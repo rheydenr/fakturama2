@@ -1,0 +1,39 @@
+# Fakturama translatable messages.
+# Copyright (C) 2013 Gerd Bartelt
+# This file is distributed under the same license as the Fakturama package.
+# Gerd Bartelt <fakturamaATsebulli.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.sebulli.fakturama 1.6.1\n"
+"Report-Msgid-Bugs-To: fakturamaATsebulli.com\n"
+"POT-Creation-Date: 2011-08-03 18:12+0200\n"
+"PO-Revision-Date: 2011-08-03 20:08+0100\n"
+"Last-Translator: Gerd Bartelt <fakturama(..)sebulli.com>\n"
+"Language-Team: Gerd Bartelt <fakturamaATsebulli.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: LIECHTENSTEIN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Bookmarks: -1,-1,-1,-1,-1,-1,-1,389,-1,-1\n"
+
+#. T: Preference page "Contact Format" - Example format Strings (Hidden countries)
+#. T: Separate the country by a comma.
+#. T: If the county name is one in this list, is won't be displayed in the address
+#. T: field. E.g. for a German language you should enter "Deutschland,Germany".
+#. T: There should be at least 2 names, separated by a comma. So that the user
+#. T: can see the format. Even if 2 countries don't make much sense like
+#. T: USA,U.S.A. for the English language.
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:134
+msgid "USA,U.S.A."
+msgstr "Liechtenstein"
+
+#. T: Preference page "Web Shop Import" - Country specific URL of demo shop
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:138
+msgid "fakturama.sebulli.com/shop/admin/fakturama_connector.php"
+msgstr "fakturama.sebulli.com/shop/admin/fakturama_connector_CH_LI.php"
+
+
+

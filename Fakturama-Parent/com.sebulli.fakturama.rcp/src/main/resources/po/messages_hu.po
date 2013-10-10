@@ -1,0 +1,4246 @@
+# Fakturama translatable messages.
+# Copyright (C) 2013 Gerd Bartelt
+# This file is distributed under the same license as the Fakturama package.
+# Gerd Bartelt <fakturamaATsebulli.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.sebulli.fakturama 1.6.1\n"
+"Report-Msgid-Bugs-To: fakturamaATsebulli.com\n"
+"POT-Creation-Date: 2011-12-25 12:01+0100\n"
+"PO-Revision-Date: 2013-06-18 19:22+0100\n"
+"Last-Translator: Gerd Bartelt <info@sebulli.com>\n"
+"Language-Team: FRANKY & FRIENDS\n"
+"Language: hu_HU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Bookmarks: -1,-1,-1,-1,-1,-1,-1,389,-1,-1\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#. T: Text of the action to open the shippings
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewShippingTable.java:62
+#: ../src/com/sebulli/fakturama/actions/OpenShippingsAction.java:32
+msgid "Shippings"
+msgstr "Szállítások"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Text of a new item
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewShippingTable.java:81
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:97
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:82
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewTextTable.java:73
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:86
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVatTable.java:84
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewListTable.java:72
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:66
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:109
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthShippingsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthListPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:68
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:63
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthTextsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:59
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogTextsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVatPreferencePage.java:59
+#: ../src/com/sebulli/fakturama/dialogs/SelectTextDialog.java:72
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:79
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:277
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1978
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2092
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:515
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:226
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:341
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:232
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:243
+msgid "Name"
+msgstr "Név"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewShippingTable.java:83
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:84
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:88
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVatTable.java:86
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:70
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthShippingsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:70
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:61
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVatPreferencePage.java:61
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:81
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2095
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:502
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:554
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:380
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:269
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:281
+msgid "Description"
+msgstr "Leírás"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Label in the document editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewShippingTable.java:85
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVatTable.java:88
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewListTable.java:74
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:113
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthShippingsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthListPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVatPreferencePage.java:63
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:286
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1246
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:394
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:282
+msgid "Value"
+msgstr "Érték"
+
+#. T: Text of the action to open the documents
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:72
+#: ../src/com/sebulli/fakturama/actions/OpenDocumentsAction.java:32
+msgid "Documents"
+msgstr "Dokumentumok"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:93
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVoucherTable.java:72
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:59
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:62
+msgid "Document"
+msgstr "Dokumentum"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Label in the voucher editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:95
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVoucherTable.java:68
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:100
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:112
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:107
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:120
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:61
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1536
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:756
+msgid "Date"
+msgstr "Dátum"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:99
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:65
+msgid "State"
+msgstr "Állapot"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Document Editor - Total sum of this document
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:101
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVoucherTable.java:76
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:67
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:66
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2449
+msgid "Total"
+msgstr "Végösszeg"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDocumentTable.java:103
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:69
+msgid "Printed"
+msgstr "Nyomtatva"
+
+#. T: Text of the action to open the products
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:60
+#: ../src/com/sebulli/fakturama/actions/OpenProductsAction.java:32
+msgid "Products"
+msgstr "Termékek"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Text of a new item
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:79
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:77
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1980
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2083
+msgid "Item No."
+msgstr "Tételszám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Product Editor - Label Product quantity
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:88
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:82
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:84
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:86
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:88
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:90
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:104
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:224
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:230
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:739
+msgid "Quantity"
+msgstr "Mennyiség"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the product editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:100
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:72
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:74
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:76
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:78
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:80
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:78
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:84
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:87
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2123
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2128
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:583
+msgid "Price"
+msgstr "Ár"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the document editor
+#. T: Used as heading of a table. Keep the word short.
+#. T: Document Editor - Label VAT
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewProductTable.java:102
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:92
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:72
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:66
+#: ../src/com/sebulli/fakturama/dialogs/SelectProductDialog.java:89
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1671
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2099
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2438
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:660
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:449
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:914
+msgid "VAT"
+msgstr "ÁFA"
+
+#. T: Text of the action to open the texts
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewTextTable.java:58
+#: ../src/com/sebulli/fakturama/actions/OpenTextsAction.java:33
+msgid "Texts"
+msgstr "Szövegek"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Document Editor Label for the text field, if there is no item table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewTextTable.java:75
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:120
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:111
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthTextsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogTextsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/dialogs/SelectTextDialog.java:74
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2161
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:264
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:908
+msgid "Text"
+msgstr "Szöveg"
+
+#. T: Text of the action to open the payments
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:64
+#: ../src/com/sebulli/fakturama/actions/OpenPaymentsAction.java:32
+msgid "Payments"
+msgstr "Fizetések"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Label in the payment editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:83
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVatTable.java:80
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthShippingsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:57
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVatPreferencePage.java:57
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:567
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:291
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:386
+msgid "Standard"
+msgstr "Alap"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Document Editor - Label discount
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:90
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:76
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:63
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2117
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2307
+msgid "Discount"
+msgstr "Kedvezmény"
+
+#. T: Discount Days
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:93
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:65
+msgid "Disc. Days"
+msgstr "Kedv. napok"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Label in the payment editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewPaymentTable.java:95
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:67
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:322
+msgid "Net Days"
+msgstr "Nettó napok"
+
+#. T: Label of the search field
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewDataSetTable.java:166
+#: ../src/com/sebulli/fakturama/dialogs/SelectDataSetDialog.java:121
+msgid "Search:"
+msgstr "Keresés:"
+
+#. T: Text of the action to open the VATs
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVatTable.java:62
+#: ../src/com/sebulli/fakturama/actions/OpenVatsAction.java:32
+msgid "VATs"
+msgstr "ÁFA-k"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewVoucherTable.java:70
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:60
+msgid "Voucher"
+msgstr "Bizonylat"
+
+#. T: Tree viewer entry for "show all"
+#: ../src/com/sebulli/fakturama/views/datasettable/TopicTreeViewer.java:111
+msgid "all"
+msgstr "Összes"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/views/datasettable/TopicTreeViewer.java:119
+msgid "Show all documents that belong to this transaction."
+msgstr "A tranzakcióhoz tartozó összes dokumentum mutatása."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/views/datasettable/TopicTreeViewer.java:123
+msgid "Show all documents that belong to this customer."
+msgstr "Az ügyfélhez tartozó összes dokumentum mutatása."
+
+#. T: Topic Tree Viewer transaction title
+#: ../src/com/sebulli/fakturama/views/datasettable/TopicTreeViewer.java:765
+msgid "Transaction"
+msgstr "Tranzakció"
+
+#. T: Mark a paid document with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:522
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:531
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2465
+#: ../src/com/sebulli/fakturama/data/DataSetDocument.java:232
+msgid "paid"
+msgstr "fizetett"
+
+#. T: Mark an unpaid document with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:526
+#: ../src/com/sebulli/fakturama/data/DataSetDocument.java:242
+msgid "unpaid"
+msgstr "kifizetetlen"
+
+#. T: Marking of a dunning in the document table.
+#. T: Format: "Dunning No. xx"
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:536
+msgid "Dunning No."
+msgstr "Felszólítási szám:"
+
+#. T: Mark an order with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:543
+msgid "open"
+msgstr "Nyitott"
+
+#. T: Mark an order with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:546
+msgid "in work"
+msgstr "Folyamatban"
+
+#. T: Mark an order with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:549
+#: ../src/com/sebulli/fakturama/data/DataSetDocument.java:252
+msgid "shipped"
+msgstr "Kiszállított"
+
+#. T: Mark an order with this text.
+#: ../src/com/sebulli/fakturama/views/datasettable/UniDataSetTableColumn.java:552
+msgid "closed"
+msgstr "Lezárt"
+
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewExpenditureVoucherTable.java:61
+msgid "Expenditure vouchers"
+msgstr "Költségbizonylatok"
+
+#. T: Text of the action to open the lists
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewListTable.java:58
+#: ../src/com/sebulli/fakturama/actions/OpenListsAction.java:32
+msgid "Lists"
+msgstr "Listák"
+
+#. T: Text of the action to open the contacts
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:62
+#: ../src/com/sebulli/fakturama/actions/OpenContactsAction.java:32
+msgid "Contacts"
+msgstr "Névjegyek"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Document Editor - Label Document Number
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:83
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1513
+msgid "No."
+msgstr "Szám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:85
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:137
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:72
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:90
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:81
+msgid "First Name"
+msgstr "Keresztnév"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:87
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:139
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:74
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:92
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:83
+msgid "Last Name"
+msgstr "Vezetéknév"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:89
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:141
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:76
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:94
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:85
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:638
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:745
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:433
+msgid "Company"
+msgstr "Cégnév"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Preference page "Your company"
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:91
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:80
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:98
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:87
+msgid "ZIP"
+msgstr "Irányítószám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Preference page "Your company"
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewContactTable.java:93
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:82
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:100
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:66
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:67
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:66
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:89
+msgid "City"
+msgstr "Város"
+
+#: ../src/com/sebulli/fakturama/views/datasettable/ViewReceiptVoucherTable.java:61
+msgid "Receipt vouchers"
+msgstr "Nyugtabizonylatok"
+
+#. T: Title of an expand bar in the navigations view
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:74
+msgid "Import"
+msgstr "Importálás"
+
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:75
+msgid "Import data into Fakturama"
+msgstr "Adatok importálása a Fakturamába"
+
+#. T: Title of an expand bar in the navigations view
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:80
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:451
+msgid "Data"
+msgstr "Adat"
+
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:81
+msgid "Data like documents, products ... "
+msgstr "Adatok (pl. dokumentumok, termékek stb.)"
+
+#. T: Title of an expand bar in the navigations view
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:96
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:453
+msgid "New"
+msgstr "Új"
+
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:97
+msgid "Create new documents, products, contacts .. "
+msgstr "Új dokumentumok, termékek, névjegyek stb. létrehozása"
+
+#. T: Title of an expand bar in the navigations view
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:112
+#: ../src/com/sebulli/fakturama/views/NavigationView.java:113
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:522
+msgid "Miscellaneous"
+msgstr "Egyéb"
+
+#. T: Title of the Message Box that appears if the OpenOffice path is invalid.
+#: ../src/com/sebulli/fakturama/views/ErrorView.java:56
+#: ../src/com/sebulli/fakturama/office/OfficeStarter.java:104
+msgid "Error"
+msgstr "Hiba"
+
+#. T: Label of the error view
+#: ../src/com/sebulli/fakturama/views/ErrorView.java:69
+msgid "Error:"
+msgstr "Hiba:"
+
+#. T: Text of the action to open the calculator
+#: ../src/com/sebulli/fakturama/views/Calculator.java:79
+#: ../src/com/sebulli/fakturama/actions/OpenCalculatorAction.java:35
+msgid "Calculator"
+msgstr "Számológép"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:236
+msgid "Web shop URL is not set."
+msgstr "Webshop URL-címe nincs beállítva."
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:264
+msgid "Connection to web shop"
+msgstr "Csatlakozás a Webshophoz"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:266
+msgid "Connected to:"
+msgstr "Csatlakoztatva ehhez:"
+
+#. T: Status error message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:334
+msgid "Error while connecting to webserver."
+msgstr "Hiba történt a webkiszolgálóhoz történő kapcsolódás során."
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:343
+msgid "Error reading web shop data."
+msgstr "Hiba történt a Webshop-adatok olvasása közben."
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:352
+msgid "Loading Data"
+msgstr "Adatok betöltése"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:417
+msgid "No webshop data:"
+msgstr "Nincsenek Webshop-adatok:"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:469
+msgid "Error opening:"
+msgstr "Hiba a megnyitás közben:"
+
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:672
+msgid "Cash_on_Delivery"
+msgstr "Utánvétes fizetés"
+
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:674
+msgid "Prepayment"
+msgstr "Előrefizetés"
+
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:676
+msgid "Credit_Card"
+msgstr "Hitelkártya"
+
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:678
+msgid "Check"
+msgstr "Csekk"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:909
+msgid "Malformated URL:"
+msgstr "Hibás formátumú URL-cím:"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:913
+msgid "Error downloading picture from:"
+msgstr "Hiba az alábbi helyen található kép letöltése közben:"
+
+#. T: Text of the web shop reference
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1272
+msgid "Web shop No."
+msgstr "Webshop szám:"
+
+#. T: Error message importing data from web shop
+#. T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1342
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:154
+msgid "Order"
+msgstr "Rendelés"
+
+#. T: Error message importing data from web shop
+#. T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1346
+msgid "Total sum from web shop:"
+msgstr "Végösszeg a Webshopból:"
+
+#. T: Error message importing data from web shop
+#. T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1350
+msgid "is not equal to the calculated one:"
+msgstr "nem egyezik a kiszámított összeggel:"
+
+#. T: Error message importing data from web shop
+#. T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1354
+msgid "Please check this!"
+msgstr "Kérjük, ellenőrizze!"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1397
+msgid "Loading product image"
+msgstr "Termékkép betöltése"
+
+#. T: Status message importing data from web shop
+#: ../src/com/sebulli/fakturama/webshopimport/WebShopImportManager.java:1409
+msgid "Importing orders"
+msgstr "Rendelések importálása"
+
+#. T: Text of the Sales Export Wizard Page 1
+#: ../src/com/sebulli/fakturama/export/ExportWizardPageStartEndDate.java:61
+msgid "Select a Periode"
+msgstr "Válasszon időszakot"
+
+#. T: Export Sales Wizard - Label Start Date of the period
+#: ../src/com/sebulli/fakturama/export/ExportWizardPageStartEndDate.java:108
+msgid "Start Date:"
+msgstr "Kezdődátum:"
+
+#. T: Export Sales Wizard - Label End Date of the period
+#: ../src/com/sebulli/fakturama/export/ExportWizardPageStartEndDate.java:114
+msgid "End Date:"
+msgstr "Végdátum:"
+
+#. T: Label in the export wizard page
+#: ../src/com/sebulli/fakturama/export/ExportWizardPageStartEndDate.java:152
+msgid "Export all and do not use a time periode."
+msgstr "Összes exportálása időszakra való tekintet nélkül."
+
+#. T: Title of the export wizard
+#. T: Name of the Table
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/vcf/contacts/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/buyers/ExportWizard.java:41
+#: ../src/com/sebulli/fakturama/export/products/ExportWizard.java:42
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportWizard.java:42
+#: ../src/com/sebulli/fakturama/export/OOCalcExporter.java:259
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizardUnpaid.java:42
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizard.java:42
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:47
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:47
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:47
+#: ../src/com/sebulli/fakturama/export/csv/products/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/csv/contacts/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/contacts/ExportWizard.java:42
+msgid "Export"
+msgstr "Exportálás"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/vcf/contacts/ExportWizard.java:46
+msgid "Export all contacts as vcard"
+msgstr "Összes névjegy exportálása vcard formátumban"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/vcf/contacts/ExportWizard.java:48
+msgid "Export the contacts in an address book vcard *.vcf file."
+msgstr ""
+"A címjegyzékben található vcard (.vcf) formátumú névjegyek exportálása."
+
+#. T: Text in a file name dialog
+#: ../src/com/sebulli/fakturama/export/vcf/contacts/ExportWizard.java:69
+msgid "VCard file"
+msgstr "VCard fájl"
+
+#. T: Text in a file name dialog
+#: ../src/com/sebulli/fakturama/export/vcf/contacts/ExportWizard.java:71
+#: ../src/com/sebulli/fakturama/export/csv/products/ExportWizard.java:72
+#: ../src/com/sebulli/fakturama/export/csv/contacts/ExportWizard.java:72
+msgid "Enter file name to save"
+msgstr "Adja meg a fájl mentési nevét"
+
+#. T: Title of the exported table
+#: ../src/com/sebulli/fakturama/export/buyers/Exporter.java:138
+msgid "List of all buyers"
+msgstr "Összes vásárló listája"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/buyers/Exporter.java:149
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:228
+msgid "Buyers"
+msgstr "Vásárlók"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/buyers/Exporter.java:151
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:226
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:232
+msgid "Volume"
+msgstr "Térfogat"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/buyers/ExportWizard.java:43
+msgid "Buyers and volume"
+msgstr "Vásárlók és térfogat"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/buyers/ExportWizard.java:45
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportWizard.java:46
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizard.java:46
+msgid ""
+"Select a periode.\n"
+"Only the invoices with a date in this periode will be exported.\n"
+"Unpaid invoices won't be exported."
+msgstr ""
+"Válasszon időszakot.\n"
+"A rendszer csak az ezen időszakban kelt számlákat exportálja.\n"
+"A rendszer a kifizetetlen számlákat nem exportálja."
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:64
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:506
+msgid "Item Number"
+msgstr "Cikkszám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:68
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:110
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:66
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:528
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:239
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:355
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:245
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:856
+msgid "Category"
+msgstr "Kategória"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:94
+msgid "Options"
+msgstr "Opciók"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Product Editor - Label Product Weight with unit (kg)
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:96
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:728
+msgid "Weight (kg)"
+msgstr "Súly (kg)"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:98
+msgid "Unit"
+msgstr "Mértékegység"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:102
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:751
+msgid "Product Picture"
+msgstr "Termék képe"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Text of the action to connect to the web shop and import new data
+#: ../src/com/sebulli/fakturama/export/products/Exporter.java:106
+#: ../src/com/sebulli/fakturama/actions/WebShopImportAction.java:52
+msgid "Web Shop"
+msgstr "Webshop"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/products/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/csv/products/ExportWizard.java:46
+msgid "Export all products"
+msgstr "Összes termék exportálása"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/products/ExportWizard.java:46
+msgid "Export the products in an OpenOffice.org Calc table."
+msgstr "Termékek exportálása OpenOffice.org Calc táblázatba."
+
+#: ../src/com/sebulli/fakturama/export/EmptyWizardPage.java:77
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportOptionPage.java:71
+#: ../src/com/sebulli/fakturama/export/sales/ExportOptionPage.java:70
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportOptionPage.java:71
+#: ../src/com/sebulli/fakturama/importer/ImportOptionPage.java:74
+msgid "preview"
+msgstr "Előnézet"
+
+#. T: Title of the exported table
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:211
+msgid "List of products and buyers"
+msgstr "Termékek és vásárlók listája"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/productbuyers/Exporter.java:222
+msgid "Product"
+msgstr "Termék"
+
+#. T: Export Sales Wizard Page 1 - Long description.
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportOptionPage.java:86
+msgid "Set sort order:"
+msgstr "Rendezési szempont beállítása:"
+
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportOptionPage.java:91
+msgid "Sort by quantity"
+msgstr "Rendezés mennyiség szerint"
+
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportOptionPage.java:93
+msgid "Sort by volume"
+msgstr "Rendezés térfogat szerint"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportWizard.java:49
+msgid "Sold products and buyers"
+msgstr "Értékesített termékek és vásárlók"
+
+#. T: Text of the export wizard
+#. T: Export Sales Wizard Page 1 - Long description.
+#. T: Text of the export wizard
+#. T: Export Sales Wizard Page 1 - Long description.
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/productbuyers/ExportWizard.java:51
+#: ../src/com/sebulli/fakturama/export/sales/ExportOptionPage.java:85
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizardUnpaid.java:51
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizard.java:51
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:56
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportOptionPage.java:86
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:56
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:56
+msgid "Set some export options."
+msgstr "Exportálási opciók beállítása."
+
+#. T: Sales Exporter - Text in the Calc document for the period
+#: ../src/com/sebulli/fakturama/export/OOCalcExporter.java:121
+msgid "Period"
+msgstr "Időszak"
+
+#. T: Sales Exporter - Text in the Calc document for the period
+#: ../src/com/sebulli/fakturama/export/OOCalcExporter.java:123
+msgid "from:"
+msgstr "Kezdés:"
+
+#. T: Sales Exporter - Text in the Calc document for the period
+#: ../src/com/sebulli/fakturama/export/OOCalcExporter.java:126
+msgid "till:"
+msgstr "Vége:"
+
+#. T: Sales Exporter - Text in the Calc document for the Earnings
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:116
+msgid "Earnings"
+msgstr "Bevételek"
+
+#. T: Sales Exporter - Text in the Calc document for the Earnings
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:119
+msgid "Unpaid invoices"
+msgstr "Kifizetetlen számlák"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:131
+msgid "Pay Date"
+msgstr "Fizetési határidő"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:133
+msgid "Invoice Nr."
+msgstr "Számlaszám"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:135
+msgid "Invoice Date"
+msgstr "Számla kelte"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:143
+msgid "VAT ID."
+msgstr "Adószám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Your company"
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:145
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:84
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:102
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:70
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:673
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:780
+msgid "Country"
+msgstr "Ország"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:147
+msgid "Invoice Value"
+msgstr "Számla végösszege"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:149
+msgid "Pay Value"
+msgstr "Kifizetett összeg"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/sales/Exporter.java:151
+msgid "Net Value"
+msgstr "Nettó érték"
+
+#: ../src/com/sebulli/fakturama/export/sales/ExportOptionPage.java:91
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportOptionPage.java:93
+#, no-c-format
+msgid "Display columns with 0% tax"
+msgstr "0% adót tartalmazó oszlopok megjelenítése"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizardUnpaid.java:44
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizardUnpaid.java:49
+msgid "List of unpaid invoices"
+msgstr "Kifizetetlen számlák listája"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizardUnpaid.java:46
+msgid ""
+"Select a periode.\n"
+"Only the unpaid invoices with a date in this periode will be exported."
+msgstr ""
+"Válasszon időszakot.\n"
+"A rendszer kizárólag az ezen időszakban kelt, kifizetetlen számlákat "
+"exportálja."
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizard.java:44
+#: ../src/com/sebulli/fakturama/export/sales/ExportWizard.java:49
+msgid "List of Sales as Table"
+msgstr "Értékesítési adatok exportálása táblázatba"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:114
+msgid "Voucher."
+msgstr "Bizonylat."
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:116
+msgid "Doc.Nr."
+msgstr "Dokumentumszám:"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:122
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:360
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:911
+msgid "Account Type"
+msgstr "Számlatípus"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Entry in a combo box of the the contact editor. Use Net or Gross
+#. T: Tag to mark a price as net or gross
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:126
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:201
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:363
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:62
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:68
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:67
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:607
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:407
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:919
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:1020
+#: ../src/com/sebulli/fakturama/editors/DocumentItemEditingSupport.java:325
+msgid "Net"
+msgstr "Nettó"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Entry in a combo box of the the contact editor. Use Net or Gross
+#. T: Tag to mark a price as net or gross
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:128
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:69
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:68
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:609
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:414
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:922
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:1022
+#: ../src/com/sebulli/fakturama/editors/DocumentItemEditingSupport.java:328
+msgid "Gross"
+msgstr "Bruttó"
+
+#. T: Sales Exporter - Text in the Calc document
+#: ../src/com/sebulli/fakturama/export/vouchers/Exporter.java:353
+msgid "Vouchers Summary:"
+msgstr "Bizonylatok összegzése:"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:49
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:54
+msgid "List of expenditure vouchers as Table"
+msgstr "Költségbizonylatok listája táblázatos formában"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:51
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:51
+msgid ""
+"Select a periode.\n"
+"Only the vouchers with a date in this periode will be exported."
+msgstr ""
+"Válasszon időszakot.\n"
+"A rendszer kizárólag az ezen időszakban kelt bizonylatokat exportálja."
+
+#. T: Title in the exported calc document
+#. T: Text of the action to open the expenditures
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportExpenditureWizard.java:77
+#: ../src/com/sebulli/fakturama/actions/OpenExpenditureVouchersAction.java:32
+msgid "Expenditure Vouchers"
+msgstr "Költségbizonylatok"
+
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportOptionPage.java:91
+msgid "Display column sum of vouchers"
+msgstr "Bizonylatok összegét mutató oszlop megjelenítése"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:49
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:54
+msgid "List of receipt vouchers as Table"
+msgstr "Nyugtabizonylatok listája táblázatos formában"
+
+#. T: Title in the exported calc document
+#. T: Text of the action to open the receipt vouchers
+#: ../src/com/sebulli/fakturama/export/vouchers/ExportReceiptWizard.java:76
+#: ../src/com/sebulli/fakturama/actions/OpenReceiptVouchersAction.java:32
+msgid "Receipt Vouchers"
+msgstr "Nyugtabizonylatok"
+
+#. T: account exporter dialog
+#. T: Title of the message dialog
+#. T: Title of the dialog that appears if customer uses a different setting for net or gross.
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:74
+#: ../src/com/sebulli/fakturama/actions/ReorganizeDocumentsAction.java:79
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1122
+msgid "Warning"
+msgstr "Figyelmeztetés"
+
+#. T: account exporter dialog
+#. T: Export Sales Wizard Page
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:76
+#: ../src/com/sebulli/fakturama/export/accounts/AccountSettingsPage.java:109
+msgid "The date must not be after the start date!"
+msgstr "A dátum nem lehet a kezdődátumnál későbbi!"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/accounts/Exporter.java:115
+msgid "Balance"
+msgstr "Egyenleg"
+
+#. T: Export Sales Wizard Page
+#: ../src/com/sebulli/fakturama/export/accounts/ExportOptionPage.java:73
+msgid "Select an account to export"
+msgstr "Válassza ki az exportálni kívánt számlát"
+
+#. T: Account settings page of account exporter
+#: ../src/com/sebulli/fakturama/export/accounts/AccountSettingsPage.java:83
+msgid "Set the account start date and value"
+msgstr "Adja meg a számla kezdődátumát és értékét"
+
+#. T: Account settings page of account exporter
+#: ../src/com/sebulli/fakturama/export/accounts/AccountSettingsPage.java:102
+msgid "Start value of this account"
+msgstr "Számla kezdőértéke"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:49
+msgid "List of account entries as a Table"
+msgstr "Számlabejegyzések listája táblázatos formában"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:51
+msgid ""
+"Select a periode.\n"
+"Only the account entries  in this periode will be exported."
+msgstr ""
+"Válasszon időszakot.\n"
+"A rendszer kizárólag az ezen időszakban kelt számlabejegyzéseket exportálja."
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:54
+msgid "List of account entries as Table"
+msgstr "Számlabejegyzések listája táblázatos formában"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:58
+msgid "Account settings"
+msgstr "Számlabeállítások"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/accounts/ExportWizard.java:60
+msgid "Set the start value of this account."
+msgstr "Számla kezdőértékének beállítása."
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/csv/products/ExportWizard.java:48
+msgid "Export the products in an comma separated value (*.csv) table."
+msgstr "Termékek exportálása vesszővel tagolt (*.csv) táblázatba."
+
+#. T: Text in a file name dialog
+#: ../src/com/sebulli/fakturama/export/csv/products/ExportWizard.java:70
+#: ../src/com/sebulli/fakturama/export/csv/contacts/ExportWizard.java:70
+msgid "Comma separated value file"
+msgstr "Vesszővel tagolt (CSV) fájl"
+
+#. T: Title of the export wizard
+#: ../src/com/sebulli/fakturama/export/csv/contacts/ExportWizard.java:46
+#: ../src/com/sebulli/fakturama/export/contacts/ExportWizard.java:44
+msgid "Export all contacts"
+msgstr "Összes névjegy exportálása"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/csv/contacts/ExportWizard.java:48
+msgid "Export the contacts in an comma separated value (*.csv) table."
+msgstr "Névjegyek exportálása vesszővel tagolt (*.csv) táblázatba."
+
+#. T: Table heading
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:61
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:688
+msgid "Delivery Address"
+msgstr "Kézbesítési cím"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:68
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:86
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:589
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:695
+msgid "Gender"
+msgstr "Nem"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: "Title" ( part of an address)
+#. T: "Title" (part of an address)
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:70
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:88
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:594
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:700
+msgctxt "ADDRESS"
+msgid "Title"
+msgstr "Megszólítás"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:78
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:96
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:648
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:755
+msgid "Street"
+msgstr "Utca"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:104
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:794
+msgid "Account Holder"
+msgstr "Számlatulajdonos"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:106
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:804
+msgid "Account Number"
+msgstr "Számlaszám"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:108
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:814
+msgid "Bank Code"
+msgstr "Bankazonosító"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:110
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:824
+msgid "Name of the Bank"
+msgstr "Bank neve"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Bank code
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:112
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:834
+msgid "IBAN"
+msgstr "IBAN"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Bank code
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:114
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:844
+msgid "BIC"
+msgstr "BIC"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:116
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:56
+#: ../src/com/sebulli/fakturama/dialogs/SelectContactDialog.java:79
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:554
+msgid "Customer ID"
+msgstr "Ügyfélazonosító"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:118
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:537
+msgid "Notice"
+msgstr "Megjegyzés"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#. T: Payment Editor: Title
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:122
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:932
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:237
+msgid "Payment"
+msgstr "Fizetés"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:124
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:960
+msgid "Reliability"
+msgstr "Megbízhatóság"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Your company"
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:126
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:73
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:892
+msgid "Telephone"
+msgstr "Telefon"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Your company"
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:128
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:76
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:902
+msgid "Telefax"
+msgstr "Fax"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:130
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:912
+msgid "Mobile"
+msgstr "Mobiltelefon"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Your company"
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:132
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:79
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:882
+msgid "E-Mail"
+msgstr "E-mail"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Preference page "Your company"
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:134
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:82
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:922
+msgid "Web Site"
+msgstr "Weboldal"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:136
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:977
+msgid "VAT Number"
+msgstr "Adószám"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:138
+msgid "VAT Number valid"
+msgstr "Adószám érvényes"
+
+#. T: Used as heading of a table. Keep the word short.
+#. T: Customer's discount
+#: ../src/com/sebulli/fakturama/export/contacts/Exporter.java:140
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:987
+msgctxt "CUSTOMER"
+msgid "Discount"
+msgstr "Kedvezmény"
+
+#. T: Text of the export wizard
+#: ../src/com/sebulli/fakturama/export/contacts/ExportWizard.java:46
+msgid "Export the contacts in an OpenOffice.org Calc table."
+msgstr "Névjegyek exportálása OpenOffice.org Calc táblázatba."
+
+#. T: Templates folder name
+#: ../src/com/sebulli/fakturama/Workspace.java:61
+msgid "Templates"
+msgstr "Sablonok"
+
+#. T: Title of the dialog to select the working directory
+#: ../src/com/sebulli/fakturama/Workspace.java:261
+msgid "Select your working directory"
+msgstr "Munkakönyvtár kiválasztása"
+
+#. T: Text of the dialog to select the working directory
+#: ../src/com/sebulli/fakturama/Workspace.java:263
+msgid "Please select your working directory, where all the data is stored."
+msgstr "Kérjük, válassza ki a munkakönyvtárát, ahol az összes adatot tárolja."
+
+#. T: Title of a message box
+#. T: Title of the dialog
+#. T: Title of the customer statistics dialog
+#. T: Title of a message box
+#: ../src/com/sebulli/fakturama/Workspace.java:284
+#: ../src/com/sebulli/fakturama/actions/CreateOODocumentAction.java:177
+#: ../src/com/sebulli/fakturama/actions/CreateOODocumentAction.java:192
+#: ../src/com/sebulli/fakturama/actions/OpenParcelServiceAction.java:232
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1478
+#: ../src/com/sebulli/fakturama/data/Data.java:114
+msgid "Information"
+msgstr "Információk"
+
+#. T: Text of the dialog that the workspace will be switched and that you should restart Fakturama.
+#: ../src/com/sebulli/fakturama/Workspace.java:286
+msgid ""
+"To switch the workspace,\n"
+"Fakturama will be restarted!"
+msgstr ""
+"A munkaterület módosításához\n"
+"a Fakturamának újra kell indulnia!"
+
+#. T: Import Wizard Page 1 - Long description.
+#. T: Import product wizard
+#: ../src/com/sebulli/fakturama/importer/ImportOptionPage.java:90
+#: ../src/com/sebulli/fakturama/importer/csv/products/ImportWizard.java:57
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/ImportWizard.java:56
+msgid "Set some import options."
+msgstr "Importálási opciók beállítása."
+
+#. T: Import Wizard page
+#: ../src/com/sebulli/fakturama/importer/ImportOptionPage.java:96
+msgid "Update existing entries"
+msgstr "Meglévő bejegyzések frissítése"
+
+#. T: Import Wizard page
+#: ../src/com/sebulli/fakturama/importer/ImportOptionPage.java:101
+msgid "Update with empty values"
+msgstr "Frissítés üres értékekkel"
+
+#. T: Importing + .. FILENAME
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:101
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:95
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:101
+msgid "Importing"
+msgstr "Az alábbi importálása:"
+
+#. T: Error message
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:127
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:122
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:129
+msgid "File not found."
+msgstr "A fájl nem található."
+
+#. T: Error message
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:141
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:147
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:136
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:142
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:143
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:149
+msgid "Error reading the first line"
+msgstr "Hiba az első sor beolvasása során"
+
+#. T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:178
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:178
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:180
+msgid "Line"
+msgstr "Sor"
+
+#. T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:180
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:180
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:182
+msgid "No Data in Column"
+msgstr "Nincs adat a(z):"
+
+#. T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:182
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:182
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:184
+msgid "found."
+msgstr "oszlopban."
+
+#. T: Message: xx Products HAVE BEEN IMPORTED
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:249
+msgid "products have been imported."
+msgstr "terméket importált a rendszer."
+
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:251
+msgid "products have been updated."
+msgstr "terméket frissített a rendszer."
+
+#. T: Error message
+#: ../src/com/sebulli/fakturama/importer/csv/products/Importer.java:257
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:278
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:273
+msgid "Error opening the file."
+msgstr "Hiba a fájl megnyitása során."
+
+#. T: Title of the CSV Import wizard
+#: ../src/com/sebulli/fakturama/importer/csv/products/ImportWizard.java:53
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/ImportWizard.java:53
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/ImportWizard.java:52
+msgid "Import CSV"
+msgstr "Importálás CSV formátumba"
+
+#. T: Import product wizard
+#: ../src/com/sebulli/fakturama/importer/csv/products/ImportWizard.java:55
+msgid "Import Products"
+msgstr "Termékek importálása"
+
+#. T: CSV Import File Dialog Title
+#: ../src/com/sebulli/fakturama/importer/csv/products/ImportWizard.java:84
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/ImportWizard.java:75
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/ImportWizard.java:82
+msgid "Select file to import"
+msgstr "Válassza ki az importálni kívánt fájlt"
+
+#. T: CSV Import File Filter
+#: ../src/com/sebulli/fakturama/importer/csv/products/ImportWizard.java:87
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/ImportWizard.java:78
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/ImportWizard.java:85
+msgid "Table as CSV"
+msgstr "Táblázat (CSV)"
+
+#. T: Error message Dataset is already imported
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:208
+msgid "Dataset is already imported"
+msgstr "Az adatkészletet már importálták"
+
+#. T: Error message: DATASET xx FROM date
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:210
+msgid "Dataset"
+msgstr "Adatkészlet"
+
+#. T: DATASET xx FROM date
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:212
+msgctxt "DATE"
+msgid "from"
+msgstr "kezdődátum:"
+
+#. T: Error message Import stopped
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:214
+msgid "Import stopped"
+msgstr "Importálás leállítva"
+
+#. T: Message: xx VOUCHERS HAVE BEEN IMPORTED
+#: ../src/com/sebulli/fakturama/importer/csv/expenditures/Importer.java:273
+msgid "Vouchers have been imported."
+msgstr "bizonylatot importált a rendszer."
+
+#. T: Message: xx Contacts have been imported
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:266
+msgid "contacts have been imported."
+msgstr "névjegyet importált a rendszer."
+
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/Importer.java:268
+msgid "contacts have been updated."
+msgstr "névjegyet frissített a rendszer."
+
+#. T: Import contact wizard
+#: ../src/com/sebulli/fakturama/importer/csv/contacts/ImportWizard.java:54
+msgid "Import Contacts"
+msgstr "Névjegyek importálása"
+
+#. T: Import progress of the CSV import
+#: ../src/com/sebulli/fakturama/importer/ImportProgressDialog.java:47
+msgid "Import Progress:"
+msgstr "Importálási folyamat:"
+
+#. T: Preference page "Office" - Label: Example of the default path. Format: (e.g. PATH).
+#. T: Only the "e.g." is translated
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:64
+msgid "e.g.:"
+msgstr "pl.:"
+
+#. T: Preference page "Office" - Label: Office App
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:68
+msgid "Office App"
+msgstr "Office alkalmazás"
+
+#. T: Preference page "Office" - Label: Office folder
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:71
+msgid "Office folder"
+msgstr "Office mappa"
+
+#. T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:74
+msgid "Export document as ODT or PDF:"
+msgstr "Dokumentum exportálása ODT vagy PDF formátumba:"
+
+#. T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:76
+msgid "only as ODT"
+msgstr "csak ODT formátumban"
+
+#. T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:78
+msgid "only as PDF"
+msgstr "csak PDF formátumban"
+
+#. T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:80
+msgid "ODT and PDF"
+msgstr "ODT és PDF"
+
+#. T: Preference page "Office"
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:84
+msgid "Format and path of .odt files."
+msgstr ".odt fájlok formátuma és útvonala."
+
+#. T: Preference page "Office"
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:86
+msgid "Format and path of .pdf files."
+msgstr ".pdf fájlok formátuma és útvonala."
+
+#. T: Preference page "Office" - Label checkbox "Start Office in a new thread"
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:90
+msgid "Start Office in a new thread"
+msgstr "Office indítása új szálon"
+
+#. T: Preference page "Office" - Title"
+#: ../src/com/sebulli/fakturama/preferences/OfficePreferencePage.java:104
+msgid "Office Settings"
+msgstr "Office beállítások"
+
+#. T: Preference page "Contact" - Label checkbox "Use delivery address"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:56
+msgid "Use delivery address"
+msgstr "Kézbesítési cím használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use bank account"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:59
+msgid "Use bank account"
+msgstr "Bankszámla használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use miscellaneous"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:62
+msgid "Use page miscellaneous"
+msgstr "\"Egyéb\" oldal használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use page notice"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:65
+msgid "Use page notice"
+msgstr "\"Megjegyzés\" oldal használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use gender"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:68
+msgid "Use gender"
+msgstr "Nem használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use title"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:71
+msgid "Use title"
+msgstr "Megszólítás használata"
+
+#. T: Preference page "Contact" - Label format of the name
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:74
+msgid "Format of the name:"
+msgstr "Név formátuma:"
+
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:74
+msgid "First name Last name"
+msgstr "Keresztnév Vezetéknév"
+
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:75
+msgid "Last name, First name"
+msgstr "Vezetéknév, Keresztnév"
+
+#. T: Preference page "Contact" - Label checkbox "Use company field"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:78
+msgid "Use company field"
+msgstr "Cégnév mező használata"
+
+#. T: Preference page "Contact" - Label checkbox "Use Country Field"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:81
+msgid "Use country field"
+msgstr "Ország mező használata"
+
+#. T: Preference page "Contact" - Title"
+#: ../src/com/sebulli/fakturama/preferences/ContactPreferencePage.java:94
+msgid "Contact Settings"
+msgstr "Névjegy beállítások"
+
+#. T: Preference page "Web Shop Import" - Label checkbox "web shop enabled"
+#: ../src/com/sebulli/fakturama/preferences/WebShopAuthorizationPreferencePage.java:57
+msgid "Web shop is password protected"
+msgstr "A Webshop jelszóval védett"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopAuthorizationPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:64
+msgid "Username"
+msgstr "Felhasználónév"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopAuthorizationPreferencePage.java:63
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:67
+msgid "Password"
+msgstr "Jelszó"
+
+#. T: Preference page "Web Shop Authorization" - Title
+#: ../src/com/sebulli/fakturama/preferences/WebShopAuthorizationPreferencePage.java:78
+msgid "Authorization for password protected web shops"
+msgstr "Engedély a jelszóval védett Webshopokhoz"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthShippingsPreferencePage.java:75
+msgid "Column width of the shipping table"
+msgstr "Szállítási táblázat oszlopszélessége"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthListPreferencePage.java:71
+msgid "Column width of the list table"
+msgstr "Lista táblázat oszlopszélessége"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVoucherItemsPreferencePage.java:77
+msgid "Column width of the voucher item table"
+msgstr "Bizonylatelem táblázat oszlopszélessége"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPreferencePage.java:63
+msgid "Column width of the tables"
+msgstr "Táblázatok oszlopszélessége"
+
+#. T: Preference page "General"
+#: ../src/com/sebulli/fakturama/preferences/GeneralPreferencePage.java:62
+msgid "Navigation view: Collapse expand bar"
+msgstr "Navigációs nézet: Sáv összecsukása/kibontása"
+
+#. T: Preference page "General"
+#: ../src/com/sebulli/fakturama/preferences/GeneralPreferencePage.java:65
+msgid "Close other editors"
+msgstr "Egyéb szerkesztők bezárása"
+
+#. T: Preference page "General"
+#: ../src/com/sebulli/fakturama/preferences/GeneralPreferencePage.java:68
+msgid "Currency"
+msgstr "Pénznem"
+
+#. T: Preference page "General" - Title"
+#: ../src/com/sebulli/fakturama/preferences/GeneralPreferencePage.java:81
+#: ../src/com/sebulli/fakturama/preferences/BrowserPreferencePage.java:79
+msgid "General Settings"
+msgstr "Általános beállítások"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:56
+msgid "Pos."
+msgstr "Poz."
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:58
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2070
+msgid "Opt."
+msgstr "Opt."
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:60
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2073
+msgid "Qty."
+msgstr "Menny."
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:62
+msgid "Qty. Unit"
+msgstr "Menny. egység"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:66
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2088
+msgid "Picture"
+msgstr "Kép"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Unit Price.
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:74
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2105
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2110
+msgid "U.Price"
+msgstr "Egységár"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthItemsPreferencePage.java:91
+msgid "Column width of the item table"
+msgstr "Elemtáblázat oszlopszélessége"
+
+#. T: Preference page "Contact Format" - label "Common Salutation"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:55
+msgid "Common Salutation"
+msgstr "Általános megszólítás"
+
+#. T: Preference page "Contact Format" - label "Salutation for men"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:58
+msgid "Salutation Men"
+msgstr "Férfiak megszólítása"
+
+#. T: Preference page "Contact Format" - label "Salutation for woman"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:61
+msgid "Salutation Women"
+msgstr "Nők megszólítása"
+
+#. T: Preference page "Contact Format" - label "Salutation for companies"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:64
+msgid "Salutation Company"
+msgstr "Vállalat megszólítása"
+
+#. T: Preference page "Contact Format" - label "Format of the address field"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:67
+msgid "Address Field"
+msgstr "Cím mező"
+
+#. T: Preference page "Contact Format" - label "List of the countries whose names are not printed in the address label"
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:70
+msgid "Hide this Countries"
+msgstr "Országok elrejtése"
+
+#. T: Preference page "Contact Format" - Title of this page with an example
+#. T: how to format the address field. Use \n to separate lines.
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:85
+msgid ""
+"Format of the address field\n"
+"\n"
+"Example:\n"
+"Dear Mr. {title} {firstname} {lastname}\n"
+msgstr ""
+"Cím mező formátuma\n"
+"\n"
+"Példa:\n"
+"Tisztelt {megszólítás} {keresztnév} {vezetéknév}!\n"
+
+#. T: Preference page "Contact Format" - Example format Strings (Common Salutation)
+#. T: Preference page "Contact Format" - Example format Strings (Salutation Company)
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:113
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:122
+msgid "Dear Sir or Madam"
+msgstr "Tisztelt Hölgyem/Uram!"
+
+#. T: Preference page "Contact Format" - Example format Strings (Salutation Men) - do not translate the placeholders
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:116
+msgid "Dear Mr. {firstname} {lastname}"
+msgstr "Tisztelt {keresztnév} {vezetéknév} úr!"
+
+#. T: Preference page "Contact Format" - Example format Strings (Salutation Women) - do not translate the placeholders
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:119
+msgid "Dear Ms. {firstname} {lastname}"
+msgstr "Tisztelt {keresztnév} {vezetéknév} asszony!"
+
+#. T: Preference page "Contact Format" - Example format Strings (Hidden countries)
+#. T: Separate the country by a comma.
+#. T: If the county name is one in this list, is won't be displayed in the address
+#. T: field. E.g. for a German language you should enter "Deutschland,Germany".
+#. T: There should be at least 2 names, separated by a comma. So that the user
+#. T: can see the format. Even if 2 countries don't make much sense like
+#. T: USA,U.S.A. for the English language.
+#: ../src/com/sebulli/fakturama/preferences/ContactFormatPreferencePage.java:134
+msgid "USA,U.S.A."
+msgstr "Magyarország,Hungary"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogProductsPreferencePage.java:77
+msgid "Column width of the dialog to select a product"
+msgstr "Termékválasztási párbeszédpanel oszlopszélessége"
+
+#. T: Preference page "Webbrowser" - URL of the start page
+#: ../src/com/sebulli/fakturama/preferences/BrowserPreferencePage.java:59
+msgid "URL web browser"
+msgstr "URL webböngésző"
+
+#. T: Preference page "Webbrowser"
+#: ../src/com/sebulli/fakturama/preferences/BrowserPreferencePage.java:62
+msgid "Type of web browser:"
+msgstr "Webböngésző típusa:"
+
+#. T: Preference page "Webbrowser"
+#: ../src/com/sebulli/fakturama/preferences/BrowserPreferencePage.java:66
+msgid "Show the URL bar"
+msgstr "URL-címsor mutatása"
+
+#. T: Preference page "Number Range Format" - Label "Format of the Customer ID"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:56
+msgid "Format customer ID:"
+msgstr "Ügyfélazonosító formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the item No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:58
+msgid "Format item No.:"
+msgstr "Cikkszám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the invoice No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:60
+msgid "Format invoice No.:"
+msgstr "Számlaszám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the delivery note No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:62
+msgid "Format delivery n.No..:"
+msgstr "Szállítólevél számának formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the offer No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:64
+msgid "Format offer No.:"
+msgstr "Árajánlatszám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the order No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:66
+msgid "Format order No.:"
+msgstr "Rendelésszám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the confirmation No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:68
+msgid "Format confirmation No.:"
+msgstr "Visszaigazolási szám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the credit No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:70
+msgid "Format credit No.:"
+msgstr "Jóváírási értesítő számának formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the dunning No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:72
+msgid "Format dunning No.:"
+msgstr "Felszólítási szám formátuma:"
+
+#. T: Preference page "Number Range Format" - Label "Format of the dunning No."
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:74
+msgid "Format proforma invoice No.:"
+msgstr "Proforma számla formátuma:"
+
+#. T: Preference page "Number Range Format" - Title with an example of the format
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:86
+msgid ""
+"Number range format for documents\n"
+"\n"
+"Example:  INV{6nr}\n"
+"Number will be displayed with 6 digits and a leading \"INV\" : INV000001\n"
+msgstr ""
+"Dokumentumok számtartományának formátuma\n"
+"\n"
+"Példa: SZ{6nr}\n"
+"A megjelenített hatjegyű szám előtti fix jelzés \"SZ\": SZ000001\n"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Customer" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:118
+msgid "CUST{6nr}"
+msgstr "ÜGYF{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Invoice" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:122
+msgid "INV{6nr}"
+msgstr "SZ{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Delivery Note" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:124
+msgid "D/O{6nr}"
+msgstr "SZL{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Offer" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:126
+msgid "LO{6nr}"
+msgstr "ÁRAJ{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Order" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:128
+msgid "PO{6nr}"
+msgstr "REND{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Credit Note" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:130
+msgid "CN{6nr}"
+msgstr "JÉ{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Confirmation" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:132
+msgid "CONF{6nr}"
+msgstr "VISSZ{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:134
+msgid "DUNNING{6nr}"
+msgstr "FELSZ{6nr}"
+
+#. T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeFormatPreferencePage.java:136
+msgid "PROFORMA{6nr}"
+msgstr "PROFORMA{6nr}"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthContactsPreferencePage.java:79
+msgid "Column width of the contact table"
+msgstr "Névjegy táblázat oszlopszélessége"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:56
+msgid "Next customer No.:"
+msgstr "Következő ügyfélszám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:58
+msgid "Next item No.:"
+msgstr "Következő cikkszám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:60
+msgid "Next invoice No.:"
+msgstr "Következő számlaszám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:62
+msgid "Next delivery note:"
+msgstr "Következő szállítólevél:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:64
+msgid "Next offer No.:"
+msgstr "Következő árajánlatszám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:66
+msgid "Next order No.:"
+msgstr "Következő rendelésszám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:68
+msgid "Next confirmation No.:"
+msgstr "Következő visszaigazolási szám:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:70
+msgid "Next credit No.:"
+msgstr "Következő jóv. ért. száma:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:72
+msgid "Next dunning No.:"
+msgstr "Következő felszól. száma:"
+
+#. T: Preference page "Number Range Values" - Label "next free number"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:74
+msgid "Next proforma invoice No.:"
+msgstr "Következő proforma számla száma:"
+
+#. T: Preference page "Number Range Values" - Title"
+#: ../src/com/sebulli/fakturama/preferences/NumberRangeValuesPreferencePage.java:86
+msgid "Next number"
+msgstr "Következő szám"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:57
+msgid "Document Icon"
+msgstr "Dokumentumikon"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDocumentsPreferencePage.java:82
+msgid "Column width of the document table"
+msgstr "Dokumentum táblázat oszlopszélessége"
+
+#. T: Error message if the selected file is not a valid OpenOffice app
+#: ../src/com/sebulli/fakturama/preferences/AppFieldEditor.java:117
+msgid "Not a valid OpenOffice App"
+msgstr "Érvénytelen OpenOffice alkalmazás"
+
+#. T: Error message if the selected folder is not a valid OpenOffice folder
+#: ../src/com/sebulli/fakturama/preferences/AppFieldEditor.java:120
+msgid "Not a valid OpenOffice program folder"
+msgstr "Érvénytelen OpenOffice programmappa"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthProductsPreferencePage.java:79
+msgid "Column width of the product table"
+msgstr "Termék táblázat oszlopszélessége"
+
+#. T: Preference page "Web Shop Import" - Label checkbox "web shop enabled"
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:58
+msgid "Web shop enabled"
+msgstr "Webshop engedélyezve"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:61
+msgid "Webshop URL"
+msgstr "Webshop URL-címe"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:72
+msgid "Products in category:"
+msgstr "Kategóriában található termékek:"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:75
+msgid "Customers in category:"
+msgstr "Kategóriában található ügyfelek:"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:78
+msgid "Shippings in category:"
+msgstr "Kategóriában található szállítások:"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:81
+msgid "Notify customer on 'In Work'"
+msgstr "Ügyfél értesítése a \"Folyamatban\" állapotról"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:83
+msgid "Notify customer on 'Shipped'"
+msgstr "Ügyfél értesítése a \"Kiküldött\" állapotról"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:85
+msgid "Maximum products:"
+msgstr "Maximum termékszám:"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:87
+msgid "Import only modified products"
+msgstr "Csak a módosított termékek importálása"
+
+#. T: Preference page "Web Shop Import" - Label
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:89
+msgid "Import EAN as item number"
+msgstr "EAN importálása cikkszámként"
+
+#. T: Preference page "Web Shop Import" - Title
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:103
+msgid "Import from web shop"
+msgstr "Importálás a Webshopból"
+
+#. T: Preference page "Web Shop Import" - Country specific URL of demo shop
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:138
+msgid "fakturama.sebulli.com/shop/admin/fakturama_connector.php"
+msgstr "fakturama.sebulli.com/shop/admin/fakturama_connector_HU.php"
+
+#. T: Preference page "Web Shop Import" - Default value "Product Category"
+#. T: Preference page "Web Shop Import" - Default value "Shipping Category"
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:142
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:146
+msgid "Shop"
+msgstr "Shop"
+
+#. T: Preference page "Web Shop Import" - Default value "Contact Category"
+#: ../src/com/sebulli/fakturama/preferences/WebShopImportPreferencePage.java:144
+msgid "Shop Customer"
+msgstr "Shop ügyfél"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthTextsPreferencePage.java:71
+msgid "Column width of the text table"
+msgstr "Szöveg táblázat oszlopszélessége"
+
+#. T: Preference page "Product" - Label "Use item No."
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:58
+msgid "Use item No."
+msgstr "Cikkszám használata"
+
+#. T: Preference page "Product" - Label "Use Quantity Unit"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:61
+msgid "Use Quantity Unit"
+msgstr "Menny. egység használata"
+
+#. T: Preference page "Product" - Label "Use description"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:64
+msgid "Use description"
+msgstr "Leírás használata"
+
+#. T: Preference page "Product" - Label "Use gross or net or both"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:67
+msgid "Enter price as net or gross:"
+msgstr "Ár megadása nettó vagy bruttó értékként:"
+
+#. T: Preference page "Product" - Label "Use both: net and gross"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:71
+msgid "Net and Gross"
+msgstr "Nettó és bruttó"
+
+#. T: Preference page "Product" - Label "Use scaled prices"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:74
+msgid "Use scaled prices:"
+msgstr "Léptékes árak használata:"
+
+#. T: Preference page "Product" - Label "Possibility to select the VAT"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:78
+msgid "Select VAT"
+msgstr "ÁFA kiválasztása"
+
+#. T: Preference page "Product" - Label "Use weight"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:81
+msgid "Use weight"
+msgstr "Súly használata"
+
+#. T: Preference page "Product" - Label "Use quantity"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:84
+msgid "Use quantity"
+msgstr "Mennyiség használata"
+
+#. T: Preference page "Product" - Label "Use product picture"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:87
+msgid "Use product picture"
+msgstr "Termékkép használata"
+
+#. T: Preference page "Product" - Title"
+#: ../src/com/sebulli/fakturama/preferences/ProductPreferencePage.java:99
+msgid "Product Settings"
+msgstr "Termékbeállítások"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthPaymentsPreferencePage.java:80
+msgid "Column width of the payment table"
+msgstr "Fizetés táblázat oszlopszélessége"
+
+#. T: Preference page "Your company"
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:55
+msgid "Company Name"
+msgstr "Cégnév"
+
+#. T: Preference page "Your company"
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:58
+msgid "Owner"
+msgstr "Tulajdonos"
+
+#. T: Preference page "Your company"
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:61
+msgid "Street No."
+msgstr "Házszám"
+
+#. T: Preference page "Your company"
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:85
+msgid "VAT No."
+msgstr "Adószám"
+
+#. T: Preference page "Your company" - Title"
+#: ../src/com/sebulli/fakturama/preferences/YourCompanyPreferencePage.java:98
+msgid "Your Company"
+msgstr "Az Ön cége"
+
+#. T: Preference page "toolbar"
+#: ../src/com/sebulli/fakturama/preferences/ToolbarPreferencePage.java:62
+msgid "Show icon: "
+msgstr "Ikon mutatása:"
+
+#. T: Preference page "toolbar"
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/preferences/ToolbarPreferencePage.java:72
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:231
+msgid "Save"
+msgstr "Mentés"
+
+#. T: Preference page Title"
+#: ../src/com/sebulli/fakturama/preferences/ToolbarPreferencePage.java:111
+msgid "Toolbar Icons"
+msgstr "Eszköztár ikonok"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:56
+msgid "Book"
+msgstr "Könyv"
+
+#. T: Preference page "Column width" - Use the same text as in the heading of the corresponding table
+#. T: Text voucher name. Customer or supplier
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:64
+#: ../src/com/sebulli/fakturama/data/DataSetExpenditureVoucher.java:23
+msgid "Supplier"
+msgstr "Szállító"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVouchersPreferencePage.java:79
+msgid "Column width of the voucher table"
+msgstr "Bizonylat táblázat oszlopszélessége"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogContactsPreferencePage.java:79
+msgid "Column width of the dialog to select a contact"
+msgstr "Névjegyválasztó párbeszédpanel oszlopszélessége"
+
+#. T: Preference page "Document" - Label "Format (net or gross) of the price in the item list"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:66
+msgid "Price in the item list:"
+msgstr "Elemlistában szereplő ár:"
+
+#. T: Preference page "Document" - Label "Copy the content of the message field when creating a duplicate of the document."
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:72
+msgid "Copy message field when creating a duplicate"
+msgstr "Üzenet mező másolása duplikált elem készítésekor"
+
+#. T: Preference page "Document" - Label "Copy the description in product selection dialog."
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:74
+msgid "Copy description from product."
+msgstr "Leírás másolása a termékből."
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:76
+msgid "Display a preview picture"
+msgstr "Előnézeti kép megjelenítése"
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:78
+msgid "Use item position"
+msgstr "Elempozíció használata"
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:80
+msgid "Use discount for each item"
+msgstr "Kedvezmény használata az egyes elemekhez"
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:82
+msgid "Use discount for all items"
+msgstr "Kedvezmény használata minden elemhez"
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:84
+msgid "Show a customer statistics dialog"
+msgstr "Ügyfélstatisztika párbeszédpanel megjelenítése"
+
+#. T: Preference page "Document" - How to compare the address to generate the customer statistics
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:86
+msgid "Compare:"
+msgstr "Összehasonlítás:"
+
+#. T: Preference page "Document" - How to compare the address to generate the customer statistics
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:88
+msgid "Only contact id"
+msgstr "Csak a névjegy-azonosító"
+
+#. T: Preference page "Document" - How to compare the address to generate the customer statistics
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:90
+msgid "Also address field"
+msgstr "Cím mezővel együtt"
+
+#. T: Preference page "Document"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:93
+msgid "No of message fields:"
+msgstr "Üzenet mezők száma:"
+
+#. T: Preference page "Document" - Title"
+#: ../src/com/sebulli/fakturama/preferences/DocumentPreferencePage.java:106
+msgid "Document Settings"
+msgstr "Dokumentum beállítások"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthDialogTextsPreferencePage.java:71
+msgid "Column width of the dialog to select a text"
+msgstr "Szövegválasztási párbeszédpanel oszlopszélessége"
+
+#. T: Preference page - Title
+#: ../src/com/sebulli/fakturama/preferences/ColumnWidthVatPreferencePage.java:76
+msgid "Column width of the VAT table"
+msgstr "ÁFA táblázat oszlopszélessége"
+
+#. T: Preference page "Optional items"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:65
+msgid "Use optional items"
+msgstr "Opcionális elemek használata"
+
+#. T: Preference page "Optional items"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:67
+msgid "Replace price"
+msgstr "Ár cseréje"
+
+#. T: Preference page "Optional items"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:69
+msgid "Price replacement"
+msgstr "Árcsere"
+
+#. T: Preference page "Optional items"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:71
+msgid "Text \"Optional Item\""
+msgstr "\"Opcionális elem\" szövege"
+
+#. T: Preference page "Optional Items" - Title"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:84
+msgid "Otional Items Settings"
+msgstr "Opcionális elem beállításai"
+
+#. T: Preference page "Optional Items" - placeholder text for "optional item"
+#: ../src/com/sebulli/fakturama/preferences/OptionalItemsPreferencePage.java:112
+msgid "Optional Item:<br>"
+msgstr "Opcionális elem:<br>"
+
+#. T: Preference page "Export Sales" - Label "Use Pay Date instead of Invoice Date"
+#: ../src/com/sebulli/fakturama/preferences/ExportPreferencePage.java:56
+msgid "Use pay date instead of invoice date"
+msgstr "Fizetési határidő használata a számla kelte helyett"
+
+#. T: Preference page "Export" - Title"
+#: ../src/com/sebulli/fakturama/preferences/ExportPreferencePage.java:68
+msgid "Export settings"
+msgstr "Exportálási beállítások"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:190
+msgid "Export.."
+msgstr "Exportálás..."
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:196
+msgid "Import.."
+msgstr "Importálás..."
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:201
+msgid "Preferences"
+msgstr "Tulajdonságok"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:206
+msgid "Quit Fakturama"
+msgstr "Fakturama bezárása"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:211
+msgid "Print"
+msgstr "Nyomtatás"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:216
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:628
+msgctxt "TOOLBAR"
+msgid "Print"
+msgstr "Nyomtatás"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:221
+msgid "Close"
+msgstr "Bezárás"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:226
+msgid "Close All"
+msgstr "Összes bezárása"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:239
+msgid "Save All"
+msgstr "Összes mentése"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:246
+msgid "About Fakturama"
+msgstr "A Fakturama névjegye"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:251
+msgid "Help Contents"
+msgstr "Súgó témakörök"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:256
+msgid "Search"
+msgstr "Keresés"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:261
+msgid "Dynamic Help"
+msgstr "Dinamikus súgó"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:266
+msgid "Show Intro"
+msgstr "Intro mutatása"
+
+#. T: Text of the actions in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:272
+msgid "Reset Perspective"
+msgstr "Perspektíva visszaállítása"
+
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:447
+msgid "File"
+msgstr "Fájl"
+
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:449
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:455
+msgid "Extra"
+msgstr "Extrák"
+
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:457
+msgid "Window"
+msgstr "Ablak"
+
+#. T: Title of the menus in the main menu
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:459
+msgid "Help"
+msgstr "Súgó"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:619
+msgctxt "TOOLBAR"
+msgid "Web Shop"
+msgstr "Webshop"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:637
+msgctxt "TOOLBAR"
+msgid "Save"
+msgstr "Mentés"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:645
+msgctxt "TOOLBAR"
+msgid "Letter"
+msgstr "Levél"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:653
+msgctxt "TOOLBAR"
+msgid "Offer"
+msgstr "Árajánlat"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:661
+msgctxt "TOOLBAR"
+msgid "Order"
+msgstr "Rendelés"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:669
+msgctxt "TOOLBAR"
+msgid "Confirmation"
+msgstr "Visszaigazolás"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:677
+msgctxt "TOOLBAR"
+msgid "Invoice"
+msgstr "Számla"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:685
+msgctxt "TOOLBAR"
+msgid "Delivery"
+msgstr "Kézbesítés"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:693
+msgctxt "TOOLBAR"
+msgid "Credit"
+msgstr "Jóváírás"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:702
+msgctxt "TOOLBAR"
+msgid "Dunning"
+msgstr "Felszólítás"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:710
+msgctxt "TOOLBAR"
+msgid "Proforma"
+msgstr "Proforma"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:718
+msgctxt "TOOLBAR"
+msgid "Product"
+msgstr "Termék"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:726
+msgctxt "TOOLBAR"
+msgid "Contact"
+msgstr "Kapcsolat"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:734
+msgctxt "TOOLBAR"
+msgid "Expenditure"
+msgstr "Költség"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:742
+msgctxt "TOOLBAR"
+msgid "Receipt"
+msgstr "Nyugta"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:750
+msgctxt "TOOLBAR"
+msgid "Parcel"
+msgstr "Csomag"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:758
+msgctxt "TOOLBAR"
+msgid "www"
+msgstr "www"
+
+#. T: Text of the actions in the tool bar. Keep it short that it can be placed under the icon.
+#: ../src/com/sebulli/fakturama/ApplicationActionBarAdvisor.java:766
+msgctxt "TOOLBAR"
+msgid "Calculator"
+msgstr "Kalkulátor"
+
+#: ../src/com/sebulli/fakturama/parcelService/ParcelServiceManager.java:118
+msgid "ParcelService"
+msgstr "Csomagküldés"
+
+#. T: Message box title
+#: ../src/com/sebulli/fakturama/parcelService/ParcelServiceFormFiller.java:396
+msgid "File created"
+msgstr "Fájl létrehozva"
+
+#. T: Message box text
+#: ../src/com/sebulli/fakturama/parcelService/ParcelServiceFormFiller.java:398
+msgid "A new parcel service template:\n"
+msgstr "Új csomagküldési sablon:\n"
+
+#. T: Message box text
+#: ../src/com/sebulli/fakturama/parcelService/ParcelServiceFormFiller.java:400
+msgid "was created"
+msgstr "létrehozva"
+
+#. T: Text of the Message Box that appears if the OpenOffice path is invalid.
+#. T: Format: OpenOffice path ... is invalid.
+#: ../src/com/sebulli/fakturama/office/OfficeStarter.java:107
+msgid "OpenOffice-Path:"
+msgstr "OpenOffice-útvonal:"
+
+#. T: Text of the Message Box that appears if the OpenOffice path is invalid.
+#. T: Format: OpenOffice path ... is invalid.
+#: ../src/com/sebulli/fakturama/office/OfficeStarter.java:110
+msgid "is invalid"
+msgstr "érvénytelen"
+
+#. T: Subdirectory of the OpenOffice documents
+#: ../src/com/sebulli/fakturama/office/FileOrganizer.java:63
+#: ../src/com/sebulli/fakturama/office/FileOrganizer.java:139
+msgid "/Documents"
+msgstr "/Dokumentumok"
+
+#. T: Message in the status bar
+#: ../src/com/sebulli/fakturama/office/FileOrganizer.java:290
+msgid "Updating documents "
+msgstr "Dokumentumok frissítése"
+
+#. T: Message in the status bar
+#: ../src/com/sebulli/fakturama/office/FileOrganizer.java:437
+msgid "Reoganizing document "
+msgstr "Dokumentum újraszervezése"
+
+#. T: Change the state of an order and send a notification to the customer.
+#: ../src/com/sebulli/fakturama/dialogs/OrderStatusDialog.java:82
+#: ../src/com/sebulli/fakturama/dialogs/OrderStatusDialog.java:117
+msgid "Comment to the customer"
+msgstr "Megjegyzés az ügyfélnek"
+
+#. T: Change the state of an order and send a notification to the customer.
+#: ../src/com/sebulli/fakturama/dialogs/OrderStatusDialog.java:93
+msgid "Notify customer by email."
+msgstr "Ügyfél értesítése e-mailben."
+
+#. T: Text of the action to open the webbrowser
+#: ../src/com/sebulli/fakturama/actions/OpenBrowserEditorAction.java:41
+msgid "Web Browser"
+msgstr "Webböngésző"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenBrowserEditorAction.java:58
+msgid "Open the project web site fakturama.sebulli.com"
+msgstr "Projekt weboldalának megnyitása: fakturama.sebulli.com"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenListsAction.java:42
+msgid "Open miscellaneous lists"
+msgstr "Egyéb listák megnyitása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenDocumentsAction.java:42
+msgid "Open a list with all the documents"
+msgstr "Az összes dokumentumot tartalmazó lista megnyitása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenProductsAction.java:42
+msgid "Open a list with all products"
+msgstr "Az összes terméket tartalmazó lista megnyitása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/WebShopImportAction.java:62
+msgid "Get new orders and products from web shop"
+msgstr "Új rendelések és termékek lekérdezése a Webshopból"
+
+#: ../src/com/sebulli/fakturama/actions/WebShopImportAction.java:103
+msgid "Error importing data from web shop"
+msgstr "Hiba az adatok Webshopból történő importálása során"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenContactsAction.java:42
+msgid "Open the list with all contacts"
+msgstr "Összes névjegyet tartalmazó lista megnyitása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenExpenditureVouchersAction.java:42
+msgid "Open a list with all the expenditures"
+msgstr "Összes költséget tartalmazó lista megnyitása"
+
+#. T: Text of the action to create a new expenditure
+#: ../src/com/sebulli/fakturama/actions/NewExpenditureVoucherAction.java:35
+msgid "New Expenditure"
+msgstr "Új költség"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewExpenditureVoucherAction.java:45
+msgid "Create a new expenditure"
+msgstr "Új költség létrehozása"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/CreateOODocumentAction.java:55
+msgid "Print as OO document"
+msgstr "Nyomtatás OO dokumentumként"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/CreateOODocumentAction.java:64
+msgid "Print/Export this document as an OpenOffice Writer document"
+msgstr "Dokumentum nyomtatása/exportálása OpenOffice Writer formátumban"
+
+#. T: Text of the dialog
+#: ../src/com/sebulli/fakturama/actions/CreateOODocumentAction.java:194
+msgid ""
+"Document has been already printed. Should it be reopened ?\n"
+"YES: Reopen it.\n"
+"NO: Create a new one."
+msgstr ""
+"A dokumentumot már kinyomtatták. Szeretné újra megnyitni?\n"
+"IGEN: Újra megnyitom.\n"
+"NEM: Létrehozok egy újat."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenCalculatorAction.java:45
+msgid "Open the calculator"
+msgstr "Kalkulátor megnyitása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenPaymentsAction.java:42
+msgid "Open a list with all payments"
+msgstr "Összes fizetést tartalmazó lista megnyitása"
+
+#. T: Text of the action to create a new list entry
+#. T: List Editor: Part Name of a new list entry
+#: ../src/com/sebulli/fakturama/actions/NewListEntryAction.java:35
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:168
+msgid "New List Entry"
+msgstr "Új listabejegyzés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewListEntryAction.java:45
+msgid "Create a new list entry"
+msgstr "Új listabejegyzés létrehozása"
+
+#. T: Text of the Action
+#: ../src/com/sebulli/fakturama/actions/MoveEntryUpAction.java:44
+msgid "move up"
+msgstr "mozgatás felfelé"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/MoveEntryUpAction.java:47
+msgid "Move up the selected entry"
+msgstr "Kiválasztott bejegyzés mozgatása felfelé"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/actions/NewDocumentAction.java:47
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:599
+msgid "New Document"
+msgstr "Új dokumentum"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewDocumentAction.java:95
+msgid "Create:"
+msgstr "Létrehozás:"
+
+#. T: Text of the action to create a new text entry
+#: ../src/com/sebulli/fakturama/actions/NewTextAction.java:35
+msgid "New Text"
+msgstr "Új szöveg"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewTextAction.java:45
+msgid "Create a new text"
+msgstr "Új szöveg létrehozása"
+
+#. T: Text of the action to create a new payment
+#. T: Payment Editor: Part Name of a new payment
+#: ../src/com/sebulli/fakturama/actions/NewPaymentAction.java:35
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:163
+msgid "New Payment"
+msgstr "Új fizetés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewPaymentAction.java:45
+msgid "Create a new payment"
+msgstr "Új fizetés létrehozása"
+
+#. T: Text of the action to check for updates
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/UpdateAction.java:31
+#: ../src/com/sebulli/fakturama/actions/UpdateAction.java:41
+msgid "Check for Updates"
+msgstr "Frissítések keresése"
+
+#. T: Text of the action to select the workspace
+#: ../src/com/sebulli/fakturama/actions/SelectWorkspaceAction.java:31
+msgid "Select Workspace"
+msgstr "Munkaterület kiválasztása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/SelectWorkspaceAction.java:41
+msgid "Select a new Workspace"
+msgstr "Új munkaterület kiválasztása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenTextsAction.java:43
+msgid "Open a list with all texts"
+msgstr "Összes szöveget tartalmazó lista megnyitása"
+
+#. T: Text of the action to create a new VAT
+#: ../src/com/sebulli/fakturama/actions/NewVatAction.java:35
+msgid "New VAT"
+msgstr "Új ÁFA"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewVatAction.java:45
+msgid "Create a new tax rate"
+msgstr "Új ÁFA-kulcs létrehozása"
+
+#. T: Text of the DeleteDataSetAction
+#: ../src/com/sebulli/fakturama/actions/DeleteDataSetAction.java:49
+msgid "delete"
+msgstr "Törlés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/DeleteDataSetAction.java:52
+msgid "Delete the marked entry"
+msgstr "Kijelölt bejegyzés törlése"
+
+#. T: Title of the dialog to confirm deleting a data set.
+#: ../src/com/sebulli/fakturama/actions/DeleteDataSetAction.java:104
+msgid "Confirm deleting"
+msgstr "Törlés megerősítése"
+
+#. T: Text of the dialog to confirm deleting a data set.
+#: ../src/com/sebulli/fakturama/actions/DeleteDataSetAction.java:106
+msgid "Entry"
+msgstr "Bejegyzés"
+
+#. T: Text of the dialog to confirm deleting a data set.
+#: ../src/com/sebulli/fakturama/actions/DeleteDataSetAction.java:108
+msgid "will be deleted !"
+msgstr "törlésre kerül!"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenVatsAction.java:42
+msgid "Open a list with all tax rates"
+msgstr "Összes ÁFA-kulcsot tartalmazó lista megnyitása"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkOrderAsAction.java:78
+msgid "mark as \"pending\""
+msgstr "Megjelölés \"Függőben\" állapottal"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkOrderAsAction.java:83
+msgid "mark as \"processing\""
+msgstr "Megjelölés \"Feldolgozás alatt\" állapottal"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkOrderAsAction.java:88
+msgid "mark as \"shipped\""
+msgstr "Megjelölés \"Kiszállított\" állapottal"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkOrderAsAction.java:93
+msgid "mark as \"completed\""
+msgstr "Megjelölés \"Teljesített\" állapottal"
+
+#. T: Text of the action to create a new product
+#: ../src/com/sebulli/fakturama/actions/NewProductAction.java:35
+msgid "New Product"
+msgstr "Új termék"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewProductAction.java:45
+msgid "Create a new product"
+msgstr "Új termék létrehozása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenShippingsAction.java:42
+msgid "Open a list with all shipping methods"
+msgstr "Összes szállítási módot tartalmazó lista megnyitása"
+
+#. T: Text of the action to reorganize all documents
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/ReorganizeDocumentsAction.java:39
+#: ../src/com/sebulli/fakturama/actions/ReorganizeDocumentsAction.java:50
+msgid "Reoganize documents"
+msgstr "Dokumentumok újraszervezése"
+
+#. T: Text of the message dialog to reorganize all documents
+#: ../src/com/sebulli/fakturama/actions/ReorganizeDocumentsAction.java:81
+msgid ""
+"All printed documents will be renamed.\n"
+"You should first backup your workspace.\n"
+"Do you want to reorganize all documents now ?"
+msgstr ""
+"A rendszer minden nyomtatott dokumentumot átnevez.\n"
+"Javasolt előbb biztonsági mentést készíteni a munkaterületről.\n"
+"Szeretné most újraszervezni az összes dokumentumot?"
+
+#. T: Clear the status bar
+#: ../src/com/sebulli/fakturama/actions/ReorganizeDocumentsAction.java:98
+#: ../src/com/sebulli/fakturama/Updater.java:83
+msgid "done !"
+msgstr "kész!"
+
+#. T: Text of the action to create a new shipping
+#. T: Shipping Editor: Part Name of a new shipping
+#: ../src/com/sebulli/fakturama/actions/NewShippingAction.java:35
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:186
+msgid "New Shipping"
+msgstr "Új szállítás"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewShippingAction.java:45
+msgid "Create a new shipping method"
+msgstr "Új szállítási mód létrehozása"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/OpenParcelServiceAction.java:59
+msgid "Parcel Service"
+msgstr "Csomagküldés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenParcelServiceAction.java:70
+msgid "Open the web site of the parcel service."
+msgstr "A csomagküldő szolgálat weboldalának megnyitása."
+
+#. T: Text of the dialog
+#: ../src/com/sebulli/fakturama/actions/OpenParcelServiceAction.java:234
+msgid "You have to open or select a document."
+msgstr "Kötelező megnyitnia vagy kiválasztania egy dokumentumot."
+
+#. T: Text of the action to create a new receipt voucher
+#: ../src/com/sebulli/fakturama/actions/NewReceiptVoucherAction.java:35
+msgid "New Receipt Voucher"
+msgstr "Új nyugtabizonylat"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewReceiptVoucherAction.java:45
+msgid "Create a new receipt voucher"
+msgstr "Új nyugtabizonylat létrehozása"
+
+#. T: Text of the action to open the calculator
+#: ../src/com/sebulli/fakturama/actions/InstallAction.java:39
+msgid "Install New Software"
+msgstr "Új szoftver telepítése"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/InstallAction.java:42
+msgid "Install new features"
+msgstr "Új funkciók telepítése"
+
+#. T: Text of the action to create a new contact
+#. T: Contact Editor Title of the editor if the data set is a new one.
+#: ../src/com/sebulli/fakturama/actions/NewContactAction.java:35
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:310
+msgid "New Contact"
+msgstr "Új névjegy"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/NewContactAction.java:48
+msgid "Create a new contact"
+msgstr "Új névjegy létrehozása"
+
+#. T: Text of the Action
+#: ../src/com/sebulli/fakturama/actions/MoveEntryDownAction.java:44
+msgid "move down"
+msgstr "mozgatás lefelé"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/MoveEntryDownAction.java:47
+msgid "Move down the selected entry"
+msgstr "Kiválasztott bejegyzés mozgatása lefelé"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkDocumentAsPaidAction.java:60
+msgid "mark as \"paid\""
+msgstr "Megjelölés \"Fizetett\" állapottal"
+
+#. T: Text of the action
+#: ../src/com/sebulli/fakturama/actions/MarkDocumentAsPaidAction.java:65
+msgid "mark as \"unpaid\""
+msgstr "Megjelölés \"Kifizetetlen\" állapottal"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/actions/OpenReceiptVouchersAction.java:42
+msgid "Open a list with all the receipt vouchers"
+msgstr "Összes nyugtabizonylatot tartalmazó lista megnyitása"
+
+#. T: Title of the voucher editor
+#: ../src/com/sebulli/fakturama/editors/ReceiptVoucherEditor.java:42
+msgid "Receipt Voucher"
+msgstr "Nyugtabizonylat"
+
+#. T: List Editor - Title
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:242
+msgid "List Entry"
+msgstr "Listabejegyzés"
+
+#. T: List Editor - Category ( Name of the List to place this entry)
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:249
+msgid "List"
+msgstr "Lista"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ListEditor.java:251
+msgid "Please select a list"
+msgstr "Kérjük, válasszon egy listát"
+
+#. T: Browser Editor
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:170
+msgid "Browse back"
+msgstr "Visszalépés"
+
+#. T: Browser Editor
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:192
+msgid "Browse forward"
+msgstr "Előrelépés"
+
+#. T: Browser Editor
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:215
+msgid "Reload the website"
+msgstr "Weboldal újbóli betöltése"
+
+#. T: Browser Editor
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:237
+msgid "Stop loading the website"
+msgstr "Weboldal betöltésének leállítása"
+
+#. T: Browser Editor
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:260
+msgid "Load the home site"
+msgstr "Kezdőlap betöltése"
+
+#. T: Button to go back to the Fakturama home page
+#: ../src/com/sebulli/fakturama/editors/BrowserEditor.java:384
+msgid "<< Back to fakturama.sebulli.com"
+msgstr "<< Vissza a fakturama.sebulli.com oldalra"
+
+#. T: Title of the dialog that appears if the document number is not valid.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:280
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2559
+msgid "Error in document number"
+msgstr "Hibás dokumentumszám"
+
+#. T: Text of the dialog that appears if the customer number is not valid.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:283
+msgid "Document number is not the next free one:"
+msgstr "A dokumentumszám nem egyezik a soron következő szabad számmal:"
+
+#. T: Text of the dialog that appears if the number is not valid.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:285
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:169
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:175
+msgid "See Preferences/Number Range."
+msgstr "Lásd: Tulajdonságok/Számtartomány."
+
+#. T: Title of the dialog that appears if the document is assigned to  an other address.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:357
+msgid "Please verify"
+msgstr "Kérjük, ellenőrizze"
+
+#. T: Text of the dialog that appears if the document is assigned to  an other address.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:360
+msgid "This document is assiged to the contact:"
+msgstr "A dokumentum az alábbi névjegyhez kapcsolódik:"
+
+#. T: Text of the dialog that appears if the document is assigned to  an other address.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:362
+msgid "You have entered a different one."
+msgstr "Ön ettől eltérő értéket adott meg."
+
+#. T: Document Editor - Label Total gross
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1093
+msgid "Total Gross"
+msgstr "Bruttó végösszeg"
+
+#. T: Document Editor - Label Total net
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1096
+msgid "Total Net"
+msgstr "Nettó végösszeg"
+
+#. T: Text of the dialog that appears if customer uses a different setting for net or gross.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1127
+msgid "Gross values are used!"
+msgstr "A rendszer bruttó értékeket használ!"
+
+#. T: Text of the dialog that appears if customer uses a different setting for net or gross.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1131
+msgid "Net values are used!"
+msgstr "A rendszer nettó értékeket használ!"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1227
+msgid "Date of the payment"
+msgstr "Fizetés dátuma"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1248
+msgid "The paid value"
+msgstr "Kifizetett összeg"
+
+#. T: Document Editor - Label before the Text Field "Due Days".
+#. T: Format: THIS LABEL <DAYS> PAYABLE UNTIL <ISSUE DATE>
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1276
+msgid "Due Days"
+msgstr "Határidőig hátralévő napok száma"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1278
+msgid "Please pay the invoice within those days"
+msgstr "Kérjük, hogy a számlát ezen időszakon belül fizesse ki"
+
+#. T: Document Editor - Label between the Text Field "Due Days" and the Date Field "Issue Date"
+#. T: Format:  DUE DAYS: <DAYS> THIS LABEL <ISSUE DATE>
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1309
+msgid "Pay Until"
+msgstr "Fizetési határidő"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1311
+msgid "Please pay the invoice before this date"
+msgstr "Kérjük, hogy a számlát eddig a napig fizesse ki"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1365
+msgid "Different billing address !"
+msgstr "Eltérő számlázási cím!"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1370
+msgid "Different delivery address !"
+msgstr "Eltérő kézbesítési cím!"
+
+#. T: Part of the customer statistics dialog
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1481
+msgid "has already ordered"
+msgstr "már adott le rendelést"
+
+#. T: Part of the customer statistics dialog
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1483
+msgid "times in the past."
+msgstr "alkalommal a múltban."
+
+#. T: Part of the customer statistics dialog
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1485
+msgid "Last time:"
+msgstr "Utoljára:"
+
+#. T: Part of the customer statistics dialog
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1487
+msgid "Invoice numbers:"
+msgstr "Számlaszámok:"
+
+#. T: Part of the customer statistics dialog
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1489
+msgid "Total volume:"
+msgstr "Teljes térfogat:"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1515
+msgid ""
+"Reference number of this document. Next document number and the format can "
+"be set unter preferences/number range"
+msgstr ""
+"A dokumentum hivatkozási száma. A soron következő dokumentumszám és annak "
+"formátuma beállítható a Tulajdonságok/Számtartomány menüpontban"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1538
+msgid "The document's date"
+msgstr "A dokumentum kelte"
+
+#. T: Document Editor - Label Customer Reference
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1593
+msgid "Cust.Ref."
+msgstr "Ügyfél hiv. szám"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1595
+msgid "Customer's reference. E.g.: Your order No.0001"
+msgstr "Ügyfél hivatkozási száma. Például: az Ön 0001 sz. rendelése"
+
+#. T: Label in the document editor
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1620
+msgid "Date of request"
+msgstr "Kérelem dátuma"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1622
+msgid "Date when the offer was requested"
+msgstr "Árajánlatkérés beküldésének dátuma"
+
+#. T: Label in the document editor
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1625
+msgid "Order Date"
+msgstr "Rendelés dátuma"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1627
+msgid "Date when the order was placed"
+msgstr "A rendelés leadásának dátuma"
+
+#. T: Label in the document editor
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1653
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:160
+msgid "Invoice"
+msgstr "Számla"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1655
+msgid "Number of the Invoice that belongs to this document."
+msgstr "A dokumentumhoz tartozó számla száma."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1673
+msgid ""
+"If this document is set to a tax rate with 0%, all the items of the document "
+"are calculated with 0% tax."
+msgstr ""
+"Ha a dokumentumot 0%-os ÁFA-kulcsra állítja, akkor a rendszer a "
+"dokumentumban található összes elemet 0% ÁFA-val számolja."
+
+#. T: Document Editor
+#. T: Label Group box to create a new document based on this one.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1732
+msgid "Create a duplicate"
+msgstr "Duplikált elem létrehozása"
+
+#. T: Label in the document editor
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1790
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:494
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:582
+msgid "Address"
+msgstr "Cím"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1796
+msgid "Pick an address from the list of all contacts"
+msgstr "Cím kiválasztása az összes névjegyet tartalmazó listából"
+
+#. T: Document Editor
+#. T: Title of the dialog to select the address
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1812
+msgid "Select the address"
+msgstr "Cím kiválasztása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1828
+msgid "Open the contact editor to enter a new address"
+msgstr "Új cím megadásához nyissa meg a névjegyszerkesztőt"
+
+#. T: Document Editor
+#. T: Label items
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1899
+msgid "Items"
+msgstr "Elemek"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1905
+msgid "Pick an item from the list of all products"
+msgstr "Válasszon egy elemet az összes terméket tartalmazó listából"
+
+#. T: Document Editor
+#. T: Title of the dialog to select a product
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1924
+msgid "Select a product"
+msgstr "Termék választása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:1960
+msgid "Add a new item with default name and quantity '1'"
+msgstr "Új elem felvétele alapértelmezett névvel és '1' mennyiséggel"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2000
+msgid "Delete the selected item from the list of items"
+msgstr "Kiválasztott elem törlése az elemek listájából"
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2065
+msgid "Pos"
+msgstr "Poz."
+
+#. T: Used as heading of a table. Keep the word short.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2078
+msgid "Q. Unit"
+msgstr "Menny. egys."
+
+#. T: Document Editor Label for the text field under the item table.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2154
+msgid "Remarks"
+msgstr "Megjegyzések"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2156
+msgid "Enter an additional text that will be placed under the list of items."
+msgstr "Az elemek listája alatt megjelenő kiegészítő információk megadása."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2163
+msgid "Enter the text that will be placed in the document."
+msgstr "A dokumentumban elhelyezendő szöveg megadása."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2171
+msgid "Select one of the text templates in of the list of texts"
+msgstr "Válasszon egy szövegsablont a szövegeket tartalmazó listákból"
+
+#. T: Document Editor
+#. T: Title of the dialog to select a text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2187
+msgid "Select a text"
+msgstr "Szöveg választása"
+
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2309
+#, no-c-format
+msgid "Enter a discount value in % for all items."
+msgstr "Kedvezmény %-os értékének megadása az összes elemhez."
+
+#. T: Document Editor - Label shipping
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2356
+msgid "Shipping"
+msgstr "Kiszállítás"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2359
+msgid ""
+"It's possible to enter a different shipping value than those of the selected "
+"shipping entry"
+msgstr ""
+"Lehetőség van a kiválasztott szállítási bejegyzések összegétől eltérő "
+"kiszállítási érték megadására"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2467
+msgid "Check this, if the invoice is paid"
+msgstr "Jelölje be a négyzetet, ha a számlát kifizették"
+
+#. T: Text of the dialog that appears if the customer number is not valid.
+#: ../src/com/sebulli/fakturama/editors/DocumentEditor.java:2562
+msgid "There is already a document with the number:"
+msgstr "Ezzel a számmal már létezik egy dokumentum:"
+
+#: ../src/com/sebulli/fakturama/editors/ProductPictureDialog.java:133
+msgid "Preview"
+msgstr "Előnézet"
+
+#. T: Title of the dialog that appears if the item/product number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:164
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:865
+msgid "Error in item number"
+msgstr "Hibás cikkszám"
+
+#. T: Text of the dialog that appears if the item/product number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:167
+msgid "Item number is not the next free one:"
+msgstr "A cikkszám nem egyezik a soron következő szabad számmal:"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:517
+msgid "Name of the product. This is used for the items in the document."
+msgstr "A termék neve, amely a dokumentumban szereplő elemeket jelöli."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:530
+msgid ""
+"You can set a category to classify the products. This is also the web shop "
+"category."
+msgstr ""
+"Kategóriákba sorolhatja a termékeket. Ez egyben a Webshop kategóriát is "
+"meghatározza."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:556
+msgid ""
+"Additional description. Can be used for the item. This can be selected in "
+"preferences/documents."
+msgstr ""
+"Az elemekhez használható kiegészítő leírás, ami a Tulajdonságok/Dokumentumok "
+"menüpontban állítható be."
+
+#. T: Product Editor - Label Product quantity unit
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:568
+msgid "Quantity unit"
+msgstr "Mennyiségi egység"
+
+#. T: Label in the product editor
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:586
+msgid "Price (net)"
+msgstr "Ár (nettó)"
+
+#. T: Label in the product editor
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:589
+msgid "Price (gross)"
+msgstr "Ár (bruttó)"
+
+#. T: Product Editor - Label Scaled Prices "from" .. Quantity the price is ..
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:623
+msgctxt "QUANTITY"
+msgid "from"
+msgstr "kezdési mennyiség"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:662
+msgid "Tax rate of the product"
+msgstr "A termék ÁFA-kulcsa"
+
+#. T: Product Editor - Button Description: Select a Picture
+#. T: Product Editor - File Dialog: Select a Picture
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:778
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:788
+msgid "Select a Picture"
+msgstr "Válasszon egy képet"
+
+#. T: Text of the dialog that appears if the item/product number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ProductEditor.java:868
+msgid "There is already a product with the number:"
+msgstr "Ezzel a számmal már létezik egy termék:"
+
+#. T: Name of a VAT entry that indicates, that VAT is not 0%
+#: ../src/com/sebulli/fakturama/editors/NoVatContentProvider.java:55
+msgid "With VAT"
+msgstr "ÁFA-val"
+
+#. T: Title of the voucher editor
+#: ../src/com/sebulli/fakturama/editors/ExpenditureVoucherEditor.java:42
+msgid "Expense Voucher"
+msgstr "Költségbizonylat"
+
+#. T: Text Editor: Part Name of a new text entry
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:151
+msgid "New Text Entry"
+msgstr "Új szövegbejegyzés"
+
+#. T: Text Editor: Title
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:220
+msgid "Text Entry"
+msgstr "Szövegbejegyzés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:228
+msgid "Name to identify the text"
+msgstr "Szöveg azonosítására szolgáló név"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:241
+msgid "You can set a category to classify the texts"
+msgstr "A szövegek kategóriákba sorolhatók."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/TextEditor.java:266
+msgid ""
+"Enter a text. It can be used as template. E.g. for the message field in the "
+"document editor."
+msgstr ""
+"Adja meg a szöveget. A szöveg sablonként is használható (pl. a "
+"dokumentumszerkesztő üzenet mezejében)."
+
+#. T: Shipping Editor: Title
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:335
+msgid "Shipping Costs"
+msgstr "Szállítási költségek"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:343
+msgid ""
+"Name of the shipping. This is also the identifier used by the shop system."
+msgstr ""
+"A szállítási mód neve, amelyet a rendszer egyben a Shopban történő "
+"azonosításra is használ."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:357
+msgid "You can set a category to classify the shippings"
+msgstr "A szállítási módok kategóriákba sorolhatók"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:382
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:271
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:283
+msgid "The description is the text used in the documents"
+msgstr "A leírás a dokumentumokban használatos szöveg"
+
+#. T: Shipping Editor: Label VAT Calculation
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:514
+msgid "VAT Calculation"
+msgstr "ÁFA kiszámítása"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:516
+msgid ""
+"Define how the VAT for the shipping is calculated. Should a fix value be "
+"used, or should the VAT calculated based on the VAT of the items."
+msgstr ""
+"A szállítási mód ÁFA-számítási módjának beállítása: fix ÁFA használata vagy "
+"az ÁFA kiszámítása az elemek ÁFA-értéke alapján."
+
+#. T: Shipping Editor: list entry for "constant VAT calculation"
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:524
+msgid "Constant VAT"
+msgstr "Fix ÁFA"
+
+#. T: Shipping Editor: list entry for "Calculate VAT from goods VAT - constant Gross"
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:528
+msgid "Calculate VAT from Value of Goods - Constant Gross Value"
+msgstr "ÁFA számítása a termékek értéke alapján - fix. bruttó érték"
+
+#. T: Shipping Editor: list entry for "Calculate VAT from goods VAT - constant Net"
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:531
+msgid "Calculate VAT from Value of Goods - Constant Net Value"
+msgstr "ÁFA számítása a termékek értéke alapján - fix. nettó érték"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:569
+msgid "Name of the shipping that is the standard"
+msgstr "Alapértelmezett szállítási mód neve"
+
+#. T: Shipping Editor: Button description to make this as standard shipping.
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:573
+msgid "This Shipping"
+msgstr "Ez a szállítási mód"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ShippingEditor.java:576
+msgid "Make this shipping to the standard shipping"
+msgstr "Szállítási mód beállítása alapértelmezettként"
+
+#. T: Voucher Editor: Name of a new Voucher
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:454
+msgid "New Voucher"
+msgstr "Új bizonylat"
+
+#. T: Label voucher edito
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:696
+msgid "book"
+msgstr "könyvelés"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:698
+msgid "Uncheck this, if the voucher should not be booked."
+msgstr ""
+"Vegye ki a jelölést a négyzetből, ha a bizonylatot nem szeretné könyvelni."
+
+#. T: Dialog in the voucher editor to uncheck the book field
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:712
+msgid "Please confirm"
+msgstr "Kérjük, erősítse meg"
+
+#. T: Dialog in the voucher editor to uncheck the book field
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:714
+msgid "If you uncheck this, the voucher won't be booked !"
+msgstr ""
+"Ha kiveszi a jelölést a négyzetből, akkor a rendszer nem könyveli le a "
+"bizonylatot!"
+
+#. T: Label in the voucher editor
+#. T: Payment Editor - category
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:730
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:257
+msgid "Account"
+msgstr "Számla"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:732
+msgid "Account of this voucher. E.g. 'Bank', 'Cash', 'Credit Card'"
+msgstr "A bizonylat számlaneme (pl. Átutalás, Készpénz vagy Hitelkártya)"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:758
+msgid "Date of the voucher"
+msgstr "A bizonylat kelte"
+
+#. T: Label in the voucher editor
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:778
+msgid "Voucher No."
+msgstr "Bizonylat száma"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:780
+msgid "Consecutive number of all vouchers"
+msgstr "Összes bizonylat soron következő száma"
+
+#. T: Label in the voucher editor
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:792
+msgid "Document No."
+msgstr "Dokumentumszám"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:794
+msgid "Number found on the voucher. (Document No of the supplier)"
+msgstr "A bizonylaton szereplő szám (szállító dokumentumszáma)"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:808
+msgid "Name of the"
+msgstr "Az alábbi neve:"
+
+#. T: VoucherEditor - Label Items
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:829
+msgctxt "VOUCHER"
+msgid "Items"
+msgstr "Elemek"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:837
+msgid "Add a new item"
+msgstr "Új elem felvétele"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:863
+msgid "Delete the selected item"
+msgstr "Kiválasztott elem törlése"
+
+#. T: Mark an voucher, if the paid value is not equal to the total value.
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:935
+msgid "Paid with discount"
+msgstr "Fizetve, kedvezménnyel"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:937
+msgid "Check this, if not the total value was paid. Then enter the paid value."
+msgstr ""
+"Jelölje be ezt a négyzetet, ha nem a teljes végösszeget fizették ki, majd "
+"adja meg a kifizetett összeget."
+
+#. T: Label in the voucher editor
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:967
+msgid "Paid Value"
+msgstr "Kifizetett összeg"
+
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:969
+#, no-c-format
+msgid ""
+"The paid value (e.g. 97$, if the total value was 100$ with 3% discount)."
+msgstr ""
+"A kifizetett összeg (pl. 97 dollár, ha a végösszeg 100 dollár, a kedvezmény "
+"pedig 3% volt)."
+
+#. T: Label in the voucher editor
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:983
+msgid "Total Value"
+msgstr "Végösszeg"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VoucherEditor.java:985
+msgid "The total value of the voucher (without discount)."
+msgstr "A bizonylat végösszege (kedvezmény nélkül)."
+
+#. T: VAT Editor: Part Name of a new VAT Entry
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:156
+msgid "New TAX Rate"
+msgstr "Új ÁFA-kulcs"
+
+#. T: VAT Editor: Title VAT Entry
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:226
+msgid "TAX Rate"
+msgstr "ÁFA-kulcs"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:234
+msgid ""
+"Name of the tax rate. This is also the identifier used by the shop system."
+msgstr ""
+"Az ÁFA-kulcs neve, amit a rendszer egyben a Webshopban történő azonosításra "
+"is használ."
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:247
+msgid "You can set a category to classify the tax rates"
+msgstr "Az ÁFA-kulcsok kategóriákba sorolhatók"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:293
+msgid "Name of the tax rate that is the standard"
+msgstr "Alapértelmezett ÁFA-kulcs neve"
+
+#. T: VAT Editor: Button description to make this as standard VAT.
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:297
+msgid "This TAX Rate"
+msgstr "Ez az ÁFA-kulcs"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/VatEditor.java:299
+msgid "Make this tax rate to the standard"
+msgstr "ÁFA-kulcs beállítása alapértelmezettként"
+
+#. T: Title of the dialog that appears if the item/product number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:170
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:1081
+msgid "Error in customer ID"
+msgstr "Hibás ügyfélazonosító"
+
+#. T: Text of the dialog that appears if the customer number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:173
+msgid "Customer ID is not the next free one:"
+msgstr "Az ügyfélazonosító nem egyezik a soron következő szabad számmal:"
+
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:508
+msgid "Bank Account"
+msgstr "Bankszámla"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:556
+msgid ""
+"Next contact ID and the format can be set unter preferences/number range"
+msgstr ""
+"A soron következő névjegy-azonosító és annak formátuma beállítható a "
+"Tulajdonságok/Számtartomány menüpontban"
+
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:568
+msgid "Delivery Address equals Invoice Address"
+msgstr "A kézbesítési cím megegyezik a számlázási címmel"
+
+#. T: Format of the name in an address
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:616
+msgid "Last Name, First Name"
+msgstr "Vezetéknév, Keresztnév"
+
+#. T: Format of the name in an address
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:624
+msgid "First Name Last Name"
+msgstr "Keresztnév Vezetéknév"
+
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:659
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:766
+msgid "ZIP, City"
+msgstr "Irányítószám, város"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:675
+msgid ""
+"Set also your home county. Under preferences/contacts you can set those "
+"country names that are not displayed on the address label"
+msgstr ""
+"Állítsa be a honos országát. A Tulajdonságok/Névjegyek menüpontban "
+"beállíthatja a cím címkén meg nem jelenő országnevek listáját."
+
+#. T: Format of the name in an address
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:722
+msgid "Last name, First Name"
+msgstr "Vezetéknév, Keresztnév"
+
+#. T: Format of the name in an address
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:730
+msgid "First Name Last name"
+msgstr "Keresztnév Vezetéknév"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:858
+msgid "Choose a category like 'Customer', 'Customer Web Shop' or 'Supplier'"
+msgstr "Válasszon egy kategóriát (pl. Ügyfél, Ügyfél Webshop vagy Szállító)"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:934
+msgid "This payment method is used when creating a new document"
+msgstr "A rendszer ezt a fizetési módot használja új dokumentum létrehozásakor"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:989
+msgid "This customer's discount is used when creating a new document"
+msgstr ""
+"A rendszer ezt az ügyfélkedvezményt használja új dokumentum létrehozásakor"
+
+#. T: Label in the contact editor
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:1014
+msgid "Net or Gross"
+msgstr "Nettó vagy bruttó"
+
+#. T: Text of the dialog that appears if the customer number is not valid.
+#: ../src/com/sebulli/fakturama/editors/ContactEditor.java:1084
+msgid "There is already a customer with the number:"
+msgstr "Ezzel a számmal már létezik egy ügyfél:"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:245
+msgid ""
+"Name of the payment. This is also the identifier used by the shop system."
+msgstr ""
+"Fizetési mód neve, amit a rendszer egyben a Webshopban történő azonosításra "
+"is használ."
+
+#. T: Payment Editor - category Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:259
+msgid ""
+"Set an (bank) account. All invoices with this payment will be booked to that "
+"account. E.g. 'Bank', 'Cash', 'Credit Card'."
+msgstr ""
+"Számla (bankszámla) beállítása. Az ezzel a fizetési móddal kiállított "
+"számlákat a rendszer a meghatározott számlákhoz könyveli le (pl. Átutalás, "
+"Készpénz vagy Hitelkártya)."
+
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:294
+msgid "Cash discount"
+msgstr "Készpénzkedvezmény"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:296
+msgid "Cash discount value in percent"
+msgstr "Készpénzkedvezmény értéke százalékban kifejezve"
+
+#. T: Label in the payment editor
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:308
+msgid "Discount Days"
+msgstr "Kedvezményes napok"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:310
+msgid "Within these days the reduced price can be paid"
+msgstr "Azon időszak, amelyen belül a kedvezményes ár igénybe vehető"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:324
+msgid "Within these days the unreduced price has to be paid"
+msgstr "Azon időszak, amelyen belül a teljes árat kell fizetni"
+
+#. T: Payment Editor: Label for the text paid
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:335
+msgid "Text 'paid'"
+msgstr "\"Fizetett\" szöveg"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:337
+msgid ""
+"Enter the text that appears in the document, if the invoice is paid. "
+"Placeholders can be used."
+msgstr ""
+"Adja meg a dokumentumban a számla kifizetése esetén megjelenő szöveget "
+"(helyőrző karaktereket is használhat)."
+
+#. T: Payment Editor: Label for the text unpaid
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:351
+msgid "Text 'unpaid'"
+msgstr "\"Kifizetetlen\" szöveg"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:353
+msgid ""
+"Enter the text that appears in the document, if the invoice is not paid. "
+"Placeholders can be used."
+msgstr ""
+"Adja meg a dokumentumban a számla kifizetetlensége esetén megjelenő szöveget "
+"(helyőrző karaktereket is használhat)."
+
+#. T: Label in the payment editor
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:369
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:379
+msgid "Placeholder"
+msgstr "Helyőrző"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:388
+msgid "Name of the payment method that is the standard"
+msgstr "Alapértelmezett fizetési mód neve"
+
+#. T: Payment Editor: Button description to make this as standard payment.
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:392
+msgid "This Payment"
+msgstr "Ez a fizetési mód"
+
+#. T: Tool Tip Text
+#: ../src/com/sebulli/fakturama/editors/PaymentEditor.java:395
+msgid "Make this payment to the standard payment"
+msgstr "A fizetési mód beállítása alapértelmezettként"
+
+#. T: Title of the list with country codes
+#: ../src/com/sebulli/fakturama/data/DataSetListNames.java:35
+msgid "2 digit country codes"
+msgstr "2-jegyű országkódok"
+
+#. T: Title of the list with country codes
+#: ../src/com/sebulli/fakturama/data/DataSetListNames.java:37
+msgid "3 digit country codes"
+msgstr "3-jegyű országkódok"
+
+#. T: Title of the list with billing accounts
+#: ../src/com/sebulli/fakturama/data/DataSetListNames.java:39
+msgid "Billing Accounts"
+msgstr "Számlázási számlák"
+
+#. T: Gender
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:428
+msgid "Mr"
+msgstr "Mr."
+
+#. T: Gender
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:431
+msgid "Ms"
+msgstr "Ms."
+
+#. T: Reliability
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:484
+msgctxt "RELIABILITY"
+msgid "poor"
+msgstr "gyenge"
+
+#. T: Reliability
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:487
+msgctxt "RELIABILITY"
+msgid "medium"
+msgstr "közepes"
+
+#. T: Reliability
+#: ../src/com/sebulli/fakturama/data/DataSetContact.java:490
+msgctxt "RELIABILITY"
+msgid "good"
+msgstr "jó"
+
+#. T: Text of the message box, if there is no connection to the database
+#: ../src/com/sebulli/fakturama/data/Data.java:116
+msgid ""
+"No connection to the database.\n"
+"\n"
+"Is the database opened by an other process ?"
+msgstr ""
+"Nem lehet csatlakozni az adatbázishoz.\n"
+"\n"
+"Esetleg egy másik folyamat is használja az adatbázist?"
+
+#. T: Name of default VAT entry
+#: ../src/com/sebulli/fakturama/data/Data.java:129
+msgid "Tax-free"
+msgstr "Adómentes"
+
+#. T: Description of default VAT entry
+#: ../src/com/sebulli/fakturama/data/Data.java:131
+msgid "Free of Tax"
+msgstr "Adómentes"
+
+#. T: Name of default shipping entry
+#: ../src/com/sebulli/fakturama/data/Data.java:134
+msgid "Free"
+msgstr "Ingyenes"
+
+#. T: Description of default shipping entry
+#: ../src/com/sebulli/fakturama/data/Data.java:136
+msgid "Free of shipping costs"
+msgstr "Szállítási költség nélkül"
+
+#. T: Name of default payment entry
+#: ../src/com/sebulli/fakturama/data/Data.java:139
+msgid "Cash"
+msgstr "Készpénz"
+
+#. T: Description of default payment entry
+#: ../src/com/sebulli/fakturama/data/Data.java:141
+msgid "Pay Cash"
+msgstr "Fizetés készpénzben"
+
+#. T: Paid text of default payment entry
+#: ../src/com/sebulli/fakturama/data/Data.java:143
+msgid "Thank you for the payment."
+msgstr "Köszönjük a fizetést."
+
+#. T: Unpaid text of default payment entry
+#: ../src/com/sebulli/fakturama/data/Data.java:145
+msgid "Payment due upon receipt of invoice."
+msgstr "A fizetés esedékessége a számla kézhezvételének napja."
+
+#. T: Name of the tax that is raised when goods are purchased
+#: ../src/com/sebulli/fakturama/data/DataSetVAT.java:103
+msgid "Purchase Tax"
+msgstr "Vásárlási adó"
+
+#. T: Name of the tax that is raised when goods are sold
+#: ../src/com/sebulli/fakturama/data/DataSetVAT.java:108
+msgid "Sales Tax"
+msgstr "Értékesítési adó"
+
+#. T: Text voucher name. Customer or supplier
+#: ../src/com/sebulli/fakturama/data/DataSetReceiptVoucher.java:23
+msgid "Customer"
+msgstr "Ügyfél"
+
+#. T: Mark an order with this text.
+#: ../src/com/sebulli/fakturama/data/DataSetDocument.java:262
+msgid "not shipped"
+msgstr "nincs kiszállítva"
+
+#. T: Message in the status bar
+#: ../src/com/sebulli/fakturama/misc/CountryCodes.java:118
+msgid "Importing country code "
+msgstr "Országkód importálása"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:148
+msgid "Letter"
+msgstr "Levél"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:151
+msgid "Offer"
+msgstr "Árajánlat"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:157
+msgid "Confirmation"
+msgstr "Visszaigazolás"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:163
+msgid "Delivery Note"
+msgstr "Szállítólevél"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:166
+msgid "Credit"
+msgstr "Jóváírás"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:169
+msgid "Dunning"
+msgstr "Felszólítás"
+
+#. T: Type of the document (singular)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:172
+msgid "Proforma"
+msgstr "Proforma"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:198
+msgid "Letters"
+msgstr "Levelek"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:201
+msgid "Offers"
+msgstr "Árajánlatok"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:204
+msgid "Orders"
+msgstr "Rendelések"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:207
+msgid "Confirmations"
+msgstr "Visszaigazolások"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:210
+msgid "Invoices"
+msgstr "Számlák"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:213
+msgid "Delivery Notes"
+msgstr "Szállítólevelek"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:216
+msgid "Credit Items"
+msgstr "Jóváírási elemek"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:219
+msgid "Dunning Letters"
+msgstr "Felszólító levelek"
+
+#. T: Type of 2 or more documents (plural)
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:222
+msgid "Proforma Invoices"
+msgstr "Proforma számlák"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:572
+msgid "New Letter"
+msgstr "Új levél"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:575
+msgid "New Offer"
+msgstr "Új árajánlat"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:578
+msgid "New Order"
+msgstr "Új rendelés"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:581
+msgid "New Confirmation"
+msgstr "Új visszaigazolás"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:584
+msgid "New Invoice"
+msgstr "Új számla"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:587
+msgid "New Delivery Note"
+msgstr "Új szállítólevél"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:590
+msgid "New Credit"
+msgstr "Új jóváírás"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:593
+msgid "New Dunning"
+msgstr "Új felszólítás"
+
+#. T: Text of the action to create a new document
+#: ../src/com/sebulli/fakturama/misc/DocumentType.java:596
+msgid "New Proforma Invoice"
+msgstr "Új proforma számla"
+
+#~ msgid "ImportCSVWizardPage"
+#~ msgstr "CSV Import"
+
+#~ msgid "Import Table as CSV"
+#~ msgstr "Tabelle im CSV Format importieren"
+
+#~ msgid "All printed documents will be renamed.\n"
+#~ msgstr "Alle ausgedruckten Dokumente werden umbenannt.\n"
+
+#, fuzzy
+#~ msgid "Printes"
+#~ msgstr "Drucken"
+
+#~ msgid "Use settings below"
+#~ msgstr "Eigene Einstellungen verwenden"
+
+#~ msgid "Parcel service URL"
+#~ msgstr "URL des Paketdienstes"
+
+#~ msgid "Sender company"
+#~ msgstr "Absender Firma"
+
+#~ msgid "Sender first name"
+#~ msgstr "Absender Vorname"
+
+#~ msgid "Sender last name"
+#~ msgstr "Absender Nachname"
+
+#~ msgid "Sender name"
+#~ msgstr "Absender Name"
+
+#~ msgid "Sender street"
+#~ msgstr "Absender Straße"
+
+#~ msgid "Sender street No"
+#~ msgstr "Absender Hausnummer"
+
+#~ msgid "Sender ZIP code"
+#~ msgstr "Absender PLZ"
+
+#~ msgid "Sender city"
+#~ msgstr "Absender Stadt"
+
+#~ msgid "Sender email"
+#~ msgstr "Absender Email"
+
+#~ msgid "Consignee name"
+#~ msgstr "Empfänger Name"
+
+#~ msgid "Consignee first name"
+#~ msgstr "Empfänger Vorname"
+
+#~ msgid "Consignee last name"
+#~ msgstr "Empfänger Nachname"
+
+#~ msgid "Consignee additional address"
+#~ msgstr "Empfänger Adresszusatz"
+
+#~ msgid "Consignee street"
+#~ msgstr "Empfänger Straße"
+
+#~ msgid "Consignee street No"
+#~ msgstr "Empfänger Hausnummer"
+
+#~ msgid "Consignee ZIP code"
+#~ msgstr "Empfänger PLZ"
+
+#~ msgid "Consignee city"
+#~ msgstr "Empfänger Stadt"
+
+#~ msgid "Consignee country"
+#~ msgstr "Empfänger Land"
+
+#~ msgid "Consignee email"
+#~ msgstr "Empfänger Email"
+
+#~ msgid "Column width of the expenditure table"
+#~ msgstr "Spaltenbreite der Ausgabentabelle"
+
+#~ msgid "Column width of the expenditure item table"
+#~ msgstr "Spaltenbreite der Tabelle der Ausgabebelege"
+
+#~ msgid "GERMANY=D;AUSTRIA=AT;SWITZERLAND=CH"
+#~ msgstr "DEUTSCHLAND=D;ÖSTERREICH=AT;SCHWEIZ=CH"
+
+#~ msgid "You can set a category to classify the payments"
+#~ msgstr ""
+#~ "Ein Kategorie kann angegeben werden, um Zahlungsarten zu gruppieren."
+
+#~ msgid "Name of the supplier"
+#~ msgstr "Name des Lieferanten"
+
+#~ msgctxt "EXPENDITURE"
+#~ msgid "Items"
+#~ msgstr "Positionen"
+
+#~ msgctxt "TOOLBAR"
+#~ msgid "Voucher"
+#~ msgstr "Beleg"
+
+#~ msgid "No OpenOffice.org *.ott template found in:\n"
+#~ msgstr "Keine OpenOffice.org *.ott Vorlage gefunden in:\n"
+
+#~ msgid "Language Code e.g. en_US"
+#~ msgstr "Sprachcode z.B: de_DE"
+
+#, fuzzy
+#~ msgid "Text."
+#~ msgstr "Text"
+
+#~ msgid "Width of the preview picture:"
+#~ msgstr "Breite des Vorschaubildes:"
+
+#~ msgid "Export List of Sales"
+#~ msgstr "Liste Umsätze"
+
+#~ msgid "Export documents, contacts .. to tables and files"
+#~ msgstr "Dokumente, Kontakte ... in Tabellen und Dateien exportieren"
+
+#~ msgid "Import CSV Table"
+#~ msgstr "CSV Tabelle wird importiert"
+
+#~ msgid "Import a CSV table into Fakturama"
+#~ msgstr "Eine CSV Tabelle in Fakturama importieren"
+
+#~ msgid "Input Tax"
+#~ msgstr "Vorsteuer"
+
+#~ msgid "PROD{5nr}"
+#~ msgstr "ARTIKEL{5nr}"
+
+#~ msgid "Sender country"
+#~ msgstr "Absender Land"
+
+#~ msgid "Sender additional address"
+#~ msgstr "Absender Zusatzadresse"
+
+#~ msgid "Service"
+#~ msgstr "Dienst"
+
+#~ msgid "Parcel Service:"
+#~ msgstr "Paketdienst:"
+
+#~ msgid "Discount:"
+#~ msgstr "Rabatt"
+
+#~ msgid "VAT:"
+#~ msgstr "MwSt.:"
+
+#~ msgid "Total:"
+#~ msgstr "Gesamt:"
+
+#~ msgid "Type"
+#~ msgstr "Art"

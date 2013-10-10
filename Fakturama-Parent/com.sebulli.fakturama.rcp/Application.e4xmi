@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_RmPToetOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ide.application" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPToutOEeKo5Ms1QUgPTw" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_RmPToutOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTo-tOEeKo5Ms1QUgPTw" label="%application.name" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/16/app_16.png" x="527" y="24" width="1024" height="768">
+    <tags>topLevel</tags>
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_RmPTo-tOEeKo5Ms1QUgPTw" elementId="" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTpOtOEeKo5Ms1QUgPTw">
+      <children xsi:type="advanced:Perspective" xmi:id="_RmPTpOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspective" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTpetOEeKo5Ms1QUgPTw" label="Fakturama Perspective">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
+          <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.navigation" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation" tooltip="wählen Sie einen Button aus"/>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTqOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.datapanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" selectedElement="_VxkroOtOEeKo5Ms1QUgPTw">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_VxkroOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detaildata" containerData="10000" selectedElement="_RmPTqetOEeKo5Ms1QUgPTw" horizontal="true">
+              <children xsi:type="basic:PartStack" xmi:id="_RmPTqetOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detailpanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="17000" selectedElement="_RmPTqutOEeKo5Ms1QUgPTw">
+                <tags>detaildata</tags>
+                <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.docdetail" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.SamplePart" label="Detail View" closeable="true"/>
+              </children>
+              <children xsi:type="basic:PartStack" xmi:id="_XhoUAOtOEeKo5Ms1QUgPTw" elementId="PartStack@1266589" visible="false" containerData="10000">
+                <children xsi:type="basic:Part" xmi:id="_Y1hk0OtOEeKo5Ms1QUgPTw" label="Calculator" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/16/calculator_16.png" closeable="true"/>
+              </children>
+            </children>
+            <children xsi:type="basic:PartStack" xmi:id="_RmPTq-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.listdata" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="7500" selectedElement="_RmPTrOtOEeKo5Ms1QUgPTw">
+              <tags>datalists</tags>
+              <children xsi:type="basic:Part" xmi:id="_RmPTrOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.views.datasettable.viewDocumentTable" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.impl.ViewDocumentTable" label="%parts.documents" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/16/letter_16.png" tooltip="" closeable="true">
+                <variables>datalists</variables>
+              </children>
+              <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="com.sebulli.fakturama.views.datasettable.viewContactTable" toBeRendered="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.impl.ViewContactTable" label="%parts.contacts" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/20/contact_list_20.png" closeable="true"/>
+            </children>
+          </children>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="_RmPTrutOEeKo5Ms1QUgPTw" elementId="menu:org.eclipse.ui.main.menu" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+      <children xsi:type="menu:Menu" xmi:id="_RmPTr-tOEeKo5Ms1QUgPTw" elementId="fakturama.main.menu.file.id" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7xq1cPoyEeKmVtv93KLoRw" elementId="fakturama.main.menu.file.close.id" label="%main.menu.file.close"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Dd9LsPozEeKmVtv93KLoRw" elementId="fakturama.main.menu.file.closeall.id" label="%main.menu.file.closeall"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.1"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file.save" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/save_edit.gif" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Yew2kPo0EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.saveAll" label="%main.menu.file.saveall"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.2"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.print.id" label="%main.menu.file.print"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.3"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iKbb4Po6EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.0" label="%main.menu.file.select-workspace"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_qPRcEPo6EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.1" label="%main.menu.file.open-preferences"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.4"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_uCz_IPo6EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.2" label="%main.menu.file.import.webshop"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_vwm9sPo6EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.3" label="%main.menu.file.import.data" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/16/import_16.png"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_w0AUYPo6EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.4" label="%main.menu.file.export.data" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/16/export_16.png"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.5"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Quit" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_Ap_DsPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.menu.0" label="edit"/>
+      <children xsi:type="menu:Menu" xmi:id="_C8FCIPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.menu.1" label="data"/>
+      <children xsi:type="menu:Menu" xmi:id="_RCrwcPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.menu.4" label="extra">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.6" label="extra"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_RmPTs-tOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Help">
+        <children xsi:type="menu:Menu" xmi:id="_NlKgsPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.menu.3" label="new">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_EAqroPo9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.handledmenuitem.5" label="new"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="About" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_Hbga0Po9EeKmVtv93KLoRw" elementId="com.sebulli.fakturama.rcp.menu.2" label="window"/>
+    </mainMenu>
+    <trimBars xmi:id="_RmPTtetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+      <children xsi:type="menu:ToolBar" xmi:id="_RmPTtutOEeKo5Ms1QUgPTw" elementId="toolbar:com.sebulli.fakturama.toolbar.main1" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+        <tags>Draggable</tags>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_RmPTt-tOEeKo5Ms1QUgPTw" elementId="icon.webshop" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" accessibilityPhrase="" label="%icon.webshop.name" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/32/shop_32.png" tooltip="%icon.webshop.tooltip" command="_RmPT0OtOEeKo5Ms1QUgPTw">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_RmPTuOtOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp"/>
+        </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_RmPTuetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Print" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/32/printoo_32.png" enabled="false" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_RmPTuutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.handledtoolitem.0" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Save" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/32/save_32.png" enabled="false" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_RmPTu-tOEeKo5Ms1QUgPTw" elementId="toolbar:com.sebulli.fakturama.toolbar.main2" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+        <tags>Draggable</tags>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_RmPTvOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.handledtoolitem.1" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Offer" iconURI="platform:/plugin/com.sebulli.fakturama.resources/icons/32/offer_new_32.png" enabled="false" command="_RmPT0-tOEeKo5Ms1QUgPTw"/>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_RmPTvetOEeKo5Ms1QUgPTw" elementId="toolbar:com.sebulli.fakturama.toolbar.main3" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+        <tags>Draggable</tags>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_RmPTvutOEeKo5Ms1QUgPTw" elementId="toolbar:com.sebulli.fakturama.toolbar.main4" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
+        <tags>Draggable</tags>
+      </children>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_RmPTv-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.quitCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QuitHandler" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTwOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.openCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenHandler" command="_RmPT0OtOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.saveCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTwutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.aboutCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.AboutHandler" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTw-tOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.handler" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.tools.emf.liveeditor/org.eclipse.e4.tools.emf.liveeditor.OpenLiveDialogHandler" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTxOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.handler.opencontacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenContactsHandler" command="_RmPT0-tOEeKo5Ms1QUgPTw"/>
+  <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
+    <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
+    <bindings xmi:id="_RmPTx-tOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+O" command="_RmPT0OtOEeKo5Ms1QUgPTw"/>
+    <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
+  </bindingTables>
+  <rootContext xmi:id="_RmPTy-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialog and Windows">
+    <children xmi:id="_RmPTzOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.window" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Windows"/>
+    <children xmi:id="_RmPTzetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialog" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="_RmPTz-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="quitCommand"/>
+  <commands xmi:id="_RmPT0OtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.open" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="openCommand"/>
+  <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="saveCommand"/>
+  <commands xmi:id="_RmPT0utOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.help.aboutAction" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="aboutCommand"/>
+  <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.commands.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%commands.openContacts" description="open the contacts view"/>
+  <commands xmi:id="_RmPT1OtOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="Show running app model" description="Show the running application model"/>
+  <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_RmPT2OtOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.commands.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_RmPT2etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.handler.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_RmPT2utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_RmPT2-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>
