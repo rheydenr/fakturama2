@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Fakturama
+Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Require-Bundle: javax.inject;bundle-version="1.0.0",
@@ -28,7 +28,7 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.persistence.jpa;bundle-version="2.3.1",
  org.apache.commons.lang3;bundle-version="3.1.0",
  osgi.enterprise;bundle-version="4.2.0",
- org.eclipse.equinox.ds;bundle-version="1.4.100",
+ org.eclipse.equinox.ds;bundle-version="1.4.101",
  org.eclipse.equinox.util;bundle-version="1.0.500",
  org.eclipse.osgi.services;bundle-version="3.3.100",
  org.eclipse.e4.tools.services,
@@ -38,7 +38,6 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.nebula.widgets.nattable.core;bundle-version="1.0.1",
  org.eclipse.nebula.widgets.nattable.extension.glazedlists;bundle-version="1.0.1",
  org.apache.commons.codec;bundle-version="1.4.0",
- org.apache.commons.lang;bundle-version="2.6.0",
  org.apache.commons.logging;bundle-version="1.1.1",
  ca.odell.glazedlists,
  org.apache.commons.collections;bundle-version="3.2.0"

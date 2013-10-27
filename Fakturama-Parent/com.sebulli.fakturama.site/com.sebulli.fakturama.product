@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="com.sebulli.fakturama.rcp" uid="Fakturama" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="com.sebulli.fakturama.rcp" uid="com.sebulli.fakturama" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
 
    <configIni use="default">
    </configIni>
@@ -11,22 +12,30 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages/>
+   <windowImages i16="../com.sebulli.fakturama.resources/icons/app/app_16.png" i32="../com.sebulli.fakturama.resources/icons/app/app_32.png" i48="../com.sebulli.fakturama.resources/icons/app/app_48.png" i64="../com.sebulli.fakturama.resources/icons/app/app_64.png" i128="../com.sebulli.fakturama.resources/icons/app/app_128.png"/>
 
    <splash
-      location="de.fakturama.rcp"
+      location="com.sebulli.fakturama.rcp"
       startupProgressRect="5,359,515,15"
       startupMessageRect="5,5,500,300"
       startupForegroundColor="FFFFFF" />
    <launcher name="Fakturama">
       <solaris/>
       <win useIco="false">
-         <bmp/>
+         <bmp
+            winSmallHigh="../com.sebulli.fakturama.resources/icons/app/app_16_32.bmp"
+            winSmallLow="../com.sebulli.fakturama.resources/icons/app/app_16_8.bmp"
+            winMediumHigh="../com.sebulli.fakturama.resources/icons/app/app_32_32.bmp"
+            winMediumLow="../com.sebulli.fakturama.resources/icons/app/app_32_8.bmp"
+            winLargeHigh="../com.sebulli.fakturama.resources/icons/app/app_48_32.bmp"
+            winLargeLow="../com.sebulli.fakturama.resources/icons/app/app_48_8.bmp"/>
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -122,27 +131,32 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.core.runtime.feature" version="1.1.0.v20130529-1710"/>
+      <feature id="org.eclipse.core.runtime.feature" version="1.1.0.v20130814-1242"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
-      <feature id="org.eclipse.persistence.jpa" version="2.5.0.v20130507-3faac2b"/>
+      <feature id="org.eclipse.persistence.jpa" version="2.5.1.v20130918-f2b9fc5"/>
       <feature id="org.slf4j.feature" version="1.6.6"/>
-      <feature id="org.eclipse.equinox.core.feature"/>
+      <feature id="org.eclipse.equinox.core.feature" version="1.1.0.v20130814-1242"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
       <feature id="org.hsql.jdbc.feature" version="2.3.0"/>
       <feature id="com.mysql.jdbc.feature" version="5.1.25"/>
-      <feature id="org.eclipse.e4.rcp" version="1.2.0.v20130605-1738"/>
+      <feature id="org.eclipse.e4.rcp" version="1.2.1.v20130910-2014"/>
       <feature id="org.eclipse.e4.core.tools.feature" version="0.14.0.v20130620-0935"/>
-      <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.nebula.widgets.nattable.core.feature" version="1.0.1.201307031725"/>
+      <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature" version="1.0.1.201307031725"/>
+      <feature id="org.apache.commons.lang3.feature" version="3.1"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.0.0.qualifier"/>
    </features>
 
    <configurations>
+      <plugin id="com.sebulli.fakturama.model" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.gemini.dbaccess.derby" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />

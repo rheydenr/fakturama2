@@ -19,6 +19,12 @@ public interface IEntity {
 	 * @return
 	 */
 	public int getTransactionKey();
+	
+	/**
+	 * The id of this entity
+	 * @return
+	 */
+	public int getId();
 
 	/**
 	 * Address key, if available. Used in content provider for data table.

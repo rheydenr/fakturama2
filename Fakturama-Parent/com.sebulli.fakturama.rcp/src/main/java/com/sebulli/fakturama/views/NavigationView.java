@@ -17,7 +17,6 @@ package com.sebulli.fakturama.views;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -31,9 +30,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ExpandBar;
@@ -41,7 +37,6 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.handlers.ICommandIds;
-import com.sebulli.fakturama.handlers.OpenContactsHandler;
 import com.sebulli.fakturama.resources.ResourceProvider;
 
 /**
@@ -55,7 +50,7 @@ public class NavigationView {
 	public static final String ID = "com.sebulli.fakturama.navigationView"; //$NON-NLS-1$
 
 	//T: Text of the action to open the contacts
-	public final static String ACTIONTEXT = "Contacts"; 
+	public final static String ACTIONTEXT = "Contact"; 
 
     @Inject
     private IResourcePool resourcePool;
@@ -136,12 +131,12 @@ public class NavigationView {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Command command = commandService.getCommand("com.sebulli.fakturama.commands.openContacts");
-				// Activate Handler, assume AboutHandler() class exists already
-				handlerService.activateHandler(ICommandIds.CMD_OPEN_CONTACTS, 
-				    new OpenContactsHandler());
+//				Command command = commandService.getCommand(ICommandIds.CMD_OPEN_CONTACTS);
+//				// Activate Handler, assume AboutHandler() class exists already
+//				handlerService.activateHandler(ICommandIds.CMD_OPEN_CONTACTS, 
+//				    new OpenContactsHandler());
 				ParameterizedCommand cmd =
-				  commandService.createCommand("com.sebulli.fakturama.commands.openContacts", null);
+				  commandService.createCommand(ICommandIds.CMD_OPEN_CONTACTS, null);
 				// Execute the command
 				handlerService.executeHandler(cmd); 		
 			}

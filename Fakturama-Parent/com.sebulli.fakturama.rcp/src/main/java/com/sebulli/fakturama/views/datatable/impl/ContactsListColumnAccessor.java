@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 
-import com.sebulli.fakturama.model.Contacts;
+import com.sebulli.fakturama.model.Contact;
 
 /**
  * @author G527032
@@ -18,7 +18,7 @@ import com.sebulli.fakturama.model.Contacts;
  *
  * TODO Die Klasse ähnelt ein bißchen der Klasse DataTableColumn
  */
-public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Contacts> {
+public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Contact> {
 	
 	/**
 	 * Properties which have to shown
@@ -46,7 +46,7 @@ public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Conta
 	}
 
 	@Override
-	public Object getDataValue(Contacts rowObject, int columnIndex) {
+	public Object getDataValue(Contact rowObject, int columnIndex) {
 		switch (columnIndex) {
 		case 0:
 			return rowObject.getNr();
@@ -79,7 +79,7 @@ public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Conta
 	}
 
 	@Override
-	public void setDataValue(Contacts rowObject, int columnIndex,
+	public void setDataValue(Contact rowObject, int columnIndex,
 			Object newValue) {
 		throw new UnsupportedOperationException("this operation is not allowed in this list.");
 		

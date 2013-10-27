@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Fakturama
+Bundle-Name: Fakturama Resources
 Bundle-SymbolicName: com.sebulli.fakturama.resources;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Require-Bundle: org.eclipse.e4.tools.services;bundle-version="0.12.0",
- org.eclipse.swt;bundle-version="3.102.0"
+ org.eclipse.swt;bundle-version="3.102.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy 
 Export-Package: com.sebulli.fakturama.resources

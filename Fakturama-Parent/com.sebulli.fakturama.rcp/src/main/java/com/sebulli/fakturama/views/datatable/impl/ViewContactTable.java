@@ -15,10 +15,15 @@
 package com.sebulli.fakturama.views.datatable.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -48,7 +53,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
 import com.sebulli.fakturama.dao.ContactDAO;
-import com.sebulli.fakturama.model.Contacts;
+import com.sebulli.fakturama.model.Contact;
 
 /**
  * View with the table of all contacts
@@ -56,7 +61,7 @@ import com.sebulli.fakturama.model.Contacts;
  * @author Gerd Bartelt
  * 
  */
-public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
+public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 
 	// ID of this view
 	public static final String ID = "com.sebulli.fakturama.views.datasettable.viewContactTable";
@@ -71,13 +76,18 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 	private EHandlerService handlerService;
 	
 	@Inject
+	private ECommandService commandService;
+	
+	@Inject
 	private ContactDAO contactDAO;
 	
 	//The top composite
 	private Composite top;
 	
 	// Filter the table 
-	protected Label filterLabel;  	  
+	protected Label filterLabel;
+
+	private String editor;  	  
 	/**
 	 * Creates the SWT controls for this workbench part.
 	 * 
@@ -95,7 +105,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 		// Add the action to create a new entry
 //		addNewAction = new NewContactAction(null);
 
-//		super.createPartControl(parent, Contacts.class, false, true, "ContextHelpConstants.CONTACT_TABLE_VIEW");
+//		super.createPartControl(parent, Contact.class, false, true, "ContextHelpConstants.CONTACT_TABLE_VIEW");
 		
 		// Create the tree viewer
 //		topicTreeViewer = new TopicTreeViewer(top, SWT.BORDER, elementClass, useDocumentAndContactFilter, useAll);
@@ -146,7 +156,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 		final Text searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
 
-		part.setLabel("Contacts");
+		part.setLabel("Contact");
 
 		// The table composite
 		// Set selection provider
@@ -155,8 +165,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 		natTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 
 		// Name of the editor
-		// FIXME was soll denn das??? ==> Öffnen der Detailansicht!
-//		editor = "Contact";
+		editor = "Contact";
 //
 //		// Get the column width from the preferences
 //		int cw_no = 10; // Activator.getDefault().getPreferenceStore().getInt("COLUMNWIDTH_CONTACTS_NO");
@@ -171,17 +180,17 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 //		// new TableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, "ID", 30, 0, true, "id");
 //		
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.RIGHT, _("No."), cw_no, true, "nr");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, _("No."), cw_no, true, "nr");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.LEFT, _("First Name"), cw_firstname,  false, "firstname");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("First Name"), cw_firstname,  false, "firstname");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.LEFT, _("Last Name"), cw_lastname, false, "name");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("Last Name"), cw_lastname, false, "name");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.LEFT, _("Company"), cw_company, false, "company");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("Company"), cw_company, false, "company");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.RIGHT, _("ZIP"), cw_zip, true, "zip");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, _("ZIP"), cw_zip, true, "zip");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contacts>(tableColumnLayout, tableViewer, SWT.LEFT, _("City"), cw_city, false, "city");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("City"), cw_city, false, "city");
 //
 //		// Set the input of the table viewer and the tree viewer
 // 		tableViewer.setInput(Data.INSTANCE.getContacts());
@@ -189,8 +198,8 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 	}
 	
 	private NatTable buildTable(Text searchTextField) {
-		ListTableGridLayer<Contacts> gridLayer = new ListTableGridLayer<Contacts>(ContactsListColumnAccessor.CONTACT_PROPERTIES, 
-				ContactsListColumnAccessor.PROPERTY_TO_LABEL_MAP, contactDAO.getContacts(),
+		ListTableGridLayer<Contact> gridLayer = new ListTableGridLayer<Contact>(ContactsListColumnAccessor.CONTACT_PROPERTIES, 
+				ContactsListColumnAccessor.PROPERTY_TO_LABEL_MAP, contactDAO.findAll(),
 				new ContactsListColumnAccessor(), searchTextField, new ContactsTextFilterator());
 
 		NatTable nattable = new NatTable(parent, gridLayer, false);
@@ -201,15 +210,15 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 
 		// Custom selection configuration
 		SelectionLayer selectionLayer = gridLayer.getSelectionLayer();
-		selectionLayer.setSelectionModel(new RowSelectionModel<Contacts>(selectionLayer, gridLayer.getBodyDataProvider(), new IRowIdAccessor<Contacts>() {
+		selectionLayer.setSelectionModel(new RowSelectionModel<Contact>(selectionLayer, gridLayer.getBodyDataProvider(), new IRowIdAccessor<Contact>() {
 
-			public Serializable getRowId(Contacts rowObject) {
+			public Serializable getRowId(Contact rowObject) {
 				return rowObject.getId();
 			}
 			
 		}));
 		
-		selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Contacts>());
+		selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Contact>());
 		nattable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
 
 		// Listen to double clicks
@@ -233,7 +242,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 	 * @param nattable 
 	 * @param gridLayer 
 	 */
-	private void hookDoubleClickCommand(final NatTable nattable, final ListTableGridLayer<Contacts> gridLayer) {
+	private void hookDoubleClickCommand(final NatTable nattable, final ListTableGridLayer<Contact> gridLayer) {
 		// Add a double click listener
 		nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE),
 		new IMouseAction() {
@@ -245,7 +254,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 				//transform the NatTable row position to the row position of the body layer stack
 				int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
 				// extract the selected Object
-				Contacts contact  = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+				Contact contact  = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
 				System.out.println("Selected contact: " + contact.getNr());
 //				try {
 					// Call the corresponding editor. The editor is set
@@ -253,11 +262,12 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contacts> {
 					// when calling the editor command.
 					// in E4 we create a new Part (or use an existing one with the same ID)
 					// from PartDescriptor
-////					Command callEditor = commandService.getCommand("com.sebulli.fakturama.editors.callEditor");
-////					Map<String, String> params = new HashMap<String, String>();
-////					params.put("com.sebulli.fakturama.editors.callEditorParameter", editor);
-////					ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
-////					handlerService.executeCommand(parameterizedCommand, null);
+					Command callEditor = commandService.getCommand("com.sebulli.fakturama.editors.callEditor");
+					Map<String, String> params = new HashMap<>();
+					params.put("com.sebulli.fakturama.editors.editortype", editor);
+					params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Integer.toString(contact.getId()));
+					ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
+					handlerService.executeHandler(parameterizedCommand);
 //
 //				}
 //				catch (Exception e) {

@@ -1,23 +1,18 @@
 package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
-import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.sebulli.fakturama.dto.ContactsDataSet;
-import com.sebulli.fakturama.model.Contacts;
-import com.sebulli.fakturama.model.IDataSetArray;
+import com.sebulli.fakturama.model.Contact;
 
 @Creatable
 public class ContactDAO {
@@ -32,12 +27,23 @@ public class ContactDAO {
     @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
-    public void save(Contacts dataObj) throws SQLException {
+    public Contact save(Contact contact) throws SQLException {
         checkConnection();
         EntityTransaction trx = em.getTransaction();
         trx.begin();
-        em.persist(dataObj);
+        em.persist(contact);
         trx.commit();
+        return contact;
+    }
+    
+    public Contact update(Contact contact) throws SQLException {
+        checkConnection();
+        EntityTransaction trx = em.getTransaction();
+        trx.begin();
+        em.merge(contact);
+        trx.commit();
+        return contact;
+   	
     }
 
     @PreDestroy
@@ -47,25 +53,28 @@ public class ContactDAO {
         }
     }
     
-    public List<Contacts> getContacts() {
+    /**
+     * Get all {@link Contact} from Database which are not deleted.
+     *
+     * @return List<Contact> 
+     */
+    public List<Contact> findAll() {
     	// Use only the undeleted entries
     	return em.createQuery("select c from Contacts c where c.deleted = false").getResultList();
     }
-
+    
+    public Contact findById(int id) {
+    	return em.find(Contact.class, id);
+    }
+    
     private void checkConnection() throws SQLException {
         if (em == null) {
             throw new SQLException("EntityManager is null. Not connected to database!");
         }
     }
 
-    /**
-     * Get all {@link Contacts} from Database which are not deleted.
-     *
-     * @return IDataSetArray<Contacts> 
-     */
-	public IDataSetArray<Contacts> getContactsDataSet() {
-		Query query = em.createQuery("select c from Contacts c where deleted = false");
-		IDataSetArray<Contacts> retval = new ContactsDataSet(query.getResultList());
-		return retval;
+	public Collection<String> getCategoryStrings() {
+		List<String> result = em.createQuery("select distinct c.category from Contacts c where c.deleted = false").getResultList();
+		return result;
 	}
 }

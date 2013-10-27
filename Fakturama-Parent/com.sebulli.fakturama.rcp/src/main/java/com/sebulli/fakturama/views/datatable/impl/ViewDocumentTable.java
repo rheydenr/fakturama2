@@ -11,6 +11,9 @@ import javax.annotation.PostConstruct;
  */
 public class ViewDocumentTable {
 
+	// ID of this view
+	public static final String ID = "com.sebulli.fakturama.views.datasettable.viewDocumentTable";
+
 	@PostConstruct
 	public void initialize() {
 		

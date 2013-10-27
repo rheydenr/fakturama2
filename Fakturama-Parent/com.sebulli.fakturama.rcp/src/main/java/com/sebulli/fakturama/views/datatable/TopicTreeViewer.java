@@ -16,8 +16,11 @@ package com.sebulli.fakturama.views.datatable;
 
 
 
+import static com.sebulli.fakturama.Translate._;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -25,8 +28,6 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.e4.tools.services.IResourcePool;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
@@ -42,12 +43,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.sebulli.fakturama.misc.DataSetListNames;
+import com.sebulli.fakturama.dao.DataSetListNames;
 import com.sebulli.fakturama.model.Documents;
-import com.sebulli.fakturama.model.IDataSetArray;
 import com.sebulli.fakturama.resources.ResourceProvider;
-
-import static com.sebulli.fakturama.Translate._;
 
 /**
  * This is the topic tree viewer that displays an tree of the categories of all
@@ -55,7 +53,7 @@ import static com.sebulli.fakturama.Translate._;
  * 
  * @author Gerd Bartelt
  */
-public class TopicTreeViewer extends TreeViewer {
+public class TopicTreeViewer<T> extends TreeViewer {
 
     @Inject
     private IResourcePool resourcePool;
@@ -77,7 +75,7 @@ public class TopicTreeViewer extends TreeViewer {
 	private TreeParent contactItem;
 
 	// The input
-	private IDataSetArray inputElement;
+	private List<T> inputElement;
 
 	// The selected item
 	private TreeObject selectedItem;
@@ -211,8 +209,10 @@ public class TopicTreeViewer extends TreeViewer {
 			root.addChild(all);
 
 		// Reset the marker for "category has changed"
-		if (inputElement != null)
-			inputElement.resetCategoryChanged();
+		if (inputElement != null) {
+			// FIXME implement
+			//inputElement.resetCategoryChanged();
+		}
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class TopicTreeViewer extends TreeViewer {
 	 * 
 	 * @author Gerd Bartelt
 	 */
-	class TreeObject {
+	class TreeObject<T> {
 		private String name;
 		private String command;
 		private String toolTip;
@@ -547,42 +547,42 @@ public class TopicTreeViewer extends TreeViewer {
 		public Object[] getElements(Object parent) {
 			int entryCnt = 0;
 
-			// Get the elements
-			if (parent == root) {
-
-				// Rebuild the elements, if some strings have changed
-				if (inputElement.getCategoryStringsChanged()) {
-
-					// Clear the tree
-					clear();
-					if (inputElement instanceof IDataSetArray) {
-
-						// Get all category strings
-						Object[] entries = inputElement.getCategoryStrings().toArray();
-						for (Object entry : entries) {
-							addEntry(entry.toString());
-						}
-					}
-				}
-			}
-
-			// Count the category strings
-			if (inputElement instanceof IDataSetArray) {
-				Object[] entries = inputElement.getCategoryStrings().toArray();
-				entryCnt = entries.length;
-			}
-
-			// Hide the Tree viewer, if there is no tree element
-			if (entryCnt != 0) {
-				me.getTree().setVisible(true);
-				GridDataFactory.fillDefaults().hint(150, -1).grab(false, true).applyTo(me.getTree());
-				me.getTree().getParent().layout(true);
-			}
-			else {
-				me.getTree().setVisible(false);
-				GridDataFactory.fillDefaults().hint(1, -1).grab(false, true).applyTo(me.getTree());
-				me.getTree().getParent().layout(true);
-			}
+//			// Get the elements
+//			if (parent == root) {
+//
+//				// Rebuild the elements, if some strings have changed
+//				if (inputElement.getCategoryStringsChanged()) {
+//
+//					// Clear the tree
+//					clear();
+//					if (inputElement instanceof IDataSetArray) {
+//
+//						// Get all category strings
+//						Object[] entries = inputElement.getCategoryStrings().toArray();
+//						for (Object entry : entries) {
+//							addEntry(entry.toString());
+//						}
+//					}
+//				}
+//			}
+//
+//			// Count the category strings
+//			if (inputElement instanceof IDataSetArray) {
+//				Object[] entries = inputElement.getCategoryStrings().toArray();
+//				entryCnt = entries.length;
+//			}
+//
+//			// Hide the Tree viewer, if there is no tree element
+//			if (entryCnt != 0) {
+//				me.getTree().setVisible(true);
+//				GridDataFactory.fillDefaults().hint(150, -1).grab(false, true).applyTo(me.getTree());
+//				me.getTree().getParent().layout(true);
+//			}
+//			else {
+//				me.getTree().setVisible(false);
+//				GridDataFactory.fillDefaults().hint(1, -1).grab(false, true).applyTo(me.getTree());
+//				me.getTree().getParent().layout(true);
+//			}
 
 			// Return the children elements
 			return getChildren(parent);
@@ -602,7 +602,7 @@ public class TopicTreeViewer extends TreeViewer {
 		 */
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (parent instanceof TreeParent) { return ((TreeParent) parent).getChildren(); }
+//			if (parent instanceof TreeParent) { return ((TreeParent) parent).getChildren(); }
 			return new Object[0];
 		}
 
@@ -611,8 +611,8 @@ public class TopicTreeViewer extends TreeViewer {
 		 */
 		@Override
 		public boolean hasChildren(Object parent) {
-			if (parent instanceof TreeParent)
-				return ((TreeParent) parent).hasChildren();
+//			if (parent instanceof TreeParent)
+//				return ((TreeParent) parent).hasChildren();
 			return false;
 		}
 	}
@@ -671,8 +671,8 @@ public class TopicTreeViewer extends TreeViewer {
 			}
 
 			// Return a "dot" icon for parent elements
-			if (obj instanceof TreeParent) { return dotImage; }
-
+//			if (obj instanceof TreeParent) { return dotImage; }
+//
 			// Return no icon
 			return null; //PlatformUI.getWorkbench().getSharedImages().getImage(null);
 		}
@@ -860,9 +860,9 @@ public class TopicTreeViewer extends TreeViewer {
 	 * 
 	 * @param input
 	 */
-	public void setInput(IDataSetArray input) {
+	public void setInput(List<T> input) {
 		this.inputElement = input;
-		this.inputElement.resetCategoryChanged();
+//		this.inputElement.resetCategoryChanged();
 		this.setContentProvider(new ViewContentProvider());
 		this.setLabelProvider(new ViewLabelProvider());
 		this.setInput(root);

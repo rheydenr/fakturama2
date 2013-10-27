@@ -5,7 +5,7 @@ package com.sebulli.fakturama.views.datatable.impl;
 
 import java.util.List;
 
-import com.sebulli.fakturama.model.Contacts;
+import com.sebulli.fakturama.model.Contact;
 
 import ca.odell.glazedlists.TextFilterator;
 
@@ -15,10 +15,10 @@ import ca.odell.glazedlists.TextFilterator;
  * @author Ralf Heydenreich
  *
  */
-public class ContactsTextFilterator implements TextFilterator<Contacts> {
+public class ContactsTextFilterator implements TextFilterator<Contact> {
 
 	@Override
-	public void getFilterStrings(List<String> baseList, Contacts contact) {
+	public void getFilterStrings(List<String> baseList, Contact contact) {
 		baseList.add(contact.getNr());
 		baseList.add(contact.getFirstname());
 		baseList.add(contact.getName());

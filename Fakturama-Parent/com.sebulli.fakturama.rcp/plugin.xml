@@ -35,33 +35,9 @@
                name="preferenceCustomization"
                value="plugin_customization.ini">
          </property>
-      </product>
-   </extension>
-   <extension
-         id="meins"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.e4.ui.workbench.swt.E4Application"
-            name="com.sebulli.fakturama.rcp">
          <property
-               name="startupForegroundColor"
-               value="FFFFFF">
-         </property>
-         <property
-               name="startupProgressRect"
-               value="5,359,515,15">
-         </property>
-         <property
-               name="startupMessageRect"
-               value="5,5,500,300">
-         </property>
-         <property
-               name="appName"
-               value="com.sebulli.fakturama.rcp">
-         </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
+               name="lifeCycleURI"
+               value="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.LifecycleManager">
          </property>
       </product>
    </extension>

@@ -44,7 +44,7 @@
     
     <persistence-unit name="origin-datasource" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sebulli.fakturama.model.Contacts</class>
+        <class>com.sebulli.fakturama.model.Contact</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.jdbc.password" value=""/>
