@@ -1,0 +1,7 @@
+(C) 2011-2013 - Fakturama
+2013-10-10
+http://fakturama.sebulli.com
+
+################ INSTALLATION ##############
+Copy the file fakturama_connector.php into the folder /admin/ in your web shop.
+

@@ -1,0 +1,7 @@
+(C) 2011-2013 - Fakturama
+2013-10-30
+http://fakturama.sebulli.com
+
+################ INSTALLATION ################
+Copy the file fakturama_connector_xtc4.php into the root folder of your webshop
+
