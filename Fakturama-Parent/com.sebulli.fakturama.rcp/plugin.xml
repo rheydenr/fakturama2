@@ -39,6 +39,10 @@
                name="lifeCycleURI"
                value="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.LifecycleManager">
          </property>
+         <property
+               name="windowImages"
+               value="/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_16.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_32.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_48.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_64.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_128.png">
+         </property>
       </product>
    </extension>
 

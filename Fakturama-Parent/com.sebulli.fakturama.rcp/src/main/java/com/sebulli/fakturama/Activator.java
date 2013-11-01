@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama;
 
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 //import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -23,13 +24,22 @@ import org.osgi.framework.BundleContext;
  * 
  * @author Gerd Bartelt
  */
-public class Activator  { // extends AbstractUIPlugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.sebulli.fakturama.rcp";
 
 	// The shared instance
-	private static Activator plugin;
+	private static BundleContext context;
+
+	/**
+	 * Returns the shared instance
+	 * 
+	 * @return the shared instance
+	 */
+	static BundleContext getContext() {
+		return context;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -38,38 +48,27 @@ public class Activator  { // extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-//	@Override
-	public void start(BundleContext context) throws Exception {
-//		super.start(context);
-		plugin = this;
+	@Override
+	public void start(BundleContext bundleContext) throws Exception {
+		Activator.context = bundleContext;
 //		ILog logger = Activator.getDefault().getLog();
 //		LogListener logListener = new LogListener();
 //		logger.addLogListener(logListener);
 
 	}
-//
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see
-//	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-//	 * )
-//	 */
-//	@Override
-//	public void stop(BundleContext context) throws Exception {
-//		plugin = null;
-//	//	super.stop(context);
-//	}
-//
-	/**
-	 * Returns the shared instance
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return the shared instance
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
+	 * )
 	 */
-	public static Activator getDefault() {
-		return plugin;
+	@Override
+	public void stop(BundleContext bundleContext) throws Exception {
+		Activator.context = null;
 	}
-//
+
 //	/**
 //	 * Returns an image descriptor for the image file at the given plug-in
 //	 * relative path

@@ -6,7 +6,7 @@
 	<version>2.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>0.18.1</tycho.version>
+		<tycho.version>0.19.0</tycho.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<encoding>UTF-8</encoding>
@@ -18,7 +18,9 @@
 	    <module>com.sebulli.fakturama.feature</module>
 		<module>com.sebulli.fakturama.target</module>
 	    <module>com.sebulli.fakturama.common</module>
+	    
 	    <module>com.sebulli.fakturama.resources</module>
+	    <module>com.sebulli.fakturama.resources.icons</module>
 	</modules>
 	<build>
 		<plugins>

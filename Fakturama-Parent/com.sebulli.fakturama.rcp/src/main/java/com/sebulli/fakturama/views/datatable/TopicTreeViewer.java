@@ -23,11 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.AssertionFailedException;
-import org.eclipse.e4.tools.services.IResourcePool;
-import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
@@ -45,7 +42,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.sebulli.fakturama.dao.DataSetListNames;
 import com.sebulli.fakturama.model.Documents;
-import com.sebulli.fakturama.resources.ResourceProvider;
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 
 /**
  * This is the topic tree viewer that displays an tree of the categories of all
@@ -55,16 +53,13 @@ import com.sebulli.fakturama.resources.ResourceProvider;
  */
 public class TopicTreeViewer<T> extends TreeViewer {
 
-    @Inject
-    private IResourcePool resourcePool;
-
 	private TopicTreeViewer me = this;
 
 	// Stores the dot image
-	private Image dotImage;
+	private ImageDescriptor dotImage;
 	
 	// Image map that stores all the used icons
-	private Map<String,Image> imageMap = new HashMap<String,Image>();
+	private Map<String,ImageDescriptor> imageMap = new HashMap<>();
 	
 	protected TreeParent root;
 	private TreeParent all;
@@ -102,7 +97,8 @@ public class TopicTreeViewer<T> extends TreeViewer {
 		// Create a dot Image
 //		LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources());
 //		dotImage = resources.createImage(Activator.getImageDescriptor("/icons/10/dot_10.png"));
-		dotImage = resourcePool.getImageUnchecked(ResourceProvider.IMG_DOT_10);
+//		dotImage = resourcePool.getImageUnchecked(ResourceProvider.IMG_DOT_10);
+		dotImage = Icon.TREE_DOT.getImageDescriptor(IconSize.MiniIconSize);
 		
 		// Create a new root element
 		root = new TreeParent("");
@@ -647,7 +643,7 @@ public class TopicTreeViewer<T> extends TreeViewer {
 		 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 		 */
 		//@Override
-		public Image getImage(Object obj) {
+		public ImageDescriptor getImage(Object obj) {
 
 			// Get the icon string of the element
 			String icon = ((TreeObject) obj).getIcon();
@@ -657,7 +653,8 @@ public class TopicTreeViewer<T> extends TreeViewer {
 					if (!imageMap.containsKey(icon)) {
 //						LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources());
 //						imageMap.put(icon, resources.createImage(Activator.getImageDescriptor("/icons/10/" + icon)));
-						imageMap.put(icon, resourcePool.getImageUnchecked(ResourceProvider.IMG_DOT_10));
+//						imageMap.put(icon, resourcePool.getImageUnchecked(ResourceProvider.IMG_DOT_10));
+						imageMap.put(icon, Icon.TREE_DOT.getImageDescriptor(IconSize.MiniIconSize));
 					}
 					// Load the icon by the icon name from the image map
 					return imageMap.get(icon);
@@ -692,7 +689,7 @@ public class TopicTreeViewer<T> extends TreeViewer {
 		@Override
 		public void update(ViewerCell cell) {
 			cell.setText(getText(cell.getElement()));
-			cell.setImage(getImage(cell.getElement()));
+			cell.setImage(getImage(cell.getElement()).createImage());
 		}
 
 		

@@ -28,29 +28,29 @@ public class TreeShellExample2 {
     final Tree t = new Tree(s, SWT.SINGLE | SWT.BORDER);
     final TreeItem child1 = new TreeItem(t, SWT.NONE, 0);
     child1.setText("1");
-    child1.setImage(new Image(d, "c:\\install\\famfamfam\\icons\\folder.png"));
+    child1.setImage(new Image(d, "d:\\install\\famfamfam\\icons\\folder.png"));
     final TreeItem child2 = new TreeItem(t, SWT.NONE, 1);
     child2.setText("2");
-    child2.setImage(new Image(d, "c:\\install\\famfamfam\\icons\\folder.png"));
+    child2.setImage(new Image(d, "d:\\install\\famfamfam\\icons\\folder.png"));
     final TreeItem child2a = new TreeItem(child2, SWT.NONE, 0);
     child2a.setText("2A");
     final TreeItem child2b = new TreeItem(child2, SWT.NONE, 1);
     child2b.setText("2B");
     final TreeItem child3 = new TreeItem(t, SWT.NONE, 2);
     child3.setText("3");
-    child3.setImage(new Image(d, "c:\\install\\famfamfam\\icons\\folder.png"));
+    child3.setImage(new Image(d, "d:\\install\\famfamfam\\icons\\folder.png"));
 
     final List l = new List(s, SWT.BORDER | SWT.SINGLE);
 
     t.addTreeListener(new TreeListener() {
       public void treeExpanded(TreeEvent e) {
         TreeItem ti = (TreeItem) e.item;
-        ti.setImage(new Image(d, "c:\\install\\famfamfam\\icons\\folder_explore.png"));
+        ti.setImage(new Image(d, "d:\\install\\famfamfam\\icons\\folder_explore.png"));
       }
 
       public void treeCollapsed(TreeEvent e) {
         TreeItem ti = (TreeItem) e.item;
-        ti.setImage(new Image(d, "c:\\install\\famfamfam\\icons\\folder.png"));
+        ti.setImage(new Image(d, "d:\\install\\famfamfam\\icons\\folder.png"));
       }
     });
 

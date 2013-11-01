@@ -60,21 +60,38 @@ public class ContactDAO {
      */
     public List<Contact> findAll() {
     	// Use only the undeleted entries
-    	return em.createQuery("select c from Contacts c where c.deleted = false").getResultList();
+    	return em.createQuery("select c from Contact c where c.deleted = false").getResultList();
     }
     
+    /**
+     * Finds a {@link Contact} by id.
+     * 
+     * @param id
+     * @return
+     */
     public Contact findById(int id) {
     	return em.find(Contact.class, id);
     }
     
+    
+    /**
+     * checks if connection is alive
+     * 
+     * @throws SQLException
+     */
     private void checkConnection() throws SQLException {
         if (em == null) {
             throw new SQLException("EntityManager is null. Not connected to database!");
         }
     }
 
+    /**
+     * Get a list of all categories stored for {@link Contact}s.
+     * 
+     * @return list of all categories
+     */
 	public Collection<String> getCategoryStrings() {
-		List<String> result = em.createQuery("select distinct c.category from Contacts c where c.deleted = false").getResultList();
+		List<String> result = em.createQuery("select distinct c.category from Contact c where c.deleted = false").getResultList();
 		return result;
 	}
 }

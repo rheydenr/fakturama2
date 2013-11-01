@@ -37,14 +37,14 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.handlers.ICommandIds;
-import com.sebulli.fakturama.resources.ResourceProvider;
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 
 /**
  * This class represents the navigation view of the workbench
  * 
  * @author Gerd Bartelt
  */
-@SuppressWarnings("restriction") 
 public class NavigationView {
 	// ID of this view
 	public static final String ID = "com.sebulli.fakturama.navigationView"; //$NON-NLS-1$
@@ -87,7 +87,7 @@ public class NavigationView {
 		item0.setText("Import");
 		item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		item0.setControl(composite);
-		item0.setImage(resourcePool.getImageUnchecked(ResourceProvider.IMG_ICN_IMPORT));
+		item0.setImage(Icon.COMMAND_IMPORT.getImageDescriptor(IconSize.DefaultIconSize).createImage());
 		item0.setExpanded(true);
 
 		// Create the 2nd expand bar "Data"
@@ -106,7 +106,7 @@ public class NavigationView {
 		item1.setText("Data");
 		item1.setHeight(composite2.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		item1.setControl(composite2);
-		item1.setImage(resourcePool.getImageUnchecked(ResourceProvider.IMG_ICN_DATA));
+		item1.setImage(Icon.COMMAND_DATA.getImageDescriptor(IconSize.DefaultIconSize).createImage());
 		item1.setExpanded(true);
 
 /*

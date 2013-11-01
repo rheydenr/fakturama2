@@ -12,6 +12,8 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
  */
 public class SaveAllHandler {
 
+	
+	// TODO use internal org.eclipse.e4.ui.internal.workbench.handlers.SaveAllHandler
 	  @Execute
 	  void execute(EPartService partService) {
 	    partService.saveAll(false);
