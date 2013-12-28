@@ -1,58 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
-    <persistence-unit name="configured" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sebulli.fakturama.model.Contact</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <!-- Embedded Derby Login -->
-            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:test;create=true" />
-            <!-- don't need userid/password in embedded Derby -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd"
+	version="2.0">
 
-            <property name="eclipselink.target-database" value="Derby" />
-            <property name="eclipselink.jdbc.read-connections.min" value="1" />
-            <property name="eclipselink.jdbc.write-connections.min" value="1" />
-            <property name="eclipselink.jdbc.batch-writing" value="JDBC" />
-
-            <!-- Database Schema Creation -->
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
-            <property name="eclipselink.ddl-generation.output-mode" value="database" />
-
-            <!-- Logging -->
-            <property name="eclipselink.logging.level" value="FINE" />
-            <property name="eclipselink.logging.session" value="false" />
-            <property name="eclipselink.logging.thread" value="false" />
-        </properties>
-    </persistence-unit>
-
-    <!-- Unconfigured persistence unit - will be done programmatically -->
-    <persistence-unit name="unconfigured" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sebulli.fakturama.model.Contact</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-    
-    <!-- Unconfigured persistence unit - will be done programmatically -->
-    <persistence-unit name="unconfigured2" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sebulli.fakturama.model.Contact</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-    
-    
-    <persistence-unit name="origin-datasource" transaction-type="RESOURCE_LOCAL">
+	<!-- Unconfigured persistence unit - will be done programmatically -->
+	<persistence-unit name="unconfigured2"
+		transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>com.sebulli.fakturama.model.Contact</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+			<class>com.sebulli.fakturama.model.AbstractCategory</class>
+			<class>com.sebulli.fakturama.model.Address</class>
+			<class>com.sebulli.fakturama.model.BillingType</class>
+			<class>com.sebulli.fakturama.model.Contact</class>
+			<class>com.sebulli.fakturama.model.ContactCategory</class>
+			<class>com.sebulli.fakturama.model.CountryCode</class>
+			<class>com.sebulli.fakturama.model.Document</class>
+			<class>com.sebulli.fakturama.model.DocumentItemCategory</class>
+			<class>com.sebulli.fakturama.model.ExpenditureAccount</class>
+			<class>com.sebulli.fakturama.model.ExpenditureItemAccountType</class>
+			<class>com.sebulli.fakturama.model.Item</class>
+			<class>com.sebulli.fakturama.model.ItemCategory</class>
+			<class>com.sebulli.fakturama.model.PaymentCategory</class>
+			<!-- <class>com.sebulli.fakturama.model.Payment</class> -->
+			<class>com.sebulli.fakturama.model.ProductCategory</class>
+			<class>com.sebulli.fakturama.model.ReceiptVoucherAccount</class>
+			<class>com.sebulli.fakturama.model.ReceiptVoucherItem</class>
+			<class>com.sebulli.fakturama.model.ReceiptVoucherItemAccountType</class>
+			<class>com.sebulli.fakturama.model.Shipping</class>
+			<class>com.sebulli.fakturama.model.ShippingCategory</class>
+			<class>com.sebulli.fakturama.model.TextCategory</class>
+			<class>com.sebulli.fakturama.model.TextModule</class>
+			<class>com.sebulli.fakturama.model.UserProperty</class>
+			<class>com.sebulli.fakturama.model.VAT</class>
+			<class>com.sebulli.fakturama.model.VATCategory</class> 
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="javax.persistence.jdbc.password" value=""/>
-			<property name="javax.persistence.jdbc.user" value="SA"/>
-			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:file:///d:/MeineDaten/Fakturama-WorkDir/Database/Database" />
-			<property name="eclipselink.ddl-generation" value="create-tables"/><!-- drop-and-create-tables -->
-			<property name="eclipselink.logging.level" value="INFO"/>
+			<!-- <property name="eclipselink.ddl-generation" value="create-tables" /> -->
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+			<property name="eclipselink.logging.level" value="INFO" />
 		</properties>
-    </persistence-unit>
+	</persistence-unit>
+
+	<!-- datasource for old Fakturama version (before 2.0) -->
+	<persistence-unit name="origin-datasource"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>com.sebulli.fakturama.oldmodel.OldContacts</class>
+		<class>com.sebulli.fakturama.oldmodel.OldDocuments</class>
+		<class>com.sebulli.fakturama.oldmodel.OldExpenditureitems</class>
+		<class>com.sebulli.fakturama.oldmodel.OldExpenditures</class>
+		<class>com.sebulli.fakturama.oldmodel.OldItems</class>
+		<class>com.sebulli.fakturama.oldmodel.OldList</class>
+		<class>com.sebulli.fakturama.oldmodel.OldPayments</class>
+		<class>com.sebulli.fakturama.oldmodel.OldProducts</class>
+		<class>com.sebulli.fakturama.oldmodel.OldProperties</class>
+		<class>com.sebulli.fakturama.oldmodel.OldReceiptvoucheritems</class>
+		<class>com.sebulli.fakturama.oldmodel.OldReceiptvouchers</class>
+		<class>com.sebulli.fakturama.oldmodel.OldShippings</class>
+		<class>com.sebulli.fakturama.oldmodel.OldTexts</class>
+		<class>com.sebulli.fakturama.oldmodel.OldVats</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.session.customizer"
+				value="com.sebulli.fakturama.dbconnector.CamelCaseSessionCustomizer" />
+		</properties>
+	</persistence-unit>
+
+	<!-- datasource for new installation *************** TEST ONLY!!! ****************** -->
+	<persistence-unit name="mysql-datasource"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+<!-- 		<class>com.sebulli.fakturama.model.Contact</class>
+		<class>com.sebulli.fakturama.model.Properties</class>
+ -->		<class>com.sebulli.fakturama.model.Shippings</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.jdbc.user" value="fakturama" />
+			<property name="javax.persistence.jdbc.password" value="fakturama" />
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/fakturama" />
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.logging.level" value="INFO" />
+		</properties>
+	</persistence-unit>
 </persistence>

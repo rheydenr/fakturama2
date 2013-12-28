@@ -146,7 +146,9 @@ public enum Icon {
 	BIGICON_ORDER,
 
 	// 48x64 overlay
-	OVERLAY_CHECKED;	
+	OVERLAY_CHECKED,
+	
+	ABOUT_ICON;	
 	// @formatter:on
 
 	private Icon() {

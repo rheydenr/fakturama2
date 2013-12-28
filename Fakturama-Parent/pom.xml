@@ -21,7 +21,6 @@
 	    
 	    <module>com.sebulli.fakturama.resources</module>
 	    <module>com.sebulli.fakturama.resources.icons</module>
-	    <module>com.sebulli.fakturama.hsqlconnector</module>
 	</modules>
 	<build>
 		<plugins>
@@ -31,6 +30,13 @@
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
+			</plugin>
+
+			<!-- enabling version for all poms -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-versions-plugin</artifactId>
+				<version>${tycho.version}</version>
 			</plugin>
 
             <!-- Use custom target platform -->

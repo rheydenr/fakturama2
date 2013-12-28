@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -67,7 +68,7 @@ import com.sebulli.fakturama.views.datatable.impl.ViewContactTable;
  * @author Gerd Bartelt
  */
 
-public class ContactEditor extends Editor<Contact> {
+public class ContactEditor extends Editor {
 
 	// Editor's ID
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
@@ -76,7 +77,6 @@ public class ContactEditor extends Editor<Contact> {
 	private Contact contact;
 
 	// SWT widgets of the editor
-	private Composite top;
 	private TabFolder tabFolder;
 	private Text textNote;
 	private Combo comboGender;
@@ -216,40 +216,40 @@ public class ContactEditor extends Editor<Contact> {
 		// Always set the editor's data set to "undeleted"
 		contact.setDeleted(false);
 
-		// Set the address data
-		contact.setGender(comboGender.getSelectionIndex());
-		contact.setTitle(txtTitle.getText());
-		contact.setFirstname(txtFirstname.getText());
-		contact.setName(txtName.getText());
-		contact.setCompany(DataUtils.removeCR(txtCompany.getText()));
-		contact.setStreet(txtStreet.getText());
-		contact.setZip(txtZip.getText());
-		contact.setCity(txtCity.getText());
-		contact.setCountry(txtCountry.getText());
-		contact.setBirthday(DataUtils.getDateTimeAsString(dtBirthday));
-
-		// Set the delivery address data
-		contact.setDeliveryGender(comboDeliveryGender.getSelectionIndex());
-		contact.setDeliveryTitle(txtDeliveryTitle.getText());
-		contact.setDeliveryFirstname(txtDeliveryFirstname.getText());
-		contact.setDeliveryName(txtDeliveryName.getText());
-		contact.setDeliveryCompany(DataUtils.removeCR(txtDeliveryCompany.getText()));
-		contact.setDeliveryStreet(txtDeliveryStreet.getText());
-		contact.setDeliveryZip(txtDeliveryZip.getText());
-		contact.setDeliveryCity(txtDeliveryCity.getText());
-		contact.setDeliveryCountry(txtDeliveryCountry.getText());
-		contact.setDeliveryBirthday(DataUtils.getDateTimeAsString(dtDeliveryBirthday));
-
-		// Set the bank data
-		contact.setAccountHolder(txtAccountHolder.getText());
-		contact.setAccount(txtAccount.getText());
-		contact.setBankCode(txtBankCode.getText());
-		contact.setBankName(txtBankName.getText());
+//		// Set the address data
+//		contact.setGender(comboGender.getSelectionIndex());
+//		contact.setTitle(txtTitle.getText());
+//		contact.setFirstName(txtFirstname.getText());
+//		contact.setName(txtName.getText());
+//		contact.setCompany(DataUtils.removeCR(txtCompany.getText()));
+//		contact.setStreet(txtStreet.getText());
+//		contact.setZip(txtZip.getText());
+//		contact.setCity(txtCity.getText());
+//		contact.setCountry(txtCountry.getText());
+//		contact.setBirthday(DataUtils.getDateTimeAsString(dtBirthday));
+//
+//		// Set the delivery address data
+//		contact.setDeliveryGender(comboDeliveryGender.getSelectionIndex());
+//		contact.setDeliveryTitle(txtDeliveryTitle.getText());
+//		contact.setDeliveryFirstname(txtDeliveryFirstname.getText());
+//		contact.setDeliveryName(txtDeliveryName.getText());
+//		contact.setDeliveryCompany(DataUtils.removeCR(txtDeliveryCompany.getText()));
+//		contact.setDeliveryStreet(txtDeliveryStreet.getText());
+//		contact.setDeliveryZip(txtDeliveryZip.getText());
+//		contact.setDeliveryCity(txtDeliveryCity.getText());
+//		contact.setDeliveryCountry(txtDeliveryCountry.getText());
+//		contact.setDeliveryBirthday(DataUtils.getDateTimeAsString(dtDeliveryBirthday));
+//
+//		// Set the bank data
+//		contact.setAccountHolder(txtAccountHolder.getText());
+//		contact.setAccount(txtAccount.getText());
+//		contact.setBankCode(txtBankCode.getText());
+//		contact.setBankName(txtBankName.getText());
 		contact.setIban(txtIBAN.getText());
 		contact.setBic(txtBIC.getText());
 
 		// Set the customer number
-		contact.setNr(txtNr.getText());
+		contact.setCustomerNumber(txtNr.getText());
 
 		// Set the payment ID
 		IStructuredSelection structuredSelection = (IStructuredSelection) comboPaymentViewer.getSelection();
@@ -265,10 +265,10 @@ public class ContactEditor extends Editor<Contact> {
 		contact.setSupplierNumber(txtSupplierNr.getText());
 		contact.setEmail(txtEmail.getText());
 		contact.setWebsite(txtWebsite.getText());
-		contact.setVatnr(txtVatNr.getText());
-		contact.setDiscount(DataUtils.StringToDoubleDiscount(txtDiscount.getText()));
-		contact.setCategory(comboCategory.getText());
-		contact.setUseNetGross(comboUseNetGross.getSelectionIndex());
+//		contact.setVatnr(txtVatNr.getText());
+//		contact.setDiscount(DataUtils.StringToDoubleDiscount(txtDiscount.getText()));
+//		contact.setCategory(comboCategory.getText());
+//		contact.setUseNetGross(comboUseNetGross.getSelectionIndex());
 
 		// Set the note
 		contact.setNote(DataUtils.removeCR(textNote.getText()));
@@ -296,14 +296,14 @@ public class ContactEditor extends Editor<Contact> {
 		
 		// Set the Editor's name to the first name and last name of the contact.
 		
-		String nameWithCompany = contact.getNameWithCompany(false);
-		if(nameWithCompany.contains("\r")) {
-			nameWithCompany = nameWithCompany.split("\\r")[0];
-		}
-		else if (nameWithCompany.contains("\n")) {
-			nameWithCompany = nameWithCompany.split("\\n")[0];
-		}
-		part.setLabel(nameWithCompany);
+//		String nameWithCompany = contact.getNameWithCompany(false);
+//		if(nameWithCompany.contains("\r")) {
+//			nameWithCompany = nameWithCompany.split("\\r")[0];
+//		}
+//		else if (nameWithCompany.contains("\n")) {
+//			nameWithCompany = nameWithCompany.split("\\n")[0];
+//		}
+//		part.setLabel(nameWithCompany);
 
 		// Refresh the table view of all contacts
 		refreshView();
@@ -323,7 +323,7 @@ public class ContactEditor extends Editor<Contact> {
 	 *            The editor's site
 	 */
 	@PostConstruct
-	public void initialize() {
+	public void initialize(IWorkbenchHelpSystem help) {
 		
 //		// Set the site and the input
 //		setSite(site);
@@ -355,13 +355,13 @@ public class ContactEditor extends Editor<Contact> {
 			contact.setPayment(contactPreferences.getInt("standardpayment", 1));
 
 			// Get the next contact number
-			contact.setNr(getNextNr());
+	//		contact.setNr(getNextNr());
 
 		}
 		else {
 
 			// Set the Editor's name to the first name and last name of the contact.
-			part.setLabel(contact.getNameWithCompany(false));
+	//		part.setLabel(contact.getNameWithCompany(false));
 		}
 		
 		createPartControl();
@@ -383,7 +383,7 @@ public class ContactEditor extends Editor<Contact> {
 		 * - servicedate:
 		 */
 
-//		if (contact.getBooleanValueByKey("deleted")) { return true; }
+		if (contact.getDeleted()) { return true; }
 		if (newContact) { return true; }
 
 		return part.isDirty();
@@ -456,23 +456,22 @@ public class ContactEditor extends Editor<Contact> {
 		useCompany = contactPreferences.getBoolean("CONTACT_USE_COMPANY", false);
 		useCountry = contactPreferences.getBoolean("CONTACT_USE_COUNTRY", false);
 
-		// Create the top Composite
+		// Create the parent Composite
 		
-		top = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(top);
+		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(parent);
 
-		// Create an invisible container for all hidden components
-		Composite invisible = new Composite(top, SWT.NONE);
+		// Create an invisible container for all hidden components	
+		Composite invisible = new Composite(parent, SWT.NONE);
 		invisible.setVisible(false);
 		GridDataFactory.fillDefaults().hint(0, 0).applyTo(invisible);
 
 		// Add context help reference 
-//		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.CONTACT_EDITOR);
+//		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextHelpConstants.CONTACT_EDITOR);
 
 		// Create the address tab
 		Composite tabAddress;
 		if (useDelivery || useBank || useMisc || useNote) {
-			tabFolder = new TabFolder(top, SWT.NONE);
+			tabFolder = new TabFolder(parent, SWT.NONE);
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
 			TabItem item1 = new TabItem(tabFolder, SWT.NONE);
@@ -482,7 +481,7 @@ public class ContactEditor extends Editor<Contact> {
 			item1.setControl(tabAddress);
 		}
 		else {
-			tabAddress = new Composite(top, SWT.NONE);
+			tabAddress = new Composite(parent, SWT.NONE);
 		}
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(tabAddress);
 
@@ -543,7 +542,7 @@ public class ContactEditor extends Editor<Contact> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
 		txtNr = new Text(customerNrComposite, SWT.BORDER);
-		txtNr.setText(contact.getNr());
+		txtNr.setText(contact.getCustomerNumber());
 		txtNr.setToolTipText(labelNr.getToolTipText());
 		superviceControl(txtNr, 32);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtNr);
@@ -613,7 +612,7 @@ public class ContactEditor extends Editor<Contact> {
 			txtName = new Text(addressGroup, SWT.BORDER);
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtName);
 		}
-		txtFirstname.setText(contact.getFirstname());
+		txtFirstname.setText(contact.getFirstName());
 		txtName.setText(contact.getName());
 		superviceControl(txtFirstname, 64);
 		superviceControl(txtName, 64);
@@ -628,43 +627,43 @@ public class ContactEditor extends Editor<Contact> {
 		superviceControl(txtCompany, 64);
 		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtCompany);
 
-		// Street
-		Label labelStreet = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelStreet.setText(_("Street"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
-		txtStreet = new Text(addressGroup, SWT.BORDER);
-		txtStreet.setText(contact.getStreet());
-		superviceControl(txtStreet, 64);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
-		setTabOrder(txtCompany, txtStreet);
-
-		// City
-		Label labelCity = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelCity.setText(_("ZIP, City"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
-		txtZip = new Text(addressGroup, SWT.BORDER);
-		txtZip.setText(contact.getZip());
-		superviceControl(txtZip, 16);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtZip);
-		txtCity = new Text(addressGroup, SWT.BORDER);
-		txtCity.setText(contact.getCity());
-		superviceControl(txtCity, 32);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCity);
-
-		// Country
-		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelCountry.setText(_("Country"));
-		//T: Tool Tip Text
-		labelCountry.setToolTipText(_("Set also your home county. Under preferences/contacts you can set those country names that are not displayed on the address label"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
-		txtCountry = new Text(useCountry ? addressGroup : invisible, SWT.BORDER);
-		txtCountry.setText(contact.getCountry());
-		txtCountry.setToolTipText(labelCountry.getToolTipText());
-		superviceControl(txtCountry, 32);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtCountry);
+//		// Street
+//		Label labelStreet = new Label(addressGroup, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelStreet.setText(_("Street"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
+//		txtStreet = new Text(addressGroup, SWT.BORDER);
+//		txtStreet.setText(contact.getStreet());
+//		superviceControl(txtStreet, 64);
+//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
+//		setTabOrder(txtCompany, txtStreet);
+//
+//		// City
+//		Label labelCity = new Label(addressGroup, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelCity.setText(_("ZIP, City"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
+//		txtZip = new Text(addressGroup, SWT.BORDER);
+//		txtZip.setText(contact.getZip());
+//		superviceControl(txtZip, 16);
+//		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtZip);
+//		txtCity = new Text(addressGroup, SWT.BORDER);
+//		txtCity.setText(contact.getCity());
+//		superviceControl(txtCity, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCity);
+//
+//		// Country
+//		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelCountry.setText(_("Country"));
+//		//T: Tool Tip Text
+//		labelCountry.setToolTipText(_("Set also your home county. Under preferences/contacts you can set those country names that are not displayed on the address label"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
+//		txtCountry = new Text(useCountry ? addressGroup : invisible, SWT.BORDER);
+//		txtCountry.setText(contact.getCountry());
+//		txtCountry.setToolTipText(labelCountry.getToolTipText());
+//		superviceControl(txtCountry, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtCountry);
 		
 		// Birthday
 		Label labelBirthday = new Label(addressGroup, SWT.NONE);
@@ -678,12 +677,12 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().applyTo(dtBirthday);
 		superviceControl(dtBirthday);
 		
-		// Set the dtBirthday widget to the contact's birthday date
-		GregorianCalendar calendar = new GregorianCalendar();
-		if(!"".equals(contact.getBirthday())) {
-			calendar = DataUtils.getCalendarFromDateString(contact.getBirthday());
-		}
-		dtBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+//		// Set the dtBirthday widget to the contact's birthday date
+//		GregorianCalendar calendar = new GregorianCalendar();
+//		if(!"".equals(contact.getBirthday())) {
+//			calendar = DataUtils.getCalendarFromDateString(contact.getBirthday());
+//		}
+//		dtBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
 		// Group: delivery address
 		deliveryGroup = new Group(tabAddress, SWT.NONE);
@@ -704,113 +703,113 @@ public class ContactEditor extends Editor<Contact> {
 			//T: "Title" (part of an address)
 			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + _("Title", "ADDRESS"));
 
-		// Delivery Gender
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
-		comboDeliveryGender = new Combo(useGender ? deliveryGroup : invisible, SWT.BORDER);
-		for (int i = 0; i < 4; i++)
-			comboDeliveryGender.add(getGenderString(i), i);
-		comboDeliveryGender.select(contact.getDeliveryGender());
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender);
-		superviceControl(comboDeliveryGender);
-
-		// Delivery Title
-		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		txtDeliveryTitle.setText(contact.getDeliveryTitle());
-		superviceControl(txtDeliveryTitle, 32);
-		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
-
-		// Delivery first and last name
-		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
-		if (useLastNameFirst) {
-			//T: Format of the name in an address
-			labelDeliveryName.setText(_("Last name, First Name"));
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(labelDeliveryName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryFirstname);
-		}
-		else {
-			//T: Format of the name in an address
-			labelDeliveryName.setText(_("First Name Last name"));
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-
-		}
-		txtDeliveryFirstname.setText(contact.getDeliveryFirstname());
-		txtDeliveryName.setText(contact.getDeliveryName());
-		superviceControl(txtDeliveryFirstname, 64);
-		superviceControl(txtDeliveryName, 64);
-
-		// Delivery company
-		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCompany.setText(_("Company"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
-		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-		txtDeliveryCompany.setText(DataUtils.makeOSLineFeeds(contact.getDeliveryCompany()));
-		superviceControl(txtDeliveryCompany, 64);
-		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
-
-		// Delivery street
-		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryStreet.setText(_("Street"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
-		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-		txtDeliveryStreet.setText(contact.getDeliveryStreet());
-		superviceControl(txtDeliveryStreet, 64);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
-		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
-
-		// Delivery city
-		Label labelDeliveryCity = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCity.setText(_("ZIP, City"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
-		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-		txtDeliveryZip.setText(contact.getDeliveryZip());
-		superviceControl(txtDeliveryZip, 16);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
-		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-		txtDeliveryCity.setText(contact.getDeliveryCity());
-		superviceControl(txtDeliveryCity, 32);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
-
-		// Delivery country
-		Label labelDeliveryCountry = new Label(useCountry ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCountry.setText(_("Country"));
-		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
-		txtDeliveryCountry = new Text(useCountry ? deliveryGroup : invisible, SWT.BORDER);
-		txtDeliveryCountry.setText(contact.getDeliveryCountry());
-		txtDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		superviceControl(txtDeliveryZip, 32);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryCountry);
-		
-		// Deliverer's Birthday
-		Label labelDelivererBirthday = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the deliverer editor
-		labelDelivererBirthday.setText(_("Birthday"));
-		//T: Tool Tip Text
-		labelDelivererBirthday.setToolTipText(_("The deliverer's birthday"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDelivererBirthday);		
-		dtDeliveryBirthday = new DateTime(deliveryGroup, SWT.DROP_DOWN);
-		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
-		superviceControl(dtDeliveryBirthday);
-		
-		// Set the dtDeliveryBirthday widget to the deliverer's birthday date
-		if(!"".equals(contact.getDeliveryBirthday())) {
-			calendar = DataUtils.getCalendarFromDateString(contact.getDeliveryBirthday());
-		} else {
-			calendar = new GregorianCalendar();
-		}
-		dtDeliveryBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
+//		// Delivery Gender
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
+//		comboDeliveryGender = new Combo(useGender ? deliveryGroup : invisible, SWT.BORDER);
+//		for (int i = 0; i < 4; i++)
+//			comboDeliveryGender.add(getGenderString(i), i);
+//		comboDeliveryGender.select(contact.getDeliveryGender());
+//		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender);
+//		superviceControl(comboDeliveryGender);
+//
+//		// Delivery Title
+//		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
+//		txtDeliveryTitle.setText(contact.getDeliveryTitle());
+//		superviceControl(txtDeliveryTitle, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
+//
+//		// Delivery first and last name
+//		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
+//		if (useLastNameFirst) {
+//			//T: Format of the name in an address
+//			labelDeliveryName.setText(_("Last name, First Name"));
+//			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
+//			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(labelDeliveryName);
+//			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
+//			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryFirstname);
+//		}
+//		else {
+//			//T: Format of the name in an address
+//			labelDeliveryName.setText(_("First Name Last name"));
+//			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
+//			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
+//			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
+//			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
+//
+//		}
+//		txtDeliveryFirstname.setText(contact.getDeliveryFirstname());
+//		txtDeliveryName.setText(contact.getDeliveryName());
+//		superviceControl(txtDeliveryFirstname, 64);
+//		superviceControl(txtDeliveryName, 64);
+//
+//		// Delivery company
+//		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelDeliveryCompany.setText(_("Company"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
+//		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
+//		txtDeliveryCompany.setText(DataUtils.makeOSLineFeeds(contact.getDeliveryCompany()));
+//		superviceControl(txtDeliveryCompany, 64);
+//		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
+//
+//		// Delivery street
+//		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelDeliveryStreet.setText(_("Street"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
+//		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
+//		txtDeliveryStreet.setText(contact.getDeliveryStreet());
+//		superviceControl(txtDeliveryStreet, 64);
+//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
+//		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
+//
+//		// Delivery city
+//		Label labelDeliveryCity = new Label(deliveryGroup, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelDeliveryCity.setText(_("ZIP, City"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
+//		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
+//		txtDeliveryZip.setText(contact.getDeliveryZip());
+//		superviceControl(txtDeliveryZip, 16);
+//		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
+//		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
+//		txtDeliveryCity.setText(contact.getDeliveryCity());
+//		superviceControl(txtDeliveryCity, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
+//
+//		// Delivery country
+//		Label labelDeliveryCountry = new Label(useCountry ? deliveryGroup : invisible, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelDeliveryCountry.setText(_("Country"));
+//		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
+//		txtDeliveryCountry = new Text(useCountry ? deliveryGroup : invisible, SWT.BORDER);
+//		txtDeliveryCountry.setText(contact.getDeliveryCountry());
+//		txtDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
+//		superviceControl(txtDeliveryZip, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryCountry);
+//		
+//		// Deliverer's Birthday
+//		Label labelDelivererBirthday = new Label(deliveryGroup, SWT.NONE);
+//		//T: Label in the deliverer editor
+//		labelDelivererBirthday.setText(_("Birthday"));
+//		//T: Tool Tip Text
+//		labelDelivererBirthday.setToolTipText(_("The deliverer's birthday"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDelivererBirthday);		
+//		dtDeliveryBirthday = new DateTime(deliveryGroup, SWT.DROP_DOWN);
+//		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
+//		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
+//		superviceControl(dtDeliveryBirthday);
+//		
+//		// Set the dtDeliveryBirthday widget to the deliverer's birthday date
+//		if(!"".equals(contact.getDeliveryBirthday())) {
+//			calendar = DataUtils.getCalendarFromDateString(contact.getDeliveryBirthday());
+//		} else {
+//			calendar = new GregorianCalendar();
+//		}
+//		dtDeliveryBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+//
 		// Controls in the tab "Bank"
 
 		// Account holder
@@ -833,15 +832,15 @@ public class ContactEditor extends Editor<Contact> {
 		superviceControl(txtAccount, 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
 
-		// Bank code
-		Label labelBankCode = new Label(tabBank, SWT.NONE);
-		//T: Label in the contact editor
-		labelBankCode.setText(_("Bank Code"));
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankCode);
-		txtBankCode = new Text(tabBank, SWT.BORDER);
-		txtBankCode.setText(contact.getBankCode());
-		superviceControl(txtBankCode, 32);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
+//		// Bank code
+//		Label labelBankCode = new Label(tabBank, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelBankCode.setText(_("Bank Code"));
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankCode);
+//		txtBankCode = new Text(tabBank, SWT.BORDER);
+//		txtBankCode.setText(contact.getBankCode());
+//		superviceControl(txtBankCode, 32);
+//		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
 
 		// Name of the bank
 		Label labelBankName = new Label(tabBank, SWT.NONE);
@@ -883,11 +882,11 @@ public class ContactEditor extends Editor<Contact> {
 		labelCategory.setToolTipText(_("Choose a category like 'Customer', 'Customer Web Shop' or 'Supplier'"));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-		comboCategory = new Combo(tabMisc, SWT.BORDER);
-		comboCategory.setText(contact.getCategory());
-		comboCategory.setToolTipText(labelCategory.getToolTipText());
-		superviceControl(comboCategory);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
+//		comboCategory = new Combo(tabMisc, SWT.BORDER);
+//		comboCategory.setText(contact.getCategory());
+//		comboCategory.setToolTipText(labelCategory.getToolTipText());
+//		superviceControl(comboCategory);
+//		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
 		// Collect all category strings
 		TreeSet<String> categories = new TreeSet<String>();
@@ -1010,7 +1009,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelVatNr.setText(_("VAT Number"));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVatNr);
 		txtVatNr = new Text(tabMisc, SWT.BORDER);
-		txtVatNr.setText(contact.getVatnr());
+		txtVatNr.setText(contact.getVatNumber());
 		superviceControl(txtVatNr, 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtVatNr);
 
@@ -1021,17 +1020,17 @@ public class ContactEditor extends Editor<Contact> {
 		//T: Tool Tip Text
 		labelDiscount.setToolTipText(_("This customer's discount is used when creating a new document"));
 
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
-		txtDiscount = new Text(tabMisc, SWT.BORDER);
-		txtDiscount.setText(DataUtils.DoubleToFormatedPercent(contact.getDiscount()));
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount);
-		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
-		txtDiscount.addFocusListener(new FocusAdapter() {
-			public void focusLost(FocusEvent e) {
-				txtDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(txtDiscount.getText())));
-				checkDirty();
-			}
-		});
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
+//		txtDiscount = new Text(tabMisc, SWT.BORDER);
+//		txtDiscount.setText(DataUtils.DoubleToFormatedPercent(contact.getDiscount()));
+//		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount);
+//		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
+//		txtDiscount.addFocusListener(new FocusAdapter() {
+//			public void focusLost(FocusEvent e) {
+//				txtDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(txtDiscount.getText())));
+//				checkDirty();
+//			}
+//		});
 		txtDiscount.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == 13) {
@@ -1053,11 +1052,11 @@ public class ContactEditor extends Editor<Contact> {
 		comboUseNetGross.add(_("Net"));
 		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
 		comboUseNetGross.add(_("Gross"));
-
-		// If the value is -1, use 0 instead
-		if (contact.getUseNetGross()<0)
-			contact.setUseNetGross(0); 
-		comboUseNetGross.select(contact.getUseNetGross());
+//
+//		// If the value is -1, use 0 instead
+//		if (contact.getUseNetGross()<0)
+//			contact.setUseNetGross(0); 
+//		comboUseNetGross.select(contact.getUseNetGross());
 		
 		superviceControl(comboUseNetGross);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboUseNetGross);
@@ -1087,14 +1086,14 @@ public class ContactEditor extends Editor<Contact> {
 	}
 
 	/**
-	 * Set the focus to the top composite.
+	 * Set the focus to the parent composite.
 	 * 
 	 * @see com.sebulli.fakturama.editors.Editor#setFocus()
 	 */
 	@Focus
 	public void setFocus() {
-		if(top != null) 
-			top.setFocus();
+		if(parent != null) 
+			parent.setFocus();
 	}
 
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 
 /**
@@ -47,19 +48,20 @@ public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Conta
 
 	@Override
 	public Object getDataValue(Contact rowObject, int columnIndex) {
+		int latestAddressIndex = rowObject.getAddresses().size() - 1;
 		switch (columnIndex) {
 		case 0:
-			return rowObject.getNr();
+			return rowObject.getCustomerNumber();
 		case 1:
-			return getFirstline(rowObject.getFirstname());
+			return getFirstline(rowObject.getFirstName());
 		case 2:
 			return getFirstline(rowObject.getName());
 		case 3:
 			return getFirstline(rowObject.getCompany());
 		case 4:
-			return rowObject.getZip();
+			return rowObject.getAddresses().get(latestAddressIndex).getZip();
 		case 5:
-			return getFirstline(rowObject.getCity());
+			return rowObject.getAddresses().get(latestAddressIndex).getCity();
 		}
 		return null;
 	}

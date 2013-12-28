@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.handlers;
 
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -37,6 +38,11 @@ public class OpenContactsHandler {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
 		partService.showPart(ViewContactTable.ID,
 				PartState.ACTIVATE);
+	}
+	
+	@CanExecute
+	public boolean canExecute() {
+		return true;
 	}
 
 }

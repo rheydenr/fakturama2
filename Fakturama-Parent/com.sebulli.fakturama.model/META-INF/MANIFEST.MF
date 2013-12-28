@@ -5,7 +5,10 @@ Bundle-SymbolicName: com.sebulli.fakturama.model;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: javax.persistence;bundle-version="[2.0.0,3.0.0)",
- com.sebulli.fakturama.common
+ com.sebulli.fakturama.common,
+ org.eclipse.persistence.jpa;bundle-version="2.5.1"
 Meta-Persistence: META-INF/persistence.xml
-Export-Package: com.sebulli.fakturama.model
+Export-Package: com.sebulli.fakturama.dbconnector,
+ com.sebulli.fakturama.model,
+ com.sebulli.fakturama.oldmodel
 Bundle-ActivationPolicy: lazy

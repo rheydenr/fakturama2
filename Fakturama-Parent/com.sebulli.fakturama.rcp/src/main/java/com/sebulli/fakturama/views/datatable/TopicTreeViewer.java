@@ -36,11 +36,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.sebulli.fakturama.dao.DataSetListNames;
 import com.sebulli.fakturama.model.Documents;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -631,7 +629,7 @@ public class TopicTreeViewer<T> extends TreeViewer {
 
 			// Display the localizes list names.
 			if (viewDataSetTable instanceof AbstractViewDataTable)
-				return DataSetListNames.NAMES.getLocalizedName(obj.toString());
+				return "mpf!"; //DataSetListNames.NAMES.getLocalizedName(obj.toString());
 			else
 				return obj.toString();
 		}

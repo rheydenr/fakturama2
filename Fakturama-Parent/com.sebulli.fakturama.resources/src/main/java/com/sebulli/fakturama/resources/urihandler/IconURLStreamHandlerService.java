@@ -15,6 +15,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
 
+import org.eclipse.e4.core.internal.di.osgi.LogHelper;
+import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -52,7 +54,7 @@ public class IconURLStreamHandlerService extends
 		} catch (Exception e) {
 			LogHelper.logError("Could not register icon URL handler.", e);
 		}
-		LogHelper.logInfo("Icon URL handler registered.");
+		LogHelper.log("Icon URL handler registered.", FrameworkLogEntry.INFO, null);
 	}
 
 	public void unregister() {

@@ -15,8 +15,8 @@
 package com.sebulli.fakturama.handlers;
 
 
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.action.Action;
 
 
 /**
@@ -24,30 +24,23 @@ import org.eclipse.jface.action.Action;
  * 
  * @author Gerd Bartelt
  */
-public class WebShopImportHandler extends Action {
+public class WebShopImportHandler {
 
 	//T: Text of the action to connect to the web shop and import new data
 	public final static String ACTIONTEXT = "Web Shop"; 
-
-	/**
-	 * Constructor
-	 */
-	public WebShopImportHandler() {
-
-		super(ACTIONTEXT);
-
-		//T: Tool Tip Text
-		setToolTipText("Get new orders and products from web shop");
-
-		// The id is used to refer to the action in a menu or toolbar
-		setId(ICommandIds.CMD_WEBSHOP_IMPORT);
-
-		// Associate the action with a predefined command, to allow key
-		// bindings.
-		setActionDefinitionId(ICommandIds.CMD_WEBSHOP_IMPORT);
-
-//		// sets a default 16x16 pixel icon.
-//		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/shop_16.png"));
+//ICommandIds.CMD_WEBSHOP_IMPORT
+	
+	@CanExecute
+	public boolean canExecute() {
+		boolean retval = false;
+		// cancel, if the data base is not connected.
+//		if (!DataBaseConnectionState.INSTANCE.isConnected())
+//			return;
+//
+		// cancel, if the webshop is disabled.
+//		if (!Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_ENABLED"))
+//			return;
+		return retval;
 	}
 
 	/**
@@ -56,16 +49,7 @@ public class WebShopImportHandler extends Action {
 	 * Open the web shop import manager.
 	 */
 	@Execute
-	@Override
-	public void run() {
-
-		// cancel, if the data base is not connected.
-//		if (!DataBaseConnectionState.INSTANCE.isConnected())
-//			return;
-//
-		// cancel, if the webshop is disabled.
-//		if (!Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_ENABLED"))
-//			return;
+	public void execute() {
 //		
 		// Start a new web shop import manager in a
 		// progress Monitor Dialog

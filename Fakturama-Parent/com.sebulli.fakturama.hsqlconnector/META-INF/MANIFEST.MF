@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DB-Connector
-Bundle-SymbolicName: com.sebulli.fakturama.hsqlconnector
+Bundle-SymbolicName: com.sebulli.fakturama.hsqlconnector;singleton:=true
 Bundle-Version: 2.0.0.qualifier
-Bundle-Activator: com.sebulli.fakturama.dbconnector.Activator
+Bundle-Activator: com.sebulli.fakturama.hsqlconnector.Activator
 Bundle-Vendor: SEBULLI
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/service.xml
 Import-Package: com.sebulli.fakturama.dbconnector,
- org.eclipse.osgi.framework.console;version="1.0.0",
  org.osgi.framework;version="1.3.0"
 Bundle-ActivationPolicy: lazy
+Export-Package: com.sebulli.fakturama.hsqlconnector

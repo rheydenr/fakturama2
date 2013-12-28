@@ -255,7 +255,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 				int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
 				// extract the selected Object
 				Contact contact  = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-				System.out.println("Selected contact: " + contact.getNr());
+				System.out.println("Selected contact: " + contact.getCustomerNumber());
 //				try {
 					// Call the corresponding editor. The editor is set
 					// in the variable "editor", which is used as a parameter
@@ -265,7 +265,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 					Command callEditor = commandService.getCommand("com.sebulli.fakturama.editors.callEditor");
 					Map<String, String> params = new HashMap<>();
 					params.put("com.sebulli.fakturama.editors.editortype", editor);
-					params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Integer.toString(contact.getId()));
+					params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(contact.getId()));
 					ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
 					handlerService.executeHandler(parameterizedCommand);
 //

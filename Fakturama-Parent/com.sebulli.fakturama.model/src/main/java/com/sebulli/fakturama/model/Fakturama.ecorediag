@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_FnmykF96EeO4qZaH7U-1wA" type="EcoreTools" name="Fakturama.ecorediag" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_FoRg8F96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FoSvEF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FoSvEV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FoT9MF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoT9MV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoT9Ml96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/firstName"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoT9M196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoUkQF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/gender"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoUkQV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoUkQl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/company"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoUkQ196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoVLUF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/birthday"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoVLUV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoVyYF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/email"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoVyYV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoVyYl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/mobile"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoVyY196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoWZcF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/account"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoWZcV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoWZcl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/accountHolder"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoWZc196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoXAgF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/bankCode"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoXAgV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoXAgl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/bankName"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoXAg196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoXnkF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/bic"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoXnkV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoXnkl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/iban"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoXnk196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoYOoF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/discount"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoYOoV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoY1sF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/title"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoY1sV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoZcwF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoZcwV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoZcwl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/dateAdded"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoZcw196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoaD0F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/deleted"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoaD0V96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Foaq4F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/fax"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Foaq4V96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Foaq4l96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/note"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Foaq4196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FobR8F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/customerNumber"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FobR8V96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FobR8l96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/payment"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FobR8196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Fob5AF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/phone"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fob5AV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Fob5Al96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/reliability"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fob5A196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FocgEF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/useNetGross"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FocgEV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FocgEl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/vatNumber"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FocgE196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FodHIF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/vatNumberValid"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FodHIV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FodHIl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/website"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FodHI196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FoduMF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Contact/supplierNumber"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoduMV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FoSvEl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FoSvE196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FoSvFF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FoTWIF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FoTWIV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FoTWIl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FoTWI196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FoRg8V96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//Contact"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FoRg8l96EeO4qZaH7U-1wA" x="2227" y="375"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FoeVQF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FoeVQ196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Foe8UF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FofjYF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FofjYV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FofjYl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FofjY196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FogKcF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/deleted"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FogKcV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FogKcl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/description"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FogKc196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FogxgF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/value"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FogxgV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FohYkF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VAT/modified"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FohYkV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Foe8UV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Foe8Ul96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Foe8U196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Foe8VF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Foe8VV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Foe8Vl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Foe8V196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FoeVQV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//VAT"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FoeVQl96EeO4qZaH7U-1wA" x="1568" y="375"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FohYkl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Foh_oF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Foh_oV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FoimtF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//UserProperty/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoimtV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FojNwF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//UserProperty/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FojNwV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FojNwl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//UserProperty/value"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FojNw196EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Foh_ol96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Foh_o196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Foh_pF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FoimsF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FoimsV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Foimsl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Foims196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FohYk196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//UserProperty"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FohYlF96EeO4qZaH7U-1wA" x="455"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Foj00F96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fokb4F96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fokb4V96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FolC8196EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextModule/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FolC9F96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FolqAF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextModule/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FolqAV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FolqAl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextModule/deleted"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FolqA196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FomREF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextModule/text"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FomREV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FomREl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextModule/modified"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FomRE196EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fokb4l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fokb4196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fokb5F96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fokb5V96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FolC8F96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FolC8V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FolC8l96EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Foj00V96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//TextModule"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Foj00l96EeO4qZaH7U-1wA" x="1988" y="375"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fom4IF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FonfMF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FonfMV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FooGRF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//AbstractCategory/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FooGRV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FootUF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//AbstractCategory/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FootUV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FonfMl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FonfM196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FonfNF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FooGQF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FooGQV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FooGQl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FooGQ196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fom4IV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//AbstractCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fom4Il96EeO4qZaH7U-1wA" x="1098"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FootUl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FopUYF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FopUYV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fop7dF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ContactCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fop7dV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FopUYl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FopUY196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FopUZF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fop7cF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fop7cV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fop7cl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fop7c196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FootU196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ContactCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FootVF96EeO4qZaH7U-1wA" x="2158" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FoqigF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_ForJkF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_ForJkV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_ForwpF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ExpenditureAccount/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_ForwpV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_ForJkl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_ForJk196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_ForJlF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_ForwoF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_ForwoV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Forwol96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Forwo196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FoqigV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ExpenditureAccount"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Foqigl96EeO4qZaH7U-1wA" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FosXsF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FosXs196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fos-wF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fotl0F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ExpenditureItemAccountType/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fotl0V96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fos-wV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fos-wl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fos-w196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fos-xF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fos-xV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fos-xl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fos-x196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FosXsV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ExpenditureItemAccountType"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FosXsl96EeO4qZaH7U-1wA" x="365" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fotl0l96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FouM4F96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fouz8F96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FovbAF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//PaymentCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FovbAV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fouz8V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fouz8l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fouz8196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fouz9F96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fouz9V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fouz9l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fouz9196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fotl0196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//PaymentCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fotl1F96EeO4qZaH7U-1wA" x="614" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FovbAl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FowCEF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FowCEV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FowpJF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherAccount/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FowpJV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FowCEl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FowCE196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FowCFF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FowpIF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FowpIV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FowpIl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FowpI196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FovbA196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ReceiptVoucherAccount"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FovbBF96EeO4qZaH7U-1wA" x="798" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FoxQMF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fox3QF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fox3QV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FoyeUF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherItemAccountType/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FoyeUV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fox3Ql96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fox3Q196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fox3RF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fox3RV96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fox3Rl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fox3R196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fox3SF96EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FoxQMV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ReceiptVoucherItemAccountType"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FoxQMl96EeO4qZaH7U-1wA" x="1365" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FozFYF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FozFY196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FozscF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo0TgF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//BillingType/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo0TgV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FozscV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fozscl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fozsc196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FozsdF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FozsdV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fozsdl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fozsd196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FozFYV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//BillingType"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FozFYl96EeO4qZaH7U-1wA" x="197" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fo2IsF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fo2vwF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fo2vwV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo3W0F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ProductCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo3W0V96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo2vwl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo2vw196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo2vxF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fo2vxV96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo2vxl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo2vx196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo2vyF96EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fo2IsV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ProductCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fo2Isl96EeO4qZaH7U-1wA" x="1185" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fo394F96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fo394196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fo4k8F96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo5MAF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//VATCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo5MAV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo4k8V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo4k8l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo4k8196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fo4k9F96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo4k9V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo4k9l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo4k9196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fo394V96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//VATCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fo394l96EeO4qZaH7U-1wA" x="1636" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fo5zEF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fo6aIF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fo7BMF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo8PUF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//TextCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo8PUV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo7BMV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo7BMl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo7BM196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fo7oQF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo7oQV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo7oQl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo7oQ196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fo5zEV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//TextCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fo5zEl96EeO4qZaH7U-1wA" x="1990" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fo82YF96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fo82Y196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fo9dcF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo-EgF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ShippingCategory/type"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo-EgV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo9dcV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo9dcl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo9dc196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fo9ddF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo9ddV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo9ddl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo9dd196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fo82YV96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ShippingCategory"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fo82Yl96EeO4qZaH7U-1wA" x="1804" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_Fo-Egl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_Fo-rkF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_Fo-rkV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_Fo_SpF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Address/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo_SpV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Fo_5sF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Address/street"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo_5sV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Fo_5sl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Address/cityAddon"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Fo_5s196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpAgwF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Address/city"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpAgwV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpBH0F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Address/zip"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpBH0V96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo-rkl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo-rk196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo-rlF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fo_SoF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_Fo_SoV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_Fo_Sol96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_Fo_So196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_Fo-Eg196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//Address"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Fo-EhF96EeO4qZaH7U-1wA" x="2337" y="196"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FpBH0l96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FpBu4F96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FpBu4V96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FpCV9F96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpCV9V96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpC9AF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/fullName"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpC9AV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpC9Al96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/fullName_de"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpC9A196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpDkEF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/fullName_fr"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpDkEV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpDkEl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/code3digit"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpDkE196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpELIF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//CountryCode/code2digit"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpELIV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpBu4l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpBu4196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpBu5F96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpCV8F96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpCV8V96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpCV8l96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpCV8196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FpBH0196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//CountryCode"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FpBH1F96EeO4qZaH7U-1wA" x="2330"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FpELIl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FpEyMF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FpFZQF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FpGAUF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpGAUV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpGnYF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/autoVat"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpGnYV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpGnYl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/deleted"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpGnY196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpHOcF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/description"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpHOcV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpHOcl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpHOc196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpH1gF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Shipping/value"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpH1gV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpFZQV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpFZQl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpFZQ196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpFZRF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpFZRV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpFZRl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpFZR196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FpELI196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//Shipping"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FpELJF96EeO4qZaH7U-1wA" x="1777" y="962"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FpH1gl96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FpIckF96EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FpIckV96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FpJDpF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Document/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpJDpV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpJqsF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//Document/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpJqsV96EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpIckl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpIck196EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpIclF96EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpJDoF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpJDoV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpJDol96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpJDo196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FpH1g196EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//Document"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FpH1hF96EeO4qZaH7U-1wA" x="187" y="962"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_FpMG8F96EeO4qZaH7U-1wA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_FpMG8196EeO4qZaH7U-1wA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_FpMuAF96EeO4qZaH7U-1wA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_FpNVEF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherItem/id"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpNVEV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpNVEl96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherItem/name"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpNVE196EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpN8IF96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherItem/deleted"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpN8IV96EeO4qZaH7U-1wA"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_FpN8Il96EeO4qZaH7U-1wA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="Fakturama.ecore#//ReceiptVoucherItem/price"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_FpN8I196EeO4qZaH7U-1wA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpMuAV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpMuAl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpMuA196EeO4qZaH7U-1wA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpMuBF96EeO4qZaH7U-1wA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_FpMuBV96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_FpMuBl96EeO4qZaH7U-1wA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_FpMuB196EeO4qZaH7U-1wA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_FpMG8V96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="Fakturama.ecore#//ReceiptVoucherItem"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FpMG8l96EeO4qZaH7U-1wA" x="1358" y="962"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_FnmykV96EeO4qZaH7U-1wA"/>
+  <element xmi:type="ecore:EPackage" href="Fakturama.ecore#/"/>
+  <edges xmi:type="notation:Edge" xmi:id="_FpOjMF96EeO4qZaH7U-1wA" type="3002" source="_FoRg8F96EeO4qZaH7U-1wA" target="_FootUl96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpOjNF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpOjNV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpPKQF96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpPKQV96EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpOjMV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpOjMl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Contact/categories"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpOjM196EeO4qZaH7U-1wA" points="[0, 0, 100, 128]$[-55, -61, 45, 67]$[-100, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtBeE196EeO4qZaH7U-1wA" id="(0.3930131004366812,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtCFIF96EeO4qZaH7U-1wA" id="(0.4957983193277311,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpPKQl96EeO4qZaH7U-1wA" type="3002" source="_FoRg8F96EeO4qZaH7U-1wA" target="_Fo-Egl96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpPxUF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpPxUV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpPxUl96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpPxU196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpPKQ196EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpPKRF96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Contact/addresses"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpPKRV96EeO4qZaH7U-1wA" points="[0, 0, 0, 60]$[0, -60, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtCFIV96EeO4qZaH7U-1wA" id="(0.7860262008733624,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtCsMF96EeO4qZaH7U-1wA" id="(0.49645390070921985,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpQYYF96EeO4qZaH7U-1wA" type="3002" source="_FoRg8F96EeO4qZaH7U-1wA" target="_FoRg8F96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpQ_cF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpQ_cV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpRmgF96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpRmgV96EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpQYYV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpQYYl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Contact/deliveryContact"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpQYY196EeO4qZaH7U-1wA" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpSNkF96EeO4qZaH7U-1wA" type="3002" source="_FoeVQF96EeO4qZaH7U-1wA" target="_Fo394F96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpS0oF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpS0oV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpS0ol96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpS0o196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpSNkV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpSNkl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//VAT/categories"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpSNk196EeO4qZaH7U-1wA" points="[0, 0, 0, 128]$[0, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs-awF96EeO4qZaH7U-1wA" id="(0.6815642458100558,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs-awV96EeO4qZaH7U-1wA" id="(0.5,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpTbsF96EeO4qZaH7U-1wA" type="3002" source="_Foj00F96EeO4qZaH7U-1wA" target="_Fo5zEF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpTbtF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpTbtV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpUCwF96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpUCwV96EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpTbsV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpTbsl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//TextModule/categories"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpTbs196EeO4qZaH7U-1wA" points="[0, 0, 0, 128]$[0, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtA3AF96EeO4qZaH7U-1wA" id="(0.3128491620111732,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtA3AV96EeO4qZaH7U-1wA" id="(0.5,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpUCwl96EeO4qZaH7U-1wA" type="3003" source="_FootUl96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpUCw196EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpUCxF96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpUCxV96EeO4qZaH7U-1wA" points="[0, 0, 1001, 128]$[0, -30, 1001, 98]$[-1001, -30, 0, 98]$[-1001, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs9zsF96EeO4qZaH7U-1wA" id="(0.4957983193277311,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs9zsV96EeO4qZaH7U-1wA" id="(0.921875,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpUp0F96EeO4qZaH7U-1wA" type="3003" source="_FoqigF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpUp0V96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpUp0l96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpUp0196EeO4qZaH7U-1wA" points="[0, 0, -1039, 128]$[0, -30, -1039, 98]$[1039, -30, 0, 98]$[1039, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs8lkl96EeO4qZaH7U-1wA" id="(0.49635036496350365,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs9MoF96EeO4qZaH7U-1wA" id="(0.0703125,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpUp1F96EeO4qZaH7U-1wA" type="3003" source="_FosXsF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpUp1V96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpUp1l96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpUp1196EeO4qZaH7U-1wA" points="[0, 0, -668, 128]$[0, -30, -668, 98]$[668, -30, 0, 98]$[668, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs6wYV96EeO4qZaH7U-1wA" id="(0.4973544973544973,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs6wYl96EeO4qZaH7U-1wA" id="(0.2265625,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpVQ4F96EeO4qZaH7U-1wA" type="3003" source="_Fotl0l96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpVQ4V96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpVQ4l96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpVQ4196EeO4qZaH7U-1wA" points="[0, 0, -461, 128]$[0, -30, -461, 98]$[461, -30, 0, 98]$[461, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs6JUV96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs6wYF96EeO4qZaH7U-1wA" id="(0.3046875,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpVQ5F96EeO4qZaH7U-1wA" type="3003" source="_FovbAl96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpV38F96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpV38V96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpV38l96EeO4qZaH7U-1wA" points="[0, 0, -270, 128]$[0, -30, -270, 98]$[270, -30, 0, 98]$[270, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs_B0F96EeO4qZaH7U-1wA" id="(0.4968553459119497,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs_B0V96EeO4qZaH7U-1wA" id="(0.3828125,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpV38196EeO4qZaH7U-1wA" type="3003" source="_FoxQMF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpV39F96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpV39V96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpV39l96EeO4qZaH7U-1wA" points="[0, 0, 294, 128]$[0, -30, 294, 98]$[-294, -30, 0, 98]$[-294, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtBeEV96EeO4qZaH7U-1wA" id="(0.4976303317535545,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtBeEl96EeO4qZaH7U-1wA" id="(0.609375,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpWfAF96EeO4qZaH7U-1wA" type="3003" source="_FozFYF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpWfAV96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpWfAl96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpWfA196EeO4qZaH7U-1wA" points="[0, 0, -866, 128]$[0, -30, -866, 98]$[866, -30, 0, 98]$[866, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtAP8F96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtAP8V96EeO4qZaH7U-1wA" id="(0.1484375,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpXGEF96EeO4qZaH7U-1wA" type="3003" source="_Fo2IsF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpXGEV96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpXGEl96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpXGE196EeO4qZaH7U-1wA" points="[0, 0, 79, 128]$[0, -30, 79, 98]$[-79, -30, 0, 98]$[-79, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs5iQF96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs6JUF96EeO4qZaH7U-1wA" id="(0.53125,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpXtIF96EeO4qZaH7U-1wA" type="3003" source="_Fo394F96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpXtIV96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpXtIl96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpXtI196EeO4qZaH7U-1wA" points="[0, 0, 504, 128]$[0, -30, 504, 98]$[-504, -30, 0, 98]$[-504, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs8lkF96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs8lkV96EeO4qZaH7U-1wA" id="(0.6875,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpXtJF96EeO4qZaH7U-1wA" type="3003" source="_Fo5zEF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpXtJV96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpXtJl96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpXtJ196EeO4qZaH7U-1wA" points="[0, 0, 838, 128]$[0, -30, 838, 98]$[-838, -30, 0, 98]$[-838, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs7XcF96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs7XcV96EeO4qZaH7U-1wA" id="(0.84375,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpYUMF96EeO4qZaH7U-1wA" type="3003" source="_Fo82YF96EeO4qZaH7U-1wA" target="_Fom4IF96EeO4qZaH7U-1wA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpYUMV96EeO4qZaH7U-1wA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpYUMl96EeO4qZaH7U-1wA" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpYUM196EeO4qZaH7U-1wA" points="[0, 0, 671, 128]$[0, -30, 671, 98]$[-671, -30, 0, 98]$[-671, -128, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtA3Al96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtBeEF96EeO4qZaH7U-1wA" id="(0.765625,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpYUNF96EeO4qZaH7U-1wA" type="3002" source="_Fo-Egl96EeO4qZaH7U-1wA" target="_FpBH0l96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpY7QF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpY7QV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpY7Ql96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpY7Q196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpYUNV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpYUNl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Address/country"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpYUN196EeO4qZaH7U-1wA" points="[0, 0, 0, 60]$[0, -60, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs7Xcl96EeO4qZaH7U-1wA" id="(0.49645390070921985,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs7Xc196EeO4qZaH7U-1wA" id="(0.4967741935483871,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpaJYF96EeO4qZaH7U-1wA" type="3002" source="_FpELIl96EeO4qZaH7U-1wA" target="_FoeVQF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpawcF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpawcV96EeO4qZaH7U-1wA" x="-41" y="-13"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fpawcl96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_Fpawc196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpaJYV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpaJYl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Shipping/shippingVat"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpaJY196EeO4qZaH7U-1wA" points="[0, 0, 135, 451]$[-105, -61, 30, 390]$[-135, -451, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs9MoV96EeO4qZaH7U-1wA" id="(0.25,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs9Mol96EeO4qZaH7U-1wA" id="(0.664804469273743,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpawdF96EeO4qZaH7U-1wA" type="3002" source="_FpELIl96EeO4qZaH7U-1wA" target="_Fo82YF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpbXgV96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpbXgl96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpbXg196EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpbXhF96EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpawdV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_Fpawdl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Shipping/categories"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpbXgF96EeO4qZaH7U-1wA" points="[0, 0, 0, 715]$[0, -715, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtD6UV96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtD6Ul96EeO4qZaH7U-1wA" id="(0.5,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_Fpclol96EeO4qZaH7U-1wA" type="3002" source="_FpH1gl96EeO4qZaH7U-1wA" target="_FozFYF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpdMsF96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpdMsV96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_FpdMsl96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpdMs196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_Fpclo196EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpclpF96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//Document/categories"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpclpV96EeO4qZaH7U-1wA" points="[0, 0, 0, 715]$[0, -715, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtDTQl96EeO4qZaH7U-1wA" id="(0.5,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtD6UF96EeO4qZaH7U-1wA" id="(0.5,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpdzxF96EeO4qZaH7U-1wA" type="3002" source="_FpMG8F96EeO4qZaH7U-1wA" target="_FoxQMF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_Fpea0F96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_Fpea0V96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fpea0l96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_Fpea0196EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpdzxV96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_Fpdzxl96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//ReceiptVoucherItem/accountTypes"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Fpdzx196EeO4qZaH7U-1wA" points="[0, 0, 0, 715]$[0, -715, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtDTQF96EeO4qZaH7U-1wA" id="(0.5083798882681564,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_FtDTQV96EeO4qZaH7U-1wA" id="(0.3981042654028436,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_FpfB4F96EeO4qZaH7U-1wA" type="3002" source="_FpMG8F96EeO4qZaH7U-1wA" target="_FoeVQF96EeO4qZaH7U-1wA">
+    <children xmi:type="notation:Node" xmi:id="_FpfB5F96EeO4qZaH7U-1wA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_FpfB5V96EeO4qZaH7U-1wA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_Fpfo8F96EeO4qZaH7U-1wA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_Fpfo8V96EeO4qZaH7U-1wA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_FpfB4V96EeO4qZaH7U-1wA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_FpfB4l96EeO4qZaH7U-1wA" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="Fakturama.ecore#//ReceiptVoucherItem/receiptVoucherItemVat"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_FpfB4196EeO4qZaH7U-1wA" points="[0, 0, -134, 451]$[103, -61, -31, 390]$[134, -451, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs_B0l96EeO4qZaH7U-1wA" id="(0.7541899441340782,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_Fs_B0196EeO4qZaH7U-1wA" id="(0.329608938547486,1.0)"/>
+  </edges>
+</notation:Diagram>

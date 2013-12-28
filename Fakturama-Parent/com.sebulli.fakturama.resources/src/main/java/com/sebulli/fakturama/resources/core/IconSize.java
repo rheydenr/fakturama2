@@ -17,13 +17,36 @@ package com.sebulli.fakturama.resources.core;
  *
  */
 public enum IconSize {
+	/**
+	 * 10x10
+	 */
 	MiniIconSize("10x10"),
+	/**
+	 * 16x16
+	 */
 	DefaultIconSize("16x16"),
+	/**
+	 * 20x20
+	 */
 	BrowserIconSize("20x20"),
+	/**
+	 * 20x20
+	 */
 	DocumentIconSize("20x20"),
+	/**
+	 * 32x32
+	 */
 	ToobarIconSize("32x32"),
+	/**
+	 * 48x48
+	 */
 	BigIconSize("48x48"),
-	OverlayIconSize("48x48");
+	/**
+	 * 48x48
+	 */
+	OverlayIconSize("48x48"),
+	
+	AppIconSize("app");
 
 	/**
 	 * the name (directory path) of this image set

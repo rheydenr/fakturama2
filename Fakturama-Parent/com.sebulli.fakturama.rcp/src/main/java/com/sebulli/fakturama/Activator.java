@@ -14,6 +14,8 @@
 
 package com.sebulli.fakturama;
 
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -37,7 +39,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @return the shared instance
 	 */
-	static BundleContext getContext() {
+	public static BundleContext getContext() {
 		return context;
 	}
 
@@ -51,10 +53,9 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-//		ILog logger = Activator.getDefault().getLog();
-//		LogListener logListener = new LogListener();
-//		logger.addLogListener(logListener);
-
+		
+		// background color for focused widgets
+		JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
 	}
 
 	/*
@@ -68,17 +69,4 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 	}
-
-//	/**
-//	 * Returns an image descriptor for the image file at the given plug-in
-//	 * relative path
-//	 * 
-//	 * @param path
-//	 *            the path
-//	 * @return the image descriptor
-//	 */
-//	public static ImageDescriptor getImageDescriptor(String path) {
-//		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-//	}
-
 }

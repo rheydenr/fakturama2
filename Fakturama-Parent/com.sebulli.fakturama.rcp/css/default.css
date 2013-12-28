@@ -22,3 +22,26 @@ SashForm {
 Shell {
   background-color: #e3efff #c1d5ef 60%;
 } */
+
+.headerSectionContainer {
+	background-color: gradient #575757 #101010 100%;
+}
+
+.sectionHeader {
+	font-weight: bold;
+	font-size: 15pt;
+	color: white;
+}
+
+.subSectionHeader {
+	background-color: gradient #575757 #101010 100%;
+}
+
+
+.contentContainer {
+	background-color: #fff #fff #cccccc 20% 80%;
+}
+
+.formContainer {
+	background-color: #fff;
+}
