@@ -59,7 +59,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Payments;
+import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.views.datatable.impl.ViewContactTable;
 
 /**
@@ -254,7 +254,7 @@ public class ContactEditor extends Editor {
 		// Set the payment ID
 		IStructuredSelection structuredSelection = (IStructuredSelection) comboPaymentViewer.getSelection();
 		if (!structuredSelection.isEmpty()) {
-			contact.setPayment(((Payments) structuredSelection.getFirstElement()).getId());
+//			contact.setPayment(((Payments) structuredSelection.getFirstElement()).getId());
 		}
 
 		// Set the miscellaneous data

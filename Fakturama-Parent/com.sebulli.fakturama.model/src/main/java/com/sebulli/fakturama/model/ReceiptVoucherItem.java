@@ -2,8 +2,6 @@ package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -23,7 +20,7 @@ import javax.persistence.Table;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_RECEIPTVOUCHERITEM")
 public class ReceiptVoucherItem implements Serializable {
 	/**
@@ -56,9 +53,9 @@ public class ReceiptVoucherItem implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "_RECEIPTVOUCHERITEM_ACCOUNTTYPES") })
-	private List<ReceiptVoucherItemAccountType> accountTypes = new ArrayList<ReceiptVoucherItemAccountType>();
+	@ManyToOne(cascade = { CascadeType.ALL })
+	@JoinColumns({ @JoinColumn(name = "FK_ITEMACCOUNTTYPE") })
+	private ItemAccountType account = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -83,9 +80,8 @@ public class ReceiptVoucherItem implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH })
-	@JoinColumns({ @JoinColumn(name = "_RECEIPTVOUCHERITEM_RECEIPTVOUCHERITEMVAT") })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumns({ @JoinColumn(name = "FK_VAT") })
 	private VAT receiptVoucherItemVat = null;
 
 	/**
@@ -141,80 +137,30 @@ public class ReceiptVoucherItem implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>accountTypes</b></em>' feature.
+	 * Returns the value of '<em><b>account</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of '<em><b>accountTypes</b></em>' feature
+	 * @return the value of '<em><b>account</b></em>' feature
 	 * @generated
 	 */
-	public List<ReceiptVoucherItemAccountType> getAccountTypes() {
-		return accountTypes;
+	public ItemAccountType getAccount() {
+		return account;
 	}
 
 	/**
-	 * Adds to the <em>accountTypes</em> feature.
-	 * 
-	 * @param accountTypesValue
-	 *            the value to add
-	 * @return true if the value is added to the collection (it was not yet
-	 *         present in the collection), false otherwise
-	 * @generated
-	 */
-	public boolean addToAccountTypes(
-			ReceiptVoucherItemAccountType accountTypesValue) {
-		if (!accountTypes.contains(accountTypesValue)) {
-			boolean result = accountTypes.add(accountTypesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes from the <em>accountTypes</em> feature.
-	 * 
-	 * @param accountTypesValue
-	 *            the value to remove
-	 * @return true if the value is removed from the collection (it existed in
-	 *         the collection before removing), false otherwise
-	 * 
-	 * @generated
-	 */
-	public boolean removeFromAccountTypes(
-			ReceiptVoucherItemAccountType accountTypesValue) {
-		if (accountTypes.contains(accountTypesValue)) {
-			boolean result = accountTypes.remove(accountTypesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Clears the <em>accountTypes</em> feature.
-	 * 
-	 * @generated
-	 */
-	public void clearAccountTypes() {
-		while (!accountTypes.isEmpty()) {
-			removeFromAccountTypes(accountTypes.iterator().next());
-		}
-	}
-
-	/**
-	 * Sets the '{@link ReceiptVoucherItem#getAccountTypes()
-	 * <em>accountTypes</em>}' feature.
+	 * Sets the '{@link ReceiptVoucherItem#getAccount() <em>account</em>}'
+	 * feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @param newAccountTypes
-	 *            the new value of the '
-	 *            {@link ReceiptVoucherItem#getAccountTypes() accountTypes}'
-	 *            feature.
+	 * @param newAccount
+	 *            the new value of the '{@link ReceiptVoucherItem#getAccount()
+	 *            account}' feature.
 	 * @generated
 	 */
-	public void setAccountTypes(
-			List<ReceiptVoucherItemAccountType> newAccountTypes) {
-		accountTypes = newAccountTypes;
+	public void setAccount(ItemAccountType newAccount) {
+		account = newAccount;
 	}
 
 	/**
@@ -271,11 +217,11 @@ public class ReceiptVoucherItem implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>receiptVoucherItemVat</b></em>' feature.
+	 * Returns the value of '<em><b>vat</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of '<em><b>receiptVoucherItemVat</b></em>' feature
+	 * @return the value of '<em><b>vat</b></em>' feature
 	 * @generated
 	 */
 	public VAT getReceiptVoucherItemVat() {
@@ -284,14 +230,14 @@ public class ReceiptVoucherItem implements Serializable {
 
 	/**
 	 * Sets the '{@link ReceiptVoucherItem#getReceiptVoucherItemVat()
-	 * <em>receiptVoucherItemVat</em>}' feature.
+	 * <em>vat</em>}' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param newReceiptVoucherItemVat
 	 *            the new value of the '
-	 *            {@link ReceiptVoucherItem#getReceiptVoucherItemVat()
-	 *            receiptVoucherItemVat}' feature.
+	 *            {@link ReceiptVoucherItem#getReceiptVoucherItemVat() vat}'
+	 *            feature.
 	 * @generated
 	 */
 	public void setReceiptVoucherItemVat(VAT newReceiptVoucherItemVat) {

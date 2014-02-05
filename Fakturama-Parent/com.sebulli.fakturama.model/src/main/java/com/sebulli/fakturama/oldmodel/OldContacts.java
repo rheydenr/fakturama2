@@ -21,6 +21,7 @@ public class OldContacts implements Serializable {
 	 */
 	private static final long serialVersionUID = 6066305318813006727L;
 	
+	private String mandatRef;
 	private String suppliernumber;
 	private String zip;
 	private String website;
@@ -181,6 +182,10 @@ public String getIban() {
 
 public int getId() {
 	return this.id;
+}
+
+public String getMandatRef() {
+	return this.mandatRef;
 }
 
 public String getMobile() {
@@ -361,6 +366,10 @@ public void setIban(String iban) {
 
 public void setId(int id) {
 	this.id = id;
+}
+
+public void setMandatRef(String mandatRef) {
+	this.mandatRef = mandatRef;
 }
 
 public void setMobile(String mobile) {

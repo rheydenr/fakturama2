@@ -15,7 +15,7 @@ import javax.persistence.Table;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_COUNTRYCODE")
 public class CountryCode implements Serializable {
 	/**
@@ -35,7 +35,9 @@ public class CountryCode implements Serializable {
 	private Long id = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The English name of this country. This is the ISO 3166-1 English
+	 * romanized short name (proper reading order). <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -55,7 +57,9 @@ public class CountryCode implements Serializable {
 	private String fullName_de = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 French short name (proper reading order) <!-- end-model-doc
+	 * -->
 	 * 
 	 * @generated
 	 */
@@ -64,7 +68,28 @@ public class CountryCode implements Serializable {
 	private String fullName_fr = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 Spanish short name (Gazetteer order) <!-- end-model-doc -->
+	 * 
+	 * @generated
+	 */
+	@Basic()
+	@Column(name = "FULLNAME_ES")
+	private String fullName_es = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * UNGEGN Russian cyrillic short name <!-- end-model-doc -->
+	 * 
+	 * @generated
+	 */
+	@Basic()
+	@Column(name = "FULLNAME_RU")
+	private String fullName_ru = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (3 digits) <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -73,7 +98,8 @@ public class CountryCode implements Serializable {
 	private String code3digit = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (2 digits) <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -109,7 +135,9 @@ public class CountryCode implements Serializable {
 	/**
 	 * Returns the value of '<em><b>fullName</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The English name of this country. This is the ISO 3166-1 English
+	 * romanized short name (proper reading order). <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>fullName</b></em>' feature
 	 * @generated
@@ -121,7 +149,9 @@ public class CountryCode implements Serializable {
 	/**
 	 * Sets the '{@link CountryCode#getFullName() <em>fullName</em>}' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The English name of this country. This is the ISO 3166-1 English
+	 * romanized short name (proper reading order). <!-- end-model-doc -->
 	 * 
 	 * @param newFullName
 	 *            the new value of the '{@link CountryCode#getFullName()
@@ -166,7 +196,9 @@ public class CountryCode implements Serializable {
 	/**
 	 * Returns the value of '<em><b>fullName_fr</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 French short name (proper reading order) <!-- end-model-doc
+	 * -->
 	 * 
 	 * @return the value of '<em><b>fullName_fr</b></em>' feature
 	 * @generated
@@ -179,7 +211,9 @@ public class CountryCode implements Serializable {
 	 * Sets the '{@link CountryCode#getFullName_fr() <em>fullName_fr</em>}'
 	 * feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 French short name (proper reading order) <!-- end-model-doc
+	 * -->
 	 * 
 	 * @param newFullName_fr
 	 *            the new value of the '{@link CountryCode#getFullName_fr()
@@ -191,9 +225,68 @@ public class CountryCode implements Serializable {
 	}
 
 	/**
+	 * Returns the value of '<em><b>fullName_es</b></em>' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 Spanish short name (Gazetteer order) <!-- end-model-doc -->
+	 * 
+	 * @return the value of '<em><b>fullName_es</b></em>' feature
+	 * @generated
+	 */
+	public String getFullName_es() {
+		return fullName_es;
+	}
+
+	/**
+	 * Sets the '{@link CountryCode#getFullName_es() <em>fullName_es</em>}'
+	 * feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * ISO 3166-1 Spanish short name (Gazetteer order) <!-- end-model-doc -->
+	 * 
+	 * @param newFullName_es
+	 *            the new value of the '{@link CountryCode#getFullName_es()
+	 *            fullName_es}' feature.
+	 * @generated
+	 */
+	public void setFullName_es(String newFullName_es) {
+		fullName_es = newFullName_es;
+	}
+
+	/**
+	 * Returns the value of '<em><b>fullName_ru</b></em>' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * UNGEGN Russian cyrillic short name <!-- end-model-doc -->
+	 * 
+	 * @return the value of '<em><b>fullName_ru</b></em>' feature
+	 * @generated
+	 */
+	public String getFullName_ru() {
+		return fullName_ru;
+	}
+
+	/**
+	 * Sets the '{@link CountryCode#getFullName_ru() <em>fullName_ru</em>}'
+	 * feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * UNGEGN Russian cyrillic short name <!-- end-model-doc -->
+	 * 
+	 * @param newFullName_ru
+	 *            the new value of the '{@link CountryCode#getFullName_ru()
+	 *            fullName_ru}' feature.
+	 * @generated
+	 */
+	public void setFullName_ru(String newFullName_ru) {
+		fullName_ru = newFullName_ru;
+	}
+
+	/**
 	 * Returns the value of '<em><b>code3digit</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (3 digits) <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>code3digit</b></em>' feature
 	 * @generated
@@ -206,7 +299,8 @@ public class CountryCode implements Serializable {
 	 * Sets the '{@link CountryCode#getCode3digit() <em>code3digit</em>}'
 	 * feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (3 digits) <!-- end-model-doc -->
 	 * 
 	 * @param newCode3digit
 	 *            the new value of the '{@link CountryCode#getCode3digit()
@@ -220,7 +314,8 @@ public class CountryCode implements Serializable {
 	/**
 	 * Returns the value of '<em><b>code2digit</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (2 digits) <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>code2digit</b></em>' feature
 	 * @generated
@@ -233,7 +328,8 @@ public class CountryCode implements Serializable {
 	 * Sets the '{@link CountryCode#getCode2digit() <em>code2digit</em>}'
 	 * feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the ISO 3166-1 code (2 digits) <!-- end-model-doc -->
 	 * 
 	 * @param newCode2digit
 	 *            the new value of the '{@link CountryCode#getCode2digit()
@@ -255,7 +351,9 @@ public class CountryCode implements Serializable {
 		return "CountryCode " + " [id: " + getId() + "]" + " [fullName: "
 				+ getFullName() + "]" + " [fullName_de: " + getFullName_de()
 				+ "]" + " [fullName_fr: " + getFullName_fr() + "]"
-				+ " [code3digit: " + getCode3digit() + "]" + " [code2digit: "
-				+ getCode2digit() + "]";
+				+ " [fullName_es: " + getFullName_es() + "]"
+				+ " [fullName_ru: " + getFullName_ru() + "]" + " [code3digit: "
+				+ getCode3digit() + "]" + " [code2digit: " + getCode2digit()
+				+ "]";
 	}
 }

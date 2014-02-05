@@ -19,7 +19,7 @@ import javax.persistence.Table;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_ADDRESS")
 public class Address implements Serializable {
 	/**
@@ -83,7 +83,7 @@ public class Address implements Serializable {
 	 */
 	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, optional = false)
-	@JoinColumns({ @JoinColumn(name = "_ADDRESS_COUNTRY") })
+	@JoinColumns({ @JoinColumn(name = "ADDRESS_COUNTRY") })
 	private CountryCode country = null;
 
 	/**

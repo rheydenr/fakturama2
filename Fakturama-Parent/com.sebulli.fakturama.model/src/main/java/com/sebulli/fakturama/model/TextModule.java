@@ -12,8 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,7 +24,7 @@ import javax.persistence.TemporalType;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_TEXTMODULE")
 public class TextModule implements Serializable {
 	/**
@@ -75,8 +75,9 @@ public class TextModule implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "_TEXTMODULE_CATEGORIES") })
+	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
+	@JoinTable(joinColumns = { @JoinColumn(name = "TEXTMODULE_CATEGORIES") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORIES_TEXTCATEGORY") }, name = "FKT_TEXTMODULE_CATEGORIES")
 	private List<TextCategory> categories = new ArrayList<TextCategory>();
 
 	/**

@@ -53,7 +53,6 @@ public class CountryCodesDAO extends AbstractDAO<CountryCode> {
     	Root<CountryCode> root = criteria.from(CountryCode.class);
 		CriteriaQuery<CountryCode> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
     	return getEntityManager().createQuery(cq).getResultList();
-//    	return getEntityManager().createQuery("select p from CountryCode p", CountryCode.class).getResultList();
     }
     
  
@@ -69,5 +68,19 @@ public class CountryCodesDAO extends AbstractDAO<CountryCode> {
 	 */
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
+	}
+
+	/**
+	 * Finds a {@link CountryCode} by its long name.
+	 * 
+	 * @param country
+	 * @return
+	 */
+	public CountryCode findByLongName(String country) {
+    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+    	CriteriaQuery<CountryCode> criteria = cb.createQuery(CountryCode.class);
+    	Root<CountryCode> root = criteria.from(CountryCode.class);
+		CriteriaQuery<CountryCode> cq = criteria.where(cb.equal(root.<String>get("name"), country));
+    	return getEntityManager().createQuery(cq).getSingleResult();
 	}
 }

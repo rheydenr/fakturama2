@@ -2,6 +2,7 @@ package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,19 +10,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
  * A representation of the model object '<em><b>AbstractCategory</b></em>'. <!--
  * begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> the
- * category of an element <!-- end-model-doc -->
+ * AbstractCategory of an element <!-- end-model-doc -->
  * 
  * @generated
  */
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Entity
+@Entity()
 @Table(name = "FKT_CATEGORY")
-public abstract class AbstractCategory implements Serializable {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public class AbstractCategory implements Serializable {
 	/**
 	 * @generated
 	 */
@@ -46,6 +50,17 @@ public abstract class AbstractCategory implements Serializable {
 	@Basic()
 	@Column(name = "NAME")
 	private String name = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * <!-- end-model-doc -->
+	 * 
+	 * @generated
+	 */
+	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumns({ @JoinColumn(name = "FK_PARENT_CATEGORY", nullable = true) })
+	private AbstractCategory parent = null;
 
 	/**
 	 * Returns the value of '<em><b>id</b></em>' feature.
@@ -97,6 +112,36 @@ public abstract class AbstractCategory implements Serializable {
 	 */
 	public void setName(String newName) {
 		name = newName;
+	}
+
+	/**
+	 * Returns the value of '<em><b>parent</b></em>' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * <!-- end-model-doc -->
+	 * 
+	 * @return the value of '<em><b>parent</b></em>' feature
+	 * @generated
+	 */
+	public AbstractCategory getParent() {
+		return parent;
+	}
+
+	/**
+	 * Sets the '{@link AbstractCategory#getParent() <em>parent</em>}' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * 
+	 * <!-- end-model-doc -->
+	 * 
+	 * @param newParent
+	 *            the new value of the '{@link AbstractCategory#getParent()
+	 *            parent}' feature.
+	 * @generated
+	 */
+	public void setParent(AbstractCategory newParent) {
+		parent = newParent;
 	}
 
 	/**

@@ -68,7 +68,7 @@ public abstract class AbstractDAO<T> {
      * @param id
      * @return
      */
-    public T findById(int id) {
+    public T findById(long id) {
     	return getEntityManager().find(getEntityClass(), id);
     }
 

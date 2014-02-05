@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -12,8 +13,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -22,7 +24,7 @@ import javax.persistence.Table;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_SHIPPING")
 public class Shipping implements Serializable {
 	/**
@@ -83,17 +85,16 @@ public class Shipping implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "T_VALUE")
-	private Double value = null;
+	@Column(name = "SHIPPINGVALUE")
+	private Double shippingValue = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH })
-	@JoinColumns({ @JoinColumn(name = "_SHIPPING_SHIPPINGVAT") })
+	@ManyToOne(cascade = { CascadeType.REFRESH }, optional = false)
+	@JoinColumns({ @JoinColumn(name = "FK_VAT") })
 	private VAT shippingVat = null;
 
 	/**
@@ -101,8 +102,9 @@ public class Shipping implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "_SHIPPING_CATEGORIES") })
+	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
+	@JoinTable(joinColumns = { @JoinColumn(name = "SHIPPING_CATEGORIES") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORIES_SHIPPINGCATEGORY") }, name = "FKT_SHIPPING_CATEGORIES")
 	private Set<ShippingCategory> categories = new HashSet<ShippingCategory>();
 
 	/**
@@ -236,29 +238,30 @@ public class Shipping implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>value</b></em>' feature.
+	 * Returns the value of '<em><b>shippingValue</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of '<em><b>value</b></em>' feature
+	 * @return the value of '<em><b>shippingValue</b></em>' feature
 	 * @generated
 	 */
-	public Double getValue() {
-		return value;
+	public Double getShippingValue() {
+		return shippingValue;
 	}
 
 	/**
-	 * Sets the '{@link Shipping#getValue() <em>value</em>}' feature.
+	 * Sets the '{@link Shipping#getShippingValue() <em>shippingValue</em>}'
+	 * feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @param newValue
-	 *            the new value of the '{@link Shipping#getValue() value}'
-	 *            feature.
+	 * @param newShippingValue
+	 *            the new value of the '{@link Shipping#getShippingValue()
+	 *            shippingValue}' feature.
 	 * @generated
 	 */
-	public void setValue(Double newValue) {
-		value = newValue;
+	public void setShippingValue(Double newShippingValue) {
+		shippingValue = newShippingValue;
 	}
 
 	/**
@@ -289,7 +292,11 @@ public class Shipping implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>categories</b></em>' feature.
+	 * Returns the value of '<em><b>categories</b></em>' feature. Note: the
+	 * returned collection is Unmodifiable use the
+	 * {#addToCategories(com.sebulli.fakturama.model.ShippingCategory value)}
+	 * and {@link #removeFromCategories(ShippingCategory value)} methods to
+	 * modify this feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -297,7 +304,7 @@ public class Shipping implements Serializable {
 	 * @generated
 	 */
 	public Set<ShippingCategory> getCategories() {
-		return categories;
+		return Collections.unmodifiableSet(categories);
 	}
 
 	/**
@@ -357,7 +364,10 @@ public class Shipping implements Serializable {
 	 * @generated
 	 */
 	public void setCategories(Set<ShippingCategory> newCategories) {
-		categories = newCategories;
+		clearCategories();
+		for (ShippingCategory value : newCategories) {
+			addToCategories(value);
+		}
 	}
 
 	/**
@@ -371,6 +381,7 @@ public class Shipping implements Serializable {
 		return "Shipping " + " [id: " + getId() + "]" + " [autoVat: "
 				+ getAutoVat() + "]" + " [deleted: " + getDeleted() + "]"
 				+ " [description: " + getDescription() + "]" + " [name: "
-				+ getName() + "]" + " [value: " + getValue() + "]";
+				+ getName() + "]" + " [shippingValue: " + getShippingValue()
+				+ "]";
 	}
 }

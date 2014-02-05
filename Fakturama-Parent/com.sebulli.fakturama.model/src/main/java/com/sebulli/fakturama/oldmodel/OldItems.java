@@ -36,6 +36,8 @@ public class OldItems {
 	private String category;
 	@Id
 	private int id;
+	private double weight;
+	private double tara;
 
 public OldItems() {
 }
@@ -88,6 +90,10 @@ public String getQunit() {
 	return this.qunit;
 }
 
+public double getTara() {
+	return this.tara;
+}
+
 public String getVatdescription() {
 	return this.vatdescription;
 }
@@ -102,6 +108,10 @@ public String getVatname() {
 
 public double getVatvalue() {
 	return this.vatvalue;
+}
+
+public double getWeight() {
+	return this.weight;
 }
 
 public boolean isDeleted() {
@@ -184,6 +194,10 @@ public void setShared(boolean shared) {
 	this.shared = shared;
 }
 
+public void setTara(double tara) {
+	this.tara = tara;
+}
+
 public void setVatdescription(String vatdescription) {
 	this.vatdescription = vatdescription;
 }
@@ -198,6 +212,10 @@ public void setVatname(String vatname) {
 
 public void setVatvalue(double vatvalue) {
 	this.vatvalue = vatvalue;
+}
+
+public void setWeight(double weight) {
+	this.weight = weight;
 }
 
 }

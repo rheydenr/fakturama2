@@ -23,7 +23,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.Documents;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.TopicTreeViewer.TreeObject;
 
@@ -85,8 +85,8 @@ public class ViewDataTableContentProvider<T> implements IStructuredContentProvid
 						.isEmpty())
 						&& ((transactionFilter < 0) || (uds.getTransactionKey() == transactionFilter))
 						&& ((contactFilter < 0) || (uds.getAddressKey() == contactFilter))) {
-					if (uds instanceof Documents) {
-						totalSum += ((Documents)uds).getTotal();
+					if (uds instanceof Document) {
+//						totalSum += ((Documents)uds).getTotal();
 					}
 					contentFiltered.add(uds);
 				}

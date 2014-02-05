@@ -19,12 +19,12 @@ public class ContactsTextFilterator implements TextFilterator<Contact> {
 
 	@Override
 	public void getFilterStrings(List<String> baseList, Contact contact) {
-		int latestAddressIndex = contact.getAddresses().size() - 1;
+//		int latestAddressIndex = contact.getAddresses().size() - 1;
 		baseList.add(contact.getCustomerNumber());
 		baseList.add(contact.getFirstName());
 		baseList.add(contact.getName());
 		baseList.add(contact.getCompany());
-		baseList.add(contact.getAddresses().get(latestAddressIndex).getZip());
-		baseList.add(contact.getAddresses().get(latestAddressIndex).getCity());
+		baseList.add(contact.getAddress().getZip());
+		baseList.add(contact.getAddress().getCity());
 	}
 }

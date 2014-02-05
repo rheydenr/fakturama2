@@ -15,7 +15,7 @@ import javax.persistence.Table;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_USERPROPERTY")
 public class UserProperty implements Serializable {
 	/**

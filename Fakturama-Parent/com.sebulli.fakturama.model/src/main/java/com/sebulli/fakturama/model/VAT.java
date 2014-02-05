@@ -1,10 +1,10 @@
 package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,8 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,7 +25,7 @@ import javax.persistence.TemporalType;
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_VAT")
 public class VAT implements Serializable {
 	/**
@@ -60,7 +60,7 @@ public class VAT implements Serializable {
 	 */
 	@Basic()
 	@Column(name = "DELETED")
-	private Boolean deleted = null;
+	private Boolean deleted = Boolean.FALSE;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -77,8 +77,8 @@ public class VAT implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "T_VALUE")
-	private Double value = null;
+	@Column(name = "TAXVALUE")
+	private Double taxValue = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -95,9 +95,10 @@ public class VAT implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "_VAT_CATEGORIES") })
-	private List<VATCategory> categories = new ArrayList<VATCategory>();
+	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
+	@JoinTable(joinColumns = { @JoinColumn(name = "VAT_CATEGORIES") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORIES_VATCATEGORY") }, name = "FKT_VAT_CATEGORIES")
+	private Set<VATCategory> categories = new HashSet<VATCategory>();
 
 	/**
 	 * Returns the value of '<em><b>id</b></em>' feature.
@@ -202,28 +203,29 @@ public class VAT implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>value</b></em>' feature.
+	 * Returns the value of '<em><b>taxValue</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of '<em><b>value</b></em>' feature
+	 * @return the value of '<em><b>taxValue</b></em>' feature
 	 * @generated
 	 */
-	public Double getValue() {
-		return value;
+	public Double getTaxValue() {
+		return taxValue;
 	}
 
 	/**
-	 * Sets the '{@link VAT#getValue() <em>value</em>}' feature.
+	 * Sets the '{@link VAT#getTaxValue() <em>taxValue</em>}' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @param newValue
-	 *            the new value of the '{@link VAT#getValue() value}' feature.
+	 * @param newTaxValue
+	 *            the new value of the '{@link VAT#getTaxValue() taxValue}'
+	 *            feature.
 	 * @generated
 	 */
-	public void setValue(Double newValue) {
-		value = newValue;
+	public void setTaxValue(Double newTaxValue) {
+		taxValue = newTaxValue;
 	}
 
 	/**
@@ -264,8 +266,8 @@ public class VAT implements Serializable {
 	 * @return the value of '<em><b>categories</b></em>' feature
 	 * @generated
 	 */
-	public List<VATCategory> getCategories() {
-		return Collections.unmodifiableList(categories);
+	public Set<VATCategory> getCategories() {
+		return Collections.unmodifiableSet(categories);
 	}
 
 	/**
@@ -324,7 +326,7 @@ public class VAT implements Serializable {
 	 *            feature.
 	 * @generated
 	 */
-	public void setCategories(List<VATCategory> newCategories) {
+	public void setCategories(Set<VATCategory> newCategories) {
 		clearCategories();
 		for (VATCategory value : newCategories) {
 			addToCategories(value);
@@ -341,7 +343,7 @@ public class VAT implements Serializable {
 	public String toString() {
 		return "VAT " + " [id: " + getId() + "]" + " [name: " + getName() + "]"
 				+ " [deleted: " + getDeleted() + "]" + " [description: "
-				+ getDescription() + "]" + " [value: " + getValue() + "]"
+				+ getDescription() + "]" + " [taxValue: " + getTaxValue() + "]"
 				+ " [modified: " + getModified() + "]";
 	}
 }

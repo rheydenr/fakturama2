@@ -20,12 +20,12 @@ package com.sebulli.fakturama.dbconnector;
  *
  */
 public enum OldTableinfo {
-	Contact, 
+	Contacts, 
 	Documents, 
 	Expenditureitems, 
 	Expenditures, 
 	Items, 
-	List, 
+	Lists, 
 	Payments, 
 	Products, 
 	Properties, 

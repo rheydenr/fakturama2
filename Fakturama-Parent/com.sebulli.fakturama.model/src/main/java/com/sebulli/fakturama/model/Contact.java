@@ -1,11 +1,10 @@
 package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,19 +14,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
  * A representation of the model object '<em><b>Contact</b></em>'. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> here comes
+ * the documentation <!-- end-model-doc -->
  * 
  * @generated
  */
-@Entity
+@Entity()
 @Table(name = "FKT_CONTACT")
 public class Contact implements Serializable {
 	/**
@@ -56,7 +57,9 @@ public class Contact implements Serializable {
 	private String firstName = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the Integer coded value of the contact's gender (1=male / 2=female /
+	 * 3=unknown) <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -65,7 +68,8 @@ public class Contact implements Serializable {
 	private Integer gender = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the company name of the contact <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -74,7 +78,8 @@ public class Contact implements Serializable {
 	private String company = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the contact's birthday (can be <code>null</code>) <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -160,37 +165,39 @@ public class Contact implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "FK_CATEGORY") })
-	private List<ContactCategory> categories = new ArrayList<ContactCategory>();
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "_CONTACT_ADDRESSES") })
-	private List<Address> addresses = new ArrayList<Address>();
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
-	@JoinColumns({ @JoinColumn(name = "FK_CONTACT") })
+	@JoinTable(joinColumns = { @JoinColumn(name = "FK_CATEGORY") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORIES_CONTACTCATEGORY") }, name = "FKT_CONTACT_CATEGORIES")
+	private Set<ContactCategory> categories = new HashSet<ContactCategory>();
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
+	@JoinColumns({ @JoinColumn(name = "FK_ADDRESS", nullable = true) })
+	private Address address = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@ManyToOne(cascade = { CascadeType.ALL })
+	@JoinColumns({ @JoinColumn(name = "FK_DELIVERYCONTACT") })
 	private Contact deliveryContact = null;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the individual discount which is given to the customer / contact <!--
+	 * end-model-doc -->
 	 * 
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "DISCOUNT")
-	private BigDecimal discount = null;
+	@Column(name = "DISCOUNT", precision = 5, scale = 3)
+	private Double discount = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -329,6 +336,17 @@ public class Contact implements Serializable {
 	private String supplierNumber = null;
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The mandate reference for this contact (which in this case is a
+	 * customer). Used for SEPA direct debit. <!-- end-model-doc -->
+	 * 
+	 * @generated
+	 */
+	@Basic()
+	@Column(name = "MANDATEREFERENCE")
+	private String mandateReference = null;
+
+	/**
 	 * Returns the value of '<em><b>id</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -382,7 +400,9 @@ public class Contact implements Serializable {
 	/**
 	 * Returns the value of '<em><b>gender</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the Integer coded value of the contact's gender (1=male / 2=female /
+	 * 3=unknown) <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>gender</b></em>' feature
 	 * @generated
@@ -394,7 +414,9 @@ public class Contact implements Serializable {
 	/**
 	 * Sets the '{@link Contact#getGender() <em>gender</em>}' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the Integer coded value of the contact's gender (1=male / 2=female /
+	 * 3=unknown) <!-- end-model-doc -->
 	 * 
 	 * @param newGender
 	 *            the new value of the '{@link Contact#getGender() gender}'
@@ -408,7 +430,8 @@ public class Contact implements Serializable {
 	/**
 	 * Returns the value of '<em><b>company</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the company name of the contact <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>company</b></em>' feature
 	 * @generated
@@ -420,7 +443,8 @@ public class Contact implements Serializable {
 	/**
 	 * Sets the '{@link Contact#getCompany() <em>company</em>}' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the company name of the contact <!-- end-model-doc -->
 	 * 
 	 * @param newCompany
 	 *            the new value of the '{@link Contact#getCompany() company}'
@@ -434,7 +458,8 @@ public class Contact implements Serializable {
 	/**
 	 * Returns the value of '<em><b>birthday</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the contact's birthday (can be <code>null</code>) <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>birthday</b></em>' feature
 	 * @generated
@@ -446,7 +471,8 @@ public class Contact implements Serializable {
 	/**
 	 * Sets the '{@link Contact#getBirthday() <em>birthday</em>}' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the contact's birthday (can be <code>null</code>) <!-- end-model-doc -->
 	 * 
 	 * @param newBirthday
 	 *            the new value of the '{@link Contact#getBirthday() birthday}'
@@ -676,8 +702,8 @@ public class Contact implements Serializable {
 	 * @return the value of '<em><b>categories</b></em>' feature
 	 * @generated
 	 */
-	public List<ContactCategory> getCategories() {
-		return Collections.unmodifiableList(categories);
+	public Set<ContactCategory> getCategories() {
+		return Collections.unmodifiableSet(categories);
 	}
 
 	/**
@@ -736,7 +762,7 @@ public class Contact implements Serializable {
 	 *            categories}' feature.
 	 * @generated
 	 */
-	public void setCategories(List<ContactCategory> newCategories) {
+	public void setCategories(Set<ContactCategory> newCategories) {
 		clearCategories();
 		for (ContactCategory value : newCategories) {
 			addToCategories(value);
@@ -744,82 +770,29 @@ public class Contact implements Serializable {
 	}
 
 	/**
-	 * Returns the value of '<em><b>addresses</b></em>' feature. Note: the
-	 * returned collection is Unmodifiable use the
-	 * {#addToAddresses(com.sebulli.fakturama.model.Address value)} and
-	 * {@link #removeFromAddresses(Address value)} methods to modify this
-	 * feature.
+	 * Returns the value of '<em><b>address</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of '<em><b>addresses</b></em>' feature
+	 * @return the value of '<em><b>address</b></em>' feature
 	 * @generated
 	 */
-	public List<Address> getAddresses() {
-		return Collections.unmodifiableList(addresses);
+	public Address getAddress() {
+		return address;
 	}
 
 	/**
-	 * Adds to the <em>addresses</em> feature.
-	 * 
-	 * @param addressesValue
-	 *            the value to add
-	 * @return true if the value is added to the collection (it was not yet
-	 *         present in the collection), false otherwise
-	 * @generated
-	 */
-	public boolean addToAddresses(Address addressesValue) {
-		if (!addresses.contains(addressesValue)) {
-			boolean result = addresses.add(addressesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes from the <em>addresses</em> feature.
-	 * 
-	 * @param addressesValue
-	 *            the value to remove
-	 * @return true if the value is removed from the collection (it existed in
-	 *         the collection before removing), false otherwise
-	 * 
-	 * @generated
-	 */
-	public boolean removeFromAddresses(Address addressesValue) {
-		if (addresses.contains(addressesValue)) {
-			boolean result = addresses.remove(addressesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Clears the <em>addresses</em> feature.
-	 * 
-	 * @generated
-	 */
-	public void clearAddresses() {
-		while (!addresses.isEmpty()) {
-			removeFromAddresses(addresses.iterator().next());
-		}
-	}
-
-	/**
-	 * Sets the '{@link Contact#getAddresses() <em>addresses</em>}' feature.
+	 * Sets the '{@link Contact#getAddress() <em>address</em>}' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @param newAddresses
-	 *            the new value of the '{@link Contact#getAddresses() addresses}
-	 *            ' feature.
+	 * @param newAddress
+	 *            the new value of the '{@link Contact#getAddress() address}'
+	 *            feature.
 	 * @generated
 	 */
-	public void setAddresses(List<Address> newAddresses) {
-		clearAddresses();
-		for (Address value : newAddresses) {
-			addToAddresses(value);
-		}
+	public void setAddress(Address newAddress) {
+		address = newAddress;
 	}
 
 	/**
@@ -852,26 +825,30 @@ public class Contact implements Serializable {
 	/**
 	 * Returns the value of '<em><b>discount</b></em>' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the individual discount which is given to the customer / contact <!--
+	 * end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>discount</b></em>' feature
 	 * @generated
 	 */
-	public BigDecimal getDiscount() {
+	public Double getDiscount() {
 		return discount;
 	}
 
 	/**
 	 * Sets the '{@link Contact#getDiscount() <em>discount</em>}' feature.
 	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * the individual discount which is given to the customer / contact <!--
+	 * end-model-doc -->
 	 * 
 	 * @param newDiscount
 	 *            the new value of the '{@link Contact#getDiscount() discount}'
 	 *            feature.
 	 * @generated
 	 */
-	public void setDiscount(BigDecimal newDiscount) {
+	public void setDiscount(Double newDiscount) {
 		discount = newDiscount;
 	}
 
@@ -1266,6 +1243,37 @@ public class Contact implements Serializable {
 	}
 
 	/**
+	 * Returns the value of '<em><b>mandateReference</b></em>' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The mandate reference for this contact (which in this case is a
+	 * customer). Used for SEPA direct debit. <!-- end-model-doc -->
+	 * 
+	 * @return the value of '<em><b>mandateReference</b></em>' feature
+	 * @generated
+	 */
+	public String getMandateReference() {
+		return mandateReference;
+	}
+
+	/**
+	 * Sets the '{@link Contact#getMandateReference() <em>mandateReference</em>}
+	 * ' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
+	 * The mandate reference for this contact (which in this case is a
+	 * customer). Used for SEPA direct debit. <!-- end-model-doc -->
+	 * 
+	 * @param newMandateReference
+	 *            the new value of the '{@link Contact#getMandateReference()
+	 *            mandateReference}' feature.
+	 * @generated
+	 */
+	public void setMandateReference(String newMandateReference) {
+		mandateReference = newMandateReference;
+	}
+
+	/**
 	 * A toString method which prints the values of all EAttributes of this
 	 * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1291,6 +1299,7 @@ public class Contact implements Serializable {
 				+ " [useNetGross: " + getUseNetGross() + "]" + " [vatNumber: "
 				+ getVatNumber() + "]" + " [vatNumberValid: "
 				+ getVatNumberValid() + "]" + " [website: " + getWebsite()
-				+ "]" + " [supplierNumber: " + getSupplierNumber() + "]";
+				+ "]" + " [supplierNumber: " + getSupplierNumber() + "]"
+				+ " [mandateReference: " + getMandateReference() + "]";
 	}
 }

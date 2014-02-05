@@ -1,8 +1,9 @@
 package com.sebulli.fakturama.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.PrimaryKeyJoinColumns;
+import javax.persistence.Table;
 
 /**
  * A representation of the model object '<em><b>PaymentCategory</b></em>'. <!--
@@ -10,47 +11,14 @@ import javax.persistence.Entity;
  * 
  * @generated
  */
-@Entity
+@Entity()
+@Table(name = "FKT_PAYMENTCATEGORY")
+@PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "PAYMENTCATEGORY_PARENT_ID") })
 public class PaymentCategory extends AbstractCategory {
 	/**
 	 * @generated
 	 */
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Basic()
-	@Column(name = "T_TYPE", nullable = true)
-	private String type = null;
-
-	/**
-	 * Returns the value of '<em><b>type</b></em>' feature.
-	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @return the value of '<em><b>type</b></em>' feature
-	 * @generated
-	 */
-	public String getType() {
-		return type;
-	}
-
-	/**
-	 * Sets the '{@link PaymentCategory#getType() <em>type</em>}' feature.
-	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param newType
-	 *            the new value of the '{@link PaymentCategory#getType() type}'
-	 *            feature.
-	 * @generated
-	 */
-	public void setType(String newType) {
-		type = newType;
-	}
 
 	/**
 	 * A toString method which prints the values of all EAttributes of this
@@ -60,6 +28,6 @@ public class PaymentCategory extends AbstractCategory {
 	 */
 	@Override
 	public String toString() {
-		return "PaymentCategory " + " [type: " + getType() + "]";
+		return "PaymentCategory ";
 	}
 }

@@ -6,6 +6,9 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -14,6 +17,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.oldmodel.OldContacts;
 
 @Creatable
 public class ContactDAO extends AbstractDAO<Contact> {
@@ -66,5 +70,17 @@ public class ContactDAO extends AbstractDAO<Contact> {
 	@Override
 	protected Class<Contact> getEntityClass() {
 		return Contact.class;
+	}
+	
+	public Contact findByOldContact(OldContacts oldContact) {
+    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+    	CriteriaQuery<Contact> criteria = cb.createQuery(Contact.class);
+    	Root<Contact> root = criteria.from(Contact.class);
+		CriteriaQuery<Contact> cq = criteria.where(
+				cb.and(
+						cb.equal(root.<String>get("firstName"), oldContact.getFirstname()),
+						cb.equal(root.<String>get("name"), oldContact.getName())));
+    	return getEntityManager().createQuery(cq).getSingleResult();
+		
 	}
 }

@@ -39,7 +39,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.sebulli.fakturama.model.Documents;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -156,8 +155,8 @@ public class TopicTreeViewer<T> extends TreeViewer {
 
 				// Set a reference to the tree object to use the
 				// tool tip hint for displaying the total sum.
-				if (elementClass.equals(Documents.class))
-					viewDataSetTable.setTreeObject(treeObject);
+//				if (elementClass.equals(Documents.class))
+//					viewDataSetTable.setTreeObject(treeObject);
 				
 				if (contactFilter >= 0)
 
