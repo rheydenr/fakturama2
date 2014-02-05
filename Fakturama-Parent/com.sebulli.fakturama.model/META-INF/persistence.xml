@@ -9,23 +9,24 @@
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 			<class>com.sebulli.fakturama.model.AbstractCategory</class>
+			<class>com.sebulli.fakturama.model.Account</class>
 			<class>com.sebulli.fakturama.model.Address</class>
-			<class>com.sebulli.fakturama.model.BillingType</class>
 			<class>com.sebulli.fakturama.model.Contact</class>
 			<class>com.sebulli.fakturama.model.ContactCategory</class>
 			<class>com.sebulli.fakturama.model.CountryCode</class>
 			<class>com.sebulli.fakturama.model.Document</class>
+			<class>com.sebulli.fakturama.model.DocumentItem</class>
 			<class>com.sebulli.fakturama.model.DocumentItemCategory</class>
-			<class>com.sebulli.fakturama.model.ExpenditureAccount</class>
-			<class>com.sebulli.fakturama.model.ExpenditureItemAccountType</class>
-			<class>com.sebulli.fakturama.model.Item</class>
-			<class>com.sebulli.fakturama.model.ItemCategory</class>
+			<class>com.sebulli.fakturama.model.Expenditure</class>
+			<class>com.sebulli.fakturama.model.ExpenditureItem</class>
+			<class>com.sebulli.fakturama.model.ItemAccountType</class>
+			<class>com.sebulli.fakturama.model.Payment</class>
 			<class>com.sebulli.fakturama.model.PaymentCategory</class>
-			<!-- <class>com.sebulli.fakturama.model.Payment</class> -->
+			<class>com.sebulli.fakturama.model.Product</class>
 			<class>com.sebulli.fakturama.model.ProductCategory</class>
-			<class>com.sebulli.fakturama.model.ReceiptVoucherAccount</class>
+			<class>com.sebulli.fakturama.model.ProductOptions</class>
+			<class>com.sebulli.fakturama.model.ReceiptVoucher</class>
 			<class>com.sebulli.fakturama.model.ReceiptVoucherItem</class>
-			<class>com.sebulli.fakturama.model.ReceiptVoucherItemAccountType</class>
 			<class>com.sebulli.fakturama.model.Shipping</class>
 			<class>com.sebulli.fakturama.model.ShippingCategory</class>
 			<class>com.sebulli.fakturama.model.TextCategory</class>

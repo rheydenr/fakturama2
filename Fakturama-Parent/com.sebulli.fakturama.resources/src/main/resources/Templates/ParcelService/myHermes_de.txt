@@ -1,0 +1,57 @@
+# Name and URL of the parcel service:
+name = myHermes.de
+url = https://www.myhermes.de/wps/portal/PRIPS_DEU/PAKETVERSAND
+# as of 09.05.2012
+
+# Fields:
+packageLabelDTO.senderAddress.lastname            = YOURCOMPANY.COMPANY
+packageLabelDTO.senderAddress.addressExtension    = YOURCOMPANY.OWNER
+packageLabelDTO.senderAddress.street              = YOURCOMPANY.STREETNAME
+packageLabelDTO.senderAddress.streetNo            = YOURCOMPANY.STREETNO
+packageLabelDTO.senderAddress.postalCode          = YOURCOMPANY.ZIP
+packageLabelDTO.senderAddress.city                = YOURCOMPANY.CITY
+packageLabelDTO.senderEmail.email                 = YOURCOMPANY.EMAIL
+packageLabelDTO.senderTelephone.areaCodePhoneNo   = YOURCOMPANY.PHONE.PRE
+packageLabelDTO.senderTelephone.phoneNo           = YOURCOMPANY.PHONE.POST
+
+packageLabelDTO.receiverAddress.firstname         = DELIVERY.ADDRESS.FIRSTNAME
+packageLabelDTO.receiverAddress.lastname          = DELIVERY.ADDRESS.LASTNAME
+packageLabelDTO.receiverAddress.addressExtension  = DELIVERY.ADDRESS.COMPANY
+packageLabelDTO.receiverAddress.street            = DELIVERY.ADDRESS.STREETNAME
+packageLabelDTO.receiverAddress.streetNo          = DELIVERY.ADDRESS.STREETNO
+packageLabelDTO.receiverAddress.postalCode        = DELIVERY.ADDRESS.ZIP
+packageLabelDTO.receiverAddress.city              = DELIVERY.ADDRESS.CITY
+packageLabelDTO.receiverTelephone.areaCodePhoneNo = ADDRESS.PHONE.PRE
+packageLabelDTO.receiverTelephone.phoneNo         = ADDRESS.PHONE.POST
+packageLabelDTO.receiverAddress.countryISO2       = DELIVERY.ADDRESS.COUNTRY.CODE2
+
+
+# If you have created a template file for a new parcel service,
+# it yould be nice to share it with other users on fakturama.sebulli.com
+# 
+# Syntax:
+# field = PLACE.HOLDER
+#
+# Some of the most significant placeholders are:
+#
+# YOURCOMPANY.COMPANY
+# YOURCOMPANY.OWNER
+# YOURCOMPANY.OWNER.FIRSTNAME
+# YOURCOMPANY.OWNER.LASTNAME
+# YOURCOMPANY.STREET
+# YOURCOMPANY.STREETNAME
+# YOURCOMPANY.STREETNO
+# YOURCOMPANY.ZIP
+# YOURCOMPANY.CITY
+#
+# DELIVERY.ADDRESS.NAME
+# DELIVERY.ADDRESS.FIRSTNAME
+# DELIVERY.ADDRESS.LASTNAME
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.STREET
+# DELIVERY.ADDRESS.STREETNAME
+# DELIVERY.ADDRESS.STREETNO
+# DELIVERY.ADDRESS.ZIP
+# DELIVERY.ADDRESS.CITY
+#
+# Read the manual for all placeholders.
