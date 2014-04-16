@@ -175,7 +175,8 @@ public class Contact implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH })
 	@JoinColumns({ @JoinColumn(name = "FK_ADDRESS", nullable = true) })
 	private Address address = null;
 

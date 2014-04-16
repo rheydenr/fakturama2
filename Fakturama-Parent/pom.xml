@@ -18,7 +18,7 @@
 	    <module>com.sebulli.fakturama.feature</module>
 		<module>com.sebulli.fakturama.target</module>
 	    <module>com.sebulli.fakturama.common</module>
-	    
+	    <module>com.sebulli.fakturama.hsqlconnector</module>
 	    <module>com.sebulli.fakturama.resources</module>
 	    <module>com.sebulli.fakturama.resources.icons</module>
 	</modules>
@@ -77,9 +77,9 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-kepler</id>
+			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/kepler</url>
+			<url>http://download.eclipse.org/releases/luna</url>
 		</repository>
 	</repositories>
 </project>

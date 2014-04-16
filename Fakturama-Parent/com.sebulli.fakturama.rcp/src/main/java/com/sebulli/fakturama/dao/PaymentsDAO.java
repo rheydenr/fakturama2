@@ -16,9 +16,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Payment;
-import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.oldmodel.OldPayments;
-import com.sebulli.fakturama.oldmodel.OldVats;
 
 @Creatable
 public class PaymentsDAO extends AbstractDAO<Payment> {

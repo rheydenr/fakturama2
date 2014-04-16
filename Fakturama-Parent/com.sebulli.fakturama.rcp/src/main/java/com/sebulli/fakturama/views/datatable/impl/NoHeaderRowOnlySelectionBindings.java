@@ -40,7 +40,7 @@ public class NoHeaderRowOnlySelectionBindings extends DefaultSelectionBindings {
 		uiBindingRegistry.registerFirstMouseDragMode(MouseEventMatcher.bodyLeftClick(SWT.SHIFT | SWT.MOD1), dragMode);
 	}
 	
-	protected void configureColumnHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
-		//do nothing
-	}
+//	protected void configureColumnHeaderMouseClickBindings(UiBindingRegistry uiBindingRegistry) {
+//		//do nothing
+//	}
 }

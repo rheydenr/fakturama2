@@ -1,7 +1,6 @@
 package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
@@ -93,7 +92,7 @@ public class Payment implements Serializable {
 	 */
 	@Basic()
 	@Column(name = "DISCOUNTVALUE")
-	private BigDecimal discountValue = null;
+	private Double discountValue = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -295,7 +294,7 @@ public class Payment implements Serializable {
 	 * @return the value of '<em><b>discountValue</b></em>' feature
 	 * @generated
 	 */
-	public BigDecimal getDiscountValue() {
+	public Double getDiscountValue() {
 		return discountValue;
 	}
 
@@ -310,7 +309,7 @@ public class Payment implements Serializable {
 	 *            discountValue}' feature.
 	 * @generated
 	 */
-	public void setDiscountValue(BigDecimal newDiscountValue) {
+	public void setDiscountValue(Double newDiscountValue) {
 		discountValue = newDiscountValue;
 	}
 

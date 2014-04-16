@@ -37,6 +37,7 @@ import com.sebulli.fakturama.model.IEntity;
  * This class represents a column of a table that contains UniDataSets
  * 
  * @author Gerd Bartelt
+ * @deprecated
  */
 public class DataTableColumn<T extends IEntity> {
 

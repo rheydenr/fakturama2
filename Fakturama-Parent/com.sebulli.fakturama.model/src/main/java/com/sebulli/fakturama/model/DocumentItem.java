@@ -98,8 +98,8 @@ public class DocumentItem implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "DOCUMENTITEM_PRODUCTREF") })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumns({ @JoinColumn(name = "FK_PRODUCT") })
 	private Product productref = null;
 
 	/**
@@ -171,7 +171,7 @@ public class DocumentItem implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PRICE")
+	@Column(name = "PRICE", precision = 12, scale = 3)
 	private BigDecimal price = null;
 
 	/**
@@ -199,9 +199,8 @@ public class DocumentItem implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH })
-	@JoinColumns({ @JoinColumn(name = "DOCUMENTITEM_ITEMVAT") })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumns({ @JoinColumn(name = "FK_VAT") })
 	private VAT itemVat = null;
 
 	/**

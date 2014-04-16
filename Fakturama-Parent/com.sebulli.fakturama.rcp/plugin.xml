@@ -41,7 +41,15 @@
          </property>
          <property
                name="windowImages"
-               value="/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_16.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_32.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_48.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_64.png,/Fakturama-Parent/com.sebulli.fakturama.resources/icons/app/app_128.png">
+               value="app/app_16.png,app/app_32.png,app/app_48.png,app/app_64.png,app/app_128.png">
+         </property>
+         <property
+               name="aboutImage"
+               value="app/about.png">
+         </property>
+         <property
+               name="aboutText"
+               value="%about.text">
          </property>
       </product>
    </extension>

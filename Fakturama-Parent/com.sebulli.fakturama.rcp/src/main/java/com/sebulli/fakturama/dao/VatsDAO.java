@@ -1,6 +1,8 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -21,45 +23,44 @@ import com.sebulli.fakturama.oldmodel.OldVats;
 @Creatable
 public class VatsDAO extends AbstractDAO<VAT> {
 
-    @Inject
-    @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
-    private EntityManager em;
+	@Inject
+	@GeminiPersistenceContext(unitName = "unconfigured2", properties = {
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
+	//    @GeminiPersistenceContext(unitName = "mysql-datasource")
+	//    @GeminiPersistenceContext(unitName = "origin-datasource")
+	private EntityManager em;
 
-    protected Class<VAT> getEntityClass() {
-    	return VAT.class;
-    }
+	protected Class<VAT> getEntityClass() {
+		return VAT.class;
+	}
 
-    @PreDestroy
-    public void destroy() {
-        if (getEntityManager() != null && getEntityManager().isOpen()) {
-            getEntityManager().close();
-        }
-    }
-    
-    /**
-     * Get all {@link VAT} from Database.
-     *
-     * @return List<VAT> 
-     */
-    public List<VAT> findAll() {
-    	//getEM2();
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
-    	Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
-    	return getEntityManager().createQuery(cq).getResultList();
-    }
-    
- 
+	@PreDestroy
+	public void destroy() {
+		if (getEntityManager() != null && getEntityManager().isOpen()) {
+			getEntityManager().close();
+		}
+	}
+
+	/**
+	 * Get all {@link VAT} from Database.
+	 *
+	 * @return List<VAT>
+	 */
+	public List<VAT> findAll() {
+		//getEM2();
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
+		Root<VAT> root = criteria.from(VAT.class);
+		CriteriaQuery<VAT> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
+		return getEntityManager().createQuery(cq).getResultList();
+	}
+
 	/**
 	 * @return the em
 	 */
@@ -68,7 +69,8 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	}
 
 	/**
-	 * @param em the em to set
+	 * @param em
+	 *            the em to set
 	 */
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
@@ -81,23 +83,44 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 * @return
 	 */
 	public VAT findByOldVat(OldVats oldVat) {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
-    	Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(
-				cb.and(
-						cb.equal(root.<String>get("description"), oldVat.getDescription()),
-						cb.equal(root.<String>get("name"), oldVat.getName())));
-    	return getEntityManager().createQuery(cq).getSingleResult();
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
+		Root<VAT> root = criteria.from(VAT.class);
+		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldVat.getDescription()),
+				cb.equal(root.<String> get("name"), oldVat.getName())));
+		return getEntityManager().createQuery(cq).getSingleResult();
 	}
 
 	public VAT findByName(String novatname) {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
-    	Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(
-						cb.equal(root.<String>get("name"), novatname));
-    	return getEntityManager().createQuery(cq).getSingleResult();
-		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
+		Root<VAT> root = criteria.from(VAT.class);
+		CriteriaQuery<VAT> cq = criteria.where(cb.equal(root.<String> get("name"), novatname));
+		return getEntityManager().createQuery(cq).getSingleResult();
+
+	}
+
+	/**
+	 * mapping from property to label, needed for column header labels (only
+	 * visible properties are needed)
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getVisiblePropertyToLabelMap() {
+		Map<String, String> propertyToLabelMap = new HashMap<>();
+		propertyToLabelMap.put("taxValue", "Value");
+		propertyToLabelMap.put("name", "Name");
+		propertyToLabelMap.put("description", "Description");
+		return propertyToLabelMap;
+	}
+
+	/**
+	 * Gets the all visible properties of this VAT object.
+	 * 
+	 * @return String[] of visible VAT properties
+	 */
+	public String[] getVisibleProperties() {
+		String[] retval = new String[] { "name", "description", "taxValue" };
+		return retval;
 	}
 }

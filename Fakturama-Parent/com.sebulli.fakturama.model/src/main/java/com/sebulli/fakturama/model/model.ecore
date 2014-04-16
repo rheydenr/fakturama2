@@ -803,7 +803,7 @@
         <details key="java.member" value="name"/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="discountValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="discountValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject">
       <eAnnotations source="org.eclipse.emf.texo">
         <details key="java.member" value="discountValue"/>
       </eAnnotations>
@@ -933,6 +933,11 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price4" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
       <eAnnotations source="org.eclipse.emf.texo">
         <details key="java.member" value="price4"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price5" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal">
+      <eAnnotations source="org.eclipse.emf.texo">
+        <details key="java.member" value="price5"/>
       </eAnnotations>
     </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject">

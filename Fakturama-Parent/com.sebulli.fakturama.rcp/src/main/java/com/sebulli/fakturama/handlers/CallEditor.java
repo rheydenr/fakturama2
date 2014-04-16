@@ -24,7 +24,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;

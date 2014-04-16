@@ -64,6 +64,7 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
+import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -88,7 +89,6 @@ import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
-import com.sebulli.fakturama.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 import com.sebulli.fakturama.oldmodel.OldDocuments;
 import com.sebulli.fakturama.oldmodel.OldExpenditureitems;
@@ -171,12 +171,12 @@ public class MigrationManager {
 	@Execute
 	public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
 		// build jdbc connection string; can't be null at this point since we've checked it above (within the caller)
-		String oldWorkDir = preferences.get(ConfigurationManager.MIGRATE_OLD_DATA, null);
+		final String oldWorkDir = preferences.get(ConfigurationManager.MIGRATE_OLD_DATA, null);
 		// hard coded old database name
-//		String hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
+//		final String hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
 		
 		// ****** FIXME TEST ONLY
-		String hsqlConnectionString = "jdbc:hsqldb:hsql://localhost/Fakturama";   // for connection with a HSQLDB Server
+		final String hsqlConnectionString = "jdbc:hsqldb:hsql://localhost/Fakturama";   // for connection with a HSQLDB Server
 		preferences.put("OLD_JDBC_URL", hsqlConnectionString);
 		preferences.flush();
 
@@ -206,14 +206,14 @@ public class MigrationManager {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					// we have to keep a certain order
 					OldTableinfo orderedTasks[] = new OldTableinfo[]{
-//							OldTableinfo.Properties,
+							OldTableinfo.Properties,
 							OldTableinfo.Vats,
 							OldTableinfo.Shippings,
-//							OldTableinfo.Texts,
-//							OldTableinfo.List,
+							OldTableinfo.Texts,
+//							OldTableinfo.Lists,
 							OldTableinfo.Payments,
-//							OldTableinfo.Expenditures,
-//							OldTableinfo.Receiptvouchers,
+							OldTableinfo.Expenditures,
+							OldTableinfo.Receiptvouchers,
 							OldTableinfo.Contacts,
 							OldTableinfo.Products,
 							OldTableinfo.Documents
@@ -228,6 +228,81 @@ public class MigrationManager {
 					}
 					monitor.done();
 				}
+
+				/**
+					 * entry point for migration of old data (db only)
+					 * 
+					 * @param parent the current {@link Shell}
+					 * @throws BackingStoreException
+					 */
+					@Execute
+					public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
+						preferences.put("OLD_JDBC_URL", hsqlConnectionString);
+						preferences.flush();
+				
+						// initialize DAOs via EclipseContext
+						// new Entities have their own dao ;-)
+						contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
+						countryCodesDAO = ContextInjectionFactory.make(CountryCodesDAO.class, context);
+						documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
+						propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
+						expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
+						paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
+						productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
+						receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
+						shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
+						vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
+						textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
+				
+						// old entities only have one DAO for all entities
+						oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
+				
+						// now start a ProgressMonitorDialog for tracing the progress of migration
+						ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
+						try {
+							IRunnableWithProgress op = new IRunnableWithProgress() {
+				
+								@Override
+								public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+									// we have to keep a certain order
+									OldTableinfo orderedTasks[] = new OldTableinfo[]{
+											OldTableinfo.Properties,
+											OldTableinfo.Vats,
+											OldTableinfo.Shippings,
+											OldTableinfo.Texts,
+				//							OldTableinfo.Lists,
+											OldTableinfo.Payments,
+											OldTableinfo.Expenditures,
+											OldTableinfo.Receiptvouchers,
+											OldTableinfo.Contacts,
+											OldTableinfo.Products,
+											OldTableinfo.Documents
+									};
+									//  orderedTasks[] now contains all tables which have to be converted
+									monitor.beginTask("Migration task running ...", orderedTasks.length);
+									for (OldTableinfo tableinfo : orderedTasks) {
+										monitor.subTask("converting " + tableinfo.name());
+										checkCancel(monitor);
+										runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
+				//						monitor.worked(1);
+									}
+									monitor.done();
+								}
+							};
+							;
+							progressMonitorDialog.run(true, true, op);
+						}
+						catch (InvocationTargetException e) {
+							log.error("Fehler: ", e.getMessage());
+						}
+						catch (InterruptedException e) {
+							// handle cancellation
+							throw new OperationCanceledException();
+						}
+						finally {
+							log.info("fäddich!");
+						}
+					}
 			};
 			;
 			progressMonitorDialog.run(true, true, op);
@@ -347,10 +422,12 @@ public class MigrationManager {
 				product.setItemNumber(oldProduct.getItemnr());
 				product.setName(oldProduct.getName());
 				product.setPictureName(oldProduct.getPicturename());
+				// DON'T USE ANY OTHER CONSTRUCTOR FOR CREATING BIGDECIMAL FROM DOUBLE!!! 
 				product.setPrice1(BigDecimal.valueOf(oldProduct.getPrice1()));
 				product.setPrice2(BigDecimal.valueOf(oldProduct.getPrice2()));
 				product.setPrice3(BigDecimal.valueOf(oldProduct.getPrice3()));
 				product.setPrice4(BigDecimal.valueOf(oldProduct.getPrice4()));
+				product.setPrice5(BigDecimal.valueOf(oldProduct.getPrice5()));
 				product.setQuantity(oldProduct.getQuantity());
 				product.setQuantityUnit(oldProduct.getQunit());
 				product.setSellingUnit(oldProduct.getUnit());
@@ -377,12 +454,15 @@ public class MigrationManager {
 		subProgressMonitor.beginTask("Bearbeite insgesamt", countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " Sätze");
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
+		Map<Integer, Document> invoiceDocuments = new HashMap<>();
 		GregorianCalendar zeroDate = new GregorianCalendar(2000, 0, 1);
 //		CategoryBuilder<DocumentItemCategory> catBuilder = new CategoryBuilder<DocumentItemCategory>(); 
 //		Map<String, DocumentItemCategory> documentItemCategories = catBuilder.buildCategoryMap(oldDao.findAllDocumentItemCategories(), DocumentItemCategory.class);
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
 				Document document = new Document();
+//				// save it for further use
+//				document = documentDAO.save(document);
 				if(oldDocument.getAddressid() < 0) {
 					/* manually edited address => store in the data container!
 					 * perhaps we have to check additionally if the address stored in document
@@ -410,6 +490,8 @@ public class MigrationManager {
 				// if the Invoiceid is the same as the document's id then it's the invoice itself
 				if(oldDocument.getInvoiceid() >= 0 && oldDocument.getId() != oldDocument.getInvoiceid()) {
 					invoiceRelevantDocuments.put(oldDocument.getId(), document);
+				} else if(oldDocument.getInvoiceid() >= 0 && oldDocument.getId() == oldDocument.getInvoiceid()) {
+					invoiceDocuments.put(oldDocument.getId(), document);
 				}
 				// each Document has its own items
 				if(StringUtils.isNotBlank(oldDocument.getItems())) {
@@ -473,12 +555,10 @@ public class MigrationManager {
 		// the reference to the source document cannot be set before all documents are stored
 		for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
 			try {
-				// invoiceRelevantDocuments now contains all Documents that need to have an Invoice reference
+				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
 				Document document = invoiceRelevantDocuments.get(oldDocument.getId());
-				// find the related OLD invoice document
-				OldDocuments relatedSourceDocument = oldDao.findDocumentById(oldDocument.getInvoiceid());
-				// now find the corresponding NEW document by its name (has to be unique)
-				Document relatedDocument = documentDAO.findByName(relatedSourceDocument.getName());
+				// now find the corresponding NEW document
+				Document relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
 					document.setSourceDocument(relatedDocument);
 					documentDAO.save(document);
@@ -510,7 +590,7 @@ public class MigrationManager {
 			item.setItemNumber(oldItem.getItemnr());
 			item.setName(oldItem.getName());
 			// find the VAT entry
-			VAT vatRef = vatsDAO.findByName(oldItem.getVatname());
+			VAT vatRef = vatsDAO.findById(newVats.get(oldItem.getVatid()));
 			if(vatRef == null) {
 				log.error("no entry for " + oldItem.getVatname() + " found. (old) Item ID=" + oldItem.getId());
 			} else {
@@ -521,8 +601,10 @@ public class MigrationManager {
 			// owner field (oldItem) contains a reference to the containing document - we don't need it
 			item.setPictureName(oldItem.getPicturename());
 			item.setPrice(BigDecimal.valueOf(oldItem.getPrice()));
-			Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
-			item.setProductref(prod);
+			if(oldItem.getProductid() >= 0) {
+				Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
+				item.setProductref(prod);
+			}
 			item.setQuantity(oldItem.getQuantity());
 			item.setQuantityUnit(oldItem.getQunit());
 			item.setShared(oldItem.isShared());
@@ -548,7 +630,7 @@ public class MigrationManager {
 				contact.setAccountHolder(oldContact.getAccountHolder());
 				
 				if(StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
-					contact.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", "")));  // TODO could run into trouble if bankCode contains spaces
+					contact.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", "")));  // could run into trouble if bankCode contains spaces
 				}
 				contact.setBankName(oldContact.getBankName());
 				contact.setBic(oldContact.getBic());
@@ -776,8 +858,7 @@ public class MigrationManager {
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
 				payment.setDiscountDays(oldPayment.getDiscountdays());
 				payment.setDefaultPaid(oldPayment.isDefaultpaid());
-				// DON'T USE ANY OTHER CONSTRUCTOR FOR CREATING BIGDECIMAL FROM DOUBLE!!! 
-				payment.setDiscountValue(BigDecimal.valueOf(oldPayment.getDiscountvalue()));
+				payment.setDiscountValue(oldPayment.getDiscountvalue());
 				payment.setDescription(oldPayment.getDescription());
 				payment.setNetDays(oldPayment.getNetdays());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
