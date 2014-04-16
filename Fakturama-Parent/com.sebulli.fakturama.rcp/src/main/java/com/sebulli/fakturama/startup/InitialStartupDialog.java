@@ -61,7 +61,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	protected Shell parent;
 	
 	private IWorkbench workbench;
-	private String templateFolderName = _("Templates");
 
 
 	// The plugin's preference store
@@ -153,6 +152,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		comboDriver.setContentProvider(ArrayContentProvider.getInstance());
 		comboDriver.setInput(connectionProviders);
 		comboDriver.setLabelProvider(new LabelProvider() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public String getText(Object element) {
 				String driverName = (String) ((ServiceReference<DataSourceFactory>)element).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
@@ -165,6 +165,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		});
 		comboDriver.addSelectionChangedListener(new ISelectionChangedListener() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				String driverClass = (String) ((ServiceReference<DataSourceFactory>)((IStructuredSelection) event

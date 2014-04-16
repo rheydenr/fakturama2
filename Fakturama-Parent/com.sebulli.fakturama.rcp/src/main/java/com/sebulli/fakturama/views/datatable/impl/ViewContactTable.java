@@ -197,7 +197,7 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 //		topicTreeViewer.setInput(Data.INSTANCE.getContacts());
 	}
 	
-	private NatTable buildTable(Text searchTextField) {
+	protected NatTable buildTable(Text searchTextField) {
 		ListTableGridLayer<Contact> gridLayer = new ListTableGridLayer<Contact>(ContactsListColumnAccessor.CONTACT_PROPERTIES, 
 				ContactsListColumnAccessor.PROPERTY_TO_LABEL_MAP, contactDAO.findAll(),
 				new ContactsListColumnAccessor(), searchTextField, new ContactsTextFilterator());

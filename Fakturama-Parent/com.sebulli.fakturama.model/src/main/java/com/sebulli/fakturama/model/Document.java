@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -68,8 +69,6 @@ public class Document implements Serializable {
 	 * 
 	 * @generated
 	 */
-	@ManyToOne(cascade = { CascadeType.ALL })
-	@JoinColumns({ @JoinColumn(name = "FK_CONTACT") })
 	private Contact contact = null;
 
 	/**
@@ -160,8 +159,8 @@ public class Document implements Serializable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
-	 * reference to the docuement from which this document was created <!--
-	 * end-model-doc -->
+	 * This is the reference to the document from which this document was
+	 * created <!-- end-model-doc -->
 	 * 
 	 * @generated
 	 */
@@ -243,7 +242,7 @@ public class Document implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PAYEDVALUE")
+	@Column(name = "PAYEDVALUE", precision = 12, scale = 3)
 	private BigDecimal payedValue = null;
 
 	/**
@@ -321,7 +320,7 @@ public class Document implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "TOTALVALUE")
+	@Column(name = "TOTALVALUE", precision = 12, scale = 3)
 	private BigDecimal totalValue = null;
 
 	/**
@@ -755,8 +754,8 @@ public class Document implements Serializable {
 	 * Returns the value of '<em><b>sourceDocument</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
-	 * reference to the docuement from which this document was created <!--
-	 * end-model-doc -->
+	 * This is the reference to the document from which this document was
+	 * created <!-- end-model-doc -->
 	 * 
 	 * @return the value of '<em><b>sourceDocument</b></em>' feature
 	 * @generated
@@ -770,8 +769,8 @@ public class Document implements Serializable {
 	 * feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc -->
-	 * reference to the docuement from which this document was created <!--
-	 * end-model-doc -->
+	 * This is the reference to the document from which this document was
+	 * created <!-- end-model-doc -->
 	 * 
 	 * @param newSourceDocument
 	 *            the new value of the '{@link Document#getSourceDocument()

@@ -22,13 +22,13 @@
                 <tags>NoMove</tags>
                 <variables>datalists</variables>
               </children>
-              <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="com.sebulli.fakturama.views.datasettable.viewContactTable" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.impl.ViewContactTable" label="%page.contacts" iconURI="icon://COMMAND_CONTACT" closeable="true">
+              <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="com.sebulli.fakturama.views.datasettable.viewContactTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.impl.ViewContactTable" label="%page.contacts" iconURI="icon://COMMAND_CONTACT" closeable="true">
                 <tags>NoMove</tags>
               </children>
               <children xsi:type="basic:Part" xmi:id="_M4ilIE8JEeOddfJz0XevPw" elementId="com.sebulli.fakturama.views.datasettable.viewProductTable" toBeRendered="false" visible="false" label="%command.products.name" iconURI="icon://COMMAND_PRODUCT">
                 <tags>NoMove</tags>
               </children>
-              <children xsi:type="basic:Part" xmi:id="_asQzsE8JEeOddfJz0XevPw" elementId="com.sebulli.fakturama.views.datasettable.viewVatTable" toBeRendered="false" visible="false" label="%command.vats.name" iconURI="icon://COMMAND_VAT">
+              <children xsi:type="basic:Part" xmi:id="_asQzsE8JEeOddfJz0XevPw" elementId="com.sebulli.fakturama.views.datasettable.viewVatTable" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable" label="%command.vats.name" iconURI="icon://COMMAND_VAT" closeable="true">
                 <tags>NoMove</tags>
               </children>
               <children xsi:type="basic:Part" xmi:id="_nWHQIE8JEeOddfJz0XevPw" elementId="com.sebulli.fakturama.views.datasettable.viewShippingTable" toBeRendered="false" visible="false" label="%command.shippings.name" iconURI="icon://COMMAND_VAT">
@@ -144,6 +144,7 @@
   <handlers xmi:id="_RmPTwutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.aboutCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.AboutHandler" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTw-tOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.handler" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.tools.emf.liveeditor/org.eclipse.e4.tools.emf.liveeditor.OpenLiveDialogHandler" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTxOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.handler.opencontacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenContactsHandler" command="_RmPT0-tOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_OXcLEJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.rcp.handler.openvats" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenVatsHandler" command="_f9TOgJNwEeOHwsccdr5WIQ"/>
   <handlers xmi:id="_7l2HYDtWEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.openContactDetail" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CallEditor" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
   <handlers xmi:id="__VvQYEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.handler.selectWorkspace" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
   <handlers xmi:id="_jFM_cEs2EeOZ37-tYt-QvQ" elementId="com.sebulli.fakturama.rcp.handler.0" command="_huYFgEstEeOZ37-tYt-QvQ"/>
@@ -168,6 +169,7 @@
   <commands xmi:id="_RmPTz-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="quitCommand"/>
   <commands xmi:id="_RmPT0utOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.help.aboutAction" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="aboutCommand"/>
   <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.command.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%command.contacts.name" description="%command.contacts.tooltip"/>
+  <commands xmi:id="_f9TOgJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.command.openVats" commandName="%command.vats.name" description="%command.vats.tooltip"/>
   <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="%command.new.contact.name" description="%command.open.contact.tooltip">
     <parameters xmi:id="_P3fboDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.cmdparam.objId" name="object Id" typeId=""/>
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>

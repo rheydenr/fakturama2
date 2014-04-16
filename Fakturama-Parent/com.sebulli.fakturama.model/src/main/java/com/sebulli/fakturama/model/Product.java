@@ -181,7 +181,7 @@ public class Product implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PRICE1")
+	@Column(name = "PRICE1", precision = 8, scale = 3)
 	private BigDecimal price1 = null;
 
 	/**
@@ -190,7 +190,7 @@ public class Product implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PRICE2")
+	@Column(name = "PRICE2", precision = 8, scale = 3)
 	private BigDecimal price2 = null;
 
 	/**
@@ -199,7 +199,7 @@ public class Product implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PRICE3")
+	@Column(name = "PRICE3", precision = 8, scale = 3)
 	private BigDecimal price3 = null;
 
 	/**
@@ -208,8 +208,17 @@ public class Product implements Serializable {
 	 * @generated
 	 */
 	@Basic()
-	@Column(name = "PRICE4")
+	@Column(name = "PRICE4", precision = 8, scale = 3)
 	private BigDecimal price4 = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Basic()
+	@Column(name = "PRICE5", precision = 8, scale = 3)
+	private BigDecimal price5 = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -850,6 +859,32 @@ public class Product implements Serializable {
 	}
 
 	/**
+	 * Returns the value of '<em><b>price5</b></em>' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the value of '<em><b>price5</b></em>' feature
+	 * @generated
+	 */
+	public BigDecimal getPrice5() {
+		return price5;
+	}
+
+	/**
+	 * Sets the '{@link Product#getPrice5() <em>price5</em>}' feature.
+	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param newPrice5
+	 *            the new value of the '{@link Product#getPrice5() price5}'
+	 *            feature.
+	 * @generated
+	 */
+	public void setPrice5(BigDecimal newPrice5) {
+		price5 = newPrice5;
+	}
+
+	/**
 	 * Returns the value of '<em><b>quantity</b></em>' feature.
 	 * 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1024,9 +1059,10 @@ public class Product implements Serializable {
 				+ " [itemNumber: " + getItemNumber() + "]" + " [price1: "
 				+ getPrice1() + "]" + " [price2: " + getPrice2() + "]"
 				+ " [price3: " + getPrice3() + "]" + " [price4: " + getPrice4()
-				+ "]" + " [quantity: " + getQuantity() + "]"
-				+ " [quantityUnit: " + getQuantityUnit() + "]"
-				+ " [sellingUnit: " + getSellingUnit() + "]" + " [webshopId: "
-				+ getWebshopId() + "]" + " [weight: " + getWeight() + "]";
+				+ "]" + " [price5: " + getPrice5() + "]" + " [quantity: "
+				+ getQuantity() + "]" + " [quantityUnit: " + getQuantityUnit()
+				+ "]" + " [sellingUnit: " + getSellingUnit() + "]"
+				+ " [webshopId: " + getWebshopId() + "]" + " [weight: "
+				+ getWeight() + "]";
 	}
 }

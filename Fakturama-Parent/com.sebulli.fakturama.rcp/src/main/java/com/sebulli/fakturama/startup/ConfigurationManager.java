@@ -107,8 +107,7 @@ public class ConfigurationManager {
 				// if no database is set then we launch the application for the first time
 				log.info("Application was started the first time!");
 				selectWorkspace(requestedWorkspace, shell);
-			}
-			else if (preferences.get(GENERAL_WORKSPACE_REQUEST, null) != null) {
+			} else if (preferences.get(GENERAL_WORKSPACE_REQUEST, null) != null) {
 				// Checks, whether the workspace request is set.
 				// If yes, the workspace is set to this value and the request value is cleared.
 				// This mechanism is used, because the workspace can only be changed by restarting the application.

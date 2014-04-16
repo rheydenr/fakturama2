@@ -13,7 +13,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import com.sebulli.fakturama.model.Contact;
 
 /**
- * @author G527032
+ * @author R. Heydenreich
  *
  *
  * TODO Die Klasse ähnelt ein bißchen der Klasse DataTableColumn
@@ -82,8 +82,7 @@ public class ContactsListColumnAccessor implements IColumnPropertyAccessor<Conta
 	@Override
 	public void setDataValue(Contact rowObject, int columnIndex,
 			Object newValue) {
-		throw new UnsupportedOperationException("this operation is not allowed in this list.");
-		
+		throw new UnsupportedOperationException("this operation is not allowed in this list.");	
 	}
 
 	@Override
