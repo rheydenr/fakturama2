@@ -44,7 +44,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.tools.services.IResourcePool;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -126,8 +125,8 @@ public class MigrationManager {
 	@Preference
 	private IEclipsePreferences preferences;
 	
-	@Resource
-	private IResourcePool rp;
+//	@Resource
+//	private IResourcePool rp;
 
 	/*
 	 * all available DAO classes

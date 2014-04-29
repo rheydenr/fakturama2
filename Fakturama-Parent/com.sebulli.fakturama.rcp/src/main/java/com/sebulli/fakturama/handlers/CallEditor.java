@@ -29,6 +29,8 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable;
 
 /**
  * Universal Handler to open an UniDataSet editor
@@ -50,30 +52,51 @@ public class CallEditor {
 			if (objId != null) {
 				// Define  the editor
 //				// And try to open it
-				partService.showPart(createEditorPart("info", objId), PartState.ACTIVATE);
+				partService.showPart(createEditorPart(param, objId), PartState.ACTIVATE);
 			}
 	}
 	
-	private MPart createEditorPart(String title, String objId) {
+	/**
+	 * create a new Part from a PartDescriptor if no one exists.
+	 * 
+	 * @param title
+	 * @param objId
+	 * @return
+	 */
+	private MPart createEditorPart(String type, String objId) {
 		MPart myPart = null;
 		Collection<MPart> parts = partService.getParts();
+		// at first we look for an existing Part
 		for (MPart mPart : parts) {
-			if(StringUtils.equalsIgnoreCase(mPart.getElementId(), "com.sebulli.fakturama.rcp.docview")
-					&& mPart.getContext() != null){
-			Object object = mPart.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
-			if(object.equals(objId)) {
-				myPart = mPart;
-				break;
-			}
+			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), "com.sebulli.fakturama.rcp.docview") && mPart.getContext() != null) {
+				Object object = mPart.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
+				if (object.equals(objId)) {
+					myPart = mPart;
+					break;
+				}
 			}
 		}
-		if(myPart == null) {
 		
-		myPart = partService.createPart("com.sebulli.fakturama.rcp.docview");
-		myPart.setLabel(title);
-		myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/"+ContactEditor.class.getName());
-		myPart.setContext(EclipseContextFactory.create());
-		myPart.getContext().set("com.sebulli.fakturama.rcp.editor.objId", objId);
+		// if not found then we create a new one
+		if (myPart == null) {			
+			myPart = partService.createPart("com.sebulli.fakturama.rcp.docview");
+			
+			// we have to distinguish the different editors here
+			switch (type) {
+			case RHENatTable.ID:
+				myPart.setLabel("VAT ");
+				myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/" + VatEditor.class.getName());
+				myPart.setContext(partService.getActivePart().getContext());
+				myPart.getContext().set("com.sebulli.fakturama.rcp.editor.objId", objId);
+				break;
+
+			default:
+				myPart.setLabel("unknown");
+				myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/" + ContactEditor.class.getName());
+				break;
+			}
+			myPart.setContext(EclipseContextFactory.create());
+			myPart.getContext().set("com.sebulli.fakturama.rcp.editor.objId", objId);
 		}
 		return myPart;
 	}

@@ -16,7 +16,6 @@ package com.sebulli.fakturama.views.datatable;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.tools.services.IResourcePool;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -41,8 +40,8 @@ import com.sebulli.fakturama.model.IEntity;
  */
 public class DataTableColumn<T extends IEntity> {
 
-    @Inject
-    private IResourcePool resourcePool;
+//    @Inject
+//    private IResourcePool resourcePool;
 
 	// All used images are loaded by default and when the table row is
 	// displayed. This makes the loading of the table faster.

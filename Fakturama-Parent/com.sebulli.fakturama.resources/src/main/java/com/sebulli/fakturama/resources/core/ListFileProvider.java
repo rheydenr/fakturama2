@@ -13,12 +13,11 @@
  */ 
 package com.sebulli.fakturama.resources.core;
 
-import org.eclipse.e4.tools.services.BasicResourceProvider;
 
 /**
  * @author Ralf Heydenreich
  *
  */
-public class ListFileProvider extends BasicResourceProvider {
+public class ListFileProvider { // extends BasicResourceProvider {
 
 }

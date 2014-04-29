@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,7 +28,7 @@ import javax.persistence.TemporalType;
  */
 @Entity()
 @Table(name = "FKT_VAT")
-public class VAT implements Serializable {
+public class VAT implements Serializable, IEntity {
 	/**
 	 * @generated
 	 */
@@ -345,5 +346,29 @@ public class VAT implements Serializable {
 				+ " [deleted: " + getDeleted() + "]" + " [description: "
 				+ getDescription() + "]" + " [taxValue: " + getTaxValue() + "]"
 				+ " [modified: " + getModified() + "]";
+	}
+
+	@Override
+	public String getCategory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getTransactionKey() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getAddressKey() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getFormatedStringValueByKey(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

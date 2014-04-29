@@ -24,7 +24,16 @@ public interface IEntity {
 	 * The id of this entity
 	 * @return
 	 */
-	public int getId();
+	public Long getId();
+	
+
+	/**
+	 * Returns the value of '<em><b>name</b></em>' feature.
+	 * 
+	 * @return the value of '<em><b>name</b></em>' feature
+	 */
+	public String getName();
+
 
 	/**
 	 * Address key, if available. Used in content provider for data table.

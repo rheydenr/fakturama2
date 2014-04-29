@@ -80,7 +80,7 @@ public class ViewDataTableContentProvider<T> implements IStructuredContentProvid
 			
 			// Check all entries
 			for (IEntity uds : content) {
-				// Use only those entries, that match the filters
+				// Use only those entries that match the filters
 				if ((uds.getCategory().toLowerCase().startsWith(categoryFilter.toLowerCase() + "/") || uds.getCategory().equalsIgnoreCase(categoryFilter) || categoryFilter
 						.isEmpty())
 						&& ((transactionFilter < 0) || (uds.getTransactionKey() == transactionFilter))

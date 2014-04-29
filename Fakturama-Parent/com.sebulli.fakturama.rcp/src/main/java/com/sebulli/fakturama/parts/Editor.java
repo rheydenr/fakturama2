@@ -60,6 +60,7 @@ import com.sebulli.fakturama.model.IEntity;
  */
 public abstract class Editor<T extends IEntity> {
 	
+	@Inject
 	@Preference(nodePath = "/configuration/defaultValues")
 	protected IEclipsePreferences defaultValuePrefs;
 	
@@ -148,13 +149,11 @@ public abstract class Editor<T extends IEntity> {
 		 * @param hSpan
 		 *            Horizontal span
 		 */
-		public StdComposite(Composite parent, final T uds, List<T> dataSetArray, final String propertyKey, final String thisDataset, int hSpan) {
+		public StdComposite(Composite parent, final T uds, final T currentStandardEntry, final String thisDataset, int hSpan) {
 
 			// Set the local variables
-			this.propertyKey = propertyKey;
 			this.uds = uds;
 			this.thisDataset = thisDataset;
-			this.dataSetArray = dataSetArray;
 
 			// Create a container for the text widget and the button
 			Composite stdComposite = new Composite(parent, SWT.NONE);
@@ -166,7 +165,7 @@ public abstract class Editor<T extends IEntity> {
 			txtStd.setEditable(false);
 
 			GridDataFactory.swtDefaults().hint(200, -1).align(SWT.BEGINNING, SWT.CENTER).applyTo(txtStd);
-			setStdText();
+			setStdText(currentStandardEntry);
 
 			// Create the button to make this entry to the standard
 			stdButton = new Button(stdComposite, SWT.BORDER);
@@ -184,7 +183,7 @@ public abstract class Editor<T extends IEntity> {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (uds.getId() >= 0) {
-						defaultValuePrefs.putInt(propertyKey, uds.getId());
+						defaultValuePrefs.putLong(propertyKey, uds.getId());
 						txtStd.setText(thisDataset);
 						refreshView();
 					}
@@ -197,27 +196,17 @@ public abstract class Editor<T extends IEntity> {
 		 * Test, if this is the standard entry and set the text of the text
 		 * widget.
 		 */
-		public void setStdText() {
+		public void setStdText(T stdEntry) {
 			if (txtStd != null) {
-				int stdID = 0;
-
-				// Get the ID of the standard unidataset
-				try {
-					// TODO chck if 1 is a valid default ID
-					stdID = defaultValuePrefs.getInt(propertyKey, 1);
-				}
-				catch (NumberFormatException e) {
-					stdID = 0;
-				}
 
 				// If the editor's unidataset is the standard entry
-				if (uds.getId() == stdID) {
+				if (uds.getId() == stdEntry.getId()) {
 					// Mark it as "standard" ..
 					txtStd.setText(thisDataset);
 				}
 				else
 					// .. or display the one that is the standard entry.
-					txtStd.setText(contactDAO.findById(stdID).getName());
+					txtStd.setText(stdEntry.getName());
 			}
 		}
 		
@@ -230,11 +219,18 @@ public abstract class Editor<T extends IEntity> {
 		public void setToolTipText (String toolTipText) {
 			stdButton.setToolTipText(toolTipText);
 		}
+		
+		/**
+		 * Sets the focus of this component to the default button.
+		 */
+		public void focus() {
+			stdButton.setFocus();
+		}
 
 	}
 
 	/**
-	 * Asks this part to take focus within the workbench Set the focus to the
+	 * Asks this part to take focus within the workbench. Set the focus to the
 	 * standard text
 	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
@@ -242,7 +238,8 @@ public abstract class Editor<T extends IEntity> {
 	@Focus
 	public void setFocus() {
 		if (stdComposite != null)
-			stdComposite.setStdText();
+//			stdComposite.setStdText();
+			stdComposite.focus();
 	}
 
 	/**
