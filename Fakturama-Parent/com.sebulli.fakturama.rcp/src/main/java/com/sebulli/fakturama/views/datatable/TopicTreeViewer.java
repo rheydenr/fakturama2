@@ -16,14 +16,16 @@ package com.sebulli.fakturama.views.datatable;
 
 
 
-import static com.sebulli.fakturama.Translate._;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -39,6 +41,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -49,6 +52,10 @@ import com.sebulli.fakturama.resources.core.IconSize;
  * @author Gerd Bartelt
  */
 public class TopicTreeViewer<T> extends TreeViewer {
+	
+	@Inject
+	@Translation
+	protected Messages _;
 
 	private TopicTreeViewer me = this;
 
@@ -105,7 +112,7 @@ public class TopicTreeViewer<T> extends TreeViewer {
 		// Add a "show all" entry
 		if (useAll) {
 			//T: Tree viewer entry for "show all"
-			all = new TreeParent(_("all"));
+			all = new TreeParent(_.topictreeAll);
 			root.addChild(all);
 		}
 
@@ -113,11 +120,11 @@ public class TopicTreeViewer<T> extends TreeViewer {
 		if (useDocumentAndContactFilter) {
 			transactionItem = new TreeParent("---", "document_10.png");
 			//T: Tool Tip Text
-			transactionItem.setToolTip(_("Show all documents that belong to this transaction."));
+			transactionItem.setToolTip(_.topictreeAllDocumentsTooltip);
 
 			contactItem = new TreeParent("---", "contact_10.png");
 			//T: Tool Tip Text
-			contactItem.setToolTip(_("Show all documents that belong to this customer."));
+			contactItem.setToolTip(_.topictreeAllCustomersTooltip);
 			
 
 		}
@@ -763,7 +770,7 @@ public class TopicTreeViewer<T> extends TreeViewer {
 
 		// Set the name
 		//T: Topic Tree Viewer transaction title
-		transactionItem.setName(_("Transaction"));
+		transactionItem.setName(_.topictreeTransaction);
 		
 		refresh();
 	}

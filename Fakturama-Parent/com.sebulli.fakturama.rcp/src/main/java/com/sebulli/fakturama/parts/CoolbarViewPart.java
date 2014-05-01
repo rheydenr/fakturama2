@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.parts;
 
-import static com.sebulli.fakturama.Translate._;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -14,6 +12,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -36,6 +35,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
 import com.sebulli.fakturama.handlers.ICommandIds;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -60,6 +60,10 @@ public class CoolbarViewPart {
 	
 	@Inject
 	private Logger log;
+	
+	@Inject
+	@Translation
+	protected Messages _;
 
 
 	/**
@@ -101,25 +105,25 @@ public class CoolbarViewPart {
 			
 		CoolBar coolbar2 = coolbarmgr.createControl(parent);
 		ToolBar toolBar2 = new ToolBar(coolbar2, SWT.FLAT);
-		String tooltipPrefix = _("command.new.tooltip") + " ";
+		String tooltipPrefix = _.commandNewTooltip + " ";
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_LETTER, 
-				tooltipPrefix + _("main.menu.new.letter"), Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_OFFER, 
-				tooltipPrefix + _("main.menu.new.offer"), Icon.ICON_OFFER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_ORDER, 
-				tooltipPrefix + _("main.menu.new.order"), Icon.ICON_ORDER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CONFIRMATION, 
-				tooltipPrefix + _("main.menu.new.confirmation"), Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_INVOICE, 
-				tooltipPrefix + _("main.menu.new.invoice"), Icon.ICON_INVOICE_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DELIVERY, 
-				tooltipPrefix + _("main.menu.new.deliverynote"), Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CREDIT, 
-				tooltipPrefix + _("main.menu.new.credit"), Icon.ICON_CREDIT_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DUNNING, 
-				tooltipPrefix + _("main.menu.new.dunning"), Icon.ICON_DUNNING_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_PROFORMA, 
-				tooltipPrefix + _("main.menu.new.proforma"), Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + _.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
 		finishToolbar(coolbar2, toolBar2);
 		
 		CoolBar coolbar3 = coolbarmgr.createControl(parent);

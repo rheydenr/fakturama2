@@ -14,8 +14,6 @@
 
 package com.sebulli.fakturama.views;
 
-import static com.sebulli.fakturama.Translate._;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -23,7 +21,7 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.services.translation.TranslationService;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.nebula.widgets.pgroup.PGroup;
@@ -35,8 +33,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import com.sebulli.fakturama.Translate;
 import com.sebulli.fakturama.handlers.ICommandIds;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -52,10 +50,9 @@ public class NavigationView {
 	@Inject
 	private EHandlerService handlerService;
 	
-	
 	@Inject
-	protected TranslationService trsSrv;
-
+	@Translation
+	protected Messages _;
 	  
 	  private Composite composite;
 	/**
@@ -116,11 +113,10 @@ public class NavigationView {
 			final String commandId) {
 		CLabel label = new CLabel(group, SWT.NORMAL);
 		label.setImage(commandIcon.getImage(IconSize.DefaultIconSize));
-		label.setToolTipText(_(commandIconDescriptor + ".tooltip"));
+		label.setToolTipText(_.getMessageFromKey(commandIconDescriptor + ".tooltip"));
 		
 		// formerly known as ACTIONTEXT
-		label.setText(trsSrv.translate("%"+commandIconDescriptor + ".name", Translate.CONTRIBUTOR_URI));
-//		label.setText(_(commandIconDescriptor + ".name"));
+		label.setText(_.getMessageFromKey(commandIconDescriptor + ".name"));
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -139,8 +135,8 @@ public class NavigationView {
 	private PGroup createPGroup(String groupName, Icon groupIcon) {
 		PGroup group = new PGroup(composite, SWT.SMOOTH);
 		//T: Title of an expand bar in the navigations view
-	    group.setText(trsSrv.translate("%"+groupName, Translate.CONTRIBUTOR_URI));
-	    group.setToolTipText(_(groupName + ".tooltip"));
+	    group.setText(_.getMessageFromKey(groupName));
+	    group.setToolTipText(_.getMessageFromKey(groupName + ".tooltip"));
 	    group.setImage(groupIcon.getImageDescriptor(IconSize.ToobarIconSize).createImage());
 	    group.setImagePosition(SWT.LEFT | SWT.TOP);
 	    

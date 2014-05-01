@@ -9,9 +9,9 @@ final class VATMatcher implements Matcher<VAT> {
 	final String vatCategoryName;
 	final boolean isRootNode;
 	
-	public VATMatcher(String pVatCategoryName) {
+	public VATMatcher(String pVatCategoryName, TreeObjectType treeObjectType) {
 		this.vatCategoryName = pVatCategoryName;
-		this.isRootNode = pVatCategoryName.equals(RHENatTable.ROOT_NODE_NAME);
+		this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -83,11 +84,16 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 
 public class RHENatTable {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
 	// ID of this view
 	public static final String ID = "com.sebulli.fakturama.views.datasettable.viewVatTable";
@@ -122,17 +128,17 @@ public class RHENatTable {
 	protected static final String ROOT_NODE_NAME = "all";
 	
 	// VAT view specific constants
-	public static final int DEFAULT_COLUMN_POSITION = 0;
-	public static final int NAME_COLUMN_POSITION = 1;
-	public static final int DESCRIPTION_COLUMN_POSITION = 2;
-	public static final int VALUE_COLUMN_POSITION = 3;
+	private static final int DEFAULT_COLUMN_POSITION = 0;
+	private static final int NAME_COLUMN_POSITION = 1;
+	private static final int DESCRIPTION_COLUMN_POSITION = 2;
+	private static final int VALUE_COLUMN_POSITION = 3;
 	
-	public static final String STANDARD_PROPERTYNAME = "default";
-	public static final String NAME_PROPERTYNAME = "name";
-	public static final String DESCRIPTION_PROPERTYNAME = "description";
-	public static final String VALUE_PROPERTYNAME = "taxValue";
+	private static final String STANDARD_PROPERTYNAME = "default";
+	private static final String NAME_PROPERTYNAME = "name";
+	private static final String DESCRIPTION_PROPERTYNAME = "description";
+	private static final String VALUE_PROPERTYNAME = "taxValue";
 
-	public static final String[] VAT_PROPERTY_NAMES = {
+	private static final String[] VAT_PROPERTY_NAMES = {
 		STANDARD_PROPERTYNAME, 
 		NAME_PROPERTYNAME, 
 		DESCRIPTION_PROPERTYNAME, 
@@ -144,10 +150,10 @@ public class RHENatTable {
 	 */
 	protected static final String NO_CATEGORY_LABEL = "$shownothing";
 	protected static final String NO_SORT_LABEL = "noSortLabel";
-	public static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
-	public static final String STATUS_CELL_LABEL = "Status_Cell_LABEL";
-	public static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
-	public static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
+	private static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
+	private static final String STATUS_CELL_LABEL = "Status_Cell_LABEL";
+	private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
+	private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
 	
 	/**
 	 * controls if the header label for the list view should be shown
@@ -221,7 +227,7 @@ public class RHENatTable {
 			public String getColumnProperty(int columnIndex) {
 				switch (columnIndex) {
 				case DEFAULT_COLUMN_POSITION:
-					return STANDARD_PROPERTYNAME;
+					return msg.commonLabelDefault;
 				case NAME_COLUMN_POSITION:
 				case DESCRIPTION_COLUMN_POSITION:
 				case VALUE_COLUMN_POSITION:
@@ -434,7 +440,7 @@ private VAT getDefaultVAT() {
 
 		// Search label an search field
 		Label searchLabel = new Label(searchComposite, SWT.NONE);
-		searchLabel.setText("Search:");
+		searchLabel.setText(msg.commonLabelSearchfield);
 		GridDataFactory.swtDefaults().applyTo(searchLabel);
 		searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
@@ -463,7 +469,7 @@ private VAT getDefaultVAT() {
 	}
 	
 	private TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
-		TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, VATCategory.class, false, true);
+		TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, VATCategory.class, false, true);
 		topicTreeViewer.setInput(GlazedLists.eventList(vatCategoriesDAO.findAll()));
 		// TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
 		// Eins von beiden muß es doch geben, oder?
@@ -471,15 +477,14 @@ private VAT getDefaultVAT() {
 		return topicTreeViewer;
 	}
 	
-	
-	/**
-	 * Set the category filter
-	 * 
-	 * @param filter
-	 *            The new filter string
-	 */
-	public void setCategoryFilter(String filter) {
-
+    /**
+     * Set the category filter with a given {@link TreeObjectType}.
+     * 
+     * @param filter
+     *            The new filter string
+     * @param treeObjectType the {@link TreeObjectType}
+     */
+    public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
 		// Set the label with the filter string
 		if (filter.equals("$shownothing"))
 			filterLabel.setText("");
@@ -492,7 +497,7 @@ private VAT getDefaultVAT() {
 		filterLabel.pack(true);
 
 		// Reset transaction and contact filter, set category filter
-		treeFilteredIssues.setMatcher(new VATMatcher(filter));
+		treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType));
 //		contentProvider.setTreeObject(treeObject);
 
 		// Set category to the addNew action. So a new data set is created
@@ -504,6 +509,19 @@ private VAT getDefaultVAT() {
 //		//Refresh
 //		this.refresh();
 		
+
+    }
+	
+	/**
+	 * Set the category filter
+	 * 
+	 * @param filter
+	 *            The new filter string
+	 *            
+	 * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)} instead
+	 */
+	public void setCategoryFilter(String filter) {
+	    setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
 	}
 
 	/**

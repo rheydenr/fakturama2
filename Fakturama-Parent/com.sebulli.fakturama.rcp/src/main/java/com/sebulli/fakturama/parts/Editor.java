@@ -14,8 +14,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import static com.sebulli.fakturama.Translate._;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -26,6 +24,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -51,6 +50,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ContactDAO;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.IEntity;
 
 /**
@@ -64,6 +64,10 @@ public abstract class Editor<T extends IEntity> {
 	@Preference(nodePath = "/configuration/defaultValues")
 	protected IEclipsePreferences defaultValuePrefs;
 	
+	@Inject
+	@Translation
+	protected Messages _;
+
 	@Inject
 	protected ContactDAO contactDAO;
 
@@ -170,7 +174,7 @@ public abstract class Editor<T extends IEntity> {
 			// Create the button to make this entry to the standard
 			stdButton = new Button(stdComposite, SWT.BORDER);
 			//T: Button text
-			stdButton.setText(_("Set as standard"));
+			stdButton.setText(_.commonButtonSetdefault);
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(stdButton);
 			stdButton.setEnabled(false);
 			stdButton.addSelectionListener(new SelectionAdapter() {
@@ -550,9 +554,9 @@ public abstract class Editor<T extends IEntity> {
 	public int promptToSaveOnClose(Composite parent) {
 		
 		//T: Dialog Header
-		MessageDialog dialog = new MessageDialog(parent.getShell(), _("Save changes"), null,
+		MessageDialog dialog = new MessageDialog(parent.getShell(), _.commonButtonSavechanges, null,
 				//T: Dialog Text
-				_("Save changes ?"), MessageDialog.QUESTION,
+				_.commonButtonSavechangesquestion, MessageDialog.QUESTION,
 				new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
 
 		final int dialogResult = dialog.open();

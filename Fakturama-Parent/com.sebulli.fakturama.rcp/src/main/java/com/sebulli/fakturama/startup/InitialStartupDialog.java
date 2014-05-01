@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.startup;
 
-import static com.sebulli.fakturama.Translate._;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +10,7 @@ import javax.inject.Named;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -44,6 +43,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -55,12 +55,18 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	// Workspace path
 	private String workspace = "";
 	
+	/*
+	 * These fields can't be injected since this class is NOT constructed ApplicationModel.
+	 * Therefore there's no EclipseContext from which these fields could be determined. 
+	 */
 	private Logger log;
+	protected Messages _;
+	private IWorkbench workbench;
+	
 	
 	@Inject
 	protected Shell parent;
-	
-	private IWorkbench workbench;
+
 
 
 	// The plugin's preference store
@@ -73,16 +79,18 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * @param parent
 	 * @param preferences2 
 	 * @param log
+	 * @param messages 
 	 * @param requestedWorkspace 
 	 * @param style
 	 */
 	public InitialStartupDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
-			IEclipsePreferences preferences, IWorkbench workbench, Logger log, String requestedWorkspace) {
+			IEclipsePreferences preferences, IWorkbench workbench, Logger log, Messages messages, String requestedWorkspace) {
 		super(parent);
 		this.workbench = workbench;
 		this.preferences = preferences;
 		this.workspace = requestedWorkspace;
-		parent.setText(_("start.first.select.workdir"));
+		this._ = messages;
+		parent.setText(messages.startFirstSelectWorkdir);
 		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
 		Collection<ServiceReference<DataSourceFactory>> serviceReferences;
 		try {
@@ -115,11 +123,11 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	    setTitleImage(Icon.ABOUT_ICON.getImage(IconSize.AppIconSize));
 	 	setTitle("Fakturama Initialisierung");
 	    // 1st row
-		setMessage(_("start.first.select.workdir.verbose"), IMessageProvider.INFORMATION);
+		setMessage(_.startFirstSelectWorkdirVerbose, IMessageProvider.INFORMATION);
 		
 		// 2nd row
 		Label lblWorkDir = new Label(container, SWT.NONE);
-		lblWorkDir.setText(_("start.first.select.workdir.short"));
+		lblWorkDir.setText(_.startFirstSelectWorkdirShort);
 		txtWorkdir = new Text(container, SWT.BORDER);
 		GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		layoutData.minimumWidth = 450;
@@ -128,25 +136,25 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		
 		final Button btnDirChooser = new Button(container, SWT.NONE);
 		btnDirChooser.setText("...");
-		btnDirChooser.setToolTipText(_("start.first.select.workdir.verbose"));
+		btnDirChooser.setToolTipText(_.startFirstSelectWorkdirVerbose);
 		btnDirChooser.addSelectionListener(new DirectoryChooser(btnDirChooser, true, false));
 		
 		
 		// 2.1st row
 		Label lblOldWorkDir = new Label(container, SWT.NONE);
-		lblOldWorkDir.setText(_("start.first.select.oldworkdir.short"));
+		lblOldWorkDir.setText(_.startFirstSelectOldworkdirShort);
 		txtOldWorkdir = new Text(container, SWT.BORDER);
 		txtOldWorkdir.setLayoutData(layoutData);
 		
 		final Button btnOldDirChooser = new Button(container, SWT.NONE);
 		btnOldDirChooser.setText("...");
-		btnOldDirChooser.setToolTipText(_("start.first.select.oldworkdir.verbose"));
+		btnOldDirChooser.setToolTipText(_.startFirstSelectOldworkdirVerbose);
 		btnOldDirChooser.addSelectionListener(new DirectoryChooser(btnOldDirChooser, false, true));
 		
 		// 3rd row
 		Label lblDatabase = new Label(container, SWT.NONE);
 		lblDatabase.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDatabase.setText(_("start.first.select.db.credentials.name"));
+		lblDatabase.setText(_.startFirstSelectDbCredentialsName);
 		
 		comboDriver = new ComboViewer(container, SWT.NONE);
 		comboDriver.setContentProvider(ArrayContentProvider.getInstance());
@@ -180,7 +188,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		// 4th row
 		Label lblJdbcurl = new Label(container, SWT.NONE);
 		lblJdbcurl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblJdbcurl.setText(_("start.first.select.db.credentials.jdbc"));
+		lblJdbcurl.setText(_.startFirstSelectDbCredentialsJdbc);
 		
 		txtJdbcUrl = new Text(container, SWT.BORDER);
 		txtJdbcUrl.setText("jdbc:derby:memory:test;create=true");
@@ -189,13 +197,13 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		// 5th row
 		Label lblUser = new Label(container, SWT.NONE);
 		lblUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblUser.setText(_("start.first.select.db.credentials.user"));
+		lblUser.setText(_.startFirstSelectDbCredentialsUser);
 		txtUser = new Text(container, SWT.BORDER);
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		Label lblPassword = new Label(container, SWT.NONE);
 		lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblPassword.setText(_("start.first.select.db.credentials.password"));
+		lblPassword.setText(_.startFirstSelectDbCredentialsPassword);
 
 		txtPassword = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -229,7 +237,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				// Close the workbench
 				// ViewManager.INSTANCE.closeAll();
 				// restarting application
-				MessageDialog.openInformation(parent, _("dialog.messagebox.title.info"), _("start.first.restartmessage"));
+				// TODO check if this works, I think "parent" is null!!!
+				MessageDialog.openInformation(parent, _.dialogMessageboxTitleInfo, _.startFirstRestartmessage);
 				workbench.restart();
 			}
 		} catch (BackingStoreException e) {
@@ -264,13 +273,12 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		}
 
 		public void widgetSelected(SelectionEvent e) {
-			String oldString = forOldVersion ? "old" : "";
 			DirectoryDialog directoryDialog = new DirectoryDialog(btnDirChooser.getShell(), SWT.OPEN);
 			directoryDialog.setFilterPath(System.getProperty("user.home"));				
 			//T: Title of the dialog to select the working directory
-			directoryDialog.setText(_("command.select"+oldString+"workspace.name"));
+			directoryDialog.setText(forOldVersion ? _.commandSelectoldworkspaceName : _.commandSelectworkspaceName);
 			//T: Text of the dialog to select the working directory
-			directoryDialog.setMessage(_("start.first.select."+oldString+"workdir.verbose"));
+			directoryDialog.setMessage(forOldVersion ? _.startFirstSelectOldworkdirVerbose : _.startFirstSelectWorkdirVerbose);
 			String selectedDirectory = directoryDialog.open();
 			if (selectedDirectory != null) {
 

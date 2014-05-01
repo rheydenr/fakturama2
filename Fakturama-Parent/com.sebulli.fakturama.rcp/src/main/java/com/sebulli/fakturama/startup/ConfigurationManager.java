@@ -3,8 +3,6 @@
  */
 package com.sebulli.fakturama.startup;
 
-import static com.sebulli.fakturama.Translate._;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,10 +16,12 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -29,6 +29,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
+
+import com.sebulli.fakturama.i18n.Messages;
 
 /**
  * Configures the application while startup. It checks for a new Workspace
@@ -51,6 +53,13 @@ public class ConfigurationManager {
 
 	@Inject
 	private IApplicationContext appContext;
+	
+	@Inject
+	@Translation
+	protected Messages _;
+
+	@Inject
+	protected IEclipseContext context;
 
 	private IWorkbench workbench;
 
@@ -159,7 +168,7 @@ public class ConfigurationManager {
 	 * @param shell
 	 */
 	private void selectWorkspace(String requestedWorkspace, Shell shell) {
-		InitialStartupDialog startDialog = new InitialStartupDialog(shell, preferences, workbench, log, requestedWorkspace);
+		InitialStartupDialog startDialog = new InitialStartupDialog(shell, preferences, workbench, log, _, requestedWorkspace);
 		appContext.applicationRunning();
 		if (startDialog.open() != Window.OK) {
 			// close the application
@@ -177,7 +186,7 @@ public class ConfigurationManager {
 	 * 
 	 */
 	private void initWorkspace(String workspace) {
-		String templateFolderName = _("config.workspace.templates.name");
+		String templateFolderName = _.configWorkspaceTemplatesName;
 		//		// Exit, if the workspace path is not set
 		//		if (workspace.isEmpty())
 		//			return;

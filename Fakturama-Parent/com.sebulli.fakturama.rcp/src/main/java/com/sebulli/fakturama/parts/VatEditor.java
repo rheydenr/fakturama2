@@ -14,16 +14,14 @@
 
 package com.sebulli.fakturama.parts;
 
-import static com.sebulli.fakturama.Translate._;
-
 import java.util.Comparator;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.xml.crypto.Data;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,6 +34,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -47,6 +46,10 @@ import com.sebulli.fakturama.model.VATCategory;
  */
 public class VatEditor extends Editor<VAT> {
 	
+	@Inject
+	@Translation
+	protected Messages _;
+
 	@Inject
 	protected VatsDAO vatDao;
 
@@ -200,16 +203,16 @@ public class VatEditor extends Editor<VAT> {
 //		return false;
 //	}
 //
-//	/**
-//	 * Returns whether the "Save As" operation is supported by this part.
-//	 * 
-//	 * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
-//	 * @return False, SaveAs is not allowed
-//	 */
+	/**
+	 * Returns whether the "Save As" operation is supported by this part.
+	 * 
+	 * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
+	 * @return False, SaveAs is not allowed
+	 */
 //	@Override
-//	public boolean isSaveAsAllowed() {
-//		return false;
-//	}
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
 
 	/**
 	 * Creates the SWT controls for this workbench part
@@ -241,7 +244,7 @@ public class VatEditor extends Editor<VAT> {
 
 			//T: VAT Editor: Part Name of a new VAT Entry
 //			setPartName(_("New TAX Rate"));
-			part.setLabel(_("New TAX Rate"));
+			part.setLabel(_.editorVatHeader);
 
 		}
 		else {
@@ -261,15 +264,15 @@ public class VatEditor extends Editor<VAT> {
 		// Large VAT label
 		Label labelTitle = new Label(top, SWT.NONE);
 		//T: VAT Editor: Title VAT Entry
-		labelTitle.setText(_("TAX Rate"));
+		labelTitle.setText(_.editorVatTitle);
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(2, 1).applyTo(labelTitle);
 		makeLargeLabel(labelTitle);
 
 		// Name of the VAT
 		Label labelName = new Label(top, SWT.NONE);
-		labelName.setText(_("Name"));
+		labelName.setText(_.commonFieldName);
 		//T: Tool Tip Text
-		labelName.setToolTipText(_("Name of the tax rate. This is also the identifier used by the shop system."));
+		labelName.setToolTipText(_.editorVatNameTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		textName = new Text(top, SWT.BORDER);
@@ -280,9 +283,9 @@ public class VatEditor extends Editor<VAT> {
 
 		// Category of the VAT
 		Label labelCategory = new Label(top, SWT.NONE);
-		labelCategory.setText(_("Category"));
+		labelCategory.setText(_.commonFieldCategory);
 		//T: Tool Tip Text
-		labelCategory.setToolTipText(_("You can set a category to classify the tax rates"));
+		labelCategory.setToolTipText(_.editorVatCategoryTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
@@ -309,9 +312,9 @@ public class VatEditor extends Editor<VAT> {
 		
 		// The description
 		Label labelDescription = new Label(top, SWT.NONE);
-		labelDescription.setText(_("Description"));
+		labelDescription.setText(_.commonFieldDescription);
 		//T: Tool Tip Text
-		labelDescription.setToolTipText(_("The description is the text used in the documents"));
+		labelDescription.setToolTipText(_.editorVatDescriptionTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
 		textDescription = new Text(top, SWT.BORDER);
@@ -322,7 +325,7 @@ public class VatEditor extends Editor<VAT> {
 
 		// The value
 		Label labelValue = new Label(top, SWT.NONE);
-		labelValue.setText(_("Value"));
+		labelValue.setText(_.commonFieldValue);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
 		textValue = new Text(top, SWT.BORDER);
 		textValue.setText(DataUtils.DoubleToFormatedPercent(editorVat.getTaxValue()));
@@ -331,9 +334,9 @@ public class VatEditor extends Editor<VAT> {
 
 		// Create the composite to make this payment to the standard payment. 
 		Label labelStdVat = new Label(top, SWT.NONE);
-		labelStdVat.setText(_("Standard"));
+		labelStdVat.setText(_.commonLabelDefault);
 		//T: Tool Tip Text
-		labelStdVat.setToolTipText(_("Name of the tax rate that is the standard"));
+		labelStdVat.setToolTipText(_.editorVatNameTooltip);
 
 		VAT stdVat = null;
 		int stdID = 0;
@@ -350,9 +353,9 @@ public class VatEditor extends Editor<VAT> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStdVat);
 		//T: VAT Editor: Button description to make this as standard VAT.
-		stdComposite = new StdComposite(top, editorVat, stdVat, _("This TAX Rate"), 1);
+		stdComposite = new StdComposite(top, editorVat, stdVat, _.editorVatDefaultbutton, 1);
 		//T: Tool Tip Text
-		stdComposite.setToolTipText(_("Make this tax rate to the standard"));
+		stdComposite.setToolTipText(_.editorVatDefaultbuttonTooltip);
 
 		// Disable the Standard Button, if this is a new VAT
 		if (!newVat)

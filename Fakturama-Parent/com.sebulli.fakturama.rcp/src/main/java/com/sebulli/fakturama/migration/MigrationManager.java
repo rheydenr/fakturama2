@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -44,6 +43,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -63,6 +63,7 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
@@ -124,6 +125,11 @@ public class MigrationManager {
 	@Inject
 	@Preference
 	private IEclipsePreferences preferences;
+	
+	@Inject
+	@Translation
+	protected Messages _;
+
 	
 //	@Resource
 //	private IResourcePool rp;

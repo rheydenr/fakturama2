@@ -34,9 +34,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import ca.odell.glazedlists.EventList;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.resources.core.Icon;
-import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable.RHEViewTableLabelProvider;
 
 /**
@@ -54,6 +53,8 @@ protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter"
 protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
 
 protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
+
+    private Messages msg;
 
 	//	private TopicTreeViewer me = this;
 	private TreeViewer internalTreeViewer;
@@ -87,13 +88,16 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * Constructor Creates a
 	 * 
 	 * @param parent
+	 * @param msg2 
 	 * @param style
 	 * @param elementClass the concrete Class of this TreeViewer
 	 * @param useDocumentAndContactFilter
 	 * @param useAll
 	 */
-	public TopicTreeViewer(Composite parent, /*int style, */final Class<T> elementClass, boolean useDocumentAndContactFilter, final boolean useAll) {
+	public TopicTreeViewer(Composite parent, Messages msg, /*int style, */final Class<T> elementClass, boolean useDocumentAndContactFilter, final boolean useAll) {
 		this.internalTreeViewer = new TreeViewer(parent, SWT.BORDER /*style*/);
+		// Messages can't be injected because this class is not called via application context
+		this.msg = msg;
 		this.useAll = useAll;
 		this.elementClass = elementClass;
 		
@@ -106,7 +110,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		// Add a "show all" entry
 		if (useAll) {
 			//T: Tree viewer entry for "show all"
-			all = new TreeObject("all");
+			all = new TreeObject(msg.topictreeAll);
 			all.setNodeType(TreeObjectType.ALL_NODE);
 			root.addChild(all);
 		}
@@ -116,12 +120,12 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			transactionItem = new TreeObject("---", "document_10.png");
 			transactionItem.setNodeType(TreeObjectType.TRANSACTIONS_ROOTNODE);
 			//T: Tool Tip Text
-			transactionItem.setToolTip("Show all documents that belong to this transaction.");
+			transactionItem.setToolTip(msg.topictreeAllDocumentsTooltip);
 
 			contactItem = new TreeObject("---", "contact_10.png");
 			contactItem.setNodeType(TreeObjectType.CONTACTS_ROOTNODE);
 			//T: Tool Tip Text
-			contactItem.setToolTip("Show all documents that belong to this customer.");
+			contactItem.setToolTip(msg.topictreeAllCustomersTooltip);
 		}
 		
 		
@@ -172,10 +176,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				else {
 					if (!useAll && categoryFilter.isEmpty()) {
 						// Show nothing
-						viewDataSetTable.setCategoryFilter("$shownothing");
+						viewDataSetTable.setCategoryFilter("$shownothing", treeObject.getNodeType());
 					} else {
 						// Set the category filter
-						viewDataSetTable.setCategoryFilter(categoryFilter);
+						viewDataSetTable.setCategoryFilter(categoryFilter, treeObject.getNodeType());
 					}
 				}
 			}
@@ -413,7 +417,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Set the name
 		//T: Topic Tree Viewer transaction title
-		transactionItem.setName("Transaction");
+		transactionItem.setName(msg.topictreeTransaction);
 		
 		internalTreeViewer.refresh();
 	}

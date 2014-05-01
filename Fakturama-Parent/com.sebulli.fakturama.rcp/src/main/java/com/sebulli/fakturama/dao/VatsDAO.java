@@ -13,15 +13,21 @@ import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.oldmodel.OldVats;
 
 @Creatable
 public class VatsDAO extends AbstractDAO<VAT> {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
 	@Inject
 	@GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -108,9 +114,9 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 */
 	public Map<String, String> getVisiblePropertyToLabelMap() {
 		Map<String, String> propertyToLabelMap = new HashMap<>();
-		propertyToLabelMap.put("taxValue", "Value");
-		propertyToLabelMap.put("name", "Name");
-		propertyToLabelMap.put("description", "Description");
+		propertyToLabelMap.put("taxValue", msg.commonFieldValue);
+		propertyToLabelMap.put("name", msg.commonFieldName);
+		propertyToLabelMap.put("description", msg.commonFieldDescription);
 		return propertyToLabelMap;
 	}
 
