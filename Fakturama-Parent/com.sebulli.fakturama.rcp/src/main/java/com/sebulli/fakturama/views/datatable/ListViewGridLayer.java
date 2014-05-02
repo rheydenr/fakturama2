@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable;
 
 import java.util.Map;
 

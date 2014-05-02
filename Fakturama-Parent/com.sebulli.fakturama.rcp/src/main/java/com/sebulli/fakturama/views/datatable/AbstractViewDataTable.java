@@ -53,8 +53,8 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 	protected Composite top;
 	
 	protected TableColumnLayout tableColumnLayout;
-	protected ViewDataTableContentProvider contentProvider;
-	protected DataTableColumn stdIconColumn = null;
+//	protected ViewDataTableContentProvider contentProvider;
+//	protected DataTableColumn stdIconColumn = null;
 
 	// Filter the table 
 	protected Label filterLabel;
@@ -273,9 +273,9 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 		filterLabel.pack(true);
 
 		// Reset category and contact filter, set transaction filter
-		contentProvider.setTransactionFilter(filter);
-		contentProvider.setContactFilter(-1);
-		contentProvider.setCategoryFilter("");
+//		contentProvider.setTransactionFilter(filter);
+//		contentProvider.setContactFilter(-1);
+//		contentProvider.setCategoryFilter("");
 
 //		// Reset the addNew action. 
 //		if (addNewAction != null) {
@@ -297,9 +297,9 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 		filterLabel.pack(true);
 
 		// Reset transaction and category filter, set contact filter
-		contentProvider.setContactFilter(filter);
-		contentProvider.setTransactionFilter(-1);
-		contentProvider.setCategoryFilter("");
+//		contentProvider.setContactFilter(filter);
+//		contentProvider.setTransactionFilter(-1);
+//		contentProvider.setCategoryFilter("");
 
 //		// Reset the addNew action. 
 //		if (addNewAction != null) {
@@ -317,8 +317,8 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 
 		if (stdPropertyKey == null)
 			return;
-		if (stdIconColumn == null)
-			return;
+//		if (stdIconColumn == null)
+//			return;
 
 		try {
 			// Set the the new standard ID to the standard icon column

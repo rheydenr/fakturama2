@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
