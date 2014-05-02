@@ -25,7 +25,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.views.datatable.TopicTreeViewer.TreeObject;
+import com.sebulli.fakturama.views.datatable.tree.TreeObject;
 
 /**
  * Content provider for the UniDataSet table viewer

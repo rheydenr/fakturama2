@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable.vats;
 
 
 import java.io.Serializable;
@@ -26,9 +26,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.CellLabelProvider;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -67,14 +64,10 @@ import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -87,9 +80,15 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.nattabletest.DefaultCheckmarkPainter;
+import com.sebulli.fakturama.views.datatable.nattabletest.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
+import com.sebulli.fakturama.views.datatable.tree.TreeCategoryLabelProvider;
+import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
 
-public class RHENatTable {
+public class VATListTable extends AbstractViewDataTable<VAT, VATCategory>{
     
     @Inject
     @Translation
@@ -97,9 +96,6 @@ public class RHENatTable {
 
 	// ID of this view
 	public static final String ID = "com.sebulli.fakturama.views.datasettable.viewVatTable";
-	
-//	@Inject
-//	private MPart part;
 	
 	@Inject
 	private EHandlerService handlerService;
@@ -110,9 +106,6 @@ public class RHENatTable {
 	@Inject
 	@Preference
 	private IEclipsePreferences preferences;
-	
-//	//The top composite
-//	private Composite top;
 	
 	private String editor = "com.sebulli.fakturama.DocumentEditor";  	
 	
@@ -158,188 +151,27 @@ public class RHENatTable {
 	/**
 	 * controls if the header label for the list view should be shown
 	 */
-	protected final boolean headerLabelEnabled = false;
+	private final boolean headerLabelEnabled = false;
 
-	private Text searchText;
-	private Label filterLabel;
-	private NatTable natTable;
-	
+	private ListViewGridLayer<VAT> gridLayer;
+	private ConfigRegistry configRegistry = new ConfigRegistry();
 
 	protected FilterList<VAT> treeFilteredIssues;
 	
 	@PostConstruct
 	public Control createPartControl(Composite parent) {
-		// Create the top composite
-		Composite top = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
-
-		// Add context help reference 
-//		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
-		
-		// Create the tree viewer
-		final TopicTreeViewer<VATCategory> topicTreeViewer = createCategoryTreeViewer(top);	
-		
-		// Create the composite that contains the search field and the table
-		Composite searchAndTableComposite = createSearchAndTableComposite(top);
-
-		//mapping from property to label, needed for column header labels
-		final Map<String, String> propertyToLabelMap = vatsDAO.getVisiblePropertyToLabelMap();
-
-		eventList = GlazedLists.eventList(vatsDAO.findAll());
-		
-		//create a new ConfigRegistry which will be needed for GlazedLists handling
-		ConfigRegistry configRegistry = new ConfigRegistry();
-		String[] propertyNames = vatsDAO.getVisibleProperties();
-
-		final IColumnPropertyAccessor<VAT> columnPropertyAccessor = 
-				new ExtendedReflectiveColumnPropertyAccessor<VAT>(propertyNames);
-		
-		// Add derived 'fullName' column
-		final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<VAT>() {
-
-			public Object getDataValue(VAT rowObject, int columnIndex) {
-				switch (columnIndex) {
-				case DEFAULT_COLUMN_POSITION:
-					// VAT_PROPERTY_NAMES
-//					System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
-					return rowObject.getId() == 1L;
-				case NAME_COLUMN_POSITION:
-				case DESCRIPTION_COLUMN_POSITION:
-				case VALUE_COLUMN_POSITION:
-					// alternative: return rowObject.getFirstName();
-					return columnPropertyAccessor.getDataValue(rowObject, columnIndex -1 );
-				default:
-					break;
-				}
-				return null;
-			}
-
-			public void setDataValue(VAT rowObject, int columnIndex, Object newValue) {
-				throw new UnsupportedOperationException();
-//				columnPropertyAccessor.setDataValue(rowObject, columnIndex+1, newValue);
-			}
-
-			public int getColumnCount() {
-				return VAT_PROPERTY_NAMES.length;
-			}
-
-			public String getColumnProperty(int columnIndex) {
-				switch (columnIndex) {
-				case DEFAULT_COLUMN_POSITION:
-					return msg.commonLabelDefault;
-				case NAME_COLUMN_POSITION:
-				case DESCRIPTION_COLUMN_POSITION:
-				case VALUE_COLUMN_POSITION:
-					return propertyToLabelMap.get(columnPropertyAccessor.getColumnProperty(columnIndex-1));
-				default:
-					break;
-				}
-				return null;
-			}
-
-			public int getColumnIndex(String propertyName) {
-				if (STANDARD_PROPERTYNAME.equals(propertyName)) {
-					return DEFAULT_COLUMN_POSITION;
-				}
-				else {
-					return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
-				}
-			}
-		};
-
-		//build the column header layer
-		// Column header data provider includes derived properties
-		IDataProvider columnHeaderDataProvider = new IDataProvider() {
-
-			public Object getDataValue(int columnIndex, int rowIndex) {
-				return derivedColumnPropertyAccessor.getColumnProperty(columnIndex);
-			}
-
-			public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-				// noop
-			}
-
-			public int getColumnCount() {
-				return derivedColumnPropertyAccessor.getColumnCount();
-			}
-
-			public int getRowCount() {
-				return 1;
-			}
-			
-		};
-
-		// matcher input Search text field 
-		final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(
-				searchText, new VATFilterator());
-		// Filtered list for Search text field filter
-		final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(eventList, textMatcherEditor);
-		
-		// build the list for the tree-filtered values (i.e., the value list which is affected by
-		// tree selection)
-		treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
-
-		//build the grid layer
-		ListViewGridLayer<VAT> gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, 
-				derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
-		
-		// get the underlying data layer
-		final DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
-		
-		// add a label accumulator to be able to register converter
-		// this is crucial for using custom values display
-		tableDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-		
-		//example for mixed percentage sizing in a grid
-		//configure not every column with the exact percentage value, this way the columns for which
-		//no exact values are set will use the remaining space
-		tableDataLayer.setColumnWidthByPosition(DEFAULT_COLUMN_POSITION, 5);
-		tableDataLayer.setColumnWidthByPosition(NAME_COLUMN_POSITION, 20);
-		tableDataLayer.setColumnWidthByPosition(VALUE_COLUMN_POSITION, 10);
-		tableDataLayer.setColumnPercentageSizing(true);
-		
-		// Custom selection configuration
-		final SelectionLayer selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-		// for further use, if we need it...
-//		ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-//		ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-		
-		// Select complete rows
-		selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
-		RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, gridLayer.getBodyDataProvider(),
-				 new IRowIdAccessor<VAT>() {
-
-			public Serializable getRowId(VAT rowObject) {
-				return rowObject.getId();
-			}
-			
-		}, false);
-		selectionLayer.setSelectionModel(selectionModel);
-
-		// now is the time where we can create the NatTable itself
-		natTable = new NatTable(searchAndTableComposite, gridLayer, false);
-
-//		VAT defaultVat = getDefaultVAT();
-//		// Label accumulator - adds labels to all cells with the given data value
-//		CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
-//			new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
-//		cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
-
-		// Create a label accumulator - adds custom labels to all cells which we
-		// wish to render differently. In this case render as an image.
-		ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
-		columnLabelAccumulator.registerColumnOverrides(DEFAULT_COLUMN_POSITION, DEFAULT_CELL_LABEL);
-		columnLabelAccumulator.registerColumnOverrides(VALUE_COLUMN_POSITION, TAXVALUE_CELL_LABEL);
-
-		// Register label accumulator
-		gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
-		
-		// Register your custom cell painter, cell style, against the label applied to the cell.
-//		addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
+	    Control top = super.createPartControl(parent, VAT.class, false, true, ID);
 
 		// Listen to double clicks
 		hookDoubleClickCommand(natTable, gridLayer);
+		topicTreeViewer.setTable(this);
+
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		return top;
+	}
+	
+	@Override
+	protected void postConfigureNatTable(NatTable natTable) {
 		
 		//as the autoconfiguration of the NatTable is turned off, we have to add the 
 		//DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
@@ -355,11 +187,177 @@ public class RHENatTable {
 		// for the SortHeaderLayer (setup in the GlazedListsGridLayer)
 		natTable.addConfiguration(new SingleClickSortConfiguration());
 		natTable.configure();
-		topicTreeViewer.setTable(this);
-
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-		return top;
+	    
 	}
+	
+	protected NatTable createListTable(Composite searchAndTableComposite) {
+        NatTable natTable;
+        
+        //mapping from property to label, needed for column header labels
+        final Map<String, String> propertyToLabelMap = vatsDAO.getVisiblePropertyToLabelMap();
+
+        eventList = GlazedLists.eventList(vatsDAO.findAll());
+        
+        //create a new ConfigRegistry which will be needed for GlazedLists handling
+        String[] propertyNames = vatsDAO.getVisibleProperties();
+
+        final IColumnPropertyAccessor<VAT> columnPropertyAccessor = 
+                new ExtendedReflectiveColumnPropertyAccessor<VAT>(propertyNames);
+        
+        // Add derived 'fullName' column
+        final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<VAT>() {
+
+            public Object getDataValue(VAT rowObject, int columnIndex) {
+                switch (columnIndex) {
+                case DEFAULT_COLUMN_POSITION:
+                    // VAT_PROPERTY_NAMES
+//                  System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
+                    return rowObject.getId() == 1L;
+                case NAME_COLUMN_POSITION:
+                case DESCRIPTION_COLUMN_POSITION:
+                case VALUE_COLUMN_POSITION:
+                    // alternative: return rowObject.getFirstName();
+                    return columnPropertyAccessor.getDataValue(rowObject, columnIndex -1 );
+                default:
+                    break;
+                }
+                return null;
+            }
+
+            public void setDataValue(VAT rowObject, int columnIndex, Object newValue) {
+                throw new UnsupportedOperationException();
+//              columnPropertyAccessor.setDataValue(rowObject, columnIndex+1, newValue);
+            }
+
+            public int getColumnCount() {
+                return VAT_PROPERTY_NAMES.length;
+            }
+
+            public String getColumnProperty(int columnIndex) {
+                switch (columnIndex) {
+                case DEFAULT_COLUMN_POSITION:
+                    return msg.commonLabelDefault;
+                case NAME_COLUMN_POSITION:
+                case DESCRIPTION_COLUMN_POSITION:
+                case VALUE_COLUMN_POSITION:
+                    return propertyToLabelMap.get(columnPropertyAccessor.getColumnProperty(columnIndex-1));
+                default:
+                    break;
+                }
+                return null;
+            }
+
+            public int getColumnIndex(String propertyName) {
+                if (STANDARD_PROPERTYNAME.equals(propertyName)) {
+                    return DEFAULT_COLUMN_POSITION;
+                }
+                else {
+                    return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
+                }
+            }
+        };
+
+        //build the column header layer
+        // Column header data provider includes derived properties
+        IDataProvider columnHeaderDataProvider = new IDataProvider() {
+
+            public Object getDataValue(int columnIndex, int rowIndex) {
+                return derivedColumnPropertyAccessor.getColumnProperty(columnIndex);
+            }
+
+            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+                // noop
+            }
+
+            public int getColumnCount() {
+                return derivedColumnPropertyAccessor.getColumnCount();
+            }
+
+            public int getRowCount() {
+                return 1;
+            }
+            
+        };
+
+        // matcher input Search text field 
+        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(
+                searchText, new VATFilterator());
+        // Filtered list for Search text field filter
+        final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(eventList, textMatcherEditor);
+        
+        // build the list for the tree-filtered values (i.e., the value list which is affected by
+        // tree selection)
+        treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
+
+        //build the grid layer
+        gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, 
+                derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
+        
+        // get the underlying data layer
+        final DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        
+        // add a label accumulator to be able to register converter
+        // this is crucial for using custom values display
+        tableDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        
+        //example for mixed percentage sizing in a grid
+        //configure not every column with the exact percentage value, this way the columns for which
+        //no exact values are set will use the remaining space
+        tableDataLayer.setColumnWidthByPosition(DEFAULT_COLUMN_POSITION, 5);
+        tableDataLayer.setColumnWidthByPosition(NAME_COLUMN_POSITION, 20);
+        tableDataLayer.setColumnWidthByPosition(VALUE_COLUMN_POSITION, 10);
+        tableDataLayer.setColumnPercentageSizing(true);
+        
+        // Custom selection configuration
+        final SelectionLayer selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
+        // for further use, if we need it...
+//      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
+//      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
+        
+        // Select complete rows
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
+        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, gridLayer.getBodyDataProvider(),
+                 new IRowIdAccessor<VAT>() {
+
+            public Serializable getRowId(VAT rowObject) {
+                return rowObject.getId();
+            }
+            
+        }, false);
+        selectionLayer.setSelectionModel(selectionModel);
+
+        // now is the time where we can create the NatTable itself
+        natTable = new NatTable(searchAndTableComposite, gridLayer, false);
+
+//      VAT defaultVat = getDefaultVAT();
+//      // Label accumulator - adds labels to all cells with the given data value
+//      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
+//          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
+//      cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
+
+        // Create a label accumulator - adds custom labels to all cells which we
+        // wish to render differently. In this case render as an image.
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
+        columnLabelAccumulator.registerColumnOverrides(DEFAULT_COLUMN_POSITION, DEFAULT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(VALUE_COLUMN_POSITION, TAXVALUE_CELL_LABEL);
+
+        // Register label accumulator
+        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
+        
+        // Register your custom cell painter, cell style, against the label applied to the cell.
+//      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
+	    return natTable;
+	}
+
+    @Override
+    protected TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
+        TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, false, true);
+        topicTreeViewer.setInput(GlazedLists.eventList(vatCategoriesDAO.findAll()));
+        // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
+        // Eins von beiden muß es doch geben, oder?
+        topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+        return topicTreeViewer;
+    }   
 
 	/**
 	 * reads the default VAT value from preference store and returns the appropriate VAT value from dtaabase
@@ -405,49 +403,6 @@ private VAT getDefaultVAT() {
 	}
 
 	/**
-	 * Component for the Search field and the item table
-	 * 
-	 * @param parent the parent {@link Composite} of this Component
-	 * @return {@link Composite}
-	 */
-	private Composite createSearchAndTableComposite(Composite parent) {
-		Composite searchAndTableComposite = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(1).applyTo(searchAndTableComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(searchAndTableComposite);
-
-		// Create the composite that contains the search field and the toolbar
-		Composite searchAndToolbarComposite = new Composite(searchAndTableComposite, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
-
-		// The toolbar 
-		ToolBar toolBar = new ToolBar(searchAndToolbarComposite, SWT.FLAT);
-		GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(toolBar);
-//		ToolBarManager tbm = new ToolBarManager(toolBar);
-
-		filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
-		FontData[] fD = filterLabel.getFont().getFontData();
-		fD[0].setHeight(20);
-		Font font = new Font(null, fD[0]);
-		filterLabel.setFont(font);
-		font.dispose();
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER).applyTo(filterLabel);
-
-		// The search composite
-		Composite searchComposite = new Composite(searchAndToolbarComposite, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(searchComposite);
-		GridDataFactory.fillDefaults().grab(true, true).align(SWT.END, SWT.CENTER).applyTo(searchComposite);
-
-		// Search label an search field
-		Label searchLabel = new Label(searchComposite, SWT.NONE);
-		searchLabel.setText(msg.commonLabelSearchfield);
-		GridDataFactory.swtDefaults().applyTo(searchLabel);
-		searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
-		return searchAndTableComposite;
-	}
-
-	/**
 	 * We have to style the table a little bit...
 	 * 
 	 * @param natTable the {@link NatTable} to style
@@ -468,50 +423,6 @@ private VAT getDefaultVAT() {
 		natTable.addConfiguration(selectionStyle);
 	}
 	
-	private TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
-		TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, VATCategory.class, false, true);
-		topicTreeViewer.setInput(GlazedLists.eventList(vatCategoriesDAO.findAll()));
-		// TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
-		// Eins von beiden muß es doch geben, oder?
-		topicTreeViewer.setLabelProvider(new RHEViewTableLabelProvider());
-		return topicTreeViewer;
-	}
-	
-    /**
-     * Set the category filter with a given {@link TreeObjectType}.
-     * 
-     * @param filter
-     *            The new filter string
-     * @param treeObjectType the {@link TreeObjectType}
-     */
-    public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-		// Set the label with the filter string
-		if (filter.equals("$shownothing"))
-			filterLabel.setText("");
-		else
-		// Display the localizes list names.
-		// or the document type
-		if (headerLabelEnabled)
-			filterLabel.setText("DataSetListNames.NAMES.getLocalizedName: " + filter);
-
-		filterLabel.pack(true);
-
-		// Reset transaction and contact filter, set category filter
-		treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType));
-//		contentProvider.setTreeObject(treeObject);
-
-		// Set category to the addNew action. So a new data set is created
-		// with the selected category
-//		if (addNewAction != null) {
-//			addNewAction.setCategory(filter);
-//		}
-
-//		//Refresh
-//		this.refresh();
-		
-
-    }
-	
 	/**
 	 * Set the category filter
 	 * 
@@ -523,82 +434,41 @@ private VAT getDefaultVAT() {
 	public void setCategoryFilter(String filter) {
 	    setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
 	}
+    
+ /**
+  * Set the category filter with a given {@link TreeObjectType}.
+  * 
+  * @param filter
+  *            The new filter string
+  * @param treeObjectType the {@link TreeObjectType}
+  */
+ public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
+     // Set the label with the filter string
+     if (filter.equals("$shownothing"))
+         filterLabel.setText("");
+     else
+     // Display the localized list names.
+     // or the document type
+     if (isHeaderLabelEnabled())
+         filterLabel.setText("DataSetListNames.NAMES.getLocalizedName: " + filter);
 
-	/**
-	 * Set the transaction filter
-	 * 
-	 * @param filter
-	 *            The new filter string
-	 */
-	public void setTransactionFilter(int filter) {
+     filterLabel.pack(true);
 
-//		// Set the label with the filter string
-//		filterLabel.setText("Dieser Vorgang");
-//		filterLabel.pack(true);
-//
-//		// Reset category and contact filter, set transaction filter
-//		treeFilteredIssues.setMatcher(new VATTransactionMatcher(filter));
-//		contentProvider.setTransactionFilter(filter);
-//		contentProvider.setContactFilter(-1);
-//		contentProvider.setCategoryFilter("");
-//
-//		// Reset the addNew action. 
-//		if (addNewAction != null) {
-//			addNewAction.setCategory("");
-//		}
-//		this.refresh();
-	}
+     // Reset transaction and contact filter, set category filter
+     treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType));
+//   contentProvider.setTreeObject(treeObject);
 
-	/**
-	 * Set the contact filter
-	 * 
-	 * @param filter
-	 *            The new filter string
-	 */
-	public void setContactFilter(int filter) {
+     // Set category to the addNew action. So a new data set is created
+     // with the selected category
+//   if (addNewAction != null) {
+//       addNewAction.setCategory(filter);
+//   }
 
-//		// Set the label with the filter string
-//		filterLabel.setText(Data.INSTANCE.getContacts().getDatasetById(filter).getName(false));
-//		filterLabel.pack(true);
-//
-//		// Reset transaction and category filter, set contact filter
-//		contentProvider.setContactFilter(filter);
-//		contentProvider.setTransactionFilter(-1);
-//		contentProvider.setCategoryFilter("");
-//
-//		// Reset the addNew action. 
-//		if (addNewAction != null) {
-//			addNewAction.setCategory("");
-//		}
-//
-//		this.refresh();
-	}
-	
-	
-	
-	
-	/**
-	 * This class provides the labels for the category tree
-	 * @author rheydenr
-	 *
-	 */	
-	class RHEViewTableLabelProvider extends CellLabelProvider {
-		public String getText(Object obj) {
+//   //Refresh
+//   this.refresh();
+     
 
-			// Display the localizes list names.
-			if (natTable instanceof NatTable)
-				return "(localized) " + obj.toString();
-			else
-				return obj.toString();
-		}
-
-		@Override
-		public void update(ViewerCell cell) {
-			cell.setText(getText(cell.getElement()));
-//			cell.setImage(getImage(cell.getElement()));
-		}
-		
-	}
+ }
 	
 	/**
 	 * On double click: open the corresponding editor
@@ -610,7 +480,6 @@ private VAT getDefaultVAT() {
 		nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE),
 		new IMouseAction() {
 
-			@SuppressWarnings("restriction")
 			@Override
 			public void run(NatTable natTable, MouseEvent event) {
 				//get the row position for the click in the NatTable
@@ -636,7 +505,14 @@ private VAT getDefaultVAT() {
 	}    	
 	
 	
-	class VATTableConfiguration extends AbstractRegistryConfiguration {
+	/**
+     * @return the headerLabelEnabled
+     */
+    protected boolean isHeaderLabelEnabled() {
+        return headerLabelEnabled;
+    }
+
+    class VATTableConfiguration extends AbstractRegistryConfiguration {
 
 		@Override
 		public void configureRegistry(IConfigRegistry configRegistry) {

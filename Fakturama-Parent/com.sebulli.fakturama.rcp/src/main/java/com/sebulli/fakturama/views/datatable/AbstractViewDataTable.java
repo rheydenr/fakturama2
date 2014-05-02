@@ -14,29 +14,27 @@
 
 package com.sebulli.fakturama.views.datatable;
 
-import org.eclipse.jface.action.ToolBarManager;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.window.ToolTip;
+import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
-import com.sebulli.fakturama.views.datatable.TopicTreeViewer.TreeObject;
-import com.sebulli.fakturama.views.datatable.filter.TableFilter;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
+import com.sebulli.fakturama.views.datatable.tree.TreeObject;
+import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
 
 /**
  * This is the abstract parent class for all views that show a table with
@@ -45,26 +43,25 @@ import com.sebulli.fakturama.views.datatable.filter.TableFilter;
  * @author Gerd Bartelt
  * 
  */
-public abstract class AbstractViewDataTable<T> {
+public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
 	//The top composite
-	Composite top;
+	protected Composite top;
 	
-	// The table with the UniDataSets
-	protected TableViewer tableViewer;
 	protected TableColumnLayout tableColumnLayout;
 	protected ViewDataTableContentProvider contentProvider;
 	protected DataTableColumn stdIconColumn = null;
 
-	// The columns that are used for the text search
-	protected String searchColumns[];
-
 	// Filter the table 
-	protected TableFilter<T> tableFilter;
 	protected Label filterLabel;
+	protected Text searchText;
 
 	// The topic tree viewer displays the categories of the UniDataSets
-	protected TopicTreeViewer topicTreeViewer;
+	protected TopicTreeViewer<C> topicTreeViewer;
 
 	// Name of the editor to edit the UniDataSets
 	protected String editor = "";
@@ -81,16 +78,14 @@ public abstract class AbstractViewDataTable<T> {
 	// The selected tree object
 	private TreeObject treeObject = null;
 	
-//	private ViewDataTable me;
+	protected NatTable natTable;
 
 	/**
 	 * Creates the SWT controls for this workbench part.
 	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
-	public void createPartControl(Composite parent, Class<?> elementClass, boolean useDocumentAndContactFilter, boolean useAll, String contextHelpId) {
-//		me = this;
-
+	public Control createPartControl(Composite parent, Class<?> elementClass, boolean useDocumentAndContactFilter, boolean useAll, String contextHelpId) {
 		// Create the top composite
 		top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
@@ -98,76 +93,17 @@ public abstract class AbstractViewDataTable<T> {
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
-		
-		// Create the tree viewer
-//		topicTreeViewer = new TopicTreeViewer(top, SWT.BORDER, elementClass, useDocumentAndContactFilter, useAll);
+        
+        // Create the tree viewer
+        topicTreeViewer = createCategoryTreeViewer(top); 
 //		GridDataFactory.swtDefaults().hint(10, -1).applyTo(topicTreeViewer.getTree());
 
-		// Create the composite that contains the search field and the table
-		Composite searchAndTableComposite = new Composite(top, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(1).applyTo(searchAndTableComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(searchAndTableComposite);
-
-		// Create the composite that contains the search field and the toolbar
-		Composite searchAndToolbarComposite = new Composite(searchAndTableComposite, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
-
-//		// The toolbar 
-		ToolBar toolBar = new ToolBar(searchAndToolbarComposite, SWT.FLAT);
-		GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(toolBar);
-		ToolBarManager tbm = new ToolBarManager(toolBar);
-
-//		tbm.add(new DeleteDataSetAction());
-
-//		if (addNewAction != null) {
-//			addNewAction.setImageDescriptor(Activator.getImageDescriptor("/icons/16/plus_16.png"));
-//			tbm.add(addNewAction);
-//		}
-
-		tbm.update(true);
-
-		// The filter label
-		filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
-		FontData[] fD = filterLabel.getFont().getFontData();
-		fD[0].setHeight(20);
-		Font font = new Font(null, fD[0]);
-		filterLabel.setFont(font);
-		font.dispose();
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER).applyTo(filterLabel);
-
-		// The search composite
-		Composite searchComposite = new Composite(searchAndToolbarComposite, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(searchComposite);
-		GridDataFactory.fillDefaults().grab(true, true).align(SWT.END, SWT.CENTER).applyTo(searchComposite);
-
-		// Search label an search field
-		Label searchLabel = new Label(searchComposite, SWT.NONE);
-		searchLabel.setText("Search:");
-		GridDataFactory.swtDefaults().applyTo(searchLabel);
-		final Text searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
-		searchText.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				tableFilter.setSearchText(searchText.getText());
-				tableViewer.refresh();
-			}
-		});
-
-		// The table composite
-		Composite tableComposite = new Composite(searchAndTableComposite, SWT.NONE);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
-
-		// Set the table layout
-		tableColumnLayout = new TableColumnLayout();
-		tableComposite.setLayout(tableColumnLayout);
-
-		// Create a table viewer
-		tableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION);
-		tableViewer.getTable().setLinesVisible(true);
-		tableViewer.getTable().setHeaderVisible(true);
+        // Create the composite that contains the search field and the table
+        Composite searchAndTableComposite = createSearchAndTableComposite(top);
+        natTable = createListTable(searchAndTableComposite);
+        
+        // call hook for post configure steps, if any
+        postConfigureNatTable(natTable);
 
 		// Workaround
 		// At startup the browser editor is the active part of the workbench.
@@ -192,31 +128,59 @@ public abstract class AbstractViewDataTable<T> {
 //		// Set selection provider
 //		getSite().setSelectionProvider(tableViewer);
 
-		// Listen to double clicks
-		hookDoubleClickCommand();
-
-		// Set the content provider
-		contentProvider = new ViewDataTableContentProvider(tableViewer);
-		tableViewer.setContentProvider(contentProvider);
-
-		// Set the table
-//		topicTreeViewer.setTable(this);
-//
-//		// Set sorter and filter
-		tableViewer.setComparator(new ViewerComparator() {
-			
-			@Override
-			public int compare(Viewer viewer, Object e1, Object e2) {
-				// TODO Auto-generated method stub
-				return super.compare(viewer, e1, e2);
-			}
-		});
-		tableFilter = new TableFilter<T>(searchColumns);
-		tableViewer.addFilter(tableFilter);
-		
-		// Activate the tooltip support for the viewer
-		ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE); 
+		return top;
 	}
+	
+	abstract protected NatTable createListTable(Composite searchAndTableComposite);
+	
+	protected void postConfigureNatTable(NatTable natTable) {
+	    // per default this method is empty
+	}
+	
+	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
+
+    /**
+     * Component for the Search field and the item table
+     * 
+     * @param parent the parent {@link Composite} of this Component
+     * @return {@link Composite}
+     */
+    private Composite createSearchAndTableComposite(Composite parent) {
+        Composite searchAndTableComposite = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(1).applyTo(searchAndTableComposite);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(searchAndTableComposite);
+
+        // Create the composite that contains the search field and the toolbar
+        Composite searchAndToolbarComposite = new Composite(searchAndTableComposite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
+
+        // The toolbar 
+        ToolBar toolBar = new ToolBar(searchAndToolbarComposite, SWT.FLAT);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(toolBar);
+//      ToolBarManager tbm = new ToolBarManager(toolBar);
+
+        filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
+        FontData[] fD = filterLabel.getFont().getFontData();
+        fD[0].setHeight(20);
+        Font font = new Font(null, fD[0]);
+        filterLabel.setFont(font);
+        font.dispose();
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER).applyTo(filterLabel);
+
+        // The search composite
+        Composite searchComposite = new Composite(searchAndToolbarComposite, SWT.NONE);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(searchComposite);
+        GridDataFactory.fillDefaults().grab(true, true).align(SWT.END, SWT.CENTER).applyTo(searchComposite);
+
+        // Search label an search field
+        Label searchLabel = new Label(searchComposite, SWT.NONE);
+        searchLabel.setText(msg.commonLabelSearchfield);
+        GridDataFactory.swtDefaults().applyTo(searchLabel);
+        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
+        return searchAndTableComposite;
+    }
 
 	/**
 	 * Returns the topic tree viewer
@@ -251,37 +215,6 @@ public abstract class AbstractViewDataTable<T> {
 	}
 
 	/**
-	 * On double click: open the corresponding editor
-	 */
-	private void hookDoubleClickCommand() {
-
-		// Add a double click listener
-		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-			public void doubleClick(DoubleClickEvent event) {
-//				IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
-//				ICommandService commandService = (ICommandService) getSite().getService(ICommandService.class);
-//
-//				try {
-//
-//					// Call the corresponding editor. The editor is set
-//					// in the variable "editor", which is used as a parameter
-//					// when calling the editor command.
-//					Command callEditor = commandService.getCommand("com.sebulli.fakturama.editors.callEditor");
-//					Map<String, String> params = new HashMap<>();
-//					params.put("com.sebulli.fakturama.editors.callEditorParameter", editor);
-//					ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
-//					handlerService.executeCommand(parameterizedCommand, null);
-//
-//				}
-//				catch (Exception e) {
-////					Logger.logError(e, "Editor not found: " + editor);
-//				}
-			}
-		});
-	}
-
-	/**
 	 * Refresh the table and the tree viewer
 	 */
 	public void refresh() {
@@ -289,14 +222,14 @@ public abstract class AbstractViewDataTable<T> {
 		// Refresh the standard entry
 		refreshStdId();
 
-		// Refresh the table
-		if (tableViewer != null)
-			tableViewer.refresh();
+//		// Refresh the table
+//		if (tableViewer != null)
+//			tableViewer.refresh();
 
-//		// Refresh the tree viewer
-//		if (topicTreeViewer != null) {
-//			topicTreeViewer.refresh();
-//		}
+		// Refresh the tree viewer
+		if (topicTreeViewer != null) {
+			topicTreeViewer.refreshTree();
+		}
 	}
 //
 //	/**
@@ -318,49 +251,22 @@ public abstract class AbstractViewDataTable<T> {
 	public void setTreeObject(TreeObject treeObject){
 		this.treeObject = treeObject;
 	}
-	
+
 	/**
 	 * Set the category filter
 	 * 
 	 * @param filter
 	 *            The new filter string
 	 */
-	public void setCategoryFilter(String filter) {
-
-		// Set the label with the filter string
-//		if (filter.equals("$shownothing"))
-//			filterLabel.setText("");
-//		else
-//		// Display the localizes list names.
-//		// or the document type
-//		if ( (this instanceof ViewDocumentTable) || (this instanceof ViewListTable) )
-//			filterLabel.setText(DataSetListNames.NAMES.getLocalizedName(filter));
-//
-//		filterLabel.pack(true);
-//
-//		// Reset transaction and contact filter, set category filter
-//		contentProvider.setTransactionFilter(-1);
-//		contentProvider.setContactFilter(-1);
-//		contentProvider.setCategoryFilter(filter);
-//		contentProvider.setTreeObject(treeObject);
-//
-//		// Set category to the addNew action. So a new data set is created
-//		// with the selected category
-//		if (addNewAction != null) {
-//			addNewAction.setCategory(filter);
-//		}
-
-		//Refresh
-		this.refresh();
-	}
-
+	abstract public void setCategoryFilter(String filter, TreeObjectType treeObjectType);
+	
 	/**
 	 * Set the transaction filter
 	 * 
 	 * @param filter
 	 *            The new filter string
 	 */
-	public void setTransactionFilter(int filter) {
+	public void setTransactionFilter(int filter, TreeObjectType treeObjectType) {
 
 		// Set the label with the filter string
 		filterLabel.setText("Dieser Vorgang");
@@ -423,4 +329,6 @@ public abstract class AbstractViewDataTable<T> {
 		}
 
 	}
+	
+	abstract protected boolean isHeaderLabelEnabled();
 }

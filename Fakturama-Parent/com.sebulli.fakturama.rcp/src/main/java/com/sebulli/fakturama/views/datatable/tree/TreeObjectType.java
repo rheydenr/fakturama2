@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable.tree;
 
 /**
  * Types of various tree items within the TopicTreeViewer

@@ -24,13 +24,15 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.VatEditor;
-import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable;
+import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * Universal Handler to open an UniDataSet editor
@@ -38,6 +40,10 @@ import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable;
  * @author Gerd Bartelt
  */
 public class CallEditor {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 	
 	@Inject
 	private EPartService partService;
@@ -83,7 +89,7 @@ public class CallEditor {
 			
 			// we have to distinguish the different editors here
 			switch (type) {
-			case RHENatTable.ID:
+			case VATListTable.ID:
 				myPart.setLabel("VAT ");
 				myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/" + VatEditor.class.getName());
 				myPart.setContext(partService.getActivePart().getContext());

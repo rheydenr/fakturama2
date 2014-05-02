@@ -24,6 +24,9 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -90,6 +93,7 @@ public class ConfigurationManager {
 	public void checkFirstStart(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, IWorkbench workbench) {
 		this.workbench = workbench;
 		String requestedWorkspace = preferences.get(GENERAL_WORKSPACE, null);
+		
 		// Get the program parameters
 		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		if (args.length != 0) {

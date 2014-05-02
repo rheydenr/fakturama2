@@ -16,10 +16,11 @@ package com.sebulli.fakturama.handlers;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
-import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable;
+import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * This action opens the VATs in a table view.
@@ -36,7 +37,11 @@ public class OpenVatsHandler {
 	@Execute
 	public void execute(final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
-		partService.showPart(RHENatTable.ID,
+	    MPart vatPart = partService.findPart(VATListTable.ID);
+	    vatPart.setVisible(true);
+	    // otherwise no content is rendered :-(
+	    vatPart.setToBeRendered(true);
+		partService.showPart(vatPart,
 				PartState.ACTIVATE);
 	}
 	

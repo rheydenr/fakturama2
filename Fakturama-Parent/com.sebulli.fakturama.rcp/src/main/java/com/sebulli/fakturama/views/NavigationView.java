@@ -52,7 +52,7 @@ public class NavigationView {
 	
 	@Inject
 	@Translation
-	protected Messages _;
+	protected Messages msg;
 	  
 	  private Composite composite;
 	/**
@@ -113,12 +113,12 @@ public class NavigationView {
 			final String commandId) {
 		CLabel label = new CLabel(group, SWT.NORMAL);
 		label.setImage(commandIcon.getImage(IconSize.DefaultIconSize));
-		label.setToolTipText(_.getMessageFromKey(commandIconDescriptor + ".tooltip"));
+		label.setToolTipText(msg.getMessageFromKey(commandIconDescriptor + ".tooltip"));
 		
 		// formerly known as ACTIONTEXT
-		label.setText(_.getMessageFromKey(commandIconDescriptor + ".name"));
+		label.setText(msg.getMessageFromKey(commandIconDescriptor + ".name"));
 		label.addMouseListener(new MouseAdapter() {
-			@Override
+            @Override
 			public void mouseDown(MouseEvent e) {
 				Command cmd = commandService.getCommand(commandId);
 				ParameterizedCommand pCmd = new ParameterizedCommand(cmd, null);
@@ -135,8 +135,8 @@ public class NavigationView {
 	private PGroup createPGroup(String groupName, Icon groupIcon) {
 		PGroup group = new PGroup(composite, SWT.SMOOTH);
 		//T: Title of an expand bar in the navigations view
-	    group.setText(_.getMessageFromKey(groupName));
-	    group.setToolTipText(_.getMessageFromKey(groupName + ".tooltip"));
+	    group.setText(msg.getMessageFromKey(groupName));
+	    group.setToolTipText(msg.getMessageFromKey(groupName + ".tooltip"));
 	    group.setImage(groupIcon.getImageDescriptor(IconSize.ToobarIconSize).createImage());
 	    group.setImagePosition(SWT.LEFT | SWT.TOP);
 	    

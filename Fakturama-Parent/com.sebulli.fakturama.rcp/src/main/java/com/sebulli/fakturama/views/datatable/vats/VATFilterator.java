@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable.vats;
 
 import java.util.List;
 

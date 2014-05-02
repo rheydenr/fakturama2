@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable.tree;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import ca.odell.glazedlists.EventList;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.views.datatable.nattabletest.RHENatTable.RHEViewTableLabelProvider;
+import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * This is the topic tree viewer that displays a tree of the categories of all
@@ -77,13 +77,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	final boolean useAll;
 
 	// The corresponding table
-	private RHENatTable viewDataSetTable;
+	private VATListTable viewDataSetTable;
 	
-	/**
-	 * the concrete Class of this TreeViewer
-	 */
-	private Class<T> elementClass;
-
 	/**
 	 * Constructor Creates a
 	 * 
@@ -94,12 +89,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param useDocumentAndContactFilter
 	 * @param useAll
 	 */
-	public TopicTreeViewer(Composite parent, Messages msg, /*int style, */final Class<T> elementClass, boolean useDocumentAndContactFilter, final boolean useAll) {
+	public TopicTreeViewer(Composite parent, Messages msg, /*int style, */boolean useDocumentAndContactFilter, final boolean useAll) {
 		this.internalTreeViewer = new TreeViewer(parent, SWT.BORDER /*style*/);
 		// Messages can't be injected because this class is not called via application context
 		this.msg = msg;
 		this.useAll = useAll;
-		this.elementClass = elementClass;
 		
 		// Create a new root element
 		root = new TreeObject("");
@@ -171,7 +165,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 				else if (transactionFilter >= 0)
 					// Set the transaction filter
-					viewDataSetTable.setTransactionFilter(transactionFilter);
+					viewDataSetTable.setTransactionFilter(transactionFilter, treeObject.getNodeType());
 
 				else {
 					if (!useAll && categoryFilter.isEmpty()) {
@@ -323,7 +317,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		public String getText(Object obj) {
 
 			// Display the localizes list names.
-			if (viewDataSetTable instanceof RHENatTable)
+			if (viewDataSetTable instanceof VATListTable)
 //				return DataSetListNames.NAMES.getLocalizedName(obj.toString());
 				return "loc: " + obj.toString();
 			else
@@ -419,7 +413,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		//T: Topic Tree Viewer transaction title
 		transactionItem.setName(msg.topictreeTransaction);
 		
-		internalTreeViewer.refresh();
+		refreshTree();
+	}
+	
+	public void refreshTree() {
+	    internalTreeViewer.refresh();
 	}
 
 	/**
@@ -500,7 +498,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			return;
 		contactItem.setContactId(contactId);
 		contactItem.setName(name);
-		internalTreeViewer.refresh();
+		refreshTree();
 	}
 
 	/**
@@ -528,11 +526,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param viewDataSetTable
 	 *            The table of the view
 	 */
-	public void setTable(RHENatTable viewDataSetTable) {
+	public void setTable(VATListTable viewDataSetTable) {
 		this.viewDataSetTable = viewDataSetTable;
 	}
 
-	public void setLabelProvider(RHEViewTableLabelProvider rheViewTableLabelProvider) {
+	public void setLabelProvider(TreeCategoryLabelProvider rheViewTableLabelProvider) {
 		internalTreeViewer.setLabelProvider(rheViewTableLabelProvider);
 	}
 }

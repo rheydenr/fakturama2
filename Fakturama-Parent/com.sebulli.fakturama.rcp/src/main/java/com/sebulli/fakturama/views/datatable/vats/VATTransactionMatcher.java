@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.views.datatable.nattabletest;
+package com.sebulli.fakturama.views.datatable.vats;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
@@ -11,7 +11,7 @@ final class VATTransactionMatcher implements Matcher<VAT> {
 	
 	public VATTransactionMatcher(String pVatCategoryName) {
 		this.vatTransactionCode = pVatCategoryName;
-		this.isRootNode = pVatCategoryName.equals(RHENatTable.ROOT_NODE_NAME);
+		this.isRootNode = pVatCategoryName.equals(VATListTable.ROOT_NODE_NAME);
 	}
 
 	@Override
