@@ -4,9 +4,6 @@
 package com.sebulli.fakturama.i18n;
 
 import java.lang.reflect.Field;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;

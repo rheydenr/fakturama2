@@ -12,7 +12,7 @@ public interface IEntity {
 	 * The category of this entity.
 	 * @return
 	 */
-	public String getCategory();
+	public AbstractCategory getCategory();
 
 	/**
 	 * Transaction Key, if available. Used in content provider for data table.

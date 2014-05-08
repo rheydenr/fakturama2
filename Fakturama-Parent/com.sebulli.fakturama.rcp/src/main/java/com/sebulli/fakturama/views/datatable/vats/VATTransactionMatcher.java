@@ -3,7 +3,6 @@ package com.sebulli.fakturama.views.datatable.vats;
 import ca.odell.glazedlists.matchers.Matcher;
 
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.model.VATCategory;
 
 final class VATTransactionMatcher implements Matcher<VAT> {
 	final String vatTransactionCode;
@@ -18,12 +17,12 @@ final class VATTransactionMatcher implements Matcher<VAT> {
 	public boolean matches(VAT item) {
 		boolean found = false;
 		if(!isRootNode) {
-			for (VATCategory vatCategory : item.getCategories()) {
-				if(vatCategory.getName().equals(vatTransactionCode)) {
+//			for (VATCategory vatCategory : item.getCategories()) {
+				if(item.getCategory().getName().equals(vatTransactionCode)) {
 					found = true;
-					break;
+//					break;
 				}
-			}
+//			}
 		}
 		return isRootNode || found;
 	}

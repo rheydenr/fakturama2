@@ -1,86 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="111">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="129">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group" version="1.1.0.RELEASE"/>
-<unit id="org.eclipse.gemini.dbaccess.feature.feature.group" version="1.1.0.RELEASE"/>
-<unit id="org.eclipse.gemini.dbaccess.h2.feature.feature.group" version="1.1.0.RELEASE"/>
-<unit id="org.eclipse.gemini.dbaccess.mysql.feature.feature.group" version="1.1.0.RELEASE"/>
-<repository location="http://download.eclipse.org/gemini/updates/dbaccess/1.1.0"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jdt.source.feature.group" version="3.10.0.v20140306-1200"/>
-<unit id="org.eclipse.jdt.feature.group" version="3.10.0.v20140306-1200"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140305-1523"/>
-<unit id="org.eclipse.test.feature.group" version="3.6.100.v20140204-1712"/>
-<unit id="org.eclipse.platform.ide" version="4.4.0.I20140306-1200"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140306-1200"/>
-<unit id="org.eclipse.rcp.source.feature.group" version="4.4.0.v20140306-1200"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<unit id="org.h2" version="1.3.168.v201212121212"/>
-<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.poi" version="3.9.0.v201303080712"/>
-<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-<unit id="org.apache.commons.codec" version="1.4.0.v201209201156"/>
-<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.commons.collections.source" version="3.2.0.v2013030210310"/>
-<unit id="org.apache.commons.lang" version="2.6.0.v201205030909"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201105210650"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.apache.commons.feature.feature.group" version="3.1.0"/>
-<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
-<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.25"/>
-<unit id="org.apache.commons.lang3.feature.feature.group" version="3.1.0"/>
-<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.0.1.201307031725"/>
-<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.0.1.201307031725"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.0.1.201307031725"/>
-<repository location="http://download.eclipse.org/nattable/releases/1.0.1/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140402-1524"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140424-1317"/>
-<unit id="org.eclipse.e4.tools.css.editor.feature.feature.group" version="0.14.0.v20140221-1650"/>
-<unit id="org.eclipse.e4.tools.orion.css.editor.feature.feature.group" version="0.15.0.v20140404-1904"/>
-<repository location="http://download.vogella.com/luna/e4tools"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201404290658"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201404290658"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201404290658"/>
-<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="ch.qos.logback.feature.feature.group" version="1.0.7"/>
-<repository location="http://logback.qos.ch/p2"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
-<repository location="http://download.eclipse.org/gemini/jpa/updates"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.persistence.sdk.feature.group" version="2.5.1.v20130918-f2b9fc5"/>
-<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
-<repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.texo.feature.group" version="0.1.0.v201312121235"/>
-<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
-</location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.feature.group" version="2.9.0.v20140203-1126"/>
 <unit id="org.eclipse.emf.databinding.feature.group" version="1.3.0.v20140203-1126"/>
@@ -91,6 +11,92 @@
 <unit id="org.eclipse.emf.ecore.feature.group" version="2.9.2.v20131212-0545"/>
 <unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.8.0.v20140203-1126"/>
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.persistence.sdk.feature.group" version="2.5.1.v20130918-f2b9fc5"/>
+<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.feature.feature.group" version="3.1.0"/>
+<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
+<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.25"/>
+<unit id="org.apache.commons.lang3.feature.feature.group" version="3.1.0"/>
+<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.source.feature.feature.group" version="1.1.0.201405012245"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.1.0.201405012245"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.1.0.201405012245"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.1.0.201405012245"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.1.0.201405012245"/>
+<repository location="http://download.eclipse.org/nattable/releases/1.1.0/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201405061248"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201405061248"/>
+<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201405061248"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
+<repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group" version="1.1.0.RELEASE"/>
+<unit id="org.eclipse.gemini.dbaccess.h2.feature.feature.group" version="1.1.0.RELEASE"/>
+<unit id="org.eclipse.gemini.dbaccess.feature.feature.group" version="1.1.0.RELEASE"/>
+<unit id="org.eclipse.gemini.dbaccess.mysql.feature.feature.group" version="1.1.0.RELEASE"/>
+<repository location="http://download.eclipse.org/gemini/updates/dbaccess/1.1.0"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.pde.api.tools.ee.feature.feature.group" version="1.0.1.v20140424-1723"/>
+<unit id="org.eclipse.platform.ide" version="4.4.0.I20140501-0200"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140430-1556"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140501-0200"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4milestones"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.texo.feature.group" version="0.1.0.v201312121235"/>
+<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.15.0.v20140221-1650"/>
+<unit id="org.eclipse.e4.tools.css.editor.feature.feature.group" version="0.14.0.v20140221-1650"/>
+<unit id="org.eclipse.e4.tools.orion.css.editor.feature.feature.group" version="0.15.0.v20140404-1904"/>
+<unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20140308-1420"/>
+<unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140402-1524"/>
+<repository location="http://download.vogella.com/luna/e4tools"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
+<unit id="org.h2" version="1.3.168.v201212121212"/>
+<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
+<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.poi" version="3.9.0.v201303080712"/>
+<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
+<unit id="org.apache.commons.codec" version="1.4.0.v201209201156"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.commons.collections" version="3.2.0.v2013030210310"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201205030909"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201105210650"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="ch.qos.logback.feature.feature.group" version="1.0.7"/>
+<repository location="http://logback.qos.ch/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201405061247"/>
+<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201405061247"/>
+<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
+<repository location="http://download.eclipse.org/gemini/jpa/updates"/>
 </location>
 </locations>
 </target>

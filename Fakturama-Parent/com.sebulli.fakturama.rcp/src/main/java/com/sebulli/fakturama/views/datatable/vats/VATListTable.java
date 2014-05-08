@@ -213,6 +213,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
                 case DEFAULT_COLUMN_POSITION:
                     // VAT_PROPERTY_NAMES
                     //                  System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
+                    // TODO set correct default value!
                     return rowObject.getId() == 1L;
                 case NAME_COLUMN_POSITION:
                 case DESCRIPTION_COLUMN_POSITION:
@@ -327,7 +328,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // now is the time where we can create the NatTable itself
         natTable = new NatTable(searchAndTableComposite, gridLayer, false);
 
-        //      VAT defaultVat = getDefaultVAT();
+        VAT defaultVat = getDefaultVAT();
         //      // Label accumulator - adds labels to all cells with the given data value
         //      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
         //          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());

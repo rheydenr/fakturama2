@@ -180,17 +180,17 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 //		// new TableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, "ID", 30, 0, true, "id");
 //		
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, _("No."), cw_no, true, "nr");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, msg("No."), cw_no, true, "nr");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("First Name"), cw_firstname,  false, "firstname");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, msg("First Name"), cw_firstname,  false, "firstname");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("Last Name"), cw_lastname, false, "name");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, msg("Last Name"), cw_lastname, false, "name");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("Company"), cw_company, false, "company");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, msg("Company"), cw_company, false, "company");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, _("ZIP"), cw_zip, true, "zip");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.RIGHT, msg("ZIP"), cw_zip, true, "zip");
 //		//T: Used as heading of a table. Keep the word short.
-//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, _("City"), cw_city, false, "city");
+//		new DataTableColumn<Contact>(tableColumnLayout, tableViewer, SWT.LEFT, msg("City"), cw_city, false, "city");
 //
 //		// Set the input of the table viewer and the tree viewer
 // 		tableViewer.setInput(Data.INSTANCE.getContacts());

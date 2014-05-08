@@ -1,10 +1,7 @@
 package com.sebulli.fakturama.model;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -14,8 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,7 +25,7 @@ import javax.persistence.TemporalType;
  */
 @Entity()
 @Table(name = "FKT_VAT")
-public class VAT implements Serializable, IEntity {
+public class VAT extends ModelObject implements IEntity, Serializable {
 	/**
 	 * @generated
 	 */
@@ -96,10 +93,9 @@ public class VAT implements Serializable, IEntity {
 	 * 
 	 * @generated
 	 */
-	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH })
-	@JoinTable(joinColumns = { @JoinColumn(name = "VAT_CATEGORIES") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORIES_VATCATEGORY") }, name = "FKT_VAT_CATEGORIES")
-	private Set<VATCategory> categories = new HashSet<VATCategory>();
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumns({ @JoinColumn(name = "FK_VAT") })
+    private VATCategory category = null;
 
 	/**
 	 * Returns the value of '<em><b>id</b></em>' feature.
@@ -148,6 +144,7 @@ public class VAT implements Serializable, IEntity {
 	 * @generated
 	 */
 	public void setName(String newName) {
+        firePropertyChange("name", this.name, newName);
 		name = newName;
 	}
 
@@ -174,6 +171,7 @@ public class VAT implements Serializable, IEntity {
 	 * @generated
 	 */
 	public void setDeleted(Boolean newDeleted) {
+	    firePropertyChange("deleted", this.deleted, newDeleted);
 		deleted = newDeleted;
 	}
 
@@ -200,6 +198,7 @@ public class VAT implements Serializable, IEntity {
 	 * @generated
 	 */
 	public void setDescription(String newDescription) {
+        firePropertyChange("description", this.description, newDescription);
 		description = newDescription;
 	}
 
@@ -226,7 +225,8 @@ public class VAT implements Serializable, IEntity {
 	 * @generated
 	 */
 	public void setTaxValue(Double newTaxValue) {
-		taxValue = newTaxValue;
+	    firePropertyChange("taxValue", this.taxValue, newTaxValue); 
+	    taxValue = newTaxValue;
 	}
 
 	/**
@@ -252,86 +252,34 @@ public class VAT implements Serializable, IEntity {
 	 * @generated
 	 */
 	public void setModified(Date newModified) {
+	    firePropertyChange("modified", this.modified, newModified);
 		modified = newModified;
 	}
 
 	/**
-	 * Returns the value of '<em><b>categories</b></em>' feature. Note: the
-	 * returned collection is Unmodifiable use the
-	 * {#addToCategories(com.sebulli.fakturama.model.VATCategory value)} and
-	 * {@link #removeFromCategories(VATCategory value)} methods to modify this
-	 * feature.
-	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @return the value of '<em><b>categories</b></em>' feature
-	 * @generated
-	 */
-	public Set<VATCategory> getCategories() {
-		return Collections.unmodifiableSet(categories);
-	}
+     * Returns the value of '<em><b>category</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>category</b></em>' feature
+     * @generated
+     */
+    public VATCategory getCategory() {
+        return category;
+    }
 
-	/**
-	 * Adds to the <em>categories</em> feature.
-	 * 
-	 * @param categoriesValue
-	 *            the value to add
-	 * @return true if the value is added to the collection (it was not yet
-	 *         present in the collection), false otherwise
-	 * @generated
-	 */
-	public boolean addToCategories(VATCategory categoriesValue) {
-		if (!categories.contains(categoriesValue)) {
-			boolean result = categories.add(categoriesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes from the <em>categories</em> feature.
-	 * 
-	 * @param categoriesValue
-	 *            the value to remove
-	 * @return true if the value is removed from the collection (it existed in
-	 *         the collection before removing), false otherwise
-	 * 
-	 * @generated
-	 */
-	public boolean removeFromCategories(VATCategory categoriesValue) {
-		if (categories.contains(categoriesValue)) {
-			boolean result = categories.remove(categoriesValue);
-			return result;
-		}
-		return false;
-	}
-
-	/**
-	 * Clears the <em>categories</em> feature.
-	 * 
-	 * @generated
-	 */
-	public void clearCategories() {
-		while (!categories.isEmpty()) {
-			removeFromCategories(categories.iterator().next());
-		}
-	}
-
-	/**
-	 * Sets the '{@link VAT#getCategories() <em>categories</em>}' feature.
-	 * 
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param newCategories
-	 *            the new value of the '{@link VAT#getCategories() categories}'
-	 *            feature.
-	 * @generated
-	 */
-	public void setCategories(Set<VATCategory> newCategories) {
-		clearCategories();
-		for (VATCategory value : newCategories) {
-			addToCategories(value);
-		}
+    /**
+     * Sets the '{@link VAT#getCategory() <em>category</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newCategory
+     *            the new value of the '{@link VAT#getCategory() category}'
+     *            feature.
+     * @generated
+     */
+    public void setCategory(VATCategory newCategory) {
+        category = newCategory;
 	}
 
 	/**
@@ -346,12 +294,6 @@ public class VAT implements Serializable, IEntity {
 				+ " [deleted: " + getDeleted() + "]" + " [description: "
 				+ getDescription() + "]" + " [taxValue: " + getTaxValue() + "]"
 				+ " [modified: " + getModified() + "]";
-	}
-
-	@Override
-	public String getCategory() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

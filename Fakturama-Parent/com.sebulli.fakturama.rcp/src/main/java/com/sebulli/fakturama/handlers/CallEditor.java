@@ -41,6 +41,12 @@ import com.sebulli.fakturama.views.datatable.vats.VATListTable;
  */
 public class CallEditor {
     
+    private static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
+
+    private static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.editor.objId";
+
+    private static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docview";
+
     @Inject
     @Translation
     protected Messages msg;
@@ -56,8 +62,7 @@ public class CallEditor {
 			@Optional @Named("com.sebulli.fakturama.rcp.cmdparam.objId") String objId) throws ExecutionException {
 			// If we had a selection lets open the editor
 			if (objId != null) {
-				// Define  the editor
-//				// And try to open it
+				// Define  the editor and try to open it
 				partService.showPart(createEditorPart(param, objId), PartState.ACTIVATE);
 			}
 	}
@@ -74,8 +79,8 @@ public class CallEditor {
 		Collection<MPart> parts = partService.getParts();
 		// at first we look for an existing Part
 		for (MPart mPart : parts) {
-			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), "com.sebulli.fakturama.rcp.docview") && mPart.getContext() != null) {
-				Object object = mPart.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
+			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), DOCVIEW_PART_ID) && mPart.getContext() != null) {
+				Object object = mPart.getContext().get(PARAM_OBJ_ID);
 				if (object.equals(objId)) {
 					myPart = mPart;
 					break;
@@ -85,24 +90,24 @@ public class CallEditor {
 		
 		// if not found then we create a new one
 		if (myPart == null) {			
-			myPart = partService.createPart("com.sebulli.fakturama.rcp.docview");
+			myPart = partService.createPart(DOCVIEW_PART_ID);
 			
 			// we have to distinguish the different editors here
 			switch (type) {
 			case VATListTable.ID:
 				myPart.setLabel("VAT ");
-				myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/" + VatEditor.class.getName());
+				myPart.setContributionURI(BASE_CONTRIBUTION_URI + VatEditor.class.getName());
 				myPart.setContext(partService.getActivePart().getContext());
-				myPart.getContext().set("com.sebulli.fakturama.rcp.editor.objId", objId);
+				myPart.getContext().set(PARAM_OBJ_ID, objId);
 				break;
 
 			default:
 				myPart.setLabel("unknown");
-				myPart.setContributionURI("bundleclass://com.sebulli.fakturama.rcp/" + ContactEditor.class.getName());
+				myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
 				break;
 			}
 			myPart.setContext(EclipseContextFactory.create());
-			myPart.getContext().set("com.sebulli.fakturama.rcp.editor.objId", objId);
+			myPart.getContext().set(PARAM_OBJ_ID, objId);
 		}
 		return myPart;
 	}

@@ -95,8 +95,8 @@ public class NavigationView {
 		/*
 	    PGroup group4 = createPGroup("main.menu.export", Icon.ICON_PRODUCT_NEW);
 	    addAction(commandService, group4, Icon.COMMAND_EXPORT, "command.export", ICommandIds.CMD_EXPORT);
-		final ExpandBar bar4 = new ExpandBar(expandBarManager, top, SWT.NONE, _("Export"),  Icon.COMMAND_EXPORT ,
-				_("Export documents, contacts .. to tables and files"));
+		final ExpandBar bar4 = new ExpandBar(expandBarManager, top, SWT.NONE, msg("Export"),  Icon.COMMAND_EXPORT ,
+				msg("Export documents, contacts .. to tables and files"));
 
 		bar4.addAction(new ExportSalesAction());
 */

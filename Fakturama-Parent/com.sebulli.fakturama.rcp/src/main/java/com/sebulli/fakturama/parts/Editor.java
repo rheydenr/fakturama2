@@ -22,17 +22,28 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -45,10 +56,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
+import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.IEntity;
@@ -57,6 +72,21 @@ import com.sebulli.fakturama.model.IEntity;
  * Parent class for all editors
  * 
  * @author Gerd Bartelt
+ */
+/**
+ * @author rheydenr
+ *
+ * @param <T>
+ */
+/**
+ * @author rheydenr
+ *
+ * @param <T>
+ */
+/**
+ * @author rheydenr
+ *
+ * @param <T>
  */
 public abstract class Editor<T extends IEntity> {
 	
@@ -76,7 +106,8 @@ public abstract class Editor<T extends IEntity> {
 	protected String editorID = "";
 	protected static final int NO_ERROR = 0;
 	protected static final int ERROR_NOT_NEXT_ID = 1;
-	
+    protected DataBindingContext ctx = new DataBindingContext();
+
 	protected abstract MDirtyable getMDirtyablePart();
 
 	/**
@@ -444,77 +475,77 @@ public abstract class Editor<T extends IEntity> {
 	 * 
 	 */
 	protected void refreshView() {
-
 		// Refresh the view that corresponds to this editor
 		// TODO change it!
 		//ApplicationWorkbenchAdvisor.refreshView(tableViewID);
-
-	}
-
-
-	/**
-	 * Request a new validation, if the document is dirty.
-	 */
-	public void checkDirty() {
-		getMDirtyablePart().setDirty(true);
 	}
 
 	/**
-	 * Supervice this text widget. Set the text limit and request a new
-	 * "isDirty" validation, if the content of the text widget is modified.
+	 * Binds a Java bean property to the UI widget.
+	 * 
+	 * @param target the Java bean
+	 * @param source the SWT widget
+	 * @param property the property to observe
 	 */
-	protected void superviceControl(Text text, int limit) {
-		text.setTextLimit(limit);
-		text.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				checkDirty();
-
-			}
-		});
+	protected void bindModelValue(T target, Scrollable source, String property) {
+//        IObservableValue model = BeansObservables.observeValue(target, property);
+//        IObservableValue uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
+//        ctx.bindValue(uiWidget, model);
+	    bindModelValue(target, source, property, null, null);
 	}
+	
+    protected void bindModelValue(T target, Scrollable source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+        IObservableValue model = BeansObservables.observeValue(target, property);
+        IObservableValue uiWidget;
+        if(source instanceof Combo) {
+            uiWidget = WidgetProperties.selection().observe(source);
+        } else {
+            uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
+        }
+        if (modelToTarget != null) {
+            ctx.bindValue(uiWidget, model, targetToModel, modelToTarget);
+        }
+        else {
+            ctx.bindValue(uiWidget, model);
+        }        
+    }
+	
+    protected void bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+        if (limit > 0) {
+            source.setTextLimit(limit);
+        }
+        source.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+              getMDirtyablePart().setDirty(true);
+            }
+        });
+//        source.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                getMDirtyablePart().setDirty(true);
+//            }
+//        });
+        bindModelValue(target, source, property, targetToModel, modelToTarget);
+    }	
 
-	/**
-	 * Supervice this dateTime widget. Set the text limit and request a new
-	 * "isDirty" validation, if the content of the text dateTime is modified.
-	 */
-	protected void superviceControl(DateTime dateTime) {
-		dateTime.addSelectionListener(new SelectionAdapter() {
+    /**
+     * Supervise this text widget. Set the text limit and request a new
+     * "isDirty" validation, if the content of the text widget is modified.
+     */
+    protected void bindModelValue(T target, Text source, String property, int limit) {
+        bindModelValue(target, source, property, limit, null, null);
+//        source.setTextLimit(limit);
+//        source.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                getMDirtyablePart().setDirty(true);
+//            }
+//        });
+//        bindModelValue(target, source, property);
+    }
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				checkDirty();
-			}
-
-		});
-	}
-
-	/**
-	 * Supervice this combo widget. Set the text limit and request a new
-	 * "isDirty" validation, if the content of the text combo is modified.
-	 */
-	protected void superviceControl(Combo combo) {
-
-		combo.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				checkDirty();
-
-			}
-		});
-
-		combo.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				checkDirty();
-			}
-
-		});
-	}
-
+	
 	/**
 	 * Jump to the next control, if in a multi-line text control the tab key is
 	 * pressed. Normally the tab won't jump to the next control, if the current

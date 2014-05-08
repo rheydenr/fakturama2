@@ -19,12 +19,12 @@ final class VATMatcher implements Matcher<VAT> {
 	public boolean matches(VAT item) {
 		boolean found = false;
 		if(!isRootNode) {
-			for (VATCategory vatCategory : item.getCategories()) {
-				if(vatCategory.getName().equals(vatCategoryName)) {
+//			for (VATCategory vatCategory : item.getCategories()) {
+				if(item.getCategory().getName().equals(vatCategoryName)) {
 					found = true;
-					break;
+//					break;
 				}
-			}
+//			}
 		}
 		return isRootNode || found;
 	}

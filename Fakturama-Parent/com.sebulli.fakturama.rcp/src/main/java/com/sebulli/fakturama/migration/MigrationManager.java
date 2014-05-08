@@ -936,7 +936,8 @@ public class MigrationManager {
 				vat.setDescription(oldVat.getDescription());
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
-					vat.addToCategories(vatCategoriesMap.get(oldVat.getCategory()));
+//					vat.addToCategories(vatCategoriesMap.get(oldVat.getCategory()));
+					vat.setCategory(vatCategoriesMap.get(oldVat.getCategory()));
 				}
 				vatsDAO.save(vat);
 				newVats.put(oldVat.getId(), vat.getId());
