@@ -22,6 +22,9 @@ public class StringToVatCategoryConverter extends Converter {
      */
     @Override
     public Object convert(Object fromObject) {
+        // in: "Umsatzsteuer"
+        // out: VATCategory
+        // FIXME!
         return null;
     }
 

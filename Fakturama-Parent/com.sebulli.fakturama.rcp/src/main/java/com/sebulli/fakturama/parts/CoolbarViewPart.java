@@ -13,6 +13,7 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -63,7 +64,7 @@ public class CoolbarViewPart {
 	
 	@Inject
 	@Translation
-	protected Messages _;
+	protected Messages msg;
 
 
 	/**
@@ -80,8 +81,15 @@ public class CoolbarViewPart {
 	@PostConstruct
 	public void createControls(Composite parent, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
 			IApplicationContext appContext, IWorkbench workbench) {
+	    
+	    // FIXME: How could we do this in a Startup class??? This solution looks realy ugly!
 		ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.firstStart.command", null);
 		handlerService.executeHandler(command );  // launch ConfigurationManager.checkFirstStart
+		
+		// maybe we're just restarting...
+		if(((E4Workbench)workbench).isRestart()) {
+		    return;
+		}
 		
 		// now lets create our CoolBar
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
@@ -105,25 +113,25 @@ public class CoolbarViewPart {
 			
 		CoolBar coolbar2 = coolbarmgr.createControl(parent);
 		ToolBar toolBar2 = new ToolBar(coolbar2, SWT.FLAT);
-		String tooltipPrefix = _.commandNewTooltip + " ";
+		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_LETTER, 
-				tooltipPrefix + _.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_OFFER, 
-				tooltipPrefix + _.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_ORDER, 
-				tooltipPrefix + _.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CONFIRMATION, 
-				tooltipPrefix + _.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_INVOICE, 
-				tooltipPrefix + _.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DELIVERY, 
-				tooltipPrefix + _.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CREDIT, 
-				tooltipPrefix + _.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DUNNING, 
-				tooltipPrefix + _.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToobarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_PROFORMA, 
-				tooltipPrefix + _.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
 		finishToolbar(coolbar2, toolBar2);
 		
 		CoolBar coolbar3 = coolbarmgr.createControl(parent);

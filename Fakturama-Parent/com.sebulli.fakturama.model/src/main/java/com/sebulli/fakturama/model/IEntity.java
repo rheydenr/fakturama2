@@ -12,13 +12,13 @@ public interface IEntity {
 	 * The category of this entity.
 	 * @return
 	 */
-	public AbstractCategory getCategory();
+//	public AbstractCategory getCategory();
 
 	/**
 	 * Transaction Key, if available. Used in content provider for data table.
 	 * @return
 	 */
-	public int getTransactionKey();
+//	public int getTransactionKey();
 	
 	/**
 	 * The id of this entity
@@ -39,7 +39,7 @@ public interface IEntity {
 	 * Address key, if available. Used in content provider for data table.
 	 * @return
 	 */
-	public int getAddressKey();
+//	public int getAddressKey();
 	
-	public String getFormatedStringValueByKey(String key);
+//	public String getFormatedStringValueByKey(String key);
 }

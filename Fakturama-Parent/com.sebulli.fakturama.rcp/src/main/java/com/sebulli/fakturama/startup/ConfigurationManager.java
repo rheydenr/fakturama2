@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,11 +24,9 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -59,12 +59,14 @@ public class ConfigurationManager {
 	
 	@Inject
 	@Translation
-	protected Messages _;
+	protected Messages msg;
 
 	@Inject
 	protected IEclipseContext context;
 
 	private IWorkbench workbench;
+    private static MessageDigest md;
+
 
 	/**
 	 * The eclipse Logger. Level can be set via config.ini
@@ -160,10 +162,31 @@ public class ConfigurationManager {
 		catch (BackingStoreException e) {
 			log.error(e);
 		}
-		// now initialize the new workspace
-		initWorkspace(requestedWorkspace);
-		shell.setText("Fakturama - " + preferences.get(GENERAL_WORKSPACE, "(unknown)"));
+		if(!((E4Workbench)workbench).isRestart()) {
+    		// now initialize the new workspace
+    		initWorkspace(requestedWorkspace);
+    		shell.setText("Fakturama - " + preferences.get(GENERAL_WORKSPACE, "(unknown)"));
+		}
 	}
+	
+	   public static String cryptWithMD5(String pass){
+	    try {
+	        md = MessageDigest.getInstance("MD5");
+	        byte[] passBytes = pass.getBytes();
+	        md.reset();
+	        byte[] digested = md.digest(passBytes);
+	        StringBuffer sb = new StringBuffer();
+	        for(int i=0;i<digested.length;i++){
+	            sb.append(Integer.toHexString(0xff & digested[i]));
+	        }
+	        return sb.toString();
+	    } catch (NoSuchAlgorithmException ex) {
+//	        log.log(Level.SEVERE, null, ex);
+	    }
+	        return null;
+
+
+	   }
 
 	/** 
 	 * Brings up a selection dialog for the Workspace path.
@@ -172,7 +195,7 @@ public class ConfigurationManager {
 	 * @param shell
 	 */
 	private void selectWorkspace(String requestedWorkspace, Shell shell) {
-		InitialStartupDialog startDialog = new InitialStartupDialog(shell, preferences, workbench, log, _, requestedWorkspace);
+		InitialStartupDialog startDialog = new InitialStartupDialog(shell, preferences, workbench, log, msg, requestedWorkspace);
 		appContext.applicationRunning();
 		if (startDialog.open() != Window.OK) {
 			// close the application
@@ -190,7 +213,7 @@ public class ConfigurationManager {
 	 * 
 	 */
 	private void initWorkspace(String workspace) {
-		String templateFolderName = _.configWorkspaceTemplatesName;
+		String templateFolderName = msg.configWorkspaceTemplatesName;
 		//		// Exit, if the workspace path is not set
 		//		if (workspace.isEmpty())
 		//			return;
@@ -261,11 +284,10 @@ public class ConfigurationManager {
 			directory.mkdirs();
 
 		// Copy the file
-		InputStream in = null;
-		try {
+		try(InputStream in = ResourceBundleHelper.getBundleForName("com.sebulli.fakturama.resources").getResource(resource).openStream()) {
 			// Create the input stream from the resource file                 "Templates/Invoice/Document.ott"
 			//			InputStream in = Activator.getContext().getBundle("com.sebulli.fakturama.resources").getResource(resource).openStream();
-			in = ResourceBundleHelper.getBundleForName("com.sebulli.fakturama.resources").getResource(resource).openStream();
+			;
 
 			// Create the output stream from the output file name
 			File fout = new File(myFilePath + "/" + fileName);
@@ -278,19 +300,6 @@ public class ConfigurationManager {
 		catch (IOException e) {
 			log.error(e, "Error copying the resource file to the file system.");
 		}
-		finally {
-			// Close stream
-			if (in != null) {
-				try {
-					in.close();
-				}
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					log.error(e);
-				}
-			}
-		}
-
 	}
 
 }

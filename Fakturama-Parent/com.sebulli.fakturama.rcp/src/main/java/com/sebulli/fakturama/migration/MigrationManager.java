@@ -128,7 +128,7 @@ public class MigrationManager {
 	
 	@Inject
 	@Translation
-	protected Messages _;
+	protected Messages msg;
 
 	
 //	@Resource

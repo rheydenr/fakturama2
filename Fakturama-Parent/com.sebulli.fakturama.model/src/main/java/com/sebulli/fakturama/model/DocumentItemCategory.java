@@ -15,19 +15,20 @@ import javax.persistence.Table;
 @Table(name = "FKT_DOCUMENTITEMCATEGORY")
 @PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "DOCUMENTITEMCATEGORY_PARENT_ID") })
 public class DocumentItemCategory extends AbstractCategory {
-	/**
-	 * @generated
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * A toString method which prints the values of all EAttributes of this
-	 * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		return "DocumentItemCategory ";
-	}
+    /**
+     * @generated
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * A toString method which prints the values of all EAttributes of this
+     * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public String toString() {
+        return "DocumentItemCategory ";
+    }
 }

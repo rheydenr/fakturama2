@@ -15,19 +15,20 @@ import javax.persistence.Table;
 @Table(name = "FKT_ACCOUNT")
 @PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "ACCOUNT_PARENT_ID") })
 public class Account extends AbstractCategory {
-	/**
-	 * @generated
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * A toString method which prints the values of all EAttributes of this
-	 * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		return "Account ";
-	}
+    /**
+     * @generated
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * A toString method which prints the values of all EAttributes of this
+     * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public String toString() {
+        return "Account ";
+    }
 }

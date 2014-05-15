@@ -45,6 +45,10 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	protected Class<VAT> getEntityClass() {
 		return VAT.class;
 	}
+	
+	public void init() {
+	    // do nothing
+	}
 
 	@PreDestroy
 	public void destroy() {
