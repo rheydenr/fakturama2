@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.parts;
 
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -117,14 +118,18 @@ public class VatEditor extends Editor<VAT> {
         // Always set the editor's data to "undeleted"
         editorVat.setDeleted(Boolean.FALSE);
 
-        //		// Set the VAT data
-        //		vat.setStringValueByKey("name", textName.getText());
-        //		vat.setStringValueByKey("category", comboCategory.getText());
-        //		vat.setStringValueByKey("description", textDescription.getText());
-        //		vat.setDoubleValueByKey("value", DataUtils.StringToDouble(textValue.getText() + "%"));
-        //
-        //		// If it is a new VAT, add it to the VAT list and
-        //		// to the data base
+   		// Set the VAT data
+        // ... done through databinding...
+
+   		// If it is a new VAT, add it to the VAT list and
+   		// to the data base
+        try {
+            vatDao.save(editorVat);
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         //		if (newVat) {
         //			vat = Data.INSTANCE.getVATs().addNewDataSet(vat);
         //			newVat = false;
@@ -217,7 +222,6 @@ public class VatEditor extends Editor<VAT> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
-        //		textName.setText(editorVat.getName());
         textName.setToolTipText(labelName.getToolTipText());
         bindModelValue(editorVat, textName, "name", 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);

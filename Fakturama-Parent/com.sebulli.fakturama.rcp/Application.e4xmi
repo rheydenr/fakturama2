@@ -140,7 +140,7 @@
   </children>
   <handlers xmi:id="_ZBS4gENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.handler.webShopImport" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.WebShopImportHandler" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
   <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenOOHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
-  <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.handler" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.ui/org.eclipse.ui.internal.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTv-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.quitCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QuitHandler" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTwutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.aboutCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.AboutHandler" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTw-tOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.handler" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.tools.emf.liveeditor/org.eclipse.e4.tools.emf.liveeditor.OpenLiveDialogHandler" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
@@ -166,7 +166,7 @@
   </descriptors>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
-  <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="" category="_no8mgEstEeOZ37-tYt-QvQ"/>
+  <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="%command.save.name %main.menu.file.save" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_RmPTz-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="quitCommand"/>
   <commands xmi:id="_RmPT0utOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.help.aboutAction" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="aboutCommand"/>
   <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.command.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%command.contacts.name" description="%command.contacts.tooltip"/>

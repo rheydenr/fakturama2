@@ -45,6 +45,52 @@ public abstract class AbstractDAO<T> {
     private EntityManager entityManager;
 	
     public T save(T properties) throws SQLException {
+        
+/*
+ * BESSER: 
+ * 
+@PersistenceUnit EntityManagerFactory factory;
+protected void doPost(HttpServlet req, ...) {
+EntityManager em = factory.createEntityManager();
+Order order order = ...;
+em.persist(order);
+
+
+TODO (in en einzelnen Entities:
+@Version Timestamp timestamp;
+
+use TypedQuery<Employee>
+
+CriteriaQuery<Order> o = cb.createQuery(Order.class);
+Root<Order> ord = o.from(Order.class);
+o.select(ord).where(cb.gt(ord.get(Order_.total), 100));
+TypeQuery<Order.class> q = en.createQuery(o);
+List<Person> result = q.getResultList();
+
+bei read-only-entities (results): @TransactionAttribute(NOT_SUPPORTED)
+
+Transaktionen
+- neue Tx:
+@Resource UserTransaction utx;
+. . .
+utx.begin();
+EntityManager em = emf.createEntityManager();
+//em is now JTA
+ * 
+ * 
+ * Verbinden zu bestehender: 
+ * @Resource UserTransaction utx;
+. . .
+EntityManager em = emf.createEntityManager();
+//em is is RESOURCE_LOCAL
+utx.begin();
+em.joinTransaction();
+
+} */
+        
+        
+        
+        
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();

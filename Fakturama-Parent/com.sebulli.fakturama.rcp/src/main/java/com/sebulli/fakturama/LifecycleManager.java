@@ -25,7 +25,7 @@ public class LifecycleManager {
 //	        cmdService = context.get(ECommandService.class);
 //	        handlerService = context.get(EHandlerService.class);
 //	        
-//	        // FIXME: How could we do this in a Startup class??? This solution looks realy ugly!
+//	        // FIXME: How could we do this in a Startup class??? This solution looks really ugly!
 //	        ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.firstStart.command", null);
 //	        handlerService.executeHandler(command );  // launch ConfigurationManager.checkFirstStart
 //	   }

@@ -500,7 +500,7 @@ public abstract class Editor<T extends IEntity> {
         if(source instanceof Combo) {
             uiWidget = WidgetProperties.selection().observe(source);
         } else {
-            uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
+            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
         }
         if (modelToTarget != null) {
             ctx.bindValue(uiWidget, model, targetToModel, modelToTarget);
@@ -581,8 +581,8 @@ public abstract class Editor<T extends IEntity> {
 	 * 
 	 * @see org.eclipse.ui.ISaveablePart2#promptToSaveOnClose()
 	 */
-	@PersistState
-	public int promptToSaveOnClose(Composite parent) {
+// TODO this has nothing to do with @PersistState!!!
+	public int promptToSaveOnClose(MDirtyable part, Composite parent) {
 		
 		//T: Dialog Header
 		MessageDialog dialog = new MessageDialog(parent.getShell(), _.commonButtonSavechanges, null,
