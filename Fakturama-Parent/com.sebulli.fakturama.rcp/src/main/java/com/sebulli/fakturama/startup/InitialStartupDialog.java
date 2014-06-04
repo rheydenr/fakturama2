@@ -92,6 +92,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			IEclipsePreferences preferences, IWorkbench workbench, Logger log, Messages messages, String requestedWorkspace) {
 		super(parent);
 		this.workbench = workbench;
+		this.log = log;
 		this.preferences = preferences;
 		this.workspace = requestedWorkspace;
 		this.msg = messages;
@@ -171,11 +172,10 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		txtOldWorkdir.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                    if(e != null) {
-                        String directory = ((Text)e.getSource()).getText();
-                        dirChecker.checkPreviousVersion(directory);
-                    }
-                    System.out.println(e);
+                if(e != null) {
+                    String directory = ((Text)e.getSource()).getText();
+                    dirChecker.checkPreviousVersion(directory);
+                }
             }
         });
 		

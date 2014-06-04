@@ -24,6 +24,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.PreferencesService;
 
 import com.sebulli.fakturama.dao.VatsDAO;
 
@@ -63,19 +64,6 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
-        eContext = EclipseContextFactory.getServiceContext(bundleContext);
-
-        // launch background job for initializing the db connection
-        Job job = new Job("initDb") {
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                VatsDAO myClassInstance = ContextInjectionFactory.make(VatsDAO.class, eContext);
-                eContext.set(VatsDAO.class, myClassInstance);
-                return Status.OK_STATUS;
-            }
-        };
-        job.schedule(10);  // timeout that the OSGi env can be started before
 
         // background color for focused widgets
         JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
