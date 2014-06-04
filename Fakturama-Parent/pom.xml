@@ -18,7 +18,7 @@
 	    <module>com.sebulli.fakturama.feature</module>
 		<module>com.sebulli.fakturama.target</module>
 	    <module>com.sebulli.fakturama.common</module>
-	    <!-- module>com.sebulli.fakturama.hsqlconnector</module -->
+	    <module>com.sebulli.fakturama.hsqlconnector</module>
 	    <module>com.sebulli.fakturama.resources</module>
 	    <module>com.sebulli.fakturama.resources.icons</module>
 	</modules>
