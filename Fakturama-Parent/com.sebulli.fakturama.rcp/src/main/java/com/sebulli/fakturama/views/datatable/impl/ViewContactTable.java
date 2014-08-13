@@ -64,7 +64,7 @@ import com.sebulli.fakturama.model.Contact;
 public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 
 	// ID of this view
-	public static final String ID = "com.sebulli.fakturama.views.datasettable.viewContactTable";
+	public static final String ID = "com.sebulli.fakturama.views.contactTable";
 	
 	@Inject
 	private Composite parent;

@@ -40,7 +40,7 @@ public class IconURLConnection extends URLConnection {
 			IconSize size = IconSize.DefaultIconSize;
 			if(iconName.startsWith("ICON_")) {
 				// ... except it starts with ICON_, because then it's a toolbar icon
-				size = IconSize.ToobarIconSize;
+				size = IconSize.ToolbarIconSize;
 			}
 			InputStream is = selectedIcon
 					.getImageAsInputStream(size);

@@ -10,12 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -47,7 +44,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.PreferencesService;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -66,7 +65,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 */
 	private Logger log;
 	protected Messages msg;
-	private IWorkbench workbench;
 	
 	@Inject
 	protected Shell parent;
@@ -88,10 +86,10 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * @param requestedWorkspace 
 	 * @param style
 	 */
-	public InitialStartupDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
-			IEclipsePreferences preferences, IWorkbench workbench, Logger log, Messages messages, String requestedWorkspace) {
+	public InitialStartupDialog(Shell parent,
+	        IEclipsePreferences preferences, Logger log, Messages messages, String requestedWorkspace) {
 		super(parent);
-		this.workbench = workbench;
+		this.parent = parent;
 		this.log = log;
 		this.preferences = preferences;
 		this.workspace = requestedWorkspace;
@@ -269,17 +267,13 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				// Store the requested directory in a preference value
 				preferences.put(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, workspace);
 				preferences.flush();
-				// Close the workbench
-				// ViewManager.INSTANCE.closeAll();
 				// restarting application
 				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
-				workbench.restart();
+				super.okPressed();
 			}
 		} catch (BackingStoreException e) {
 			log.error(e);
 		}
-		
-//		super.okPressed();
 	}
 	
 	private final class DirectoryChecker {

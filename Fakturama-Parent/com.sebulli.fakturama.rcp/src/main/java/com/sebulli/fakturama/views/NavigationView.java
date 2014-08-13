@@ -137,7 +137,7 @@ public class NavigationView {
 		//T: Title of an expand bar in the navigations view
 	    group.setText(msg.getMessageFromKey(groupName));
 	    group.setToolTipText(msg.getMessageFromKey(groupName + ".tooltip"));
-	    group.setImage(groupIcon.getImageDescriptor(IconSize.ToobarIconSize).createImage());
+	    group.setImage(groupIcon.getImageDescriptor(IconSize.ToolbarIconSize).createImage());
 	    group.setImagePosition(SWT.LEFT | SWT.TOP);
 	    
 	    GridData gd = new GridData();

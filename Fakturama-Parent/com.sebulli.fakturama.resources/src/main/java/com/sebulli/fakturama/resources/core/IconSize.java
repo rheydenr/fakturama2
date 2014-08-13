@@ -36,7 +36,7 @@ public enum IconSize {
 	/**
 	 * 32x32
 	 */
-	ToobarIconSize("32x32"),
+	ToolbarIconSize("32x32"),
 	/**
 	 * 48x48
 	 */

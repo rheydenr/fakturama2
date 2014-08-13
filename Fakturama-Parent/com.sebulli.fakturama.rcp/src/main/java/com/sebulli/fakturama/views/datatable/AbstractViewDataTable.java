@@ -21,14 +21,20 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
@@ -38,7 +44,7 @@ import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
 
 /**
  * This is the abstract parent class for all views that show a table with
- * UniDataSets and a tree viewer
+ * UniDataSets and a tree viewer.
  * 
  * @author Gerd Bartelt
  * 
@@ -138,6 +144,7 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 	}
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
+	abstract protected void createListViewToolbar(Composite parent);
 
     /**
      * Component for the Search field and the item table
@@ -155,11 +162,9 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
         GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
 
-        // The toolbar 
-        ToolBar toolBar = new ToolBar(searchAndToolbarComposite, SWT.FLAT);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(toolBar);
-//      ToolBarManager tbm = new ToolBarManager(toolBar);
-
+        // The toolbar
+        createListViewToolbar(searchAndToolbarComposite);
+        
         filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
         FontData[] fD = filterLabel.getFont().getFontData();
         fD[0].setHeight(20);
@@ -203,7 +208,39 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 //		getSite().setSelectionProvider(tableViewer);
 //
 //	}
-//
+
+    
+    protected PopupMenuBuilder createBodyMenu(final NatTable natTable) {
+        return new PopupMenuBuilder(natTable)
+                .withMenuItemProvider(new IMenuItemProvider() {
+                    @Override
+                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+                        menuItem.setText("Toggle auto spanning");
+                        menuItem.setEnabled(true);
+
+                        menuItem.addSelectionListener(new SelectionAdapter() {
+                            @Override
+                            public void widgetSelected(SelectionEvent event) {
+//                                if (dataProvider.isAutoColumnSpan()) {
+//                                    dataProvider.setAutoColumnSpan(false);
+//                                    dataProvider.setAutoRowSpan(true);
+//                                }
+//                                else if (dataProvider.isAutoRowSpan()) {
+//                                    dataProvider.setAutoRowSpan(false);
+//                                }
+//                                else {
+//                                    dataProvider.setAutoColumnSpan(true);
+//                                }
+                                natTable.doCommand(new VisualRefreshCommand());
+                            }
+                        });
+                    }
+                })
+                .withStateManagerMenuItemProvider();
+    }
+    
+    //
 	/**
 	 * Create the default context menu with one addNew and one Delete action
 	 */

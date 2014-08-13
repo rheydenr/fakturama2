@@ -10,8 +10,8 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.vats;
 
-
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,9 +23,13 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -33,17 +37,24 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.coordinate.Range;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
+import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
@@ -52,6 +63,9 @@ import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
+import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
+import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
@@ -89,6 +103,10 @@ import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
 
+/**
+ * Builds the VAT list table.
+ *
+ */
 public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @Inject
@@ -99,13 +117,22 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     private Logger log;
 
     // ID of this view
-    public static final String ID = "com.sebulli.fakturama.views.datasettable.viewVatTable";
+    public static final String ID = "com.sebulli.fakturama.views.vatTable";
 
     @Inject
     private EHandlerService handlerService;
 
     @Inject
     private ECommandService commandService;
+    
+    @Inject
+    private EModelService modelService;
+    
+    /**
+     * Event Broker for receiving update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
     @Inject
     @Preference
@@ -160,6 +187,10 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     protected FilterList<VAT> treeFilteredIssues;
 
+    private SelectionLayer selectionLayer;
+
+    private DataLayer tableDataLayer;
+
     @PostConstruct
     public Control createPartControl(Composite parent) {
         Control top = super.createPartControl(parent, VAT.class, false, true, ID);
@@ -193,8 +224,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     }
 	
     protected NatTable createListTable(Composite searchAndTableComposite) {
-        NatTable natTable;
-
         //mapping from property to label, needed for column header labels
         final Map<String, String> propertyToLabelMap = vatsDAO.getVisiblePropertyToLabelMap();
 
@@ -212,7 +241,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
                 switch (columnIndex) {
                 case DEFAULT_COLUMN_POSITION:
                     // VAT_PROPERTY_NAMES
-                    //                  System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
+                    // System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
                     // TODO set correct default value!
                     return rowObject.getId() == 1L;
                 case NAME_COLUMN_POSITION:
@@ -283,6 +312,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
         // matcher input Search text field 
         final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
+        
         // Filtered list for Search text field filter
         final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(eventList, textMatcherEditor);
 
@@ -290,11 +320,17 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // tree selection)
         treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
 
+        //create the body layer stack
+        final IRowDataProvider<VAT> firstBodyDataProvider = 
+                new GlazedListsDataProvider<VAT>(treeFilteredIssues, columnPropertyAccessor);
+        
         //build the grid layer
         gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
 
-        // get the underlying data layer
-        final DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        tableDataLayer = gridLayer.getBodyDataLayer();        
+
+        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, eventList);
+        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(vatListEventLayer);
 
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -307,28 +343,28 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         tableDataLayer.setColumnWidthByPosition(NAME_COLUMN_POSITION, 20);
         tableDataLayer.setColumnWidthByPosition(VALUE_COLUMN_POSITION, 10);
         tableDataLayer.setColumnPercentageSizing(true);
-
-        // Custom selection configuration
-        final SelectionLayer selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
+        
+        selectionLayer = new SelectionLayer(bodyLayer);
+        
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
 
         // Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
-        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, gridLayer.getBodyDataProvider(), new IRowIdAccessor<VAT>() {
-
+        IRowIdAccessor<VAT> rowIdAccessor = new IRowIdAccessor<VAT>() {
+            @Override
             public Serializable getRowId(VAT rowObject) {
                 return rowObject.getId();
             }
-
-        }, false);
+        };
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
+        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
+        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
+        
 
         // now is the time where we can create the NatTable itself
-        natTable = new NatTable(searchAndTableComposite, gridLayer, false);
 
-        VAT defaultVat = getDefaultVAT();
         //      // Label accumulator - adds labels to all cells with the given data value
         //      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
         //          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
@@ -340,6 +376,54 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         columnLabelAccumulator.registerColumnOverrides(DEFAULT_COLUMN_POSITION, DEFAULT_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(VALUE_COLUMN_POSITION, TAXVALUE_CELL_LABEL);
 
+        final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
+
+        natTable.addLayerListener(new ILayerListener() {
+
+            // Default selection behavior selects cells by default.
+            @Override
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellSelectionEvent) {
+                    CellSelectionEvent cellEvent = (CellSelectionEvent) event;
+                    
+                    System.out.println("Selected cell: [" +
+                            cellEvent.getRowPosition() + ", " +
+                            cellEvent.getColumnPosition() + "], " +
+                            natTable.getDataValueByPosition(cellEvent.getColumnPosition(), cellEvent.getRowPosition()));
+                }
+                else if (event instanceof ColumnSelectionEvent) {
+                    ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
+                    System.out.println("Selected Column: " + columnEvent.getColumnPositionRanges());
+                }
+                else if (event instanceof RowSelectionEvent) {
+                    //directly ask the SelectionLayer about the selected rows and access the data via IRowDataProvider
+                    Collection<Range> selections = selectionLayer.getSelectedRowPositions();
+                    StringBuilder builder = new StringBuilder("Selected Persons: ")
+                        .append(selectionLayer.getSelectedRowPositions())
+                        .append("[");
+                    for (Range r : selections) {
+                        for (int i = r.start; i < r.end; i++) {
+                            VAT p = gridLayer.getBodyDataProvider().getRowObject(i);
+                            if (p != null) {
+                                if (!builder.toString().endsWith("[")) {
+                                    builder.append(", ");
+                                }
+                                builder.append(p.getName());
+                            }
+                        }
+                    }
+                    builder.append("]");
+                    System.out.println(builder.toString());
+                }
+            }
+        });
+
+        
+        
+        
+        
+        
+        
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
 
@@ -368,6 +452,14 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // FIXME FOR TEST PURPOSES  HERE'S THE VAT WITH ID 1 RETURNED!
         return vatsDAO.findById(1L);
     }
+    
+    @Inject @Optional
+    public void handleRefreshEvent(@EventTopic("VatEditor") String message) {
+        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+        eventList.clear();
+        eventList.addAll(vatsDAO.findAll());
+    }
+
 
     private void addImageTextToColumn(IConfigRegistry configRegistry, Composite parent, IDataProvider iDataProvider) {
         ICellPainter imageTextPainter = new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, new MyImagePainter(iDataProvider));
@@ -464,9 +556,14 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //       addNewAction.setCategory(filter);
         //   }
 
-        //   //Refresh
+        //Refresh
         //   this.refresh();
 
+    }
+
+    @Override
+    protected void createListViewToolbar(Composite parent) {
+        // Toolbar is created via Application model
     }
 
     /**
@@ -547,6 +644,34 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 					TAXVALUE_CELL_LABEL);
 		}
 	}
+
+    public void removeSelectedEntry() {
+        selectionLayer.getDataValueByPosition(1,1);
+        tableDataLayer.getDataProvider().getDataValue(1, 1);
+        selectionLayer.getFullySelectedRowPositions();
+        selectionLayer.getSelectedCells();
+        
+        // das tut!!!
+        gridLayer.getBodyDataProvider().getRowObject(2);
+        
+        
+        
+//        for (Range range : selectedRowPositions) {
+//            range.
+//        }
+//        try {
+//            // don't delete the entry because it could be referenced
+//            // from another entity
+//            editorVat.setDeleted(Boolean.TRUE);
+//            vatsDAO.save(editorVat);
+//        }
+//        catch (SQLException e) {
+//            log.error(e, "can't save the current VAT: " + editorVat.toString());
+//        }
+//
+//        // Refresh the table view of all VATs
+//        evtBroker.post("VatEditor", "update");
+    }
 
 }
 

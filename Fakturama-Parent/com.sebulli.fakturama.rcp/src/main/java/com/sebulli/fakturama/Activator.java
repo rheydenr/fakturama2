@@ -13,20 +13,12 @@
 
 package com.sebulli.fakturama;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.prefs.PreferencesService;
 
-import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.resources.urihandler.IconURLStreamHandlerService;
 
 // import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -42,8 +34,6 @@ public class Activator implements BundleActivator {
 
     // The shared instance
     private static BundleContext context;
-
-    private IEclipseContext eContext;
 
     /**
      * Returns the shared instance
@@ -67,7 +57,9 @@ public class Activator implements BundleActivator {
 
         // background color for focused widgets
         JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
-    }
+        // for using of icons from another plugin
+        IconURLStreamHandlerService.getInstance().register();
+   }
 
     /*
      * (non-Javadoc)

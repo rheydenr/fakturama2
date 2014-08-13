@@ -124,7 +124,7 @@ public class MigrationManager {
 
 	@Inject
 	@Preference
-	private IEclipsePreferences preferences;
+	private IEclipsePreferences eclipsePrefs;
 	
 	@Inject
 	@Translation
@@ -162,7 +162,22 @@ public class MigrationManager {
 
 	private final SimpleDateFormat sdf;
 
-	public MigrationManager() {
+	/**
+     * @param context
+     * @param log
+     * @param preferences
+     * @param msg
+     */
+    public MigrationManager(IEclipseContext context, Logger log, IEclipsePreferences preferences, Messages msg) {
+        this();
+        this.context = context;
+        this.log = log;
+        this.eclipsePrefs = preferences;
+        this.msg = msg;
+    }
+
+
+    public MigrationManager() {
 		sdf = new SimpleDateFormat("yyyy-MM-dd");
 	}
 
@@ -176,14 +191,14 @@ public class MigrationManager {
 	@Execute
 	public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
 		// build jdbc connection string; can't be null at this point since we've checked it above (within the caller)
-		final String oldWorkDir = preferences.get(ConfigurationManager.MIGRATE_OLD_DATA, null);
+		final String oldWorkDir = eclipsePrefs.get(ConfigurationManager.MIGRATE_OLD_DATA, null);
 		// hard coded old database name
 //		final String hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
 		
 		// ****** FIXME TEST ONLY
 		final String hsqlConnectionString = "jdbc:hsqldb:hsql://localhost/Fakturama";   // for connection with a HSQLDB Server
-		preferences.put("OLD_JDBC_URL", hsqlConnectionString);
-		preferences.flush();
+		eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
+		eclipsePrefs.flush();
 
 		// initialize DAOs via EclipseContext
 		// new Entities have their own dao ;-)
@@ -242,8 +257,8 @@ public class MigrationManager {
 					 */
 					@Execute
 					public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
-						preferences.put("OLD_JDBC_URL", hsqlConnectionString);
-						preferences.flush();
+						eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
+						eclipsePrefs.flush();
 				
 						// initialize DAOs via EclipseContext
 						// new Entities have their own dao ;-)

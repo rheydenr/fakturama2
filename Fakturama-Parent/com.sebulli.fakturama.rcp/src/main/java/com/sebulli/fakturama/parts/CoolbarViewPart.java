@@ -13,7 +13,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -81,16 +80,7 @@ public class CoolbarViewPart {
 	@PostConstruct
 	public void createControls(Composite parent, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
 			IApplicationContext appContext, IWorkbench workbench) {
-	    
-	    // FIXME: How could we do this in a Startup class??? This solution looks realy ugly!
-		ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.firstStart.command", null);
-		handlerService.executeHandler(command );  // launch ConfigurationManager.checkFirstStart
-		
-		// maybe we're just restarting...
-		if(((E4Workbench)workbench).isRestart()) {
-		    return;
-		}
-		
+	    		
 		// now lets create our CoolBar
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
 		parent.setLayout(layout);
@@ -104,49 +94,49 @@ public class CoolbarViewPart {
 		CoolBar coolbar1 = coolbarmgr.createControl(parent);
 		ToolBar toolBar1 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(coolbar1, toolBar1, ICommandIds.CMD_WEBSHOP_IMPORT, 
-				Icon.ICON_SHOP.getImage(IconSize.ToobarIconSize));
+				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar1, toolBar1, IWorkbenchCommandConstants.FILE_PRINT, 
-				Icon.ICON_PRINTOO.getImage(IconSize.ToobarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToobarIconSize));
+				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar1, toolBar1, IWorkbenchCommandConstants.FILE_SAVE, 
-				Icon.ICON_SAVE.getImage(IconSize.ToobarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToobarIconSize));
+				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize));
 		finishToolbar(coolbar1, toolBar1);
 			
 		CoolBar coolbar2 = coolbarmgr.createControl(parent);
 		ToolBar toolBar2 = new ToolBar(coolbar2, SWT.FLAT);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_LETTER, 
-				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_OFFER, 
-				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_ORDER, 
-				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CONFIRMATION, 
-				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_INVOICE, 
-				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DELIVERY, 
-				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_CREDIT, 
-				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_DUNNING, 
-				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize));
 		createToolItem(coolbar2, toolBar2, ICommandIds.CMD_NEW_PROFORMA, 
-				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToobarIconSize));
+				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize));
 		finishToolbar(coolbar2, toolBar2);
 		
 		CoolBar coolbar3 = coolbarmgr.createControl(parent);
 		ToolBar toolBar3 = new ToolBar(coolbar3, SWT.FLAT);
-		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToobarIconSize));	
-		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToobarIconSize));	
-		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToobarIconSize));	
-		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToobarIconSize));	
+		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize));	
+		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize));	
+		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize));	
+		createToolItem(coolbar3, toolBar3, ICommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize));	
 		finishToolbar(coolbar3, toolBar3);
 		
 		CoolBar coolbar4 = coolbarmgr.createControl(parent);
 		ToolBar toolBar4 = new ToolBar(coolbar4, SWT.FLAT);
-		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToobarIconSize));	
-		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToobarIconSize));	
-		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToobarIconSize));	
+		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize));	
+		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize));	
+		createToolItem(coolbar4, toolBar4, ICommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize));	
 		finishToolbar(coolbar4, toolBar4);
 		
 /*

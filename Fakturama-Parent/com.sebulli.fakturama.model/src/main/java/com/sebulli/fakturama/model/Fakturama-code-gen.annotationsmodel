@@ -233,7 +233,7 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="modified" getter="getModified" defaultValue="null" setter="setModified" validJavaMemberName="modified" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.3/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//VAT/categories"/>
+        <eReference href="Fakturama.ecore#//VAT/category"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.VATCategory>()" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.3/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_VAT" table=""/>

@@ -3,6 +3,8 @@
  */
 package com.sebulli.fakturama.parts;
 
+import java.util.TreeSet;
+
 import org.eclipse.core.databinding.conversion.Converter;
 
 import com.sebulli.fakturama.model.VATCategory;
@@ -13,8 +15,11 @@ import com.sebulli.fakturama.model.VATCategory;
  */
 public class StringToVatCategoryConverter extends Converter {
 
-    public StringToVatCategoryConverter() {
+    private final TreeSet<VATCategory> categories;
+    
+    public StringToVatCategoryConverter(TreeSet<VATCategory> categories) {
         super(String.class, VATCategory.class);
+        this.categories = categories;
     }
 
     /* (non-Javadoc)
@@ -24,7 +29,13 @@ public class StringToVatCategoryConverter extends Converter {
     public Object convert(Object fromObject) {
         // in: "Umsatzsteuer"
         // out: VATCategory
-        // FIXME!
+        // TODO Look for a better approach!
+        String searchString = (String)fromObject;
+        for (VATCategory vatCategory : categories) {
+            if(vatCategory.getName().equals(searchString)) {
+                return vatCategory;
+            }
+        }
         return null;
     }
 

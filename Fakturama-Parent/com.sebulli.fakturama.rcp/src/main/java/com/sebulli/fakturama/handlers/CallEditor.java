@@ -61,10 +61,10 @@ public class CallEditor {
 	public void execute( @Named("com.sebulli.fakturama.editors.editortype") String param,
 			@Optional @Named("com.sebulli.fakturama.rcp.cmdparam.objId") String objId) throws ExecutionException {
 			// If we had a selection lets open the editor
-			if (objId != null) {
+//			if (objId != null) {
 				// Define  the editor and try to open it
 				partService.showPart(createEditorPart(param, objId), PartState.ACTIVATE);
-			}
+//			}
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class CallEditor {
 		for (MPart mPart : parts) {
 			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), DOCVIEW_PART_ID) && mPart.getContext() != null) {
 				Object object = mPart.getContext().get(PARAM_OBJ_ID);
-				if (object.equals(objId)) {
+				if (object != null && object.equals(objId)) {
 					myPart = mPart;
 					break;
 				}
@@ -94,6 +94,7 @@ public class CallEditor {
 			
 			// we have to distinguish the different editors here
 			switch (type) {
+			case VatEditor.ID:  // fall through
 			case VATListTable.ID:
 				myPart.setLabel("VAT ");
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + VatEditor.class.getName());

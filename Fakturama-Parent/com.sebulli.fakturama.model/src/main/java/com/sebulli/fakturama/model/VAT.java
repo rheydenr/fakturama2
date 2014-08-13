@@ -93,7 +93,7 @@ public class VAT extends ModelObject implements IEntity, Serializable {
      * 
      * @generated
      */
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumns({ @JoinColumn(name = "FK_VAT") })
     private VATCategory category = null;
 

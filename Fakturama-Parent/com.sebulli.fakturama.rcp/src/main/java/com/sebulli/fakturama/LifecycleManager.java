@@ -1,56 +1,110 @@
 package com.sebulli.fakturama;
 
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
+import javax.inject.Inject;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
-import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
-import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.handlers.IHandlerService;
-import org.osgi.service.prefs.Preferences;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
-import com.sebulli.fakturama.resources.urihandler.IconURLStreamHandlerService;
+import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.startup.ConfigurationManager;
 
+/**
+ * The LifecycleManager controls the start and the end of an application.
+ * @author rheydenr
+ *
+ */
 public class LifecycleManager {
 
-    private ECommandService cmdService;
+    @Inject
+    private IEclipseContext context;
+
+    @Inject
+    private Logger log;
+
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
     
-    private IHandlerService handlerService;
+    @Inject
+    @Translation
+    protected Messages msg;
+ 
+    private static final boolean RESTART_APPLICATION = true;
 
-	@ProcessAdditions
-	void postAdditions(IApplicationContext appContext, Display display, IEclipseContext context, MApplication application) {
+    @ProcessAdditions
+    public void checksBeforeStartup(final IEventBroker eventBroker) {
+        log.debug("checks before startup");
+        // at first we check if we have to migrate an older version
 
-        // for using of icons from another plugin
-		IconURLStreamHandlerService.getInstance().register();
-//	        cmdService = context.get(ECommandService.class);
-//	        handlerService = context.get(EHandlerService.class);
-//	        // better than in CoolbarViewPart...
-//	        ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.firstStart.command", null);
-//	        handlerService.executeHandler(command );  // launch ConfigurationManager.checkFirstStart
-	    
-	}
-	
-	   @PostContextCreate
-	   public void login(IEclipseContext eContext) {
-	       // wanted: IEclipsePreferences preferences
-//        IEclipseContext eContext = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IEclipsePreferences.class);
-System.out.println("huhu");
-        // launch background job for initializing the db connection
-        // but only if we are in "normal" mode and not just installing a new workspace...
-//        if(eContext.get(PreferencesService.class).getUserPreferences(PLUGIN_ID).get("javax.persistence.jdbc.driver", "") != "") {
-//            Job job = new Job("initDb") {
-//    
-//                @Override
-//                protected IStatus run(IProgressMonitor monitor) {
-//                    VatsDAO myClassInstance = ContextInjectionFactory.make(VatsDAO.class, eContext);
-//                    eContext.set(VatsDAO.class, myClassInstance);
-//                    return Status.OK_STATUS;
-//                }
-//            };
-//            job.schedule(10);  // timeout that the OSGi env can be started before
-//        }
-	   }
+        // check if the db connection is set
+        // if not, it is a certain sign that the application is started the first time
+        if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
+            // launch background job for initializing the db connection
+            // but only if we are in "normal" mode and not just installing a new workspace...
+            Job job = new Job("initDb") {
+    
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    VatsDAO myClassInstance = ContextInjectionFactory.make(VatsDAO.class, context);
+                    context.set(VatsDAO.class, myClassInstance);
+                    return Status.OK_STATUS;
+                }
+            };
+            job.schedule(10);  // timeout that the OSGi env can be started before
+        } else {
+            // for later restarting
+            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
+        }
+        // at first create a (temporary) shell
+        final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
+//        handlerService = ContextInjectionFactory.make(EHandlerService.class, context);
+//        cmdService = ContextInjectionFactory.make(ECommandService.class, context);
+        ConfigurationManager configMgr = new ConfigurationManager(shell, context, eclipsePrefs, log, msg);
+        // launch ConfigurationManager.checkFirstStart
+        configMgr.checkFirstStart(null, null);
+    }
+    
+    /**
+     * Because we don't have a complete workbench at this stage, the
+     * {@link EventHandler} is registered so that we can restart the application
+     * if the working directory has changed or the application is launched the
+     * first time. The handler is only registered
+     *
+     */
+    private static final class AppStartupCompleteEventHandler implements EventHandler {
+        private final IEclipseContext _context;
+        private final boolean restartApplication;
+
+        AppStartupCompleteEventHandler(final IEclipseContext context, boolean restartApplication) {
+            _context = context;
+            this.restartApplication = restartApplication;
+        }
+
+        @Override
+        public void handleEvent(final Event event) {
+            IWorkbench workbench = _context.get(IWorkbench.class);
+            if (restartApplication) {
+                workbench.restart();
+            }
+        }
+    }
+
 }

@@ -22,28 +22,27 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.conversion.StringToNumberConverter;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
@@ -63,9 +62,18 @@ public class VatEditor extends Editor<VAT> {
 
     @Inject
     protected VatsDAO vatDao;
+    
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
     @Inject
     protected VatCategoriesDAO vatCategoriesDAO;
+    
+    @Inject
+    protected Logger log;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
@@ -89,16 +97,6 @@ public class VatEditor extends Editor<VAT> {
     // This UniDataSet represents the editor's input 
     private VAT editorVat = null;
 
-    //	/**
-    //	 * Constructor
-    //	 * 
-    //	 * Associate the table view with the editor
-    //	 */
-    //	public VatEditor() {
-    //		tableViewID = ViewVatTable.ID;
-    //		editorID = "vat";
-    //	}
-
     /**
      * Saves the contents of this part
      * 
@@ -106,7 +104,6 @@ public class VatEditor extends Editor<VAT> {
      *            Progress monitor
      * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
-    //	@Override
     @Persist
     public void doSave(IProgressMonitor monitor) {
 
@@ -127,36 +124,27 @@ public class VatEditor extends Editor<VAT> {
             vatDao.save(editorVat);
         }
         catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, "can't save the current VAT: " + editorVat.toString());
         }
-        //		if (newVat) {
-        //			vat = Data.INSTANCE.getVATs().addNewDataSet(vat);
-        //			newVat = false;
-        //			stdComposite.stdButton.setEnabled(true);
-        //		}
-        //		// If it's not new, update at least the data base
-        //		else {
-        //			Data.INSTANCE.getVATs().updateDataSet(vat);
-        //		}
-        //
-        		// Set the Editor's name to the payment name.
+
+        if (newVat) {
+    //			vat = Data.INSTANCE.getVATs().addNewDataSet(vat);
+    			newVat = false;
+    			stdComposite.stdButton.setEnabled(true);
+    		}
+    		// If it's not new, update at least the data base
+//    		else {
+//    			Data.INSTANCE.getVATs().updateDataSet(vat);
+//    		}
+
+       	// Set the Editor's name to the payment name.
         part.setLabel(editorVat.getName());
         
-        		// Refresh the table view of all payments
-        		refreshView();
-        		getMDirtyablePart().setDirty(false);
-    }
-
-    /**
-     * Returns whether the "Save As" operation is supported by this part.
-     * 
-     * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
-     * @return False, SaveAs is not allowed
-     */
-    //	@Override
-    public boolean isSaveAsAllowed() {
-        return false;
+		// Refresh the table view of all VATs
+        evtBroker.post("VatEditor", "update");
+        
+        // reset dirty flag
+		getMDirtyablePart().setDirty(false);
     }
 
     /**
@@ -173,6 +161,8 @@ public class VatEditor extends Editor<VAT> {
     @PostConstruct
     public void createPartControl(Composite parent) {
         Long objId = null;
+        VAT stdVat = null;
+        int stdID = 0;
         this.part = (MPart) parent.getData("modelElement");
         String tmpObjId = (String) part.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
         if (StringUtils.isNumeric(tmpObjId)) {
@@ -187,7 +177,6 @@ public class VatEditor extends Editor<VAT> {
 
         // If new ..
         if (newVat) {
-
             // Create a new data set
             editorVat = new VAT();
 
@@ -195,7 +184,6 @@ public class VatEditor extends Editor<VAT> {
             part.setLabel(msg.editorVatHeader);
         }
         else {
-
             // Set the Editor's name to the payment name.
             part.setLabel(editorVat.getName());
         }
@@ -225,8 +213,6 @@ public class VatEditor extends Editor<VAT> {
         textName.setToolTipText(labelName.getToolTipText());
         bindModelValue(editorVat, textName, "name", 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
-
-        //		org.eclipse.core.internal.databinding.provisional.bind.Bind.twoWay(editorVat);
 
         // Category of the VAT
         Label labelCategory = new Label(top, SWT.NONE);
@@ -263,24 +249,12 @@ public class VatEditor extends Editor<VAT> {
             }
         });
 
-//        DataBindingContext dbc = new DataBindingContext();
-//        ViewerSupport.bind(viewer, BeansObservables.observeSet(editorVat,
-//                "category", VATCategory.class), Properties.selfValue(VATCategory.class));
-//        dbc.bindValue(ViewersObservables.observeSingleSelection(viewer),
-//                BeansObservables.observeValue(editorVat, "category"));
-      
-
-        IObservableValue widgetValue = WidgetProperties.selection().observe(comboCategory);
-        IObservableValue modelValue = BeanProperties.value("category").observe(editorVat);
         UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
         vatCatModel2Target.setConverter(new VATCategoryConverter());
         
         UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToVatCategoryConverter());
-        ctx.bindValue(widgetValue, modelValue, target2VatcatModel, vatCatModel2Target);
-        
-        
-        
+        target2VatcatModel.setConverter(new StringToVatCategoryConverter(categories));
+        bindModelValue(editorVat, comboCategory, "category", target2VatcatModel, vatCatModel2Target);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // The description
@@ -300,29 +274,36 @@ public class VatEditor extends Editor<VAT> {
         Label labelValue = new Label(top, SWT.NONE);
         labelValue.setText(msg.commonFieldValue);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
-        textValue = new Text(top, SWT.BORDER);
+
+    final FormattedText text = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
+    text.setFormatter(new PercentFormatter());
+    GridData data = new GridData();
+    data.widthHint = 200;
+    text.getControl().setLayoutData(data);
+        
+//        textValue = new Text(top, SWT.BORDER);
         // create UpdateValueStrategy and assign it to the binding
-        UpdateValueStrategy modelToTargetStrategy = new UpdateValueStrategy();
-        NumberFormat percentNumberFormat = NumberFormat.getPercentInstance();
-        percentNumberFormat.setMinimumFractionDigits(2);
-        NumberToStringConverter model2TargetConverter = NumberToStringConverter.fromDouble(percentNumberFormat, false);
-        StringToNumberConverter target2ModelConverter = StringToNumberConverter.toDouble(percentNumberFormat, false);
-        UpdateValueStrategy targetToModelStrategy = new UpdateValueStrategy();
-        targetToModelStrategy.setConverter(target2ModelConverter);
-        modelToTargetStrategy.setConverter(model2TargetConverter);
+//        UpdateValueStrategy modelToTargetStrategy = new UpdateValueStrategy();
+//        NumberFormat percentNumberFormat = NumberFormat.getInstance(); //NumberFormat.getPercentInstance();
+//        percentNumberFormat.setMaximumFractionDigits(2);
+//        NumberToStringConverter model2TargetConverter = NumberToStringConverter.fromDouble(percentNumberFormat, false);
+//        StringToNumberConverter target2ModelConverter = StringToNumberConverter.toDouble(percentNumberFormat, false);
+//        UpdateValueStrategy targetToModelStrategy = new UpdateValueStrategy();
+//        targetToModelStrategy.setConverter(target2ModelConverter);
+//        modelToTargetStrategy.setConverter(model2TargetConverter);
 
         //		textValue.setText(DataUtils.DoubleToFormatedPercent(editorVat.getTaxValue()));
-        bindModelValue(editorVat, textValue, "taxValue", 16, targetToModelStrategy, modelToTargetStrategy);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
+//        bindModelValue(editorVat, textValue, "taxValue", 16, targetToModelStrategy, modelToTargetStrategy);
+//        bindModelValue(editorVat, text.getControl(), "taxValue", 16, targetToModelStrategy, modelToTargetStrategy);
+        bindModelValue(editorVat, text, "taxValue", 16);
+//        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(text.getControl());
 
         // Create the composite to make this payment to the standard payment. 
         Label labelStdVat = new Label(top, SWT.NONE);
         labelStdVat.setText(msg.commonLabelDefault);
         //T: Tool Tip Text
         labelStdVat.setToolTipText(msg.editorVatNameTooltip);
-
-        VAT stdVat = null;
-        int stdID = 0;
 
         // Get the ID of the standard unidataset
         try {
@@ -341,6 +322,7 @@ public class VatEditor extends Editor<VAT> {
         stdComposite.setToolTipText(msg.editorVatDefaultbuttonTooltip);
 
         // Disable the Standard Button, if this is a new VAT
+        // the Button is disabled by default, see Editor.StdComposite
         if (!newVat) {
             stdComposite.stdButton.setEnabled(true);
         }
