@@ -11,6 +11,7 @@
 package com.sebulli.fakturama.views.datatable.vats;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,6 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -54,7 +54,6 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
@@ -62,7 +61,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDec
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
@@ -125,9 +123,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Inject
     private ECommandService commandService;
     
-    @Inject
-    private EModelService modelService;
-    
     /**
      * Event Broker for receiving update events to the list table
      */
@@ -173,7 +168,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected static final String NO_CATEGORY_LABEL = "$shownothing";
     protected static final String NO_SORT_LABEL = "noSortLabel";
     private static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
-    private static final String STATUS_CELL_LABEL = "Status_Cell_LABEL";
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
 
@@ -183,6 +177,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     private final boolean headerLabelEnabled = false;
 
     private ListViewGridLayer<VAT> gridLayer;
+    
+    //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
 
     protected FilterList<VAT> treeFilteredIssues;
@@ -190,6 +186,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     private SelectionLayer selectionLayer;
 
     private DataLayer tableDataLayer;
+    private int lastSelectedRow = -1;
 
     @PostConstruct
     public Control createPartControl(Composite parent) {
@@ -220,16 +217,16 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
         natTable.configure();
-
     }
 	
     protected NatTable createListTable(Composite searchAndTableComposite) {
         //mapping from property to label, needed for column header labels
         final Map<String, String> propertyToLabelMap = vatsDAO.getVisiblePropertyToLabelMap();
-
+        
+        // fill the underlying data source (GlazedList)
         eventList = GlazedLists.eventList(vatsDAO.findAll());
 
-        //create a new ConfigRegistry which will be needed for GlazedLists handling
+        // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
 
         final IColumnPropertyAccessor<VAT> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<VAT>(propertyNames);
@@ -256,8 +253,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
 
             public void setDataValue(VAT rowObject, int columnIndex, Object newValue) {
-                throw new UnsupportedOperationException();
-                //              columnPropertyAccessor.setDataValue(rowObject, columnIndex+1, newValue);
+                throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
             public int getColumnCount() {
@@ -281,8 +277,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             public int getColumnIndex(String propertyName) {
                 if (STANDARD_PROPERTYNAME.equals(propertyName)) {
                     return DEFAULT_COLUMN_POSITION;
-                }
-                else {
+                } else {
                     return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
                 }
             }
@@ -326,11 +321,10 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         
         //build the grid layer
         gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
-
         tableDataLayer = gridLayer.getBodyDataLayer();        
 
         GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, eventList);
-        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(vatListEventLayer);
+//        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(vatListEventLayer);
 
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -344,24 +338,24 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         tableDataLayer.setColumnWidthByPosition(VALUE_COLUMN_POSITION, 10);
         tableDataLayer.setColumnPercentageSizing(true);
         
-        selectionLayer = new SelectionLayer(bodyLayer);
+        selectionLayer = new SelectionLayer(tableDataLayer);
         
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
 
-        // Select complete rows
         IRowIdAccessor<VAT> rowIdAccessor = new IRowIdAccessor<VAT>() {
             @Override
             public Serializable getRowId(VAT rowObject) {
                 return rowObject.getId();
             }
         };
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
+        
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
         RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
-        
+//         Select complete rows
+//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
 
         // now is the time where we can create the NatTable itself
 
@@ -385,11 +379,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             public void handleLayerEvent(ILayerEvent event) {
                 if (event instanceof CellSelectionEvent) {
                     CellSelectionEvent cellEvent = (CellSelectionEvent) event;
-                    
-                    System.out.println("Selected cell: [" +
-                            cellEvent.getRowPosition() + ", " +
-                            cellEvent.getColumnPosition() + "], " +
-                            natTable.getDataValueByPosition(cellEvent.getColumnPosition(), cellEvent.getRowPosition()));
+                    lastSelectedRow = cellEvent.getRowPosition();
+//                    System.out.println("Selected cell: [" +
+//                            cellEvent.getRowPosition() + ", " +
+//                            cellEvent.getColumnPosition() + "], " +
+//                            natTable.getDataValueByPosition(cellEvent.getColumnPosition(), cellEvent.getRowPosition()));
                 }
                 else if (event instanceof ColumnSelectionEvent) {
                     ColumnSelectionEvent columnEvent = (ColumnSelectionEvent) event;
@@ -646,31 +640,19 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 	}
 
     public void removeSelectedEntry() {
-        selectionLayer.getDataValueByPosition(1,1);
-        tableDataLayer.getDataProvider().getDataValue(1, 1);
-        selectionLayer.getFullySelectedRowPositions();
-        selectionLayer.getSelectedCells();
-        
-        // das tut!!!
-        gridLayer.getBodyDataProvider().getRowObject(2);
-        
-        
-        
-//        for (Range range : selectedRowPositions) {
-//            range.
-//        }
-//        try {
-//            // don't delete the entry because it could be referenced
-//            // from another entity
-//            editorVat.setDeleted(Boolean.TRUE);
-//            vatsDAO.save(editorVat);
-//        }
-//        catch (SQLException e) {
-//            log.error(e, "can't save the current VAT: " + editorVat.toString());
-//        }
-//
-//        // Refresh the table view of all VATs
-//        evtBroker.post("VatEditor", "update");
+        VAT objToDelete = gridLayer.getBodyDataProvider().getRowObject(lastSelectedRow);
+        try {
+            // don't delete the entry because it could be referenced
+            // from another entity
+            objToDelete.setDeleted(Boolean.TRUE);
+            vatsDAO.save(objToDelete);
+        }
+        catch (SQLException e) {
+            log.error(e, "can't save the current VAT: " + objToDelete.toString());
+        }
+
+        // Refresh the table view of all VATs
+        evtBroker.post("VatEditor", "update");
     }
 
 }

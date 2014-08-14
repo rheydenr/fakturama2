@@ -82,7 +82,7 @@ public class VatEditor extends Editor<VAT> {
     private Composite top;
     private Text textName;
     private Text textDescription;
-    private Text textValue;
+    private FormattedText textValue;
     private Combo comboCategory;
 
     // defines, if the vat is just created
@@ -118,9 +118,29 @@ public class VatEditor extends Editor<VAT> {
    		// Set the VAT data
         // ... done through databinding...
 
-   		// If it is a new VAT, add it to the VAT list and
-   		// to the data base
+   		// save the new or updated VAT
         try {
+            // at first, check the category for a new entry
+            // (the user could have written a new one into the combo field)
+            String testCat = comboCategory.getText();
+            // to find the complete Category we have to split the category string and check each of the parts
+            String[] splittedCategories = testCat.split("/");
+            VATCategory parentCategory = null;
+            for (String category : splittedCategories) {
+                VATCategory searchCat = vatCategoriesDAO.findVATCategoryByName(category);
+                if(searchCat == null) {
+                    // not found? Then create a new one.
+                    VATCategory newCategory = new VATCategory();
+                    newCategory.setName(category);
+                    newCategory.setParent(parentCategory);
+                    vatCategoriesDAO.save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            }
+            // parentCategory now has the last found Category
+            editorVat.setCategory(parentCategory);
             vatDao.save(editorVat);
         }
         catch (SQLException e) {
@@ -128,14 +148,9 @@ public class VatEditor extends Editor<VAT> {
         }
 
         if (newVat) {
-    //			vat = Data.INSTANCE.getVATs().addNewDataSet(vat);
-    			newVat = false;
-    			stdComposite.stdButton.setEnabled(true);
-    		}
-    		// If it's not new, update at least the data base
-//    		else {
-//    			Data.INSTANCE.getVATs().updateDataSet(vat);
-//    		}
+			newVat = false;
+			stdComposite.stdButton.setEnabled(true);
+    	}
 
        	// Set the Editor's name to the payment name.
         part.setLabel(editorVat.getName());
@@ -275,29 +290,14 @@ public class VatEditor extends Editor<VAT> {
         labelValue.setText(msg.commonFieldValue);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
 
-    final FormattedText text = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
-    text.setFormatter(new PercentFormatter());
-    GridData data = new GridData();
-    data.widthHint = 200;
-    text.getControl().setLayoutData(data);
-        
-//        textValue = new Text(top, SWT.BORDER);
-        // create UpdateValueStrategy and assign it to the binding
-//        UpdateValueStrategy modelToTargetStrategy = new UpdateValueStrategy();
-//        NumberFormat percentNumberFormat = NumberFormat.getInstance(); //NumberFormat.getPercentInstance();
-//        percentNumberFormat.setMaximumFractionDigits(2);
-//        NumberToStringConverter model2TargetConverter = NumberToStringConverter.fromDouble(percentNumberFormat, false);
-//        StringToNumberConverter target2ModelConverter = StringToNumberConverter.toDouble(percentNumberFormat, false);
-//        UpdateValueStrategy targetToModelStrategy = new UpdateValueStrategy();
-//        targetToModelStrategy.setConverter(target2ModelConverter);
-//        modelToTargetStrategy.setConverter(model2TargetConverter);
-
-        //		textValue.setText(DataUtils.DoubleToFormatedPercent(editorVat.getTaxValue()));
-//        bindModelValue(editorVat, textValue, "taxValue", 16, targetToModelStrategy, modelToTargetStrategy);
-//        bindModelValue(editorVat, text.getControl(), "taxValue", 16, targetToModelStrategy, modelToTargetStrategy);
-        bindModelValue(editorVat, text, "taxValue", 16);
+        textValue = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
+        textValue.setFormatter(new PercentFormatter());
+        GridData data = new GridData();
+        data.widthHint = 200;
+        textValue.getControl().setLayoutData(data);
+        bindModelValue(editorVat, textValue, "taxValue", 16);
 //        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(text.getControl());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
         // Create the composite to make this payment to the standard payment. 
         Label labelStdVat = new Label(top, SWT.NONE);

@@ -59,6 +59,34 @@ public class TreeObject {
 			this.icon = icon;
 			nodeType = TreeObjectType.DEFAULT_NODE;
 		}
+		
+		/**
+		 * Checks if a certain child exists. The check is at name level.
+		 * 
+		 * @param child
+		 * @return
+		 */
+		public boolean hasChild(TreeObject child) {
+		    boolean retval = false;
+		    for (TreeObject treeObject : children) {
+                if(treeObject.getFullPathName().equals(child.getFullPathName())) {
+                    retval = true;
+                    break;
+                }
+            }
+		    return retval;
+		}
+		
+		public TreeObject findChildWithName(String name) {
+		    TreeObject retval = null;
+            for (TreeObject treeObject : children) {
+                if(treeObject.getName().equals(name)) {
+                    retval = treeObject;
+                    break;
+                }
+            }
+		    return retval;
+		}
 
 		/**
 		 * Returns the tool tip text of the tree object
@@ -262,8 +290,8 @@ public class TreeObject {
 			String fullPathName = getName();
 
 			// Root and all have an empty path
-//			if (getNodeType() == TreeObjectType.ROOT_NODE || getNodeType() == TreeObjectType.ALL_NODE)
-//				return "";
+			if (getNodeType() == TreeObjectType.ROOT_NODE || getNodeType() == TreeObjectType.ALL_NODE)
+				return "";
 
 			// this is unnecessary because we filter upon real objects and not upon path names!
 //			TreeObject p = this;

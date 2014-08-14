@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -57,12 +58,25 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
 //    	return getEntityManager().createQuery("select p from VATCategory p", VATCategory.class).getResultList();
     }
     
+    /**
+     * Finds a VATCategory by its name.
+     * 
+     * @param VATCategory
+     * @return
+     */
     public VATCategory findVATCategoryByName(String VATCategory) {
+        VATCategory result = null;
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     	CriteriaQuery<VATCategory> cq = cb.createQuery(VATCategory.class);
     	Root<VATCategory> rootEntity = cq.from(VATCategory.class);
 		CriteriaQuery<VATCategory> selectQuery = cq.select(rootEntity).where(cb.equal(rootEntity.get("name"), VATCategory));
-    	return getEntityManager().createQuery(selectQuery).getSingleResult();
+        try {
+            result = getEntityManager().createQuery(selectQuery).getSingleResult();
+        }
+        catch (NoResultException nre) {
+            // no result means we return a null value 
+        }
+        return result;
 //    	return getEntityManager().createQuery("select p from VATCategory p", VATCategory.class).getResultList();
     }
     

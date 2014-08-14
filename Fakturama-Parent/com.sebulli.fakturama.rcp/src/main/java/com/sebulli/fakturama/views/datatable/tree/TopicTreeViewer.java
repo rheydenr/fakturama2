@@ -377,20 +377,22 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @return
 	 */
 	private TreeObject addEntry(TreeObject parent, AbstractCategory entry) {
-//TODO anpassen auf Category!!!!
-		// das sind die parent-Beziehungen!
-//		String[] entryParts = entry.split("/");
-		TreeObject me = parent, newMe;
-
+		TreeObject currentLeaf = parent, newLeaf;
 		// Use all string parts to build the tree elements
 		if(entry.getParent() != null) {
-			newMe = addEntry(me, entry.getParent());
+			newLeaf = addEntry(currentLeaf, entry.getParent());
+			currentLeaf = new TreeObject(entry.getName());
+			newLeaf.addChild(currentLeaf);
 		} else {
-			newMe = new TreeObject(entry.getName());
-			me.addChild(newMe);
-			me = newMe;
+		    // only create a new entry if it doesn't exist!
+		    newLeaf = all.findChildWithName(entry.getName());
+		    if(newLeaf == null) {
+		        newLeaf = new TreeObject(entry.getName());
+		        currentLeaf.addChild(newLeaf);
+		    }
+			currentLeaf = newLeaf;
 		}
-		return me;
+		return currentLeaf;
 	}
 
 	/**
@@ -530,7 +532,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		this.viewDataSetTable = viewDataSetTable;
 	}
 
-	public void setLabelProvider(TreeCategoryLabelProvider rheViewTableLabelProvider) {
-		internalTreeViewer.setLabelProvider(rheViewTableLabelProvider);
+	public void setLabelProvider(TreeCategoryLabelProvider treeTableLabelProvider) {
+		internalTreeViewer.setLabelProvider(treeTableLabelProvider);
 	}
 }

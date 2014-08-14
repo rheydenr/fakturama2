@@ -13,7 +13,7 @@ public class TreeCategoryLabelProvider extends CellLabelProvider {
 
     public String getText(Object obj) {
 
-        // Display the localizes list names.
+        // Display the localized list names.
         //			if (this.rheNatTable.natTable instanceof NatTable)
         //				return "(localized) " + obj.toString();
         //			else

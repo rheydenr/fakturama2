@@ -12,9 +12,12 @@
  */
 package com.sebulli.fakturama.migration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.model.AbstractCategory;
 
@@ -58,13 +61,28 @@ public class CategoryBuilder<T extends AbstractCategory> {
 		}
 		return newCategories;
 	}
+	
+	/**
+	 * Builds a (hierarchical) category from the given String.
+	 *  
+	 * @param category string with "/" separated categories
+	 * @param categoryClazz the category class to process
+	 * @return deepest category (rightmost category entry from the String)
+	 */
+	public T buildCategoryFromString(String category, Class<T> categoryClazz) {
+	    // build a List with one entry
+	    List<String> paramList = new ArrayList<>();
+	    paramList.add(category);
+	    Map<String, T> newCategories = buildCategoryMap(paramList, categoryClazz);
+	    // what is the rightmost entry?
+	    String deepestCat = category.substring(StringUtils.lastIndexOf(category, "/") == -1 ? 0 : StringUtils.lastIndexOf(category, "/"));
+	    return newCategories.get(deepestCat);
+	}
 
 	private T createCategory(String oldCategory, Class<T> categoryClazz, T parentCategory) throws InstantiationException, IllegalAccessException {
 		T newCategory = categoryClazz.newInstance();
 		newCategory.setName(oldCategory);
 		newCategory.setParent(parentCategory);
 		return newCategory;
-
 	}
-
 }
