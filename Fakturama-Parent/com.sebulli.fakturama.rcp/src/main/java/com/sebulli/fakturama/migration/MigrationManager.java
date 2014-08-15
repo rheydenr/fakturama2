@@ -1003,7 +1003,7 @@ public class MigrationManager {
 	}
 
 	/**
-	 * Runs the subtask which converts a single table.
+	 * Migration of the Properties table. Sets the properties in EclipsePreferences.
 	 * 
 	 * @param subProgressMonitor
 	 * @param countOfEntitiesInTable
@@ -1028,6 +1028,10 @@ public class MigrationManager {
 		}
 		subProgressMonitor.done();
 	}
+	
+	// adapted from PreferencesInDatabase.loadPreferencesFromDatabase()
+	// Assume that all preferences in CAPITAL LETTERS are user preferences
+	
 
 	/**
 	 * Checks for cancellation of the long running migration job

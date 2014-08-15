@@ -53,5 +53,19 @@
          </property>
       </product>
    </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            class="com.sebulli.fakturama.preferences.ColumnWidthVatPreferencePage"
+            id="com.sebulli.fakturama.prefs.page1"
+            name="ColumnWidthVatPreferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.sebulli.fakturama.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

@@ -15,6 +15,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
@@ -22,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.startup.ConfigurationManager;
@@ -80,13 +82,24 @@ public class LifecycleManager {
         ConfigurationManager configMgr = new ConfigurationManager(shell, context, eclipsePrefs, log, msg);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkFirstStart(null, null);
+        
+        postInitialize();
+    }
+    
+    /**
+     * Some steps to do before workbench is showing.
+     */
+    private void postInitialize() {
+        PropertiesDAO myClassInstance = ContextInjectionFactory.make(PropertiesDAO.class, context);
+        context.set(PropertiesDAO.class, myClassInstance);
+        context.get(PropertiesDAO.class).findAll();
     }
     
     /**
      * Because we don't have a complete workbench at this stage, the
      * {@link EventHandler} is registered so that we can restart the application
      * if the working directory has changed or the application is launched the
-     * first time. The handler is only registered
+     * first time. 
      *
      */
     private static final class AppStartupCompleteEventHandler implements EventHandler {

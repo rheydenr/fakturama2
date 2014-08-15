@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.gemini.ext.di;bundle-version="1.0.0",
  com.ibm.icu;bundle-version="52.1.0",
  org.eclipse.nebula.widgets.formattedtext;bundle-version="1.0.0",
  org.eclipse.e4.ui.workbench,
- org.eclipse.core.jobs
+ org.eclipse.core.jobs,
+ com.opcoach.e4.preferences;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy 
 Bundle-Localization: OSGI-INF/l10n/bundle
@@ -56,10 +57,6 @@ Import-Package: javax.inject;version="1.0.0",
  org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.services.events,
  org.eclipse.e4.ui.widgets,
- org.eclipse.e4.ui.workbench,
- org.eclipse.e4.ui.workbench.lifecycle,
- org.eclipse.e4.ui.workbench.modeling,
- org.eclipse.e4.ui.workbench.swt.util,
  org.eclipse.equinox.app;version="1.1.0",
  org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.persistence;version="2.5.1",
