@@ -14,8 +14,6 @@
 
 package com.sebulli.fakturama.misc;
 
-
-
 /**
  * Enumeration of all 8 data types, a document can be.
  * 
@@ -25,15 +23,15 @@ public enum DocumentType {
 	// all 8 data types
 	// TODO localize!!!
 	NONE(0, "None", "None", false, false, true, false, 1, "none"),
- LETTER(1, "Letter", "Letters", false, false, false, false, 1, "New Letter"),
- OFFER(2, "Offer", "Offers", true, true, false, false, 1, "New Offer"),
- ORDER(3, "Order", "Orders", true, true, false, false, 1, "New Order"),
- CONFIRMATION(4, "Confirmation", "Confirmations", true, true, false, false, 1, "New Confirmation"),
- INVOICE(5, "Invoice", "Invoices", true, true, true, false, 1, "New Invoice"),
- DELIVERY(6, "Delivery Note", "Delivery Notes", true, false, false, true, 1, "New Delivery Note"),
- CREDIT(7, "Credit", "Credit Items", true, true, true, true, -1, "New Credit"),
- DUNNING(8, "Dunning", "Dunning Letters", false, false, false, true, 1, "New Dunning"),
- PROFORMA(9, "Proforma", "Proforma Invoices", true, true, false, false, 1, "New Proforma Invoice");
+ LETTER(1, "Letter", "Letters", false, false, false, false, 1, "main.menu.new.letter"),
+ OFFER(2, "Offer", "Offers", true, true, false, false, 1, "main.menu.new.offer"),
+ ORDER(3, "Order", "Orders", true, true, false, false, 1, "main.menu.new.order"),
+ CONFIRMATION(4, "Confirmation", "Confirmations", true, true, false, false, 1, "main.menu.new.confirmation"),
+ INVOICE(5, "Invoice", "Invoices", true, true, true, false, 1, "main.menu.new.invoice"),
+ DELIVERY(6, "Delivery Note", "Delivery Notes", true, false, false, true, 1, "main.menu.new.deliverynote"),
+ CREDIT(7, "Credit", "Credit Items", true, true, true, true, -1, "main.menu.new.credit"),
+ DUNNING(8, "Dunning", "Dunning Letters", false, false, false, true, 1, "main.menu.new.dunning"),
+ PROFORMA(9, "Proforma", "Proforma Invoices", true, true, false, false, 1, "main.menu.new.proforma");
 	
 	// 9 types.
 	public final static int MAXID = DocumentType.values().length;
@@ -41,7 +39,7 @@ public enum DocumentType {
 
 	private int sign;
 
-	private String newText;
+	private String newTextKey;
 
 	/**
 	 * If {@link DocumentType} has an item table
@@ -75,7 +73,7 @@ public enum DocumentType {
 		this.paid = paid;
 		this.invoiceReference = invoiceReference;
 		this.sign = sign;
-		this.newText = newText;
+		this.newTextKey = newText;
 	}
 
 	/**
@@ -306,7 +304,19 @@ public enum DocumentType {
 	 * @return Text as localized string.
 	 */
 	public String getNewText() {
-		return newText;
+		return newTextKey;
 	}
+    
+    /**
+     * Get the text key to create labels with "new" documents
+     * 
+     * @param i
+     *      The document type index
+     * @return 
+     * Text as localized string.
+     */
+    public static String getNewTextKey(DocumentType documentType) {
+        return documentType.getNewText();
+    }	
 
 }
