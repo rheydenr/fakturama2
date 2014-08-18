@@ -27,22 +27,12 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_SHIPPING")
 public class Shipping extends ModelObject implements IEntity, Serializable {
-
     /**
-     * @generated
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * A common serial ID.
      * 
      * @generated
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Long id = null;
+    private static final long serialVersionUID = 1L;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -59,26 +49,8 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
      * @generated
      */
     @Basic()
-    @Column(name = "DELETED")
-    private Boolean deleted = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
     @Column(name = "DESCRIPTION")
     private String description = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "NAME")
-    private String name = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -108,30 +80,31 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
     private Set<ShippingCategory> categories = new HashSet<ShippingCategory>();
 
     /**
-     * Returns the value of '<em><b>id</b></em>' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @return the value of '<em><b>id</b></em>' feature
      * @generated
      */
-    public Long getId() {
-        return id;
-    }
+    @Basic()
+    @Column(name = "NAME")
+    private String name = null;
 
     /**
-     * Sets the '{@link Shipping#getId() <em>id</em>}' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @param newId
-     *            the new value of the '{@link Shipping#getId() id}' feature.
      * @generated
      */
-    public void setId(Long newId) {
-        id = newId;
-        firePropertyChange("id", this.id, newId);
-    }
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id = 0;
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Basic()
+    @Column(name = "DELETED")
+    private Boolean deleted = null;
 
     /**
      * Returns the value of '<em><b>autoVat</b></em>' feature.
@@ -161,33 +134,6 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
     }
 
     /**
-     * Returns the value of '<em><b>deleted</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>deleted</b></em>' feature
-     * @generated
-     */
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Sets the '{@link Shipping#getDeleted() <em>deleted</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newDeleted
-     *            the new value of the '{@link Shipping#getDeleted() deleted}'
-     *            feature.
-     * @generated
-     */
-    public void setDeleted(Boolean newDeleted) {
-        deleted = newDeleted;
-        firePropertyChange("deleted", this.deleted, newDeleted);
-    }
-
-    /**
      * Returns the value of '<em><b>description</b></em>' feature.
      *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -213,33 +159,6 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
     public void setDescription(String newDescription) {
         description = newDescription;
         firePropertyChange("description", this.description, newDescription);
-    }
-
-    /**
-     * Returns the value of '<em><b>name</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>name</b></em>' feature
-     * @generated
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the '{@link Shipping#getName() <em>name</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newName
-     *            the new value of the '{@link Shipping#getName() name}'
-     *            feature.
-     * @generated
-     */
-    public void setName(String newName) {
-        name = newName;
-        firePropertyChange("name", this.name, newName);
     }
 
     /**
@@ -380,6 +299,86 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
     }
 
     /**
+     * Returns the value of '<em><b>name</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>name</b></em>' feature
+     * @generated
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the '{@link Shipping#getName() <em>name</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newName
+     *            the new value of the '{@link Shipping#getName() name}'
+     *            feature.
+     * @generated
+     */
+    public void setName(String newName) {
+        name = newName;
+        firePropertyChange("name", this.name, newName);
+    }
+
+    /**
+     * Returns the value of '<em><b>id</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>id</b></em>' feature
+     * @generated
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the '{@link Shipping#getId() <em>id</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newId
+     *            the new value of the '{@link Shipping#getId() id}' feature.
+     * @generated
+     */
+    public void setId(long newId) {
+        id = newId;
+        firePropertyChange("id", this.id, newId);
+    }
+
+    /**
+     * Returns the value of '<em><b>deleted</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>deleted</b></em>' feature
+     * @generated
+     */
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Sets the '{@link Shipping#getDeleted() <em>deleted</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newDeleted
+     *            the new value of the '{@link Shipping#getDeleted() deleted}'
+     *            feature.
+     * @generated
+     */
+    public void setDeleted(Boolean newDeleted) {
+        deleted = newDeleted;
+        firePropertyChange("deleted", this.deleted, newDeleted);
+    }
+
+    /**
      * A toString method which prints the values of all EAttributes of this
      * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -387,7 +386,7 @@ public class Shipping extends ModelObject implements IEntity, Serializable {
      */
     @Override
     public String toString() {
-        return "Shipping " + " [id: " + getId() + "]" + " [autoVat: " + getAutoVat() + "]" + " [deleted: " + getDeleted() + "]" + " [description: "
-                + getDescription() + "]" + " [name: " + getName() + "]" + " [shippingValue: " + getShippingValue() + "]";
+        return "Shipping " + " [autoVat: " + getAutoVat() + "]" + " [description: " + getDescription() + "]" + " [shippingValue: " + getShippingValue() + "]"
+                + " [name: " + getName() + "]" + " [id: " + getId() + "]" + " [deleted: " + getDeleted() + "]";
     }
 }

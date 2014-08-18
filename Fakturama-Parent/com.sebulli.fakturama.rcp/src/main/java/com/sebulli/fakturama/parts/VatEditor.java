@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
@@ -141,7 +142,13 @@ public class VatEditor extends Editor<VAT> {
             }
             // parentCategory now has the last found Category
             editorVat.setCategory(parentCategory);
-            vatDao.save(editorVat);
+            
+            /*
+             * If we DON'T use update, the category is saved again and again and again
+             * because we have CascadeType.PERSIST. If we use update and save the new VatCategory before,
+             * all went ok. That's the point...
+             */
+            vatDao.update(editorVat);
         }
         catch (SQLException e) {
             log.error(e, "can't save the current VAT: " + editorVat.toString());
@@ -328,6 +335,12 @@ public class VatEditor extends Editor<VAT> {
         }
     }
 
+
+    @Override
+    protected String getDefaultEntryKey() {
+        return Constants.DEFAULT_VAT;
+    }
+    
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;

@@ -16,6 +16,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Shipping;
+import com.sebulli.fakturama.oldmodel.OldShippings;
 
 @Creatable
 public class ShippingsDAO extends AbstractDAO<Shipping> {
@@ -63,6 +64,15 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
 		CriteriaQuery<Shipping> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
     	return getEntityManager().createQuery(cq).getResultList();
 //    	return getEntityManager().createQuery("select p from Shipping p", Shipping.class).getResultList();
+    }
+
+    public Shipping findByOldShipping(OldShippings oldShipping) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Shipping> criteria = cb.createQuery(Shipping.class);
+        Root<Shipping> root = criteria.from(Shipping.class);
+        CriteriaQuery<Shipping> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldShipping.getDescription()),
+                cb.equal(root.<String> get("name"), oldShipping.getName())));
+        return getEntityManager().createQuery(cq).getSingleResult();
     }
     
  

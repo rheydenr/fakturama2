@@ -17,8 +17,8 @@ import javax.persistence.Table;
 
 /**
  * A representation of the model object '<em><b>AbstractCategory</b></em>'. <!--
- * begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> the
- * AbstractCategory of an element <!-- end-model-doc -->
+ * begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> the common
+ * super class for each category <!-- end-model-doc -->
  * 
  * @generated
  */
@@ -26,8 +26,9 @@ import javax.persistence.Table;
 @Table(name = "FKT_CATEGORY")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class AbstractCategory implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

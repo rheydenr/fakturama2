@@ -18,8 +18,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_PRODUCTOPTIONS")
 public class ProductOptions implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

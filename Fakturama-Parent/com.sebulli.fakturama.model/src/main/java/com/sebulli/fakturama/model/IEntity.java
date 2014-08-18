@@ -1,45 +1,76 @@
-/**
- * 
- */
 package com.sebulli.fakturama.model;
 
 /**
- * @author Administrator
- *
+ * A representation of the model object '<em><b>IEntity</b></em>'. <!--
+ * begin-user-doc --> <!-- end-user-doc -->
+ * 
+ * @generated
  */
 public interface IEntity {
-	/**
-	 * The category of this entity.
-	 * @return
-	 */
-//	public AbstractCategory getCategory();
+    /**
+     * Returns the value of '<em><b>name</em></b>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>name</b></em>' feature
+     * @generated
+     */
+    public String getName();
 
-	/**
-	 * Transaction Key, if available. Used in content provider for data table.
-	 * @return
-	 */
-//	public int getTransactionKey();
-	
-	/**
-	 * The id of this entity
-	 * @return
-	 */
-	public Long getId();
-	
+    /**
+     * Sets the '{@link IEntity#getName() <em>name</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newName
+     *            the new value of the '{@link IEntity#getName() <em>name</em>}'
+     *            feature.
+     * @generated
+     */
+    public void setName(String newName);
 
-	/**
-	 * Returns the value of '<em><b>name</b></em>' feature.
-	 * 
-	 * @return the value of '<em><b>name</b></em>' feature
-	 */
-	public String getName();
+    /**
+     * Returns the value of '<em><b>id</em></b>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>id</b></em>' feature
+     * @generated
+     */
+    public long getId();
 
+    /**
+     * Sets the '{@link IEntity#getId() <em>id</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newId
+     *            the new value of the '{@link IEntity#getId() <em>id</em>}'
+     *            feature.
+     * @generated
+     */
+    public void setId(long newId);
 
-	/**
-	 * Address key, if available. Used in content provider for data table.
-	 * @return
-	 */
-//	public int getAddressKey();
-	
-//	public String getFormatedStringValueByKey(String key);
+    /**
+     * Returns the value of '<em><b>deleted</em></b>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>deleted</b></em>' feature
+     * @generated
+     */
+    public Boolean getDeleted();
+
+    /**
+     * Sets the '{@link IEntity#getDeleted() <em>deleted</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newDeleted
+     *            the new value of the '{@link IEntity#getDeleted()
+     *            <em>deleted</em>}' feature.
+     * @generated
+     */
+    public void setDeleted(Boolean newDeleted);
+
 }

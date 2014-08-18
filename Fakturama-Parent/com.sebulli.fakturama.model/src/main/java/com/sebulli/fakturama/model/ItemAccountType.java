@@ -15,8 +15,9 @@ import javax.persistence.Table;
 @Table(name = "FKT_ITEMACCOUNTTYPE")
 @PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "ITEMACCOUNTTYPE_PARENT_ID") })
 public class ItemAccountType extends AbstractCategory {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

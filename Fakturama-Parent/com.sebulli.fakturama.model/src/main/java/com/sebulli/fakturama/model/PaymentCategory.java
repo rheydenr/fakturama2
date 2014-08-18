@@ -15,8 +15,9 @@ import javax.persistence.Table;
 @Table(name = "FKT_PAYMENTCATEGORY")
 @PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "PAYMENTCATEGORY_PARENT_ID") })
 public class PaymentCategory extends AbstractCategory {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

@@ -12,30 +12,36 @@
  */
 package com.sebulli.fakturama.migration;
 
-import java.io.BufferedReader;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
+//import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -48,9 +54,9 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.dao.CountryCodesDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -70,7 +76,6 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.CountryCode;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Expenditure;
@@ -102,8 +107,9 @@ import com.sebulli.fakturama.oldmodel.OldReceiptvouchers;
 import com.sebulli.fakturama.oldmodel.OldShippings;
 import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
-import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.startup.ConfigurationManager;
+import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * Migration Tool for converting old data to new one. This affects only database
@@ -149,8 +155,9 @@ public class MigrationManager {
 	private TextsDAO textDAO;
 	private VatsDAO vatsDAO;
 	
+	// These Maps are for assigning the old entities to the new one (needed for lookup)
 	private Map<Integer, Long> newContacts = new HashMap<Integer, Long>();
-	private Map<Integer, Long> newVats =     new HashMap<Integer, Long>();
+	private Map<Integer, Long> newVats     = new HashMap<Integer, Long>();
 	private Map<Integer, Long> newShippings =new HashMap<Integer, Long>();
 	private Map<Integer, Long> newPayments = new HashMap<Integer, Long>();
 	private Map<Integer, Long> newProducts = new HashMap<Integer, Long>();
@@ -216,6 +223,22 @@ public class MigrationManager {
 
 		// old entities only have one DAO for all entities
 		oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
+		
+		// we have to keep a certain order
+		final OldTableinfo orderedTasks[] = new OldTableinfo[]{
+	        OldTableinfo.Vats,
+	        OldTableinfo.Shippings,
+	        OldTableinfo.Payments,
+	        OldTableinfo.Properties,
+//	        OldTableinfo.Texts,
+////			OldTableinfo.Lists,
+//	        OldTableinfo.Expenditures,
+//	        OldTableinfo.Receiptvouchers,
+//	        OldTableinfo.Contacts,
+//	        OldTableinfo.Products,
+//	        OldTableinfo.Documents
+		};
+		//  orderedTasks[] now contains all tables which have to be converted
 
 		// now start a ProgressMonitorDialog for tracing the progress of migration
 		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
@@ -224,21 +247,6 @@ public class MigrationManager {
 
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					// we have to keep a certain order
-					OldTableinfo orderedTasks[] = new OldTableinfo[]{
-							OldTableinfo.Properties,
-							OldTableinfo.Vats,
-							OldTableinfo.Shippings,
-							OldTableinfo.Texts,
-//							OldTableinfo.Lists,
-							OldTableinfo.Payments,
-							OldTableinfo.Expenditures,
-							OldTableinfo.Receiptvouchers,
-							OldTableinfo.Contacts,
-							OldTableinfo.Products,
-							OldTableinfo.Documents
-					};
-					//  orderedTasks[] now contains all tables which have to be converted
 					monitor.beginTask("Migration task running ...", orderedTasks.length);
 					for (OldTableinfo tableinfo : orderedTasks) {
 						monitor.subTask("converting " + tableinfo.name());
@@ -284,21 +292,6 @@ public class MigrationManager {
 				
 								@Override
 								public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-									// we have to keep a certain order
-									OldTableinfo orderedTasks[] = new OldTableinfo[]{
-											OldTableinfo.Properties,
-											OldTableinfo.Vats,
-											OldTableinfo.Shippings,
-											OldTableinfo.Texts,
-				//							OldTableinfo.Lists,
-											OldTableinfo.Payments,
-											OldTableinfo.Expenditures,
-											OldTableinfo.Receiptvouchers,
-											OldTableinfo.Contacts,
-											OldTableinfo.Products,
-											OldTableinfo.Documents
-									};
-									//  orderedTasks[] now contains all tables which have to be converted
 									monitor.beginTask("Migration task running ...", orderedTasks.length);
 									for (OldTableinfo tableinfo : orderedTasks) {
 										monitor.subTask("converting " + tableinfo.name());
@@ -361,36 +354,36 @@ public class MigrationManager {
 		case Lists:
 			// Country Codes are no user definable data; they will be read
 			// from ISO-Countrycodes.txt.
-			try {
-				// TODO use a service!!! (or at least some kind of ResourceLocator...)
-			    InputStream inputStream = FileLocator.openStream(FrameworkUtil.getBundle(Icon.class), new Path("/lists/ISO-Countrycodes.txt"), false);
-			    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			    String inputLine;
-			    int lineno = 1;
-			    int colNumber;
-			    while ((inputLine = in.readLine()) != null) {
-			    	colNumber = 0;
-			    	if(lineno++ == 1) continue;  // skip header
-			    	// now the simplest tab separated reader ever... :-)
-			    	String[] entries = inputLine.split("\\t");
-			    	CountryCode countryCode = new CountryCode();
-			    	countryCode.setCode2digit(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setCode3digit(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setFullName_de(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setFullName(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setFullName_fr(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setFullName_es(StringUtils.trim(entries[colNumber++]));
-			    	countryCode.setFullName_ru(StringUtils.trim(entries[colNumber++]));
-			    	countryCodesDAO.save(countryCode);
-			    }
-			    in.close();
-			    
-			    // TODO at the moment, the "billing_accounts"entries in the old List table will be ignored
-			    // since they are also stored in expenditureitemaccounttype and receiptvoucheritemaccounttype 
-			 
-			} catch (IOException | SQLException e) {
-			    e.printStackTrace();
-			}
+//			try {
+//				// TODO use a service!!! (or at least some kind of ResourceLocator...)
+//			    InputStream inputStream = FileLocator.openStream(FrameworkUtil.getBundle(Icon.class), new Path("/lists/ISO-Countrycodes.txt"), false);
+//			    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+//			    String inputLine;
+//			    int lineno = 1;
+//			    int colNumber;
+//			    while ((inputLine = in.readLine()) != null) {
+//			    	colNumber = 0;
+//			    	if(lineno++ == 1) continue;  // skip header
+//			    	// now the simplest tab separated reader ever... :-)
+//			    	String[] entries = inputLine.split("\\t");
+//			    	CountryCode countryCode = new CountryCode();
+//			    	countryCode.setCode2digit(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setCode3digit(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setFullName_de(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setFullName(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setFullName_fr(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setFullName_es(StringUtils.trim(entries[colNumber++]));
+//			    	countryCode.setFullName_ru(StringUtils.trim(entries[colNumber++]));
+//			    	countryCodesDAO.save(countryCode);
+//			    }
+//			    in.close();
+//			    
+//			    // TODO at the moment, the "billing_accounts"entries in the old List table will be ignored
+//			    // since they are also stored in expenditureitemaccounttype and receiptvoucheritemaccounttype 
+//			 
+//			} catch (IOException | SQLException e) {
+//			    e.printStackTrace();
+//			}
 			
 			break;
 		case Texts:
@@ -434,6 +427,7 @@ public class MigrationManager {
 				product.setBlock3(oldProduct.getBlock3());
 				product.setBlock4(oldProduct.getBlock4());
 				product.setDateAdded(getSaveParsedDate(oldProduct.getDateAdded()));
+				product.setDeleted(oldProduct.isDeleted());
 				product.setDescription(oldProduct.getDescription());
 				if(StringUtils.isNotBlank(oldProduct.getCategory()) && newProducts.containsKey(oldProduct.getCategory())) {
 					// add it to the new entity
@@ -500,6 +494,7 @@ public class MigrationManager {
 				document.setBillingType(BillingType.get(oldDocument.getCategory()));
 				document.setCustomerRef(oldDocument.getCustomerref());
 				document.setCreationDate(getSaveParsedDate(oldDocument.getDate()));
+				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address is stored 
 				document.setDueDays(oldDocument.getDuedays());
@@ -663,6 +658,7 @@ public class MigrationManager {
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
 				contact.setDeliveryContact(deliveryContact);
+				contact.setDeleted(oldContact.isDeleted());
 				contact.setDiscount(oldContact.getDiscount());
 				contact.setEmail(oldContact.getEmail());
 				contact.setFax(oldContact.getFax());
@@ -746,6 +742,7 @@ public class MigrationManager {
 					receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
 				}
 				receiptVoucher.setDiscounted(oldReceiptvoucher.isDiscounted());
+				receiptVoucher.setDeleted(oldReceiptvoucher.isDeleted());
 				receiptVoucher.setDocumentNumber(oldReceiptvoucher.getDocumentnr());
 				receiptVoucher.setDoNotBook(oldReceiptvoucher.isDonotbook());
 				if(StringUtils.isNotEmpty(oldReceiptvoucher.getDate())) {
@@ -793,6 +790,7 @@ public class MigrationManager {
 				if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
 					expenditure.setAccount(expenditureAccounts.get(oldExpenditure.getCategory()));
 				}
+				expenditure.setDeleted(oldExpenditure.isDeleted());
 				expenditure.setDiscounted(oldExpenditure.isDiscounted());
 				expenditure.setDocumentNumber(oldExpenditure.getDocumentnr());
 				expenditure.setDoNotBook(oldExpenditure.isDonotbook());
@@ -876,8 +874,9 @@ public class MigrationManager {
 				payment.setName(oldPayment.getName());
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
-				payment.setDiscountDays(oldPayment.getDiscountdays());
 				payment.setDefaultPaid(oldPayment.isDefaultpaid());
+				payment.setDeleted(oldPayment.isDeleted());
+				payment.setDiscountDays(oldPayment.getDiscountdays());
 				payment.setDiscountValue(oldPayment.getDiscountvalue());
 				payment.setDescription(oldPayment.getDescription());
 				payment.setNetDays(oldPayment.getNetdays());
@@ -942,12 +941,12 @@ public class MigrationManager {
 		// use a HashMap as a simple cache
 		CategoryBuilder<VATCategory> catBuilder = new CategoryBuilder<VATCategory>(); 
 		Map<String, VATCategory> vatCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllVatCategories(), VATCategory.class);
-
 		for (OldVats oldVat : oldDao.findAllVats()) {
 			try {
 				VAT vat = new VAT();
 				vat.setName(oldVat.getName());
 				vat.setTaxValue(oldVat.getValue());
+				vat.setDeleted(oldVat.isDeleted());
 				vat.setDescription(oldVat.getDescription());
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
@@ -982,6 +981,7 @@ public class MigrationManager {
 				Shipping shipping = new Shipping();
 				shipping.setName(oldShipping.getName());
 				shipping.setShippingValue(oldShipping.getValue());
+				shipping.setDeleted(oldShipping.isDeleted());
 				shipping.setAutoVat(BooleanUtils.toBooleanObject(oldShipping.getAutovat()));
 				shipping.setDescription(oldShipping.getDescription());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
@@ -1014,25 +1014,147 @@ public class MigrationManager {
 		Long countOfEntitiesInTable = oldDao.countAllProperties();
 		subProgressMonitor.beginTask("Converting Properties", countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask("(" + countOfEntitiesInTable + " records total)");
-		for (OldProperties oldProperties : oldDao.findAllProperties()) {
+
+	    createColumnWidthPreferences();
+	    
+        for (OldProperties oldProperty : oldDao.findAllPropertiesWithoutColumnWidthProperties()) {
 			try {
 				UserProperty prop = new UserProperty();
-				prop.setName(oldProperties.getName());
-				prop.setValue(oldProperties.getValue());
-				propertiesDAO.save(prop);
+				prop.setName(oldProperty.getName());
+				String propValue = oldProperty.getValue();
+
+				// there are only three different default entries
+				switch (oldProperty.getName()) {
+                case Constants.DEFAULT_VAT:
+				    // if we get a default entry property we have to synchronize this with the correct entry
+                    // switch propValue to the correct id
+                    VAT newVat = vatsDAO.findById(newVats.get(Integer.parseInt(propValue)));
+                    propValue = Long.toString(newVat.getId());
+                    break;
+                case Constants.DEFAULT_SHIPPING:
+                    Shipping newShipping = shippingsDAO.findById(newShippings.get(Integer.parseInt(propValue)));
+                    propValue = Long.toString(newShipping.getId());
+                    break;
+                case Constants.DEFAULT_PAYMENT:
+                    Payment newPayment = paymentsDAO.findById(newPayments.get(Integer.parseInt(propValue)));
+                    propValue = Long.toString(newPayment.getId());
+                    break;
+                default:
+                    break;
+                }
+                prop.setValue(propValue);
+                propertiesDAO.save(prop);
+                
+                // save the preference in preference store
+				eclipsePrefs.node("/configuration/defaultValues").put(prop.getName(), prop.getValue());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
-				log.error("error while migrating UserProperty. (old) ID=" + oldProperties.getId());
+			catch (SQLException sqlex) {
+				log.error("error while migrating UserProperty. (old) ID=" + oldProperty.getId());
 			}
 		}
 		subProgressMonitor.done();
 	}
-	
-	// adapted from PreferencesInDatabase.loadPreferencesFromDatabase()
-	// Assume that all preferences in CAPITAL LETTERS are user preferences
-	
 
+
+    /**
+     * Assume that all preferences in CAPITAL LETTERS are user preferences.
+     * For ease of use we create a properties file for the column settings of the views
+     * (therefore we don't have to store tons of COLUMN_* settings).
+     */
+    private void createColumnWidthPreferences() {
+		// at first create a properties file
+		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+		Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
+		
+		// truncate and overwrite an existing file, or create the file if
+		// it doesn't initially exist
+		try(BufferedWriter propsWriter = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(Files.newOutputStream(propertiesFile))));) {
+		    // at first we collect all COLUMNWIDTH_ properties
+	        Pattern pattern = Pattern.compile("COLUMNWIDTH_([A-Z]+)_(\\w+)(\\.*)");
+	        // since we have to write it on ONE line we collect all the properties for a table
+	        Map<String, List<Integer>> columnWidthsMap = new HashMap<>();
+            for (OldProperties oldProperty : oldDao.findAllColumnWidthProperties()) {
+		        Matcher matcher = pattern.matcher(oldProperty.getName());
+		        if(matcher.matches()) {
+		            String table = matcher.group(1);
+		            // prefix for the column width properties
+		            String tableId = null;
+		            switch (table) {
+                    case "VATS":
+                        tableId = VATListTable.ID;
+                        break;
+                    case "CONTACTS":
+                        tableId = ContactListTable.ID;
+                        break;
+                    case "DOCUMENTS":
+//                        tableId = DocumentsListTable.ID;
+                        break;
+                    case "ITEMS":
+                        break;
+                    case "LIST":
+                        break;
+                    case "PAYMENTS":
+                        break;
+                    case "PRODUCTS":
+                        break;
+                    case "SHIPPINGS":
+                        break;
+                    case "TEXTS":
+                        break;
+                    case "VOUCHERITEMS":
+                        break;
+                    case "VOUCHERS":
+                        break;
+                    case "DIALOG":
+                        // e.g., COLUMNWIDTH_DIALOG_CONTACTS_CITY
+                        String[] splittedString = matcher.group(2).split("_");
+                        switch (splittedString[0]) {
+                        case "CONTACTS":
+                            
+                            break;
+                        case "PRODUCTS":
+                            break;
+
+                        case "TEXTS":
+                            break;
+                        default:
+                            break;
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                    List<Integer> valueList = columnWidthsMap.get(tableId);
+                    if(valueList == null) {
+                        valueList = new ArrayList<>();
+                    }
+                    valueList.add(Integer.parseInt(oldProperty.getValue()));
+                    columnWidthsMap.put(tableId, valueList);
+		            
+		        }
+            }		    
+            // now write all the collected column widths to property file
+            for (String tableId : columnWidthsMap.keySet()) {
+                // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
+                List<Integer> valueList = columnWidthsMap.get(tableId);
+                StringBuilder stringBuilder = new StringBuilder();
+                for(int i = 0; i < valueList.size(); i++) {
+                    if(stringBuilder.length() > 0) {
+                        stringBuilder.append(',');
+                    }
+                    stringBuilder.append(i+"\\:"+valueList.get(i));
+                }
+                propsWriter.write(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
+                propsWriter.newLine();
+            }
+        }
+        catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    }
+	
 	/**
 	 * Checks for cancellation of the long running migration job
 	 * 

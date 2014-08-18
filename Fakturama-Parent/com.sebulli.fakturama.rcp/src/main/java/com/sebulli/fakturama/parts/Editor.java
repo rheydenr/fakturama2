@@ -123,6 +123,13 @@ public abstract class Editor<T extends IEntity> {
 		label.setFont(font);
 		font.dispose();
 	}
+	
+    protected String getDefaultEntryKey() {
+        // per default this method does nothing;
+        // only three editors use the default button.
+        return "";
+    }
+
 
 	/**
 	 * Class to create the widgets to show and set the standard entry.
@@ -197,20 +204,21 @@ public abstract class Editor<T extends IEntity> {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (uds.getId() >= 0) {
-						defaultValuePrefs.putLong(propertyKey, uds.getId());
+						defaultValuePrefs.putLong(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
 					}
 				}
+
 			});
 
 		}
-
+		
 		/**
 		 * Test, if this is the standard entry and set the text of the text
 		 * widget.
 		 */
 		public void setStdText(T stdEntry) {
-			if (txtStd != null) {
+			if (stdEntry != null && txtStd != null) {
 
 				// If the editor's unidataset is the standard entry
 				if (uds.getId() == stdEntry.getId()) {

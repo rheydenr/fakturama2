@@ -23,8 +23,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_EXPENDITUREITEM")
 public class ExpenditureItem implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
@@ -46,7 +47,7 @@ public class ExpenditureItem implements Serializable {
      * @generated
      */
     @ManyToOne(cascade = { CascadeType.ALL })
-    @JoinColumns({ @JoinColumn(name = "FK_ITEMACCOUNTTYPE") })
+    @JoinColumns({ @JoinColumn(name = "EXPENDITUREITEM_ACCOUNT") })
     private ItemAccountType account = null;
 
     /**
@@ -81,8 +82,8 @@ public class ExpenditureItem implements Serializable {
      * 
      * @generated
      */
-    @ManyToOne(cascade = { CascadeType.REFRESH })
-    @JoinColumns({ @JoinColumn(name = "FK_VAT") })
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumns({ @JoinColumn(name = "EXPENDITUREITEM_VAT") })
     private VAT vat = null;
 
     /**

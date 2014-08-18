@@ -101,8 +101,21 @@ public class OldEntitiesDAO {
 	}
 	
 	public List<OldProperties> findAllProperties() {
-		return em.createQuery("select c from OldProperties c", OldProperties.class).getResultList();
+		return em.createQuery("select p from OldProperties p", OldProperties.class).getResultList();
 	}
+	
+	public OldProperties findPropertyById(int id) {
+	    return em.find(OldProperties.class, id);
+	}
+	
+	public List<OldProperties> findAllPropertiesWithoutColumnWidthProperties() {
+	    return em.createQuery("select p from OldProperties p where p.name not like 'COLUMNWIDTH_%' order by p.name", OldProperties.class).getResultList();
+	}
+	
+	public List<OldProperties> findAllColumnWidthProperties() {
+	    return em.createQuery("select p from OldProperties p where p.name like 'COLUMNWIDTH_%' order by p.name", OldProperties.class).getResultList();
+	}
+	
 	
 	/* * * * * * * * * * * * * * * * * * [Shippings] * * * * * * * * * * * * * * * * * * * * * */ 
 	
@@ -115,9 +128,12 @@ public class OldEntitiesDAO {
 	}
 	
 	public List<String> findAllShippingCategories() {
-		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and  s.category <> ''", String.class).getResultList();
+		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and s.category <> ''", String.class).getResultList();
 	}
 	
+	public OldShippings findShippingById(int shippingId) {
+	    return em.find(OldShippings.class, shippingId);
+	}
 	/* * * * * * * * * * * * * * * * * * [VATs] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllVats() {

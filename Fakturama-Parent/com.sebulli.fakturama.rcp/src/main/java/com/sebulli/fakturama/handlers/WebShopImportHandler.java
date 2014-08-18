@@ -15,8 +15,13 @@
 package com.sebulli.fakturama.handlers;
 
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.nls.Translation;
+
+import com.sebulli.fakturama.i18n.Messages;
 
 
 /**
@@ -25,6 +30,10 @@ import org.eclipse.e4.core.di.annotations.Execute;
  * @author Gerd Bartelt
  */
 public class WebShopImportHandler {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
 	//T: Text of the action to connect to the web shop and import new data
 	public final static String ACTIONTEXT = "Web Shop"; 
@@ -50,7 +59,7 @@ public class WebShopImportHandler {
 	 */
 	@Execute
 	public void execute() {
-//		
+		
 		// Start a new web shop import manager in a
 		// progress Monitor Dialog
 //		WebShopImportManager webShopImportManager = new WebShopImportManager();

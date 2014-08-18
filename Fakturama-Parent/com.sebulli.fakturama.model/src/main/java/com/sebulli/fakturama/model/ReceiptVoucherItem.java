@@ -23,8 +23,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_RECEIPTVOUCHERITEM")
 public class ReceiptVoucherItem implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
@@ -55,7 +56,7 @@ public class ReceiptVoucherItem implements Serializable {
      * @generated
      */
     @ManyToOne(cascade = { CascadeType.ALL })
-    @JoinColumns({ @JoinColumn(name = "FK_ITEMACCOUNTTYPE") })
+    @JoinColumns({ @JoinColumn(name = "RECEIPTVOUCHERITEM_ACCOUNT") })
     private ItemAccountType account = null;
 
     /**

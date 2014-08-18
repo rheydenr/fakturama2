@@ -34,33 +34,55 @@ public interface ICommandIds {
 	public static final String CMD_OPEN_EXPENDITUREVOUCHERS = "com.sebulli.fakturama.command.openExpenditureVouchers";
 	public static final String CMD_OPEN_RECEIPTVOUCHERS = "com.sebulli.fakturama.command.openReceiptVouchers";
 
-	public static final String CMD_NEW_CONTACT = "com.sebulli.fakturama.command.newContact";
-	public static final String CMD_NEW_PRODUCT = "com.sebulli.fakturama.command.newProduct";
-	public static final String CMD_NEW_VAT = "com.sebulli.fakturama.command.newVat";
-	
-	public static final String CMD_NEW_DOCUMENT = "com.sebulli.fakturama.command.newDocument";
-	public static final String CMD_NEW_LETTER = "com.sebulli.fakturama.command.newLetter";
-	public static final String CMD_NEW_OFFER = "com.sebulli.fakturama.command.newOffer";
-	public static final String CMD_NEW_ORDER = "com.sebulli.fakturama.command.newOrder";
-	public static final String CMD_NEW_CONFIRMATION = "com.sebulli.fakturama.command.newConfirmation";
-	public static final String CMD_NEW_INVOICE = "com.sebulli.fakturama.command.newInvoice";
-	public static final String CMD_NEW_DELIVERY = "com.sebulli.fakturama.command.newDelivery";
-	public static final String CMD_NEW_DELIVERYNOTE = "com.sebulli.fakturama.command.newDeliverynote";
-	public static final String CMD_NEW_CREDIT = "com.sebulli.fakturama.command.newCredit";
-	public static final String CMD_NEW_DUNNING = "com.sebulli.fakturama.command.newDunning";
-	public static final String CMD_NEW_PROFORMA = "com.sebulli.fakturama.command.newProforma";
-	
-	public static final String CMD_NEW_PAYMENT = "com.sebulli.fakturama.command.newPayment";
-	public static final String CMD_NEW_SHIPPING = "com.sebulli.fakturama.command.newShipping";
-	public static final String CMD_NEW_TEXT = "com.sebulli.fakturama.command.newText";
-	public static final String CMD_NEW_LISTENTRY = "com.sebulli.fakturama.command.newListEntry";
-	public static final String CMD_NEW_EXPENDITUREVOUCHER = "com.sebulli.fakturama.command.newExpenditureVoucher";
-	public static final String CMD_NEW_RECEIPTVOUCHER = "com.sebulli.fakturama.command.newReceiptVoucher";
-
+    public static final String CMD_NEW_CONTACT = "command.new.contact";
+    public static final String CMD_NEW_PRODUCT = "command.new.product";
+    public static final String CMD_NEW_VAT = "command.new.vat";
+    
+    public static final String CMD_NEW_DOCUMENT = "command.new.document";
+    public static final String CMD_NEW_LETTER = "command.new.letter";
+    public static final String CMD_NEW_OFFER = "command.new.offer";
+    public static final String CMD_NEW_ORDER = "command.new.order";
+    public static final String CMD_NEW_CONFIRMATION = "command.new.confirmation";
+    public static final String CMD_NEW_INVOICE = "command.new.invoice";
+    public static final String CMD_NEW_DELIVERY = "command.new.delivery";
+    public static final String CMD_NEW_DELIVERYNOTE = "command.new.deliverynote";
+    public static final String CMD_NEW_CREDIT = "command.new.credit";
+    public static final String CMD_NEW_DUNNING = "command.new.dunning";
+    public static final String CMD_NEW_PROFORMA = "command.new.proforma";
+    
+    public static final String CMD_NEW_PAYMENT = "command.new.payment";
+    public static final String CMD_NEW_SHIPPING = "command.new.shipping";
+    public static final String CMD_NEW_TEXT = "command.new.text";
+    public static final String CMD_NEW_LISTENTRY = "command.new.listentry";
+    public static final String CMD_NEW_EXPENDITUREVOUCHER = "command.new.expenditurevoucher";
+    public static final String CMD_NEW_RECEIPTVOUCHER = "command.new.receiptvoucher";
 	public static final String CMD_NEW_ = "com.sebulli.fakturama.command.new";
 
-	public static final String CMD_CREATE_OODOCUMENT = "com.sebulli.fakturama.command.createOODocument";
-	public static final String CMD_SAVE = "com.sebulli.fakturama.command.save";
+	public static final String TOOLBAR_CONTACT = "main.menu.new.contact.name";
+    public static final String TOOLBAR_PRODUCT = "main.menu.new.product.name";
+    public static final String TOOLBAR_VAT = "main.menu.new.vat";
+    
+    public static final String TOOLBAR_DOCUMENT = "main.menu.new.document";
+    public static final String TOOLBAR_LETTER = "main.menu.new.letter";
+    public static final String TOOLBAR_OFFER = "main.menu.new.offer";
+    public static final String TOOLBAR_ORDER = "main.menu.new.order";
+    public static final String TOOLBAR_CONFIRMATION = "main.menu.new.confirmation";
+    public static final String TOOLBAR_INVOICE = "main.menu.new.invoice";
+    public static final String TOOLBAR_DELIVERY = "main.menu.new.delivery";
+    public static final String TOOLBAR_DELIVERYNOTE = "main.menu.new.deliverynote";
+    public static final String TOOLBAR_CREDIT = "main.menu.new.credit";
+    public static final String TOOLBAR_DUNNING = "main.menu.new.dunning";
+    public static final String TOOLBAR_PROFORMA = "main.menu.new.proforma";
+    
+    public static final String TOOLBAR_PAYMENT = "main.menu.new.payment";
+    public static final String TOOLBAR_SHIPPING = "main.menu.new.shipping";
+    public static final String TOOLBAR_TEXT = "main.menu.new.text";
+    public static final String TOOLBAR_LISTENTRY = "main.menu.new.listentry";
+    public static final String TOOLBAR_EXPENDITUREVOUCHER = "main.menu.new.expenditurevoucher";
+    public static final String TOOLBAR_RECEIPTVOUCHER = "main.menu.new.receiptvoucher";
+    public static final String CMD_CREATE_OODOCUMENT = "com.sebulli.fakturama.command.createOODocument";
+    
+	public static final String CMD_SAVE = "org.eclipse.ui.file.save";
 
 	public static final String CMD_DELETE_DATASET = "com.sebulli.fakturama.command.deleteDataSet";
 

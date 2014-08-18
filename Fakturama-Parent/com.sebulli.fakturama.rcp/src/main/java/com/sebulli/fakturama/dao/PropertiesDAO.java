@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -15,6 +16,8 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.UserProperty;
+import com.sebulli.fakturama.oldmodel.OldProperties;
+import com.sebulli.fakturama.oldmodel.OldVats;
 
 @Creatable
 public class PropertiesDAO extends AbstractDAO<UserProperty> {
@@ -57,7 +60,21 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
 //    	return getEntityManager().createQuery("select p from UserProperty p", UserProperty.class).getResultList();
     }
     
- 
+    /**
+     * Finds a {@link UserProperty} by a given {@link OldProperties}.
+     * 
+     * @param oldVat
+     * @return
+     */
+    public OldProperties findByOldProperty(OldProperties oldProperties) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<OldProperties> criteria = cb.createQuery(OldProperties.class);
+        Root<OldProperties> root = criteria.from(OldProperties.class);
+        CriteriaQuery<OldProperties> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldProperties.getName()),
+                cb.equal(root.<String> get("name"), oldProperties.getName())));
+        return getEntityManager().createQuery(cq).getSingleResult();
+    }
+
 	/**
 	 * @return the em
 	 */

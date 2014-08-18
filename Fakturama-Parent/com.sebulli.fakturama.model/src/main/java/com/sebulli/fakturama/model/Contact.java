@@ -31,22 +31,12 @@ import javax.persistence.TemporalType;
 @Entity()
 @Table(name = "FKT_CONTACT")
 public class Contact extends ModelObject implements IEntity, Serializable {
-
     /**
-     * @generated
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * A common serial ID.
      * 
      * @generated
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Long id = null;
+    private static final long serialVersionUID = 1L;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -214,27 +204,9 @@ public class Contact extends ModelObject implements IEntity, Serializable {
      * @generated
      */
     @Basic()
-    @Column(name = "NAME")
-    private String name = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
     @Column(name = "DATEADDED")
     @Temporal(TemporalType.DATE)
     private Date dateAdded = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "DELETED")
-    private Boolean deleted = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -347,30 +319,31 @@ public class Contact extends ModelObject implements IEntity, Serializable {
     private String mandateReference = null;
 
     /**
-     * Returns the value of '<em><b>id</b></em>' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @return the value of '<em><b>id</b></em>' feature
      * @generated
      */
-    public Long getId() {
-        return id;
-    }
+    @Basic()
+    @Column(name = "NAME")
+    private String name = null;
 
     /**
-     * Sets the '{@link Contact#getId() <em>id</em>}' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @param newId
-     *            the new value of the '{@link Contact#getId() id}' feature.
      * @generated
      */
-    public void setId(Long newId) {
-        id = newId;
-        firePropertyChange("id", this.id, newId);
-    }
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id = 0;
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Basic()
+    @Column(name = "DELETED")
+    private Boolean deleted = null;
 
     /**
      * Returns the value of '<em><b>firstName</b></em>' feature.
@@ -898,32 +871,6 @@ public class Contact extends ModelObject implements IEntity, Serializable {
     }
 
     /**
-     * Returns the value of '<em><b>name</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>name</b></em>' feature
-     * @generated
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the '{@link Contact#getName() <em>name</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newName
-     *            the new value of the '{@link Contact#getName() name}' feature.
-     * @generated
-     */
-    public void setName(String newName) {
-        name = newName;
-        firePropertyChange("name", this.name, newName);
-    }
-
-    /**
      * Returns the value of '<em><b>dateAdded</b></em>' feature.
      *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -948,33 +895,6 @@ public class Contact extends ModelObject implements IEntity, Serializable {
     public void setDateAdded(Date newDateAdded) {
         dateAdded = newDateAdded;
         firePropertyChange("dateAdded", this.dateAdded, newDateAdded);
-    }
-
-    /**
-     * Returns the value of '<em><b>deleted</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>deleted</b></em>' feature
-     * @generated
-     */
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Sets the '{@link Contact#getDeleted() <em>deleted</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newDeleted
-     *            the new value of the '{@link Contact#getDeleted() deleted}'
-     *            feature.
-     * @generated
-     */
-    public void setDeleted(Boolean newDeleted) {
-        deleted = newDeleted;
-        firePropertyChange("deleted", this.deleted, newDeleted);
     }
 
     /**
@@ -1308,6 +1228,85 @@ public class Contact extends ModelObject implements IEntity, Serializable {
     }
 
     /**
+     * Returns the value of '<em><b>name</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>name</b></em>' feature
+     * @generated
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the '{@link Contact#getName() <em>name</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newName
+     *            the new value of the '{@link Contact#getName() name}' feature.
+     * @generated
+     */
+    public void setName(String newName) {
+        name = newName;
+        firePropertyChange("name", this.name, newName);
+    }
+
+    /**
+     * Returns the value of '<em><b>id</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>id</b></em>' feature
+     * @generated
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the '{@link Contact#getId() <em>id</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newId
+     *            the new value of the '{@link Contact#getId() id}' feature.
+     * @generated
+     */
+    public void setId(long newId) {
+        id = newId;
+        firePropertyChange("id", this.id, newId);
+    }
+
+    /**
+     * Returns the value of '<em><b>deleted</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>deleted</b></em>' feature
+     * @generated
+     */
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Sets the '{@link Contact#getDeleted() <em>deleted</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newDeleted
+     *            the new value of the '{@link Contact#getDeleted() deleted}'
+     *            feature.
+     * @generated
+     */
+    public void setDeleted(Boolean newDeleted) {
+        deleted = newDeleted;
+        firePropertyChange("deleted", this.deleted, newDeleted);
+    }
+
+    /**
      * A toString method which prints the values of all EAttributes of this
      * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -1315,14 +1314,14 @@ public class Contact extends ModelObject implements IEntity, Serializable {
      */
     @Override
     public String toString() {
-        return "Contact " + " [id: " + getId() + "]" + " [firstName: " + getFirstName() + "]" + " [gender: " + getGender() + "]" + " [company: " + getCompany()
-                + "]" + " [birthday: " + getBirthday() + "]" + " [email: " + getEmail() + "]" + " [mobile: " + getMobile() + "]" + " [account: " + getAccount()
-                + "]" + " [accountHolder: " + getAccountHolder() + "]" + " [bankCode: " + getBankCode() + "]" + " [bankName: " + getBankName() + "]"
-                + " [bic: " + getBic() + "]" + " [iban: " + getIban() + "]" + " [discount: " + getDiscount() + "]" + " [title: " + getTitle() + "]"
-                + " [name: " + getName() + "]" + " [dateAdded: " + getDateAdded() + "]" + " [deleted: " + getDeleted() + "]" + " [fax: " + getFax() + "]"
-                + " [note: " + getNote() + "]" + " [customerNumber: " + getCustomerNumber() + "]" + " [payment: " + getPayment() + "]" + " [phone: "
-                + getPhone() + "]" + " [reliability: " + getReliability() + "]" + " [useNetGross: " + getUseNetGross() + "]" + " [vatNumber: " + getVatNumber()
-                + "]" + " [vatNumberValid: " + getVatNumberValid() + "]" + " [website: " + getWebsite() + "]" + " [supplierNumber: " + getSupplierNumber()
-                + "]" + " [mandateReference: " + getMandateReference() + "]";
+        return "Contact " + " [firstName: " + getFirstName() + "]" + " [gender: " + getGender() + "]" + " [company: " + getCompany() + "]" + " [birthday: "
+                + getBirthday() + "]" + " [email: " + getEmail() + "]" + " [mobile: " + getMobile() + "]" + " [account: " + getAccount() + "]"
+                + " [accountHolder: " + getAccountHolder() + "]" + " [bankCode: " + getBankCode() + "]" + " [bankName: " + getBankName() + "]" + " [bic: "
+                + getBic() + "]" + " [iban: " + getIban() + "]" + " [discount: " + getDiscount() + "]" + " [title: " + getTitle() + "]" + " [dateAdded: "
+                + getDateAdded() + "]" + " [fax: " + getFax() + "]" + " [note: " + getNote() + "]" + " [customerNumber: " + getCustomerNumber() + "]"
+                + " [payment: " + getPayment() + "]" + " [phone: " + getPhone() + "]" + " [reliability: " + getReliability() + "]" + " [useNetGross: "
+                + getUseNetGross() + "]" + " [vatNumber: " + getVatNumber() + "]" + " [vatNumberValid: " + getVatNumberValid() + "]" + " [website: "
+                + getWebsite() + "]" + " [supplierNumber: " + getSupplierNumber() + "]" + " [mandateReference: " + getMandateReference() + "]" + " [name: "
+                + getName() + "]" + " [id: " + getId() + "]" + " [deleted: " + getDeleted() + "]";
     }
 }

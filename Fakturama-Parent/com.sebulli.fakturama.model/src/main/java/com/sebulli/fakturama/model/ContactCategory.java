@@ -15,8 +15,9 @@ import javax.persistence.Table;
 @Table(name = "FKT_CONTACTCATEGORY")
 @PrimaryKeyJoinColumns({ @PrimaryKeyJoinColumn(name = "CONTACTCATEGORY_PARENT_ID") })
 public class ContactCategory extends AbstractCategory {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

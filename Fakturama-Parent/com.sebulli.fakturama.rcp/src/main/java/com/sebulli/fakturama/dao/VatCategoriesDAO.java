@@ -61,15 +61,18 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
     /**
      * Finds a VATCategory by its name.
      * 
-     * @param VATCategory
+     * @param vatCategory
      * @return
      */
-    public VATCategory findVATCategoryByName(String VATCategory) {
+    public VATCategory findVATCategoryByName(String vatCategory) {
         VATCategory result = null;
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     	CriteriaQuery<VATCategory> cq = cb.createQuery(VATCategory.class);
     	Root<VATCategory> rootEntity = cq.from(VATCategory.class);
-		CriteriaQuery<VATCategory> selectQuery = cq.select(rootEntity).where(cb.equal(rootEntity.get("name"), VATCategory));
+		CriteriaQuery<VATCategory> selectQuery = cq.select(rootEntity)
+		        .where(/*cb.and(*/
+    		                cb.equal(rootEntity.get("name"), vatCategory)/*,
+    		                cb.equal(rootEntity.get("deleted"), false))*/);
         try {
             result = getEntityManager().createQuery(selectQuery).getSingleResult();
         }

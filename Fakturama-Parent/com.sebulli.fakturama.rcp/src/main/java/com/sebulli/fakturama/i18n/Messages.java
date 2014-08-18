@@ -35,46 +35,7 @@ public class Messages {
 	public String BrowserPreferencePage293;
 	public String BrowserPreferencePage294;
 	public String BrowserPreferencePage295;
-	public String BrowserPreferencePage296;
-
-	public String ColumnWidthContactsPreferencePage395;
-
-	public String ColumnWidthDialogContactsPreferencePage392;
-
-	public String ColumnWidthDialogProductsPreferencePage447;
-
-	public String ColumnWidthDialogTextsPreferencePage450;
-
-	public String ColumnWidthDocumentsPreferencePage416;
-	public String ColumnWidthDocumentsPreferencePage417;
-
-	public String ColumnWidthItemsPreferencePage324;
-	public String ColumnWidthItemsPreferencePage325;
-	public String ColumnWidthItemsPreferencePage326;
-	public String ColumnWidthItemsPreferencePage327;
-	public String ColumnWidthItemsPreferencePage328;
-	public String ColumnWidthItemsPreferencePage329;
-	public String ColumnWidthItemsPreferencePage330;
-
-	public String ColumnWidthListPreferencePage353;
-
-	public String ColumnWidthPaymentsPreferencePage297;
-
-	public String ColumnWidthPreferencePage309;
-
-	public String ColumnWidthProductsPreferencePage418;
-
-	public String ColumnWidthShippingsPreferencePage451;
-
-	public String ColumnWidthTextsPreferencePage449;
-
-	public String ColumnWidthVatPreferencePage310;
-
-	public String ColumnWidthVoucherItemsPreferencePage448;
-
-	public String ColumnWidthVouchersPreferencePage378;
-	public String ColumnWidthVouchersPreferencePage379;
-	public String ColumnWidthVouchersPreferencePage380;
+	public String preferencesGeneral;
 
 	public String ContactEditor482;
 	public String ContactEditor483;
@@ -364,10 +325,10 @@ public class Messages {
 	public String FileOrganizer152;
 	public String FileOrganizer153;
 
-	public String GeneralPreferencePage347;
-	public String GeneralPreferencePage348;
-	public String GeneralPreferencePage349;
-	public String GeneralPreferencePage350;
+	public String preferencesGeneralCollapsenavbar;
+	public String preferencesGeneralCloseeditors;
+	public String preferencesGeneralCurrency;
+	public String preferencesGeneralThousendseparator;
 
 	public String ImportOptionPage122;
 	public String ImportOptionPage123;
@@ -508,7 +469,6 @@ public class Messages {
 
 	public String ProductEditor516;
 	public String ProductEditor517;
-	public String ProductEditor518;
 	public String ProductEditor519;
 	public String ProductEditor520;
 	public String ProductEditor521;
@@ -562,8 +522,8 @@ public class Messages {
 	public String TextEditor543;
 	public String TextEditor544;
 
-	public String ToolbarPreferencePage425;
-	public String ToolbarPreferencePage426;
+	public String preferencesToolbarShowicon;
+	public String preferencesToolbarIcons;
 
 	public String topictreeAll;
 	public String topictreeAllDocumentsTooltip;
@@ -788,6 +748,7 @@ public class Messages {
 	public String mainMenuNew;
 	public String mainMenuNewConfirmation;
 	public String mainMenuNewCredit;
+	public String mainMenuNewContactName;
 	public String mainMenuNewDeliverynote;
 	public String mainMenuNewDunning;
 	public String mainMenuNewExpenditurevoucher;
@@ -800,6 +761,7 @@ public class Messages {
 	public String mainMenuNewPayment;
 	public String mainMenuNewPaymentTooltip;
 	public String mainMenuNewProforma;
+    public String mainMenuNewProductName;
 	public String mainMenuNewReceiptvoucher;
 	public String mainMenuNewReceiptvoucherTooltip;
 	public String mainMenuNewShipping;
@@ -896,8 +858,8 @@ public class Messages {
 	public String wizardImportCsvProductsName;
 
 	/**
-	 * This method helps you to create messags from compund keys, i.e. if you
-	 * try to use "come.key"+".tooltip". Don't use it for simple known keys
+	 * This method helps you to create messages from compound keys, i.e. if you
+	 * try to use "some.key"+".tooltip". Don't use it for simple known keys
 	 * because this method uses reflection for finding the appropriate string
 	 * representation.
 	 * 

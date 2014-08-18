@@ -29,8 +29,9 @@ import javax.persistence.TemporalType;
 @Entity()
 @Table(name = "FKT_RECEIPTVOUCHER")
 public class ReceiptVoucher implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
@@ -52,7 +53,7 @@ public class ReceiptVoucher implements Serializable {
      * @generated
      */
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-    @JoinColumns({ @JoinColumn(name = "FK_ACCOUNT") })
+    @JoinColumns({ @JoinColumn(name = "RECEIPTVOUCHER_ACCOUNT") })
     private Account account = null;
 
     /**

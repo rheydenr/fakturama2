@@ -14,10 +14,13 @@
 
 package com.sebulli.fakturama.preferences;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
@@ -28,7 +31,10 @@ import com.sebulli.fakturama.Activator;
  * 
  * @author Gerd Bartelt
  */
-public class PreferenceInitializer extends AbstractPreferenceInitializer {
+public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
+
+    @Inject
+    private Logger log;
 
 	/**
 	 * This method is called by the preference initializer to initialize default
@@ -41,17 +47,16 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
         IPreferenceStore node = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
-        
-        System.out.println("Enter in default Preference Initializer");
 
-//		IEclipsePreferences node = DefaultScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        System.out.println("Enter in default Preference Initializer");
+//        log.debug("Enter in default Preference Initializer");
 
 		// Initialize every single preference page
 //		ToolbarPreferencePage.setInitValues(node);
 //		ContactPreferencePage.setInitValues(node);
 //		ContactFormatPreferencePage.setInitValues(node);
 //		DocumentPreferencePage.setInitValues(node);
-//		GeneralPreferencePage.setInitValues(node);
+		GeneralPreferencePage.setDefaultValues(node);
 //		NumberRangeValuesPreferencePage.setInitValues(node);
 //		NumberRangeFormatPreferencePage.setInitValues(node);
 //		OfficePreferencePage.setInitValues(node);
@@ -77,7 +82,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 //		ColumnWidthProductsPreferencePage.setInitValues(node);
 //		ColumnWidthShippingsPreferencePage.setInitValues(node);
 //		ColumnWidthTextsPreferencePage.setInitValues(node);
-		ColumnWidthVatPreferencePage.setInitValues(node);
 
 		
 	}

@@ -19,7 +19,6 @@ import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,22 +34,12 @@ import javax.persistence.TemporalType;
 @Entity()
 @Table(name = "FKT_DOCUMENT")
 public class Document extends ModelObject implements IEntity, Serializable {
-
     /**
-     * @generated
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * A common serial ID.
      * 
      * @generated
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Long id = null;
+    private static final long serialVersionUID = 1L;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> A
@@ -72,7 +61,6 @@ public class Document extends ModelObject implements IEntity, Serializable {
      */
     @ManyToOne(cascade = { CascadeType.ALL })
     @JoinColumns({ @JoinColumn(name = "DOCUMENT_CONTACT") })
-    @OneToOne()
     private Contact contact = null;
 
     /**
@@ -102,24 +90,6 @@ public class Document extends ModelObject implements IEntity, Serializable {
     @Column(name = "CREATIONDATE")
     @Temporal(TemporalType.DATE)
     private Date creationDate = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "DELETED")
-    private Boolean deleted = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "NAME")
-    private String name = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -168,7 +138,7 @@ public class Document extends ModelObject implements IEntity, Serializable {
      * @generated
      */
     @ManyToOne(cascade = { CascadeType.ALL })
-    @JoinColumns({ @JoinColumn(name = "FK_SOURCEDOCUMENT") })
+    @JoinColumns({ @JoinColumn(name = "DOCUMENT_SOURCEDOCUMENT") })
     private Document sourceDocument = null;
 
     /**
@@ -245,7 +215,7 @@ public class Document extends ModelObject implements IEntity, Serializable {
      * @generated
      */
     @Basic()
-    @Column(name = "PAYEDVALUE", precision = 12, scale = 3)
+    @Column(name = "PAYEDVALUE")
     private BigDecimal payedValue = null;
 
     /**
@@ -277,7 +247,7 @@ public class Document extends ModelObject implements IEntity, Serializable {
      * @generated
      */
     @Basic()
-    @Column(length = 5000, name = "DATACONTAINER")
+    @Column(name = "DATACONTAINER")
     private String dataContainer = null;
 
     /**
@@ -379,30 +349,31 @@ public class Document extends ModelObject implements IEntity, Serializable {
     private VAT noVatReference = null;
 
     /**
-     * Returns the value of '<em><b>id</b></em>' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @return the value of '<em><b>id</b></em>' feature
      * @generated
      */
-    public Long getId() {
-        return id;
-    }
+    @Basic()
+    @Column(name = "NAME")
+    private String name = null;
 
     /**
-     * Sets the '{@link Document#getId() <em>id</em>}' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @param newId
-     *            the new value of the '{@link Document#getId() id}' feature.
      * @generated
      */
-    public void setId(Long newId) {
-        id = newId;
-        firePropertyChange("id", this.id, newId);
-    }
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id = 0;
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Basic()
+    @Column(name = "DELETED")
+    private Boolean deleted = null;
 
     /**
      * Returns the value of '<em><b>addressManual</b></em>' feature.
@@ -549,60 +520,6 @@ public class Document extends ModelObject implements IEntity, Serializable {
     public void setCreationDate(Date newCreationDate) {
         creationDate = newCreationDate;
         firePropertyChange("creationDate", this.creationDate, newCreationDate);
-    }
-
-    /**
-     * Returns the value of '<em><b>deleted</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>deleted</b></em>' feature
-     * @generated
-     */
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Sets the '{@link Document#getDeleted() <em>deleted</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newDeleted
-     *            the new value of the '{@link Document#getDeleted() deleted}'
-     *            feature.
-     * @generated
-     */
-    public void setDeleted(Boolean newDeleted) {
-        deleted = newDeleted;
-        firePropertyChange("deleted", this.deleted, newDeleted);
-    }
-
-    /**
-     * Returns the value of '<em><b>name</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>name</b></em>' feature
-     * @generated
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the '{@link Document#getName() <em>name</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newName
-     *            the new value of the '{@link Document#getName() name}'
-     *            feature.
-     * @generated
-     */
-    public void setName(String newName) {
-        name = newName;
-        firePropertyChange("name", this.name, newName);
     }
 
     /**
@@ -1401,6 +1318,86 @@ public class Document extends ModelObject implements IEntity, Serializable {
     }
 
     /**
+     * Returns the value of '<em><b>name</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>name</b></em>' feature
+     * @generated
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the '{@link Document#getName() <em>name</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newName
+     *            the new value of the '{@link Document#getName() name}'
+     *            feature.
+     * @generated
+     */
+    public void setName(String newName) {
+        name = newName;
+        firePropertyChange("name", this.name, newName);
+    }
+
+    /**
+     * Returns the value of '<em><b>id</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>id</b></em>' feature
+     * @generated
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the '{@link Document#getId() <em>id</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newId
+     *            the new value of the '{@link Document#getId() id}' feature.
+     * @generated
+     */
+    public void setId(long newId) {
+        id = newId;
+        firePropertyChange("id", this.id, newId);
+    }
+
+    /**
+     * Returns the value of '<em><b>deleted</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>deleted</b></em>' feature
+     * @generated
+     */
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Sets the '{@link Document#getDeleted() <em>deleted</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newDeleted
+     *            the new value of the '{@link Document#getDeleted() deleted}'
+     *            feature.
+     * @generated
+     */
+    public void setDeleted(Boolean newDeleted) {
+        deleted = newDeleted;
+        firePropertyChange("deleted", this.deleted, newDeleted);
+    }
+
+    /**
      * A toString method which prints the values of all EAttributes of this
      * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -1408,14 +1405,14 @@ public class Document extends ModelObject implements IEntity, Serializable {
      */
     @Override
     public String toString() {
-        return "Document " + " [id: " + getId() + "]" + " [addressManual: " + getAddressManual() + "]" + " [addressFirstLine: " + getAddressFirstLine() + "]"
-                + " [customerRef: " + getCustomerRef() + "]" + " [creationDate: " + getCreationDate() + "]" + " [deleted: " + getDeleted() + "]" + " [name: "
-                + getName() + "]" + " [billingType: " + getBillingType() + "]" + " [dueDays: " + getDueDays() + "]" + " [dunningLevel: " + getDunningLevel()
-                + "]" + " [itemsRebate: " + getItemsRebate() + "]" + " [message: " + getMessage() + "]" + " [message2: " + getMessage2() + "]" + " [message3: "
-                + getMessage3() + "]" + " [odtPath: " + getOdtPath() + "]" + " [pdfPath: " + getPdfPath() + "]" + " [orderDate: " + getOrderDate() + "]"
-                + " [payedValue: " + getPayedValue() + "]" + " [payDate: " + getPayDate() + "]" + " [dataContainer: " + getDataContainer() + "]"
-                + " [printTemplate: " + getPrintTemplate() + "]" + " [progress: " + getProgress() + "]" + " [serviceDate: " + getServiceDate() + "]"
-                + " [totalValue: " + getTotalValue() + "]" + " [transactionId: " + getTransactionId() + "]" + " [webshopDate: " + getWebshopDate() + "]"
-                + " [webshopId: " + getWebshopId() + "]" + " [consultant: " + getConsultant() + "]";
+        return "Document " + " [addressManual: " + getAddressManual() + "]" + " [addressFirstLine: " + getAddressFirstLine() + "]" + " [customerRef: "
+                + getCustomerRef() + "]" + " [creationDate: " + getCreationDate() + "]" + " [billingType: " + getBillingType() + "]" + " [dueDays: "
+                + getDueDays() + "]" + " [dunningLevel: " + getDunningLevel() + "]" + " [itemsRebate: " + getItemsRebate() + "]" + " [message: " + getMessage()
+                + "]" + " [message2: " + getMessage2() + "]" + " [message3: " + getMessage3() + "]" + " [odtPath: " + getOdtPath() + "]" + " [pdfPath: "
+                + getPdfPath() + "]" + " [orderDate: " + getOrderDate() + "]" + " [payedValue: " + getPayedValue() + "]" + " [payDate: " + getPayDate() + "]"
+                + " [dataContainer: " + getDataContainer() + "]" + " [printTemplate: " + getPrintTemplate() + "]" + " [progress: " + getProgress() + "]"
+                + " [serviceDate: " + getServiceDate() + "]" + " [totalValue: " + getTotalValue() + "]" + " [transactionId: " + getTransactionId() + "]"
+                + " [webshopDate: " + getWebshopDate() + "]" + " [webshopId: " + getWebshopId() + "]" + " [consultant: " + getConsultant() + "]" + " [name: "
+                + getName() + "]" + " [id: " + getId() + "]" + " [deleted: " + getDeleted() + "]";
     }
 }

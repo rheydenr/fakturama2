@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.preferences;
 
-import com.sebulli.fakturama.Activator;
 
 /**
  * Write or read preference settings to or from the data base
@@ -70,7 +69,7 @@ public class PreferencesInDatabase {
 //		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
 //		DocumentPreferencePage.syncWithPreferencesFromDatabase(save);
-//		GeneralPreferencePage.syncWithPreferencesFromDatabase(save);
+		GeneralPreferencePage.syncWithPreferencesFromDatabase(save);
 //		NumberRangeFormatPreferencePage.syncWithPreferencesFromDatabase(save);
 //		NumberRangeValuesPreferencePage.syncWithPreferencesFromDatabase(save);
 //		OfficePreferencePage.syncWithPreferencesFromDatabase(save);
@@ -94,7 +93,6 @@ public class PreferencesInDatabase {
 //		ColumnWidthProductsPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ColumnWidthShippingsPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ColumnWidthTextsPreferencePage.syncWithPreferencesFromDatabase(save);
-		ColumnWidthVatPreferencePage.syncWithPreferencesFromDatabase(save);
 	}
 
 	/**

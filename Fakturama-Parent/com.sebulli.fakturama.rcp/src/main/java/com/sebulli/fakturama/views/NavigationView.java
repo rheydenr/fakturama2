@@ -51,6 +51,9 @@ public class NavigationView {
 	private EHandlerService handlerService;
 	
 	@Inject
+	private ECommandService commandService;
+	
+	@Inject
 	@Translation
 	protected Messages msg;
 	  
@@ -60,8 +63,7 @@ public class NavigationView {
 	 * it.
 	 */
 	@PostConstruct
-	public void createPartControl(final Composite parent, 
-			final ECommandService commandService) {
+	public void createPartControl(final Composite parent) {
 
 		composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout());
@@ -71,30 +73,30 @@ public class NavigationView {
 
 		// Create the first expand bar "Import"
 	    PGroup group = createPGroup("command.navigation.import", Icon.ICON_SHOP);
-	    addAction(commandService, group, Icon.COMMAND_IMPORT, "command.webshop", ICommandIds.CMD_WEBSHOP_IMPORT);
+	    addAction(group, Icon.COMMAND_IMPORT, "command.webshop", ICommandIds.CMD_WEBSHOP_IMPORT);
 		
 		// Create the 2nd expand bar "Data"
 	    PGroup group2 = createPGroup("main.menu.data", Icon.ICON_LETTER);
-	    addAction(commandService, group2, Icon.COMMAND_LETTER, "command.documents", ICommandIds.CMD_OPEN_DOCUMENTS);
-	    addAction(commandService, group2, Icon.COMMAND_PRODUCT, "command.products", ICommandIds.CMD_OPEN_PRODUCTS);
-	    addAction(commandService, group2, Icon.COMMAND_CONTACT, "command.contacts", ICommandIds.CMD_OPEN_CONTACTS);
-	    addAction(commandService, group2, Icon.COMMAND_PAYMENT, "command.payments", ICommandIds.CMD_OPEN_PAYMENTS);
-	    addAction(commandService, group2, Icon.COMMAND_SHIPPING, "command.shippings", ICommandIds.CMD_OPEN_SHIPPINGS);
-	    addAction(commandService, group2, Icon.COMMAND_VAT, "command.vats", ICommandIds.CMD_OPEN_VATS);
-	    addAction(commandService, group2, Icon.COMMAND_TEXT, "command.texts", ICommandIds.CMD_OPEN_TEXTS);
-	    addAction(commandService, group2, Icon.COMMAND_LIST, "command.lists", ICommandIds.CMD_OPEN_LISTS);
-	    addAction(commandService, group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", ICommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
-	    addAction(commandService, group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", ICommandIds.CMD_NEW_RECEIPTVOUCHER);
+	    addAction(group2, Icon.COMMAND_LETTER, "command.documents", ICommandIds.CMD_OPEN_DOCUMENTS);
+	    addAction(group2, Icon.COMMAND_PRODUCT, "command.products", ICommandIds.CMD_OPEN_PRODUCTS);
+	    addAction(group2, Icon.COMMAND_CONTACT, "command.contacts", ICommandIds.CMD_OPEN_CONTACTS);
+	    addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", ICommandIds.CMD_OPEN_PAYMENTS);
+	    addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", ICommandIds.CMD_OPEN_SHIPPINGS);
+	    addAction(group2, Icon.COMMAND_VAT, "command.vats", ICommandIds.CMD_OPEN_VATS);
+	    addAction(group2, Icon.COMMAND_TEXT, "command.texts", ICommandIds.CMD_OPEN_TEXTS);
+	    addAction(group2, Icon.COMMAND_LIST, "command.lists", ICommandIds.CMD_OPEN_LISTS);
+	    addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", ICommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
+	    addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", ICommandIds.CMD_NEW_RECEIPTVOUCHER);
 
 		// Create the 3rd expand bar "Create new"
 	    PGroup group3 = createPGroup("main.menu.new", Icon.ICON_PRODUCT_NEW);
-	    addAction(commandService, group3, Icon.COMMAND_PRODUCT, "command.new.product", ICommandIds.CMD_NEW_PRODUCT);
-	    addAction(commandService, group3, Icon.COMMAND_CONTACT, "command.new.contact", ICommandIds.CMD_NEW_CONTACT);
+	    addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", ICommandIds.CMD_NEW_PRODUCT);
+	    addAction(group3, Icon.COMMAND_CONTACT, "command.new.contact", ICommandIds.CMD_NEW_CONTACT);
 
 		// Create the 4th expand bar "export"
 		/*
 	    PGroup group4 = createPGroup("main.menu.export", Icon.ICON_PRODUCT_NEW);
-	    addAction(commandService, group4, Icon.COMMAND_EXPORT, "command.export", ICommandIds.CMD_EXPORT);
+	    addAction(group4, Icon.COMMAND_EXPORT, "command.export", ICommandIds.CMD_EXPORT);
 		final ExpandBar bar4 = new ExpandBar(expandBarManager, top, SWT.NONE, msg("Export"),  Icon.COMMAND_EXPORT ,
 				msg("Export documents, contacts .. to tables and files"));
 
@@ -102,13 +104,13 @@ public class NavigationView {
 */
 		// Create the 5th expand bar "Miscellaneous"
 	    PGroup group5 = createPGroup("command.navigation.misc", Icon.ICON_PRINTOO);
-	    addAction(commandService, group5, Icon.COMMAND_PARCEL, "command.parcelservice", ICommandIds.CMD_OPEN_PARCEL_SERVICE);
-	    addAction(commandService, group5, Icon.COMMAND_WWW, "command.browser", ICommandIds.CMD_OPEN_BROWSER_EDITOR);
-	    addAction(commandService, group5, Icon.COMMAND_CALCULATOR, "command.calculator", ICommandIds.CMD_OPEN_CALCULATOR);
-//	    addAction(commandService, group5, Icon.COMMAND_REORGANIZE, "ReorganizeDocumentsAction.116", ICommandIds.CMD_REOGANIZE_DOCUMENTS);
+	    addAction(group5, Icon.COMMAND_PARCEL, "command.parcelservice", ICommandIds.CMD_OPEN_PARCEL_SERVICE);
+	    addAction(group5, Icon.COMMAND_WWW, "command.browser", ICommandIds.CMD_OPEN_BROWSER_EDITOR);
+	    addAction(group5, Icon.COMMAND_CALCULATOR, "command.calculator", ICommandIds.CMD_OPEN_CALCULATOR);
+//	    addAction(group5, Icon.COMMAND_REORGANIZE, "ReorganizeDocumentsAction.116", ICommandIds.CMD_REOGANIZE_DOCUMENTS);
 	}
 
-	private void addAction(final ECommandService commandService, PGroup group,
+	private void addAction(PGroup group,
 			Icon commandIcon, String commandIconDescriptor,
 			final String commandId) {
 		CLabel label = new CLabel(group, SWT.NORMAL);

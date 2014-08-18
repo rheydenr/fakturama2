@@ -63,7 +63,7 @@ public class PaymentsDAO extends AbstractDAO<Payment> {
 	 * @param oldVat
 	 * @return
 	 */
-	public Payment findByOldVat(OldPayments oldPayment) {
+	public Payment findByOldPayment(OldPayments oldPayment) {
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     	CriteriaQuery<Payment> criteria = cb.createQuery(Payment.class);
     	Root<Payment> root = criteria.from(Payment.class);

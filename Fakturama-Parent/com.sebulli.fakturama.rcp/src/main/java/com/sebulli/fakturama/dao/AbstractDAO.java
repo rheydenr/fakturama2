@@ -88,9 +88,6 @@ em.joinTransaction();
 
 } */
         
-        
-        
-        
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();

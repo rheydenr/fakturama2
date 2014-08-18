@@ -27,6 +27,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.MigrationManager;
 
@@ -40,7 +41,6 @@ import com.sebulli.fakturama.migration.MigrationManager;
 public class ConfigurationManager {
 
 	public static final String GENERAL_WORKSPACE_REQUEST = "GENERAL_WORKSPACE_REQUEST";
-	public static final String GENERAL_WORKSPACE = "GENERAL_WORKSPACE";
 	public static final String MIGRATE_OLD_DATA = "MIGRATE_OLD_DATA";
 	
 	private IApplicationContext appContext;
@@ -89,7 +89,7 @@ public class ConfigurationManager {
 	 * @param workbench
 	 */
 	public void checkFirstStart(@Optional ECommandService cmdService, @Optional EHandlerService handlerService) {
-		String requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE, null);
+		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		boolean isRestart = false;
 		// Get the program parameters
 		// TODO use Apache CLI!!!
@@ -133,7 +133,7 @@ public class ConfigurationManager {
 				requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null);
 				if (!requestedWorkspace.isEmpty()) {
 					eclipsePrefs.remove(GENERAL_WORKSPACE_REQUEST);
-					eclipsePrefs.put(GENERAL_WORKSPACE, requestedWorkspace);
+					eclipsePrefs.put(Constants.GENERAL_WORKSPACE, requestedWorkspace);
 					// now check if an old database has to be converted
 					if (eclipsePrefs.get(MIGRATE_OLD_DATA, null) != null) {
 						appContext.applicationRunning();
@@ -156,7 +156,7 @@ public class ConfigurationManager {
 					// Exit if the workspace path is not valid
 					File workspacePath = new File(requestedWorkspace);
 					if (!workspacePath.exists()) {
-						eclipsePrefs.put(GENERAL_WORKSPACE, "");
+						eclipsePrefs.put(Constants.GENERAL_WORKSPACE, "");
 						selectWorkspace(requestedWorkspace, shell);
 					}
 				}
@@ -173,7 +173,7 @@ public class ConfigurationManager {
 		if(!isRestart) {
     		// now initialize the new workspace
     		initWorkspace(requestedWorkspace);
-    		shell.setText("Fakturama - " + eclipsePrefs.get(GENERAL_WORKSPACE, "(unknown)"));
+    		shell.setText("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "(unknown)"));
 		}
 	}
 	

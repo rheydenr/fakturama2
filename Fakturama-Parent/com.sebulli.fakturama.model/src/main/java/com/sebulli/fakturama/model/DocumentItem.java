@@ -23,8 +23,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_DOCUMENTITEM")
 public class DocumentItem implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
@@ -99,8 +100,8 @@ public class DocumentItem implements Serializable {
      * 
      * @generated
      */
-    @ManyToOne(cascade = { CascadeType.REFRESH })
-    @JoinColumns({ @JoinColumn(name = "FK_PRODUCT") })
+    @ManyToOne(cascade = { CascadeType.ALL })
+    @JoinColumns({ @JoinColumn(name = "DOCUMENTITEM_PRODUCTREF") })
     private Product productref = null;
 
     /**

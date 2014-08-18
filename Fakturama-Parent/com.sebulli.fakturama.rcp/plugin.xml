@@ -56,15 +56,89 @@
    <extension
          point="com.opcoach.e4.preferences.e4PreferencePages">
       <page
-            class="com.sebulli.fakturama.preferences.ColumnWidthVatPreferencePage"
-            id="com.sebulli.fakturama.prefs.page1"
-            name="ColumnWidthVatPreferences">
+            class="com.sebulli.fakturama.preferences.GeneralPreferencePage"
+            id="com.sebulli.fakturama.preferences.generalPreferencePage"
+            name="%page.general">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.ToolbarPreferencePage"
+            id="com.sebulli.fakturama.preferences.toolbarPreferencePage"
+            name="%page.toolbar">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.ProductPreferencePage"
+            id="com.sebulli.fakturama.preferences.productPreferencePage"
+            name="%page.products">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.ContactPreferencePage"
+            id="com.sebulli.fakturama.preferences.contactPreferencePage"
+            name="%page.contacts">
+      </page>
+      <page
+            category="com.sebulli.fakturama.preferences.contactPreferencePage"
+            class="com.sebulli.fakturama.preferences.ContactFormatPreferencePage"
+            id="com.sebulli.fakturama.preferences.contactFormatGreetingPreferencePage"
+            name="%page.contacts.format">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.NumberRangeValuesPreferencePage"
+            id="com.sebulli.fakturama.preferences.numberRangeValuesPreferencePage"
+            name="%page.numberrange">
+      </page>
+      <page
+            category="com.sebulli.fakturama.preferences.numberRangeValuesPreferencePage"
+            class="com.sebulli.fakturama.preferences.NumberRangeFormatPreferencePage"
+            id="com.sebulli.fakturama.preferences.numberRangeFormatPreferencePage"
+            name="%page.numberrange.format">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.WebShopImportPreferencePage"
+            id="com.sebulli.fakturama.webshopimport.webShopImportPreferencePage"
+            name="%page.webshop">
+      </page>
+      <page
+            category="com.sebulli.fakturama.webshopimport.webShopImportPreferencePage"
+            class="com.sebulli.fakturama.preferences.WebShopAuthorizationPreferencePage"
+            id="com.sebulli.fakturama.webshopimport.webShopAuthorizationPreferencePage"
+            name="%page.webshopauthorization">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.YourCompanyPreferencePage"
+            id="com.sebulli.fakturama.preferences.yourCompanyPreferencePage"
+            name="%page.company">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.DocumentPreferencePage"
+            id="com.sebulli.fakturama.preferences.documentPreferencePage"
+            name="%page.documents">
+      </page>
+      <page
+            category="com.sebulli.fakturama.preferences.documentPreferencePage"
+            class="com.sebulli.fakturama.preferences.OptionalItemsPreferencePage"
+            id="com.sebulli.fakturama.preferences.optionalItemsPreferencePage"
+            name="%page.optionalitems">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.OfficePreferencePage"
+            id="com.sebulli.fakturama.preferences.officePreferencePage"
+            name="%page.office">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.ExportPreferencePage"
+            id="com.sebulli.fakturama.exportsales.exportPreferencePage"
+            name="%page.export">
+      </page>
+      <page
+            class="com.sebulli.fakturama.preferences.BrowserPreferencePage"
+            id="com.sebulli.fakturama.preferences.browserPreferencePage"
+            name="%page.browser">
       </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="com.sebulli.fakturama.preferences.PreferenceInitializer">
+            class="com.sebulli.fakturama.preferences.DefaultValuesInitializer">
       </initializer>
    </extension>
 

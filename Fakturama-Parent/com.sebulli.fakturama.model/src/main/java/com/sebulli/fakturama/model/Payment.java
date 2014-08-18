@@ -24,8 +24,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_PAYMENT")
 public class Payment extends ModelObject implements IEntity, Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
@@ -35,29 +36,9 @@ public class Payment extends ModelObject implements IEntity, Serializable {
      * 
      * @generated
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Long id = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
     @Basic()
     @Column(name = "DEFAULTPAID")
     private Boolean defaultPaid = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "DELETED")
-    private Boolean deleted = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -76,15 +57,6 @@ public class Payment extends ModelObject implements IEntity, Serializable {
     @Basic()
     @Column(name = "DISCOUNTDAYS")
     private Integer discountDays = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Basic()
-    @Column(name = "NAME")
-    private String name = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -132,30 +104,31 @@ public class Payment extends ModelObject implements IEntity, Serializable {
     private String unpaidText = null;
 
     /**
-     * Returns the value of '<em><b>id</b></em>' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @return the value of '<em><b>id</b></em>' feature
      * @generated
      */
-    public Long getId() {
-        return id;
-    }
+    @Basic()
+    @Column(name = "NAME")
+    private String name = null;
 
     /**
-     * Sets the '{@link Payment#getId() <em>id</em>}' feature.
-     *
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
-     * @param newId
-     *            the new value of the '{@link Payment#getId() id}' feature.
      * @generated
      */
-    public void setId(Long newId) {
-        id = newId;
-        firePropertyChange("id", this.id, newId);
-    }
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id = 0;
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Basic()
+    @Column(name = "DELETED")
+    private Boolean deleted = null;
 
     /**
      * Returns the value of '<em><b>defaultPaid</b></em>' feature.
@@ -182,33 +155,6 @@ public class Payment extends ModelObject implements IEntity, Serializable {
     public void setDefaultPaid(Boolean newDefaultPaid) {
         defaultPaid = newDefaultPaid;
         firePropertyChange("defaultPaid", this.defaultPaid, newDefaultPaid);
-    }
-
-    /**
-     * Returns the value of '<em><b>deleted</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>deleted</b></em>' feature
-     * @generated
-     */
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Sets the '{@link Payment#getDeleted() <em>deleted</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newDeleted
-     *            the new value of the '{@link Payment#getDeleted() deleted}'
-     *            feature.
-     * @generated
-     */
-    public void setDeleted(Boolean newDeleted) {
-        deleted = newDeleted;
-        firePropertyChange("deleted", this.deleted, newDeleted);
     }
 
     /**
@@ -264,32 +210,6 @@ public class Payment extends ModelObject implements IEntity, Serializable {
     public void setDiscountDays(Integer newDiscountDays) {
         discountDays = newDiscountDays;
         firePropertyChange("discountDays", this.discountDays, newDiscountDays);
-    }
-
-    /**
-     * Returns the value of '<em><b>name</b></em>' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @return the value of '<em><b>name</b></em>' feature
-     * @generated
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the '{@link Payment#getName() <em>name</em>}' feature.
-     *
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @param newName
-     *            the new value of the '{@link Payment#getName() name}' feature.
-     * @generated
-     */
-    public void setName(String newName) {
-        name = newName;
-        firePropertyChange("name", this.name, newName);
     }
 
     /**
@@ -476,6 +396,85 @@ public class Payment extends ModelObject implements IEntity, Serializable {
     }
 
     /**
+     * Returns the value of '<em><b>name</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>name</b></em>' feature
+     * @generated
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the '{@link Payment#getName() <em>name</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newName
+     *            the new value of the '{@link Payment#getName() name}' feature.
+     * @generated
+     */
+    public void setName(String newName) {
+        name = newName;
+        firePropertyChange("name", this.name, newName);
+    }
+
+    /**
+     * Returns the value of '<em><b>id</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>id</b></em>' feature
+     * @generated
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the '{@link Payment#getId() <em>id</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newId
+     *            the new value of the '{@link Payment#getId() id}' feature.
+     * @generated
+     */
+    public void setId(long newId) {
+        id = newId;
+        firePropertyChange("id", this.id, newId);
+    }
+
+    /**
+     * Returns the value of '<em><b>deleted</b></em>' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @return the value of '<em><b>deleted</b></em>' feature
+     * @generated
+     */
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Sets the '{@link Payment#getDeleted() <em>deleted</em>}' feature.
+     *
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @param newDeleted
+     *            the new value of the '{@link Payment#getDeleted() deleted}'
+     *            feature.
+     * @generated
+     */
+    public void setDeleted(Boolean newDeleted) {
+        deleted = newDeleted;
+        firePropertyChange("deleted", this.deleted, newDeleted);
+    }
+
+    /**
      * A toString method which prints the values of all EAttributes of this
      * instance. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -483,9 +482,8 @@ public class Payment extends ModelObject implements IEntity, Serializable {
      */
     @Override
     public String toString() {
-        return "Payment " + " [id: " + getId() + "]" + " [defaultPaid: " + getDefaultPaid() + "]" + " [deleted: " + getDeleted() + "]" + " [description: "
-                + getDescription() + "]" + " [discountDays: " + getDiscountDays() + "]" + " [name: " + getName() + "]" + " [discountValue: "
-                + getDiscountValue() + "]" + " [netDays: " + getNetDays() + "]" + " [paidText: " + getPaidText() + "]" + " [unpaidText: " + getUnpaidText()
-                + "]";
+        return "Payment " + " [defaultPaid: " + getDefaultPaid() + "]" + " [description: " + getDescription() + "]" + " [discountDays: " + getDiscountDays()
+                + "]" + " [discountValue: " + getDiscountValue() + "]" + " [netDays: " + getNetDays() + "]" + " [paidText: " + getPaidText() + "]"
+                + " [unpaidText: " + getUnpaidText() + "]" + " [name: " + getName() + "]" + " [id: " + getId() + "]" + " [deleted: " + getDeleted() + "]";
     }
 }

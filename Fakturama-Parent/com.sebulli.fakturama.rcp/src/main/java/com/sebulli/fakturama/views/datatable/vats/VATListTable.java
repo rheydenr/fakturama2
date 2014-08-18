@@ -13,17 +13,12 @@ package com.sebulli.fakturama.views.datatable.vats;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -49,7 +44,6 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEven
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
@@ -71,12 +65,9 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
-import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -88,6 +79,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
@@ -116,12 +108,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     // ID of this view
     public static final String ID = "com.sebulli.fakturama.views.vatTable";
-
-    @Inject
-    private EHandlerService handlerService;
-
-    @Inject
-    private ECommandService commandService;
     
     /**
      * Event Broker for receiving update events to the list table
@@ -140,34 +126,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @Inject
     private VatCategoriesDAO vatCategoriesDAO;
-
-    //	private static final String CUSTOM_COMPARATOR_LABEL = "customComparatorLabel";
-    protected static final String ROOT_NODE_NAME = "all";
-
-    // VAT view specific constants
-    private static final int DEFAULT_COLUMN_POSITION = 0;
-    private static final int NAME_COLUMN_POSITION = 1;
-    private static final int DESCRIPTION_COLUMN_POSITION = 2;
-    private static final int VALUE_COLUMN_POSITION = 3;
-
-    private static final String STANDARD_PROPERTYNAME = "default";
-    private static final String NAME_PROPERTYNAME = "name";
-    private static final String DESCRIPTION_PROPERTYNAME = "description";
-    private static final String VALUE_PROPERTYNAME = "taxValue";
-
-	private static final String[] VAT_PROPERTY_NAMES = {
-		STANDARD_PROPERTYNAME, 
-		NAME_PROPERTYNAME, 
-		DESCRIPTION_PROPERTYNAME, 
-		VALUE_PROPERTYNAME};
-
-	
-    /**
-     * show now category label as header for the list view
-     */
-    protected static final String NO_CATEGORY_LABEL = "$shownothing";
-    protected static final String NO_SORT_LABEL = "noSortLabel";
-    private static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
+    
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
 
@@ -230,20 +189,18 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         String[] propertyNames = vatsDAO.getVisibleProperties();
 
         final IColumnPropertyAccessor<VAT> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<VAT>(propertyNames);
-
+        
         // Add derived 'fullName' column
         final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<VAT>() {
 
             public Object getDataValue(VAT rowObject, int columnIndex) {
-                switch (columnIndex) {
-                case DEFAULT_COLUMN_POSITION:
-                    // VAT_PROPERTY_NAMES
-                    // System.out.println(preferences.getBoolean(STANDARD_PROPERTYNAME, false));
-                    // TODO set correct default value!
-                    return rowObject.getId() == 1L;
-                case NAME_COLUMN_POSITION:
-                case DESCRIPTION_COLUMN_POSITION:
-                case VALUE_COLUMN_POSITION:
+                VATListDescriptor descriptor = VATListDescriptor.getDescriptorFromColumn(columnIndex);
+                switch (descriptor) {
+                case DEFAULT:
+                    return rowObject.getId() == getDefaultVATId();
+                case NAME:
+                case DESCRIPTION:
+                case VALUE:
                     // alternative: return rowObject.getFirstName();
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex - 1);
                 default:
@@ -257,16 +214,17 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
 
             public int getColumnCount() {
-                return VAT_PROPERTY_NAMES.length;
+                return VATListDescriptor.getVATPropertyNames().length;
             }
 
             public String getColumnProperty(int columnIndex) {
-                switch (columnIndex) {
-                case DEFAULT_COLUMN_POSITION:
+                VATListDescriptor descriptor = VATListDescriptor.getDescriptorFromColumn(columnIndex);
+                switch (descriptor) {
+                case DEFAULT:
                     return msg.commonLabelDefault;
-                case NAME_COLUMN_POSITION:
-                case DESCRIPTION_COLUMN_POSITION:
-                case VALUE_COLUMN_POSITION:
+                case NAME:
+                case DESCRIPTION:
+                case VALUE:
                     return propertyToLabelMap.get(columnPropertyAccessor.getColumnProperty(columnIndex - 1));
                 default:
                     break;
@@ -275,8 +233,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
 
             public int getColumnIndex(String propertyName) {
-                if (STANDARD_PROPERTYNAME.equals(propertyName)) {
-                    return DEFAULT_COLUMN_POSITION;
+                if (VATListDescriptor.DEFAULT.getPropertyName().equals(propertyName)) {
+                    return VATListDescriptor.DEFAULT.getPosition();
                 } else {
                     return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
                 }
@@ -333,12 +291,12 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //example for mixed percentage sizing in a grid
         //configure not every column with the exact percentage value, this way the columns for which
         //no exact values are set will use the remaining space
-        tableDataLayer.setColumnWidthByPosition(DEFAULT_COLUMN_POSITION, 5);
-        tableDataLayer.setColumnWidthByPosition(NAME_COLUMN_POSITION, 20);
-        tableDataLayer.setColumnWidthByPosition(VALUE_COLUMN_POSITION, 10);
-        tableDataLayer.setColumnPercentageSizing(true);
+//        tableDataLayer.setColumnWidthByPosition(VATListDescriptor.DEFAULT.getPosition(), 5);
+//        tableDataLayer.setColumnWidthByPosition(VATListDescriptor.NAME.getPosition(), 20);
+//        tableDataLayer.setColumnWidthByPosition(VATListDescriptor.VALUE.getPosition(), 10);
+//        tableDataLayer.setColumnPercentageSizing(true);
         
-        selectionLayer = new SelectionLayer(tableDataLayer);
+        selectionLayer = new SelectionLayer(vatListEventLayer);
         
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
@@ -367,8 +325,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently. In this case render as an image.
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(DEFAULT_COLUMN_POSITION, DEFAULT_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(VALUE_COLUMN_POSITION, TAXVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
 
         final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
 
@@ -411,12 +369,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
                 }
             }
         });
-
-        
-        
-        
-        
-        
         
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
@@ -438,13 +390,12 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     /**
      * reads the default VAT value from preference store and returns the
-     * appropriate VAT value from database
+     * appropriate VAT-ID value from database
      * 
      * @return
      */
-    private VAT getDefaultVAT() {
-        // FIXME FOR TEST PURPOSES  HERE'S THE VAT WITH ID 1 RETURNED!
-        return vatsDAO.findById(1L);
+    private long getDefaultVATId() {
+        return preferences.getLong(Constants.DEFAULT_VAT, 1L);
     }
     
     @Inject @Optional
@@ -554,45 +505,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //   this.refresh();
 
     }
-
-    @Override
-    protected void createListViewToolbar(Composite parent) {
-        // Toolbar is created via Application model
-    }
-
-    /**
-     * On double click: open the corresponding editor
-     * 
-     * @param nattable
-     * @param gridLayer
-     */
-    private void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<VAT> gridLayer) {
-        // Add a double click listener
-        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
-
-            @Override
-            public void run(NatTable natTable, MouseEvent event) {
-                //get the row position for the click in the NatTable
-                int rowPos = natTable.getRowPositionByY(event.y);
-                //transform the NatTable row position to the row position of the body layer stack
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
-                // extract the selected Object
-                VAT vat = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-                log.debug("Selected VAT: " + vat.getName());
-                // Call the corresponding editor. The editor is set
-                // in the variable "editor", which is used as a parameter
-                // when calling the editor command.
-                // in E4 we create a new Part (or use an existing one with the same ID)
-                // from PartDescriptor
-                Command callEditor = commandService.getCommand("com.sebulli.fakturama.command.callEditor");
-                Map<String, String> params = new HashMap<>();
-                params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(vat.getId()));
-                params.put("com.sebulli.fakturama.editors.editortype", ID);
-                ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
-                handlerService.executeHandler(parameterizedCommand);
-            }
-        });
-    }
 	
 	/**
      * @return the headerLabelEnabled
@@ -601,6 +513,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         return headerLabelEnabled;
     }
 
+    @Override
+    protected String getTableId() {
+        return ID;
+    }
+    
     class VATTableConfiguration extends AbstractRegistryConfiguration {
 
 		@Override

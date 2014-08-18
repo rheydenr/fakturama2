@@ -14,17 +14,41 @@
 
 package com.sebulli.fakturama.views.datatable;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -36,8 +60,10 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
@@ -49,11 +75,34 @@ import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
  * @author Gerd Bartelt
  * 
  */
-public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
-    
+public abstract class AbstractViewDataTable<T extends IEntity, C extends AbstractCategory> {
+    public static final String ROOT_NODE_NAME = "all";
+
+    /**
+     * show now category label as header for the list view
+     */
+    protected static final String NO_CATEGORY_LABEL = "$shownothing";
+
+    protected static final String NO_SORT_LABEL = "noSortLabel";
+
+    protected static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
+
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+
+    @Inject
+    private Logger log;
+
     @Inject
     @Translation
     protected Messages msg;
+
+    @Inject
+    private EHandlerService handlerService;
+
+    @Inject
+    private ECommandService commandService;
 
 	//The top composite
 	protected Composite top;
@@ -110,6 +159,15 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
         
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
+        
+        onStart(natTable);
+        natTable.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                onStop(natTable);
+            }
+        });
 
 		// Workaround
 		// At startup the browser editor is the active part of the workbench.
@@ -137,14 +195,99 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
 		return top;
 	}
 	
+	/**
+	 * Loads the table settings (layout and such stuff) from a properties file.
+	 * @param natTable
+	 */
+    public void onStart(NatTable natTable) {
+        Properties properties = new Properties();
+        String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+        Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
+
+        try {
+            log.debug("Loading NatTable state from " + Constants.VIEWTABLE_PREFERENCES_FILE);
+            properties.load(Files.newInputStream(propertiesFile, StandardOpenOption.READ));
+            natTable.loadState(getTableId(), properties);
+        } catch (IOException e) {
+            // No file found, oh well, move along
+            log.warn(Constants.VIEWTABLE_PREFERENCES_FILE + " not found, skipping load");
+        }
+
+//        example.onStart();
+    }
+	
+    /**
+     * Before Nattable is disposed, all the settings for this table are stored in a properties file.
+     * 
+     * @param natTable
+     */
+    public void onStop(NatTable natTable) {
+//        example.onStop();
+
+        Properties properties = new Properties();
+        String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+        Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
+        natTable.saveState(getTableId(), properties);
+
+        try {
+            log.info("Saving NatTable state to " + Constants.VIEWTABLE_PREFERENCES_FILE);
+            properties.store(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE), "NatTable state");
+        } catch (IOException ioex) {
+            log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be created. ");
+        }
+    }
+	
 	abstract protected NatTable createListTable(Composite searchAndTableComposite);
+	
+	/**
+	 * Gets a unique identifier for the implementing table (for using in conjunction with storing preferences)
+	 *  
+	 * @return unique identifier
+	 */
+	abstract protected String getTableId();
 	
 	protected void postConfigureNatTable(NatTable natTable) {
 	    // per default this method is empty
 	}
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
-	abstract protected void createListViewToolbar(Composite parent);
+//	abstract protected void createListViewToolbar(Composite parent);
+	
+
+    /**
+     * On double click: open the corresponding editor
+     * 
+     * @param nattable
+     * @param gridLayer
+     */
+    protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<T> gridLayer) {
+        // Add a double click listener
+        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+            @Override
+            public void run(NatTable natTable, MouseEvent event) {
+                //get the row position for the click in the NatTable
+                int rowPos = natTable.getRowPositionByY(event.y);
+                //transform the NatTable row position to the row position of the body layer stack
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                // extract the selected Object
+                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                log.debug("Selected Object: " + selectedObject.getName());
+                // Call the corresponding editor. The editor is set
+                // in the variable "editor", which is used as a parameter
+                // when calling the editor command.
+                // in E4 we create a new Part (or use an existing one with the same ID)
+                // from PartDescriptor
+                Command callEditor = commandService.getCommand("com.sebulli.fakturama.command.callEditor");
+                Map<String, String> params = new HashMap<>();
+                params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(selectedObject.getId()));
+                params.put("com.sebulli.fakturama.editors.editortype", getTableId());
+                ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
+                handlerService.executeHandler(parameterizedCommand);
+            }
+        });
+    }
+
 
     /**
      * Component for the Search field and the item table
@@ -163,7 +306,7 @@ public abstract class AbstractViewDataTable<T, C extends AbstractCategory> {
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
 
         // The toolbar
-        createListViewToolbar(searchAndToolbarComposite);
+//        createListViewToolbar(searchAndToolbarComposite);
         
         filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
         FontData[] fD = filterLabel.getFont().getFontData();

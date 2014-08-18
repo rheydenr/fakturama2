@@ -27,8 +27,9 @@ import javax.persistence.TemporalType;
 @Entity()
 @Table(name = "FKT_TEXTMODULE")
 public class TextModule extends ModelObject implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;

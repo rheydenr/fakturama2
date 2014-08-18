@@ -22,8 +22,9 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_ADDRESS")
 public class Address implements Serializable {
-
     /**
+     * A common serial ID.
+     * 
      * @generated
      */
     private static final long serialVersionUID = 1L;
