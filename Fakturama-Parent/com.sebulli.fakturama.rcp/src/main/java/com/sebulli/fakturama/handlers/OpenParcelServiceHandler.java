@@ -41,11 +41,11 @@ public class OpenParcelServiceHandler /*extends Action */{
 //		setToolTipText(_("Open the web site of the parcel service.") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_OPEN_PARCEL_SERVICE);
+//		setId(CommandIds.CMD_OPEN_PARCEL_SERVICE);
 //
 //		// Associate the action with a pre-defined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_OPEN_PARCEL_SERVICE);
+//		setActionDefinitionId(CommandIds.CMD_OPEN_PARCEL_SERVICE);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/parcel_16.png"));

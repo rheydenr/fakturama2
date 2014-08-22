@@ -1,12 +1,8 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -40,19 +36,6 @@ public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
             getEntityManager().close();
         }
     }
-    
-    /**
-     * Get all {@link ReceiptVoucher}s from Database.
-     *
-     * @return List<ReceiptVoucher> 
-     */
-    public List<ReceiptVoucher> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<ReceiptVoucher> cq = cb.createQuery(ReceiptVoucher.class);
-    	cq.select(cq.from(ReceiptVoucher.class));
-    	return em.createQuery(cq).getResultList();
-    }
-    
  
 	/**
 	 * @return the em

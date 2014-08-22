@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Fakturama Templates
+Bundle-SymbolicName: com.sebulli.fakturama.resources.templates
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: Fakturama.org
+Fragment-Host: com.sebulli.fakturama.resources;bundle-version="2.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

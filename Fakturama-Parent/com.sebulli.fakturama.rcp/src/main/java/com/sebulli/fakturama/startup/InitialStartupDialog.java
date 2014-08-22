@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -44,19 +45,20 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.PreferencesService;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
 public class InitialStartupDialog extends TitleAreaDialog {
 
-	private Text txtWorkdir, txtOldWorkdir, txtJdbcUrl, txtUser, txtPassword;
+	private static final String DEFAULT_JDBC_CLASS = "org.apache.derby.jdbc.EmbeddedDriver";
+    private Text txtWorkdir, txtOldWorkdir, txtJdbcUrl, txtUser, txtPassword;
 	private ComboViewer comboDriver;
 
-	// Workspace path
+	/** 
+	 * Workspace path
+	 */
 	private String workspace = "";
 	
 	/*
@@ -69,22 +71,25 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	@Inject
 	protected Shell parent;
 
-	// The plugin's preference store
+	/** 
+	 * The plugin's preference store
+	 */
 	IEclipsePreferences preferences;
 	
     private static final Map<String, String> jdbcUrlMap = new HashMap<String, String>();;
 
 
 	private List<ServiceReference<DataSourceFactory>> connectionProviders = new ArrayList<>();
+    private int jdbcClassComboIndex = 0;
 
 	/**
 	 * Create the dialog.
+	 * 
 	 * @param parent
-	 * @param preferences2 
+	 * @param preferences
 	 * @param log
 	 * @param messages 
 	 * @param requestedWorkspace 
-	 * @param style
 	 */
 	public InitialStartupDialog(Shell parent,
 	        IEclipsePreferences preferences, Logger log, Messages messages, String requestedWorkspace) {
@@ -97,16 +102,22 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		parent.setText(msg.startFirstSelectWorkdir);
 		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
 		Collection<ServiceReference<DataSourceFactory>> serviceReferences;
+        String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "");
 		try {
 			// get all available Datasources (which are registered in OSGi context
 			// and store them in a hash for using in ComboBox
 			serviceReferences = bundleContext.getServiceReferences(DataSourceFactory.class, null);
+			int i = 0;
 			for (ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
 //				DataSourceFactory s = (DataSourceFactory) bundleContext.getService(serviceReference);
 				connectionProviders.add(serviceReference);
+				if(StringUtils.equalsIgnoreCase((String)serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), oldJdbcDriverClass)) {
+				    jdbcClassComboIndex = i;
+				}
 				log.info(String.format("adding [%s (%s)] as DB Connection Provider", 
 						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME),
 						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION)));
+				i++;
 			}
 
 			// initialize some JDBC URLs
@@ -136,7 +147,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		Composite container = new Composite(area, SWT.NONE);
 	    container.setLayout(new GridLayout(3, false));
 	    setTitleImage(Icon.ABOUT_ICON.getImage(IconSize.AppIconSize));
-	 	setTitle("Fakturama Initialisierung");
+	 	setTitle(msg.startFirstTitle);
 	    // 1st row
 		setMessage(msg.startFirstSelectWorkdirVerbose, IMessageProvider.INFORMATION);
 		
@@ -147,7 +158,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		layoutData.minimumWidth = 450;
 		txtWorkdir.setLayoutData(layoutData);
-		txtWorkdir.setText(workspace);
+		txtWorkdir.setText(StringUtils.defaultIfEmpty(workspace, ""));
         final DirectoryChecker dirChecker = new DirectoryChecker(txtWorkdir.getShell());
 		txtWorkdir.addFocusListener(new FocusAdapter() {
 		    @Override
@@ -167,6 +178,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblOldWorkDir.setText(msg.startFirstSelectOldworkdirShort);
 		txtOldWorkdir = new Text(container, SWT.BORDER);
 		txtOldWorkdir.setLayoutData(layoutData);
+		txtOldWorkdir.setText(getOldWorkDir());
 		txtOldWorkdir.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -208,15 +220,13 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				String driverClass = (String) ((ServiceReference<DataSourceFactory>)((IStructuredSelection) event
-			      .getSelection()).getFirstElement()).getProperty("osgi.jdbc.driver.class");
-				
-//				txtJdbcUrl.setText(driverClass);
+			      .getSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 				txtJdbcUrl.setText(jdbcUrlMap.get(driverClass));
 			}
 		});
 		Combo combo = comboDriver.getCombo();
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		combo.select(0);
+		combo.select(jdbcClassComboIndex);
 
 		// 4th row
 		Label lblJdbcurl = new Label(container, SWT.NONE);
@@ -224,7 +234,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblJdbcurl.setText(msg.startFirstSelectDbCredentialsJdbc);
 		
 		txtJdbcUrl = new Text(container, SWT.BORDER);
-		txtJdbcUrl.setText("jdbc:derby:memory:test;create=true");
+		// if an old value is set, we use it
+		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, "jdbc:derby:memory:test;create=true"));
 		txtJdbcUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		// 5th row
@@ -233,6 +244,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblUser.setText(msg.startFirstSelectDbCredentialsUser);
 		txtUser = new Text(container, SWT.BORDER);
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		txtUser.setText(preferences.get(PersistenceUnitProperties.JDBC_USER, ""));
 
 		Label lblPassword = new Label(container, SWT.NONE);
 		lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -240,17 +252,31 @@ public class InitialStartupDialog extends TitleAreaDialog {
 
 		txtPassword = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		txtPassword.setText(preferences.get(PersistenceUnitProperties.JDBC_PASSWORD, ""));
 
 	    return container;
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Try to find the old workdir path.
+	 * 
+     * @return
+     */
+    private String getOldWorkDir() {
+        // TODO
+        // old: ${user}/.fakturama
+        // new: ${user}/.fakturama2
+        // or eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "")
+        return "";
+    }
+
+    @SuppressWarnings("unchecked")
 	@Override
 	protected void okPressed() {
 		IStructuredSelection selection = (IStructuredSelection) comboDriver.getSelection();
 		ServiceReference<DataSourceFactory> firstElement = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
-		String driver = selection.isEmpty() ? "org.apache.derby.jdbc.EmbeddedDriver" :  (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+		String driver = selection.isEmpty() ? DEFAULT_JDBC_CLASS : (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 
 		// storing DB credentials
 		try {
@@ -276,6 +302,11 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		}
 	}
 	
+	/**
+	 * Checks if a directory contains an older version of Fakturama.
+	 * If so, the migration flag is set for further processing.
+	 *
+	 */
 	private final class DirectoryChecker {
 	    private Shell shell;
 	    
@@ -313,9 +344,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	}
 	
 	/**
-	 * Selection Adapter for choosing the working directory
+	 * Selection Adapter for choosing the working directory.
 	 * 
-	 * @author R. Heydenreich
 	 *
 	 */
 	private final class DirectoryChooser extends SelectionAdapter {

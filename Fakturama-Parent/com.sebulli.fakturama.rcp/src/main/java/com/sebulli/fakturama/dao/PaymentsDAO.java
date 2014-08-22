@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -43,18 +41,6 @@ public class PaymentsDAO extends AbstractDAO<Payment> {
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }
-    }
-    
-    /**
-     * Get all {@link Payment} from Database.
-     *
-     * @return List<Payment> 
-     */
-    public List<Payment> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
-    	cq.select(cq.from(Payment.class));
-    	return em.createQuery(cq).getResultList();
     }
 
 	/**

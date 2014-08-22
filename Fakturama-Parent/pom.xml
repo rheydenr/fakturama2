@@ -21,6 +21,7 @@
 	    <module>com.sebulli.fakturama.hsqlconnector</module>
 	    <module>com.sebulli.fakturama.resources</module>
 	    <module>com.sebulli.fakturama.resources.icons</module>
+	    <module>com.sebulli.fakturama.resources.templates</module>
 	</modules>
 	<build>
 		<plugins>

@@ -15,13 +15,9 @@
 package com.sebulli.fakturama.handlers;
 
 /**
- * Interface defining the application's command IDs. Key bindings can be defined
- * for specific commands. To associate an action with a command, use
- * IAction.setActionDefinitionId(commandId).
- * 
- * @see org.eclipse.jface.action.IAction#setActionDefinitionId(String)
+ * Constants defining the application's command IDs. 
  */
-public interface ICommandIds {
+public final class CommandIds {
 
 	public static final String CMD_OPEN_CONTACTS = "com.sebulli.fakturama.command.openContacts";
 	public static final String CMD_OPEN_PRODUCTS = "com.sebulli.fakturama.command.openProducts";

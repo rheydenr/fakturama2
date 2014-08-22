@@ -41,16 +41,6 @@ public class ContactDAO extends AbstractDAO<Contact> {
             em.close();
         }
     }
-    
-    /**
-     * Get all {@link Contact}s from Database which are not deleted.
-     *
-     * @return List<Contact> 
-     */
-    public List<Contact> findAll() {
-    	// Use only the undeleted entries
-    	return em.createQuery("select c from Contact c where c.deleted = false", Contact.class).getResultList();
-    }
 
     /**
      * Get a list of all categories stored for {@link Contact}s.

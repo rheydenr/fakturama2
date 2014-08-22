@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama;
+package com.sebulli.fakturama.misc;
 
 import com.sebulli.fakturama.misc.DocumentType;
 

@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.views.datatable;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -60,8 +59,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;

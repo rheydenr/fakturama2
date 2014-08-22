@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -41,20 +39,6 @@ public class CountryCodesDAO extends AbstractDAO<CountryCode> {
             getEntityManager().close();
         }
     }
-    
-    /**
-     * Get all {@link CountryCode} from Database.
-     *
-     * @return List<CountryCode> 
-     */
-    public List<CountryCode> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<CountryCode> criteria = cb.createQuery(CountryCode.class);
-    	Root<CountryCode> root = criteria.from(CountryCode.class);
-		CriteriaQuery<CountryCode> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
-    	return getEntityManager().createQuery(cq).getResultList();
-    }
-    
  
 	/**
 	 * @return the em

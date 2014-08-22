@@ -14,10 +14,15 @@
 package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
@@ -44,7 +49,7 @@ public abstract class AbstractDAO<T> {
 //    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager entityManager;
 	
-    public T save(T properties) throws SQLException {
+    public T save(T object) throws SQLException {
         
 /*
  * BESSER: 
@@ -91,20 +96,50 @@ em.joinTransaction();
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
-        getEntityManager().persist(properties);
+        getEntityManager().persist(object);
         trx.commit();
-        return properties;
+        return object;
     }
     
-    public T update(T properties) throws SQLException {
+    public T update(T object) throws SQLException {
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
-        getEntityManager().merge(properties);
+        getEntityManager().merge(object);
         trx.commit();
-        return properties;
+        return object;
     }
-    
+
+/* * * * * * * * * [some common finders] * * * * * * * * * * * * * * * * * * * * * /
+    /**
+     * Get all {@link T} from Database.
+     *
+     * @return List<T>
+     */
+    public List<T> findAll() {
+        //getEM2();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
+        Root<T> root = criteria.from(getEntityClass());
+        CriteriaQuery<T> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    /**
+     * Finds a t with its name.
+     * 
+     * @param name the name of the entity
+     * @return T
+     */
+    public T findByName(String entityName) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
+        Root<T> root = criteria.from(getEntityClass());
+        CriteriaQuery<T> cq = criteria.where(cb.equal(root.<String> get("name"), entityName));
+        return getEntityManager().createQuery(cq).getSingleResult();
+    }
+
+
     /**
      * Finds a {@link T} by id.
      * 
@@ -113,6 +148,21 @@ em.joinTransaction();
      */
     public T findById(long id) {
     	return getEntityManager().find(getEntityClass(), id);
+    }
+    
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    
+    
+    /**
+     * Gets the count of all entities of this sort.
+     * 
+     * @return count of entities
+     */
+    public Long getCount() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> cq1 = cb.createQuery(Long.class);
+        cq1.select(cb.count(cq1.from(getEntityClass())));
+        TypedQuery<Long> qry = getEntityManager().createQuery(cq1);
+        return qry.getSingleResult();
     }
 
     /**

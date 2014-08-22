@@ -20,25 +20,26 @@ package com.sebulli.fakturama.misc;
  * @author Gerd Bartelt
  */
 public enum DocumentType {
-	// all 8 data types
-	// TODO localize!!!
-	NONE(0, "None", "None", false, false, true, false, 1, "none"),
- LETTER(1, "Letter", "Letters", false, false, false, false, 1, "main.menu.new.letter"),
- OFFER(2, "Offer", "Offers", true, true, false, false, 1, "main.menu.new.offer"),
- ORDER(3, "Order", "Orders", true, true, false, false, 1, "main.menu.new.order"),
- CONFIRMATION(4, "Confirmation", "Confirmations", true, true, false, false, 1, "main.menu.new.confirmation"),
- INVOICE(5, "Invoice", "Invoices", true, true, true, false, 1, "main.menu.new.invoice"),
- DELIVERY(6, "Delivery Note", "Delivery Notes", true, false, false, true, 1, "main.menu.new.deliverynote"),
- CREDIT(7, "Credit", "Credit Items", true, true, true, true, -1, "main.menu.new.credit"),
- DUNNING(8, "Dunning", "Dunning Letters", false, false, false, true, 1, "main.menu.new.dunning"),
- PROFORMA(9, "Proforma", "Proforma Invoices", true, true, false, false, 1, "main.menu.new.proforma");
+ // all 8 data types
+ // TODO localize!!!
+ NONE(0, "None", "None", false, false, true, false, 1, "none"),
+ LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "Letters", false, false, false, false, 1, "main.menu.new.letter"),
+ OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "Offers", true, true, false, false, 1, "main.menu.new.offer"),
+ ORDER(3, "toolbar.new.order.name" /*"Order"*/, "Orders", true, true, false, false, 1, "main.menu.new.order"),
+ CONFIRMATION(4, "toolbar.new.confirmation.name" /*"Confirmation"*/, "Confirmations", true, true, false, false, 1, "main.menu.new.confirmation"),
+ INVOICE(5, "toolbar.new.invoice.name" /*"Invoice"*/, "Invoices", true, true, true, false, 1, "main.menu.new.invoice"),
+ DELIVERY(6, "toolbar.new.deliverynote.name" /*"Delivery Note"*/, "Delivery Notes", true, false, false, true, 1, "main.menu.new.deliverynote"),
+ CREDIT(7, "toolbar.new.document.credit.name" /*"Credit"*/, "Credit Items", true, true, true, true, -1, "main.menu.new.credit"),
+ DUNNING(8, "toolbar.new.document.dunning.name" /*"Dunning"*/, "Dunning Letters", false, false, false, true, 1, "main.menu.new.dunning"),
+ PROFORMA(9, "toolbar.new.document.proforma.name" /*"Proforma"*/, "Proforma Invoices", true, true, false, false, 1, "main.menu.new.proforma");
 	
 	// 9 types.
 	public final static int MAXID = DocumentType.values().length;
-	private int key;
+	private int key, sign;
 
-	private int sign;
-
+	/**
+	 * the l18n key for a new document (e.g., "main.menu.new.letter" => "New Letter")
+	 */
 	private String newTextKey;
 
 	/**
@@ -47,7 +48,7 @@ public enum DocumentType {
 	private boolean itemTable;
 
 	/**
-	 * * Defines all Document Types that contains a price
+	 * * Defines all {@link DocumentType}s that contains a price
 	 */
 	private boolean price;
 
@@ -61,13 +62,13 @@ public enum DocumentType {
 	/**
 	 * Type of the document (singular)
 	 */
-	private String singularDescription, pluralDescription;
+	private String singularKey, pluralDescription;
 
 	private DocumentType(int key, String description, String plural,
 			boolean itemTable, boolean price, boolean paid,
 			boolean invoiceReference, int sign, String newText) {
 		this.key = key;
-		this.singularDescription = description;
+		this.singularKey = description;
 		this.pluralDescription = plural;
 		this.itemTable = itemTable;
 		this.paid = paid;
@@ -88,8 +89,8 @@ public enum DocumentType {
 	/**
 	 * @return the description
 	 */
-	public final String getSingularDescription() {
-		return singularDescription;
+	public final String getSingularKey() {
+		return singularKey;
 	}
 
 	/**
@@ -144,7 +145,7 @@ public enum DocumentType {
 	public static DocumentType findDocumentTypeByDescription(String documentType) {
 		DocumentType retval = null;
 		for (DocumentType selfDocumentType : values()) {
-			if (selfDocumentType.getSingularDescription().equalsIgnoreCase(
+			if (selfDocumentType.getSingularKey().equalsIgnoreCase(
 					documentType)) {
 				retval = selfDocumentType;
 				break;
@@ -237,31 +238,31 @@ public enum DocumentType {
 	/**
 	 * Get the type as non-localized string
 	 * 
-	 * @return The DocumentType as non-localized string
+	 * @return The {@link DocumentType} as non-localized string
 	 */
 	public String getTypeAsString() {
 		return toString();
 	}
 
 	/**
-	 * Convert from DocumentType to a document type localized string The
+	 * Convert from {@link DocumentType} to a document type localized string. The
 	 * singular style is used.
 	 * 
 	 * @param documentType
-	 *            DocumentType to convert
-	 * @return The DocumentType as localized string
+	 *            {@link DocumentType} to convert
+	 * @return The {@link DocumentType} as localized string
 	 */
 	public static String getString(DocumentType documentType) {
-		return documentType.getSingularDescription();
+		return documentType.getSingularKey();
 	}
 
 	/**
-	 * Convert from DocumentType to a document type localized string The plural
+	 * Convert from {@link DocumentType} to a document type localized string. The plural
 	 * style is used.
 	 * 
 	 * @param documentType
-	 *            DocumentType to convert
-	 * @return The DocumentType as localized string
+	 *            {@link DocumentType} to convert
+	 * @return The {@link DocumentType} as localized string
 	 */
 	public static String getPluralString(DocumentType documentType) {
 		return DocumentType.getPluralString(documentType);

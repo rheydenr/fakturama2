@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -16,7 +14,6 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.Expenditure;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -42,19 +39,6 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             getEntityManager().close();
         }
     }
-    
-    /**
-     * Get all {@link Expenditure}s from Database.
-     *
-     * @return List<Expenditure> 
-     */
-    public List<Document> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<Document> cq = cb.createQuery(Document.class);
-    	cq.select(cq.from(Document.class));
-    	return em.createQuery(cq).getResultList();
-    }
-    
  
 	/**
 	 * @return the em

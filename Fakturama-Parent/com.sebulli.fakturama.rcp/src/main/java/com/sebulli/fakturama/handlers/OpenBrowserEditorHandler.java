@@ -43,11 +43,11 @@ public class OpenBrowserEditorHandler/* extends Action*/ {
 //		setToolTipText(_("Open the project web site www.fakturama.org") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_OPEN_BROWSER_EDITOR);
+//		setId(CommandIds.CMD_OPEN_BROWSER_EDITOR);
 //
 //		// Associate the action with a pre-defined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_OPEN_BROWSER_EDITOR);
+//		setActionDefinitionId(CommandIds.CMD_OPEN_BROWSER_EDITOR);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/www_16.png"));

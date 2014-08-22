@@ -37,11 +37,11 @@ public class OpenCalculatorHandler extends Action {
 //		setToolTipText(_("Open the calculator") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_OPEN_CALCULATOR);
+//		setId(CommandIds.CMD_OPEN_CALCULATOR);
 //
 //		// Associate the action with a pre-defined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_OPEN_CALCULATOR);
+//		setActionDefinitionId(CommandIds.CMD_OPEN_CALCULATOR);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/calculator_16.png"));

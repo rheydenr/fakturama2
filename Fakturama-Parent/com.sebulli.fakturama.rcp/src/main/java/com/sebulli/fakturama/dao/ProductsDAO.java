@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -43,18 +41,6 @@ public class ProductsDAO extends AbstractDAO<Product> {
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }
-    }
-    
-    /**
-     * Get all {@link Product} from Database.
-     *
-     * @return List<Product> 
-     */
-    public List<Product> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<Product> cq = cb.createQuery(Product.class);
-    	cq.select(cq.from(Product.class));
-    	return em.createQuery(cq).getResultList();
     }
 
 	/**

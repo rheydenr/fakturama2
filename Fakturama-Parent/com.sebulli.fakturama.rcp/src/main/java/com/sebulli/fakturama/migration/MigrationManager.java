@@ -56,7 +56,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.dao.CountryCodesDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -71,6 +70,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -167,7 +167,7 @@ public class MigrationManager {
 	 */
 	private OldEntitiesDAO oldDao;
 
-	private final SimpleDateFormat sdf;
+	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	/**
      * @param context
@@ -175,19 +175,15 @@ public class MigrationManager {
      * @param preferences
      * @param msg
      */
-    public MigrationManager(IEclipseContext context, Logger log, IEclipsePreferences preferences, Messages msg) {
-        this();
+    public MigrationManager(IEclipseContext context, Messages msg) {
         this.context = context;
-        this.log = log;
-        this.eclipsePrefs = preferences;
+        this.log = context.get(org.eclipse.e4.core.services.log.Logger.class);
+        this.eclipsePrefs = context.get(org.eclipse.core.runtime.preferences.IEclipsePreferences.class);
         this.msg = msg;
     }
 
-
     public MigrationManager() {
-		sdf = new SimpleDateFormat("yyyy-MM-dd");
 	}
-
 
 	/**
 	 * entry point for migration of old data (db only)

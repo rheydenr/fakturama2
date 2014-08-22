@@ -1,7 +1,6 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
@@ -58,20 +57,6 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	}
 
 	/**
-	 * Get all {@link VAT} from Database.
-	 *
-	 * @return List<VAT>
-	 */
-	public List<VAT> findAll() {
-		//getEM2();
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
-		Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
-		return getEntityManager().createQuery(cq).getResultList();
-	}
-
-	/**
 	 * @return the em
 	 */
 	protected EntityManager getEntityManager() {
@@ -99,15 +84,6 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldVat.getDescription()),
 				cb.equal(root.<String> get("name"), oldVat.getName())));
 		return getEntityManager().createQuery(cq).getSingleResult();
-	}
-
-	public VAT findByName(String novatname) {
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
-		Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(cb.equal(root.<String> get("name"), novatname));
-		return getEntityManager().createQuery(cq).getSingleResult();
-
 	}
 
 	/**

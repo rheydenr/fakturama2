@@ -1,12 +1,8 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -40,19 +36,6 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
             getEntityManager().close();
         }
     }
-    
-    /**
-     * Get all {@link Expenditure}s from Database.
-     *
-     * @return List<Expenditure> 
-     */
-    public List<Expenditure> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<Expenditure> cq = cb.createQuery(Expenditure.class);
-    	cq.select(cq.from(Expenditure.class));
-    	return em.createQuery(cq).getResultList();
-    }
-    
  
 	/**
 	 * @return the em

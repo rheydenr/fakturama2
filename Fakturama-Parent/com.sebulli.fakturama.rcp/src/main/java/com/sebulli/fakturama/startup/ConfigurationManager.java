@@ -3,23 +3,27 @@
  */
 package com.sebulli.fakturama.startup;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
@@ -27,13 +31,16 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.Constants;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.MigrationManager;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.resources.ITemplateResourceManager;
 
 /**
  * Configures the application while startup. It checks for a new Workspace
- * or the database conversion.
+ * or the need of database conversion. Furthermore, it checks if all the templates are
+ * available and if the directory structure is ok. If needed, the templates are copied 
+ * from resource bundle into the template directory. 
  * 
  * @author R. Heydenreich
  * 
@@ -53,9 +60,9 @@ public class ConfigurationManager {
 	@Preference
 	private IEclipsePreferences eclipsePrefs;
 	
+	private ITemplateResourceManager resourceManager;
+	
 	private Shell shell;
-
-    private static MessageDigest md;
 
     /**
 	 * The eclipse Logger. Level can be set via config.ini
@@ -67,134 +74,123 @@ public class ConfigurationManager {
 	    // constructor for injection framework
 	}
 
-	public ConfigurationManager(Shell shell, IEclipseContext eContext, IEclipsePreferences eclipsePrefs, Logger log, Messages msg) {
+	public ConfigurationManager(Shell shell, IEclipseContext eContext, IEclipsePreferences eclipsePrefs, Logger log, Messages msg,
+	        ITemplateResourceManager resourceManager) {
 	    this.shell = shell;
 	    this.appContext = eContext.get(IApplicationContext.class);
 	    this.context = eContext;
 	    this.eclipsePrefs = eclipsePrefs;
 	    this.log = log;
 	    this.msg = msg;
+	    this.resourceManager = resourceManager;
     }
 
     /**
 	 * Checks if the application was started the first time or if the workspace
-	 * has changed
+	 * has changed.
 	 * 
-	 * @param context
+	 * @param cmdService {@link ECommandService} for creating commands
+	 * @param handlerService {@link EHandlerService} for executing commands
 	 * 
-	 * @param bundleContext
-	 * 
-	 * @param shell
-	 * @param appContext
-	 * @param workbench
 	 */
-	public void checkFirstStart(@Optional ECommandService cmdService, @Optional EHandlerService handlerService) {
+	public void checkAndUpdateConfiguration(/*@Optional ECommandService cmdService, @Optional EHandlerService handlerService*/) {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		boolean isRestart = false;
 		// Get the program parameters
-		// TODO use Apache CLI!!!
-		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
-		if (args.length != 0) {
-			// Read the parameter "-workspace"
-			String workspaceFromParameters = "";
-			int i = 0;
-			while (i < args.length) {
-				if (args[i].equals("-workspace")) {
-					i++;
-					workspaceFromParameters = args[i];
 
-					// Checks, whether the workspace from the parameters exists
-					File workspacePath = new File(workspaceFromParameters);
-					if (workspacePath.exists()) {
-						// Use it, if it is an existing folder.
-						requestedWorkspace = workspaceFromParameters;
-					}
-				}
-				i++;
-			}
-		}
+		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
+		// create Options object
+		@SuppressWarnings("static-access")
+        Option selectWorkspaceOpt = OptionBuilder.withArgName("workspace")
+                .hasArg()
+                .withLongOpt("workspace")
+                .withDescription(msg.commandSelectworkspaceTooltip)
+                .create("w");
+
+        Options options = new Options();
+        options.addOption(selectWorkspaceOpt);
+        
+        CommandLineParser parser = new BasicParser();
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if(cmd.hasOption("w")) {
+    			// Read the parameter "--workspace"
+                //  --workspace d:\MeineDaten\Fakt1.6.1-EN
+    			String workspaceFromParameters = cmd.getOptionValue('w');
+    
+    			// Checks, whether the workspace from the parameters exists
+    			Path workspacePath = Paths.get(workspaceFromParameters);
+    			if (Files.exists(workspacePath, LinkOption.NOFOLLOW_LINKS)) {
+    				// Use it, if it is an existing folder.
+    			    requestedWorkspace = workspaceFromParameters;
+    				eclipsePrefs.put(GENERAL_WORKSPACE_REQUEST, requestedWorkspace);
+                } else {
+        			// if it not exists, ignore it quietly...
+        			// ... or, better, at least we inform the user
+        			log.warn("The requested workspace folder is invalid. Please select "
+        			        + "a new one from the Fakturama menu (File - select workspace...)."
+        			        + "The option is for now ignored.");
+                }
+            }
+        } catch (ParseException e1) {
+            log.error(e1, "Fehler beim Aufruf des Programms.");
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("Fakturama", options);
+//            appContext.setResult(null, IApplication.EXIT_OK);
+            //  ExitHandler!
+            System.exit(-1);  // TODO error handling?!
+        }
 		
 		try {
-//	        ContextInjectionFactory.inject(ECommandService.class, context);
-//	        ContextInjectionFactory.inject(EHandlerService.class, context);
-//		    context.get(ECommandService.class);
-//	        ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.firstStart.handler", null);
-//	        handlerService.executeHandler(command);  // launch ConfigurationManager
-		    
 			if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, null) == null) {
 				// if no database is set then we launch the application for the first time
-				log.info("Application was started the first time!");
+				log.info("Application was started the first time or no workspace was set!");
 				selectWorkspace(requestedWorkspace, shell);
                 isRestart = true;
-			} else if (eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null) != null) {
+			} else if (eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null) != null || requestedWorkspace == null) {
 				// Checks, whether the workspace request is set.
 				// If yes, the workspace is set to this value and the request value is cleared.
-				// This mechanism is used, because the workspace can only be changed by restarting the application.
-				requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null);
-				if (!requestedWorkspace.isEmpty()) {
+				// This mechanism is used because the workspace can only be changed by restarting the application.
+			    requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null);
+				if (StringUtils.isNoneBlank(requestedWorkspace)) {
+				    // switch the preference from a temporary one to the right one
 					eclipsePrefs.remove(GENERAL_WORKSPACE_REQUEST);
 					eclipsePrefs.put(Constants.GENERAL_WORKSPACE, requestedWorkspace);
 					// now check if an old database has to be converted
 					if (eclipsePrefs.get(MIGRATE_OLD_DATA, null) != null) {
 						appContext.applicationRunning();
-						MigrationManager migMan = new MigrationManager( context,  log, eclipsePrefs,  msg);
+						MigrationManager migMan = new MigrationManager(context, msg);
 						migMan.migrateOldData(shell);
-//						ContextInjectionFactory.make(ECommandService.class, appContext);
-//						ParameterizedCommand command = cmdService.createCommand("com.sebulli.fakturama.migman.command", null);
-//						handlerService.executeHandler(command);  // launch MigrationManager.migrateOldData
+	                    eclipsePrefs.remove(MIGRATE_OLD_DATA);
 					}
-
 				}
 				// Checks, whether the workspace is set.
 				// If not, the SelectWorkspaceAction is started to select it.
-				if (requestedWorkspace.isEmpty()) {
+				if (StringUtils.isBlank(requestedWorkspace)) {
 					selectWorkspace(requestedWorkspace, shell);
 					isRestart = true;
-				}
-				else {
+				} else {
 					// Checks whether the workspace exists
 					// Exit if the workspace path is not valid
-					File workspacePath = new File(requestedWorkspace);
-					if (!workspacePath.exists()) {
+				    Path workspacePath = Paths.get(requestedWorkspace);
+					if (!Files.exists(workspacePath, LinkOption.NOFOLLOW_LINKS)) {
 						eclipsePrefs.put(Constants.GENERAL_WORKSPACE, "");
 						selectWorkspace(requestedWorkspace, shell);
 					}
 				}
-			}
-			else {
+			} else {
 				// close the static splash screen
 				appContext.applicationRunning();
 			}
 			eclipsePrefs.flush();
-		}
-		catch (BackingStoreException e) {
+		} catch (BackingStoreException e) {
 			log.error(e);
 		}
 		if(!isRestart) {
     		// now initialize the new workspace
-    		initWorkspace(requestedWorkspace);
-    		shell.setText("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "(unknown)"));
+    		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
 		}
 	}
-	
-	   public static String cryptWithMD5(String pass){
-	    try {
-	        md = MessageDigest.getInstance("MD5");
-	        byte[] passBytes = pass.getBytes();
-	        md.reset();
-	        byte[] digested = md.digest(passBytes);
-	        StringBuffer sb = new StringBuffer();
-	        for(int i=0;i<digested.length;i++){
-	            sb.append(Integer.toHexString(0xff & digested[i]));
-	        }
-	        return sb.toString();
-	    } catch (NoSuchAlgorithmException ex) {
-//	        log.log(Level.SEVERE, null, ex);
-	    }
-	        return null;
-
-
-	   }
 
 	/** 
 	 * Brings up a selection dialog for the Workspace path.
@@ -215,98 +211,14 @@ public class ConfigurationManager {
 	}
 
 	/**
-	 * Initialize the workspace. e.g. creates a new template folder if it not exists.
+	 * Initialize the workspace. E.g., creates a new template folder if it not exists
+	 * and fills it with all the templates.
 	 * 
-	 * @param workspace
+	 * @param workspace the workspace path to use
 	 * 
 	 */
-	private void initWorkspace(String workspace) {
-		String templateFolderName = msg.configWorkspaceTemplatesName;
-		// Exit, if the workspace path is not set
-		//		if (workspace.isEmpty())
-		//			return;
-
-		// Exit, if the workspace path is not valid
-		File workspacePath = new File(workspace);
-		if (!workspacePath.exists())
-			return;
-
-		// Create and fill the template folder, if it does not exist.
-		File directory = new File(workspace + "/" + templateFolderName);
-		if (!directory.exists()) {
-
-			// Copy the templates from the resources to the file system
-			//			for (int i = 1; i <= DocumentType.MAXID; i++) {
-			//				if (DocumentType.getType(i) == DocumentType.DELIVERY) {
-			//					resourceCopy("Templates/Delivery/Document.ott", templateFolderName + "/" + DocumentType.getString(i), "Document.ott");
-			//				}
-			//				else {
-			//					resourceCopy("Templates/Invoice/Document.ott", templateFolderName + "/" + DocumentType.getString(i), "Document.ott");
-			//				}
-			//			}
-		}
-
-		// Create the start page, if it does not exist.
-		File startPage = new File(workspace + "/" + templateFolderName + "/Start" + "/" + "start.html");
-		if (!startPage.exists()) {
-			resourceCopy("Templates/Start/start.html", templateFolderName + "/Start", "start.html", workspace);
-			resourceCopy("Templates/Start/logo.png", templateFolderName + "/Start", "logo.png", workspace);
-		}
-
-		// Copy the parcel service templates
-		//		String parcelServiceTemplatePath = ParcelServiceManager.getRelativeTemplatePath();
-		//		File parcelServiceFolder = new File(ParcelServiceManager.getTemplatePath());
-		//		if (!parcelServiceFolder.exists()) {
-		//			resourceCopy("Templates/ParcelService/DHL_de.txt", parcelServiceTemplatePath , "DHL_de.txt", workspace);
-		//			resourceCopy("Templates/ParcelService/eFILIALE_de.txt", parcelServiceTemplatePath , "eFILIALE_de.txt", workspace);
-		//			resourceCopy("Templates/ParcelService/myHermes_de.txt", parcelServiceTemplatePath , "myHermes_de.txt", workspace);
-		//		}
-		//		
-		//		isInitialized = true;
-
+	private void initWorkspace(String requestedWorkspace) {
+		resourceManager.createWorkspaceTemplates(requestedWorkspace, context);
 	}
 
-	/**
-	 * Copies a resource file from the resource to the file system
-	 * 
-	 * @param resource
-	 *            The resource file
-	 * @param filePath
-	 *            The destination on the file system
-	 * @param fileName
-	 *            The destination file name
-	 * @param workspace
-	 */
-	private void resourceCopy(String resource, String filePath, String fileName, String workspace) {
-		String myFilePath = filePath;
-		// Remove the last "/"
-		if (myFilePath.endsWith("/"))
-			myFilePath = myFilePath.substring(0, myFilePath.length() - 1);
-
-		// Relative path
-		myFilePath = workspace + "/" + myFilePath;
-
-		// Create the destination folder
-		File directory = new File(myFilePath);
-		if (!directory.exists())
-			directory.mkdirs();
-
-		// Copy the file
-		try(InputStream in = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource(resource).openStream()) {
-			// Create the input stream from the resource file                 "Templates/Invoice/Document.ott"
-			//			InputStream in = Activator.getContext().getBundle("com.sebulli.fakturama.resources").getResource(resource).openStream();
-			;
-
-			// Create the output stream from the output file name
-			File fout = new File(myFilePath + "/" + fileName);
-			FileUtils.copyInputStreamToFile(in, fout);
-
-		}
-		catch (FileNotFoundException e) {
-			log.error(e, "Resource file not found");
-		}
-		catch (IOException e) {
-			log.error(e, "Error copying the resource file to the file system.");
-		}
-	}
 }

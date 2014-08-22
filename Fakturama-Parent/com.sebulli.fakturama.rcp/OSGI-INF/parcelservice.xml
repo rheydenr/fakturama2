@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ParcelService">
+   <implementation class="com.sebulli.fakturama.parcelservice.ParcelServiceManager"/>
+   <service>
+      <provide interface="com.sebulli.fakturama.parcelservice.IParcelService"/>
+   </service>
+</scr:component>

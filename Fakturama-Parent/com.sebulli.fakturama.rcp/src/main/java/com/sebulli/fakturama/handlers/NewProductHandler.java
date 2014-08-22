@@ -32,7 +32,7 @@ public class NewProductHandler /*extends NewEditorAction*/{
     protected Messages msg;
 
 	//T: Text of the action to create a new product
-	public final static String ACTION_ID = ICommandIds.CMD_NEW_PRODUCT; 
+	public final static String ACTION_ID = CommandIds.CMD_NEW_PRODUCT; 
 
 //	/**
 //	 * Constructor
@@ -45,11 +45,11 @@ public class NewProductHandler /*extends NewEditorAction*/{
 //		setToolTipText(_("Create a new product") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_NEW_PRODUCT);
+//		setId(CommandIds.CMD_NEW_PRODUCT);
 //
 //		// Associate the action with a pre-defined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_NEW_PRODUCT);
+//		setActionDefinitionId(CommandIds.CMD_NEW_PRODUCT);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/product_16.png"));

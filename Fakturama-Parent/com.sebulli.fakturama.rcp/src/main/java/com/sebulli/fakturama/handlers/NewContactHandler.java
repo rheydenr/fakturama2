@@ -32,7 +32,7 @@ public class NewContactHandler/* extends NewEditorAction */{
     protected Messages msg;
 
 	//T: Text of the action to create a new contact
-	public final static String ACTION_ID = ICommandIds.CMD_NEW_CONTACT; 
+	public final static String ACTION_ID = CommandIds.CMD_NEW_CONTACT; 
 
 //	/**
 //	 * Constructor
@@ -48,11 +48,11 @@ public class NewContactHandler/* extends NewEditorAction */{
 //		setToolTipText(_("Create a new contact") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_NEW_CONTACT);
+//		setId(CommandIds.CMD_NEW_CONTACT);
 //
 //		// Associate the action with a predefined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_NEW_CONTACT);
+//		setActionDefinitionId(CommandIds.CMD_NEW_CONTACT);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/contact_16.png"));

@@ -36,11 +36,11 @@ public class NewReceiptVoucherHandler /*extends NewEditorAction */{
 //		setToolTipText(_("Create a new receipt voucher") );
 //
 //		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_NEW_RECEIPTVOUCHER);
+//		setId(CommandIds.CMD_NEW_RECEIPTVOUCHER);
 //
 //		// Associate the action with a pre-defined command, to allow key
 //		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_NEW_RECEIPTVOUCHER);
+//		setActionDefinitionId(CommandIds.CMD_NEW_RECEIPTVOUCHER);
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/receipt_voucher_16.png"));

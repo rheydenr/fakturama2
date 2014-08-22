@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -50,20 +48,6 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }
-    }
-    
-    /**
-     * Get all {@link Shipping} from Database.
-     *
-     * @return List<Shipping> 
-     */
-    public List<Shipping> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<Shipping> criteria = cb.createQuery(Shipping.class);
-    	Root<Shipping> root = criteria.from(Shipping.class);
-		CriteriaQuery<Shipping> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
-    	return getEntityManager().createQuery(cq).getResultList();
-//    	return getEntityManager().createQuery("select p from Shipping p", Shipping.class).getResultList();
     }
 
     public Shipping findByOldShipping(OldShippings oldShipping) {

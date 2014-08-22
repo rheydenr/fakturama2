@@ -37,7 +37,7 @@ public class WebShopImportHandler {
 
 	//T: Text of the action to connect to the web shop and import new data
 	public final static String ACTIONTEXT = "Web Shop"; 
-//ICommandIds.CMD_WEBSHOP_IMPORT
+//CommandIds.CMD_WEBSHOP_IMPORT
 	
 	@CanExecute
 	public boolean canExecute() {

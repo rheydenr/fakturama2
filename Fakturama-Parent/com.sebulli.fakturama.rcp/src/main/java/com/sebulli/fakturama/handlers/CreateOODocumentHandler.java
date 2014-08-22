@@ -60,8 +60,8 @@ public class CreateOODocumentHandler {
 //	public CreateOODocumentHandler(String text, String toolTipText) {
 //		super(text);
 //		setToolTipText(toolTipText);
-//		setId(ICommandIds.CMD_CREATE_OODOCUMENT);
-//		setActionDefinitionId(ICommandIds.CMD_CREATE_OODOCUMENT);
+//		setId(CommandIds.CMD_CREATE_OODOCUMENT);
+//		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
 //	}
 //

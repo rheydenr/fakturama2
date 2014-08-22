@@ -1,13 +1,8 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -39,22 +34,7 @@ public class TextsDAO extends AbstractDAO<TextModule> {
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }
-    }
-    
-    /**
-     * Get all {@link TextModule} from Database.
-     *
-     * @return List<TextModule> 
-     */
-    public List<TextModule> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<TextModule> criteria = cb.createQuery(TextModule.class);
-    	Root<TextModule> root = criteria.from(TextModule.class);
-		CriteriaQuery<TextModule> cq = criteria.where(cb.not(root.<Boolean>get("deleted")));
-    	return getEntityManager().createQuery(cq).getResultList();
-//    	return getEntityManager().createQuery("select p from TextModule p", TextModule.class).getResultList();
-    }
-    
+    }   
  
 	/**
 	 * @return the em

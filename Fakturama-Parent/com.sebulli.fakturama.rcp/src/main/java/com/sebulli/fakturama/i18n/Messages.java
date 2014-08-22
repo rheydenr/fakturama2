@@ -90,14 +90,14 @@ public class Messages {
 	public String CreateOODocumentAction90;
 
 	public String Data653;
-	public String Data654;
-	public String Data655;
-	public String Data656;
-	public String Data657;
-	public String Data658;
-	public String Data659;
-	public String Data660;
-	public String Data661;
+	public String dataDefaultVat;
+	public String dataDefaultVatDescription;
+	public String dataDefaultShipping;
+	public String dataDefaultShippingDescription;
+	public String dataDefaultPayment;
+	public String dataDefaultPaymentDescription;
+	public String dataDefaultPaymentPaidtext;
+	public String dataDefaultPaymentUnpaidtext;
 
 	public String DataSetContact662;
 	public String DataSetContact663;
@@ -449,7 +449,7 @@ public class Messages {
 	public String ParcelServiceFormFiller649;
 	public String ParcelServiceFormFiller650;
 
-	public String ParcelServiceManager647;
+	public String parcelServiceName;
 
 	public String PaymentEditor625;
 	public String PaymentEditor626;
@@ -811,6 +811,7 @@ public class Messages {
 	public String partsContacts;
 	public String partsDocuments;
 
+	public String startFirstTitle;
 	public String startFirstRestartmessage;
 	public String startFirstSelectDbCredentialsJdbc;
 	public String startFirstSelectDbCredentialsName;
@@ -857,17 +858,18 @@ public class Messages {
 	public String wizardImportCsvProductsDescription;
 	public String wizardImportCsvProductsName;
 
-	/**
-	 * This method helps you to create messages from compound keys, i.e. if you
-	 * try to use "some.key"+".tooltip". Don't use it for simple known keys
-	 * because this method uses reflection for finding the appropriate string
-	 * representation.
-	 * 
-	 * @param key
-	 *            the key which has to be looked up
-	 * @return message or (if not found) the key itself (enclosed in "!")
-	 */
-	public String getMessageFromKey(String key) {
+
+    /**
+     * This method helps you to create messages from compound keys, i.e. if you
+     * try to use "some.key"+".tooltip". Don't use it for simple known keys
+     * because this method uses reflection for finding the appropriate string
+     * representation.
+     * 
+     * @param key
+     *            the key which has to be looked up
+     * @return message or (if not found) the key itself (enclosed in "!")
+     */
+    public String getMessageFromKey(String key) {
 		String retval = null;
 		// try to make the string representation of this key via reflection
 

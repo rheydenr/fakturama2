@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -17,7 +15,6 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.oldmodel.OldProperties;
-import com.sebulli.fakturama.oldmodel.OldVats;
 
 @Creatable
 public class PropertiesDAO extends AbstractDAO<UserProperty> {
@@ -44,20 +41,6 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
         if (getEntityManager() != null && getEntityManager().isOpen()) {
             getEntityManager().close();
         }
-    }
-    
-    /**
-     * Get all {@link UserProperty} from Database.
-     *
-     * @return List<UserProperty> 
-     */
-    public List<UserProperty> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<UserProperty> cq = cb.createQuery(UserProperty.class);
-    	cq.select(cq.from(UserProperty.class));
-    	return em.createQuery(cq).getResultList();
-//
-//    	return getEntityManager().createQuery("select p from UserProperty p", UserProperty.class).getResultList();
     }
     
     /**
