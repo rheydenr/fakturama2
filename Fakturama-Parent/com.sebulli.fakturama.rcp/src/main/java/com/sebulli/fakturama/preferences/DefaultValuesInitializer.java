@@ -52,21 +52,21 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 //        log.debug("Enter in default Preference Initializer");
 
 		// Initialize every single preference page
-//		ToolbarPreferencePage.setInitValues(node);
-//		ContactPreferencePage.setInitValues(node);
+		ToolbarPreferencePage.setInitValues(node);
+		ContactPreferencePage.setInitValues(node);
 //		ContactFormatPreferencePage.setInitValues(node);
 //		DocumentPreferencePage.setInitValues(node);
 		GeneralPreferencePage.setDefaultValues(node);
 //		NumberRangeValuesPreferencePage.setInitValues(node);
 //		NumberRangeFormatPreferencePage.setInitValues(node);
 //		OfficePreferencePage.setInitValues(node);
-//		ProductPreferencePage.setInitValues(node);
+		ProductPreferencePage.setInitValues(node);
 //		WebShopImportPreferencePage.setInitValues(node);
 //		YourCompanyPreferencePage.setInitValues(node);
 //		ExportPreferencePage.setInitValues(node);
 //		OptionalItemsPreferencePage.setInitValues(node);
 //		WebShopAuthorizationPreferencePage.setInitValues(node);
-//		BrowserPreferencePage.setInitValues(node);
+		BrowserPreferencePage.setInitValues(node);
 //
 //		ColumnWidthDialogContactsPreferencePage.setInitValues(node);
 //		ColumnWidthDialogProductsPreferencePage.setInitValues(node);

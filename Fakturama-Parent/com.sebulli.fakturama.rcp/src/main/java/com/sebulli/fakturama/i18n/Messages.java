@@ -60,30 +60,30 @@ public class Messages {
 	public String ContactEditor502;
 	public String ContactEditor503;
 
-	public String ContactFormatPreferencePage381;
-	public String ContactFormatPreferencePage382;
-	public String ContactFormatPreferencePage383;
-	public String ContactFormatPreferencePage384;
-	public String ContactFormatPreferencePage385;
-	public String ContactFormatPreferencePage386;
-	public String ContactFormatPreferencePage387;
-	public String ContactFormatPreferencePage388;
-	public String ContactFormatPreferencePage389;
-	public String ContactFormatPreferencePage390;
-	public String ContactFormatPreferencePage391;
+	public String preferencesContactFormatSalutation;
+	public String preferencesContactFormatSalutationMen;
+	public String preferencesContactFormatSalutationWomen;
+	public String preferencesContactFormatSalutationCompany;
+	public String preferencesContactFormatAddressfieldlabel;
+	public String preferencesContactFormatHidecountries;
+	public String preferencesContactFormatAddressfield;
+	public String dataDefaultContactFormatSalutation;
+	public String dataDefaultContactFormatSalutationMen;
+	public String dataDefaultContactFormatSalutationWomen;
+	public String dataDefaultContactFormatExcludedcountries;
 
-	public String ContactPreferencePage404;
-	public String ContactPreferencePage405;
-	public String ContactPreferencePage406;
-	public String ContactPreferencePage407;
-	public String ContactPreferencePage408;
-	public String ContactPreferencePage409;
-	public String ContactPreferencePage410;
-	public String ContactPreferencePage411;
-	public String ContactPreferencePage412;
-	public String ContactPreferencePage413;
-	public String ContactPreferencePage414;
-	public String ContactPreferencePage415;
+	public String preferencesContactUsedelivery;
+	public String preferencesContactUsebankaccount;
+	public String preferencesContactUsemiscpage;
+	public String preferencesContactUsenotepage;
+	public String preferencesContactUsegender;
+	public String preferencesContactUsetitle;
+	public String preferencesContactNameformat;
+	public String preferencesContactFirstlastname;
+	public String preferencesContactLastfirstname;
+	public String preferencesContactUsecompany;
+	public String preferencesContactUsecountry;
+	public String preferencesContact;
 
 	public String CountryCodes697;
 

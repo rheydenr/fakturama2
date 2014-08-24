@@ -16,8 +16,6 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -38,10 +36,6 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage {
     @Inject
     @Translation
     protected Messages msg;
-
-    @Inject
-    @Preference
-    private IEclipsePreferences eclipsePrefs;
 
 	/**
 	 * Constructor

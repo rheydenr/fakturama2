@@ -16,11 +16,11 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -44,6 +44,7 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
      * 
      */
     public static final String PREFERENCES_GENERAL_WEBBROWSER_URL = "GENERAL_WEBBROWSER_URL";
+
     @Inject
     @Translation
     protected Messages msg;
@@ -105,11 +106,11 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IEclipsePreferences node) {
-//		node.put(PREFERENCES_GENERAL_WEBBROWSER_URL, OpenBrowserEditorAction.FAKTURAMA_PROJECT_URL);
-		node.put(PREFERENCES_GENERAL_WEBBROWSER_URL, "");
-		node.put(PREFERENCES_BROWSER_TYPE, "0");
-		node.putBoolean(PREFERENCES_BROWSER_SHOW_URL_BAR, true);
+	public static void setInitValues(IPreferenceStore node) {
+//		node.setDefault(PREFERENCES_GENERAL_WEBBROWSER_URL, OpenBrowserEditorAction.FAKTURAMA_PROJECT_URL);
+	    node.setDefault(PREFERENCES_GENERAL_WEBBROWSER_URL, "");
+	    node.setDefault(PREFERENCES_BROWSER_TYPE, "0");
+	    node.setDefault(PREFERENCES_BROWSER_SHOW_URL_BAR, true);
 	}
 
 

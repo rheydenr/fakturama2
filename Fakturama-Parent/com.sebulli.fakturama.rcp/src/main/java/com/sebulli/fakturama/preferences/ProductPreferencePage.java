@@ -16,12 +16,11 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -82,12 +81,7 @@ public class ProductPreferencePage extends FieldEditorPreferencePage {
     @Translation
     protected Messages msg;
 
-    @Inject
-    @Preference
-    private IEclipsePreferences eclipsePrefs;
-
-
-	/**
+    /**
 	 * Constructor
 	 */
 	public ProductPreferencePage() {
@@ -171,16 +165,16 @@ public class ProductPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IEclipsePreferences node) {
-		node.putBoolean(PREFERENCES_PRODUCT_USE_ITEMNR, true);
-		node.putBoolean(PREFERENCES_PRODUCT_USE_QUNIT, false);
-		node.putBoolean(PREFERENCES_PRODUCT_USE_DESCRIPTION, true);
-		node.put(PREFERENCES_PRODUCT_USE_NET_GROSS, "2");
-		node.put(PREFERENCES_PRODUCT_SCALED_PRICES, "1");
-		node.putBoolean(PREFERENCES_PRODUCT_USE_VAT, true);
-		node.putBoolean(PREFERENCES_PRODUCT_USE_WEIGHT, false);
-		node.putBoolean(PREFERENCES_PRODUCT_USE_QUANTITY, true);
-		node.putBoolean(PREFERENCES_PRODUCT_USE_PICTURE, true);
+	public static void setInitValues(IPreferenceStore node) {
+		node.setDefault(PREFERENCES_PRODUCT_USE_ITEMNR, true);
+		node.setDefault(PREFERENCES_PRODUCT_USE_QUNIT, false);
+		node.setDefault(PREFERENCES_PRODUCT_USE_DESCRIPTION, true);
+		node.setDefault(PREFERENCES_PRODUCT_USE_NET_GROSS, "2");
+		node.setDefault(PREFERENCES_PRODUCT_SCALED_PRICES, "1");
+		node.setDefault(PREFERENCES_PRODUCT_USE_VAT, true);
+		node.setDefault(PREFERENCES_PRODUCT_USE_WEIGHT, false);
+		node.setDefault(PREFERENCES_PRODUCT_USE_QUANTITY, true);
+		node.setDefault(PREFERENCES_PRODUCT_USE_PICTURE, true);
 	}
 
 }
