@@ -32,9 +32,9 @@ public class Messages {
 	public String BrowserEditor480;
 	public String BrowserEditor481;
 
-	public String BrowserPreferencePage293;
-	public String BrowserPreferencePage294;
-	public String BrowserPreferencePage295;
+	public String preferencesBrowserUrl;
+	public String preferencesBrowserType;
+	public String preferencesBrowserShowaddressbar;
 	public String preferencesGeneral;
 
 	public String ContactEditor482;

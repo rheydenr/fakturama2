@@ -65,7 +65,7 @@ public class PreferencesInDatabase {
 	 * preference pages.
 	 */
 	public static void loadOrSavePreferencesFromOrInDatabase(boolean save) {
-//		ToolbarPreferencePage.syncWithPreferencesFromDatabase(save);
+		ToolbarPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
 //		DocumentPreferencePage.syncWithPreferencesFromDatabase(save);
@@ -73,7 +73,7 @@ public class PreferencesInDatabase {
 //		NumberRangeFormatPreferencePage.syncWithPreferencesFromDatabase(save);
 //		NumberRangeValuesPreferencePage.syncWithPreferencesFromDatabase(save);
 //		OfficePreferencePage.syncWithPreferencesFromDatabase(save);
-//		ProductPreferencePage.syncWithPreferencesFromDatabase(save);
+		ProductPreferencePage.syncWithPreferencesFromDatabase(save);
 //		WebShopImportPreferencePage.syncWithPreferencesFromDatabase(save);
 //		YourCompanyPreferencePage.syncWithPreferencesFromDatabase(save);
 //		ExportPreferencePage.syncWithPreferencesFromDatabase(save);
