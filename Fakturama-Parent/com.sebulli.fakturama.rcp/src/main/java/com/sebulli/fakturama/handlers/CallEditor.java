@@ -88,7 +88,7 @@ public class CallEditor {
 			}
 		}
 		
-		// if not found then we create a new one
+		// if not found then we create a new one from a part descriptor
 		if (myPart == null) {			
 			myPart = partService.createPart(DOCVIEW_PART_ID);
 			
@@ -104,11 +104,10 @@ public class CallEditor {
 
 			default:
 				myPart.setLabel("unknown");
+				myPart.setContext(EclipseContextFactory.create());
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
 				break;
 			}
-			myPart.setContext(EclipseContextFactory.create());
-			myPart.getContext().set(PARAM_OBJ_ID, objId);
 		}
 		return myPart;
 	}

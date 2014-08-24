@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.prefs.Preferences;
 
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
@@ -37,6 +38,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.preferences.DefaultValuesInitializer;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
@@ -177,35 +179,18 @@ public class LifecycleManager {
         defaultPayment = paymentsDAO.findByName(msg.dataDefaultPayment);
 
         // Set the default values to this entries
-        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_VAT, defaultVat.getId());
-        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
-        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+        Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
+        defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
+        defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+        defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // TODO: Load the default country codes
 //        CountryCodes.loadFromRecouces(list, null);
         
+        // now, initialize some other preferences
+        DefaultValuesInitializer defaultValuesInitializer = new DefaultValuesInitializer(log);
+        defaultValuesInitializer.initializeDefaultPreferences();
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     @ProcessAdditions
     void processAdditions(MApplication app, EModelService modelService) {

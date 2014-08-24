@@ -277,21 +277,21 @@ public class Messages {
 	public String Exporter186;
 	public String Exporter187;
 	public String Exporter188;
-	public String Exporter189;
-	public String Exporter190;
+	public String exporterDataIban;
+	public String exporterDataBic;
 	public String Exporter191;
 	public String Exporter192;
 	public String Exporter193;
 	public String Exporter194;
-	public String Exporter195;
-	public String Exporter196;
-	public String Exporter197;
-	public String Exporter198;
-	public String Exporter199;
-	public String Exporter200;
-	public String Exporter201;
-	public String Exporter202;
-	public String Exporter209;
+	public String exporterDataTelephone;
+	public String exporterDataTelefax;
+	public String exporterDataMobile;
+	public String exporterDataEmail;
+	public String exporterDataWebsite;
+	public String exporterDataVatno;
+	public String exporterDataVatnoValid;
+	public String exporterDataRebate;
+	public String exporterDataItemnumber;
 	public String commonFieldDescription;
 	public String Exporter211;
 	public String Exporter212;
@@ -632,14 +632,15 @@ public class Messages {
 	public String WebShopImportPreferencePage345;
 	public String WebShopImportPreferencePage346;
 
-	public String YourCompanyPreferencePage396;
-	public String YourCompanyPreferencePage397;
-	public String YourCompanyPreferencePage398;
-	public String YourCompanyPreferencePage399;
-	public String YourCompanyPreferencePage400;
-	public String YourCompanyPreferencePage401;
-	public String YourCompanyPreferencePage402;
-	public String YourCompanyPreferencePage403;
+	public String preferencesYourcompany;
+	public String preferencesYourcompanyName;
+	public String preferencesYourcompanyOwner;
+	public String preferencesYourcompanyStreet;
+	public String preferencesYourcompanyVatno;
+	public String preferencesYourcompanyTaxoffice;
+	public String preferencesYourcompanyBankaccount;
+	public String preferencesYourcompanyBankname;
+	public String preferencesYourcompanyCreditorid;
 
 	public String aboutText;
 
