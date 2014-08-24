@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.converter;
 
 import org.eclipse.core.databinding.conversion.Converter;
 

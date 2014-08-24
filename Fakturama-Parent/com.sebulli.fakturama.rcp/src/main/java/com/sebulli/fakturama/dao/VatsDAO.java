@@ -1,8 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -84,20 +81,6 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldVat.getDescription()),
 				cb.equal(root.<String> get("name"), oldVat.getName())));
 		return getEntityManager().createQuery(cq).getSingleResult();
-	}
-
-	/**
-	 * mapping from property to label, needed for column header labels (only
-	 * visible properties are needed)
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getVisiblePropertyToLabelMap() {
-		Map<String, String> propertyToLabelMap = new HashMap<>();
-		propertyToLabelMap.put("taxValue", msg.commonFieldValue);
-		propertyToLabelMap.put("name", msg.commonFieldName);
-		propertyToLabelMap.put("description", msg.commonFieldDescription);
-		return propertyToLabelMap;
 	}
 
 	/**

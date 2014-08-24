@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.converter;
 
 import org.eclipse.core.databinding.conversion.Converter;
 
@@ -24,9 +24,8 @@ public class VATCategoryConverter extends Converter {
     public Object convert(Object fromObject) {
         String result = null;
         if(VATCategory.class.equals(getFromType())) {
-            result = ((VATCategory) fromObject).getName();
+            result = CommonConverter.getCategoryName((VATCategory) fromObject, "");
         }
         return result;
     }
-
 }

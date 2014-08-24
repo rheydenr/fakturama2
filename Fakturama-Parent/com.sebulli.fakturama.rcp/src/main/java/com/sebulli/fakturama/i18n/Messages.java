@@ -316,8 +316,8 @@ public class Messages {
 	public String Exporter247;
 	public String Exporter248;
 	public String Exporter249;
-	public String Exporter250;
-	public String Exporter251;
+	public String productDataNet;
+	public String productDataGross;
 	public String Exporter252;
 	public String Exporter255;
 
@@ -482,17 +482,17 @@ public class Messages {
 
 	public String ProductPictureDialog507;
 
-	public String ProductPreferencePage313;
-	public String ProductPreferencePage314;
-	public String ProductPreferencePage315;
-	public String ProductPreferencePage316;
-	public String ProductPreferencePage317;
-	public String ProductPreferencePage318;
-	public String ProductPreferencePage319;
-	public String ProductPreferencePage320;
-	public String ProductPreferencePage321;
-	public String ProductPreferencePage322;
-	public String ProductPreferencePage323;
+	public String preferencesProductUseitemno;
+	public String preferencesProductUsequantityunit;
+	public String preferencesProductUsedescription;
+	public String preferencesProductNetorgrossprices;
+	public String preferencesProductNetandgross;
+	public String preferencesProductScaledprices;
+	public String preferencesProductSelectvat;
+	public String preferencesProductUseweight;
+	public String preferencesProductUsequantity;
+	public String preferencesProductUsepicture;
+	public String preferencesProduct;
 
 	public String ReceiptVoucherEditor642;
 

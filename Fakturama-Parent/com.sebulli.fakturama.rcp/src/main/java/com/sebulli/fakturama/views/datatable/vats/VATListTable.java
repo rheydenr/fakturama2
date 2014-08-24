@@ -13,7 +13,6 @@ package com.sebulli.fakturama.views.datatable.vats;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -46,12 +45,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
-import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
@@ -65,11 +59,9 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -91,6 +83,7 @@ import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.TreeCategoryLabelProvider;
+import com.sebulli.fakturama.views.datatable.tree.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
 
 /**
@@ -98,6 +91,11 @@ import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
  *
  */
 public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
+
+    /**
+     * Path for the default values configuration in the Preference store
+     */
+    private static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
 
     @Inject
     @Translation
@@ -119,7 +117,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Preference
     private IEclipsePreferences preferences;
 
-    private EventList<VAT> eventList;
+    private EventList<VAT> vatListData;
+    private EventList<VATCategory> categories;
+
 
     @Inject
     private VatsDAO vatsDAO;
@@ -139,18 +139,13 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-
     protected FilterList<VAT> treeFilteredIssues;
-
     private SelectionLayer selectionLayer;
-
-    private DataLayer tableDataLayer;
     private int lastSelectedRow = -1;
 
     @PostConstruct
     public Control createPartControl(Composite parent) {
         Control top = super.createPartControl(parent, VAT.class, false, true, ID);
-
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -161,14 +156,13 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @Override
     protected void postConfigureNatTable(NatTable natTable) {
-
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
-        addCustomStyling(natTable);
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new VATTableConfiguration());
+        addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
@@ -178,12 +172,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.configure();
     }
 	
-    protected NatTable createListTable(Composite searchAndTableComposite) {
-        //mapping from property to label, needed for column header labels
-        final Map<String, String> propertyToLabelMap = vatsDAO.getVisiblePropertyToLabelMap();
-        
+    protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
-        eventList = GlazedLists.eventList(vatsDAO.findAll());
+        vatListData = GlazedLists.eventList(vatsDAO.findAll());
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
@@ -219,17 +210,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
             public String getColumnProperty(int columnIndex) {
                 VATListDescriptor descriptor = VATListDescriptor.getDescriptorFromColumn(columnIndex);
-                switch (descriptor) {
-                case DEFAULT:
-                    return msg.commonLabelDefault;
-                case NAME:
-                case DESCRIPTION:
-                case VALUE:
-                    return propertyToLabelMap.get(columnPropertyAccessor.getColumnProperty(columnIndex - 1));
-                default:
-                    break;
-                }
-                return null;
+                return msg.getMessageFromKey(descriptor.getMessageKey());
             }
 
             public int getColumnIndex(String propertyName) {
@@ -267,7 +248,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
         
         // Filtered list for Search text field filter
-        final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(eventList, textMatcherEditor);
+        final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(vatListData, textMatcherEditor);
 
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
@@ -279,10 +260,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         
         //build the grid layer
         gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
-        tableDataLayer = gridLayer.getBodyDataLayer();        
-
-        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, eventList);
-//        DefaultBodyLayerStack bodyLayer = new DefaultBodyLayerStack(vatListEventLayer);
+        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, vatListData);
 
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -381,7 +360,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Override
     protected TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
         TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, false, true);
-        topicTreeViewer.setInput(GlazedLists.eventList(vatCategoriesDAO.findAll()));
+        categories = GlazedLists.eventList(vatCategoriesDAO.findAll());
+        topicTreeViewer.setInput(categories);
         // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
         // Eins von beiden muß es doch geben, oder?
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
@@ -395,46 +375,50 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @return
      */
     private long getDefaultVATId() {
-        return preferences.getLong(Constants.DEFAULT_VAT, 1L);
+        return preferences.node(DEFAULT_VALUE_PREFERENCES).getLong(Constants.DEFAULT_VAT, 1L);
     }
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic("VatEditor") String message) {
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        eventList.clear();
-        eventList.addAll(vatsDAO.findAll());
+        vatListData.clear();
+        vatListData.addAll(vatsDAO.findAll());
+        categories.clear();
+        categories.addAll(vatCategoriesDAO.findAll());
+        topicTreeViewer.setInput(categories);
+//        topicTreeViewer.refreshTree();
     }
 
 
-    private void addImageTextToColumn(IConfigRegistry configRegistry, Composite parent, IDataProvider iDataProvider) {
-        ICellPainter imageTextPainter = new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, new MyImagePainter(iDataProvider));
+//    private void addImageTextToColumn(IConfigRegistry configRegistry, Composite parent, IDataProvider iDataProvider) {
+//        ICellPainter imageTextPainter = new CellPainterDecorator(new TextPainter(), CellEdgeEnum.RIGHT, new MyImagePainter(iDataProvider));
+//
+//        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, imageTextPainter, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
+//
+//        // Set the color of the cell. This is picked up by the button painter to style the button
+//        Style style = new Style();
+//        style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
+//
+//        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
+//        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, style, DisplayMode.SELECT, CUSTOM_CELL_LABEL);
+//    }
 
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER, imageTextPainter, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
-
-        // Set the color of the cell. This is picked up by the button painter to style the button
-        Style style = new Style();
-        style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_WHITE);
-
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL, CUSTOM_CELL_LABEL);
-        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, style, DisplayMode.SELECT, CUSTOM_CELL_LABEL);
-    }
-
-    //My image painter
-    class MyImagePainter extends ImagePainter {
-
-        private IDataProvider data = null;
-
-        public MyImagePainter(IDataProvider iDataProvider) {
-            this.data = iDataProvider; //this would be useful, what image has to displayed on call.
-        }
-
-        @Override
-        protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-            //return specific image on data object and it's properties.
-            // cell.getDataValue();
-            return GUIHelper.getImage("preferences");
-        }
-    }
+//    //My image painter
+//    class MyImagePainter extends ImagePainter {
+//
+//        private IDataProvider data = null;
+//
+//        public MyImagePainter(IDataProvider iDataProvider) {
+//            this.data = iDataProvider; //this would be useful, what image has to displayed on call.
+//        }
+//
+//        @Override
+//        protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+//            //return specific image on data object and it's properties.
+//            // cell.getDataValue();
+//            return GUIHelper.getImage("preferences");
+//        }
+//    }
 
     /**
      * We have to style the table a little bit...
@@ -492,7 +476,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         filterLabel.pack(true);
 
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType));
+        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType, ((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
         //   contentProvider.setTreeObject(treeObject);
 
         // Set category to the addNew action. So a new data set is created

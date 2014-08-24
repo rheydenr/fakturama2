@@ -178,9 +178,6 @@ public class ConfigurationManager {
 						selectWorkspace(requestedWorkspace, shell);
 					}
 				}
-			} else {
-				// close the static splash screen
-				appContext.applicationRunning();
 			}
 			eclipsePrefs.flush();
 		} catch (BackingStoreException e) {

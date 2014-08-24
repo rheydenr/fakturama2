@@ -1,14 +1,34 @@
+/* 
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
+ * 
+ * Copyright (C) 2014 www.fakturama.org
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     The Fakturama Team - initial API and implementation
+ */
+
 package com.sebulli.fakturama.views.datatable.vats;
 
+
+/**
+ * Enum for describing a VAT list. This contains the name of the displayed values, the position of
+ * the columns and a default width of each column (copied from old ColumnWidth*PreferencePages). 
+ *
+ */
 public enum VATListDescriptor {
     
-    DEFAULT("default", 0, 55),
-    NAME("name", 1, 120),
-    DESCRIPTION("description", 2, 200),
-    VALUE("taxValue", 3, 70)
+    DEFAULT("default", "common.label.default", 0, 55),
+    NAME("name", "common.field.name", 1, 120),
+    DESCRIPTION("description", "common.field.description", 2, 200),
+    VALUE("taxValue", "common.field.value", 3, 70)
     ;
-    
-    private String propertyName;
+
+    private String propertyName, messageKey;
     private int position, defaultWidth;
     
     /**
@@ -16,8 +36,9 @@ public enum VATListDescriptor {
      * @param position
      * @param defaultWidth
      */
-    private VATListDescriptor(String propertyName, int position, int defaultWidth) {
+    private VATListDescriptor(String propertyName, String messageKey, int position, int defaultWidth) {
         this.propertyName = propertyName;
+        this.messageKey = messageKey;
         this.position = position;
         this.defaultWidth = defaultWidth;
     }
@@ -41,6 +62,13 @@ public enum VATListDescriptor {
      */
     public final int getDefaultWidth() {
         return defaultWidth;
+    }
+    
+    /**
+     * @return the messageKey
+     */
+    public String getMessageKey() {
+        return messageKey;
     }
 
     public static VATListDescriptor getDescriptorFromColumn(int columnIndex) {

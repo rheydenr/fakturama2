@@ -22,6 +22,7 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
@@ -109,6 +110,10 @@ public class LifecycleManager {
                 e.printStackTrace();
             }
         }
+        IApplicationContext appContext = context.get(IApplicationContext.class);
+        // close the static splash screen
+        // TODO check if we could call it twice (one call is before Migrationmanager)
+        appContext.applicationRunning();
     }
 
     /**
@@ -172,9 +177,9 @@ public class LifecycleManager {
         defaultPayment = paymentsDAO.findByName(msg.dataDefaultPayment);
 
         // Set the default values to this entries
-        eclipsePrefs.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
-        eclipsePrefs.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
-        eclipsePrefs.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_VAT, defaultVat.getId());
+        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+        eclipsePrefs.node("/configuration/defaultValues").putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // TODO: Load the default country codes
 //        CountryCodes.loadFromRecouces(list, null);

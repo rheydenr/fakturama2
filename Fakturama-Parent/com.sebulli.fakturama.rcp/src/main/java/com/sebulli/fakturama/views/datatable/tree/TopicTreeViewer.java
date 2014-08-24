@@ -14,16 +14,12 @@
 
 package com.sebulli.fakturama.views.datatable.tree;
 
-import java.util.List;
-
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -47,20 +43,16 @@ import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 public class TopicTreeViewer<T extends AbstractCategory> {
 
 protected static final String TABLEDATA_CATEGORY_FILTER = "CategoryFilter";
-
 protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter";
-
 protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
-
 protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
     private Messages msg;
 
-	//	private TopicTreeViewer me = this;
-	private TreeViewer internalTreeViewer;
+	TreeViewer internalTreeViewer;
 	
 	protected TreeObject root;
-	private TreeObject all;
+	TreeObject all;
 
 	// Display a transaction item, only if it is a tree of documents
 	private TreeObject transactionItem;
@@ -68,7 +60,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	private TreeObject contactItem;
 
 	// The input
-	private EventList<T> inputElement;
+	EventList<T> inputElement;
 
 	// The selected item
 	private TreeObject selectedItem;
@@ -78,6 +70,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 	// The corresponding table
 	private VATListTable viewDataSetTable;
+    private TreeObjectContentProvider<T> contentProvider;
 	
 	/**
 	 * Constructor Creates a
@@ -186,7 +179,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	/**
 	 * Clear the tree
 	 */
-	private void clear() {
+	void clear() {
 		if (all != null)
 			all.clear();
 
@@ -208,96 +201,6 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		// FIXME ???
 //		if (inputElement != null)
 //			inputElement.resetCategoryChanged();
-	}
-
-	/**
-	 * Content provider for the tree view
-	 * 
-	 * @author Gerd Bartelt
-	 */
-	class ViewContentProvider extends TreeNodeContentProvider {
-
-		/**
-		 * Returns the elements to display in the viewer when its input is set
-		 * to the given element.
-		 */
-		@Override
-		public Object[] getElements(Object parent) {
-			int entryCnt = 0;
-
-			// Get the elements
-			if (parent == root) {
-
-				// Rebuild the elements, if some strings have changed
-				// => this replaces "getCategoryStringsChanged()"
-				// FIXME zur Zeit ändert sich hier nichts...
-//				internalTreeViewer.aL
-//				inputElement.addListEventListener(new ListEventListener<MyRowObject>() {
-//
-//					@Override
-//					public void listChanged(ListEvent<MyRowObject> listChanges) {
-					// Clear the tree
-					clear();
-					if (inputElement instanceof List) {
-
-						// Get all category strings
-						for (T entry : inputElement) {
-							// Start with the root or all element
-							addEntry(all != null ? all : root, entry);
-						}
-					}
-//						
-//				}});
-			}
-			
-			// Count the category strings
-			if (inputElement instanceof List) {
-				Object[] entries = inputElement.toArray();
-				entryCnt = entries.length;
-			}
-
-			// Hide the Tree viewer, if there is no tree element
-			if (entryCnt != 0) {
-				internalTreeViewer.getTree().setVisible(true);
-				GridDataFactory.fillDefaults().hint(150, -1).grab(false, true).applyTo(internalTreeViewer.getTree());
-				internalTreeViewer.getTree().getParent().layout(true);
-			} else {
-				internalTreeViewer.getTree().setVisible(false);
-				GridDataFactory.fillDefaults().hint(1, -1).grab(false, true).applyTo(internalTreeViewer.getTree());
-				internalTreeViewer.getTree().getParent().layout(true);
-			}
-
-			// Return the children elements
-			return getChildren(parent);
-		}
-
-		/**
-		 * Returns the parent element
-		 */
-		@Override
-		public Object getParent(Object child) {
-			if (child instanceof TreeObject) { return ((TreeObject) child).getParent(); }
-			return null;
-		}
-
-		/**
-		 * Returns the children elements
-		 */
-		@Override
-		public Object[] getChildren(Object parent) {
-			if (parent instanceof TreeObject) { return ((TreeObject) parent).getChildren(); }
-			return new Object[0];
-		}
-
-		/**
-		 * Returns, if the element has children
-		 */
-		@Override
-		public boolean hasChildren(Object parent) {
-			if (parent instanceof TreeObject)
-				return ((TreeObject) parent).hasChildren();
-			return false;
-		}
 	}
 
 	/**
@@ -369,33 +272,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		}
 	}
 
-	/**
-	 * Add a new entry to the tree
-	 * 
-	 * @param entry
-	 *            The new entry to add
-	 * @return
-	 */
-	private TreeObject addEntry(TreeObject parent, AbstractCategory entry) {
-		TreeObject currentLeaf = parent, newLeaf;
-		// Use all string parts to build the tree elements
-		if(entry.getParent() != null) {
-			newLeaf = addEntry(currentLeaf, entry.getParent());
-			currentLeaf = new TreeObject(entry.getName());
-			newLeaf.addChild(currentLeaf);
-		} else {
-		    // only create a new entry if it doesn't exist!
-		    newLeaf = all.findChildWithName(entry.getName());
-		    if(newLeaf == null) {
-		        newLeaf = new TreeObject(entry.getName());
-		        currentLeaf.addChild(newLeaf);
-		    }
-			currentLeaf = newLeaf;
-		}
-		return currentLeaf;
-	}
-
-	/**
+    /**
 	 * Set the transaction Filter
 	 * 
 	 * @param name
@@ -404,7 +281,6 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 *            ID of the transaction
 	 */
 	public void setTransaction(String name, int transactionId) {
-
 		if (transactionItem == null)
 			return;
 
@@ -419,7 +295,15 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	}
 	
 	public void refreshTree() {
-	    internalTreeViewer.refresh();
+/*
+ * receiver => root element
+ * receiver.add(new Book)
+ *   Book.accept(adder, Bookstore)
+ *      fireAdd(book);
+
+ */
+//	    contentProvider.in
+//	    internalTreeViewer.refresh();
 	}
 
 	/**
@@ -450,7 +334,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		boolean childfound = false;
 		TreeItem newParent = null;
 		TreeItem[] children;
-		children = internalTreeViewer.getTree().getItems();
+		children = getTree().getItems();
 
 		// Scan all parts of the input string
 		for (String namePart : nameParts) {
@@ -479,7 +363,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Select the item, if it was found
 		if (found && allScanned) {
-			internalTreeViewer.getTree().setSelection(newParent);
+			getTree().setSelection(newParent);
 			internalTreeViewer.setSelection(internalTreeViewer.getSelection(), true);
 		}
 
@@ -510,15 +394,14 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 */
 	public void setInput(EventList<T> input) {
 		this.inputElement = input;
-//		this.inputElement.resetCategoryChanged();
-		internalTreeViewer.setContentProvider(new ViewContentProvider());
+        contentProvider = new TreeObjectContentProvider<T>(this);
+        internalTreeViewer.setContentProvider(contentProvider);
 		internalTreeViewer.setLabelProvider(new ViewLabelProvider());
 		internalTreeViewer.setInput(root);
 
 		// Expand the tree only to level 2
 		internalTreeViewer.expandToLevel(2);
 		ColumnViewerToolTipSupport.enableFor(this.internalTreeViewer);
-
 	}
 
 	/**
@@ -535,4 +418,5 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	public void setLabelProvider(TreeCategoryLabelProvider treeTableLabelProvider) {
 		internalTreeViewer.setLabelProvider(treeTableLabelProvider);
 	}
+	
 }

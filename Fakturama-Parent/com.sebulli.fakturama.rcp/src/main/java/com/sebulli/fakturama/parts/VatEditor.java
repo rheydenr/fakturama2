@@ -49,6 +49,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.parts.converter.CommonConverter;
+import com.sebulli.fakturama.parts.converter.StringToVatCategoryConverter;
+import com.sebulli.fakturama.parts.converter.VATCategoryConverter;
 
 /**
  * The VAT editor
@@ -148,7 +151,7 @@ public class VatEditor extends Editor<VAT> {
              * because we have CascadeType.PERSIST. If we use update and save the new VatCategory before,
              * all went ok. That's the point...
              */
-            vatDao.update(editorVat);
+            editorVat = vatDao.update(editorVat);
         }
         catch (SQLException e) {
             log.error(e, "can't save the current VAT: " + editorVat.toString());
@@ -184,7 +187,7 @@ public class VatEditor extends Editor<VAT> {
     public void createPartControl(Composite parent) {
         Long objId = null;
         VAT stdVat = null;
-        int stdID = 0;
+        long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
         String tmpObjId = (String) part.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
         if (StringUtils.isNumeric(tmpObjId)) {
@@ -267,7 +270,7 @@ public class VatEditor extends Editor<VAT> {
         viewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof VATCategory ? ((VATCategory)element).getName() : null;
+                return element instanceof VATCategory ? CommonConverter.getCategoryName((VATCategory)element, "") : null;
             }
         });
 
@@ -306,20 +309,19 @@ public class VatEditor extends Editor<VAT> {
 //        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
-        // Create the composite to make this payment to the standard payment. 
+        // Create the composite to make this VAT to the standard VAT. 
         Label labelStdVat = new Label(top, SWT.NONE);
         labelStdVat.setText(msg.commonLabelDefault);
         //T: Tool Tip Text
         labelStdVat.setToolTipText(msg.editorVatNameTooltip);
 
-        // Get the ID of the standard unidataset
+        // Get the ID of the standard entity
         try {
-            // TODO check if 1 is a valid default ID
-            stdID = defaultValuePrefs.getInt("standardvat", 1);
+            stdID = defaultValuePrefs.getLong(getDefaultEntryKey(), 1L);
+        } catch (NumberFormatException | NullPointerException e) {
+            stdID = 1L;
+        } finally {
             stdVat = vatDao.findById(stdID);
-        }
-        catch (NumberFormatException | NullPointerException e) {
-            stdID = 0;
         }
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStdVat);
@@ -335,6 +337,7 @@ public class VatEditor extends Editor<VAT> {
         }
     }
 
+    
 
     @Override
     protected String getDefaultEntryKey() {

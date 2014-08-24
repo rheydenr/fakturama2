@@ -29,10 +29,11 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -56,11 +57,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.model.VAT;
 
 /**
  * Parent class for all editors
@@ -76,8 +77,17 @@ public abstract class Editor<T extends IEntity> {
 	@Inject
 	@Translation
 	protected Messages msg;
+    
+    @Inject
+    protected Logger log;
+    
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
-	@Inject
+    @Inject
 	protected ContactDAO contactDAO;
 
 	protected StdComposite stdComposite = null;
@@ -142,17 +152,14 @@ public abstract class Editor<T extends IEntity> {
 		// The button
 		public Button stdButton;
 
-		// The property key that defines the standard
-		private String propertyKey = null;
-
 		// The unidataset of this editor 
 		private final T uds;
 
 		// The label for "This dataset"
 		private String thisDataset = null;
 
-		// The data set array with this and the other unidatasets
-		private List<T> dataSetArray;
+//		// The data set array with this and the other unidatasets
+//		private List<T> dataSetArray;
 
 		/**
 		 * Constructor Creates the widgets to set this entry as standard entry.
@@ -206,6 +213,14 @@ public abstract class Editor<T extends IEntity> {
 					if (uds.getId() >= 0) {
 						defaultValuePrefs.putLong(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
+						try {
+                            defaultValuePrefs.flush();
+                            
+                            // Refresh the table view of all VATs
+                            evtBroker.post("VatEditor", "update");
+                        } catch (BackingStoreException e1) {
+                            log.error(e1, "Error while flushing default value preferences.");
+                        }
 					}
 				}
 

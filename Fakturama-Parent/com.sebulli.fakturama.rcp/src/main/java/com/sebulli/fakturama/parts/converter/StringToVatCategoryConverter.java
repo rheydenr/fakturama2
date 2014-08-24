@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.converter;
 
 import java.util.TreeSet;
 
@@ -32,7 +32,7 @@ public class StringToVatCategoryConverter extends Converter {
         // TODO Look for a better approach!
         String searchString = (String)fromObject;
         for (VATCategory vatCategory : categories) {
-            if(vatCategory.getName().equals(searchString)) {
+            if(CommonConverter.getCategoryName(vatCategory, "").equals(searchString)) {
                 return vatCategory;
             }
         }
