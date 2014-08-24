@@ -137,6 +137,9 @@ public class LifecycleManager {
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         // Fill some default data
+
+        // Set the default values to this entries
+        Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
         VAT defaultVat;
         if(vatsDAO.getCount() == 0L) {
             defaultVat = new VAT();
@@ -144,9 +147,9 @@ public class LifecycleManager {
             defaultVat.setDescription(msg.dataDefaultVatDescription);
             defaultVat.setTaxValue(0.0);
             defaultVat.setDeleted(Boolean.FALSE);
-            vatsDAO.save(defaultVat);
+            defaultVat = vatsDAO.save(defaultVat);
+            defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
-        defaultVat = vatsDAO.findByName(msg.dataDefaultVat);
         
         Shipping defaultShipping;
         if(shippingsDAO.getCount() == 0L) {
@@ -155,11 +158,11 @@ public class LifecycleManager {
             defaultShipping.setDescription(msg.dataDefaultShippingDescription);
             defaultShipping.setShippingValue(0.0);
             defaultShipping.setAutoVat(Boolean.TRUE);
-            defaultShipping.setShippingVat(defaultVat);
+            defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
             defaultShipping.setDeleted(Boolean.FALSE);
-            shippingsDAO.update(defaultShipping);
+            defaultShipping = shippingsDAO.update(defaultShipping);
+            defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
-        defaultShipping = shippingsDAO.findByName(msg.dataDefaultShipping);
 
         Payment defaultPayment;
         if(paymentsDAO.getCount() == 0L) {
@@ -174,15 +177,9 @@ public class LifecycleManager {
             defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
             defaultPayment.setDefaultPaid(Boolean.FALSE);
             defaultPayment.setDeleted(Boolean.FALSE);
-            paymentsDAO.save(defaultPayment);
+            defaultPayment = paymentsDAO.save(defaultPayment);
+            defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
-        defaultPayment = paymentsDAO.findByName(msg.dataDefaultPayment);
-
-        // Set the default values to this entries
-        Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
-        defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
-        defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
-        defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // TODO: Load the default country codes
 //        CountryCodes.loadFromRecouces(list, null);

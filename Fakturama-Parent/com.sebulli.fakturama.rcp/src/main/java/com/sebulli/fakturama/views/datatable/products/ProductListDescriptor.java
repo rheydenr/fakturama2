@@ -11,20 +11,22 @@
  * Contributors:
  *     The Fakturama Team - initial API and implementation
  */
+ 
+package com.sebulli.fakturama.views.datatable.products;
 
-package com.sebulli.fakturama.views.datatable.vats;
 
 /**
- * Enum for describing a VAT list. This contains the name of the displayed values, the position of
+ * Enum for describing a product list. This contains the name of the displayed values, the position of
  * the columns and a default width of each column (copied from old ColumnWidth*PreferencePages). 
  *
  */
-public enum VATListDescriptor {
-    
-    DEFAULT("default", "common.label.default", 0, 55),
+public enum ProductListDescriptor {
+    ITEMNO("itemNumber", "product.field.itemno", 0, 55),
     NAME("name", "common.field.name", 1, 120),
     DESCRIPTION("description", "common.field.description", 2, 200),
-    VALUE("taxValue", "common.field.value", 3, 70)
+    QUANTITY("quantity", "common.fields.quantity", 3, 70),
+    PRICE("price1", "common.field.price", 4, 70),
+    VAT("vat", "common.field.vat", 5, 70)
     ;
 
     private String propertyName, messageKey;
@@ -35,7 +37,7 @@ public enum VATListDescriptor {
      * @param position
      * @param defaultWidth
      */
-    private VATListDescriptor(String propertyName, String messageKey, int position, int defaultWidth) {
+    private ProductListDescriptor(String propertyName, String messageKey, int position, int defaultWidth) {
         this.propertyName = propertyName;
         this.messageKey = messageKey;
         this.position = position;
@@ -70,20 +72,24 @@ public enum VATListDescriptor {
         return messageKey;
     }
 
-    public static VATListDescriptor getDescriptorFromColumn(int columnIndex) {
-        for (VATListDescriptor descriptor : values()) {
+    public static ProductListDescriptor getDescriptorFromColumn(int columnIndex) {
+        for (ProductListDescriptor descriptor : values()) {
             if(descriptor.getPosition() == columnIndex) {
                 return descriptor;
             }
         }
         return null;
     }
-    
+
     public static final String[] getVATPropertyNames() {
         return new String[]{
-        VATListDescriptor.DEFAULT.getPropertyName(), 
-        VATListDescriptor.NAME.getPropertyName(), 
-        VATListDescriptor.DESCRIPTION.getPropertyName(), 
-        VATListDescriptor.VALUE.getPropertyName()};
+        ProductListDescriptor.ITEMNO.getPropertyName(), 
+        ProductListDescriptor.NAME.getPropertyName(), 
+        ProductListDescriptor.DESCRIPTION.getPropertyName(), 
+        ProductListDescriptor.QUANTITY.getPropertyName(),
+        ProductListDescriptor.PRICE.getPropertyName(),
+        ProductListDescriptor.VAT.getPropertyName(),
+        };
     }
+
 }

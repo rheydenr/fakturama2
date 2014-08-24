@@ -11,20 +11,21 @@
  * Contributors:
  *     The Fakturama Team - initial API and implementation
  */
-
-package com.sebulli.fakturama.views.datatable.vats;
+ 
+package com.sebulli.fakturama.views.datatable.payments;
 
 /**
- * Enum for describing a VAT list. This contains the name of the displayed values, the position of
+ * Enum for describing a Payment list. This contains the name of the displayed values, the position of
  * the columns and a default width of each column (copied from old ColumnWidth*PreferencePages). 
  *
  */
-public enum VATListDescriptor {
-    
+public enum PaymentListDescriptor {
     DEFAULT("default", "common.label.default", 0, 55),
     NAME("name", "common.field.name", 1, 120),
     DESCRIPTION("description", "common.field.description", 2, 200),
-    VALUE("taxValue", "common.field.value", 3, 70)
+    DISCOUNT("discountValue", "common.field.discount", 3, 50),
+    DISCDAYS("discountDays", "common.field.discount.days", 3, 70),
+    NETDAYS("netDays", "common.field.net.days", 3, 70),
     ;
 
     private String propertyName, messageKey;
@@ -35,7 +36,7 @@ public enum VATListDescriptor {
      * @param position
      * @param defaultWidth
      */
-    private VATListDescriptor(String propertyName, String messageKey, int position, int defaultWidth) {
+    private PaymentListDescriptor(String propertyName, String messageKey, int position, int defaultWidth) {
         this.propertyName = propertyName;
         this.messageKey = messageKey;
         this.position = position;
@@ -70,8 +71,8 @@ public enum VATListDescriptor {
         return messageKey;
     }
 
-    public static VATListDescriptor getDescriptorFromColumn(int columnIndex) {
-        for (VATListDescriptor descriptor : values()) {
+    public static PaymentListDescriptor getDescriptorFromColumn(int columnIndex) {
+        for (PaymentListDescriptor descriptor : values()) {
             if(descriptor.getPosition() == columnIndex) {
                 return descriptor;
             }
@@ -81,9 +82,12 @@ public enum VATListDescriptor {
     
     public static final String[] getVATPropertyNames() {
         return new String[]{
-        VATListDescriptor.DEFAULT.getPropertyName(), 
-        VATListDescriptor.NAME.getPropertyName(), 
-        VATListDescriptor.DESCRIPTION.getPropertyName(), 
-        VATListDescriptor.VALUE.getPropertyName()};
+        PaymentListDescriptor.DEFAULT.getPropertyName(), 
+        PaymentListDescriptor.NAME.getPropertyName(), 
+        PaymentListDescriptor.DESCRIPTION.getPropertyName(), 
+        PaymentListDescriptor.DISCOUNT.getPropertyName(),
+        PaymentListDescriptor.DISCDAYS.getPropertyName(),
+        PaymentListDescriptor.NETDAYS.getPropertyName(),
+        };
     }
 }

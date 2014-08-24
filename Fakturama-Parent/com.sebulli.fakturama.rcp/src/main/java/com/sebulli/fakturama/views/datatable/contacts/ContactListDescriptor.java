@@ -21,7 +21,7 @@ package com.sebulli.fakturama.views.datatable.contacts;
  */
 public enum ContactListDescriptor {
 
-    NO("customerNumber", "common.label.default", 0, 60), 
+    NO("customerNumber", "common.field.number", 0, 60), 
     FIRSTNAME("firstName", "common.label.default", 1, 200), 
     LASTNAME("name", "common.field.name", 2, 120), 
     COMPANY("description", "common.field.description", 3, 150), 

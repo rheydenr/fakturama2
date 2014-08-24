@@ -54,7 +54,7 @@ public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */
 		ToolbarPreferencePage.setInitValues(node);
 		ContactPreferencePage.setInitValues(node);
 // TODO static!!!		ContactFormatPreferencePage.setInitValues(node);
-//		DocumentPreferencePage.setInitValues(node);
+// TODO static!!!			DocumentPreferencePage.setInitValues(node);
 		GeneralPreferencePage.setDefaultValues(node);
 //		NumberRangeValuesPreferencePage.setInitValues(node);
 //		NumberRangeFormatPreferencePage.setInitValues(node);

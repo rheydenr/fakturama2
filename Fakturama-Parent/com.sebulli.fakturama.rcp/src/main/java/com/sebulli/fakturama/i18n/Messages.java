@@ -178,20 +178,24 @@ public class Messages {
 	public String DocumentEditor623;
 	public String DocumentEditor624;
 
-	public String DocumentPreferencePage365;
-	public String DocumentPreferencePage366;
-	public String DocumentPreferencePage367;
-	public String DocumentPreferencePage368;
-	public String DocumentPreferencePage369;
-	public String DocumentPreferencePage370;
-	public String DocumentPreferencePage371;
-	public String DocumentPreferencePage372;
-	public String DocumentPreferencePage373;
-	public String DocumentPreferencePage374;
-	public String DocumentPreferencePage375;
-	public String DocumentPreferencePage376;
-	public String DocumentPreferencePage377;
-
+	public String preferencesDocumentUsenetgross;
+    public String preferencesDocumentCopymsgfield;
+    public String preferencesDocumentCopydescfield;
+    public String preferencesDocumentDisplaypreview;
+    public String preferencesDocumentUsepos;
+    public String preferencesDocumentUsediscountsingle;
+    public String preferencesDocumentUsediscountall;
+    public String preferencesDocumentShowcustomerstat;
+    public String preferencesDocumentLabelCompare;
+    public String preferencesDocumentOnlycontactid;
+    public String preferencesDocumentAlsoaddress;
+    public String preferencesDocumentNumberofremarkfields;
+    public String preferencesDocument;
+    public String preferencesDocumentShowitemsprices;
+    public String preferencesDocumentAdddelnotenumber;
+    public String preferencesDocumentLabelDepositrow;
+    public String preferencesDocumentLabelFinalrow;
+    
 	public String DocumentType678;
 	public String DocumentType679;
 	public String DocumentType680;
@@ -293,9 +297,9 @@ public class Messages {
 	public String exporterDataRebate;
 	public String exporterDataItemnumber;
 	public String commonFieldDescription;
-	public String Exporter211;
-	public String Exporter212;
-	public String Exporter213;
+	public String commonFieldPrice;
+	public String commonFieldQuantity;
+	public String commonFieldVat;
 	public String Exporter214;
 	public String Exporter215;
 	public String Exporter216;
@@ -502,7 +506,7 @@ public class Messages {
 
 	public String commonLabelSearchfield;
 
-	public String SelectProductDialog261;
+	public String productFieldItemno;
 
 	public String ShippingEditor529;
 	public String ShippingEditor530;
@@ -549,16 +553,16 @@ public class Messages {
 	public String editorVatDefaultbuttonTooltip;
 	public String editorVatNameTooltip;
 
-	public String ViewContactTable291;
+	public String commonFieldNumber;
 
 	public String ViewDocumentTable270;
 	public String ViewDocumentTable271;
 	public String ViewDocumentTable272;
 	public String ViewDocumentTable273;
 
-	public String ViewPaymentTable288;
-	public String ViewPaymentTable289;
-	public String ViewPaymentTable290;
+	public String commonFieldDiscount;  // TODO evtl. "rebate" ???
+	public String commonFieldDiscountDays;
+	public String commonFieldNetDays;
 
 	public String ViewReceiptVoucherTable292;
 
