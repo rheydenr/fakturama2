@@ -176,7 +176,6 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage {
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_DOCUMENT_USE_ITEM_POS, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_DOCUMENT_USE_NET_GROSS, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, write);

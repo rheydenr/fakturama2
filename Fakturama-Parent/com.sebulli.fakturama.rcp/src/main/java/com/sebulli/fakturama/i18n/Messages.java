@@ -22,8 +22,8 @@ public class Messages {
 	public String AccountSettingsPage160;
 	public String AccountSettingsPage161;
 
-	public String AppFieldEditor351;
-	public String AppFieldEditor352;
+    public String preferencesOfficeAppfieldNovalidapp;
+    public String preferencesOfficeAppfieldNovalidfolder;
 
 	public String BrowserEditor476;
 	public String BrowserEditor477;
@@ -225,8 +225,8 @@ public class Messages {
 	public String ExportOptionPage243;
 	public String ExportOptionPage253;
 
-	public String ExportPreferencePage311;
-	public String ExportPreferencePage312;
+    public String preferencesExportUsepaydate;
+    public String preferencesExport;
 
 	public String ExportReceiptWizard254;
 
@@ -418,17 +418,17 @@ public class Messages {
 	public String OOCalcExporter258;
 	public String OOCalcExporter259;
 
-	public String OfficePreferencePage354;
-	public String OfficePreferencePage355;
-	public String OfficePreferencePage356;
-	public String OfficePreferencePage357;
-	public String OfficePreferencePage358;
-	public String OfficePreferencePage359;
-	public String OfficePreferencePage360;
-	public String OfficePreferencePage361;
-	public String OfficePreferencePage362;
-	public String OfficePreferencePage363;
-	public String OfficePreferencePage364;
+    public String preferencesOfficeExampleshort;
+    public String preferencesOfficeApp;
+    public String preferencesOfficeFolder;
+    public String preferencesOfficeExportasLabel;
+    public String preferencesOfficeOnlyodtLabel;
+    public String preferencesOfficeOnlypdfLabel;
+    public String preferencesOfficeOdtpdfLabel;
+    public String preferencesOfficeFormatandpathodt;
+    public String preferencesOfficeFormatandpathpdf;
+    public String preferencesOfficeStartnewthread;
+    public String preferencesOffice;
 
 	public String OfficeStarter148;
 	public String OfficeStarter149;
@@ -593,8 +593,8 @@ public class Messages {
 	public String VoucherEditor565;
 	public String VoucherEditor566;
 
-	public String WebShopAuthorizationPreferencePage393;
-	public String WebShopAuthorizationPreferencePage394;
+    public String preferencesWebshopAuthorizationPasswordproteced;
+    public String preferencesWebshopAuthorization;
 
 	public String WebShopImportAction73;
 
@@ -619,22 +619,22 @@ public class Messages {
 	public String WebShopImportManager471;
 	public String WebShopImportManager472;
 
-	public String WebShopImportPreferencePage331;
-	public String WebShopImportPreferencePage332;
-	public String WebShopImportPreferencePage333;
-	public String WebShopImportPreferencePage334;
-	public String WebShopImportPreferencePage335;
-	public String WebShopImportPreferencePage336;
-	public String WebShopImportPreferencePage337;
-	public String WebShopImportPreferencePage338;
-	public String WebShopImportPreferencePage339;
-	public String WebShopImportPreferencePage340;
-	public String WebShopImportPreferencePage341;
-	public String WebShopImportPreferencePage342;
-	public String WebShopImportPreferencePage343;
-	public String WebShopImportPreferencePage344;
-	public String WebShopImportPreferencePage345;
-	public String WebShopImportPreferencePage346;
+    public String preferencesWebshopEnabled;
+    public String preferencesWebshopUrl;
+    public String preferencesWebshopUser;
+    public String preferencesWebshopPassword;
+    public String preferencesWebshopLabelProductsincategory;
+    public String preferencesWebshopLabelCustomersincategory;
+    public String preferencesWebshopLabelShippingsincategory;
+    public String preferencesWebshopNoifycustomerOnprogress;
+    public String preferencesWebshopNoifycustomerOnshipped;
+    public String preferencesWebshopMaxproducts;
+    public String preferencesWebshopModifiedproducts;
+    public String preferencesWebshopEanasitemno;
+    public String preferencesWebshopImport;
+    public String preferencesWebshopDefaulturl;
+    public String preferencesWebshop;
+    public String preferencesWebshopCustomer;
 
 	public String preferencesYourcompany;
 	public String preferencesYourcompanyName;

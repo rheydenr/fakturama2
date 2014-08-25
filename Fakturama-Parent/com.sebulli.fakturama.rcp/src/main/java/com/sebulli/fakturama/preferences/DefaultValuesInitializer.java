@@ -58,13 +58,13 @@ public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */
 		GeneralPreferencePage.setDefaultValues(node);
 //		NumberRangeValuesPreferencePage.setInitValues(node);
 //		NumberRangeFormatPreferencePage.setInitValues(node);
-//		OfficePreferencePage.setInitValues(node);
+		OfficePreferencePage.setInitValues(node);
 		ProductPreferencePage.setInitValues(node);
-//		WebShopImportPreferencePage.setInitValues(node);
+// TODO static!!!    WebShopImportPreferencePage.setInitValues(node);
 		YourCompanyPreferencePage.setInitValues(node);
-//		ExportPreferencePage.setInitValues(node);
+		ExportPreferencePage.setInitValues(node);
 //		OptionalItemsPreferencePage.setInitValues(node);
-//		WebShopAuthorizationPreferencePage.setInitValues(node);
+		WebShopAuthorizationPreferencePage.setInitValues(node);
 		BrowserPreferencePage.setInitValues(node);
 //
 //		ColumnWidthDialogContactsPreferencePage.setInitValues(node);
