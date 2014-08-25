@@ -226,13 +226,13 @@ public class MigrationManager {
 	        OldTableinfo.Shippings,
 	        OldTableinfo.Payments,
 	        OldTableinfo.Properties,
-//	        OldTableinfo.Texts,
-////			OldTableinfo.Lists,
-//	        OldTableinfo.Expenditures,
-//	        OldTableinfo.Receiptvouchers,
-//	        OldTableinfo.Contacts,
-//	        OldTableinfo.Products,
-//	        OldTableinfo.Documents
+	        OldTableinfo.Texts,
+//			OldTableinfo.Lists,
+	        OldTableinfo.Expenditures,
+	        OldTableinfo.Receiptvouchers,
+	        OldTableinfo.Contacts,
+	        OldTableinfo.Products,
+	        OldTableinfo.Documents
 		};
 		//  orderedTasks[] now contains all tables which have to be converted
 

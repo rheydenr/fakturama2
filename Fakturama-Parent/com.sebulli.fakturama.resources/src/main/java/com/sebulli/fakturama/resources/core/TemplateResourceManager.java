@@ -61,39 +61,46 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         // Exit, if the workspace path is not valid
         Path workspacePath = Paths.get(workspace);
         if (!Files.isDirectory(workspacePath)) {
-            return false; // TODO return error???
-        }
-
-        // Create and fill the template folder, if it does not exist.
-        // Copy the document templates from the resources to the file system
-        for (DocumentType doctype : DocumentType.values()) {
-            switch (doctype) {
-            case NONE:
-                // do nothing!
-                break;
-            case DELIVERY:
-                resourceCopy("Templates/Delivery/Document.ott", Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
-                break;
-            default:
-                resourceCopy("Templates/Invoice/Document.ott", Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
-                break;
+            // Create and fill the template folder, if it does not exist.
+            try {
+                Files.createDirectory(workspacePath);
+                // Copy the document templates from the resources to the file system
+                for (DocumentType doctype : DocumentType.values()) {
+                    switch (doctype) {
+                    case NONE:
+                        // do nothing!
+                        break;
+                    case DELIVERY:
+                        resourceCopy("Templates/Delivery/Document.ott",
+                                Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
+                        break;
+                    default:
+                        resourceCopy("Templates/Invoice/Document.ott",
+                                Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
+                        break;
+                    }
+                }
+    
+                // Create the start page, if it does not exist.
+                Path startPage = Paths.get(workspace, templateFolderName, "Start", "start.html");
+                if (Files.notExists(startPage)) {
+                    resourceCopy("Templates/Start/start.html", Paths.get(workspace, templateFolderName, "Start", "start.html"));
+                    resourceCopy("Templates/Start/logo.png", Paths.get(workspace, templateFolderName,  "Start", "logo.png"));
+                }
+        
+                // Copy the parcel service templates
+                Path parcelServiceFolder = Paths.get(workspace, templateFolderName, translate("parcel.service.name")); // new File(ParcelServiceManager.getTemplatePath());
+                if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
+                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "DHL_de.txt"));
+                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "eFILIALE_de.txt"));
+                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "myHermes_de.txt"));
+                }
+            } catch (IOException ioex) {
+                log.error(ioex, "couldn't create template dir in workspace");
+                return false; 
             }
         }
 
-        // Create the start page, if it does not exist.
-        Path startPage = Paths.get(workspace, templateFolderName, "Start", "start.html");
-        if (Files.notExists(startPage)) {
-            resourceCopy("Templates/Start/start.html", Paths.get(workspace, templateFolderName, "Start", "start.html"));
-            resourceCopy("Templates/Start/logo.png", Paths.get(workspace, templateFolderName,  "Start", "logo.png"));
-        }
-
-        // Copy the parcel service templates
-        Path parcelServiceFolder = Paths.get(workspace, templateFolderName, translate("parcel.service.name")); // new File(ParcelServiceManager.getTemplatePath());
-        if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-            resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "DHL_de.txt"));
-            resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "eFILIALE_de.txt"));
-            resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "myHermes_de.txt"));
-        }
         return true;
     }
     

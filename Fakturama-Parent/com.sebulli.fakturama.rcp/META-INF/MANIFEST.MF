@@ -3,29 +3,29 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
 Bundle-Version: 2.0.0.qualifier
-Require-Bundle: org.eclipse.gemini.ext.di;bundle-version="1.0.0",
- com.sebulli.fakturama.resources;bundle-version="2.0.0",
+Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.model;bundle-version="2.0.0",
- org.apache.commons.lang3;bundle-version="3.1.0",
+ org.eclipse.gemini.ext.di;bundle-version="1.0.0",
  org.eclipse.nebula.widgets.nattable.core;bundle-version="1.0.1",
  org.eclipse.nebula.widgets.pgroup;bundle-version="1.0.0",
+ org.eclipse.nebula.widgets.formattedtext;bundle-version="1.0.0",
  ca.odell.glazedlists,
- org.eclipse.jface;bundle-version="3.10.0",
  org.eclipse.e4.core.services,
- org.eclipse.ui.workbench,
+ org.eclipse.jface;bundle-version="3.10.0",
+ org.eclipse.jface.databinding;bundle-version="1.6.200",
  org.eclipse.core.databinding;bundle-version="1.4.1",
  org.eclipse.core.databinding.beans;bundle-version="1.2.200",
  org.eclipse.core.databinding.observable;bundle-version="1.4.1",
  org.eclipse.core.databinding.property;bundle-version="1.4.200",
- org.eclipse.jface.databinding,
- com.ibm.icu;bundle-version="52.1.0",
- org.eclipse.nebula.widgets.formattedtext;bundle-version="1.0.0",
  org.eclipse.e4.ui.workbench,
  org.eclipse.core.jobs,
+ com.ibm.icu;bundle-version="52.1.0",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
  org.apache.commons.cli;bundle-version="1.2.0",
- org.apache.commons.codec;bundle-version="1.6.0"
+ org.apache.commons.codec;bundle-version="1.6.0",
+ org.apache.commons.lang3;bundle-version="3.1.0",
+ org.eclipse.ui;bundle-version="3.106.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy 
 Bundle-Localization: OSGI-INF/l10n/bundle

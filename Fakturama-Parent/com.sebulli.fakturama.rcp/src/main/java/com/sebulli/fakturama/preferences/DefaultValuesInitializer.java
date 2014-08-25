@@ -72,13 +72,10 @@ public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */
 //		ColumnWidthDialogTextsPreferencePage.setInitValues(node);
 //
 //		ColumnWidthContactsPreferencePage.setInitValues(node);
-//		ColumnWidthDocumentsPreferencePage.setInitValues(node);
 //		ColumnWidthVouchersPreferencePage.setInitValues(node);
 //		ColumnWidthVoucherItemsPreferencePage.setInitValues(node);
 //		ColumnWidthItemsPreferencePage.setInitValues(node);
 //		ColumnWidthListPreferencePage.setInitValues(node);
-//		ColumnWidthPaymentsPreferencePage.setInitValues(node);
-//		ColumnWidthProductsPreferencePage.setInitValues(node);
 //		ColumnWidthShippingsPreferencePage.setInitValues(node);
 //		ColumnWidthTextsPreferencePage.setInitValues(node);
 

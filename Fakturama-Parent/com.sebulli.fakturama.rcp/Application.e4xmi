@@ -62,10 +62,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7xq1cPoyEeKmVtv93KLoRw" elementId="org.eclipse.ui.file.close" label="%main.menu.file.close" command="_RmrPQCTQEeS9z6SQNducwg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Dd9LsPozEeKmVtv93KLoRw" elementId="org.eclipse.ui.file.closeAll" label="%main.menu.file.closeall" command="_pBm00CvEEeSxtNFFgqSUpw"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.1"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file.save" iconURI="icons://COMMAND_SAVE" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Yew2kPo0EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.saveAll" label="%main.menu.file.saveall" iconURI="icons://COMMAND_SAVEALL" command="_jH3nYCTLEeS9z6SQNducwg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file.save" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/save_edit.png" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Yew2kPo0EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.saveAll" label="%main.menu.file.saveall" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/saveall_edit.png" command="_jH3nYCTLEeS9z6SQNducwg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.2"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.print" label="%main.menu.file.print" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.print" label="%main.menu.file.print" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iKbb4Po6EeKmVtv93KLoRw" elementId="menu:main.menu.file.handleselectworkspace" label="%command.selectworkspace.name" enabled="false" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_RjR8sEgIEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.0"/>
