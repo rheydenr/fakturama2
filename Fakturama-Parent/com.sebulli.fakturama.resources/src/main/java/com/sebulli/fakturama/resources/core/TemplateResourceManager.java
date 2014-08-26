@@ -39,7 +39,9 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  */
 public class TemplateResourceManager implements ITemplateResourceManager {
     private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
-    private Logger log;
+    private Logger log;   
+    
+    // Messages class can't be used at this point, since it isn't in context at this stage
     private TranslationService translationService;
 //    private IEclipsePreferences eclipsePrefs;
 
@@ -51,7 +53,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         this.log = context.get(Logger.class);
 //        this.eclipsePrefs = context.get(IEclipsePreferences.class);
         this.translationService = context.get(TranslationService.class);
-        String templateFolderName = translate("config.workspace.templates.name"); 
+        String templateFolderName = translate("config.workspace.templates.name2"); 
         
         // Exit if the workspace path is not set
         if (StringUtils.isBlank(workspace)) {

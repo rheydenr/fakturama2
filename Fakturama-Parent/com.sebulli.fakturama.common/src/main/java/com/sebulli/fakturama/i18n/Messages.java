@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
+import org.eclipse.e4.core.services.nls.Message;
 
 /**
  * This class contains all the message keys from
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.text.StrTokenizer;
  * @author rheydenr
  *
  */
+@Message(contributorURI="platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 
 	public String AccountSettingsPage159;

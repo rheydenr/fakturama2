@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="161">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="163">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.feature.group" version="2.9.0.v20140203-1126"/>
@@ -77,18 +77,23 @@
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20140808-1908"/>
-<unit id="org.eclipse.e4.tools.emf.liveeditor.feature.feature.group" version="0.15.0.v20140812-1141"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140811-0818"/>
-<unit id="org.eclipse.e4.tools.css.editor.feature.feature.group" version="0.14.0.v20140808-1908"/>
-<repository location="http://download.vogella.com/luna/e4tools"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.mysql.jdbc.feature.feature.group" version="5.1.30"/>
 <unit id="org.apache.commons.feature.feature.group" version="3.2.0"/>
 <unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201408152323"/>
 <unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.jboss.tools.maven.apt.feature.feature.group" version="1.1.0.201405210909"/>
+<repository location="http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20140808-1908"/>
+<unit id="org.eclipse.e4.tools.emf.liveeditor.feature.feature.group" version="0.15.0.v20140819-0835"/>
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140811-0818"/>
+<unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140808-1908"/>
+<unit id="org.eclipse.e4.tools.css.editor.feature.feature.group" version="0.14.0.v20140808-1908"/>
+<repository location="http://download.vogella.com/luna/e4tools"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
