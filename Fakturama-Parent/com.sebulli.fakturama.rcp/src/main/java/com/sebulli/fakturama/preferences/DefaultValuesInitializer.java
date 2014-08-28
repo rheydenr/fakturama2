@@ -25,7 +25,7 @@ import com.opcoach.e4.preferences.ScopedPreferenceStore;
  * 
  * @author Gerd Bartelt
  */
-public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */{
+public class DefaultValuesInitializer {
 
     private Logger log;
     
@@ -35,8 +35,6 @@ public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */
     public DefaultValuesInitializer(Logger log) {
         this.log = log;
     }
-
-
 
     /**
 	 * This method is called by the preference initializer to initialize default
@@ -66,19 +64,5 @@ public class DefaultValuesInitializer /*extends AbstractPreferenceInitializer */
 //		OptionalItemsPreferencePage.setInitValues(node);
 		WebShopAuthorizationPreferencePage.setInitValues(node);
 		BrowserPreferencePage.setInitValues(node);
-//
-//		ColumnWidthDialogContactsPreferencePage.setInitValues(node);
-//		ColumnWidthDialogProductsPreferencePage.setInitValues(node);
-//		ColumnWidthDialogTextsPreferencePage.setInitValues(node);
-//
-//		ColumnWidthContactsPreferencePage.setInitValues(node);
-//		ColumnWidthVouchersPreferencePage.setInitValues(node);
-//		ColumnWidthVoucherItemsPreferencePage.setInitValues(node);
-//		ColumnWidthItemsPreferencePage.setInitValues(node);
-//		ColumnWidthListPreferencePage.setInitValues(node);
-//		ColumnWidthShippingsPreferencePage.setInitValues(node);
-//		ColumnWidthTextsPreferencePage.setInitValues(node);
-
-		
 	}
 }

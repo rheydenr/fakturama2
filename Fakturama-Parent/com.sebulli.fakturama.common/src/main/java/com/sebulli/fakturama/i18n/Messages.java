@@ -17,7 +17,7 @@ import org.eclipse.e4.core.services.nls.Message;
  * @author rheydenr
  *
  */
-@Message(contributorURI="platform:/plugin/com.sebulli.fakturama.rcp")
+@Message(contributionURI="platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 
 	public String AccountSettingsPage159;
@@ -280,6 +280,7 @@ public class Messages {
 	public String commonFieldCity;
 	public String commonFieldCountry;
 	public String commonFieldAccountholder;
+	public String commonFieldTotal;
 	public String Exporter186;
 	public String Exporter187;
 	public String Exporter188;
@@ -383,38 +384,39 @@ public class Messages {
 
 	public String NoVatContentProvider640;
 
-	public String NumberRangeFormatPreferencePage427;
-	public String NumberRangeFormatPreferencePage428;
-	public String NumberRangeFormatPreferencePage429;
-	public String NumberRangeFormatPreferencePage430;
-	public String NumberRangeFormatPreferencePage431;
-	public String NumberRangeFormatPreferencePage432;
-	public String NumberRangeFormatPreferencePage433;
-	public String NumberRangeFormatPreferencePage434;
-	public String NumberRangeFormatPreferencePage435;
-	public String NumberRangeFormatPreferencePage436;
-	public String NumberRangeFormatPreferencePage437;
-	public String NumberRangeFormatPreferencePage438;
-	public String NumberRangeFormatPreferencePage439;
-	public String NumberRangeFormatPreferencePage440;
-	public String NumberRangeFormatPreferencePage441;
-	public String NumberRangeFormatPreferencePage442;
-	public String NumberRangeFormatPreferencePage443;
-	public String NumberRangeFormatPreferencePage444;
-	public String NumberRangeFormatPreferencePage445;
-	public String NumberRangeFormatPreferencePage446;
+	public String preferencesNumberrangeFormatCustomernoLabel;
+	public String preferencesNumberrangeFormatItemnoLabel;
+	public String preferencesNumberrangeFormatInvoicenoLabel;
+	public String preferencesNumberrangeFormatDeliverynotenoLabel;
+	public String preferencesNumberrangeFormatOffernoLabel;
+	public String preferencesNumberrangeFormatOrdernoLabel;
+	public String preferencesNumberrangeFormatConfirmationoLabel;
+	public String preferencesNumberrangeFormatCreditnoLabel;
+	public String preferencesNumberrangeFormatDunningnoLabel;
+	public String preferencesNumberrangeFormatProformanoLabel;
+	public String preferencesNumberrangeFormat;
+	public String preferencesNumberrangeFormatCustomernoValue;
+	public String preferencesNumberrangeFormatItemnoValue;
+	public String preferencesNumberrangeFormatInvoicenoValue;
+	public String preferencesNumberrangeFormatDeliverynotenoValue;
+	public String preferencesNumberrangeFormatOffernoValue;
+	public String preferencesNumberrangeFormatOrdernoValue;
+	public String preferencesNumberrangeFormatConfirmationoValue;
+	public String preferencesNumberrangeFormatCreditnoValue;
+	public String preferencesNumberrangeFormatDunningnoValue;
+	public String preferencesNumberrangeFormatProformanoValue;
 
-	public String NumberRangeValuesPreferencePage298;
-	public String NumberRangeValuesPreferencePage299;
-	public String NumberRangeValuesPreferencePage300;
-	public String NumberRangeValuesPreferencePage301;
-	public String NumberRangeValuesPreferencePage302;
-	public String NumberRangeValuesPreferencePage303;
-	public String NumberRangeValuesPreferencePage304;
-	public String NumberRangeValuesPreferencePage305;
-	public String NumberRangeValuesPreferencePage306;
-	public String NumberRangeValuesPreferencePage307;
-	public String NumberRangeValuesPreferencePage308;
+	public String preferencesNumberrangeValuesLabelNextno;
+	public String preferencesNumberrangeValuesLabelNextitemno;
+	public String preferencesNumberrangeValuesLabelNextinvoiceno;
+	public String preferencesNumberrangeValuesLabelNextdeliverynoteno;
+	public String preferencesNumberrangeValuesLabelNextofferno;
+	public String preferencesNumberrangeValuesLabelNextorderno;
+	public String preferencesNumberrangeValuesLabelNextconfirmno;
+	public String preferencesNumberrangeValuesLabelNextcreditno;
+	public String preferencesNumberrangeValuesLabelNextdunningno;
+	public String preferencesNumberrangeValuesLabelNextproformano;
+	public String preferencesNumberrangeValuesLabel;
 
 	public String OOCalcExporter257;
 	public String OOCalcExporter258;
@@ -441,12 +443,12 @@ public class Messages {
 
 	public String OpenParcelServiceAction110;
 
-	public String OptionalItemsPreferencePage419;
-	public String OptionalItemsPreferencePage420;
-	public String OptionalItemsPreferencePage421;
-	public String OptionalItemsPreferencePage422;
-	public String OptionalItemsPreferencePage423;
-	public String OptionalItemsPreferencePage424;
+	public String preferencesOptionalitemsUse;
+	public String preferencesOptionalitemsReplaceprice;
+	public String preferencesOptionalitemsPricereplacement;
+	public String preferencesOptionalitemsLabel;
+	public String preferencesOptionalitems;
+	public String preferencesOptionalitemsItemlabel;
 
 	public String OrderStatusDialog262;
 	public String OrderStatusDialog263;
@@ -501,6 +503,7 @@ public class Messages {
 	public String preferencesProduct;
 
 	public String ReceiptVoucherEditor642;
+	public String receiptvoucherFieldBook;
 
 	public String ReorganizeDocumentsAction117;
 	public String ReorganizeDocumentsAction118;
@@ -557,10 +560,7 @@ public class Messages {
 
 	public String commonFieldNumber;
 
-	public String ViewDocumentTable270;
-	public String ViewDocumentTable271;
-	public String ViewDocumentTable272;
-	public String ViewDocumentTable273;
+	public String documentFieldPrinted;
 
 	public String commonFieldDiscount;  // TODO evtl. "rebate" ???
 	public String commonFieldDiscountDays;
@@ -570,7 +570,10 @@ public class Messages {
 
 	public String commonLabelDefault;
 
-	public String ViewVoucherTable287;
+	public String receiptvoucherFieldVoucher;
+	public String commonFieldDocument;
+	public String receiptvoucherFieldSupplier;
+	public String receiptvoucherFieldState;
 
 	public String VoucherEditor545;
 	public String VoucherEditor546;
@@ -781,21 +784,21 @@ public class Messages {
 	public String mainMenuWindow;
 
 	public String pageBrowser;
-	public String pageColumnwidth;
-	public String pageColumnwidthcontacts;
-	public String pageColumnwidthdialogcontacts;
-	public String pageColumnwidthdialogproducts;
-	public String pageColumnwidthdialogtexts;
-	public String pageColumnwidthdocuments;
-	public String pageColumnwidthitems;
-	public String pageColumnwidthlist;
-	public String pageColumnwidthpayments;
-	public String pageColumnwidthproducts;
-	public String pageColumnwidthshippings;
-	public String pageColumnwidthtexts;
-	public String pageColumnwidthvat;
-	public String pageColumnwidthvoucheritems;
-	public String pageColumnwidthvouchers;
+//	public String pageColumnwidth;
+//	public String pageColumnwidthcontacts;
+//	public String pageColumnwidthdialogcontacts;
+//	public String pageColumnwidthdialogproducts;
+//	public String pageColumnwidthdialogtexts;
+//	public String pageColumnwidthdocuments;
+//	public String pageColumnwidthitems;
+//	public String pageColumnwidthlist;
+//	public String pageColumnwidthpayments;
+//	public String pageColumnwidthproducts;
+//	public String pageColumnwidthshippings;
+//	public String pageColumnwidthtexts;
+//	public String pageColumnwidthvat;
+//	public String pageColumnwidthvoucheritems;
+//	public String pageColumnwidthvouchers;
 	public String pageCompany;
 	public String pageContacts;
 	public String pageContactsFormat;

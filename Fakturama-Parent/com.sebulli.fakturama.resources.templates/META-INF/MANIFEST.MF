@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Fakturama Templates
+Bundle-Name: com.sebulli.fakturama.resources.templates
 Bundle-SymbolicName: com.sebulli.fakturama.resources.templates
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: Fakturama.org

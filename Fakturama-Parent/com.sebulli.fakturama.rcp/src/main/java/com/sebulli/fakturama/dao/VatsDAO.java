@@ -16,6 +16,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.oldmodel.OldVats;
 
 @Creatable
@@ -78,8 +79,8 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
 		Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldVat.getDescription()),
-				cb.equal(root.<String> get("name"), oldVat.getName())));
+		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get(VAT_.description), oldVat.getDescription()),
+				cb.equal(root.<String> get(VAT_.name), oldVat.getName())));
 		return getEntityManager().createQuery(cq).getSingleResult();
 	}
 
@@ -89,7 +90,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 * @return String[] of visible VAT properties
 	 */
 	public String[] getVisibleProperties() {
-		String[] retval = new String[] { "name", "description", "taxValue" };
+		String[] retval = new String[] { VAT_.name.getName(), VAT_.description.getName(), VAT_.taxValue.getName()};
 		return retval;
 	}
 }

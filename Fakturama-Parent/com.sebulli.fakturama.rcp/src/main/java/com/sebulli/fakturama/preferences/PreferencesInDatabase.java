@@ -66,33 +66,20 @@ public class PreferencesInDatabase {
 	 */
 	public static void loadOrSavePreferencesFromOrInDatabase(boolean save) {
 		ToolbarPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
-//		DocumentPreferencePage.syncWithPreferencesFromDatabase(save);
+		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
+		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
+		DocumentPreferencePage.syncWithPreferencesFromDatabase(save);
 		GeneralPreferencePage.syncWithPreferencesFromDatabase(save);
-//		NumberRangeFormatPreferencePage.syncWithPreferencesFromDatabase(save);
-//		NumberRangeValuesPreferencePage.syncWithPreferencesFromDatabase(save);
-//		OfficePreferencePage.syncWithPreferencesFromDatabase(save);
+		NumberRangeFormatPreferencePage.syncWithPreferencesFromDatabase(save);
+		NumberRangeValuesPreferencePage.syncWithPreferencesFromDatabase(save);
+		OfficePreferencePage.syncWithPreferencesFromDatabase(save);
 		ProductPreferencePage.syncWithPreferencesFromDatabase(save);
-//		WebShopImportPreferencePage.syncWithPreferencesFromDatabase(save);
-//		YourCompanyPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ExportPreferencePage.syncWithPreferencesFromDatabase(save);
-//		OptionalItemsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		WebShopAuthorizationPreferencePage.syncWithPreferencesFromDatabase(save);
-//		BrowserPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthDialogContactsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthDialogProductsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthDialogTextsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthContactsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthDocumentsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthVouchersPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthVoucherItemsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthItemsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthListPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthPaymentsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthProductsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthShippingsPreferencePage.syncWithPreferencesFromDatabase(save);
-//		ColumnWidthTextsPreferencePage.syncWithPreferencesFromDatabase(save);
+		WebShopImportPreferencePage.syncWithPreferencesFromDatabase(save);
+		YourCompanyPreferencePage.syncWithPreferencesFromDatabase(save);
+		ExportPreferencePage.syncWithPreferencesFromDatabase(save);
+		OptionalItemsPreferencePage.syncWithPreferencesFromDatabase(save);
+		WebShopAuthorizationPreferencePage.syncWithPreferencesFromDatabase(save);
+		BrowserPreferencePage.syncWithPreferencesFromDatabase(save);
 	}
 
 	/**

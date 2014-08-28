@@ -234,7 +234,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
    <features>
       <feature id="com.sebulli.fakturama.feature" version="2.0.0.qualifier"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.eclipse.persistence.jpa" version="2.5.1.v20130918-f2b9fc5"/>
       <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
       <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
@@ -247,6 +246,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.persistence.jpa"/>
    </features>
 
    <configurations>
@@ -261,5 +261,9 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <property name="org.eclipse.update.reconcile" value="false" />
       <property name="osgi.instance.area" value="@user.home/.fakturama2" />
    </configurations>
+
+   <repositories>
+      <repository location="http://www.fakturama.org/" enabled="true" />
+   </repositories>
 
 </product>
