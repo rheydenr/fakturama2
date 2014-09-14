@@ -38,11 +38,17 @@ public class OpenVatsHandler {
 	public void execute(final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
 	    MPart vatPart = partService.findPart(VATListTable.ID);
-	    vatPart.setVisible(true);
-	    // otherwise no content is rendered :-(
-	    vatPart.setToBeRendered(true);
-		partService.showPart(vatPart,
-				PartState.ACTIVATE);
+	    if(vatPart != null && vatPart.isVisible()) {
+	        System.out.println("part is already created!");
+    		partService.showPart(vatPart,
+    				PartState.VISIBLE);
+	    } else {
+	        vatPart.setVisible(true);
+	        // otherwise no content is rendered :-(
+	        vatPart.setToBeRendered(true);
+    		partService.showPart(vatPart,
+    				PartState.ACTIVATE);
+	    }
 	}
 	
 	@CanExecute

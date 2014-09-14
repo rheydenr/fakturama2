@@ -71,7 +71,7 @@ import com.sebulli.fakturama.model.IEntity;
 public abstract class Editor<T extends IEntity> {
 	
 	@Inject
-	@Preference(nodePath = "/configuration/defaultValues")
+	@Preference
 	protected IEclipsePreferences defaultValuePrefs;
 	
 	@Inject

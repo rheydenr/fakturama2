@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
@@ -189,7 +190,7 @@ public class VatEditor extends Editor<VAT> {
         VAT stdVat = null;
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
-        String tmpObjId = (String) part.getContext().get("com.sebulli.fakturama.rcp.editor.objId");
+        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input

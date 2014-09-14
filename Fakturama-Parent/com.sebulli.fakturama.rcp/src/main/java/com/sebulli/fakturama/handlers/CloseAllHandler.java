@@ -21,7 +21,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
@@ -49,8 +48,8 @@ public class CloseAllHandler {
             InterruptedException {
         // at first find the PartStack "detailpanel"
         MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
-        for (MStackElement mpart : documentPartStack.getChildren()) {
-            MPart activePart = (MPart) mpart;
+        while(!documentPartStack.getChildren().isEmpty()) {
+            MPart activePart = (MPart) documentPartStack.getSelectedElement();
             // ask before closing
             if (activePart != null) {
                 // the parts are removed when they are hidden
@@ -59,6 +58,7 @@ public class CloseAllHandler {
                 } else {
                     partService.hidePart(activePart, true);
                 }
+                partService.requestActivation();
             }
         }
     }

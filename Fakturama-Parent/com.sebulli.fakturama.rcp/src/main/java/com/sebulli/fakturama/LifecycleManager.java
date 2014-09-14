@@ -140,7 +140,7 @@ public class LifecycleManager {
 
         // Set the default values to this entries
         Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
-        VAT defaultVat;
+        VAT defaultVat = null;
         if(vatsDAO.getCount() == 0L) {
             defaultVat = new VAT();
             defaultVat.setName(msg.dataDefaultVat);
@@ -148,6 +148,8 @@ public class LifecycleManager {
             defaultVat.setTaxValue(0.0);
             defaultVat.setDeleted(Boolean.FALSE);
             defaultVat = vatsDAO.save(defaultVat);
+        }
+        if(defaultVat != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
             defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
         
@@ -182,11 +184,11 @@ public class LifecycleManager {
         }
         
         // TODO: Load the default country codes
-//        CountryCodes.loadFromRecouces(list, null);
+//        CountryCodes.loadFromResources(list, null);
         
-        // now, initialize some other preferences
-        DefaultValuesInitializer defaultValuesInitializer = new DefaultValuesInitializer(log);
-        defaultValuesInitializer.initializeDefaultPreferences();
+        // now, initialize some other preferences ==> das macht schon der Extension Point!
+//        DefaultValuesInitializer defaultValuesInitializer = new DefaultValuesInitializer(log);
+//        defaultValuesInitializer.initializeDefaultPreferences();
     }
 
     @ProcessAdditions

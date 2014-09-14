@@ -159,7 +159,7 @@ public class ConfigurationManager {
 					// now check if an old database has to be converted
 					if (eclipsePrefs.get(MIGRATE_OLD_DATA, null) != null) {
 						appContext.applicationRunning();
-						MigrationManager migMan = new MigrationManager(context, msg);
+						MigrationManager migMan = new MigrationManager(context, msg, eclipsePrefs);
 						migMan.migrateOldData(shell);
 	                    eclipsePrefs.remove(MIGRATE_OLD_DATA);
 					}

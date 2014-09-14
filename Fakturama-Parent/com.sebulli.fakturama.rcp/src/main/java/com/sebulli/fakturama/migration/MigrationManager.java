@@ -55,6 +55,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.dao.CountryCodesDAO;
@@ -128,17 +129,11 @@ public class MigrationManager {
 	@Inject
 	private Logger log;
 
-	@Inject
-	@Preference
 	private IEclipsePreferences eclipsePrefs;
 	
 	@Inject
 	@Translation
 	protected Messages msg;
-
-	
-//	@Resource
-//	private IResourcePool rp;
 
 	/*
 	 * all available DAO classes
@@ -175,10 +170,10 @@ public class MigrationManager {
      * @param preferences
      * @param msg
      */
-    public MigrationManager(IEclipseContext context, Messages msg) {
+    public MigrationManager(IEclipseContext context, Messages msg, IEclipsePreferences eclipsePrefs) {
         this.context = context;
         this.log = context.get(org.eclipse.e4.core.services.log.Logger.class);
-        this.eclipsePrefs = context.get(org.eclipse.core.runtime.preferences.IEclipsePreferences.class);
+        this.eclipsePrefs = eclipsePrefs; //context.get(IEclipsePreferences.class);
         this.msg = msg;
     }
 
@@ -254,64 +249,64 @@ public class MigrationManager {
 				}
 
 				/**
-					 * entry point for migration of old data (db only)
-					 * 
-					 * @param parent the current {@link Shell}
-					 * @throws BackingStoreException
-					 */
-					@Execute
-					public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
-						eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
-						eclipsePrefs.flush();
-				
-						// initialize DAOs via EclipseContext
-						// new Entities have their own dao ;-)
-						contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
-						countryCodesDAO = ContextInjectionFactory.make(CountryCodesDAO.class, context);
-						documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
-						propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
-						expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
-						paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
-						productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
-						receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
-						shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
-						vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
-						textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
-				
-						// old entities only have one DAO for all entities
-						oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
-				
-						// now start a ProgressMonitorDialog for tracing the progress of migration
-						ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
-						try {
-							IRunnableWithProgress op = new IRunnableWithProgress() {
-				
-								@Override
-								public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-									monitor.beginTask("Migration task running ...", orderedTasks.length);
-									for (OldTableinfo tableinfo : orderedTasks) {
-										monitor.subTask("converting " + tableinfo.name());
-										checkCancel(monitor);
-										runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
-				//						monitor.worked(1);
-									}
-									monitor.done();
+				 * entry point for migration of old data (db only)
+				 * 
+				 * @param parent the current {@link Shell}
+				 * @throws BackingStoreException
+				 */
+				@Execute
+				public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
+					eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
+					eclipsePrefs.flush();
+			
+					// initialize DAOs via EclipseContext
+					// new Entities have their own dao ;-)
+					contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
+					countryCodesDAO = ContextInjectionFactory.make(CountryCodesDAO.class, context);
+					documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
+					propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
+					expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
+					paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
+					productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
+					receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
+					shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
+					vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
+					textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
+			
+					// old entities only have one DAO for all entities
+					oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
+			
+					// now start a ProgressMonitorDialog for tracing the progress of migration
+					ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
+					try {
+						IRunnableWithProgress op = new IRunnableWithProgress() {
+			
+							@Override
+							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+								monitor.beginTask("Migration task running ...", orderedTasks.length);
+								for (OldTableinfo tableinfo : orderedTasks) {
+									monitor.subTask("converting " + tableinfo.name());
+									checkCancel(monitor);
+									runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
+			//						monitor.worked(1);
 								}
-							};
-							;
-							progressMonitorDialog.run(true, true, op);
-						}
-						catch (InvocationTargetException e) {
-							log.error("Fehler: ", e.getMessage());
-						}
-						catch (InterruptedException e) {
-							// handle cancellation
-							throw new OperationCanceledException();
-						}
-						finally {
-							log.info("fäddich!");
-						}
+								monitor.done();
+							}
+						};
+						;
+						progressMonitorDialog.run(true, true, op);
 					}
+					catch (InvocationTargetException e) {
+						log.error("Fehler: ", e.getMessage());
+					}
+					catch (InterruptedException e) {
+						// handle cancellation
+						throw new OperationCanceledException();
+					}
+					finally {
+						log.info("fäddich!");
+					}
+				}
 			};
 			;
 			progressMonitorDialog.run(true, true, op);
@@ -324,6 +319,7 @@ public class MigrationManager {
 			throw new OperationCanceledException();
 		}
 		finally {
+		    eclipsePrefs.flush();
 			log.info("fäddich!");
 		}
 	}
@@ -931,6 +927,7 @@ public class MigrationManager {
 	 * @param subProgressMonitor the {@link SubProgressMonitor}
 	 */
 	private void runMigrateVatsSubTask(SubProgressMonitor subProgressMonitor) {
+//	    vatsDAO.truncate();
 		Long countOfEntitiesInTable = oldDao.countAllVats();
 		subProgressMonitor.beginTask("Bearbeite insgesamt", countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " Sätze");
@@ -1042,7 +1039,7 @@ public class MigrationManager {
                 propertiesDAO.save(prop);
                 
                 // save the preference in preference store
-				eclipsePrefs.node("/configuration/defaultValues").put(prop.getName(), prop.getValue());
+				eclipsePrefs.put(prop.getName(), prop.getValue());
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException sqlex) {

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.handlers;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -45,8 +46,9 @@ public class CloseHandler {
 
     @Execute
     public void execute(
-            MApplication application,
+            final MApplication application,
             final EModelService modelService,
+           /* final @Active MPart activePart2, */
             final EPartService partService)
             throws InvocationTargetException, InterruptedException {
         // at first find the PartStack "detailpanel"
@@ -54,11 +56,11 @@ public class CloseHandler {
         MPart activePart = (MPart)documentPartStack.getSelectedElement();
         // ask before closing
         if(activePart != null) {
-            // the parts are removed when they are hidden
+            // the parts are NOT removed when they are hidden
             if (activePart.isDirty() && partService.savePart(activePart, true)) {
-                partService.hidePart(activePart, true);
+                partService.hidePart(activePart, false);
             } else {
-                partService.hidePart(activePart, true);                
+                partService.hidePart(activePart, false);                
             }
         }
     }

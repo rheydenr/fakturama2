@@ -17,6 +17,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.VATCategory_;
 
 @Creatable
 public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
@@ -71,8 +72,8 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
     	Root<VATCategory> rootEntity = cq.from(VATCategory.class);
 		CriteriaQuery<VATCategory> selectQuery = cq.select(rootEntity)
 		        .where(/*cb.and(*/
-    		                cb.equal(rootEntity.get("name"), vatCategory)/*,
-    		                cb.equal(rootEntity.get("deleted"), false))*/);
+    		                cb.equal(rootEntity.get(VATCategory_.name), vatCategory)/*,
+    		                cb.equal(rootEntity.get(VATCategory_.deleted), false))*/);
         try {
             result = getEntityManager().createQuery(selectQuery).getSingleResult();
         }

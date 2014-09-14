@@ -27,7 +27,9 @@ import org.eclipse.swt.widgets.Shell;
 public class SaveHandler {
     
 	@CanExecute
-	public boolean canExecute(@Active MDirtyable dirtyable) {
+	public boolean canExecute(
+	        final EPartService partService,
+	        @Active MDirtyable dirtyable) {
 		if (dirtyable == null) {
 			return false;
 		}

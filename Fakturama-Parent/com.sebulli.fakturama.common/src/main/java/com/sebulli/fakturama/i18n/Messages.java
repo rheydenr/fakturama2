@@ -17,7 +17,7 @@ import org.eclipse.e4.core.services.nls.Message;
  * @author rheydenr
  *
  */
-@Message(contributionURI="platform:/plugin/com.sebulli.fakturama.rcp")
+@Message(contributorURI="platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 
 	public String AccountSettingsPage159;

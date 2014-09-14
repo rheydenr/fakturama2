@@ -198,7 +198,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(PREFERENCES_DOCUMENT_USE_NET_GROSS, "1");
 		node.setDefault(PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false);
 		node.setDefault(PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, false);
@@ -211,7 +211,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage {
 		node.setDefault(PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true);
 		node.setDefault(PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, "1");
 		node.setDefault(PREFERENCES_DOCUMENT_MESSAGES, "1");
-		node.setDefault(PREFERENCES_DEPOSIT_TEXT, "Deposit");
-		node.setDefault(PREFERENCES_FINALPAYMENT_TEXT, "Finalpayment");
+		node.setDefault(PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow);
+		node.setDefault(PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);
 	}
 }

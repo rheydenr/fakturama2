@@ -1,12 +1,16 @@
 package com.sebulli.fakturama.startup;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -66,21 +70,22 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * Therefore there's no EclipseContext from which these fields could be determined. 
 	 */
 	private Logger log;
-	protected Messages msg;
+	private  Messages msg;
 	
 	@Inject
-	protected Shell parent;
+	private  Shell parent;
 
 	/** 
 	 * The plugin's preference store
 	 */
-	IEclipsePreferences preferences;
+	private IEclipsePreferences preferences;
 	
-    private static final Map<String, String> jdbcUrlMap = new HashMap<String, String>();;
+	private static final Map<String, String> jdbcUrlMap = new HashMap<String, String>();;
 
 
 	private List<ServiceReference<DataSourceFactory>> connectionProviders = new ArrayList<>();
     private int jdbcClassComboIndex = 0;
+    private final DirectoryChecker dirChecker;
 
 	/**
 	 * Create the dialog.
@@ -95,6 +100,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	        IEclipsePreferences preferences, Logger log, Messages messages, String requestedWorkspace) {
 		super(parent);
 		this.parent = parent;
+		this.dirChecker = new DirectoryChecker(parent);
 		this.log = log;
 		this.preferences = preferences;
 		this.workspace = requestedWorkspace;
@@ -159,14 +165,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		layoutData.minimumWidth = 450;
 		txtWorkdir.setLayoutData(layoutData);
 		txtWorkdir.setText(StringUtils.defaultIfEmpty(workspace, ""));
-        final DirectoryChecker dirChecker = new DirectoryChecker(txtWorkdir.getShell());
-		txtWorkdir.addFocusListener(new FocusAdapter() {
-		    @Override
-		    public void focusLost(FocusEvent e) {
-                String directory = ((Text)e.getSource()).getText();
-                dirChecker.checkPreviousVersion(directory);
-		    }
-        });
 		
 		final Button btnDirChooser = new Button(container, SWT.NONE);
 		btnDirChooser.setText("...");
@@ -221,7 +219,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			public void selectionChanged(SelectionChangedEvent event) {
 				String driverClass = (String) ((ServiceReference<DataSourceFactory>)((IStructuredSelection) event
 			      .getSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
-				txtJdbcUrl.setText(jdbcUrlMap.get(driverClass));
+				txtJdbcUrl.setText(StringUtils.defaultString(jdbcUrlMap.get(driverClass), ""));
 			}
 		});
 		Combo combo = comboDriver.getCombo();
@@ -268,7 +266,21 @@ public class InitialStartupDialog extends TitleAreaDialog {
         // old: ${user}/.fakturama
         // new: ${user}/.fakturama2
         // or eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "")
-        return "";
+        Path userDir = Paths.get(System.getProperty("user.home"), ".fakturama",
+                ".metadata", ".plugins", "org.eclipse.core.runtime", ".settings", "com.sebulli.fakturama.prefs");
+        String retval = "";
+        if(Files.exists(userDir)) {
+            Properties oldProps = new Properties();
+            try {
+                oldProps.load(Files.newInputStream(userDir));
+                retval = oldProps.getProperty("GENERAL_WORKSPACE");
+            }
+            catch (IOException e) {
+                // ok, something went wrong, therefore we leave it blank
+                log.warn("couldn't get the old Fakturama properties from " + userDir.getFileName());
+            }
+        }
+        return retval;
     }
 
     @SuppressWarnings("unchecked")
@@ -287,6 +299,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			preferences.putBoolean("jdbc_reconnect", true);
 			preferences.flush();
 		
+			dirChecker.checkPreviousVersion(txtOldWorkdir.getText());
+			
 			// handle workdir
 			workspace = txtWorkdir.getText();
 			if (!workspace.isEmpty()) {
@@ -310,7 +324,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	private final class DirectoryChecker {
 	    private Shell shell;
 	    
-	    // don't ask twice for this directory
+	    // don't ask twice for these directories
 	    private final Set<String> alreadyCheckedDirs = new HashSet<String>();
 
         /**
@@ -325,19 +339,22 @@ public class InitialStartupDialog extends TitleAreaDialog {
          * @param selectedDirectory 
          */
         private void checkPreviousVersion(String selectedDirectory) {
-            // The data base is in the /Database/ directory
-            String path = selectedDirectory + "/Database/Database.script";
-            File directory = new File(path);
-            if(!alreadyCheckedDirs.contains(selectedDirectory) && directory.exists()) {
-                boolean answer = MessageDialog.openQuestion(shell, "Datenübernahme", 
-                           "In dem angegebenen Arbeitsverzeichnis befindet sich eine frühere\n"
-                         + "Fakturama-Version. Möchten Sie diese Daten (Rechnungen,\n"
-                         + "Produkte, Kontakte usw.) übernehmen?");
-                if(answer) {
-                    preferences.put(ConfigurationManager.MIGRATE_OLD_DATA, selectedDirectory);
-                    txtOldWorkdir.setText(selectedDirectory);
+            if(StringUtils.isNotBlank(selectedDirectory)) {
+                // The data base is in the /Database/ directory
+                Path directory = Paths.get(selectedDirectory, "/Database/Database.script");
+                if(!alreadyCheckedDirs.contains(selectedDirectory) && Files.exists(directory)) {
+                    boolean answer = MessageDialog.openQuestion(shell, "Datenübernahme", 
+                               "In dem angegebenen Arbeitsverzeichnis befindet sich eine frühere\n"
+                             + "Fakturama-Version. Möchten Sie diese Daten (Rechnungen,\n"
+                             + "Produkte, Kontakte usw.) übernehmen?\n"
+                             + "HINWEIS: Eventuell in der neuen Datenbank vorhandene Werte "
+                             + "werden vor dem Import gelöscht!!!");
+                    if(answer) {
+                        preferences.put(ConfigurationManager.MIGRATE_OLD_DATA, selectedDirectory);
+                        txtOldWorkdir.setText(selectedDirectory);
+                    }
+                    alreadyCheckedDirs.add(selectedDirectory);
                 }
-                alreadyCheckedDirs.add(selectedDirectory);
             }
         }
 
