@@ -1,5 +1,9 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -32,11 +36,8 @@ public class VatsDAO extends AbstractDAO<VAT> {
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-			@GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-	//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-	//    @GeminiPersistenceContext(unitName = "origin-datasource")
 	private EntityManager em;
 
 	protected Class<VAT> getEntityClass() {
@@ -78,6 +79,18 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.sebulli.fakturama.dao.AbstractDAO#getAlwaysIncludeAttributes()
+	 */
+	@Override
+	protected Map<Class<VAT>, Vector> getAlwaysIncludeAttributes() {
+	    Map<Class<VAT>, Vector> map = new HashMap<>();
+	    Vector<String> attribVector = new Vector<String>();
+	    attribVector.addElement(VAT_.taxValue.getName());
+	    map.put(getEntityClass(), attribVector);
+	    return map;
+	}
 
 	/**
 	 * Finds a {@link VAT} by a given {@link OldVats}.
@@ -93,7 +106,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 				cb.equal(root.<String> get(VAT_.name), oldVat.getName())));
 		return getEntityManager().createQuery(cq).getSingleResult();
 	}
-
+	     
 	/**
 	 * Gets the all visible properties of this VAT object.
 	 * 

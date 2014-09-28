@@ -28,11 +28,8 @@ public class ContactDAO extends AbstractDAO<Contact> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
     @PreDestroy

@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.views.datatable.tree;
+package com.sebulli.fakturama.views.datatable.tree.ui;
 
 import java.util.List;
 
@@ -22,11 +22,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 
 /**
 	 * Content provider for the tree view

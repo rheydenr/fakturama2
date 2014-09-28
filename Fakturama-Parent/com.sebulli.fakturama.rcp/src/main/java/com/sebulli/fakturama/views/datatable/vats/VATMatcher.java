@@ -4,7 +4,7 @@ import ca.odell.glazedlists.matchers.Matcher;
 
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
-import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  * {@link Matcher} class for filtering the VAT list entries. The {@link VATMatcher} checks if

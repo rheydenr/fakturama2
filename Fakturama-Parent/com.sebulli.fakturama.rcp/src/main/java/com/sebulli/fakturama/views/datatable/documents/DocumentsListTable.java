@@ -19,9 +19,8 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
-import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
+import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
+import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
 
 /**
  * @author rheydenr
@@ -70,15 +69,27 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, Abstract
     }
 
     @Override
-    public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     protected boolean isHeaderLabelEnabled() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#getEditorId()
+     */
+    @Override
+    protected String getEditorId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#setCategoryFilter(java.lang.String, com.sebulli.fakturama.views.datatable.vats.TreeObjectType)
+     */
+    @Override
+    public void setCategoryFilter(String filter, com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType treeObjectType) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

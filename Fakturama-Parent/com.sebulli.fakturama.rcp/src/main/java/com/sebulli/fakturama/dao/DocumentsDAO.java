@@ -1,5 +1,8 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -13,7 +16,10 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Document_;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -55,11 +61,46 @@ public class DocumentsDAO extends AbstractDAO<Document> {
 	}
 
 	public Document findByName(String name) {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     	CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
-    	Root<Document> root = criteria.from(Document.class);
+	    Root<Document> root = criteria.from(Document.class);
 		CriteriaQuery<Document> cq = criteria.where(cb.equal(root.<String>get("name"), name));
     	return getEntityManager().createQuery(cq).getSingleResult();
 		
 	}
+
+    /**
+     * @param order
+     * @param order_id
+     * @param dateAsISO8601String
+     * @return
+     */
+    public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, Date webshopDate) {
+        BillingType billingType = getBillingTypeFromDocumentType(type);
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        CriteriaQuery<Document> cq = criteria.where(
+                cb.and(
+                        cb.equal(root.<BillingType> get(Document_.billingType), billingType),
+                        cb.equal(root.<String> get(Document_.webshopId), webshopId),
+                        cb.equal(root.<Date> get(Document_.webshopDate), webshopDate)
+                      )
+            );
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+    
+    /**
+     * The BillingType is added here because that was for the database modeling. The Document types
+     * are merely for UI actions. But we have to put these two enums together.
+     */
+    private BillingType getBillingTypeFromDocumentType(DocumentType type) {
+        BillingType retval = null;
+        for (BillingType billingType : BillingType.values()) {
+            if(billingType.name().contentEquals(type.getTypeAsString())) {
+                retval = billingType;
+            }
+        }
+        return retval;
+    }
 }

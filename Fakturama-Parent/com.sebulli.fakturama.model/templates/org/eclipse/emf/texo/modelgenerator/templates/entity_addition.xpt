@@ -1,0 +1,43 @@
+«REM»Template file which can be overridden to generate additional files or code«ENDREM»
+«IMPORT org::eclipse::emf::texo::modelgenerator::modelannotations»
+«IMPORT org::eclipse::emf::texo::modelgenerator::annotator»
+«IMPORT org::eclipse::emf::texo::generator»
+
+«EXTENSION  org::eclipse::emf::texo::modelgenerator::templates::customutil»
+
+«REM»Called for an EClass, generated code is placed in the entity main class body
+Additional code for JavaBeans
+«ENDREM»
+«DEFINE root(ModelController modelController) FOR EClassModelGenAnnotation-»
+	 
+	 /**
+	  * A semantical compare method. This method compares the actual object attribute by attribute to another object.
+ 	  * @generated
+	  */
+	  public boolean isSameAs(«this.simpleClassName-» other) {
+	  	return other != null && «FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation -»
+			«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many -»
+				«featureAnnotation.getter»().isSameAs(other.«featureAnnotation.getter»()) &&
+			«ELSEIF featureAnnotation.EStructuralFeature.many -»
+				/* reference to a Set («featureAnnotation.name») cannot be compared... */
+			«ELSE -»
+				«EXPAND attribute FOR featureAnnotation -» &&
+	  		«ENDIF-»
+	 	«ENDFOREACH-»
+	 	true /* and this is the last entry from the attributes */;
+	  }
+
+«ENDDEFINE»
+
+«DEFINE attribute FOR EAttributeModelGenAnnotation -»
+	«IF this.primitive -»
+	«REM»ugly hack, but I don't know how to identify the entities ID :-( /* INFO: «this» */ «ENDREM-»
+		«IF this.name != 'id' -»
+	   		«this.name» != null && «this.name» == other.«this.getter»()
+   		«ELSE»true /* this is for the id */«ENDIF -»
+	«ELSEIF this.type == 'java.util.Date' || this.type == 'java.lang.Integer' || this.type == 'java.lang.String' || this.type == 'java.lang.Double' || this.type == 'java.lang.Boolean' -»
+		«this.name» != null && «this.name».compareTo(other.«this.getter»()) == 0
+	«ELSE -»
+		«this.name» != null && «this.name».equals(other.«this.getter»())
+	«ENDIF -»
+«ENDDEFINE -»

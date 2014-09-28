@@ -14,6 +14,12 @@ public class Constants {
     public static final String GENERAL_WORKSPACE = "GENERAL_WORKSPACE";
     
     /**
+     * Path to product pictures (relative to Workspace path!)
+     */
+    public static final String PRODUCT_PICTURE_FOLDER = "/Pics/Products/";
+
+    
+    /**
      * Default identifier for VAT
      */
     public static final String DEFAULT_VAT = "standardvat";

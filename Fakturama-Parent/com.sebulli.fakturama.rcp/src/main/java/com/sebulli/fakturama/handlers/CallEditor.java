@@ -31,7 +31,6 @@ import org.eclipse.e4.ui.model.application.ui.MContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
-import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -80,10 +79,10 @@ public class CallEditor {
                     stackContext = contexts.getContext();
                 }
             }
-            MPartStack stack = (MPartStack)modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+ //           MPartStack stack = (MPartStack)modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
 
 			// Define  the editor and try to open it
-			partService.showPart(createEditorPart(editorType, objId, stackContext, stack), PartState.ACTIVATE);
+			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack), PartState.ACTIVATE);
 	}
 	
 	/**

@@ -13,10 +13,10 @@
 			<class>com.sebulli.fakturama.model.Address</class>
 			<class>com.sebulli.fakturama.model.Contact</class>
 			<class>com.sebulli.fakturama.model.ContactCategory</class>
-			<class>com.sebulli.fakturama.model.CountryCode</class>
 			<class>com.sebulli.fakturama.model.Document</class>
 			<class>com.sebulli.fakturama.model.DocumentItem</class>
 			<class>com.sebulli.fakturama.model.DocumentItemCategory</class>
+			<class>com.sebulli.fakturama.model.IndividualDocumentInfo</class>
 			<class>com.sebulli.fakturama.model.Expenditure</class>
 			<class>com.sebulli.fakturama.model.ExpenditureItem</class>
 			<class>com.sebulli.fakturama.model.ItemAccountType</class>
@@ -29,8 +29,10 @@
 			<class>com.sebulli.fakturama.model.ReceiptVoucherItem</class>
 			<class>com.sebulli.fakturama.model.Shipping</class>
 			<class>com.sebulli.fakturama.model.ShippingCategory</class>
+			<class>com.sebulli.fakturama.model.Tenant</class>
 			<class>com.sebulli.fakturama.model.TextCategory</class>
 			<class>com.sebulli.fakturama.model.TextModule</class>
+			<class>com.sebulli.fakturama.model.User</class>
 			<class>com.sebulli.fakturama.model.UserProperty</class>
 			<class>com.sebulli.fakturama.model.VAT</class>
 			<class>com.sebulli.fakturama.model.VATCategory</class> 
@@ -39,7 +41,7 @@
 			<!-- update database automagically ;-)  -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
-			<property name="eclipselink.logging.level" value="FINE" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
 		</properties>
 	</persistence-unit>
 
@@ -66,25 +68,6 @@
 			<property name="eclipselink.ddl-generation" value="create-tables" />
 			<property name="eclipselink.session.customizer"
 				value="com.sebulli.fakturama.dbconnector.CamelCaseSessionCustomizer" />
-		</properties>
-	</persistence-unit>
-
-	<!-- datasource for new installation *************** TEST ONLY!!! ****************** -->
-	<persistence-unit name="mysql-datasource"
-		transaction-type="RESOURCE_LOCAL">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-<!-- 		<class>com.sebulli.fakturama.model.Contact</class>
-		<class>com.sebulli.fakturama.model.Properties</class>
- -->		<class>com.sebulli.fakturama.model.Shippings</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		<properties>
-			<property name="javax.persistence.jdbc.user" value="fakturama" />
-			<property name="javax.persistence.jdbc.password" value="fakturama" />
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/fakturama" />
-			<property name="eclipselink.ddl-generation" value="create-tables" />
-			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
-			<property name="eclipselink.logging.level" value="INFO" />
 		</properties>
 	</persistence-unit>
 </persistence>

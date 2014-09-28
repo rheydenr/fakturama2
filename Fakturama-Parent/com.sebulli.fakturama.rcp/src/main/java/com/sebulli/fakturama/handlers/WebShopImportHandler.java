@@ -16,12 +16,23 @@ package com.sebulli.fakturama.handlers;
 
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.webshopimport.ExecutionResult;
 
 
 /**
@@ -33,23 +44,25 @@ public class WebShopImportHandler {
     
     @Inject
     @Translation
-    protected Messages msg;
+    private Messages msg;
+    
+    @Inject
+    private Logger log;
 
-	//T: Text of the action to connect to the web shop and import new data
-	public final static String ACTIONTEXT = "Web Shop"; 
-//CommandIds.CMD_WEBSHOP_IMPORT
-	
+    @Inject
+    private ECommandService cmdService;
+    
+    @Inject
+    private EHandlerService handlerService;
+    
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+
 	@CanExecute
 	public boolean canExecute() {
-		boolean retval = false;
-		// cancel, if the data base is not connected.
-//		if (!DataBaseConnectionState.INSTANCE.isConnected())
-//			return;
-//
-		// cancel, if the webshop is disabled.
-//		if (!Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_ENABLED"))
-//			return;
-		return retval;
+	    // cancel, if the webshop is disabled.
+		return eclipsePrefs.getBoolean("WEBSHOP_ENABLED", false);
 	}
 
 	/**
@@ -58,44 +71,31 @@ public class WebShopImportHandler {
 	 * Open the web shop import manager.
 	 */
 	@Execute
-	public void execute() {
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
 		
 		// Start a new web shop import manager in a
 		// progress Monitor Dialog
-//		WebShopImportManager webShopImportManager = new WebShopImportManager();
-//		webShopImportManager.prepareGetProductsAndOrders();
-//		IWorkbenchWindow workbenchWindow = ApplicationWorkbenchWindowAdvisor.getActiveWorkbenchWindow();
-//		try {
-//			new ProgressMonitorDialog(workbenchWindow.getShell()).run(true, true, webShopImportManager);
+	    ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT_MGR, null);
+	    ExecutionResult executionResult = (ExecutionResult) handlerService.executeHandler(command);
 //
-//			// If there is no error - interpret the data.
-//			if (!webShopImportManager.getRunResult().isEmpty()) {
-//				// If there is an error - display it in a message box
-//				MessageBox messageBox = new MessageBox(ApplicationWorkbenchWindowAdvisor.getActiveWorkbenchWindow().getShell(), SWT.ICON_ERROR);
-//				messageBox.setText(msg("Error importing data from web shop"));
-//				String errorMessage = webShopImportManager.getRunResult();
-//				if (errorMessage.length() > 400)
-//					errorMessage = errorMessage.substring(0, 400) + "...";
-//				messageBox.setMessage(errorMessage);
-//				messageBox.open();
-//			}
-//		}
-//		catch (InvocationTargetException e) {
-//			Logger.logError(e, "Error running web shop import manager.");
-//		}
-//		catch (InterruptedException e) {
-//			Logger.logError(e, "Web shop import manager was interrupted.");
-//		}
-//
-//		// Refresh the views
+			// If there is no error - interpret the data.
+			if (executionResult != null) {
+				// If there is an error - display it in a message box
+			    String errorMessage = executionResult.getErrorMessage();
+			    if (errorMessage.length() > 400)
+			        errorMessage = errorMessage.substring(0, 400) + "...";
+			    MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
+			}
+
+		// Refresh the views
 //		ApplicationWorkbenchAdvisor.refreshView(ViewProductTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewContactTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewPaymentTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewShippingTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewVatTable.ID);
-//
-//		// After the web shop import, open the document view
-//		// and set the focus to the new imported orders.
+
+		// After the web shop import, open the document view
+		// and set the focus to the new imported orders.
 //		ViewManager.showView(ViewDocumentTable.ID);
 //		IViewPart view = ApplicationWorkbenchWindowAdvisor.getActiveWorkbenchWindow().getActivePage().findView(ViewDocumentTable.ID);
 //		ViewDocumentTable viewDocumentTable = (ViewDocumentTable) view;

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -36,6 +37,9 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage {
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    protected IEventBroker eventBroker;
 
 	/**
 	 * Constructor
@@ -90,7 +94,15 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage {
 		
 		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName, getFieldEditorParent()));
-		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
+	 */
+	@Override
+	public boolean performOk() {
+	    eventBroker.post("TOOLBARPREFS", "jaa");
+	    return super.performOk();
 	}
 	
 	@Override

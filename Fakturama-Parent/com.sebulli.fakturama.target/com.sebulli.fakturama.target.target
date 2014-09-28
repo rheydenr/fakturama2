@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="171">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="183">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -11,13 +11,6 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
 <repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.1.0.201405012245"/>
-<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.1.0.201405012245"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.1.0.201405012245"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.1.0.201405012245"/>
-<repository location="http://download.eclipse.org/nattable/releases/1.1.0/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.mysql.jdbc.feature.feature.group" version="5.1.30"/>
@@ -46,15 +39,11 @@
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201407311802"/>
-<unit id="org.eclipse.nebula.widgets.calendarcombo.feature.feature.group" version="1.0.0.201407311802"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201407311802"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201407311802"/>
-<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201407311809"/>
-<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.1.1.201409122046"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.1.1.201409122046"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.1.1.201409122046"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.1.1.201409122046"/>
+<repository location="http://download.eclipse.org/nattable/releases/1.1.1/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
@@ -74,22 +63,27 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.texo.feature.group" version="0.1.0.v201312121235"/>
-<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201409261657"/>
+<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140606-1445"/>
-<unit id="org.eclipse.platform.ide" version="4.4.0.I20140606-1215"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
+<unit id="org.eclipse.nebula.widgets.calendarcombo.feature.feature.group" version="1.0.0.201409261659"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201409261659"/>
+<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201409261659"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20140808-1908"/>
-<unit id="org.eclipse.e4.tools.emf.liveeditor.feature.feature.group" version="0.15.0.v20140826-0703"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140827-1607"/>
 <unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140808-1908"/>
-<unit id="org.eclipse.e4.tools.css.editor.feature.feature.group" version="0.14.0.v20140808-1908"/>
+<unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.15.0.v20140808-1908"/>
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140925-1437"/>
 <repository location="http://download.vogella.com/luna/e4tools"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.platform.ide" version="4.4.1.M20140925-0400"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140909-1633"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140925-0400"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

@@ -14,19 +14,7 @@
 
 package com.sebulli.fakturama.parcelservice;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.ui.IEditorInput;
-
-import com.sebulli.fakturama.Activator;
-import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * Fills the form of the parcel service
@@ -167,7 +155,7 @@ public class ParcelServiceFormFiller {
 	/**
 	 * Fills the form of the parcel service with the address data
 	 */
-	public void fillForm(Browser browser, IEditorInput editorInput, boolean forceFill) {
+	public void fillForm(Browser browser,/* IEditorInput editorInput,*/ boolean forceFill) {
 //		this.browser = browser;
 //
 //		Properties inputProperties = ((ParcelServiceBrowserEditorInput)editorInput).getProperties();

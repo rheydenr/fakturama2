@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable;
+package com.sebulli.fakturama.views.datatable.vats;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -63,9 +63,10 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
-import com.sebulli.fakturama.views.datatable.tree.TreeObject;
-import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
+import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
+import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  * This is the abstract parent class for all views that show a table with
@@ -136,8 +137,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	/**
 	 * Creates the SWT controls for this workbench part.
-	 * 
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public Control createPartControl(Composite parent, Class<?> elementClass, boolean useDocumentAndContactFilter, boolean useAll, String contextHelpId) {
 		// Create the top composite
@@ -245,6 +244,16 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 */
 	abstract protected String getTableId();
 	
+
+    /**
+     * Returns the editor id which corresponds to the current list table (relevant
+     * for creating a suitable command)
+     * 
+     * @return
+     */
+    protected abstract String getEditorId();
+
+	
 	protected void postConfigureNatTable(NatTable natTable) {
 	    // per default this method is empty
 	}
@@ -280,7 +289,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 Command callEditor = commandService.getCommand("com.sebulli.fakturama.command.callEditor");
                 Map<String, String> params = new HashMap<>();
                 params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(selectedObject.getId()));
-                params.put("com.sebulli.fakturama.editors.editortype", getTableId());
+                params.put("com.sebulli.fakturama.editors.editortype", getEditorId());
                 ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
                 handlerService.executeHandler(parameterizedCommand);
             }

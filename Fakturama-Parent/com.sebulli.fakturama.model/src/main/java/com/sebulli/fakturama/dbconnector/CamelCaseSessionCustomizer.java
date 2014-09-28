@@ -23,8 +23,8 @@ public class CamelCaseSessionCustomizer implements SessionCustomizer {
 			 * not used, this is for tables only. Old Fakturama doesn't use tables
 			 * with underscores. 
 			 */
-//			// Only change the table name for non-embedable entities with no
-//			// @Table already
+			// Only change the table name for non-embedable entities with no
+			// @Table already
 //			if (!descriptor.getTables().isEmpty() && descriptor.getAlias().equalsIgnoreCase(descriptor.getTableName())) {
 //				String tableName = addUnderscores(descriptor.getTableName());
 //				descriptor.setTableName(tableName);

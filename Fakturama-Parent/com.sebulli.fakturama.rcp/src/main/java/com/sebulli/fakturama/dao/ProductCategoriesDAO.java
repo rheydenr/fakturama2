@@ -3,9 +3,6 @@ package com.sebulli.fakturama.dao;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -13,10 +10,10 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.sebulli.fakturama.model.CountryCode;
+import com.sebulli.fakturama.model.ProductCategory;
 
 @Creatable
-public class CountryCodesDAO extends AbstractDAO<CountryCode> {
+public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -27,10 +24,12 @@ public class CountryCodesDAO extends AbstractDAO<CountryCode> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
+//    @GeminiPersistenceContext(unitName = "mysql-datasource")
+//    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
-    protected Class<CountryCode> getEntityClass() {
-    	return CountryCode.class;
+    protected Class<ProductCategory> getEntityClass() {
+    	return ProductCategory.class;
     }
 
     @PreDestroy
@@ -52,19 +51,5 @@ public class CountryCodesDAO extends AbstractDAO<CountryCode> {
 	 */
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
-	}
-
-	/**
-	 * Finds a {@link CountryCode} by its long name.
-	 * 
-	 * @param country
-	 * @return
-	 */
-	public CountryCode findByLongName(String country) {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<CountryCode> criteria = cb.createQuery(CountryCode.class);
-    	Root<CountryCode> root = criteria.from(CountryCode.class);
-		CriteriaQuery<CountryCode> cq = criteria.where(cb.equal(root.<String>get("name"), country));
-    	return getEntityManager().createQuery(cq).getSingleResult();
 	}
 }

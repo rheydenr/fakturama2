@@ -1,8 +1,10 @@
 package com.sebulli.fakturama.parts;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -10,12 +12,11 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -29,10 +30,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IWorkbenchCommandConstants;
 
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
@@ -66,7 +65,12 @@ public class CoolbarViewPart {
 	@Translation
 	protected Messages msg;
 
+    private Composite top;
+    
+    private Set<ToolBar> coolBarsByKey = new HashSet<>();
 
+    private CoolBarManager coolbarmgr;
+    
 	/**
 	 * Fill the cool bar with 4 Toolbars.
 	 * 
@@ -79,20 +83,19 @@ public class CoolbarViewPart {
 	 * bar.
 	 */
 	@PostConstruct
-	public void createControls(Composite parent, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			IApplicationContext appContext, IWorkbench workbench) {
-	    		
-		// now lets create our CoolBar
-		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
-		parent.setLayout(layout);
-		parent.setSize(SWT.DEFAULT, 70);
+	public void createControls(Composite parent) {
+	    this.top = parent;
 
-		// create cool bar
-		CoolBarManager coolbarmgr = new CoolBarManager(SWT.NONE);
+	    // now lets create our CoolBar
+		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
+		top.setLayout(layout);
+		top.setSize(SWT.DEFAULT, 70);
+
+		coolbarmgr = new CoolBarManager(SWT.NONE);
 		IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);
 		coolbarmgr.add(toolbarmgr);
 		
-		CoolBar coolbar1 = coolbarmgr.createControl(parent);
+		CoolBar coolbar1 = coolbarmgr.createControl(top);
 		ToolBar toolBar1 = new ToolBar(coolbar1, SWT.FLAT);
 		
 		/*
@@ -105,71 +108,84 @@ public class CoolbarViewPart {
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
 		
-		createToolItem(coolbar1, toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
-				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP, true));
-		createToolItem(coolbar1, toolBar1, IWorkbenchCommandConstants.FILE_PRINT, 
+		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
+				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP, false));
+		createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
-				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_PRINT, true));
-		createToolItem(coolbar1, toolBar1, IWorkbenchCommandConstants.FILE_SAVE, 
+				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_PRINT, false));
+		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
-				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_SAVE, true));
+				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_SAVE, false));
 		finishToolbar(coolbar1, toolBar1);
 			
-		CoolBar coolbar2 = coolbarmgr.createControl(parent);
-		ToolBar toolBar2 = new ToolBar(coolbar2, SWT.FLAT);
+		ToolBar toolBar2 = new ToolBar(coolbar1, SWT.FLAT);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_LETTER, 
+		createToolItem(toolBar2, CommandIds.CMD_NEW_LETTER, 
 				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_OFFER, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_OFFER, 
 				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_ORDER, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_ORDER, 
 				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_CONFIRMATION, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_CONFIRMATION, 
 				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_INVOICE, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_INVOICE, 
 				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_DELIVERY, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_DELIVERY, 
 				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_CREDIT, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_CREDIT, 
 				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_DUNNING, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_DUNNING, 
 				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING, true));
-		createToolItem(coolbar2, toolBar2, CommandIds.CMD_NEW_PROFORMA, 
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING, false));
+		createToolItem(toolBar2, CommandIds.CMD_NEW_PROFORMA, 
 				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA, true));
-		finishToolbar(coolbar2, toolBar2);
+				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA, false));
+		finishToolbar(coolbar1, toolBar2);
 
-		CoolBar coolbar3 = coolbarmgr.createControl(parent);
-		ToolBar toolBar3 = new ToolBar(coolbar3, SWT.FLAT);
-		createToolItem(coolbar3, toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT, true));	
-		createToolItem(coolbar3, toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT, true));	
-		createToolItem(coolbar3, toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, true));	
-		createToolItem(coolbar3, toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, true));	
-		finishToolbar(coolbar3, toolBar3);
+		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
+		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT, false));	
+		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT, false));	
+		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, false));	
+		createToolItem(toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, false));	
+		finishToolbar(coolbar1, toolBar3);
 		
-		CoolBar coolbar4 = coolbarmgr.createControl(parent);
-		ToolBar toolBar4 = new ToolBar(coolbar4, SWT.FLAT);
-		createToolItem(coolbar4, toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, true));	
-		createToolItem(coolbar4, toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER, true));	
-		createToolItem(coolbar4, toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, true));	
-		finishToolbar(coolbar4, toolBar4);	
+		ToolBar toolBar4 = new ToolBar(coolbar1, SWT.FLAT);
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, false));	
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER, false));	
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
+		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, false));	
+		finishToolbar(coolbar1, toolBar4);	
 	}
 
+	@Inject
+	@Optional
+	public void handleEvent(@UIEventTopic("TOOLBARPREFS") String msg) {
+	    // doesn't work :-(
+//	    coolbarmgr.update(true);
+//	    createControls(top);
+	}
+//
+//    @Inject
+//    @Optional
+//    public void reactOnPrefColorChange(@Preference(value = Constants.TOOLBAR_SHOW_SAVE) Boolean colorKey) {
+//        System.out.println("React on a change in preferences with colorkey = " + colorKey);
+//        if ((top != null) && !top.isDisposed()) {
+//            toolItemsByKey.get("org.eclipse.ui.file.save"/*Constants.TOOLBAR_SHOW_SAVE*/).dispose();
+//        }
+//    }
 
 	/**
 	 * Packs the toolbar and adds it to the Coolbar.
@@ -184,21 +200,23 @@ public class CoolbarViewPart {
 		coolItem.setControl(toolBar);
 	    Point preferred = coolItem.computeSize(size.x, size.y);
 	    coolItem.setPreferredSize(preferred);
+	    
+        coolBarsByKey.add(toolBar);
 	}
 	
-	private void createToolItem(final CoolBar coolbar, final ToolBar toolBar, final String commandId, 
+	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, boolean show) {
-		createToolItem(coolbar, toolBar, commandId, null, iconImage, null, show);
+		createToolItem(toolBar, commandId, null, iconImage, null, show);
 	}
 	
-	private void createToolItem(final CoolBar coolbar, final ToolBar toolBar, final String commandId, 
+	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, final Image disabledIcon, boolean show) {
-		createToolItem(coolbar, toolBar, commandId, null, iconImage, disabledIcon, show);
+		createToolItem(toolBar, commandId, null, iconImage, disabledIcon, show);
 	}
 
-	private void createToolItem(final CoolBar coolbar, final ToolBar toolBar, final String commandId, 
+	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final String tooltip, final Image iconImage, boolean show) {
-		createToolItem(coolbar, toolBar, commandId, tooltip, iconImage, null, show);
+		createToolItem(toolBar, commandId, tooltip, iconImage, null, show);
 	}
 	
 	/**
@@ -212,7 +230,7 @@ public class CoolbarViewPart {
 	 * @param disabledIcon if it is disabled, which icon should be displayed?
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
 	 */
-	private void createToolItem(final CoolBar coolbar, final ToolBar toolBar, final String commandId, 
+	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final String tooltip, final Image iconImage, final Image disabledIcon, boolean show) {
 	    
 	    if(!show) {
@@ -246,5 +264,8 @@ public class CoolbarViewPart {
 			}
 		});
         item.setImage(iconImage);
+        
+        
+        item.setData("mpf!");
 	}
 }

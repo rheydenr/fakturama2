@@ -14,54 +14,57 @@
 
 package com.sebulli.fakturama.handlers;
 
-import org.eclipse.jface.action.Action;
+import java.util.Collection;
+
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 /**
  * This action opens the calculator in a view.
  * 
  * @author Gerd Bartelt
  */
-public class OpenCalculatorHandler extends Action {
+public class OpenCalculatorHandler {
+    @Inject
+    private EPartService partService;
 
-	//T: Text of the action to open the calculator
-	public final static String ACTIONTEXT = "Calculator"; 
-
-//	/**
-//	 * Constructor
-//	 */
-//	public OpenCalculatorHandler() {
-//
-//		super(ACTIONTEXT);
-//
-//		//T: Tool Tip Text
-//		setToolTipText(_("Open the calculator") );
-//
-//		// The id is used to refer to the action in a menu or toolbar
-//		setId(CommandIds.CMD_OPEN_CALCULATOR);
-//
-//		// Associate the action with a pre-defined command, to allow key
-//		// bindings.
-//		setActionDefinitionId(CommandIds.CMD_OPEN_CALCULATOR);
-//
-//		// sets a default 16x16 pixel icon.
-//		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/calculator_16.png"));
-//	}
-//
-//	/**
-//	 * Run the action
-//	 * 
-//	 * Open the calculators view.
-//	 */
-//	@Override
-//	public void run() {
-//
-//		BackupManager.createBackup();
-//
-//		try {
-//			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(Calculator.ID);
-//		}
-//		catch (PartInitException e) {
-//			Logger.logError(e, "Error opening Calculator");
-//		}
-//	}
+	/**
+	 * Run the action
+	 * 
+	 * Open the calculators view.
+	 */
+    @Execute
+    public void handleDelete(final MApplication application,
+        final EModelService modelService) throws ExecutionException {
+        MPartStack calcStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.calculatorpanel", application);
+        // try to open it
+        MPart myPart = null;
+        
+        Collection<MPart> parts = partService.getParts();
+        // at first we look for an existing Part
+        for (MPart mPart : parts) {
+            if (StringUtils.equalsIgnoreCase(mPart.getElementId(), "part:com.sebulli.fakturama.views.calculator") && mPart.getContext() != null) {
+                myPart = mPart;
+                break;
+            }
+        }
+        calcStack.setToBeRendered(true);
+        calcStack.setVisible(true);
+        if(myPart != null) {
+            partService.showPart(myPart, PartState.ACTIVATE);
+        } else {
+            myPart = partService.createPart("part:com.sebulli.fakturama.views.calculator");
+            myPart.setToBeRendered(true);
+            myPart.setContext(application.getContext());
+        }
+	}
 }

@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.views.datatable.tree;
+package com.sebulli.fakturama.views.datatable.tree.ui;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;

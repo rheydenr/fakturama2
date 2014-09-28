@@ -817,25 +817,16 @@ public class DataUtils {
 		return s;
 	}
 	
-	/**
-	 * If the string is a multi line string, extract only one line 
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static String getSingleLine(String s) {
-		int pos = s.indexOf('\n');
-		
-		// There is a line break, so use the string 
-		// before this character
-		if (pos > 0) {
-			s = s.substring(0, pos-1);
-		}
-		else if (pos == 0)
-			s = "";
-		return s;
-	}
-
+    /**
+     * If the string is a multi line string, extract only one line 
+     * 
+     * @param s
+     * @return
+     */
+    public static String getSingleLine(String s) {
+        String newline = System.getProperty("line.separator");
+        return s != null ? s.split(newline)[0] : "";
+    }
 	
 	/**
 	 * Replace all accented characters

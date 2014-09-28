@@ -344,7 +344,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
                 Path directory = Paths.get(selectedDirectory, "/Database/Database.script");
                 if(!alreadyCheckedDirs.contains(selectedDirectory) && Files.exists(directory)) {
                     boolean answer = MessageDialog.openQuestion(shell, "Datenübernahme", 
-                               "In dem angegebenen Arbeitsverzeichnis befindet sich eine frühere\n"
+                               "In dem angegebenen alten Arbeitsverzeichnis befindet sich eine frühere\n"
                              + "Fakturama-Version. Möchten Sie diese Daten (Rechnungen,\n"
                              + "Produkte, Kontakte usw.) übernehmen?\n"
                              + "HINWEIS: Eventuell in der neuen Datenbank vorhandene Werte "

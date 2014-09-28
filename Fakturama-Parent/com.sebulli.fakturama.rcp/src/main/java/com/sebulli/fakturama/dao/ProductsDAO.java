@@ -28,8 +28,6 @@ public class ProductsDAO extends AbstractDAO<Product> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
     protected Class<Product> getEntityClass() {

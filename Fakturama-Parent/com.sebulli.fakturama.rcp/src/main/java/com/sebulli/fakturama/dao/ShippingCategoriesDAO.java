@@ -1,13 +1,8 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -43,29 +38,6 @@ public class ShippingCategoriesDAO extends AbstractDAO<ShippingCategory> {
             getEntityManager().close();
         }
     }
-    
-    /**
-     * Get all {@link ShippingCategory}s from Database.
-     *
-     * @return List<ShippingCategory> 
-     */
-    public List<ShippingCategory> findAll() {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<ShippingCategory> cq = cb.createQuery(ShippingCategory.class);
-    	CriteriaQuery<ShippingCategory> selectQuery = cq.select(cq.from(ShippingCategory.class));
-    	return getEntityManager().createQuery(selectQuery).getResultList();
-//    	return getEntityManager().createQuery("select p from ShippingCategory p", ShippingCategory.class).getResultList();
-    }
-    
-    public ShippingCategory findShippingCategoryByName(String shippingCategory) {
-    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<ShippingCategory> cq = cb.createQuery(ShippingCategory.class);
-    	Root<ShippingCategory> rootEntity = cq.from(ShippingCategory.class);
-		CriteriaQuery<ShippingCategory> selectQuery = cq.select(rootEntity).where(cb.equal(rootEntity.get("name"), shippingCategory));
-    	return getEntityManager().createQuery(selectQuery).getSingleResult();
-//    	return getEntityManager().createQuery("select p from ShippingCategory p", ShippingCategory.class).getResultList();
-    }
-    
  
 	/**
 	 * @return the em

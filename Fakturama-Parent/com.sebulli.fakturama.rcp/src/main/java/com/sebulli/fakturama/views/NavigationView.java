@@ -104,7 +104,7 @@ public class NavigationView {
 		bar4.addAction(new ExportSalesAction());
 */
 		// Create the 5th expand bar "Miscellaneous"
-	    PGroup group5 = createPGroup("command.navigation.misc", Icon.ICON_PRINTOO);
+	    PGroup group5 = createPGroup("command.navigation.misc", Icon.ICON_MISC);
 	    addAction(group5, Icon.COMMAND_PARCEL, "command.parcelservice", CommandIds.CMD_OPEN_PARCEL_SERVICE);
 	    addAction(group5, Icon.COMMAND_WWW, "command.browser", CommandIds.CMD_OPEN_BROWSER_EDITOR);
 	    addAction(group5, Icon.COMMAND_CALCULATOR, "command.calculator", CommandIds.CMD_OPEN_CALCULATOR);

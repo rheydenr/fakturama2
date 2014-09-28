@@ -47,7 +47,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -55,10 +54,8 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 import com.sebulli.fakturama.dao.ContactDAO;
-import com.sebulli.fakturama.dao.CountryCodesDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -81,6 +78,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
+import com.sebulli.fakturama.model.IndividualDocumentInfo;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.PaymentCategory;
@@ -139,7 +137,6 @@ public class MigrationManager {
 	 * all available DAO classes
 	 */
 	private ContactDAO contactDAO;
-	private CountryCodesDAO countryCodesDAO;
 	private DocumentsDAO documentDAO;
 	private ExpendituresDAO expendituresDAO;
 	private PaymentsDAO paymentsDAO;
@@ -201,7 +198,6 @@ public class MigrationManager {
 		// initialize DAOs via EclipseContext
 		// new Entities have their own dao ;-)
 		contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
-		countryCodesDAO = ContextInjectionFactory.make(CountryCodesDAO.class, context);
 		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
 		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
 		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
@@ -261,8 +257,9 @@ public class MigrationManager {
 			
 					// initialize DAOs via EclipseContext
 					// new Entities have their own dao ;-)
+					
+					// TODO checken, ob das wirklich sein muß (zweimal initialisieren???)
 					contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
-					countryCodesDAO = ContextInjectionFactory.make(CountryCodesDAO.class, context);
 					documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
 					propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
 					expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
@@ -418,6 +415,7 @@ public class MigrationManager {
 				product.setBlock2(oldProduct.getBlock2());
 				product.setBlock3(oldProduct.getBlock3());
 				product.setBlock4(oldProduct.getBlock4());
+				product.setBlock5(oldProduct.getBlock5());
 				product.setDateAdded(getSaveParsedDate(oldProduct.getDateAdded()));
 				product.setDeleted(oldProduct.isDeleted());
 				product.setDescription(oldProduct.getDescription());
@@ -474,7 +472,9 @@ public class MigrationManager {
 					 * perhaps we have to check additionally if the address stored in document
 					 * is equal to the address stored in the database :-(
 					 */
-					document.setAddressManual(oldDocument.getAddress());
+				    IndividualDocumentInfo docInfo = new IndividualDocumentInfo();
+				    docInfo.setManualAddress(oldDocument.getAddress());
+					document.setDocumentInfo(docInfo);
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
@@ -509,6 +509,7 @@ public class MigrationManager {
 				document.setMessage(oldDocument.getMessage());
 				document.setMessage2(oldDocument.getMessage2());
 				document.setMessage3(oldDocument.getMessage3());
+				// The document number is the document name
 				document.setName(oldDocument.getName());
 				if(oldDocument.isNovat()) {
 					// find the VAT entry
@@ -610,13 +611,20 @@ public class MigrationManager {
 			item.setPrice(BigDecimal.valueOf(oldItem.getPrice()));
 			if(oldItem.getProductid() >= 0) {
 				Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
-				item.setProductref(prod);
+				item.setProduct(prod);
 			}
 			item.setQuantity(oldItem.getQuantity());
 			item.setQuantityUnit(oldItem.getQunit());
 			item.setShared(oldItem.isShared());
 			item.setTara(oldItem.getTara());
 			item.setWeight(oldItem.getWeight());
+			// search for owning document
+			int owner = oldItem.getOwner();
+            if(owner > 0) {
+			    OldDocuments oldDocument = oldDao.findDocumentById(owner);
+			    Document owningDocument = documentDAO.findByName(oldDocument.getName());
+    			item.setOwningDocument(owningDocument);
+			}
 			document.addToItems(item);
 		}
 	}

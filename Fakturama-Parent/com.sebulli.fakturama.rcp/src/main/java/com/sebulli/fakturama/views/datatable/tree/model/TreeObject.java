@@ -1,7 +1,9 @@
-package com.sebulli.fakturama.views.datatable.tree;
+package com.sebulli.fakturama.views.datatable.tree.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  * This class represents a tree object, that can be the parent of an other tree
@@ -321,6 +323,23 @@ public class TreeObject {
             }
         }
         return retval;
+    }
+
+    /**
+     * @param child
+     */
+    public void fireAdd(TreeParent child) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /**
+     * @param adder
+     * @param treeParent
+     */
+    public void accept(IModelVisitor adder, TreeParent treeParent) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

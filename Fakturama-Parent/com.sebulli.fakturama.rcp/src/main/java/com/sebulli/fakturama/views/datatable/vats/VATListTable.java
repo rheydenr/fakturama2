@@ -49,6 +49,7 @@ import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.ColumnSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.selection.event.RowSelectionEvent;
@@ -77,14 +78,14 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
-import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
+import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
-import com.sebulli.fakturama.views.datatable.tree.TopicTreeViewer;
-import com.sebulli.fakturama.views.datatable.tree.TreeCategoryLabelProvider;
-import com.sebulli.fakturama.views.datatable.tree.TreeObject;
-import com.sebulli.fakturama.views.datatable.tree.TreeObjectType;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
+import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  * Builds the VAT list table.
@@ -105,7 +106,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     private Logger log;
 
     // ID of this view
-    public static final String ID = "com.sebulli.fakturama.views.vatTable";
+    public static final String ID = "fakturama.views.vatTable";
     
     /**
      * Event Broker for receiving update events to the list table
@@ -175,6 +176,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
         vatListData = GlazedLists.eventList(vatsDAO.findAll());
+        
+        VAT test = new VAT();
+        test.setName("bb");
+        test.isSameAs(vatListData.get(0));
+        vatsDAO.findByExample(test);
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
@@ -292,7 +298,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
 //         Select complete rows
-//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
 
         // now is the time where we can create the NatTable itself
 
@@ -476,7 +482,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         filterLabel.pack(true);
 
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType, ((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
         //   contentProvider.setTreeObject(treeObject);
 
         // Set category to the addNew action. So a new data set is created
@@ -501,7 +507,15 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected String getTableId() {
         return ID;
     }
-    
+
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#getEditorId()
+     */
+    @Override
+    protected String getEditorId() {
+        return VatEditor.ID;
+    }
+
     class VATTableConfiguration extends AbstractRegistryConfiguration {
 
 		@Override

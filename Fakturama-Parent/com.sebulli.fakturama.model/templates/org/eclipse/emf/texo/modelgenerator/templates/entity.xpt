@@ -1,0 +1,312 @@
+«IMPORT org::eclipse::emf::texo::modelgenerator::modelannotations»
+«IMPORT org::eclipse::emf::texo::annotations::annotationsmodel»
+«IMPORT org::eclipse::emf::ecore»
+«IMPORT org::eclipse::emf::texo::generator»
+
+«EXTENSION  org::eclipse::emf::texo::modelgenerator::templates::util»
+
+«DEFINE root(ModelController modelController) FOR EClassModelGenAnnotation-»
+«LET ((EPackageModelGenAnnotation)this.ownerEPackageAnnotation) AS ePackageAnnotation»
+
+«REM»Only generate if not transient, in case of document root only generate if the model info needs to be generated«ENDREM»
+«IF this.generateCode && (ePackageAnnotation.addRuntimeModelBehavior || !isDocumentRoot(this.EClass))-»
+«FILE classFileName(this) java-»
+«ePackageAnnotation.javaFileHeader-»
+package «ePackageAnnotation.packagePath»;
+
+/**
+ * A representation of the model object '<em><b>«this.name»</b></em>'.
+ * <!-- begin-user-doc -->
+ * <!-- end-user-doc -->
+«IF this.documentation != null-»
+ * <!-- begin-model-doc -->
+ * «this.documentation»
+ * <!-- end-model-doc -->
+«ENDIF-»
+ * @generated
+*/
+«modelController.getJavaAnnotations(this.EClass, "type")»
+public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
+«IF this.classExtends.size > 0-» extends «this.classExtends.get(0)-»«ENDIF-»
+«IF this.EClass.getEAnnotation("http://www.fakturama.org/JavaBean") != null-»
+«IF this.classExtends.size == 0-» extends«ENDIF-» ModelObject
+«ENDIF-»
+«IF this.classImplements.size > 0-» implements
+«FOREACH this.classImplements AS classImplements SEPARATOR ","»«classImplements-»
+«ENDFOREACH-»
+«ENDIF-»
+{
+«IF this.serializable-»
+  /**
+  * A common serial ID.
+  * @generated
+  */
+  private static final long serialVersionUID = 1L;
+«ENDIF-»
+
+«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
+	«REM»a document root has almost only volatile features, but they need to be generated also«ENDREM»
+		
+	«IF featureAnnotation != null && (isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile)-»
+
+		/**
+ 		 * <!-- begin-user-doc -->
+ 		 * <!-- end-user-doc -->
+		«IF featureAnnotation.documentation != null-»
+		 * <!-- begin-model-doc -->
+		 * «featureAnnotation.documentation»
+		 * <!-- end-model-doc -->
+		«ENDIF-»
+		 * @generated
+		 */
+		«modelController.getJavaAnnotations(featureAnnotation.EStructuralFeature, "field")-»
+		private «featureAnnotation.type» «featureAnnotation.validJavaMemberName» = «featureAnnotation.defaultValue»;
+	«ENDIF-»
+«ENDFOREACH-»
+
+«EXPAND org::eclipse::emf::texo::modelgenerator::templates::entity_addition::root(modelController) FOR this»
+
+«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
+		/**
+		 * Returns the value of '<em><b>«featureAnnotation.EStructuralFeature.name»</b></em>' feature.
+			«IF (isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile) && featureAnnotation.many && featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess-»
+		 * Note: the returned collection is Unmodifiable use the {#addTo«toFirstUpper(featureAnnotation.validJavaMemberName)»(«featureAnnotation.itemType» value)}
+		 * and {@link #removeFrom«toFirstUpper(featureAnnotation.validJavaMemberName)»(«featureAnnotation.itemType» value)} methods
+		 * to modify this feature.
+		 	«ENDIF-»
+		 *
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		«IF featureAnnotation.documentation != null-»
+		 * <!-- begin-model-doc -->
+		 * «featureAnnotation.documentation»
+		 * <!-- end-model-doc -->
+		«ENDIF-»
+		 * @return the value of '<em><b>«featureAnnotation.EStructuralFeature.name»</b></em>' feature
+		 * @generated
+		 */
+		«modelController.getJavaAnnotations(featureAnnotation.EStructuralFeature, "getter")-»
+		public «featureAnnotation.type» «featureAnnotation.getter»() {
+		«IF isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile-»
+			«IF featureAnnotation.many && featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess-»
+				«IF ((EReferenceModelGenAnnotation)featureAnnotation).useList-»
+			return java.util.Collections.unmodifiableList(«featureAnnotation.validJavaMemberName»);
+				«ELSE-»
+			return java.util.Collections.unmodifiableSet(«featureAnnotation.validJavaMemberName»);
+				«ENDIF-»
+			«ELSE-»
+			return «featureAnnotation.validJavaMemberName»;
+			«ENDIF-»
+		«ELSEIF featureAnnotation.featureMapFeature != null-»
+			«IF featureAnnotation.many-»
+			return «featureAnnotation.featureMapFeature.featureMapQualifiedClassName».createUnmodifiableValueList(«featureAnnotation.featureMapFeature.getter»(), «featureAnnotation.featureMapFeature.featureMapQualifiedClassName».Feature.«toUpperCase(featureAnnotation.name)»);
+			«ELSE-»
+			return «featureAnnotation.featureMapFeature.featureMapQualifiedClassName».getSingleFeatureMapValue(«featureAnnotation.featureMapFeature.getter»(), «featureAnnotation.featureMapFeature.featureMapQualifiedClassName».Feature.«toUpperCase(featureAnnotation.name)»);
+			«ENDIF-»
+		«ELSE-»
+	    	// Volatile feature
+	    	// TODO: implement this method to return the '«featureAnnotation.EStructuralFeature.name»'
+			// Ensure that you remove @generated or mark it @generated NOT
+			throw new UnsupportedOperationException();
+		«ENDIF-»
+		}
+
+		«IF featureAnnotation.EStructuralFeature.changeable || (featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation != null)-»
+			«IF featureAnnotation.featureMapFeature == null && featureAnnotation.many && featureAnnotation.reference && (((EReferenceModelGenAnnotation)featureAnnotation).generateBidirectionalAssociationSupport || ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess)-»
+			/**
+			 * Adds to the <em>«featureAnnotation.EStructuralFeature.name»</em> feature.
+			 *
+			 * @param «featureAnnotation.validJavaMemberName»Value value to add
+			 *
+			 * @generated
+			 */
+			public boolean addTo«toFirstUpper(featureAnnotation.validJavaMemberName)»(«featureAnnotation.itemType» «featureAnnotation.validJavaMemberName»Value) {
+				«IF !featureAnnotation.EStructuralFeature.volatile-»
+				«IF featureAnnotation.EStructuralFeature.unique-»
+				if (!«featureAnnotation.validJavaMemberName».contains(«featureAnnotation.validJavaMemberName»Value)) {
+				«ENDIF-»
+					«featureAnnotation.validJavaMemberName».add(«featureAnnotation.validJavaMemberName»Value);
+					«IF ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation != null && ((EReferenceModelGenAnnotation)featureAnnotation).generateBidirectionalAssociationSupport-»
+					«LET ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation AS oppositeAnnotation-»
+					«IF oppositeAnnotation.many-»
+						«IF oppositeAnnotation.generateSafeManyAccess-»
+							«featureAnnotation.validJavaMemberName»Value.addTo«toFirstUpper(oppositeAnnotation.validJavaMemberName)»(this);
+						«ELSE-»
+							«featureAnnotation.validJavaMemberName»Value.add(this);
+						«ENDIF-»
+					«ELSE-»
+						«featureAnnotation.validJavaMemberName»Value.«oppositeAnnotation.setter»(this);
+					«ENDIF-»
+					«ENDLET-»
+					«ENDIF-»
+					return true;
+				«IF featureAnnotation.EStructuralFeature.unique-»
+				} else {
+					return false;
+				}
+				«ENDIF-»
+				«ELSE-»
+		    	// Volatile feature
+				// Ensure that you remove @generated or mark it @generated NOT
+				throw new UnsupportedOperationException();
+				«ENDIF-»
+			}
+
+			/**
+			 * Removes from the <em>«featureAnnotation.EStructuralFeature.name»</em> feature.
+			 *
+			 * @param «featureAnnotation.validJavaMemberName»Value value to remove
+			 *
+			 * @generated
+			 */
+			public boolean removeFrom«toFirstUpper(featureAnnotation.validJavaMemberName)»(«featureAnnotation.itemType» «featureAnnotation.validJavaMemberName»Value) {
+				«IF !featureAnnotation.EStructuralFeature.volatile-»
+				if («featureAnnotation.validJavaMemberName».contains(«featureAnnotation.validJavaMemberName»Value)) {
+					«featureAnnotation.validJavaMemberName».remove(«featureAnnotation.validJavaMemberName»Value);
+					«IF ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation != null && ((EReferenceModelGenAnnotation)featureAnnotation).generateBidirectionalAssociationSupport-»
+					«LET ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation AS oppositeAnnotation-»
+					«IF oppositeAnnotation.many-»
+						«IF oppositeAnnotation.generateSafeManyAccess-»
+							«featureAnnotation.validJavaMemberName»Value.removeFrom«toFirstUpper(oppositeAnnotation.validJavaMemberName)»(this);
+						«ELSE-»
+							«featureAnnotation.validJavaMemberName»Value.remove(oppositeAnnotation.validJavaMemberName)»(this);
+						«ENDIF-»
+					«ELSE-»
+						«featureAnnotation.validJavaMemberName»Value.«oppositeAnnotation.setter»(null);
+					«ENDIF-»
+					«ENDLET-»
+					«ENDIF-»
+					return true;
+				} else {
+					return false;
+				}
+				«ELSE-»
+		    	// Volatile feature
+				// Ensure that you remove @generated or mark it @generated NOT
+				throw new UnsupportedOperationException();
+				«ENDIF-»
+			}
+
+			/**
+			 * Clears the <em>«featureAnnotation.EStructuralFeature.name»</em> feature.
+			 * @generated
+			 */
+			public void clear«toFirstUpper(featureAnnotation.validJavaMemberName)»() {
+				«IF !featureAnnotation.EStructuralFeature.volatile-»
+				while (!«featureAnnotation.validJavaMemberName».isEmpty()) {
+					removeFrom«toFirstUpper(featureAnnotation.validJavaMemberName)»(«featureAnnotation.validJavaMemberName».iterator().next());
+				}
+				«ELSE-»
+		    	// Volatile feature
+				// Ensure that you remove @generated or mark it @generated NOT
+				throw new UnsupportedOperationException();
+				«ENDIF-»
+			}
+			«ENDIF-»
+			/**
+			 * Sets the '{@link «this.simpleClassName»#«featureAnnotation.getter»() <em>«featureAnnotation.EStructuralFeature.name»</em>}' feature.
+			 *
+			 * <!-- begin-user-doc -->
+			 * <!-- end-user-doc -->
+			«IF featureAnnotation.documentation != null-»
+			 * <!-- begin-model-doc -->
+			 * «featureAnnotation.documentation»
+			 * <!-- end-model-doc -->
+			«ENDIF-»
+			 * @param new«toFirstUpper(featureAnnotation.validJavaMemberName)»
+			 *            the new value of the '{@link «this.simpleClassName»#«featureAnnotation.getter»() «featureAnnotation.EStructuralFeature.name»}' feature.
+			 * @generated
+			 */
+			«modelController.getJavaAnnotations(featureAnnotation.EStructuralFeature, "setter")-»
+			public void «featureAnnotation.setter»(«featureAnnotation.type» new«toFirstUpper(featureAnnotation.validJavaMemberName)») {
+			«IF isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile-»
+				«IF featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess-»
+					«IF featureAnnotation.many-»
+						clear«toFirstUpper(featureAnnotation.validJavaMemberName)»();
+						for («featureAnnotation.itemType» value : new«toFirstUpper(featureAnnotation.validJavaMemberName)») {
+							addTo«toFirstUpper(featureAnnotation.validJavaMemberName)»(value);
+						}
+					«ELSE-»
+						«IF ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation != null && ((EReferenceModelGenAnnotation)featureAnnotation).generateBidirectionalAssociationSupport-»
+						«LET ((EReferenceModelGenAnnotation)featureAnnotation).oppositeModelGenAnnotation AS oppositeAnnotation-»
+						if («featureAnnotation.validJavaMemberName» != new«toFirstUpper(featureAnnotation.validJavaMemberName)») {
+							if («featureAnnotation.validJavaMemberName» != null) {
+								«IF oppositeAnnotation.many-»
+									«IF ((EReferenceModelGenAnnotation)oppositeAnnotation).generateSafeManyAccess-»
+										«featureAnnotation.validJavaMemberName».removeFrom«toFirstUpper(oppositeAnnotation.validJavaMemberName)»(this);
+									«ELSE-»
+										«featureAnnotation.validJavaMemberName».remove(this);
+									«ENDIF-»
+								«ELSE-»
+									«featureAnnotation.type» temp«toFirstUpper(featureAnnotation.validJavaMemberName)» = «featureAnnotation.validJavaMemberName»;
+									«featureAnnotation.validJavaMemberName» = null;
+									temp«toFirstUpper(featureAnnotation.validJavaMemberName)».«oppositeAnnotation.setter»(null);
+								«ENDIF-»
+							}
+							«featureAnnotation.validJavaMemberName» = new«toFirstUpper(featureAnnotation.validJavaMemberName)»;
+							if («featureAnnotation.validJavaMemberName» != null) {
+								«IF oppositeAnnotation.many-»
+									«IF ((EReferenceModelGenAnnotation)oppositeAnnotation).generateSafeManyAccess-»
+										«featureAnnotation.validJavaMemberName».addTo«toFirstUpper(oppositeAnnotation.validJavaMemberName)»(this);
+									«ELSE-»
+										«featureAnnotation.validJavaMemberName».add(this);
+									«ENDIF-»
+								«ELSE-»
+									«featureAnnotation.validJavaMemberName».«oppositeAnnotation.setter»(this);
+								«ENDIF-»
+							}
+						}
+						«ENDLET-»
+						«ELSE-»
+							«featureAnnotation.validJavaMemberName» = new«toFirstUpper(featureAnnotation.validJavaMemberName)»;
+						«ENDIF-»
+					«ENDIF-»
+				«ELSE-»
+					«featureAnnotation.validJavaMemberName» = new«toFirstUpper(featureAnnotation.validJavaMemberName)»;
+				«ENDIF-»				
+				«REM»added by rheydenr for Javabinding«ENDREM-»
+				«IF this.EClass.getEAnnotation("http://www.fakturama.org/JavaBean") != null-»
+				firePropertyChange("«featureAnnotation.validJavaMemberName»", this.«featureAnnotation.validJavaMemberName», new«toFirstUpper(featureAnnotation.validJavaMemberName)»);			
+				«ENDIF-»
+			«ELSEIF featureAnnotation.featureMapFeature != null-»
+				«IF featureAnnotation.many-»
+				«featureAnnotation.featureMapFeature.setter»(«featureAnnotation.featureMapFeature.featureMapQualifiedClassName».createFeatureGroupList(«featureAnnotation.featureMapFeature.featureMapQualifiedClassName».Feature.«toUpperCase(featureAnnotation.name)», new«toFirstUpper(featureAnnotation.validJavaMemberName)»));
+				«ELSE-»
+				«featureAnnotation.featureMapFeature.featureMapQualifiedClassName».setSingleFeatureMapValue(«featureAnnotation.featureMapFeature.getter»(), «featureAnnotation.featureMapFeature.featureMapQualifiedClassName».Feature.«toUpperCase(featureAnnotation.name)», new«toFirstUpper(featureAnnotation.validJavaMemberName)»);
+				«ENDIF-»
+			«ELSE-»
+		    	// Volatile feature
+				// TODO: implement this method to set the '«featureAnnotation.EStructuralFeature.name»'
+				// Ensure that you remove @generated or mark it @generated NOT
+				throw new UnsupportedOperationException();
+			«ENDIF-»
+			}
+		«ENDIF-»
+	«ENDFOREACH-»
+
+	/**
+	 * A toString method which prints the values of all EAttributes of this instance.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+ 	 * @generated
+	 */
+	 @Override
+	 public String toString() {
+	 	return  "«this.name» "
+	 	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
+			«IF !featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many-»
+		 		+ " [«featureAnnotation.name»: " +  «featureAnnotation.getter»() + "]"
+	  		«ENDIF-»
+	 	«ENDFOREACH-»;
+	 }
+}
+«ENDFILE-»
+
+	«REM»Create the feature map entries if any«ENDREM»
+	«FOREACH this.featureMapFeatures AS featureAnnotation-»
+	«EXPAND org::eclipse::emf::texo::modelgenerator::templates::featuregroup::root(modelController) FOR featureAnnotation»
+	«ENDFOREACH-»
+
+«ENDIF-»
+«ENDLET»
+«ENDDEFINE»

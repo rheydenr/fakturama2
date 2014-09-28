@@ -58,8 +58,8 @@ public class CloseAllHandler {
                 } else {
                     partService.hidePart(activePart, true);
                 }
-                partService.requestActivation();
             }
+            partService.requestActivation();
         }
     }
 }

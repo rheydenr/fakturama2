@@ -14,9 +14,11 @@
 package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
@@ -24,30 +26,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
-import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
 
 
 /**
- * @author rheydenr
+ * Abstract superclass for all DAOs. Used for finding, saving or updating certain entities.
  *
  */
 public abstract class AbstractDAO<T> {
-
-    @Inject
-    @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
-    private EntityManager entityManager;
 	
     public T save(T object) throws SQLException {
         
@@ -61,7 +49,7 @@ Order order order = ...;
 em.persist(order);
 
 
-TODO (in en einzelnen Entities:
+TODO (in den einzelnen Entities:
 @Version Timestamp timestamp;
 
 use TypedQuery<Employee>
@@ -117,7 +105,6 @@ em.joinTransaction();
      * @return List<T>
      */
     public List<T> findAll() {
-        //getEM2();
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
@@ -139,7 +126,6 @@ em.joinTransaction();
         return getEntityManager().createQuery(cq).getSingleResult();
     }
 
-
     /**
      * Finds a {@link T} by id.
      * 
@@ -152,6 +138,45 @@ em.joinTransaction();
     
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    
     
+    /**
+     * Adds a new entity if it doesn't exist. I.e., if an semantically equal object is in the database,
+     * no saving is done (this is useful e.g. for webshop import).
+     * 
+     * @param obj the entity to write
+     * @return the refreshed entity
+     */
+    public T addIfNew(T obj) throws SQLException {
+        T retval = findByExample(obj);
+        if(retval == null) {
+            retval = save(obj);
+        }
+        return retval;
+    }
+  
+    @SuppressWarnings("unchecked")
+    public T findByExample(T example) {
+        ReadAllQuery query = new ReadAllQuery(getEntityClass());
+        query.setExampleObject(example);
+        QueryByExamplePolicy policy = new QueryByExamplePolicy();
+        policy.addSpecialOperation(String.class, "containsSubstring");
+        policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
+        policy.setShouldUseEqualityForNulls(true);
+        query.setQueryByExamplePolicy(policy);
+        List<T> resultList = JpaHelper.createQuery(query, getEntityManager()).getResultList();
+        if(resultList.isEmpty()) {
+            return null;
+        } else {
+            return resultList.get(0);
+        }
+    }
+    
+    /**
+     * Contains all the attributes which are always necessary for comparing.
+     * 
+     * @return
+     */
+    protected Map<Class<T>, Vector> getAlwaysIncludeAttributes() {return Collections.emptyMap();}
+
     /**
      * Gets the count of all entities of this sort.
      * 
@@ -178,8 +203,4 @@ em.joinTransaction();
 
 	protected abstract EntityManager getEntityManager();
 	protected abstract Class<T> getEntityClass();
-	
-	protected EntityManager getEM2() {
-		return entityManager;
-	}
 }

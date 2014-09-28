@@ -4,7 +4,7 @@
 package com.sebulli.fakturama.dbconnector;
 
 /**
- * @author rheydenr
+ * This interface describes a JDBC connection handler. 
  *
  */
 public interface IDbConnection {

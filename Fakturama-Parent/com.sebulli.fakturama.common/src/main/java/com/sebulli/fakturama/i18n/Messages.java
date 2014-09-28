@@ -115,8 +115,8 @@ public class Messages {
 
 	public String DataSetReceiptVoucher671;
 
-	public String DataSetVAT651;
-	public String DataSetVAT652;
+    public String dataVatPurchasetax;
+    public String dataVatSalestax;
 
 	public String DeleteDataSetAction100;
 	public String DeleteDataSetAction101;
@@ -601,28 +601,29 @@ public class Messages {
     public String preferencesWebshopAuthorizationPasswordproteced;
     public String preferencesWebshopAuthorization;
 
-	public String WebShopImportAction73;
+	public String importWebshopActionError;
 
-	public String WebShopImportManager452;
-	public String WebShopImportManager453;
-	public String WebShopImportManager454;
-	public String WebShopImportManager455;
-	public String WebShopImportManager456;
-	public String WebShopImportManager457;
-	public String WebShopImportManager458;
-	public String WebShopImportManager459;
-	public String WebShopImportManager460;
-	public String WebShopImportManager461;
-	public String WebShopImportManager462;
-	public String WebShopImportManager463;
-	public String WebShopImportManager464;
-	public String WebShopImportManager465;
-	public String WebShopImportManager466;
-	public String WebShopImportManager468;
-	public String WebShopImportManager469;
-	public String WebShopImportManager470;
-	public String WebShopImportManager471;
-	public String WebShopImportManager472;
+    public String importWebshopErrorUrlnotset;
+    public String importWebshopInfoConnection;
+    public String importWebshopInfoConnected;
+    public String importWebshopErrorCantconnect;
+    public String importWebshopErrorCantread;
+    public String importWebshopInfoLoading;
+    public String importWebshopErrorNodata;
+    public String importWebshopErrorCantopen;
+    public String importWebshopDataCashondelivery;
+    public String importWebshopDataPrepayment;
+    public String importWebshopDataCreditcard;
+    public String importWebshopDataCheque;
+    public String importWebshopErrorMalformedurl;
+    public String importWebshopErrorCantopenpicture;
+    public String importWebshopInfoWebshopno;
+    public String importWebshopInfoTotalsum;
+    public String importWebshopErrorTotalsumincorrect;
+    public String importWebshopErrorTotalsumcheckit;
+    public String importWebshopInfoLoadingpicture;
+    public String importWebshopInfoImportorders;
+    public String importWebshopErrorCantconvertnumber;
 
     public String preferencesWebshopEnabled;
     public String preferencesWebshopUrl;
@@ -738,6 +739,7 @@ public class Messages {
 	public String mainMenuFileClose;
 	public String mainMenuFileCloseall;
 	public String mainMenuFileExit;
+	public String mainMenuFileExitQuestion;
 	public String mainMenuFileExport;
 	public String mainMenuFileImport;
 	public String mainMenuFileOpen;
@@ -832,7 +834,23 @@ public class Messages {
 	public String startFirstSelectWorkdir;
 	public String startFirstSelectWorkdirShort;
 	public String startFirstSelectWorkdirVerbose;
-
+	
+	public String toolbarNewConfirmationName;
+	public String toolbarNewContactName;
+	public String toolbarNewCreditName;
+	public String toolbarNewDeliveryName;
+	public String toolbarNewDeliverynoteName;
+	public String toolbarNewDocumentCreditName;
+	public String toolbarNewDocumentDunningName;
+	public String toolbarNewDocumentProformaName;
+	public String toolbarNewExpenditurevoucherName;
+	public String toolbarNewInvoiceName;
+	public String toolbarNewLetterName;
+	public String toolbarNewOfferName;
+	public String toolbarNewOrderName;
+	public String toolbarNewProductName;
+	public String toolbarNewReceiptvoucherName;
+	
 	public String wizardExportAccountsDescription;
 	public String wizardExportAccountsName;
 	public String wizardExportBuyersDescription;
@@ -867,7 +885,16 @@ public class Messages {
 	public String wizardImportCsvExpendituresName;
 	public String wizardImportCsvProductsDescription;
 	public String wizardImportCsvProductsName;
+    
+    public String getPurchaseTaxString() {
+          //T: Name of the tax that is raised when goods are purchased
+          return dataVatPurchasetax;
+      }
 
+      public String getSalesTaxString() {
+          //T: Name of the tax that is raised when goods are sold
+          return dataVatSalestax;
+      }
 
     /**
      * This method helps you to create messages from compound keys, i.e. if you

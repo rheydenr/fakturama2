@@ -42,6 +42,10 @@ public enum IconSize {
 	 */
 	BigIconSize("48x48"),
 	/**
+	 * Icons for Calculator
+	 */
+	CalcIconSize("47x47"),
+	/**
 	 * 48x48
 	 */
 	OverlayIconSize("48x48"),

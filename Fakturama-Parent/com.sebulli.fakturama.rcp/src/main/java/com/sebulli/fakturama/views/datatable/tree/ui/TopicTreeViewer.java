@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable.tree;
+package com.sebulli.fakturama.views.datatable.tree.ui;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -32,6 +32,7 @@ import ca.odell.glazedlists.EventList;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -147,8 +148,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 					}
 				}
 
-//				// Set a reference to the tree object to use the
-//				// tool tip hint for displaying the total sum.
+				// Set a reference to the tree object to use the
+				// tool tip hint for displaying the total sum.
 //				if (elementClass.equals(TreeObject.class)) // TODO
 //					viewDataSetTable.setData(TABLEDATA_TREE_OBJECT, treeObject);
 				

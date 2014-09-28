@@ -15,13 +15,12 @@
 package com.sebulli.fakturama.misc;
 
 /**
- * Enumeration of all 8 data types, a document can be.
+ * Enumeration of all 8 data types a document can be.
  * 
  * @author Gerd Bartelt
  */
 public enum DocumentType {
  // all 8 data types
- // TODO localize!!!
  NONE(0, "None", "None", false, false, true, false, 1, "none"),
  LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "Letters", false, false, false, false, 1, "main.menu.new.letter"),
  OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "Offers", true, true, false, false, 1, "main.menu.new.offer"),
@@ -36,7 +35,7 @@ public enum DocumentType {
 	// 9 types.
 	public final static int MAXID = DocumentType.values().length;
 	private int key, sign;
-
+	
 	/**
 	 * the l18n key for a new document (e.g., "main.menu.new.letter" => "New Letter")
 	 */
@@ -71,6 +70,7 @@ public enum DocumentType {
 		this.singularKey = description;
 		this.pluralDescription = plural;
 		this.itemTable = itemTable;
+		this.price = price;
 		this.paid = paid;
 		this.invoiceReference = invoiceReference;
 		this.sign = sign;
