@@ -144,6 +144,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage {
 		node.setDefault(Constants.TOOLBAR_SHOW_PRINT, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_SAVE, true);
 		// Get all documents
+		// TODO change to to a loop over native enumerations!!!
 		for (int i=1; i<DocumentType.MAXID; i++) {
 			node.setDefault("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), 
 					i==3 || i ==5 || i == 6);

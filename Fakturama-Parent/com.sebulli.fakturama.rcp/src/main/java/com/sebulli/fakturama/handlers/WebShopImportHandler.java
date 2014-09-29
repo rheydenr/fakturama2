@@ -32,6 +32,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
 
 
@@ -41,6 +42,8 @@ import com.sebulli.fakturama.webshopimport.ExecutionResult;
  * @author Gerd Bartelt
  */
 public class WebShopImportHandler {
+    
+    public static final int RC_OK = 0;
     
     @Inject
     @Translation
@@ -58,11 +61,16 @@ public class WebShopImportHandler {
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    @Preference(nodePath=Constants.DEFAULT_PREFERENCES_NODE)
+    private IEclipsePreferences eclipseDefaultPrefs;
 
 	@CanExecute
 	public boolean canExecute() {
 	    // cancel, if the webshop is disabled.
-		return eclipsePrefs.getBoolean("WEBSHOP_ENABLED", false);
+        return eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, 
+                eclipseDefaultPrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, false));
 	}
 
 	/**
@@ -76,18 +84,17 @@ public class WebShopImportHandler {
 		// Start a new web shop import manager in a
 		// progress Monitor Dialog
 	    ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT_MGR, null);
-	    ExecutionResult executionResult = (ExecutionResult) handlerService.executeHandler(command);
-//
-			// If there is no error - interpret the data.
-			if (executionResult != null) {
-				// If there is an error - display it in a message box
-			    String errorMessage = executionResult.getErrorMessage();
-			    if (errorMessage.length() > 400)
-			        errorMessage = errorMessage.substring(0, 400) + "...";
-			    MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
-			}
+        ExecutionResult executionResult = (ExecutionResult) handlerService.executeHandler(command);
 
-		// Refresh the views
+        if (executionResult != null && executionResult.getErrorCode() != RC_OK) {
+            // If there is an error - display it in a message box
+            String errorMessage = executionResult.getErrorMessage();
+            if (errorMessage.length() > 400)
+                errorMessage = errorMessage.substring(0, 400) + "...";
+            MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
+        }
+
+		// Refresh the views - this is done automatically because we use GlazedLists!
 //		ApplicationWorkbenchAdvisor.refreshView(ViewProductTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewContactTable.ID);
 //		ApplicationWorkbenchAdvisor.refreshView(ViewPaymentTable.ID);

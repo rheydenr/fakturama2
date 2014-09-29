@@ -3,15 +3,21 @@
  */
 package com.sebulli.fakturama.misc;
 
-import com.sebulli.fakturama.misc.DocumentType;
 
 /**
  * Common constants for the Fakturama project.
  *
  */
 public class Constants {
+    public static final String DEFAULT_PREFERENCES_NODE="/default/com.sebulli.fakturama.preferences";
+    
     public static final String VIEWTABLE_PREFERENCES_FILE = "fakturamaviews.properties";
     public static final String GENERAL_WORKSPACE = "GENERAL_WORKSPACE";
+        
+    public static final String PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR = "GENERAL_HAS_THOUSANDS_SEPARATOR";
+    public static final String PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR = "GENERAL_COLLAPSE_EXPANDBAR";
+    public static final String PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS = "GENERAL_CLOSE_OTHER_EDITORS";
+    public static final String PREFERENCE_GENERAL_CURRENCY = "GENERAL_CURRENCY";
     
     /**
      * Path to product pictures (relative to Workspace path!)
@@ -58,6 +64,55 @@ public class Constants {
     public static final String TOOLBAR_SHOW_SAVE = "TOOLBAR_SHOW_SAVE";
     public static final String TOOLBAR_SHOW_PRINT = "TOOLBAR_SHOW_PRINT";
     public static final String TOOLBAR_SHOW_WEBSHOP = "TOOLBAR_SHOW_WEBSHOP";
+    
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR = "WEBSHOP_USE_EAN_AS_ITEMNR";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS = "WEBSHOP_ONLY_MODIFIED_PRODUCTS";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_MAX_PRODUCTS = "WEBSHOP_MAX_PRODUCTS";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_NOTIFY_SHIPPED = "WEBSHOP_NOTIFY_SHIPPED";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_NOTIFY_PROCESSING = "WEBSHOP_NOTIFY_PROCESSING";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_SHIPPING_CATEGORY = "WEBSHOP_SHIPPING_CATEGORY";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_CONTACT_CATEGORY = "WEBSHOP_CONTACT_CATEGORY";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_PRODUCT_CATEGORY = "WEBSHOP_PRODUCT_CATEGORY";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_PASSWORD = "WEBSHOP_PASSWORD";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_USER = "WEBSHOP_USER";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_WEBSHOP_URL = "WEBSHOP_URL";
 
-
+    /**
+     * Preference for enabling / disabling webshop import
+     */
+    public static final String PREFERENCES_WEBSHOP_ENABLED = "WEBSHOP_ENABLED";
+    
 }

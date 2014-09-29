@@ -608,8 +608,10 @@ public class WebShopImportManager {
                 reader.close();
     
                 // Interpret the imported data (and load the product images)
-                if (runResult.isEmpty())
+                if (runResult.isEmpty()) {
+                    // If there is no error - interpret the data.
                     interpretWebShopData(localMonitor);
+                }
     
                 // Store the time of now
                 String now = DataUtils.DateAsISO8601String();
@@ -974,7 +976,7 @@ public class WebShopImportManager {
                     countryCode = LocaleUtil.findByName(delivery_country);
                     deliveryAddress.setCountry(countryCode);
                     deliveryContact.setAddress(deliveryAddress);
-                    contact.setDeliveryContact(deliveryContact);
+                    contact.getDeliveryContacts().add(deliveryContact);
                     contactsDAO.save(contact);
         
                     dataSetDocument.setContact(contact);

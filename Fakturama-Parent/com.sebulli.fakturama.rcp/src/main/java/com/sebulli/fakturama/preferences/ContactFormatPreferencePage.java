@@ -151,7 +151,6 @@ public String getDescription() {
 		//T: can see the format. Even if 2 countries don't make much sense like 
 		//T: USA,U.S.A. for the English language.
 		node.setDefault(PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, msg.dataDefaultContactFormatExcludedcountries);
-
 	}
 
 }

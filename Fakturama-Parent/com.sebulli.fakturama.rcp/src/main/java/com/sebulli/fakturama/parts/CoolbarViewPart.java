@@ -59,6 +59,10 @@ public class CoolbarViewPart {
 	private IEclipsePreferences eclipsePrefs;
 	
 	@Inject
+    @Preference(nodePath=Constants.DEFAULT_PREFERENCES_NODE)
+	private IEclipsePreferences eclipseDefaultPrefs;
+	
+	@Inject
 	private Logger log;
 	
 	@Inject
@@ -85,7 +89,6 @@ public class CoolbarViewPart {
 	@PostConstruct
 	public void createControls(Composite parent) {
 	    this.top = parent;
-
 	    // now lets create our CoolBar
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
 		top.setLayout(layout);
@@ -107,68 +110,78 @@ public class CoolbarViewPart {
 		 * Das muß man dann beim Erstellen des Icons über den Preference-Store abfragen, da die Einstellung dort
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
-		
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
-				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP, false));
+				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), getPreference(Constants.TOOLBAR_SHOW_WEBSHOP));
 		createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
-				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_PRINT, false));
+				getPreference(Constants.TOOLBAR_SHOW_PRINT));
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
-				eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_SAVE, false));
+				getPreference(Constants.TOOLBAR_SHOW_SAVE));
 		finishToolbar(coolbar1, toolBar1);
 			
 		ToolBar toolBar2 = new ToolBar(coolbar1, SWT.FLAT);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(toolBar2, CommandIds.CMD_NEW_LETTER, 
 				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_OFFER, 
 				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_ORDER, 
 				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_CONFIRMATION, 
 				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_INVOICE, 
 				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_DELIVERY, 
 				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_CREDIT, 
 				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_DUNNING, 
 				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING));
 		createToolItem(toolBar2, CommandIds.CMD_NEW_PROFORMA, 
 				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA, false));
+				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA));
 		finishToolbar(coolbar1, toolBar2);
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));	
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
 		createToolItem(toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER));	
 		finishToolbar(coolbar1, toolBar3);
 		
 		ToolBar toolBar4 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));	
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_OPEN_BROWSER));	
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
-		        eclipsePrefs.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, false));	
+		        getPreference(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR));	
 		finishToolbar(coolbar1, toolBar4);	
 	}
+
+    /**
+     * Helper method for getting a preference. At first, it looks in the regular Eclipse
+     * preference store. If there's no preference, then look into default preferences (set while 
+     * booting the application in DefaultValuesInitializer). If then not found, return <code>false</code>.
+     *   
+     * @return preference value, either set via preferences page or the default value set from Initializer
+     */
+    private boolean getPreference(String pref) {
+        return eclipsePrefs.getBoolean(pref, eclipseDefaultPrefs.getBoolean(pref, false));
+    }
 
 	@Inject
 	@Optional

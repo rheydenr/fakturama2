@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="183">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="187">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -74,15 +74,16 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20140808-1908"/>
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140929-0800"/>
 <unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140808-1908"/>
 <unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.15.0.v20140808-1908"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20140925-1437"/>
 <repository location="http://download.vogella.com/luna/e4tools"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.platform.ide" version="4.4.1.M20140925-0400"/>
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140909-1633"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.10.0.v20140925-0400"/>
 <unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140925-0400"/>
+<unit id="org.eclipse.platform.ide" version="4.4.1.M20140925-0400"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 </locations>

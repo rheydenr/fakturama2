@@ -26,6 +26,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.ContextHelpConstants;
 import com.sebulli.fakturama.misc.DataUtils;
 
@@ -36,11 +37,6 @@ import com.sebulli.fakturama.misc.DataUtils;
  * @author Gerd Bartelt
  */
 public class GeneralPreferencePage extends FieldEditorPreferencePage {
-    
-    public static final String PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR = "GENERAL_HAS_THOUSANDS_SEPARATOR";
-    public static final String PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR = "GENERAL_COLLAPSE_EXPANDBAR";
-    public static final String PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS = "GENERAL_CLOSE_OTHER_EDITORS";
-    public static final String PREFERENCE_GENERAL_CURRENCY = "GENERAL_CURRENCY";
     
     @Inject
     @Translation
@@ -65,16 +61,16 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.GENERAL_PREFERENCE_PAGE);
 
 		//T: Preference page "General"
-		addField(new BooleanFieldEditor(PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
 
 		//T: Preference page "General"
-		addField(new BooleanFieldEditor(PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
 		//T: Preference page "General"
-		addField(new StringFieldEditor(PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
 		
 		//T: Preference page "General"
-		addField(new BooleanFieldEditor(PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousendseparator, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousendseparator, getFieldEditorParent()));
 	}
 	
 	@Override
@@ -89,9 +85,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCE_GENERAL_CURRENCY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_GENERAL_CURRENCY, write);
 	}
 
 	/**
@@ -101,8 +97,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 *            The preference node
 	 */
 	public static void setDefaultValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
-		node.setDefault(PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
+		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
+		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
 
 		//Set the currency symbol of the default locale
 		String currency = "$";
@@ -112,7 +108,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 		}
 		catch (Exception e) {
 		}
-		node.setDefault(PREFERENCE_GENERAL_CURRENCY, currency);
+		node.setDefault(Constants.PREFERENCE_GENERAL_CURRENCY, currency);
 	}
 
 	/**

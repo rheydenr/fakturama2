@@ -22,9 +22,13 @@ public class ContactUtil {
     public static String getNameWithCompany(Contact contact, boolean useDelivery) {
         String line = "";
         // use delivery attribute only if it's not null!
-        String deliveryCompany = contact.getDeliveryContact() != null ? contact.getDeliveryContact().getCompany() : null;
-        String deliveryFirstName = contact.getDeliveryContact() != null ? contact.getDeliveryContact().getFirstName() : null;
-        String deliveryLastName = contact.getDeliveryContact() != null ? contact.getDeliveryContact().getName() : null;
+        Contact deliveryContact = null;
+        if(!contact.getDeliveryContacts().isEmpty()) {
+            deliveryContact = contact.getDeliveryContacts().get(0);
+        }
+        String deliveryCompany = deliveryContact != null ? deliveryContact.getCompany() : null;
+        String deliveryFirstName = deliveryContact != null ? deliveryContact.getFirstName() : null;
+        String deliveryLastName = deliveryContact != null ? deliveryContact.getName() : null;
         if (!getSelectedAttribute(contact.getCompany(), deliveryCompany, useDelivery).isEmpty()) {
             line = DataUtils.getSingleLine(getSelectedAttribute(contact.getCompany(), deliveryCompany, useDelivery));
             if ((!getSelectedAttribute(contact.getFirstName(), deliveryFirstName, useDelivery).isEmpty()) || 
@@ -55,8 +59,12 @@ public class ContactUtil {
      */
     public static String getFirstAndLastName(Contact contact, boolean useDelivery) {
         String line = "";
-        String deliveryFirstName = contact.getDeliveryContact() != null ? contact.getDeliveryContact().getFirstName() : null;
-        String deliveryLastName = contact.getDeliveryContact() != null ? contact.getDeliveryContact().getName() : null;
+        Contact deliveryContact = null;
+        if(!contact.getDeliveryContacts().isEmpty()) {
+            deliveryContact = contact.getDeliveryContacts().get(0);
+        }
+        String deliveryFirstName = deliveryContact != null ? deliveryContact.getFirstName() : null;
+        String deliveryLastName = deliveryContact != null ? deliveryContact.getName() : null;
         if (!getSelectedAttribute(contact.getFirstName(), deliveryFirstName, useDelivery).isEmpty()) {
             line += getSelectedAttribute(contact.getFirstName(), deliveryFirstName, useDelivery);
         }

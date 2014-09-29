@@ -14,12 +14,16 @@
 
 package com.sebulli.fakturama.preferences;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
+import com.sebulli.fakturama.i18n.Messages;
 
 /**
  * Initializes the preference pages with default values
@@ -27,6 +31,10 @@ import com.opcoach.e4.preferences.ScopedPreferenceStore;
  * @author Gerd Bartelt
  */
 public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
+
+    @Inject
+    protected IEclipseContext context;
+
 
     private Logger log;
     
@@ -50,6 +58,7 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() { 
 //        log.debug("Enter in default Preference Initializer");
+	    // look at Constants.DEFAULT_PREFERENCES_NODE)
 	    IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
 
 		// Initialize every single preference page

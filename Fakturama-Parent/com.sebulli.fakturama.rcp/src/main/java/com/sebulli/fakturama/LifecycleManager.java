@@ -38,7 +38,6 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.preferences.DefaultValuesInitializer;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
@@ -183,10 +182,7 @@ public class LifecycleManager {
             defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         
-        // TODO: Load the default country codes
-//        CountryCodes.loadFromResources(list, null);
-        
-        // now, initialize some other preferences ==> das macht schon der Extension Point!
+// now, initialize some other preferences ==> das macht schon der Extension Point!
 //        DefaultValuesInitializer defaultValuesInitializer = new DefaultValuesInitializer(log);
 //        defaultValuesInitializer.initializeDefaultPreferences();
     }
