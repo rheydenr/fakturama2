@@ -17,7 +17,7 @@ import org.eclipse.e4.core.services.nls.Message;
  * @author rheydenr
  *
  */
-@Message(contributorURI="platform:/plugin/com.sebulli.fakturama.rcp")
+@Message(contributionURI="platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 
 	public String AccountSettingsPage159;
@@ -834,6 +834,12 @@ public class Messages {
 	public String startFirstSelectWorkdir;
 	public String startFirstSelectWorkdirShort;
 	public String startFirstSelectWorkdirVerbose;
+	public String startMigrationBegin;
+	public String startMigrationConvert;
+	public String startMigrationEnd;
+	public String startMigrationRecords;
+	public String startMigrationWorking;
+	
 	
 	public String toolbarNewConfirmationName;
 	public String toolbarNewContactName;

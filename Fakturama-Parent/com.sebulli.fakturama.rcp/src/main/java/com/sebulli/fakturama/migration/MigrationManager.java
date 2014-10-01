@@ -234,9 +234,9 @@ public class MigrationManager {
 
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Migration task running ...", orderedTasks.length);
+					monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 					for (OldTableinfo tableinfo : orderedTasks) {
-						monitor.subTask("converting " + tableinfo.name());
+						monitor.subTask(msg.startMigrationConvert +" " + tableinfo.name());
 						checkCancel(monitor);
 						runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
 //						monitor.worked(1);
@@ -280,9 +280,9 @@ public class MigrationManager {
 			
 							@Override
 							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-								monitor.beginTask("Migration task running ...", orderedTasks.length);
+								monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 								for (OldTableinfo tableinfo : orderedTasks) {
-									monitor.subTask("converting " + tableinfo.name());
+									monitor.subTask(msg.startMigrationConvert + tableinfo.name());
 									checkCancel(monitor);
 									runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
 			//						monitor.worked(1);
@@ -301,7 +301,7 @@ public class MigrationManager {
 						throw new OperationCanceledException();
 					}
 					finally {
-						log.info("fäddich!");
+						log.info(msg.startMigrationEnd);
 					}
 				}
 			};
@@ -317,7 +317,7 @@ public class MigrationManager {
 		}
 		finally {
 		    eclipsePrefs.flush();
-			log.info("fäddich!");
+			log.info(msg.startMigrationEnd);
 		}
 	}
 	
@@ -342,37 +342,7 @@ public class MigrationManager {
 			break;
 		case Lists:
 			// Country Codes are no user definable data; they will be read
-			// from ISO-Countrycodes.txt.
-//			try {
-//				// TODO use a service!!! (or at least some kind of ResourceLocator...)
-//			    InputStream inputStream = FileLocator.openStream(FrameworkUtil.getBundle(Icon.class), new Path("/lists/ISO-Countrycodes.txt"), false);
-//			    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-//			    String inputLine;
-//			    int lineno = 1;
-//			    int colNumber;
-//			    while ((inputLine = in.readLine()) != null) {
-//			    	colNumber = 0;
-//			    	if(lineno++ == 1) continue;  // skip header
-//			    	// now the simplest tab separated reader ever... :-)
-//			    	String[] entries = inputLine.split("\\t");
-//			    	CountryCode countryCode = new CountryCode();
-//			    	countryCode.setCode2digit(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setCode3digit(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setFullName_de(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setFullName(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setFullName_fr(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setFullName_es(StringUtils.trim(entries[colNumber++]));
-//			    	countryCode.setFullName_ru(StringUtils.trim(entries[colNumber++]));
-//			    	countryCodesDAO.save(countryCode);
-//			    }
-//			    in.close();
-//			    
-//			    // TODO at the moment, the "billing_accounts"entries in the old List table will be ignored
-//			    // since they are also stored in expenditureitemaccounttype and receiptvoucheritemaccounttype 
-//			 
-//			} catch (IOException | SQLException e) {
-//			    e.printStackTrace();
-//			}
+			// from java Locale.
 			
 			break;
 		case Texts:
@@ -404,8 +374,8 @@ public class MigrationManager {
 
 	private void runMigrateProductsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllProducts();
-		subProgressMonitor.beginTask("Bearbeite insgesamt", countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " Sätze");
+		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
+		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigrationRecords);
 		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<ProductCategory>(); 
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		for (OldProducts oldProduct : oldDao.findAllProducts()) {
@@ -455,8 +425,8 @@ public class MigrationManager {
 
 	private void runMigrateDocumentsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllDocuments();
-		subProgressMonitor.beginTask("Bearbeite insgesamt", countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " Sätze");
+		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
+		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigrationRecords);
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
 		Map<Integer, Document> invoiceDocuments = new HashMap<>();
 		GregorianCalendar zeroDate = new GregorianCalendar(2000, 0, 1);

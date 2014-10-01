@@ -14,15 +14,24 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.internal.services.BundleTranslationProvider;
+import org.eclipse.e4.core.internal.services.DefaultResourceBundleProvider;
+import org.eclipse.e4.core.internal.services.MessageFactoryServiceImpl;
+import org.eclipse.e4.core.internal.services.ResourceBundleTranslationProvider;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.translation.TranslationService;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 
 /**
@@ -60,8 +69,22 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 //        log.debug("Enter in default Preference Initializer");
 	    // look at Constants.DEFAULT_PREFERENCES_NODE)
 	    IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
+	    
+	    
+//Activator.getContext().getServiceReferences(TranslationService.class, null)RegisteredServices()ServiceReference(TranslationService.class);
+//	    MessageFactoryServiceImpl m = new MessageFactoryServiceImpl();
+////	    m.getMessageInstance(Locale.getDefault(), Messages.class, Activator.getContext().getBundle());
+//	    DefaultResourceBundleProvider d = new DefaultResourceBundleProvider();
+//	    d.setBundleLocalization(new BundLo)
+//	    d.getResourceBundle(Activator.getContext().getBundle(), Locale.getDefault().getLanguage()).getKeys();
+//	            Activator.getContext().getBundle();
+//	    ResourceBundle myResources =
+//	            ResourceBundle.getBundle("MyResources", Locale.getDefault());
+//Activator.getContext().getBundle().getResource("");
+	    
+	    
 
-		// Initialize every single preference page
+	    // Initialize every single preference page
 		ToolbarPreferencePage.setInitValues(defaultValuesNode);
 		ContactPreferencePage.setInitValues(defaultValuesNode);
 // TODO static!!!		ContactFormatPreferencePage.setInitValues(node);
