@@ -105,6 +105,10 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Inject
     private Logger log;
 
+//    this is for synchronizing the UI thread (unused at the moment)
+//    @Inject    
+//    private UISynchronize synch;
+
     // ID of this view
     public static final String ID = "fakturama.views.vatTable";
     
@@ -176,11 +180,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
         vatListData = GlazedLists.eventList(vatsDAO.findAll());
-        
-        VAT test = new VAT();
-        test.setName("bb");
-        test.isSameAs(vatListData.get(0));
-        vatsDAO.findByExample(test);
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
@@ -230,25 +229,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new IDataProvider() {
-
-            public Object getDataValue(int columnIndex, int rowIndex) {
-                return derivedColumnPropertyAccessor.getColumnProperty(columnIndex);
-            }
-
-            public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-                // noop
-            }
-
-            public int getColumnCount() {
-                return derivedColumnPropertyAccessor.getColumnCount();
-            }
-
-            public int getRowCount() {
-                return 1;
-            }
-
-        };
+        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<VAT>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
         final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
@@ -314,7 +295,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
 
         final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
-
         natTable.addLayerListener(new ILayerListener() {
 
             // Default selection behavior selects cells by default.
@@ -362,10 +342,17 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
         return natTable;
     }
+    
+    /**
+     * @return the gridLayer
+     */
+    protected ListViewGridLayer<VAT> getGridLayer() {
+        return gridLayer;
+    }
 
     @Override
     protected TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
-        TopicTreeViewer<VATCategory> topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, false, true);
+        topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(vatCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
@@ -381,9 +368,21 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @return
      */
     private long getDefaultVATId() {
-        return preferences.node(DEFAULT_VALUE_PREFERENCES).getLong(Constants.DEFAULT_VAT, 1L);
+        return preferences.getLong(Constants.DEFAULT_VAT, 1L);
     }
     
+    /**
+     * Handle an incoming refresh command. This could be initiated by an editor 
+     * which has just saved a new element (document, VAT, payment etc). Here we ONLY
+     * listen to "VatEditor" events.<br />
+     * The tree of {@link VATCategory}s is updated because we use a GlazedList for
+     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
+     * react on every change of the underlying list (here in the field <code>categories</code>).
+     * If the content of <code>categories</code> changes, the change event is fired and the 
+     * {@link TopicTreeViewer} is updated.
+     * 
+     * @param message an incoming message
+     */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic("VatEditor") String message) {
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
@@ -391,8 +390,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         vatListData.addAll(vatsDAO.findAll());
         categories.clear();
         categories.addAll(vatCategoriesDAO.findAll());
-        topicTreeViewer.setInput(categories);
-//        topicTreeViewer.refreshTree();
+        lastSelectedRow = -1;
     }
 
 
@@ -490,10 +488,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //   if (addNewAction != null) {
         //       addNewAction.setCategory(filter);
         //   }
+        lastSelectedRow = -1;
 
-        //Refresh
-        //   this.refresh();
-
+        //Refresh is done automagically...
     }
 	
 	/**
@@ -555,19 +552,23 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 	}
 
     public void removeSelectedEntry() {
-        VAT objToDelete = gridLayer.getBodyDataProvider().getRowObject(lastSelectedRow);
-        try {
-            // don't delete the entry because it could be referenced
-            // from another entity
-            objToDelete.setDeleted(Boolean.TRUE);
-            vatsDAO.save(objToDelete);
+        if(lastSelectedRow > 0) {
+            VAT objToDelete = gridLayer.getBodyDataProvider().getRowObject(lastSelectedRow - 1);
+            try {
+                // don't delete the entry because it could be referenced
+                // from another entity
+                objToDelete.setDeleted(Boolean.TRUE);
+                vatsDAO.save(objToDelete);
+            }
+            catch (SQLException e) {
+                log.error(e, "can't save the current VAT: " + objToDelete.toString());
+            }
+    
+            // Refresh the table view of all VATs
+            evtBroker.post("VatEditor", "update");
+        } else {
+            log.debug("tried to delete an entry for non-existing row. lastSelectedRow="+lastSelectedRow);
         }
-        catch (SQLException e) {
-            log.error(e, "can't save the current VAT: " + objToDelete.toString());
-        }
-
-        // Refresh the table view of all VATs
-        evtBroker.post("VatEditor", "update");
     }
 
 }

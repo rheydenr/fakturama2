@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 
 /**
  * This class provides the labels for the category tree
- * 
- * @author rheydenr
  *
  */
 public class TreeCategoryLabelProvider extends CellLabelProvider {

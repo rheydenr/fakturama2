@@ -23,12 +23,15 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -40,6 +43,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -56,8 +60,6 @@ import com.sebulli.fakturama.parts.converter.VATCategoryConverter;
 
 /**
  * The VAT editor
- * 
- * @author Ralf Heydenreich
  */
 public class VatEditor extends Editor<VAT> {
 
@@ -90,10 +92,10 @@ public class VatEditor extends Editor<VAT> {
     private FormattedText textValue;
     private Combo comboCategory;
 
-    // defines, if the vat is just created
+    // defines if the vat is just created
     private boolean newVat;
 
-    /*
+    /**
      * This field can't be injected since the part is created from
      * a PartDescriptor (see createPartControl).
      */
@@ -107,7 +109,6 @@ public class VatEditor extends Editor<VAT> {
      * 
      * @param monitor
      *            Progress monitor
-     * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Persist
     public void doSave(IProgressMonitor monitor) {
@@ -128,15 +129,18 @@ public class VatEditor extends Editor<VAT> {
             // at first, check the category for a new entry
             // (the user could have written a new one into the combo field)
             String testCat = comboCategory.getText();
-            // to find the complete Category we have to split the category string and check each of the parts
+            // to find the complete category we have to start with the topmost category
+            // and then lookup each of the child categories in the given path
             String[] splittedCategories = testCat.split("/");
             VATCategory parentCategory = null;
-            for (String category : splittedCategories) {
+            String category = "";
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
                 VATCategory searchCat = vatCategoriesDAO.findVATCategoryByName(category);
                 if(searchCat == null) {
                     // not found? Then create a new one.
                     VATCategory newCategory = new VATCategory();
-                    newCategory.setName(category);
+                    newCategory.setName(splittedCategories[i]);
                     newCategory.setParent(parentCategory);
                     vatCategoriesDAO.save(newCategory);
                     searchCat = newCategory;
@@ -166,7 +170,7 @@ public class VatEditor extends Editor<VAT> {
        	// Set the Editor's name to the payment name.
         part.setLabel(editorVat.getName());
         
-		// Refresh the table view of all VATs
+		// Refresh the table view of all VATs (this also refreshes the tree of categories)
         evtBroker.post("VatEditor", "update");
         
         // reset dirty flag
@@ -177,12 +181,12 @@ public class VatEditor extends Editor<VAT> {
      * Initializes the editor. If an existing data set is opened, the local
      * variable "vat" is set to this data set. If the editor is opened to create
      * a new one, a new data set is created and the local variable "vat" is set
-     * to this one.
-     * 
+     * to this one.<br />
+     * If we get an ID from the opening command we try to open the given
+     * VAT.
      * 
      * @param parent
      *            the parent control
-     * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     @PostConstruct
     public void createPartControl(Composite parent) {
@@ -217,13 +221,12 @@ public class VatEditor extends Editor<VAT> {
         // Create the top Composite
         top = new Composite(parent, SWT.NONE);
         GridLayoutFactory.swtDefaults().numColumns(2).applyTo(top);
-        //
-        //		// Add context help reference 
+        
+		// Add context help reference 
         //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.VAT_EDITOR);
 
         // Large VAT label
         Label labelTitle = new Label(top, SWT.NONE);
-        //T: VAT Editor: Title VAT Entry
         labelTitle.setText(msg.editorVatTitle);
         GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(2, 1).applyTo(labelTitle);
         makeLargeLabel(labelTitle);
@@ -231,7 +234,6 @@ public class VatEditor extends Editor<VAT> {
         // Name of the VAT
         Label labelName = new Label(top, SWT.NONE);
         labelName.setText(msg.commonFieldName);
-        //T: Tool Tip Text
         labelName.setToolTipText(msg.editorVatNameTooltip);
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
@@ -243,16 +245,15 @@ public class VatEditor extends Editor<VAT> {
         // Category of the VAT
         Label labelCategory = new Label(top, SWT.NONE);
         labelCategory.setText(msg.commonFieldCategory);
-        //T: Tool Tip Text
         labelCategory.setToolTipText(msg.editorVatCategoryTooltip);
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        // Collect all category strings
+        // Collect all category strings as a sorted Set
         final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
             @Override
-            public int compare(VATCategory o1, VATCategory o2) {
-                return o1.getName().compareTo(o2.getName());
+            public int compare(VATCategory cat1, VATCategory cat2) {
+                return cat1.getName().compareTo(cat2.getName());
             }
         });
         categories.addAll(vatCategoriesDAO.findAll());
@@ -286,7 +287,6 @@ public class VatEditor extends Editor<VAT> {
         // The description
         Label labelDescription = new Label(top, SWT.NONE);
         labelDescription.setText(msg.commonFieldDescription);
-        //T: Tool Tip Text
         labelDescription.setToolTipText(msg.editorVatDescriptionTooltip);
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
@@ -307,16 +307,14 @@ public class VatEditor extends Editor<VAT> {
         data.widthHint = 200;
         textValue.getControl().setLayoutData(data);
         bindModelValue(editorVat, textValue, "taxValue", 16);
-//        GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
         // Create the composite to make this VAT to the standard VAT. 
         Label labelStdVat = new Label(top, SWT.NONE);
         labelStdVat.setText(msg.commonLabelDefault);
-        //T: Tool Tip Text
         labelStdVat.setToolTipText(msg.editorVatNameTooltip);
 
-        // Get the ID of the standard entity
+        // Get the ID of the standard entity from preferences
         try {
             stdID = defaultValuePrefs.getLong(getDefaultEntryKey(), 1L);
         } catch (NumberFormatException | NullPointerException e) {
@@ -328,18 +326,23 @@ public class VatEditor extends Editor<VAT> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStdVat);
         //T: VAT Editor: Button description to make this as standard VAT.
         stdComposite = new StdComposite(top, editorVat, stdVat, msg.editorVatDefaultbutton, 1);
-        //T: Tool Tip Text
         stdComposite.setToolTipText(msg.editorVatDefaultbuttonTooltip);
 
-        // Disable the Standard Button, if this is a new VAT
+        // Disable the Standard Button if this is a new VAT;
         // the Button is disabled by default, see Editor.StdComposite
         if (!newVat) {
             stdComposite.stdButton.setEnabled(true);
         }
     }
-
     
-
+    @Inject
+    @Optional
+    public void partActivation(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) 
+      Event event) {
+      // do something
+      System.out.println("Got Part");
+    }     
+    
     @Override
     protected String getDefaultEntryKey() {
         return Constants.DEFAULT_VAT;
@@ -349,5 +352,4 @@ public class VatEditor extends Editor<VAT> {
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
-
 }

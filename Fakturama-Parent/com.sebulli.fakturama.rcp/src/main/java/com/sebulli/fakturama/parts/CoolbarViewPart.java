@@ -277,8 +277,5 @@ public class CoolbarViewPart {
 			}
 		});
         item.setImage(iconImage);
-        
-        
-        item.setData("mpf!");
 	}
 }

@@ -34,16 +34,25 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -103,6 +112,9 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
     @Inject
     private ECommandService commandService;
+    
+    @Inject
+    private EMenuService menuService;
 
 	//The top composite
 	protected Composite top;
@@ -154,9 +166,17 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         // Create the composite that contains the search field and the table
         Composite searchAndTableComposite = createSearchAndTableComposite(top);
         natTable = createListTable(searchAndTableComposite);
+        addCustomStyling(natTable);
         
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
+//        createDefaultContextMenu();
+//        natTable.setMenu(createMenuManager();)
+        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();
+        natTable.setMenu(contextMenu);  // works!
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
+                new PopupMenuAction(contextMenu));
         
         onStart(natTable);
         natTable.addDisposeListener(new DisposeListener() {
@@ -189,10 +209,38 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 //		// Set selection provider
 //		getSite().setSelectionProvider(tableViewer);
-
 		return top;
 	}
-	
+
+    /**
+     * @return
+     */
+    protected ListViewGridLayer<T> getGridLayer() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * We have to style the table a little bit...
+     * 
+     * @param natTable the {@link NatTable} to style
+     */
+    private void addCustomStyling(NatTable natTable) {
+        // NOTE: Getting the colors and fonts from the GUIHelper ensures that
+        // they are disposed properly (required by SWT)
+        // Setup selection styling
+        DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
+        selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
+        selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
+        selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
+        selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
+        selectionStyle.anchorBgColor = GUIHelper.getColor(217, 232, 251);
+        selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
+
+        // Add all style configurations to NatTable
+        natTable.addConfiguration(selectionStyle);
+    }
+
 	/**
 	 * Loads the table settings (layout and such stuff) from a properties file.
 	 * @param natTable
@@ -210,8 +258,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
             // No file found, oh well, move along
             log.warn(Constants.VIEWTABLE_PREFERENCES_FILE + " not found, skipping load");
         }
-
-//        example.onStart();
     }
 	
     /**
@@ -220,8 +266,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @param natTable
      */
     public void onStop(NatTable natTable) {
-//        example.onStop();
-
         Properties properties = new Properties();
         String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
         Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
@@ -259,7 +303,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	}
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
-//	abstract protected void createListViewToolbar(Composite parent);
 	
 
     /**
@@ -313,8 +356,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
 
-        // The toolbar
-//        createListViewToolbar(searchAndToolbarComposite);
+        // The toolbar is created via Application model (Application.e4xmi)
         
         filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
         FontData[] fD = filterLabel.getFont().getFontData();
@@ -346,22 +388,22 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //	public TopicTreeViewer getTopicTreeViewer() {
 //		return topicTreeViewer;
 //	}
-//
-//	/**
-//	 * Create the menu manager for the context menu
-//	 */
-//	protected void createMenuManager() {
+
+	/**
+	 * Create the menu manager for the context menu
+	 */
+	protected void createMenuManager() {
 //		menuManager = new MenuManager();
 //		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 //		tableViewer.getTable().setMenu(menuManager.createContextMenu(tableViewer.getTable()));
 //
 //		getSite().registerContextMenu("com.sebulli.fakturama.views.datasettable.popup", menuManager, tableViewer);
 //		getSite().setSelectionProvider(tableViewer);
-//
-//	}
+//	    menuService.registerContextMenu(natTable, "com.sebulli.fakturama.vatlist.popup");
+	}
 
     
-    protected PopupMenuBuilder createBodyMenu(final NatTable natTable) {
+    protected PopupMenuBuilder createBodyMenu(final NatTable natTable, final ListViewGridLayer<T> gridLayer) {
         return new PopupMenuBuilder(natTable)
                 .withMenuItemProvider(new IMenuItemProvider() {
                     @Override
@@ -373,16 +415,17 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                         menuItem.addSelectionListener(new SelectionAdapter() {
                             @Override
                             public void widgetSelected(SelectionEvent event) {
-//                                if (dataProvider.isAutoColumnSpan()) {
-//                                    dataProvider.setAutoColumnSpan(false);
-//                                    dataProvider.setAutoRowSpan(true);
-//                                }
-//                                else if (dataProvider.isAutoRowSpan()) {
-//                                    dataProvider.setAutoRowSpan(false);
-//                                }
-//                                else {
-//                                    dataProvider.setAutoColumnSpan(true);
-//                                }
+                                NatEventData natEventData = MenuItemProviders.getNatEventData(event);
+                                //get the row position for the click in the NatTable
+                                int rowPosition = natEventData.getRowPosition();
+                               // natTable.getDataValueByPosition(columnPosition, rowPosition);
+
+                                //transform the NatTable row position to the row position of the body layer stack
+                                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPosition, gridLayer.getBodyDataLayer());
+                                // extract the selected Object
+                                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                                log.debug("Selected Object: " + selectedObject.getName());
+
                                 natTable.doCommand(new VisualRefreshCommand());
                             }
                         });
@@ -391,12 +434,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 .withStateManagerMenuItemProvider();
     }
     
-    //
 	/**
 	 * Create the default context menu with one addNew and one Delete action
 	 */
 	protected void createDefaultContextMenu() {
-//		createMenuManager();
+		createMenuManager();
 //		if (addNewAction != null)
 //			menuManager.add(addNewAction);
 //		menuManager.add(new DeleteDataSetAction());
@@ -404,6 +446,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	/**
 	 * Refresh the table and the tree viewer
+	 * @deprecated
 	 */
 	public void refresh() {
 
@@ -416,19 +459,17 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 		// Refresh the tree viewer
 		if (topicTreeViewer != null) {
-			topicTreeViewer.refreshTree();
+//			topicTreeViewer.refreshTree();
 		}
 	}
-//
-//	/**
-//	 * Asks this part to take focus within the workbench.
-//	 * 
-//	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-//	 */
-//	@Override
-//	public void setFocus() {
-//		tableViewer.getControl().setFocus();
-//	}
+
+	/**
+	 * Asks this part to take focus within the workbench.
+	 */
+	@Focus
+	public void setFocus() {
+	    natTable.setFocus();
+	}
 
 	/**
 	 * Set a reference to the tree object
@@ -500,6 +541,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	/**
 	 * Refresh the standard ID. Sets the new standard ID to the standard icon
 	 * column of the table
+	 * @deprecated
 	 */
 	public void refreshStdId() {
 

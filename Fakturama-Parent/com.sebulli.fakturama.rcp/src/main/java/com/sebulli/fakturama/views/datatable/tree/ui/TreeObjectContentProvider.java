@@ -59,8 +59,6 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 				// Rebuild the elements, if some strings have changed
 				// => this replaces "getCategoryStringsChanged()"
 				// FIXME zur Zeit ändert sich hier nichts...
-//			    internalTreeViewer.addTreeListener(listener)
-//				internalTreeViewer.aL
 //				inputElement.addListEventListener(new ListEventListener<MyRowObject>() {
 //
 //					@Override
@@ -159,32 +157,16 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
          * @see org.eclipse.jface.viewers.IContentProvider#dispose()
          */
         @Override
-        public void dispose() { }
+        public void dispose() { 
+            // this.topicTreeViewer ... ?
+        }
 
         /* (non-Javadoc)
          * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
          */
-        
-        /*
-         * @see IDeltaListener#add(DeltaEvent)
-         */
-        public void refresh() {
-            this.topicTreeViewer.internalTreeViewer.refresh();
-        }
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//            ((TreeViewer) viewer).refresh();
             this.topicTreeViewer.internalTreeViewer = (TreeViewer)viewer;
-            if(oldInput != null) {
-//                ((EventList)oldInput).addListEventListener(listChangeListener)
-                System.out.println("mpf1!");
-//                removeListenerFrom((MovingBox)oldInput);
-            }
-            if(newInput != null) {
-                System.out.println("mpf2!");
-//                addListenerTo((MovingBox)newInput);
-            }
-            System.out.println("mpf!3");
         }
 	}

@@ -193,8 +193,8 @@ public class Calculator {
         // Button Icon.CALC_.
         createButton(container, '.', false, Icon.CALC_POINT, 1);
 
-        // Sign Button
-        createButton(container, '-', false, Icon.CALC_PLUSMINUS, 1);
+        // Sign Button (therefore we use the Character 's')
+        createButton(container, 's', false, Icon.CALC_PLUSMINUS, 1);
 
 		// Set the focus to the display Text and add a key listener.
 		// So, you can use the mouse or the keyboard
@@ -226,6 +226,7 @@ public class Calculator {
 				case 'I':
 				case '%':
 				case '.':
+				case 's':
 					updateDisplay(e.character);
 					break;
 				case '*':
@@ -348,7 +349,8 @@ public class Calculator {
 			doClear = true;
 			break;
 
-		case '-': // Change Sign
+		case 's': // Change Sign
+		    keyVal = '-';
 			if (tempString.startsWith("-")) {
 				tempString = tempString.substring(1, tempString.length());
 			}
@@ -615,6 +617,7 @@ public class Calculator {
 				case 'I':
 				case '%':
 				case '.':
+				case 's':
 					updateDisplay(c);
 					break;
 				case '*':
@@ -630,6 +633,7 @@ public class Calculator {
 		// Set the icon
 		try {
 			button.setImage(commandIcon.getImage(IconSize.CalcIconSize));
+			button.setToolTipText(String.valueOf(c));
 		}
 		catch (Exception e) {
 			log.error(e, "Icon not found");

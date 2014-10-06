@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
@@ -200,8 +202,24 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Reset the marker for "category has changed"
 		// FIXME ???
-//		if (inputElement != null)
+		if (inputElement != null) {
+//		    internalTreeViewer.refresh();
+//		    root.accept(new IModelVisitor() {
+//                
+//                @Override
+//                public void visitMovingBox(TreeParent box, Object passAlongArgument) {
+//                    // TODO Auto-generated method stub
+//                    
+//                }
+//                
+//                @Override
+//                public void visitBook(TreeObject book, Object passAlongArgument) {
+//                    // TODO Auto-generated method stub
+//                    
+//                }
+//            }, root);
 //			inputElement.resetCategoryChanged();
+		}
 	}
 
 	/**
@@ -292,19 +310,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		//T: Topic Tree Viewer transaction title
 		transactionItem.setName(msg.topictreeTransaction);
 		
-		refreshTree();
-	}
-	
-	public void refreshTree() {
-/*
- * receiver => root element
- * receiver.add(new Book)
- *   Book.accept(adder, Bookstore)
- *      fireAdd(book);
-
- */
-//	    contentProvider.in
-//	    internalTreeViewer.refresh();
+//		refreshTree();
 	}
 
 	/**
@@ -385,7 +391,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			return;
 		contactItem.setContactId(contactId);
 		contactItem.setName(name);
-		refreshTree();
+//		refreshTree();
 	}
 
 	/**
@@ -399,6 +405,35 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
         internalTreeViewer.setContentProvider(contentProvider);
 		internalTreeViewer.setLabelProvider(new ViewLabelProvider());
 		internalTreeViewer.setInput(root);
+		
+		/*
+		 * If an update of the underlying list occurs, the inputElement
+		 * gets informed. Then it has to update the complete tree. This
+		 * can only(!) be done in UI thread (else you get an ugly Exception).
+		 * Therefore we have to run the refresh() method inside a separate 
+		 * Runnable class.
+		 * 
+		 * see http://www.eclipsezone.com/eclipse/forums/t24195.html
+		 * and http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fswt_threading.htm
+		 */
+		this.inputElement.addListEventListener(new ListEventListener<T>() {
+		    /* (non-Javadoc)
+		     * @see ca.odell.glazedlists.event.ListEventListener#listChanged(ca.odell.glazedlists.event.ListEvent)
+		     */
+		    @Override
+		    public void listChanged(ListEvent<T> listChanges) {
+		        // alternative: use UISynchronize
+		        internalTreeViewer.getControl().getDisplay().asyncExec(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        if(!internalTreeViewer.getControl().getDisplay().isDisposed()) {
+                            internalTreeViewer.refresh();
+                        }
+                    }
+                });
+		    }
+        });
 
 		// Expand the tree only to level 2
 		internalTreeViewer.expandToLevel(2);
