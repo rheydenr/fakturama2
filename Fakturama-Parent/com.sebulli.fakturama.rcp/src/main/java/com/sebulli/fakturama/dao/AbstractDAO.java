@@ -175,7 +175,7 @@ em.joinTransaction();
      * 
      * @return
      */
-    protected Map<Class<T>, Vector> getAlwaysIncludeAttributes() {return Collections.emptyMap();}
+    protected Map<Class<T>, Vector<String>> getAlwaysIncludeAttributes() {return Collections.emptyMap();}
 
     /**
      * Gets the count of all entities of this sort.

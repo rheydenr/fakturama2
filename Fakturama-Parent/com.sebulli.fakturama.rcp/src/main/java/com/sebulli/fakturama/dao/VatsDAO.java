@@ -84,8 +84,8 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 * @see com.sebulli.fakturama.dao.AbstractDAO#getAlwaysIncludeAttributes()
 	 */
 	@Override
-	protected Map<Class<VAT>, Vector> getAlwaysIncludeAttributes() {
-	    Map<Class<VAT>, Vector> map = new HashMap<>();
+	protected Map<Class<VAT>, Vector<String>> getAlwaysIncludeAttributes() {
+	    Map<Class<VAT>, Vector<String>> map = new HashMap<>();
 	    Vector<String> attribVector = new Vector<String>();
 	    attribVector.addElement(VAT_.taxValue.getName());
 	    map.put(getEntityClass(), attribVector);
