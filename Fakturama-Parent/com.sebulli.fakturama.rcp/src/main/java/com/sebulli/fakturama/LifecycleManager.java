@@ -106,9 +106,8 @@ public class LifecycleManager {
             try {
                 fillWithInitialData();
             }
-            catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            catch (SQLException sqlex) {
+                log.error(sqlex, "couldn't fill with inital data! " + sqlex);
             }
         }
         IApplicationContext appContext = context.get(IApplicationContext.class);

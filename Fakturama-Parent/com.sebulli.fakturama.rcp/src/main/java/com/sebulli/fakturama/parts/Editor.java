@@ -268,7 +268,6 @@ public abstract class Editor<T extends IEntity> {
 	/**
 	 * Asks this part to take focus within the workbench. Set the focus to the
 	 * standard text
-	 * 
 	 */
 	@Focus
 	public void setFocus() {
@@ -580,7 +579,6 @@ public abstract class Editor<T extends IEntity> {
 
 	/**
 	 * Test before close, if the document ID is correct
-	 * 
 	 */
 // TODO this has nothing to do with @PersistState!!!
 	public int promptToSaveOnClose(MDirtyable part, Composite parent) {

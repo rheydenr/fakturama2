@@ -325,21 +325,4 @@ public class TreeObject {
         return retval;
     }
 
-    /**
-     * @param child
-     */
-    public void fireAdd(TreeParent child) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * @param adder
-     * @param treeParent
-     */
-    public void accept(IModelVisitor adder, TreeParent treeParent) {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

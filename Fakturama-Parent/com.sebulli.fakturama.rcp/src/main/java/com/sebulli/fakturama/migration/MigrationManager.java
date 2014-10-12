@@ -1121,8 +1121,7 @@ public class MigrationManager {
             }
         }
         catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            log.error(e1, "Error while writing ColumnWidthPreferences to " + propertiesFile.getFileName());
         }
     }
 	

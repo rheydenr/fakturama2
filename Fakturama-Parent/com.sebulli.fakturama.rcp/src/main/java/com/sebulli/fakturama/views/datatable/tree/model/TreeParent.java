@@ -10,8 +10,6 @@ import java.util.ArrayList;
  */
 public class TreeParent extends TreeObject {
     
-    private static IModelVisitor adder = new Adder();
-
 	// List with all children
 	private ArrayList<TreeObject> children;
 
@@ -47,20 +45,7 @@ public class TreeParent extends TreeObject {
 	public void addChild(TreeParent child) {
 		children.add(child);
 		child.setParent(this);
-        fireAdd(child);
 	}
-
-    public void add(TreeObject toAdd) {
-        toAdd.accept(adder, this);
-    }
-    
-    /*
-     * @see Model#accept(ModelVisitorI, Object)
-     */
-    public void accept(IModelVisitor visitor, Object passAlongArgument) {
-        visitor.visitMovingBox(this, passAlongArgument);
-    }
-
 
 	/**
 	 * Remove a child from the tree object
@@ -104,26 +89,5 @@ public class TreeParent extends TreeObject {
 	public void clear() {
 		children.clear();
 	}
-    
-    private static class Adder implements IModelVisitor {
-         /* (non-Javadoc)
-         * @see com.sebulli.fakturama.views.datatable.tree.model.IModelVisitor#visitMovingBox(com.sebulli.fakturama.views.datatable.tree.model.TreeParent, java.lang.Object)
-         */
-        @Override
-        public void visitMovingBox(TreeParent box, Object passAlongArgument) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        /* (non-Javadoc)
-         * @see com.sebulli.fakturama.views.datatable.tree.model.IModelVisitor#visitBook(com.sebulli.fakturama.views.datatable.tree.model.TreeObject, java.lang.Object)
-         */
-        @Override
-        public void visitBook(TreeObject book, Object passAlongArgument) {
-            // TODO Auto-generated method stub
-            
-        }
-
-    }
-
+ 
 }

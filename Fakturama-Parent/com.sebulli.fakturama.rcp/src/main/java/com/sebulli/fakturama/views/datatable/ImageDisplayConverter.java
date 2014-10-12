@@ -19,7 +19,6 @@ public class ImageDisplayConverter extends DisplayConverter {
 	 */
 	@Override
 	public Object canonicalToDisplayValue(Object canonicalValue) {
-		// TODO Auto-generated method stub
 		return Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize);
 	}
 

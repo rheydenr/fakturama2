@@ -125,7 +125,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 
-				TreeObject treeObject = null;
+				TreeObject treeObject = selectedItem; // initially it's equal...
 				
 				// Update the category, transaction and contact filter
 				String categoryFilter = "";
@@ -391,7 +391,6 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			return;
 		contactItem.setContactId(contactId);
 		contactItem.setName(name);
-//		refreshTree();
 	}
 
 	/**
@@ -422,7 +421,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		     */
 		    @Override
 		    public void listChanged(ListEvent<T> listChanges) {
-		        // alternative: use UISynchronize
+		        // TODO alternative: use UISynchronize
 		        internalTreeViewer.getControl().getDisplay().asyncExec(new Runnable() {
                     
                     @Override
