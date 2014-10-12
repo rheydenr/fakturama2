@@ -269,7 +269,6 @@ public abstract class Editor<T extends IEntity> {
 	 * Asks this part to take focus within the workbench. Set the focus to the
 	 * standard text
 	 * 
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	@Focus
 	public void setFocus() {
@@ -582,7 +581,6 @@ public abstract class Editor<T extends IEntity> {
 	/**
 	 * Test before close, if the document ID is correct
 	 * 
-	 * @see org.eclipse.ui.ISaveablePart2#promptToSaveOnClose()
 	 */
 // TODO this has nothing to do with @PersistState!!!
 	public int promptToSaveOnClose(MDirtyable part, Composite parent) {

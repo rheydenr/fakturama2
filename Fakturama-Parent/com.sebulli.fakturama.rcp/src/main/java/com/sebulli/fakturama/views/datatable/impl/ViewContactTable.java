@@ -91,7 +91,6 @@ public class ViewContactTable { // extends AbstractViewDataTable<Contact> {
 	/**
 	 * Creates the SWT controls for this workbench part.
 	 * 
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@PostConstruct
 	public void createPartControl() {
