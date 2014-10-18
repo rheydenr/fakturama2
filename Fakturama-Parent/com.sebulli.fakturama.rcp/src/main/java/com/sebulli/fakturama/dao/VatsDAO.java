@@ -61,16 +61,18 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	protected EntityManager getEntityManager() {
 		return em;
 	}
-	
-	/**
-	 * Deletes the whole table data. Use with caution!
-	 */
-	public boolean truncate() {
+
+// THIS DOESN'T WORK BECAUSE VAT IS REFERENCED FROM OTHER TABLES!!!	
+//	/**
+//	 * Deletes the whole table data. Use with caution!
+//	 */
+////	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) ==> ONLY EJB!
+//	public boolean truncate() {
 //	    getEntityManager().getTransaction().begin();
 //	    getEntityManager().createQuery("delete from VAT").executeUpdate();
 //	    getEntityManager().getTransaction().commit();
-	    return true;
-	}
+//	    return true;
+//	}
 
 	/**
 	 * @param em

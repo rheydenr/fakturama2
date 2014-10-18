@@ -93,20 +93,19 @@ public class ConfigurationManager {
 	 * @param handlerService {@link EHandlerService} for executing commands
 	 * 
 	 */
-	public void checkAndUpdateConfiguration(/*@Optional ECommandService cmdService, @Optional EHandlerService handlerService*/) {
+	public void checkAndUpdateConfiguration() {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		boolean isRestart = false;
 		// Get the program parameters
 
 		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
-		// create Options object
-		@SuppressWarnings("static-access")
-        Option selectWorkspaceOpt = OptionBuilder.withArgName("workspace")
-                .hasArg()
-                .withLongOpt("workspace")
-                .withDescription(msg.commandSelectworkspaceTooltip)
-                .create("w");
+		OptionBuilder.withArgName("workspace");
+		OptionBuilder.hasArg();
+		OptionBuilder.withLongOpt("workspace");
+		OptionBuilder.withDescription(msg.commandSelectworkspaceTooltip);
+        Option selectWorkspaceOpt = OptionBuilder.create("w");
 
+        // create Options object
         Options options = new Options();
         options.addOption(selectWorkspaceOpt);
         

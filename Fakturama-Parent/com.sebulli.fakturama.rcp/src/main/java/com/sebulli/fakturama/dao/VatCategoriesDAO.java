@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -95,14 +94,12 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
                         break;
                     }
                 }
-                //result = getEntityManager().createQuery(selectQuery).getSingleResult();
             }
             catch (NoResultException nre) {
                 // no result means we return a null value 
             }
         }
         return result;
-//    	return getEntityManager().createQuery("select p from VATCategory p", VATCategory.class).getResultList();
     }
     
  

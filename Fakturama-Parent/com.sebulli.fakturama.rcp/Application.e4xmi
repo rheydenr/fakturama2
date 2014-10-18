@@ -75,7 +75,7 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iKbb4Po6EeKmVtv93KLoRw" elementId="menu:main.menu.file.handleselectworkspace" label="%command.selectworkspace.name" enabled="false" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_RjR8sEgIEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_qPRcEPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.openpreferences.id" label="%main.menu.file.open-preferences" command="_EDLOIDtZEeOcltwCzP-ZbQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_qPRcEPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.openpreferences.id" label="%main.menu.file.openpreferences" command="_EDLOIDtZEeOcltwCzP-ZbQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.4"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_uCz_IPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.webshop.id" label="%command.webshop.name" iconURI="icon://COMMAND_SHOP" tooltip="%icon.webshop.tooltip" enabled="false" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_vwm9sPo6EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.import" label="%main.menu.file.import" iconURI="icon://COMMAND_IMPORT" enabled="false" mnemonics=""/>
@@ -212,7 +212,7 @@
   <commands xmi:id="_jH3nYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.file.saveAll" commandName="%main.menu.file.saveall" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_RmPTz-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.exit" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_RmPT0utOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.help.aboutAction" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.help.about" category="_ck9sUCTREeS9z6SQNducwg"/>
-  <commands xmi:id="_EDLOIDtZEeOcltwCzP-ZbQ" elementId="org.eclipse.ui.window.preferences" commandName="%main.menu.file.open-preferences" category="_ck9sUCTREeS9z6SQNducwg"/>
+  <commands xmi:id="_EDLOIDtZEeOcltwCzP-ZbQ" elementId="org.eclipse.ui.window.preferences" commandName="%main.menu.file.openpreferences" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_mzJEUEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.command.selectWorkspace" commandName="%command.selectworkspace.name" description="%command.selectworkspace.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_RAuAAEf5EeO7mNzAwIZUXQ" elementId="org.eclipse.ui.file.export" commandName="%main.menu.file.export"/>
   <commands xmi:id="_RmPT1OtOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="Show running app model" description="Show the running application model"/>

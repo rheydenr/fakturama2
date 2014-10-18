@@ -18,16 +18,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.services.log.Logger;
 
 import com.sebulli.fakturama.model.AbstractCategory;
 
 /**
  * Builder for all the categories used by {@link MigrationManager}.
  * 
- * @author Ralf Heydenreich
- * 
  */
 public class CategoryBuilder<T extends AbstractCategory> {
+	
+	private Logger log;
+	
 
 	/**
 	 * Builds a new Category Map
@@ -42,22 +44,17 @@ public class CategoryBuilder<T extends AbstractCategory> {
 		Map<String, T> newCategories = new HashMap<String, T>();
 		for (String oldCategory : oldCategoriesList) {
 			T newCategory = null;
-			try {
-				T parentCategory = null;
-				String[] splittedCategories = oldCategory.split("/");
-				for (String string : splittedCategories) {
-					if(newCategories.containsKey(string)) {
-						newCategory = newCategories.get(string);
-					} else {
-						newCategory = createCategory(string, categoryClazz, parentCategory);
-					}
-					parentCategory = newCategory;
+			T parentCategory = null;
+			String[] splittedCategories = oldCategory.split("/");
+			for (String string : splittedCategories) {
+				if(newCategories.containsKey(string)) {
+					newCategory = newCategories.get(string);
+				} else {
+					newCategory = createCategory(string, categoryClazz, parentCategory);
 				}
-				newCategories.put(oldCategory, newCategory);
+				parentCategory = newCategory;
 			}
-			catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
+			newCategories.put(oldCategory, newCategory);
 		}
 		return newCategories;
 	}
@@ -79,10 +76,26 @@ public class CategoryBuilder<T extends AbstractCategory> {
 	    return newCategories.get(deepestCat);
 	}
 
-	private T createCategory(String oldCategory, Class<T> categoryClazz, T parentCategory) throws InstantiationException, IllegalAccessException {
-		T newCategory = categoryClazz.newInstance();
-		newCategory.setName(oldCategory);
-		newCategory.setParent(parentCategory);
+	/**
+	 * Creates a new Category
+	 * 
+	 * @param oldCategory
+	 * @param categoryClazz
+	 * @param parentCategory
+	 * @return
+	 * 
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private T createCategory(String oldCategory, Class<T> categoryClazz, T parentCategory) {
+		T newCategory = null;
+		try {
+			newCategory = categoryClazz.newInstance();
+			newCategory.setName(oldCategory);
+			newCategory.setParent(parentCategory);
+		} catch (InstantiationException | IllegalAccessException e) {
+			log.error(e, "couldn't create new Category of type " + categoryClazz.getName());
+		}
 		return newCategory;
 	}
 }

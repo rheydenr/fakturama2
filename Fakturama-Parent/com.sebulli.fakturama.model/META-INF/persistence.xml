@@ -14,6 +14,7 @@
 			<class>com.sebulli.fakturama.model.Contact</class>
 			<class>com.sebulli.fakturama.model.ContactCategory</class>
 			<class>com.sebulli.fakturama.model.Document</class>
+			<class>com.sebulli.fakturama.model.CustomDocument</class>
 			<class>com.sebulli.fakturama.model.DocumentItem</class>
 			<class>com.sebulli.fakturama.model.DocumentItemCategory</class>
 			<class>com.sebulli.fakturama.model.IndividualDocumentInfo</class>
@@ -65,7 +66,6 @@
 		<class>com.sebulli.fakturama.oldmodel.OldVats</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="eclipselink.ddl-generation" value="create-tables" />
 			<property name="eclipselink.session.customizer"
 				value="com.sebulli.fakturama.dbconnector.CamelCaseSessionCustomizer" />
 		</properties>

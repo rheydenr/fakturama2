@@ -73,6 +73,9 @@ public class Messages {
 	public String dataDefaultContactFormatSalutationMen;
 	public String dataDefaultContactFormatSalutationWomen;
 	public String dataDefaultContactFormatExcludedcountries;
+	
+	public String dataExpenditureItems;
+	public String dataReceiptvoucherItems;
 
 	public String preferencesContactUsedelivery;
 	public String preferencesContactUsebankaccount;
@@ -162,7 +165,7 @@ public class Messages {
 	public String DocumentEditor604;
 	public String DocumentEditor605;
 	public String DocumentEditor606;
-	public String DocumentEditor608;
+	public String editorDocumentItems;
 	public String DocumentEditor609;
 	public String DocumentEditor610;
 	public String DocumentEditor611;
@@ -179,7 +182,7 @@ public class Messages {
 	public String DocumentEditor622;
 	public String DocumentEditor623;
 	public String DocumentEditor624;
-
+	
 	public String preferencesDocumentUsenetgross;
     public String preferencesDocumentCopymsgfield;
     public String preferencesDocumentCopydescfield;
@@ -742,8 +745,7 @@ public class Messages {
 	public String mainMenuFileExitQuestion;
 	public String mainMenuFileExport;
 	public String mainMenuFileImport;
-	public String mainMenuFileOpen;
-	public String preferences;
+	public String mainMenuFileOpenpreferences;
 	public String mainMenuFilePrint;
 	public String mainMenuFilePrintTooltip;
 	public String mainMenuFilePrintTooltipDeprecated;
@@ -837,7 +839,7 @@ public class Messages {
 	public String startMigrationBegin;
 	public String startMigrationConvert;
 	public String startMigrationEnd;
-	public String startMigrationRecords;
+	public String startMigration;
 	public String startMigrationWorking;
 	
 	
@@ -912,15 +914,15 @@ public class Messages {
      *            the key which has to be looked up
      * @return message or (if not found) the key itself (enclosed in "!")
      */
-    public String getMessageFromKey(String key) {
-		String retval = null;
+    public String getMessageFromKey(final String key) {
+		String retval = key.replaceAll("-", ".");
 		// try to make the string representation of this key via reflection
 
 		try {
 			Class<?> c = this.getClass();
 			// make the key java-like :-)
 			StringBuffer sb = new StringBuffer();
-			StrTokenizer st = new StrTokenizer(key, ".");
+			StrTokenizer st = new StrTokenizer(retval, ".");
 			while (st.hasNext()) {
 				if(st.previousIndex() == -1) {
 					sb.append(st.next());
@@ -933,7 +935,7 @@ public class Messages {
 			retval = (String) chap.get(this);
 		}
 		catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-			retval = "?" + key + "?";
+			retval = "?" + retval + "?";
 		}
 		return retval;
 	}

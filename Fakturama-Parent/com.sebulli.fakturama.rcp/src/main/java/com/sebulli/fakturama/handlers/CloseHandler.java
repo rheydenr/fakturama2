@@ -16,7 +16,6 @@ package com.sebulli.fakturama.handlers;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;

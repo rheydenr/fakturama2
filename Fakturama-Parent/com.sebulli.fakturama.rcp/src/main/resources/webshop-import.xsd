@@ -1,0 +1,153 @@
+
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" targetNamespace="http://www.fakturama.org"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fkt="http://www.fakturama.org">
+	<xs:element name="webshopexport">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="webshop" type="fkt:WebshopType" />
+				<xs:element name="products" maxOccurs="1" minOccurs="0"
+					type="fkt:ProductsType" />
+				<xs:element name="orders" maxOccurs="1" minOccurs="0"
+					type="fkt:OrdersType" />
+				<xs:element type="xs:string" name="error" minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute type="xs:float" name="version" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="OrdersType">
+		<xs:sequence>
+			<xs:element name="orderList" maxOccurs="unbounded"
+				minOccurs="0" type="fkt:OrderType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="OrderType">
+		<xs:sequence>
+			<xs:element name="contact" type="fkt:ContactType" />
+			<xs:element name="comments" type="fkt:CommentType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="items" type="fkt:ItemType" maxOccurs="unbounded"
+				minOccurs="0" />
+			<xs:element name="shipping" type="fkt:ShippingType" />
+			<xs:element name="payment" type="fkt:PaymentType" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="id" use="optional" />
+		<xs:attribute type="xs:string" name="date" use="optional" />
+		<xs:attribute type="xs:string" name="currency" use="optional" />
+		<xs:attribute type="xs:float" name="currency_value" use="optional" />
+		<xs:attribute type="xs:string" name="status" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="CommentType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="textcontent" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="date" />
+	</xs:complexType>
+
+	<xs:complexType name="WebshopType">
+		<xs:attribute type="xs:string" name="shop" />
+		<xs:attribute type="xs:anyURI" name="url" />
+	</xs:complexType>
+
+	<xs:complexType name="ContactType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="gender" />
+			<xs:element type="xs:string" name="firstname" />
+			<xs:element type="xs:string" name="lastname" />
+			<xs:element type="xs:string" name="company" />
+			<xs:element type="xs:string" name="street" />
+			<xs:element type="xs:string" name="zip" />
+			<xs:element type="xs:string" name="city" />
+			<xs:element type="xs:string" name="country" />
+			<xs:element type="xs:string" name="delivery_gender" />
+			<xs:element type="xs:string" name="delivery_firstname" />
+			<xs:element type="xs:string" name="delivery_lastname" />
+			<xs:element type="xs:string" name="delivery_company" />
+			<xs:element type="xs:string" name="delivery_street" />
+			<xs:element type="xs:string" name="delivery_zip" />
+			<xs:element type="xs:string" name="delivery_city" />
+			<xs:element type="xs:string" name="delivery_country" />
+			<xs:element type="xs:string" name="phone" />
+			<xs:element type="xs:string" name="email" />
+		</xs:sequence>
+		<xs:attribute type="xs:byte" name="id" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="ItemType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="model" />
+			<xs:element type="xs:string" name="ean" />
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="xs:string" name="category" />
+			<xs:element type="xs:string" name="qunit" />
+			<xs:element type="xs:string" name="vatname" />
+			<xs:element type="fkt:AttributeType" name="attribute"
+				maxOccurs="unbounded" minOccurs="0" />
+			<xs:element type="xs:string" name="short_description" />
+			<xs:element type="xs:string" name="image" />
+		</xs:sequence>
+		<xs:attribute type="xs:integer" name="productid" use="optional" />
+		<xs:attribute type="xs:float" name="quantity" use="optional" />
+		<xs:attribute type="xs:float" name="gross" use="optional" />
+		<xs:attribute type="xs:float" name="vatpercent" use="optional" />
+		<xs:attribute type="xs:float" name="discount" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="AttributeType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="option" />
+			<xs:element type="xs:string" name="value" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="prefix" use="optional" />
+		<xs:attribute type="xs:float" name="price" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="ShippingType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="xs:string" name="vatname" />
+		</xs:sequence>
+		<xs:attribute type="xs:float" name="gross" use="optional" />
+		<xs:attribute type="xs:float" name="vatpercent" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="PaymentType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="name" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="type" use="optional" />
+		<xs:attribute type="xs:float" name="total" use="optional" />
+		<xs:attribute type="xs:float" name="discount" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="ProductsType">
+		<xs:sequence>
+			<xs:element name="productList" maxOccurs="unbounded"
+				minOccurs="0" type="fkt:ProductType" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="imagepath" />
+	</xs:complexType>
+
+	<xs:complexType name="ProductType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="model" />
+			<xs:element type="xs:string" name="ean" />
+			<xs:element type="xs:string" name="name" />
+			<xs:element type="xs:string" name="category" />
+			<xs:element type="xs:string" name="qunit" />
+			<xs:element type="xs:string" name="vatname" />
+			<xs:element type="xs:string" name="short_description" />
+			<xs:element type="xs:string" name="image" />
+		</xs:sequence>
+		<xs:attribute type="xs:float" name="gross" use="optional" />
+		<!-- <xs:attribute type="xs:float" name="net" use="optional" /> -->
+		<xs:attribute type="xs:float" name="vatpercent" use="optional" />
+		<xs:attribute type="xs:float" name="quantity" use="optional" />
+		<xs:attribute type="xs:integer" name="id" use="optional" />
+	</xs:complexType>
+</xs:schema>
+
+

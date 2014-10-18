@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
@@ -70,10 +68,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * Therefore there's no EclipseContext from which these fields could be determined. 
 	 */
 	private Logger log;
-	private  Messages msg;
-	
-	@Inject
-	private  Shell parent;
+	private Messages msg;
+	private Shell parent;
 
 	/** 
 	 * The plugin's preference store

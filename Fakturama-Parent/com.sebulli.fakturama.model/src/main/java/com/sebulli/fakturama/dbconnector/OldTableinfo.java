@@ -20,19 +20,38 @@ package com.sebulli.fakturama.dbconnector;
  *
  */
 public enum OldTableinfo {
-	Contacts, 
-	Documents, 
-	Expenditureitems, 
-	Expenditures, 
-	Items, 
-	Lists, 
-	Payments, 
-	Products, 
-	Properties, 
-	Receiptvoucheritems, 
-	Receiptvouchers, 
-	Shippings, 
-	Texts, 
-	Vats;
+	Contacts("command.contacts.name"), 
+	Documents("command.documents.name"), 
+	Expenditureitems("data.expenditure.items"), 
+	Expenditures("command.expenditurevouchers.name"), 
+	Items("editor.document.items"), 
+	Lists("command.lists.name"), 
+	Payments("command.products.name"), 
+	Products("command.payments.name"), 
+	Properties("main.menu.file.openpreferences"), 
+	Receiptvoucheritems("data.receiptvoucher.items"), 
+	Receiptvouchers("command.receiptvouchers.name"), 
+	Shippings("command.shippings.name"), 
+	Texts("command.texts.name"), 
+	Vats("command.vats.name");
+	
+	private String messageKey;
+	
+	/**
+	 * @param messageKey
+	 */
+	private OldTableinfo(String messageKey) {
+		this.messageKey = messageKey;
+	}
 
+
+
+	/**
+	 * @return the messageKey
+	 */
+	public String getMessageKey() {
+		return messageKey;
+	}
+	
+	
 }
