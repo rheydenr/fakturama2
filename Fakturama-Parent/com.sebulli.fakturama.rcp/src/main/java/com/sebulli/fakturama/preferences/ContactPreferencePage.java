@@ -29,7 +29,7 @@ import com.sebulli.fakturama.i18n.Messages;
  * 
  * @author Gerd Bartelt
  */
-public class ContactPreferencePage extends FieldEditorPreferencePage {
+public class ContactPreferencePage extends FieldEditorPreferencePage implements DefaultPreferencesInitializerListener  {
 
 	/**
      * 
@@ -148,13 +148,11 @@ public class ContactPreferencePage extends FieldEditorPreferencePage {
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_COUNTRY, write);
 	}
 
-	/**
-	 * Set the default values for this preference page
-	 * 
-	 * @param node
-	 *            The preference node
+	/* (non-Javadoc)
+	 * @see com.sebulli.fakturama.preferences.DefaultPreferencesInitializerListener#setInitValues(org.eclipse.jface.preference.IPreferenceStore)
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	@Override
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(PREFERENCES_CONTACT_USE_DELIVERY, true);
 		node.setDefault(PREFERENCES_CONTACT_USE_BANK, false);
 		node.setDefault(PREFERENCES_CONTACT_USE_MISC, true);

@@ -72,8 +72,8 @@ public class CategoryBuilder<T extends AbstractCategory> {
 	    paramList.add(category);
 	    Map<String, T> newCategories = buildCategoryMap(paramList, categoryClazz);
 	    // what is the rightmost entry?
-	    String deepestCat = category.substring(StringUtils.lastIndexOf(category, "/") == -1 ? 0 : StringUtils.lastIndexOf(category, "/"));
-	    return newCategories.get(deepestCat);
+//	    String deepestCat = category.substring(StringUtils.lastIndexOf(category, "/") == -1 ? 0 : StringUtils.lastIndexOf(category, "/"));
+	    return newCategories.get(category);
 	}
 
 	/**

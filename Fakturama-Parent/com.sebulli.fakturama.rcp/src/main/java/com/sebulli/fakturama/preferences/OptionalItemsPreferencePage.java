@@ -16,10 +16,10 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -116,12 +116,12 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IEclipsePreferences node) {
-		node.putBoolean(PREFERENCES_OPTIONALITEMS_USE, false);
-		node.putBoolean(PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, true);
-		node.put(PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, "---");
+	public void setInitValues(IPreferenceStore node, Messages msg) {
+		node.setDefault(PREFERENCES_OPTIONALITEMS_USE, false);
+		node.setDefault(PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, true);
+		node.setDefault(PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, "---");
 		//T: Preference page "Optional Items" - placeholder text for "optional item"
-		node.put(PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsItemlabel);
+		node.setDefault(PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsItemlabel);
 	}
 
 }

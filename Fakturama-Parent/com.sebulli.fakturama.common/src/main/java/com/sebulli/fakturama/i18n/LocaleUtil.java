@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.common.Activator;
 
 /**
  *

@@ -217,7 +217,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage {
     /**
      * @param node
      */
-    public static void setInitValues(IPreferenceStore node) {
+    public void setInitValues(IPreferenceStore node) {
         // no values to initialize
         
     }

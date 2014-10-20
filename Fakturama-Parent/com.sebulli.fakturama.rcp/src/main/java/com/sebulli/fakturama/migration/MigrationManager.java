@@ -78,7 +78,6 @@ import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
-import com.sebulli.fakturama.model.IndividualDocumentInfo;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.PaymentCategory;
@@ -332,44 +331,50 @@ public class MigrationManager {
 	 * @throws InterruptedException
 	 */
 	private void runMigration(SubProgressMonitor subProgressMonitor, OldTableinfo tableinfo) throws InterruptedException {
-		switch (tableinfo) {
-		case Properties:
-			runMigratePropertiesSubTask(subProgressMonitor);
-			break;
-		case Shippings:
-			runMigrateShippingsSubTask(subProgressMonitor);
-			break;
-		case Vats:
-			runMigrateVatsSubTask(subProgressMonitor);
-			break;
-		case Lists:
-			// Country Codes are no user definable data; they will be read
-			// from java Locale.
-			
-			break;
-		case Texts:
-			runMigrateTextsSubTask(subProgressMonitor);
-			break;
-		case Expenditures:
-			runMigrateExpendituresSubTask(subProgressMonitor);
-			break;
-		case Contacts:
-			runMigrateContactsSubTask(subProgressMonitor);
-			break;
-		case Documents:
-			runMigrateDocumentsSubTask(subProgressMonitor);
-			break;
-		case Payments:
-			runMigratePaymentsSubTask(subProgressMonitor);
-			break;
-		case Products:
-			runMigrateProductsSubTask(subProgressMonitor);
-			break;
-		case Receiptvouchers:
-			runMigrateReceiptvouchersSubTask(subProgressMonitor);
-			break;
-		default:
-			break;
+		
+		try {
+			switch (tableinfo) {
+			case Properties:
+				runMigratePropertiesSubTask(subProgressMonitor);
+				break;
+			case Shippings:
+				runMigrateShippingsSubTask(subProgressMonitor);
+				break;
+			case Vats:
+				runMigrateVatsSubTask(subProgressMonitor);
+				break;
+			case Lists:
+				// Country Codes are no user definable data; they will be read
+				// from java Locale.
+				
+				break;
+			case Texts:
+				runMigrateTextsSubTask(subProgressMonitor);
+				break;
+			case Expenditures:
+				runMigrateExpendituresSubTask(subProgressMonitor);
+				break;
+			case Contacts:
+				runMigrateContactsSubTask(subProgressMonitor);
+				break;
+			case Documents:
+				runMigrateDocumentsSubTask(subProgressMonitor);
+				break;
+			case Payments:
+				runMigratePaymentsSubTask(subProgressMonitor);
+				break;
+			case Products:
+				runMigrateProductsSubTask(subProgressMonitor);
+				break;
+			case Receiptvouchers:
+				runMigrateReceiptvouchersSubTask(subProgressMonitor);
+				break;
+			default:
+				break;
+			}
+		}
+		catch (RuntimeException rex) {
+			log.error(rex, "error while migrating "+tableinfo.name()+"; Reason: " + rex.getMessage());
 		}
 	}
 
@@ -481,9 +486,7 @@ public class MigrationManager {
 					 * perhaps we have to check additionally if the address stored in document
 					 * is equal to the address stored in the database :-(
 					 */
-				    IndividualDocumentInfo docInfo = new IndividualDocumentInfo();
-				    docInfo.setManualAddress(oldDocument.getAddress());
-					document.setDocumentInfo(docInfo);
+					document.setAddress(oldDocument.getAddress());
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
@@ -504,10 +507,12 @@ public class MigrationManager {
 				// if the old Document has an InvoiceId and that ID is the same as the Document's ID
 				// then we have to store it for further processing.
 				// if the Invoiceid is the same as the document's id then it's the invoice itself
-				if(oldDocument.getInvoiceid() >= 0 && oldDocument.getId() != oldDocument.getInvoiceid()) {
-					invoiceRelevantDocuments.put(oldDocument.getId(), document);
-				} else if(oldDocument.getInvoiceid() >= 0 && oldDocument.getId() == oldDocument.getInvoiceid()) {
-					invoiceDocuments.put(oldDocument.getId(), document);
+				if(oldDocument.getInvoiceid() >= 0) {
+					if (oldDocument.getId() != oldDocument.getInvoiceid()) {
+						invoiceRelevantDocuments.put(oldDocument.getId(), document);
+					} else {
+						invoiceDocuments.put(oldDocument.getId(), document);
+					}
 				}
 				// each Document has its own items
 				if(StringUtils.isNotBlank(oldDocument.getItems())) {
@@ -624,21 +629,16 @@ public class MigrationManager {
 			}
 			item.setQuantity(oldItem.getQuantity());
 			item.setQuantityUnit(oldItem.getQunit());
-			item.setShared(oldItem.isShared());
-			item.setTara(oldItem.getTara());
-			item.setWeight(oldItem.getWeight());
-			// search for owning document
-			int owner = oldItem.getOwner();
-            if(owner > 0) {
-			    OldDocuments oldDocument = oldDao.findDocumentById(owner);
-			    CustomDocument owningDocument = (CustomDocument) documentDAO.findByName(oldDocument.getName());
-    			item.setOwningDocument(owningDocument);
-			}
+
+			// only PRO version
+//			item.setTara(oldItem.getTara());
+//			item.setWeight(oldItem.getWeight());
+			
+			// the owning document is _always_ the document which was given as parameter herein
+   			item.setOwningDocument(document);
 			document.addToItems(item);
 		}
 	}
-
-
 
 	private void runMigrateContactsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllContacts();
@@ -965,8 +965,8 @@ public class MigrationManager {
 				newVats.put(oldVat.getId(), vat.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | RuntimeException e) {
-				log.error("error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
+			catch (SQLException e) {
+				log.error(e, "error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();

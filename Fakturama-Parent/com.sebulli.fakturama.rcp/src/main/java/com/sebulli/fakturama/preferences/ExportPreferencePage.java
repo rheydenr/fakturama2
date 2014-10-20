@@ -86,9 +86,8 @@ public class ExportPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(PREFERENCES_EXPORTSALES_PAIDDATE, true);
-
 	}
 
 }

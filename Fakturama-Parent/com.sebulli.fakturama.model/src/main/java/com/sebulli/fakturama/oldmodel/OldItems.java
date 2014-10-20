@@ -15,10 +15,22 @@ import org.eclipse.persistence.annotations.ReadOnly;
 @ReadOnly
 public class OldItems {
 
+	@Id
+	private int id;
 	private double vatvalue;
 	private String vatname;
 	private int vatid;
 	private String vatdescription;
+	
+	/**
+	 * The "shared" attribute was used formerly to share Items between more than one Document.
+	 * If a Document was copied, the items were "shared" initially. Only if an item was changed,
+	 * the "shared" status changed from <code>true</code> to <code>false</code>. I think it's
+	 * better to copy <i>all</i> Items if a Document is copied. Then we don't have to handle
+	 * any extra status for Items. Therefore this attribute is only for migration purposes.
+	 * 
+	 * @deprecated
+	 */
 	private boolean shared;
 	private String qunit;
 	private double quantity;
@@ -34,10 +46,10 @@ public class OldItems {
 	private String description;
 	private boolean deleted;
 	private String category;
-	@Id
-	private int id;
-	private double weight;
-	private double tara;
+	
+	// these attributes are only available in the PRO version!
+//	private double weight;
+//	private double tara;
 
 public OldItems() {
 }
@@ -90,10 +102,6 @@ public String getQunit() {
 	return this.qunit;
 }
 
-public double getTara() {
-	return this.tara;
-}
-
 public String getVatdescription() {
 	return this.vatdescription;
 }
@@ -110,10 +118,23 @@ public double getVatvalue() {
 	return this.vatvalue;
 }
 
+/* only PRO version!!!
+public double getTara() {
+	return this.tara;
+}
+
 public double getWeight() {
 	return this.weight;
 }
 
+public void setTara(double tara) {
+	this.tara = tara;
+}
+
+public void setWeight(double weight) {
+	this.weight = weight;
+}
+*/
 public boolean isDeleted() {
 	return this.deleted;
 }
@@ -126,6 +147,16 @@ public boolean isOptional() {
 	return this.optional;
 }
 
+
+/**
+ * The "shared" attribute was used formerly to share Items between more than one Document.
+ * If a Document was copied, the items were "shared" initially. Only if an item was changed,
+ * the "shared" status changed from <code>true</code> to <code>false</code>. I think it's
+ * better to copy <i>all</i> Items if a Document is copied. Then we don't have to handle
+ * any extra status for Items. Therefore this attribute is only for migration purposes.
+ * 
+ * @deprecated
+ */
 public boolean isShared() {
 	return this.shared;
 }
@@ -190,12 +221,18 @@ public void setQunit(String qunit) {
 	this.qunit = qunit;
 }
 
+
+/**
+ * The "shared" attribute was used formerly to share Items between more than one Document.
+ * If a Document was copied, the items were "shared" initially. Only if an item was changed,
+ * the "shared" status changed from <code>true</code> to <code>false</code>. I think it's
+ * better to copy <i>all</i> Items if a Document is copied. Then we don't have to handle
+ * any extra status for Items. Therefore this attribute is only for migration purposes.
+ * 
+ * @deprecated
+ */
 public void setShared(boolean shared) {
 	this.shared = shared;
-}
-
-public void setTara(double tara) {
-	this.tara = tara;
 }
 
 public void setVatdescription(String vatdescription) {
@@ -212,10 +249,6 @@ public void setVatname(String vatname) {
 
 public void setVatvalue(double vatvalue) {
 	this.vatvalue = vatvalue;
-}
-
-public void setWeight(double weight) {
-	this.weight = weight;
 }
 
 }

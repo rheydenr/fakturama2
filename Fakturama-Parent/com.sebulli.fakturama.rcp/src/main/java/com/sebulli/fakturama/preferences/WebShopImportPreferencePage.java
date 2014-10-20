@@ -131,7 +131,7 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node, Messages msg) {
 		node.setDefault(Constants.PREFERENCES_WEBSHOP_ENABLED, true);
 		
 		//T: Preference page "Web Shop Import" - Country specific URL of demo shop

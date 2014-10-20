@@ -14,24 +14,15 @@
 
 package com.sebulli.fakturama.preferences;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.internal.services.BundleTranslationProvider;
-import org.eclipse.e4.core.internal.services.DefaultResourceBundleProvider;
-import org.eclipse.e4.core.internal.services.MessageFactoryServiceImpl;
-import org.eclipse.e4.core.internal.services.ResourceBundleTranslationProvider;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.translation.TranslationService;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 
 /**
@@ -44,16 +35,18 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
     @Inject
     protected IEclipseContext context;
 
-
+    private Messages msg;
     private Logger log;
     
     public DefaultValuesInitializer() {}
     
 	/**
      * @param log
+	 * @param msg 
      */
-    public DefaultValuesInitializer(Logger log) {
+    public DefaultValuesInitializer(Logger log, Messages msg) {
         this.log = log;
+        this.msg = msg;
     }
 
     /**
@@ -66,39 +59,33 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 *      #initializeDefaultPreferences()
 	 */
 	public void initializeDefaultPreferences() { 
-//        log.debug("Enter in default Preference Initializer");
+		
+        log.info("Enter in default Preference Initializer");
 	    // look at Constants.DEFAULT_PREFERENCES_NODE)
 	    IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
-	    
-	    
-//Activator.getContext().getServiceReferences(TranslationService.class, null)RegisteredServices()ServiceReference(TranslationService.class);
-//	    MessageFactoryServiceImpl m = new MessageFactoryServiceImpl();
-////	    m.getMessageInstance(Locale.getDefault(), Messages.class, Activator.getContext().getBundle());
-//	    DefaultResourceBundleProvider d = new DefaultResourceBundleProvider();
-//	    d.setBundleLocalization(new BundLo)
-//	    d.getResourceBundle(Activator.getContext().getBundle(), Locale.getDefault().getLanguage()).getKeys();
-//	            Activator.getContext().getBundle();
-//	    ResourceBundle myResources =
-//	            ResourceBundle.getBundle("MyResources", Locale.getDefault());
-//Activator.getContext().getBundle().getResource("");
-	    
-	    
 
+	    // TODO Later on we use registered preference pages which register itself on a registry.
+	    // But for now we use the old style way...
+	    
+//		for (DefaultPreferencesInitializerListener listener : preferencesListeners) {
+//			listener.setInitValues(defaultValuesNode);
+//		}
+	    
 	    // Initialize every single preference page
-		ToolbarPreferencePage.setInitValues(defaultValuesNode);
-		ContactPreferencePage.setInitValues(defaultValuesNode);
-// TODO static!!!		ContactFormatPreferencePage.setInitValues(node);
-// TODO static!!!			DocumentPreferencePage.setInitValues(node);
-		GeneralPreferencePage.setDefaultValues(defaultValuesNode);
-//		NumberRangeValuesPreferencePage.setInitValues(node);
-//		NumberRangeFormatPreferencePage.setInitValues(node);
-		OfficePreferencePage.setInitValues(defaultValuesNode);
-		ProductPreferencePage.setInitValues(defaultValuesNode);
-// TODO static!!!    WebShopImportPreferencePage.setInitValues(node);
-		YourCompanyPreferencePage.setInitValues(defaultValuesNode);
-		ExportPreferencePage.setInitValues(defaultValuesNode);
-//		OptionalItemsPreferencePage.setInitValues(node);
-		WebShopAuthorizationPreferencePage.setInitValues(defaultValuesNode);
-		BrowserPreferencePage.setInitValues(defaultValuesNode);
+		new ToolbarPreferencePage().setInitValues(defaultValuesNode);
+		new ContactPreferencePage().setInitValues(defaultValuesNode);
+		new ContactFormatPreferencePage().setInitValues(defaultValuesNode, msg);
+		new DocumentPreferencePage().setInitValues(defaultValuesNode, msg);
+		new GeneralPreferencePage().setDefaultValues(defaultValuesNode);
+		new NumberRangeValuesPreferencePage().setInitValues(defaultValuesNode);
+		new NumberRangeFormatPreferencePage().setInitValues(defaultValuesNode, msg);
+		new OfficePreferencePage().setInitValues(defaultValuesNode);
+		new ProductPreferencePage().setInitValues(defaultValuesNode);
+		new WebShopImportPreferencePage().setInitValues(defaultValuesNode, msg);
+		new YourCompanyPreferencePage().setInitValues(defaultValuesNode);
+		new ExportPreferencePage().setInitValues(defaultValuesNode);
+		new OptionalItemsPreferencePage().setInitValues(defaultValuesNode, msg);
+		new WebShopAuthorizationPreferencePage().setInitValues(defaultValuesNode);
+		new BrowserPreferencePage().setInitValues(defaultValuesNode);
 	}
 }

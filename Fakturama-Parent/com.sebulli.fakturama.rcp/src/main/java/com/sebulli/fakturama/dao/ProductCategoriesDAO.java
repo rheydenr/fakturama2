@@ -24,8 +24,6 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
     protected Class<ProductCategory> getEntityClass() {
@@ -38,7 +36,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
             getEntityManager().close();
         }
     }
- 
+    
 	/**
 	 * @return the em
 	 */

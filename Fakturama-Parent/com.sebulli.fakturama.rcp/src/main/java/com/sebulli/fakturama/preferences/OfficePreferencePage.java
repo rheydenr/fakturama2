@@ -170,7 +170,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(PREFERENCES_OPENOFFICE_ODT_PDF, "ODT+PDF");
 		node.setDefault(PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
 		node.setDefault(PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");

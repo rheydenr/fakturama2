@@ -16,9 +16,9 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -151,17 +151,17 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IEclipsePreferences node) {
-		node.put(PREFERENCES_NUMBERRANGE_CONTACT_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_PRODUCT_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_INVOICE_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_DELIVERY_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_OFFER_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_ORDER_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_CREDIT_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_DUNNING_NR, "1");
-		node.put(PREFERENCES_NUMBERRANGE_PROFORMA_NR, "1");
+	public void setInitValues(IPreferenceStore node) {
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
 		
 	}
 

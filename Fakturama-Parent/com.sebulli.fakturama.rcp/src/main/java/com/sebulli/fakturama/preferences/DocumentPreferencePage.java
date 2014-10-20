@@ -198,7 +198,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node, Messages msg) {
 		node.setDefault(PREFERENCES_DOCUMENT_USE_NET_GROSS, "1");
 		node.setDefault(PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false);
 		node.setDefault(PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, false);

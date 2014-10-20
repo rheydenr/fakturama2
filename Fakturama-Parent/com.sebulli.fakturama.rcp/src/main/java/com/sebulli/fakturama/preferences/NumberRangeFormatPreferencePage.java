@@ -16,9 +16,9 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -150,27 +150,27 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IEclipsePreferences node) {
+	public void setInitValues(IPreferenceStore node, Messages msg) {
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Customer" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, msg.preferencesNumberrangeFormatCustomernoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, msg.preferencesNumberrangeFormatCustomernoValue);
 		//Preference page "Number Range Format" - Default value: Abbreviation for "Product/Item" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, (""));
+		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, "");
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Invoice" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_INVOICE_FORMAT, msg.preferencesNumberrangeFormatInvoicenoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_FORMAT, msg.preferencesNumberrangeFormatInvoicenoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Delivery Note" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_DELIVERY_FORMAT, msg.preferencesNumberrangeFormatDeliverynotenoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_FORMAT, msg.preferencesNumberrangeFormatDeliverynotenoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Offer" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_OFFER_FORMAT, msg.preferencesNumberrangeFormatOffernoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_FORMAT, msg.preferencesNumberrangeFormatOffernoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Order" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_ORDER_FORMAT, msg.preferencesNumberrangeFormatOrdernoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_FORMAT, msg.preferencesNumberrangeFormatOrdernoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Credit Note" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_CREDIT_FORMAT, msg.preferencesNumberrangeFormatCreditnoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_FORMAT, msg.preferencesNumberrangeFormatCreditnoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Confirmation" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_CONFIRMATION_FORMAT, msg.preferencesNumberrangeFormatConfirmationoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_FORMAT, msg.preferencesNumberrangeFormatConfirmationoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, msg.preferencesNumberrangeFormatDunningnoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, msg.preferencesNumberrangeFormatDunningnoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
-		node.put(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, msg.preferencesNumberrangeFormatProformanoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, msg.preferencesNumberrangeFormatProformanoValue);
 		
 	}
 

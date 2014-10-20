@@ -23,6 +23,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the webshop settings
@@ -31,19 +32,6 @@ import com.sebulli.fakturama.i18n.Messages;
  */
 public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePage {
  
-    /**
-     * 
-     */
-    public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD = "WEBSHOP_AUTHORIZATION_PASSWORD";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_USER = "WEBSHOP_AUTHORIZATION_USER";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED = "WEBSHOP_AUTHORIZATION_ENABLED";
-    
     @Inject
     @Translation
     protected Messages msg;
@@ -68,13 +56,13 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.WEBSHOP_AUTHORIZATION_PREFERENCE_PAGE);
 
 		//T: Preference page "Web Shop Import" - Label checkbox "web shop enabled"
-		addField(new BooleanFieldEditor(PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, msg.preferencesWebshopAuthorizationPasswordproteced, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, msg.preferencesWebshopAuthorizationPasswordproteced, getFieldEditorParent()));
 		
 		//T: Preference page "Web Shop Import" - Label
-		addField(new StringFieldEditor(PREFERENCES_WEBSHOP_AUTHORIZATION_USER, msg.preferencesWebshopUser, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, msg.preferencesWebshopUser, getFieldEditorParent()));
 
 		//T: Preference page "Web Shop Import" - Label
-		StringFieldEditor passwordEditor = new StringFieldEditor(PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, msg.preferencesWebshopPassword, getFieldEditorParent());
+		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, msg.preferencesWebshopPassword, getFieldEditorParent());
 		passwordEditor.getTextControl(getFieldEditorParent()).setEchoChar('*');
 		addField(passwordEditor);
 
@@ -95,9 +83,9 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_WEBSHOP_AUTHORIZATION_USER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, write);
 	}
 
 	/**
@@ -106,10 +94,10 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, false);
-		node.setDefault(PREFERENCES_WEBSHOP_AUTHORIZATION_USER, "user");
-		node.setDefault(PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, "password");
+	public void setInitValues(IPreferenceStore node) {
+		node.setDefault(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, false);
+		node.setDefault(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, "user");
+		node.setDefault(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, "password");
 	}
 	
 }

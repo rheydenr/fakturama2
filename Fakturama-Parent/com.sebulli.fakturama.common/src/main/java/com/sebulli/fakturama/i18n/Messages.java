@@ -72,6 +72,16 @@ public class Messages {
 	public String dataDefaultContactFormatSalutation;
 	public String dataDefaultContactFormatSalutationMen;
 	public String dataDefaultContactFormatSalutationWomen;
+	
+	/**
+	 * Preference page "Contact Format" - Example format Strings (Hidden
+	 * countries) Separate the country by a comma. If the county name is one in
+	 * this list, it won't be displayed in the address field. E.g. for a German
+	 * language you should enter "Deutschland,Germany". There should be at least
+	 * 2 names, separated by a comma. So that the user can see the format. Even
+	 * if 2 countries don't make much sense like USA,U.S.A. for the English
+	 * language.
+	 */
 	public String dataDefaultContactFormatExcludedcountries;
 	
 	public String dataExpenditureItems;

@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.nls.Translation;
 
-import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.IParcelService;
 

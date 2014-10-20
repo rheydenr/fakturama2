@@ -3,8 +3,12 @@
  */
 package com.sebulli.fakturama.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import com.sebulli.fakturama.oldmodel.OldDocuments;
 
 
 /**
@@ -22,12 +26,25 @@ import javax.persistence.Table;
 @Entity()
 @Table(name = "FKT_CDOCUMENT")
 public class CustomDocument extends Document {
-
+	
 	private VAT shippingvat;
 	private String shippingvatdescription;	
-	private String shippingname;
+	private String shippingName;
 	private String shippingdescription;
-	private boolean shippingautovat;
+	private boolean shippingAutoVat;
+	private BigDecimal shippingValue;
+	
+	/**
+	 * A manually edited address (which doesn't point to an existing Address entry).
+	 */
+	private String manualAddress = null;
+		
+	private String deliveryAddress = null;
+//	private String paymentName = null;
+//	private String paymentText = null;
+//	private String paymentDescription = null;
+//	private String noVatName = null;
+//	private String noVatDescription = null;
 
 	/**
 	 * 
@@ -40,7 +57,7 @@ public class CustomDocument extends Document {
 	public String getShippingvatdescription() {
 		if(getShipping() != null) {
 			return getShipping().getShippingVat().getDescription();
-		}
+		} else
 			return shippingvatdescription;
 	}
 
@@ -79,7 +96,7 @@ public class CustomDocument extends Document {
 		if(getShipping() != null) {
 			return getShipping().getName();
 		} else {
-			return shippingname;
+			return shippingName;
 		}
 	}
 
@@ -88,13 +105,13 @@ public class CustomDocument extends Document {
 	 */
 	public void setShippingname(String shippingname) {
 		setShipping(null);
-		this.shippingname = shippingname;
+		this.shippingName = shippingname;
 	}
 
 	/**
 	 * @return the shippingdescription
 	 */
-	public String getShippingdescription() {
+	public String getShippingDescription() {
 		if(getShipping() != null) {
 			return getShipping().getDescription();
 		} else {
@@ -105,7 +122,7 @@ public class CustomDocument extends Document {
 	/**
 	 * @param shippingdescription the shippingdescription to set
 	 */
-	public void setShippingdescription(String shippingdescription) {
+	public void setShippingDescription(String shippingdescription) {
 		setShipping(null);
 		this.shippingdescription = shippingdescription;
 	}
@@ -113,19 +130,110 @@ public class CustomDocument extends Document {
 	/**
 	 * @return the shippingautovat
 	 */
-	public boolean isShippingautovat() {
+	public boolean isShippingAutoVat() {
 		if(getShipping() != null) {
 			return getShipping().getAutoVat();
 		} else {
-			return shippingautovat;
+			return shippingAutoVat;
 		}
 	}
 
 	/**
 	 * @param shippingautovat the shippingautovat to set
 	 */
-	public void setShippingautovat(boolean shippingautovat) {
+	public void setShippingAutoVat(boolean shippingautovat) {
 		setShipping(null);
-		this.shippingautovat = shippingautovat;
+		this.shippingAutoVat = shippingautovat;
 	}
+
+	/**
+	 * @return the shippingValue
+	 */
+	public BigDecimal getShippingValue() {
+		if(getShipping() != null) {
+			return BigDecimal.valueOf(getShipping().getShippingValue());		
+		} else {
+		return shippingValue;
+		}
+	}
+
+	/**
+	 * @param shippingValue the shippingValue to set
+	 */
+	public void setShippingValue(BigDecimal shippingValue) {
+		setShipping(null);
+		this.shippingValue = shippingValue;
+	}
+
+	/**
+	 * @return the manualAddress
+	 */
+	public String getAddressAsString() {
+		if(getContact() != null && getContact().getAddress() != null) {
+			return createAddressString(getContact());
+		} else {
+			return manualAddress;
+		}
+	}
+
+	private String createAddressString(Contact contact) {
+		Address address = contact.getAddress();
+		return String.format("", contact.getFirstName(), contact.getName());
+	}
+
+	/**
+	 * @param manualAddress the manualAddress to set
+	 */
+	public void setAddress(String manualAddress) {
+		setContact(null);
+		this.manualAddress = manualAddress;
+	}
+	
+	
+	
+/*
+//
+//	/**
+//	 * A semantical compare method. This method compares the actual object
+//	 * attribute by attribute to another object.
+//	 * 
+//	 * @generated
+//	 */
+//	public boolean isSameAs(IndividualDocumentInfo other) {
+//		return other != null
+//				&& id != null
+//				&& id.equals(other.getId())
+//				&& manualAddress != null
+//				&& manualAddress.compareTo(other.getManualAddress()) == 0
+//				&& deliveryAddress != null
+//				&& deliveryAddress.compareTo(other.getDeliveryAddress()) == 0
+//				&& paymentName != null
+//				&& paymentName.compareTo(other.getPaymentName()) == 0
+//				&& paymentText != null
+//				&& paymentText.compareTo(other.getPaymentText()) == 0
+//				&& paymentDescription != null
+//				&& paymentDescription.compareTo(other.getPaymentDescription()) == 0
+//				&& shippingName != null
+//				&& shippingName.compareTo(other.getShippingName()) == 0
+//				&& shippingValue != null
+//				&& shippingValue.equals(other.getShippingValue())
+//				&& shippingAutoVat != null
+//				&& shippingAutoVat.compareTo(other.getShippingAutoVat()) == 0
+//				&& shippingDescription != null
+//				&& shippingDescription
+//						.compareTo(other.getShippingDescription()) == 0
+//				&& shippingVatDescription != null
+//				&& shippingVatDescription.compareTo(other
+//						.getShippingVatDescription()) == 0
+//				&& shippingVat != null
+//				&& shippingVat.equals(other.getShippingVat())
+//				&& noVatName != null
+//				&& noVatName.compareTo(other.getNoVatName()) == 0
+//				&& noVatDescription != null
+//				&& noVatDescription.compareTo(other.getNoVatDescription()) == 0
+//				&& true /* and this is the last entry from the attributes */;
+//	}
+//
+//
+// */
 }

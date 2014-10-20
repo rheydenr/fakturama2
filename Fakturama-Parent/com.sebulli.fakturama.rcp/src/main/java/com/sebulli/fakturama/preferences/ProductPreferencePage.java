@@ -165,12 +165,12 @@ public class ProductPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(PREFERENCES_PRODUCT_USE_ITEMNR, true);
 		node.setDefault(PREFERENCES_PRODUCT_USE_QUNIT, false);
 		node.setDefault(PREFERENCES_PRODUCT_USE_DESCRIPTION, true);
-		node.setDefault(PREFERENCES_PRODUCT_USE_NET_GROSS, "2");
-		node.setDefault(PREFERENCES_PRODUCT_SCALED_PRICES, "1");
+		node.setDefault(PREFERENCES_PRODUCT_USE_NET_GROSS, 2);
+		node.setDefault(PREFERENCES_PRODUCT_SCALED_PRICES, 1);
 		node.setDefault(PREFERENCES_PRODUCT_USE_VAT, true);
 		node.setDefault(PREFERENCES_PRODUCT_USE_WEIGHT, false);
 		node.setDefault(PREFERENCES_PRODUCT_USE_QUANTITY, true);

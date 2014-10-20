@@ -114,5 +114,50 @@ public class Constants {
      * Preference for enabling / disabling webshop import
      */
     public static final String PREFERENCES_WEBSHOP_ENABLED = "WEBSHOP_ENABLED";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES = "CONTACT_FORMAT_HIDE_COUNTRIES";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_ADDRESS = "CONTACT_FORMAT_ADDRESS";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY = "CONTACT_FORMAT_GREETING_COMPANY";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_GREETING_MS = "CONTACT_FORMAT_GREETING_MS";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_GREETING_MR = "CONTACT_FORMAT_GREETING_MR";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_CONTACT_FORMAT_GREETING_COMMON = "CONTACT_FORMAT_GREETING_COMMON";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED = "WEBSHOP_AUTHORIZATION_ENABLED";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD = "WEBSHOP_AUTHORIZATION_PASSWORD";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_USER = "WEBSHOP_AUTHORIZATION_USER";
     
 }

@@ -13,8 +13,6 @@
 
 package com.sebulli.fakturama;
 
-import org.eclipse.e4.core.internal.services.BundleTranslationProvider;
-import org.eclipse.e4.core.services.translation.TranslationService;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;

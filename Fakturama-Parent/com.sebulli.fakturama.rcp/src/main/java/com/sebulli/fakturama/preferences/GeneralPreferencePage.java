@@ -96,7 +96,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setDefaultValues(IPreferenceStore node) {
+	public void setDefaultValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
 		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
 

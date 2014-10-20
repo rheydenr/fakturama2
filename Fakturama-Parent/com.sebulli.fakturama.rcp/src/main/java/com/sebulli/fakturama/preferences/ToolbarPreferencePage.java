@@ -139,7 +139,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public static void setInitValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.TOOLBAR_SHOW_WEBSHOP, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_PRINT, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_SAVE, true);

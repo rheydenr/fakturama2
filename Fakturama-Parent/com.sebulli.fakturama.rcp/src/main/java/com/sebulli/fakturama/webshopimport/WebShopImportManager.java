@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -45,6 +46,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryCurrencies;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 import javax.xml.bind.JAXBContext;
@@ -53,8 +55,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
@@ -62,9 +66,11 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
 
+import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -287,7 +293,7 @@ public class WebShopImportManager {
             ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
             IRunnableWithProgress op = new WebShopImportWorker();
             progressMonitorDialog.run(true, true, op);
-            result = new ExecutionResult(runResult, 0);
+            result = new ExecutionResult(runResult, runResult.isEmpty() ? 0 : 1);
           }
           catch (InvocationTargetException e) {
               log.error(e, "Error running web shop import manager.");
@@ -375,23 +381,42 @@ public class WebShopImportManager {
 
     class WebShopImportWorker implements IRunnableWithProgress {
 	    private IProgressMonitor localMonitor;
+		private final IPreferenceStore defaultValuesNode;
 	    
-	    @Override
+	    /**
+		 * 
+		 */
+		public WebShopImportWorker() {
+    	    defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");
+		}
+		
+		/**
+		 * Retrieves a preference from PreferenceStore. Uses a default value (from PreferenceStore) if
+		 * no value was found.
+		 * 
+		 * @param preference preference which is looked for
+		 * @return value for this preference
+		 */
+		private String getPreference(String preference) {
+			return eclipsePrefs.get(preference, defaultValuesNode.getDefaultString(preference));
+		}
+
+		@Override
 	    public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException  {
 	        localMonitor = pMonitor;
             runResult = "";
     		Webshopexport webshopexport = null;
-            
+
             // Get URL, user name and password from the preference store
-            String address = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_URL, "");
-            String user = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_USER, "");
-            String password = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_PASSWORD, "");
-            Integer maxProducts  = eclipsePrefs.getInt(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS, 1);
-            Boolean onlyModifiedProducts  = eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS, true);
-            useEANasItemNr  = eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR, true);
-            Boolean useAuthorization = eclipsePrefs.getBoolean("WEBSHOP_AUTHORIZATION_ENABLED", false); 
-            String authorizationUser = eclipsePrefs.get("WEBSHOP_AUTHORIZATION_USER", "");
-            String authorizationPassword = eclipsePrefs.get("WEBSHOP_AUTHORIZATION_PASSWORD", "");
+            String address = getPreference(Constants.PREFERENCES_WEBSHOP_URL);
+            String user = getPreference(Constants.PREFERENCES_WEBSHOP_USER);
+            String password = getPreference(Constants.PREFERENCES_WEBSHOP_PASSWORD);
+            Integer maxProducts  = Integer.parseInt(getPreference(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS));
+            Boolean onlyModifiedProducts  = Boolean.parseBoolean(getPreference(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS));
+            useEANasItemNr  = Boolean.parseBoolean(getPreference(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR));
+            Boolean useAuthorization = Boolean.parseBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED);
+            String authorizationUser = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER);
+            String authorizationPassword = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD);
             
             // Check empty URL
             if (address.isEmpty()) {
@@ -642,7 +667,7 @@ public class WebShopImportManager {
         
         	// Get all products and import them
         	
-        	List<ProductType> productList = webshopexport.getProducts().getProductList();
+        	List<ProductType> productList = webshopexport.getProducts().getProduct();
 			int producListSize = productList.size();
 			for (int productIndex = 0; productIndex < producListSize; productIndex++) {
         		//T: Status message importing data from web shop
@@ -660,7 +685,7 @@ public class WebShopImportManager {
         	//T: Status message importing data from web shop
         	monitor.subTask(msg.importWebshopInfoImportorders);
         	setProgress(95);
-        	List<OrderType> orderList = webshopexport.getOrders().getOrderList();
+        	List<OrderType> orderList = webshopexport.getOrders().getOrder();
         	int orderListSize = orderList.size();
         	for (int orderIndex = 0; orderIndex < orderListSize; orderIndex++) {
         		OrderType order = orderList.get(orderIndex);
@@ -694,6 +719,8 @@ public class WebShopImportManager {
          * @throws SQLException 
          */
         private void createOrderFromXMLOrderNode(OrderType order) throws SQLException {
+        	ContactUtil contactUtil = new ContactUtil(eclipsePrefs);
+        	
     		// Order data
     		String webshopId;
     		String webshopDate;
@@ -797,7 +824,7 @@ public class WebShopImportManager {
             dataSetDocument.setContact(contactItem);
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact
 //            dataSetDocument.setDeliveryaddress(deliveryContact); // included in contact
-            dataSetDocument.setAddressFirstLine(ContactUtil.getNameWithCompany(deliveryContact, false));			
+            dataSetDocument.setAddressFirstLine(contactUtil.getNameWithCompany(contactItem));			
         
         	// Get the comments
         	comment = new StringBuilder("");
@@ -1036,16 +1063,20 @@ public class WebShopImportManager {
         		Double vatPercentDouble = 0.0;
        			vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
         
-        		// Convert the gross or net string to a double value
-        		MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
-        
-    			// Use the net string, if it is set
+        		// Convert the gross or net string to a money value
+       			// FIXME until we only get an Exception we use the BigDecimal workaround...
+        		//MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+       			BigDecimal priceNet = BigDecimal.ZERO;
+       			
+        		// Use the net string, if it is set
     			// => net string is *never* set! The connectors don't deliver it!
     
     			// Use the gross string, if it is set
     			if (product.getGross() != null) {
-    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
-    				priceNet = priceGross.divide(1 + vatPercentDouble);
+//    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+    				BigDecimal priceGross = BigDecimal.valueOf(product.getGross());
+//    				priceNet = priceGross.divide(1 + vatPercentDouble);
+    				priceNet = priceGross.divide(BigDecimal.valueOf(1 + vatPercentDouble), RoundingMode.HALF_UP);
     			}
         
         		// Add the VAT value to the data base, if it is a new one 
@@ -1065,10 +1096,8 @@ public class WebShopImportManager {
         		// Get the category of the imported products from the preferences
         		String shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY, "");
         
-        		// If the category is not set, use the shop category
-        		if (!shopCategory.isEmpty())
-        			if (!shopCategory.endsWith("/"))
-        				shopCategory += "/";
+        		if (!shopCategory.isEmpty() && !shopCategory.endsWith("/"))
+					shopCategory += "/";
         
         		// Use the EAN number
         		if (useEANasItemNr) {
@@ -1095,7 +1124,7 @@ public class WebShopImportManager {
         		}
         
         		// Convert the quantity string to a double value
-        		Double quantity = Double.valueOf(product.getQuantity()).doubleValue();
+        		Double quantity = product.getQuantity() != null ? product.getQuantity().doubleValue() : 0.0;
         
         		// Create a new product object
         		productItem = new Product();
@@ -1109,7 +1138,8 @@ public class WebShopImportManager {
         		productCategoryFromBuilder = productCategoriesDAO.addIfNew(productCategoryFromBuilder);
         		productItem.getCategories().add(productCategoryFromBuilder);
         		productItem.setDescription(productDescription);
-        		productItem.setPrice1(priceNet.getNumber().numberValue(BigDecimal.class));
+//        		productItem.setPrice1(priceNet.getNumber().numberValue(BigDecimal.class));
+        		productItem.setPrice1(priceNet.setScale(3, RoundingMode.HALF_UP));
         		productItem.setVat(vat);
         		productItem.setPictureName(pictureName);
         		productItem.setQuantity(quantity);

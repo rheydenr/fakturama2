@@ -15,7 +15,8 @@ Require-Bundle: javax.persistence;bundle-version="[2.0.0,3.0.0)",
  org.eclipse.e4.core.services;bundle-version="1.2.0",
  org.eclipse.core.databinding.observable,
  org.eclipse.emf.texo;bundle-version="0.1.0",
- org.eclipse.emf.ecore;bundle-version="2.10.0"
+ org.eclipse.emf.ecore;bundle-version="2.10.0",
+ org.eclipse.equinox.preferences
 Meta-Persistence: META-INF/persistence.xml
 Export-Package: com.sebulli.fakturama.dbconnector,
  com.sebulli.fakturama.model,

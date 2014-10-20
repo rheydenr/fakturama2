@@ -11,7 +11,7 @@
  * Contributors: Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama;
+package com.sebulli.fakturama.common;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -26,7 +26,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "com.sebulli.fakturama.rcp";
+    public static final String PLUGIN_ID = "com.sebulli.fakturama.common";
 
     // The shared instance
     private static BundleContext context;

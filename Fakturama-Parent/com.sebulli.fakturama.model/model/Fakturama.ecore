@@ -147,7 +147,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="noVatReference" eType="#//VAT"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentInfo" eType="#//IndividualDocumentInfo"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItem" eSuperTypes="#//IEntity">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
@@ -166,7 +165,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="pictureName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantityUnit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shared" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemVat" eType="#//VAT"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="owningDocument" eType="#//Document"/>
   </eClassifiers>
@@ -331,31 +329,6 @@
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"
         defaultValueLiteral="false"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IndividualDocumentInfo">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="manualAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deliveryAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingAutoVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingVatDescription"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVatName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVatDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="User" eSuperTypes="#//IEntity">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="password" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
