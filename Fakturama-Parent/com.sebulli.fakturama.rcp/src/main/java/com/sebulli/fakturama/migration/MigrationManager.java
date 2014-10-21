@@ -396,7 +396,7 @@ public class MigrationManager {
 				product.setDateAdded(getSaveParsedDate(oldProduct.getDateAdded()));
 				product.setDeleted(oldProduct.isDeleted());
 				product.setDescription(oldProduct.getDescription());
-				if(StringUtils.isNotBlank(oldProduct.getCategory()) && newProducts.containsKey(oldProduct.getCategory())) {
+				if(StringUtils.isNotBlank(oldProduct.getCategory()) && productCategories.containsKey(oldProduct.getCategory())) {
 					// add it to the new entity
 					product.addToCategories(productCategories.get(oldProduct.getCategory()));
 				}
@@ -891,7 +891,7 @@ public class MigrationManager {
 				payment.setNetDays(oldPayment.getNetdays());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
 					// add it to the new entity
-					payment.addToCategories(paymentCategories.get(oldPayment.getCategory()));
+					payment.getCategories().add(paymentCategories.get(oldPayment.getCategory()));
 				}
 				paymentsDAO.save(payment);
 				newPayments.put(oldPayment.getId(), payment.getId());

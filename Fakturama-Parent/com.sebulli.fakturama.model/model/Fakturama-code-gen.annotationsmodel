@@ -127,6 +127,11 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The default payment for this contact." getter="getPayment " setter="setPayment" useList="false" generateBidirectionalAssociationSupport="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_PAYMENT"/>
+          <manyToOne>
+            <cascade>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
@@ -362,6 +367,11 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="Reference to the contact which this document is for (formerly known as &quot;address&quot;)." name="contact" getter="getContact" defaultValue="null" setter="setContact" validJavaMemberName="contact" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_CONTACT"/>
+          <manyToOne>
+            <cascade>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
@@ -369,6 +379,11 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" description="The delivery address for this document (for delivery notes this is the primary address!)." documentation="The delivery address for this document." getter="getDeliveryContact" setter="setDeliveryContact"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_DELIVERYCONTACT" referencedColumnName=""/>
+          <manyToOne>
+            <cascade>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
@@ -402,6 +417,11 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="This is the reference to the document from which this document was created." name="sourceDocument" getter="getSourceDocument" defaultValue="null" setter="setSourceDocument" validJavaMemberName="sourceDocument" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_DOCUMENT"/>
+          <manyToOne>
+            <cascade>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
@@ -483,10 +503,6 @@
         <eAttribute href="Fakturama.ecore#//Document/transactionId"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This id is for grouping of multiple docuements that belongs to the same transaction. It is a unique ID which determines the transaction." name="transactionId" getter="getTransactionId" defaultValue="null" setter="setTransactionId" validJavaMemberName="transactionId" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//Document/noVatReference"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="If all the document is completely VAT free then use this entry to point to a zero valued VAT entry. All items in the editor will be displayed with zero tax." name="noVatReference" getter="getNoVatReference" defaultValue="null" setter="setNoVatReference" validJavaMemberName="noVatReference" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/webshopId"/>
       </annotatedEStructuralFeatures>
@@ -562,6 +578,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//DocumentItem/itemVat"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The VAT of this item."/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_VAT" referencedColumnName="" table=""/>
           <manyToOne>
@@ -576,6 +593,11 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="Reference to an existing Product." name="productref" getter="getProduct" defaultValue="null" setter="setProduct" validJavaMemberName="product" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.11/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_PRODUCT"/>
+          <manyToOne>
+            <cascade>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
@@ -661,7 +683,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Payment/categories"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.PaymentCategory>()" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.13/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.PaymentCategory>()" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.13/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="false"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/paidText"/>
@@ -719,9 +741,9 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Product/categories"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.ProductCategory>()" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.15/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.ProductCategory>()" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.15/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
-          <joinColumn columnDefinition="" name="FK_PRODUCTCTAEGORY"/>
+          <joinColumn columnDefinition="" name="FK_PRODUCTCATEGORY" table=""/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">

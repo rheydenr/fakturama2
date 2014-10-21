@@ -46,7 +46,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 import javax.xml.bind.JAXBContext;
@@ -55,7 +54,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -910,7 +908,7 @@ public class WebShopImportManager {
     			product.setItemNumber(itemModel);
     			CategoryBuilder<ProductCategory> prodCatBuilder = new CategoryBuilder<ProductCategory>();
     			ProductCategory productCategory = prodCatBuilder.buildCategoryFromString(shopCategory + itemType.getCategory(), ProductCategory.class);
-    			product.addToCategories(productCategory);
+    			product.getCategories().add(productCategory);
     			
     			product.setDescription(itemDescription.toString());
     			product.setPrice1(priceNet.getNumber().numberValue(BigDecimal.class));

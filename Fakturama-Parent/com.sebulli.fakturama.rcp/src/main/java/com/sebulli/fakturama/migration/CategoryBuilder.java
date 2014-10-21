@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 
 import com.sebulli.fakturama.model.AbstractCategory;
@@ -46,11 +45,12 @@ public class CategoryBuilder<T extends AbstractCategory> {
 			T newCategory = null;
 			T parentCategory = null;
 			String[] splittedCategories = oldCategory.split("/");
-			for (String string : splittedCategories) {
-				if(newCategories.containsKey(string)) {
-					newCategory = newCategories.get(string);
+			for (String subCat : splittedCategories) {
+				if(newCategories.containsKey(subCat)) {
+					newCategory = newCategories.get(subCat);
 				} else {
-					newCategory = createCategory(string, categoryClazz, parentCategory);
+					newCategory = createCategory(subCat, categoryClazz, parentCategory);
+					newCategories.put(subCat, newCategory);
 				}
 				parentCategory = newCategory;
 			}
