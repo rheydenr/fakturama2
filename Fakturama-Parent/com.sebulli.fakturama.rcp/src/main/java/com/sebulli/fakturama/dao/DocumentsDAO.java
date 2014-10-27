@@ -1,5 +1,8 @@
 package com.sebulli.fakturama.dao;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -75,16 +78,18 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      * @param dateAsISO8601String
      * @return
      */
-    public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, Date webshopDate) {
+    public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
         BillingType billingType = getBillingTypeFromDocumentType(type);
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
         Root<Document> root = criteria.from(Document.class);
+        Instant instant = calendarWebshopDate.atZone(ZoneId.systemDefault()).toInstant();
+        Date res = Date.from(instant);
         CriteriaQuery<Document> cq = criteria.where(
                 cb.and(
                         cb.equal(root.<BillingType> get(Document_.billingType), billingType),
                         cb.equal(root.<String> get(Document_.webshopId), webshopId),
-                        cb.equal(root.<Date> get(Document_.webshopDate), webshopDate)
+                        cb.equal(root.<Date> get(Document_.webshopDate), res)
                       )
             );
         return getEntityManager().createQuery(cq).getResultList();

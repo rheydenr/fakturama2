@@ -90,7 +90,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     /**
      * Path for the default values configuration in the Preference store
      */
-//    private static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
+    protected static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
 
     @Inject
     @Translation

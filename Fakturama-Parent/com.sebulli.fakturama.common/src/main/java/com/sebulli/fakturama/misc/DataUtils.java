@@ -18,6 +18,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -485,7 +487,7 @@ public class DataUtils {
 	}
 
 	/**
-	 * Get the date and time from a Calendar object in the format: YYYY-MM-DD
+	 * Get the date and time from a Calendar object in the format: YYYY-mm-dd HH:MM:ss
 	 * 
 	 * @param calendar
 	 *            Gregorian Calendar object
@@ -575,9 +577,8 @@ public class DataUtils {
 	 * @return Date as formated String
 	 */
 	public static String DateAsISO8601String() {
-
-		GregorianCalendar calendar = new GregorianCalendar();
-		return getDateAndTimeAsString(calendar);
+        LocalDate now = LocalDate.now(); 
+        return now.format(DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	/**

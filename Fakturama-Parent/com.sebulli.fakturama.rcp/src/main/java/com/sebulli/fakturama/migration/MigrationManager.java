@@ -891,7 +891,7 @@ public class MigrationManager {
 				payment.setNetDays(oldPayment.getNetdays());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
 					// add it to the new entity
-					payment.getCategories().add(paymentCategories.get(oldPayment.getCategory()));
+					payment.setCategory(paymentCategories.get(oldPayment.getCategory()));
 				}
 				paymentsDAO.save(payment);
 				newPayments.put(oldPayment.getId(), payment.getId());

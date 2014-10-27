@@ -170,13 +170,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
-//        createDefaultContextMenu();
-//        natTable.setMenu(createMenuManager();)
-        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();
-        natTable.setMenu(contextMenu);  // works!
-        natTable.getUiBindingRegistry().registerMouseDownBinding(
-                new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
-                new PopupMenuAction(contextMenu));
+        createDefaultContextMenu();
+//        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();  // works!
+//        natTable.setMenu(contextMenu);
+//        natTable.getUiBindingRegistry().registerMouseDownBinding(
+//                new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
+//                new PopupMenuAction(contextMenu));
         
         onStart(natTable);
         natTable.addDisposeListener(new DisposeListener() {
@@ -393,13 +392,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 * Create the menu manager for the context menu
 	 */
 	protected void createMenuManager() {
-//		menuManager = new MenuManager();
-//		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-//		tableViewer.getTable().setMenu(menuManager.createContextMenu(tableViewer.getTable()));
-//
-//		getSite().registerContextMenu("com.sebulli.fakturama.views.datasettable.popup", menuManager, tableViewer);
-//		getSite().setSelectionProvider(tableViewer);
-//	    menuService.registerContextMenu(natTable, "com.sebulli.fakturama.vatlist.popup");
+	    menuService.registerContextMenu(natTable, "com.sebulli.fakturama.vatlist.popup");
 	}
 
     

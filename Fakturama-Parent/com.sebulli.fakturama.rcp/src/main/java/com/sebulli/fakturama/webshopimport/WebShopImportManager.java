@@ -26,7 +26,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -37,7 +36,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+//import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -744,7 +748,9 @@ public class WebShopImportManager {
         	webshopDate = order.getDate();
         
         	// Check, if this order is still existing
-        	Date calendarWebshopDate = DataUtils.getCalendarFromDateString(webshopDate).getTime();
+        	// date="2011-08-04 15:35:52"
+        	LocalDateTime calendarWebshopDate = LocalDateTime.parse(webshopDate, DateTimeFormatter.ISO_DATE_TIME);
+//        	Date calendarWebshopDate = DataUtils.getCalendarFromDateString(webshopDate).getTime();
             if(!documentsDAO.findDocumentByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
         		return;
         	}
@@ -758,7 +764,8 @@ public class WebShopImportManager {
         	// currency = order.getCurrency();
         	dataSetDocument.setName(webshopId);
         	dataSetDocument.setWebshopId(webshopId);
-        	dataSetDocument.setWebshopDate(calendarWebshopDate);
+        	Instant instant = calendarWebshopDate.atZone(ZoneId.systemDefault()).toInstant();
+        	dataSetDocument.setWebshopDate(Date.from(instant));
         	dataSetDocument = documentsDAO.save(dataSetDocument);
         
             CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<ContactCategory>();
@@ -825,7 +832,7 @@ public class WebShopImportManager {
             dataSetDocument.setAddressFirstLine(contactUtil.getNameWithCompany(contactItem));			
         
         	// Get the comments
-        	comment = new StringBuilder("");
+        	comment = new StringBuilder();
 
         	for (CommentType commentType : order.getComments()) {
         		// Get the comment text
@@ -999,7 +1006,7 @@ public class WebShopImportManager {
         	dataSetDocument.setProgress(10);
         
         	// Set the document data
-        	dataSetDocument.setWebshopDate(calendarWebshopDate);
+        	dataSetDocument.setWebshopDate(Date.from(instant));
         	comment = new StringBuilder(dataSetDocument.getMessage()).append(comment);
         	dataSetDocument.setMessage(comment.toString());
         
@@ -1062,19 +1069,15 @@ public class WebShopImportManager {
        			vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
         
         		// Convert the gross or net string to a money value
-       			// FIXME until we only get an Exception we use the BigDecimal workaround...
-        		//MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
-       			BigDecimal priceNet = BigDecimal.ZERO;
+        		MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
        			
         		// Use the net string, if it is set
     			// => net string is *never* set! The connectors don't deliver it!
     
     			// Use the gross string, if it is set
     			if (product.getGross() != null) {
-//    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
-    				BigDecimal priceGross = BigDecimal.valueOf(product.getGross());
-//    				priceNet = priceGross.divide(1 + vatPercentDouble);
-    				priceNet = priceGross.divide(BigDecimal.valueOf(1 + vatPercentDouble), RoundingMode.HALF_UP);
+    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+    				priceNet = priceGross.divide(1 + vatPercentDouble);
     			}
         
         		// Add the VAT value to the data base, if it is a new one 
@@ -1134,14 +1137,13 @@ public class WebShopImportManager {
         		
         		// save ProductCategory
         		productCategoryFromBuilder = productCategoriesDAO.addIfNew(productCategoryFromBuilder);
-        		productItem.getCategories().add(productCategoryFromBuilder);
+        		productItem.addToCategories(productCategoryFromBuilder);
         		productItem.setDescription(productDescription);
-//        		productItem.setPrice1(priceNet.getNumber().numberValue(BigDecimal.class));
-        		productItem.setPrice1(priceNet.setScale(3, RoundingMode.HALF_UP));
+        		productItem.setPrice1(priceNet.getNumber().numberValue(BigDecimal.class));
         		productItem.setVat(vat);
         		productItem.setPictureName(pictureName);
         		productItem.setQuantity(quantity);
-        		productItem.setWebshopId(product.getId().longValue());
+        		productItem.setWebshopId(product.getId() != null ? product.getId().longValue() : Long.valueOf(0));
         		productItem.setQuantityUnit(product.getQunit());
         
         		// Add a new product to the data base, if it not exists yet	
@@ -1151,8 +1153,8 @@ public class WebShopImportManager {
         		}
         		else {
         			// Update data
-        			existingProduct.getCategories().clear();
-        			existingProduct.getCategories().addAll(productItem.getCategories());
+        			existingProduct.clearCategories();
+        			productItem.getCategories().forEach(cat -> existingProduct.addToCategories(cat));
         			existingProduct.setName(productItem.getName());
                     existingProduct.setItemNumber(productItem.getItemNumber());
                     existingProduct.setDescription(productItem.getDescription());

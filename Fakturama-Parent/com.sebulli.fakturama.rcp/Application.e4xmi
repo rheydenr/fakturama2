@@ -34,7 +34,7 @@
               <children xsi:type="basic:Part" xmi:id="_asQzsE8JEeOddfJz0XevPw" elementId="fakturama.views.vatTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.vats.VATListTable" label="%command.vats.name" iconURI="icon://COMMAND_VAT" closeable="true">
                 <tags>NoMove</tags>
                 <menus xsi:type="menu:PopupMenu" xmi:id="_WuLW8EwUEeSCJ9OsKKeUpg" elementId="com.sebulli.fakturama.vatlist.popup" label="mpf!">
-                  <children xsi:type="menu:HandledMenuItem" xmi:id="_Y9V9MEwUEeSCJ9OsKKeUpg" elementId="com.sebulli.fakturama.rcp.handledmenuitem.0" label="huhu" tooltip="lö" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_Y9V9MEwUEeSCJ9OsKKeUpg" elementId="com.sebulli.fakturama.rcp.handledmenuitem.0" label="%main.menu.edit.markaspaid" tooltip="" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
                 </menus>
                 <toolbar xmi:id="_gyNiQCDTEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.rcp.toolbar.0">
                   <children xsi:type="menu:HandledToolItem" xmi:id="_iNXRoCDTEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.listview.add" iconURI="icon://COMMAND_PLUS" tooltip="%main.menu.new.vat.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
