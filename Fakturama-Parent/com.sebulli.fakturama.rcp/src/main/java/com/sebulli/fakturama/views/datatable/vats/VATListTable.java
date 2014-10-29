@@ -242,6 +242,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //build the grid layer
         gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        tableDataLayer.setColumnPercentageSizing(true);
+        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
+        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
         GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, vatListData);
 
         // add a label accumulator to be able to register converter
@@ -372,6 +377,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
 
         // Add all style configurations to NatTable
+        natTable.setBackground(GUIHelper.getColor(242, 242, 242));
         natTable.addConfiguration(selectionStyle);
     }
 

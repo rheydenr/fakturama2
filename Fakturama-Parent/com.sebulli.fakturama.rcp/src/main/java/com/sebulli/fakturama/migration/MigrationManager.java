@@ -1075,6 +1075,9 @@ public class MigrationManager {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
 		
+		System.out.print("propertiesFile:"+propertiesFile);
+		System.out.print("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
+			
 		// truncate and overwrite an existing file, or create the file if
 		// it doesn't initially exist
 		try(BufferedWriter propsWriter = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(Files.newOutputStream(propertiesFile))));) {
@@ -1141,21 +1144,59 @@ public class MigrationManager {
                     columnWidthsMap.put(tableId, valueList);
 		            
 		        }
-            }		    
+            }
+            
             // now write all the collected column widths to property file
             for (String tableId : columnWidthsMap.keySet()) {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
+            	
+            	
                 List<Integer> valueList = columnWidthsMap.get(tableId);
                 StringBuilder stringBuilder = new StringBuilder();
+                
+                //convert old values to percentage values
+                //
+                Integer totalSize = 0;
+                Integer largestFieldIdx = 0;
+                
+                //calculate the total size and get the largest field
+                Integer currentHighest = 0;
                 for(int i = 0; i < valueList.size(); i++) {
+                	totalSize += valueList.get(i);
+                	
+                	if(valueList.size() > currentHighest){
+                		currentHighest = valueList.size();
+                		largestFieldIdx = i;
+                	}
+                }
+                
+                //convert the values
+                List<Integer> convertedValueList = new ArrayList<Integer>();
+                Integer convertedMaxSize = 0;
+                for(int i = 0; i < valueList.size(); i++) {
+                	Integer convertedValue = 100/(totalSize/valueList.get(i));
+                	convertedMaxSize += convertedValue;
+                	convertedValueList.add(convertedValue);
+                }
+                
+                //add rest space to the largest field
+                convertedValueList.set(largestFieldIdx, convertedValueList.get(largestFieldIdx) + 100 - convertedMaxSize );
+                
+                for(int i = 0; i < convertedValueList.size(); i++) {
                     if(stringBuilder.length() > 0) {
                         stringBuilder.append(',');
                     }
-                    stringBuilder.append(i+"\\:"+valueList.get(i));
+                                        
+                    stringBuilder.append(i+"\\:"+convertedValueList.get(i));
                 }
+        		System.out.print(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
+                
                 propsWriter.write(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
                 propsWriter.newLine();
             }
+            
+    		System.out.print("--- old data end ----");
+
         }
         catch (IOException e1) {
             log.error(e1, "Error while writing ColumnWidthPreferences to " + propertiesFile.getFileName());
