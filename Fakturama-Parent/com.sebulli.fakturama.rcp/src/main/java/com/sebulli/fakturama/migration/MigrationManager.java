@@ -1173,10 +1173,13 @@ public class MigrationManager {
                     columnWidthsMap.put(tableId, valueList);
 		            
 		        }
-            }		    
+            }
+            
             // now write all the collected column widths to property file
             for (String tableId : columnWidthsMap.keySet()) {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
+            	
+            	
                 List<Integer> valueList = columnWidthsMap.get(tableId);
                 StringBuilder stringBuilder = new StringBuilder();
                 
