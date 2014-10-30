@@ -37,6 +37,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
+import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.preferences.DefaultValuesInitializer;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -136,7 +137,7 @@ public class LifecycleManager {
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         // Fill some default data
-
+        // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         // Set the default values to this entries
         Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
         VAT defaultVat = null;
@@ -158,7 +159,7 @@ public class LifecycleManager {
             defaultShipping.setName(msg.dataDefaultShipping);
             defaultShipping.setDescription(msg.dataDefaultShippingDescription);
             defaultShipping.setShippingValue(0.0);
-            defaultShipping.setAutoVat(Boolean.TRUE);
+            defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
             defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
             defaultShipping.setDeleted(Boolean.FALSE);
             defaultShipping = shippingsDAO.update(defaultShipping);

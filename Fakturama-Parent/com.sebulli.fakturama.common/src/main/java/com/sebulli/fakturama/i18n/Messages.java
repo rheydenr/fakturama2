@@ -637,6 +637,8 @@ public class Messages {
     public String importWebshopInfoLoadingpicture;
     public String importWebshopInfoImportorders;
     public String importWebshopErrorCantconvertnumber;
+    public String importWebshopInfoSuccess;
+    public String importWebshopActionLabel;
 
     public String preferencesWebshopEnabled;
     public String preferencesWebshopUrl;

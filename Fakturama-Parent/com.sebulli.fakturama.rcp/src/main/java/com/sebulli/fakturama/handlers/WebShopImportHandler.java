@@ -92,6 +92,8 @@ public class WebShopImportHandler {
             if (errorMessage.length() > 400)
                 errorMessage = errorMessage.substring(0, 400) + "...";
             MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
+        } else {
+        	MessageDialog.openInformation(parent, msg.importWebshopActionLabel, msg.importWebshopInfoSuccess);
         }
 
 		// Refresh the views - this is done automatically because we use GlazedLists!

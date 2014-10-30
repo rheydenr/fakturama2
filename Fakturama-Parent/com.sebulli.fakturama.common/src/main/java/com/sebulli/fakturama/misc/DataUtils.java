@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -577,7 +578,7 @@ public class DataUtils {
 	 * @return Date as formated String
 	 */
 	public static String DateAsISO8601String() {
-        LocalDate now = LocalDate.now(); 
+        LocalDateTime now = LocalDateTime.now(); 
         return now.format(DateTimeFormatter.ISO_DATE_TIME);
 	}
 

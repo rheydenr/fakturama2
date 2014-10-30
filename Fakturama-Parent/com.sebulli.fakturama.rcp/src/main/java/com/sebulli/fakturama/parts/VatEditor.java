@@ -340,7 +340,7 @@ public class VatEditor extends Editor<VAT> {
     public void partActivation(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) 
       Event event) {
       // do something
-      System.out.println("Got Part");
+//      System.out.println("Got Part");
     }     
     
     @Override

@@ -3,8 +3,6 @@
  */
 package com.sebulli.fakturama.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -31,8 +29,8 @@ public class CustomDocument extends Document {
 	private String shippingvatdescription;	
 	private String shippingName;
 	private String shippingdescription;
-	private boolean shippingAutoVat;
-	private BigDecimal shippingValue;
+	private ShippingVatType shippingAutoVat;
+	private Double shippingValue;
 	
 	/**
 	 * A manually edited address (which doesn't point to an existing Address entry).
@@ -130,7 +128,7 @@ public class CustomDocument extends Document {
 	/**
 	 * @return the shippingautovat
 	 */
-	public boolean isShippingAutoVat() {
+	public ShippingVatType getShippingAutoVat() {
 		if(getShipping() != null) {
 			return getShipping().getAutoVat();
 		} else {
@@ -141,7 +139,7 @@ public class CustomDocument extends Document {
 	/**
 	 * @param shippingautovat the shippingautovat to set
 	 */
-	public void setShippingAutoVat(boolean shippingautovat) {
+	public void setShippingAutoVat(ShippingVatType shippingautovat) {
 		setShipping(null);
 		this.shippingAutoVat = shippingautovat;
 	}
@@ -149,9 +147,9 @@ public class CustomDocument extends Document {
 	/**
 	 * @return the shippingValue
 	 */
-	public BigDecimal getShippingValue() {
+	public Double getShippingValue() {
 		if(getShipping() != null) {
-			return BigDecimal.valueOf(getShipping().getShippingValue());		
+			return Double.valueOf(getShipping().getShippingValue());		
 		} else {
 		return shippingValue;
 		}
@@ -160,7 +158,7 @@ public class CustomDocument extends Document {
 	/**
 	 * @param shippingValue the shippingValue to set
 	 */
-	public void setShippingValue(BigDecimal shippingValue) {
+	public void setShippingValue(Double shippingValue) {
 		setShipping(null);
 		this.shippingValue = shippingValue;
 	}

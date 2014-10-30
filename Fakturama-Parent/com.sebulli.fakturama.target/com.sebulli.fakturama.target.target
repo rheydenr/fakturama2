@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="199">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="202">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -63,22 +63,8 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.calendarcombo.feature.feature.group" version="1.0.0.201410030023"/>
-<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201410030023"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201410030023"/>
-<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201410030017"/>
-<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.texo.runtime.core.feature.group" version="0.1.0.v201311162224"/>
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/milestones/0.1.0M1"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20141020-0816"/>
-<repository location="http://download.vogella.com/luna/e4tools"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201408152323"/>
@@ -88,6 +74,20 @@
 <unit id="org.javamoney.feature.feature.group" version="1.0.0.201410202327"/>
 <unit id="org.apache.commons.feature.feature.group" version="3.2.0"/>
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201410280747"/>
+<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.calendarcombo.feature.feature.group" version="1.0.0.201410280747"/>
+<unit id="org.eclipse.nebula.examples.feature.feature.group" version="1.0.4.201410280747"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201410280747"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20141023-0808"/>
+<repository location="http://download.vogella.com/luna/e4tools"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

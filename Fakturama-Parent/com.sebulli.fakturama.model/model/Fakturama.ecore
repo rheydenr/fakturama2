@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://fakturama.sebulli.com" nsPrefix="FKT">
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractCategory">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractCategory" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="the abstract superclass for each Category"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//AbstractCategory"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"
-        defaultValueLiteral="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Account" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Address">
@@ -27,7 +15,7 @@
       <eAnnotations source="texo.java.annotation" references="#//VAT">
         <details key="field" value="@javax.persistence.Id"/>
       </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
+      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
         <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -107,7 +95,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="addressFirstLine" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="customerRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="creationDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="items" unique="false" upperBound="-1"
         eType="#//DocumentItem"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemsRebate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="billingType" eType="#//BillingType"/>
@@ -144,7 +132,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemRebate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="product" eType="#//Product"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dataContainer" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="weight" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="tara" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
@@ -154,8 +141,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantityUnit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemVat" eType="#//VAT"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owningDocument" eType="#//Document"
-        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItemCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//IEntity">
@@ -239,7 +224,7 @@
       <eAnnotations source="texo.java.annotation" references="#//VAT">
         <details key="field" value="@javax.persistence.Id"/>
       </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
+      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
         <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -268,7 +253,7 @@
       <eAnnotations source="texo.java.annotation" references="#//VAT">
         <details key="field" value="@javax.persistence.Id"/>
       </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
+      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
         <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -281,7 +266,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Shipping" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="autoVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="autoVat" eType="#//ShippingVatType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="shippingVat" lowerBound="1"
@@ -298,7 +283,7 @@
       <eAnnotations source="texo.java.annotation" references="#//VAT">
         <details key="field" value="@javax.persistence.Id"/>
       </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
+      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
         <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -314,7 +299,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="password" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="tenant" eType="#//Tenant"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="userName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="roles" upperBound="-1"
+        eType="#//Role"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//IEntity"/>
   <eClassifiers xsi:type="ecore:EClass" name="UserProperty">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
@@ -322,7 +310,7 @@
       <eAnnotations source="texo.java.annotation" references="#//VAT">
         <details key="field" value="@javax.persistence.Id"/>
       </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//AbstractCategory/id #//UserProperty/id #//TextModule/id">
+      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
         <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
       </eAnnotations>
     </eStructuralFeatures>
@@ -338,4 +326,21 @@
         eType="#//VATCategory"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="VATCategory" eSuperTypes="#//AbstractCategory"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="ShippingVatType">
+    <eLiterals name="SHIPPINGVATFIX">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Calculate the shipping's vat with a fix vat value."/>
+      </eAnnotations>
+    </eLiterals>
+    <eLiterals name="SHIPPINGVATGROSS" value="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Calculate the shipping's vat with the same vat of the items. The shipping vat is a gross value."/>
+      </eAnnotations>
+    </eLiterals>
+    <eLiterals name="SHIPPINGVATNET" value="2">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Calculate the shipping's vat with the same vat of the items. The shipping vat is a net value."/>
+      </eAnnotations>
+    </eLiterals>
+  </eClassifiers>
 </ecore:EPackage>

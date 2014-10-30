@@ -13,20 +13,18 @@
           <discriminatorColumn name="categoryName"/>
         </entity>
       </eClassAnnotations>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//AbstractCategory/id"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="id" getter="getId" defaultValue="null" setter="setId" validJavaMemberName="id" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.0/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//AbstractCategory/name"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="name" getter="getName" defaultValue="null" setter="setName" validJavaMemberName="name" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.0/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//AbstractCategory/parent"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="" name="parent" getter="getParent" defaultValue="null" setter="setParent" validJavaMemberName="parent" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.0/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_PARENT_CATEGORY" nullable="true" referencedColumnName="" table=""/>
-          <manyToOne/>
+          <manyToOne>
+            <cascade>
+              <cascadePersist/>
+              <cascadeMerge/>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
@@ -109,7 +107,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/title"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="title" getter="getTitle" defaultValue="null" setter="setTitle" validJavaMemberName="title" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="" name="title" getter="getTitle" defaultValue="null" setter="setTitle" validJavaMemberName="title" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/firstName"/>
@@ -137,11 +135,11 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/account"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="account" getter="getAccount" defaultValue="null" setter="setAccount" validJavaMemberName="account" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The bank account of this Contact." name="account" getter="getAccount" defaultValue="null" setter="setAccount" validJavaMemberName="account" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/accountHolder"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="accountHolder" getter="getAccountHolder" defaultValue="null" setter="setAccountHolder" validJavaMemberName="accountHolder" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The owner of the given bank account." name="accountHolder" getter="getAccountHolder" defaultValue="null" setter="setAccountHolder" validJavaMemberName="accountHolder" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/bankCode"/>
@@ -313,7 +311,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/items"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The items of this document." name="items" getter="getItems" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.DocumentItem>()" setter="setItems" validJavaMemberName="items" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The items of this document." name="items" getter="getItems" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.DocumentItem>()" setter="setItems" validJavaMemberName="items" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinTable>
             <joinColumn name="FK_ITEM"/>
@@ -454,7 +452,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/progress"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="progress" getter="getProgress" defaultValue="null" setter="setProgress" validJavaMemberName="progress" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The status of the transaction (is an order shipped, paid or in any other state)." name="progress" getter="getProgress" defaultValue="null" setter="setProgress" validJavaMemberName="progress" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/serviceDate"/>
@@ -526,10 +524,6 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="itemNumber" getter="getItemNumber" defaultValue="null" setter="setItemNumber" validJavaMemberName="itemNumber" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//DocumentItem/dataContainer"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="dataContainer" getter="getDataContainer" defaultValue="null" setter="setDataContainer" validJavaMemberName="dataContainer" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/quantity"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="quantity" getter="getQuantity" defaultValue="null" setter="setQuantity" validJavaMemberName="quantity" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
@@ -556,10 +550,6 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/quantityUnit"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="quantityUnit" getter="getQuantityUnit" defaultValue="null" setter="setQuantityUnit" validJavaMemberName="quantityUnit" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//DocumentItem/owningDocument"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="Reference to the owning document, if ever. Formerly known as &quot;owner&quot;." getter="getOwningDocument" setter="setOwningDocument" validJavaMemberName="owningDocument"/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
@@ -983,7 +973,7 @@
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Shipping/autoVat"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="If TRUE, the shipping VAT is based on the item's VAT" name="autoVat" getter="getAutoVat" defaultValue="null" setter="setAutoVat" validJavaMemberName="autoVat" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.20/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="If shippingAutoVat is not fix, the shipping vat is an average value of the vats of the items." name="autoVat" getter="getAutoVat" defaultValue="null" setter="setAutoVat" validJavaMemberName="autoVat" featureMapQualifiedClassName="" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.20/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Shipping/description"/>

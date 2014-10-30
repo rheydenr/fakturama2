@@ -49,7 +49,9 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryCurrencies;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 import javax.xml.bind.JAXBContext;
@@ -81,6 +83,8 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.ItemTotalCalculator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
@@ -101,6 +105,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
+import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -158,7 +163,7 @@ public class WebShopImportManager {
     
     @Inject
     private ProductCategoriesDAO productCategoriesDAO;
-    
+	        
 	/**
 	 * Runs the reading of a http stream in an extra thread.
 	 * So it can be interrupted by clicking the cancel button. 
@@ -384,6 +389,7 @@ public class WebShopImportManager {
     class WebShopImportWorker implements IRunnableWithProgress {
 	    private IProgressMonitor localMonitor;
 		private final IPreferenceStore defaultValuesNode;
+		private CurrencyUnit currencyCode;
 	    
 	    /**
 		 * 
@@ -419,6 +425,10 @@ public class WebShopImportManager {
             Boolean useAuthorization = Boolean.parseBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED);
             String authorizationUser = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER);
             String authorizationPassword = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD);
+            
+   			String currencyPreference = eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR");
+   			currencyCode = MonetaryCurrencies.getCurrency(currencyPreference);
+
             
             // Check empty URL
             if (address.isEmpty()) {
@@ -721,7 +731,7 @@ public class WebShopImportManager {
          * @throws SQLException 
          */
         private void createOrderFromXMLOrderNode(OrderType order) throws SQLException {
-        	ContactUtil contactUtil = new ContactUtil(eclipsePrefs);
+        	ContactUtil contactUtil = new ContactUtil(eclipsePrefs);   			
         	
     		// Order data
     		String webshopId;
@@ -756,7 +766,7 @@ public class WebShopImportManager {
         	}
         
         	// Create a new order
-        	Document dataSetDocument = new CustomDocument();
+            CustomDocument dataSetDocument = new CustomDocument();
         	dataSetDocument.setBillingType(BillingType.ORDER); // DocumentType.ORDER
         
         	// Set name, web shop order id and date
@@ -869,8 +879,8 @@ public class WebShopImportManager {
     			}
     
     			// Calculate the net value of the price
-        		MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
-				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+        		MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
+				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
 				priceNet = priceGross.divide(1 + vatPercent);
     
     			// Add the VAT value to the data base, if it is a new one
@@ -936,7 +946,7 @@ public class WebShopImportManager {
     			item.setItemRebate(itemType.getDiscount().doubleValue());
     			
                 // search for owning document
-    			item.setOwningDocument((CustomDocument) dataSetDocument);
+//    			item.setOwningDocument((CustomDocument) dataSetDocument);
     
     			// Update the modified item data
     			dataSetDocument.getItems().add(item);
@@ -974,7 +984,7 @@ public class WebShopImportManager {
     			shipping.setDescription(shippingType.getName());
     			shipping.setShippingValue(shippingGross);
     			shipping.setShippingVat(shippingvat);
-    			shipping.setAutoVat(Boolean.TRUE);
+    			shipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
     			shipping = shippingsDAO.addIfNew(shipping);
     
     			// Set the document entries for the shipping
@@ -983,15 +993,15 @@ public class WebShopImportManager {
     
     			// Use the order ID of the web shop as customer reference for
     			// imports web shop orders
-    			if (webshopId.length() <= 5)
+    			if (webshopId.length() <= 5) {
     				s = "00000".substring(webshopId.length(), 5);
+    			}
     			s += webshopId;
     			//T: Text of the web shop reference
     			dataSetDocument.setCustomerRef(msg.importWebshopInfoWebshopno + " " + s);
     		}
         
         	// Get the payment (s)
-    		
     		PaymentType paymentType = order.getPayment();
 			if (paymentType != null) {
     			// Add the payment to the data base, if it's a new one
@@ -1000,6 +1010,7 @@ public class WebShopImportManager {
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);
     			paymentsDAO.addIfNew(payment);
+            	dataSetDocument.setPayment(payment);
     		}
         
         	// Set the progress of an imported order to 10%
@@ -1029,10 +1040,9 @@ public class WebShopImportManager {
         	// Re-calculate the document's total sum and check it.
         	// It must be the same total value as in the web shop
 //        	dataSetDocument.calculate();
-			MonetaryAmount calcTotal = FastMoney.of(0.0, eclipsePrefs.get(
-					Constants.PREFERENCE_GENERAL_CURRENCY, "EUR")); // dataSetDocument.getSummary().getTotalGross().asDouble();
-			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType.getTotal(), eclipsePrefs.get(
-					Constants.PREFERENCE_GENERAL_CURRENCY, "EUR")); 
+        	DocumentSummary summary = new ItemTotalCalculator(currencyCode).calculate(dataSetDocument);
+			MonetaryAmount calcTotal = summary.getTotalGross();
+			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType.getTotal(), currencyCode); 
         	// If there is a difference, show a warning.
         	if (!calcTotal.isEqualTo(totalFromWebshop)) {
         		// TODO change Locale to OSGI environment variable
@@ -1069,14 +1079,14 @@ public class WebShopImportManager {
        			vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
         
         		// Convert the gross or net string to a money value
-        		MonetaryAmount priceNet = FastMoney.of(0.0, eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+        		MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
        			
         		// Use the net string, if it is set
     			// => net string is *never* set! The connectors don't deliver it!
     
     			// Use the gross string, if it is set
     			if (product.getGross() != null) {
-    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR"));
+    				MonetaryAmount priceGross = FastMoney.of(product.getGross(), currencyCode);
     				priceNet = priceGross.divide(1 + vatPercentDouble);
     			}
         
