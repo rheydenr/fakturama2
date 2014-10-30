@@ -40,7 +40,6 @@ import javax.inject.Named;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryCurrencies;
-import javax.money.format.AmountFormatQuery;
 import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
@@ -1104,8 +1103,8 @@ public class MigrationManager {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
 		
-		System.out.print("propertiesFile:"+propertiesFile);
-		System.out.print("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
+		log.info("propertiesFile: "+propertiesFile);
+		log.debug("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
 			
 		// truncate and overwrite an existing file, or create the file if
 		// it doesn't initially exist
@@ -1149,9 +1148,10 @@ public class MigrationManager {
                     case "DIALOG":
                         // e.g., COLUMNWIDTH_DIALOG_CONTACTS_CITY
                         String[] splittedString = matcher.group(2).split("_");
+                        // TODO implement!
                         switch (splittedString[0]) {
                         case "CONTACTS":
-                            
+                            tableId="DIALOG";
                             break;
                         case "PRODUCTS":
                             break;
@@ -1175,56 +1175,62 @@ public class MigrationManager {
 		        }
             }
             
+            List<Integer> valueList;
+            List<Integer> convertedValueList;
+            int totalSize;
+            int largestFieldIdx;
+            int currentHighest;
+        	Integer convertedValue;
+            int convertedMaxSize;
+    		String columnWidthPropertyString;
             // now write all the collected column widths to property file
             for (String tableId : columnWidthsMap.keySet()) {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
             	
-            	
-                List<Integer> valueList = columnWidthsMap.get(tableId);
+				valueList = columnWidthsMap.get(tableId);
                 StringBuilder stringBuilder = new StringBuilder();
                 
                 //convert old values to percentage values
-                //
-                Integer totalSize = 0;
-                Integer largestFieldIdx = 0;
+				totalSize = 0;
+				largestFieldIdx = 0;
                 
                 //calculate the total size and get the largest field
-                Integer currentHighest = 0;
-                for(int i = 0; i < valueList.size(); i++) {
+				currentHighest = 0;
+                int valueListSize = valueList.size();
+				for(int i = 0; i < valueListSize; i++) {
                 	totalSize += valueList.get(i);
                 	
-                	if(valueList.size() > currentHighest){
-                		currentHighest = valueList.size();
+                	if(valueListSize > currentHighest){
+                		currentHighest = valueListSize;
                 		largestFieldIdx = i;
                 	}
                 }
                 
                 //convert the values
-                List<Integer> convertedValueList = new ArrayList<Integer>();
-                Integer convertedMaxSize = 0;
-                for(int i = 0; i < valueList.size(); i++) {
-                	Integer convertedValue = 100/(totalSize/valueList.get(i));
+				convertedValueList = new ArrayList<Integer>();
+				convertedMaxSize = 0;
+                for(int i = 0; i < valueListSize; i++) {
+					convertedValue = 100/(totalSize/valueList.get(i));
                 	convertedMaxSize += convertedValue;
                 	convertedValueList.add(convertedValue);
                 }
                 
                 //add rest space to the largest field
-                convertedValueList.set(largestFieldIdx, convertedValueList.get(largestFieldIdx) + 100 - convertedMaxSize );
+                convertedValueList.set(largestFieldIdx, convertedValueList.get(largestFieldIdx) + 100 - convertedMaxSize);
                 
                 for(int i = 0; i < convertedValueList.size(); i++) {
                     if(stringBuilder.length() > 0) {
                         stringBuilder.append(',');
                     }
-                                        
                     stringBuilder.append(i+"\\:"+convertedValueList.get(i));
                 }
-        		System.out.print(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
-                
-                propsWriter.write(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
+				columnWidthPropertyString = tableId+".BODY.columnWidth.sizes="+stringBuilder.toString();
+				log.info(columnWidthPropertyString);
+                propsWriter.write(columnWidthPropertyString);
                 propsWriter.newLine();
             }
             
-    		System.out.print("--- old data end ----");
+            log.info("--- old data end ----");
 
         }
         catch (IOException e1) {

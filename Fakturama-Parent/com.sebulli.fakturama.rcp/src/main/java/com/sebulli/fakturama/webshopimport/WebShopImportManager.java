@@ -40,6 +40,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 //import java.util.Date;
 import java.util.List;
@@ -466,7 +467,7 @@ public class WebShopImportManager {
     
                     // Use password for password protected web shops
                     if (useAuthorization) {
-                        String encodedPassword = Base64Coder.encodeString(authorizationUser + ":" + authorizationPassword );
+                    	String encodedPassword = Base64.getEncoder().encodeToString((authorizationUser + ":" + authorizationPassword).getBytes());
                         conn.setRequestProperty( "Authorization", "Basic " + encodedPassword );
                     }
     
