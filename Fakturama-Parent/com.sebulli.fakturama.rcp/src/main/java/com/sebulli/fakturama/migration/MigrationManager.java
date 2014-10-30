@@ -30,12 +30,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.money.CurrencyUnit;
+import javax.money.MonetaryAmount;
+import javax.money.MonetaryCurrencies;
+import javax.money.format.AmountFormatQuery;
+import javax.money.format.AmountFormatQueryBuilder;
+import javax.money.format.MonetaryAmountFormat;
+import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +61,8 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.format.CurrencyStyle;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.dao.ContactDAO;
@@ -87,6 +97,7 @@ import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucherItem;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
+import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.UserProperty;
@@ -635,7 +646,7 @@ public class MigrationManager {
 //			item.setWeight(oldItem.getWeight());
 			
 			// the owning document is _always_ the document which was given as parameter herein
-   			item.setOwningDocument(document);
+//   			item.setOwningDocument(document);
 			document.addToItems(item);
 		}
 	}
@@ -990,7 +1001,7 @@ public class MigrationManager {
 				shipping.setName(oldShipping.getName());
 				shipping.setShippingValue(oldShipping.getValue());
 				shipping.setDeleted(oldShipping.isDeleted());
-				shipping.setAutoVat(BooleanUtils.toBooleanObject(oldShipping.getAutovat()));
+				shipping.setAutoVat(ShippingVatType.get(oldShipping.getAutovat()));
 				shipping.setDescription(oldShipping.getDescription());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
 					// add it to the new entity
@@ -1023,6 +1034,11 @@ public class MigrationManager {
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 
+		final Map<String, String> currencySymbols = new HashMap<String, String>(); 
+		currencySymbols.put("€", "EUR");
+		currencySymbols.put("$", "USD");
+		// add more symbols if necessary
+
 	    createColumnWidthPreferences();
 	    
         for (OldProperties oldProperty : oldDao.findAllPropertiesWithoutColumnWidthProperties()) {
@@ -1047,6 +1063,19 @@ public class MigrationManager {
                     Payment newPayment = paymentsDAO.findById(newPayments.get(Integer.parseInt(propValue)));
                     propValue = Long.toString(newPayment.getId());
                     break;
+                case Constants.PREFERENCE_GENERAL_CURRENCY:
+                	// if the currency is stored as symbol we have to convert it to an ISO code
+           			// FastMoney doesn't work with symbols, therefore we have to convert this
+           			if(StringUtils.length(propValue) == 1) {
+           				propValue = currencySymbols.get(propValue);
+           			}
+           			CurrencyUnit currencyCode = MonetaryCurrencies.getCurrency(propValue);
+           			propValue = currencyCode.getCurrencyCode();
+           			MonetaryAmount m = FastMoney.of(0.0, currencyCode);
+           			MonetaryAmountFormat f = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.GERMANY).set(CurrencyStyle.SYMBOL).build());
+           		    f.format(m);
+
+                	break;
                 default:
                     break;
                 }
@@ -1075,6 +1104,9 @@ public class MigrationManager {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
 		
+		System.out.print("propertiesFile:"+propertiesFile);
+		System.out.print("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
+			
 		// truncate and overwrite an existing file, or create the file if
 		// it doesn't initially exist
 		try(BufferedWriter propsWriter = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(Files.newOutputStream(propertiesFile))));) {
@@ -1147,15 +1179,50 @@ public class MigrationManager {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
                 List<Integer> valueList = columnWidthsMap.get(tableId);
                 StringBuilder stringBuilder = new StringBuilder();
+                
+                //convert old values to percentage values
+                //
+                Integer totalSize = 0;
+                Integer largestFieldIdx = 0;
+                
+                //calculate the total size and get the largest field
+                Integer currentHighest = 0;
                 for(int i = 0; i < valueList.size(); i++) {
+                	totalSize += valueList.get(i);
+                	
+                	if(valueList.size() > currentHighest){
+                		currentHighest = valueList.size();
+                		largestFieldIdx = i;
+                	}
+                }
+                
+                //convert the values
+                List<Integer> convertedValueList = new ArrayList<Integer>();
+                Integer convertedMaxSize = 0;
+                for(int i = 0; i < valueList.size(); i++) {
+                	Integer convertedValue = 100/(totalSize/valueList.get(i));
+                	convertedMaxSize += convertedValue;
+                	convertedValueList.add(convertedValue);
+                }
+                
+                //add rest space to the largest field
+                convertedValueList.set(largestFieldIdx, convertedValueList.get(largestFieldIdx) + 100 - convertedMaxSize );
+                
+                for(int i = 0; i < convertedValueList.size(); i++) {
                     if(stringBuilder.length() > 0) {
                         stringBuilder.append(',');
                     }
-                    stringBuilder.append(i+"\\:"+valueList.get(i));
+                                        
+                    stringBuilder.append(i+"\\:"+convertedValueList.get(i));
                 }
+        		System.out.print(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
+                
                 propsWriter.write(tableId+".BODY.columnWidth.sizes="+stringBuilder.toString());
                 propsWriter.newLine();
             }
+            
+    		System.out.print("--- old data end ----");
+
         }
         catch (IOException e1) {
             log.error(e1, "Error while writing ColumnWidthPreferences to " + propertiesFile.getFileName());
