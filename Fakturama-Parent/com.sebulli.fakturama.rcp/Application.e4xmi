@@ -5,7 +5,7 @@
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_RmPTo-tOEeKo5Ms1QUgPTw" elementId="" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTpOtOEeKo5Ms1QUgPTw">
       <children xsi:type="advanced:Perspective" xmi:id="_RmPTpOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspective" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Fakturama Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
-          <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation" tooltip="wählen Sie einen Button aus"/>
+          <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation View" tooltip=""/>
           <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTqOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.datapanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" selectedElement="_VxkroOtOEeKo5Ms1QUgPTw">
             <children xsi:type="basic:PartSashContainer" xmi:id="_VxkroOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detaildata" containerData="10000" selectedElement="_RmPTqetOEeKo5Ms1QUgPTw" horizontal="true">
               <tags>documentWindow</tags>
@@ -72,7 +72,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file.save" iconURI="icon://COMMAND_SAVE" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Yew2kPo0EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.saveAll" label="%main.menu.file.saveall" iconURI="icon://COMMAND_SAVEALL" command="_jH3nYCTLEeS9z6SQNducwg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.2"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.print" label="%main.menu.file.print" iconURI="icon://COMMAND_PRINT" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.print" label="%main.menu.file.print" iconURI="icon://COMMAND_PRINT" tooltip="%main.menu.file.print.tooltip" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iKbb4Po6EeKmVtv93KLoRw" elementId="menu:main.menu.file.handleselectworkspace" label="%command.selectworkspace.name" enabled="false" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_RjR8sEgIEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.0"/>
@@ -212,7 +212,7 @@
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_-hDgwDxeEeS-t56iKjyYpA" elementId="com.sebulli.fakturama.command.webShopImportManager" commandName="webshop import manager" description="Runner class for te webshop import"/>
   <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
-  <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="%command.save.name %main.menu.file.save" category="_no8mgEstEeOZ37-tYt-QvQ"/>
+  <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="%main.menu.file.save" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_RmrPQCTQEeS9z6SQNducwg" elementId="org.eclipse.ui.file.close" commandName="%main.menu.file.close" description="close active document" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_pBm00CvEEeSxtNFFgqSUpw" elementId="org.eclipse.ui.file.closeAll" commandName="%main.menu.file.closeall" description="close all open documents"/>
   <commands xmi:id="_jH3nYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.file.saveAll" commandName="%main.menu.file.saveall" category="_no8mgEstEeOZ37-tYt-QvQ"/>
