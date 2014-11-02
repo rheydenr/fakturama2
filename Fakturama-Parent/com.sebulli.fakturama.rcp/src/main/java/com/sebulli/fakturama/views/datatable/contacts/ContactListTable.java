@@ -18,13 +18,11 @@ import ca.odell.glazedlists.EventList;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
 
 /**
- * @author rheydenr
  *
  */
 public class ContactListTable extends AbstractViewDataTable<Contact, ContactCategory> {
@@ -37,7 +35,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     private Logger log;
 
     // ID of this view
-    public static final String ID = "com.sebulli.fakturama.views.datasettable.viewContactTable";
+    public static final String ID = "fakturama.views.contactTable";
      
     /**
      * Event Broker for receiving update events to the list table
@@ -49,7 +47,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @Preference
     private IEclipsePreferences preferences;
 
-    private EventList<VAT> eventList;
+    private EventList<Contact> eventList;
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#createListTable(org.eclipse.swt.widgets.Composite)

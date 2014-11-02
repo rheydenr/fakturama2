@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.i18n.Messages;

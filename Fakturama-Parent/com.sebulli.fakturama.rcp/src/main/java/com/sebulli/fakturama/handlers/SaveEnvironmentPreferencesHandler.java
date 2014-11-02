@@ -13,6 +13,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+/**
+ * TODO check it!
+ * @deprecated Possibly unused
+ */
 public class SaveEnvironmentPreferencesHandler {
 
 	@Inject

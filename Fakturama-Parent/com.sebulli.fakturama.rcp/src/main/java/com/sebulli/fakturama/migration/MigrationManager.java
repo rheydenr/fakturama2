@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +57,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
@@ -64,6 +65,7 @@ import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.ContactDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
@@ -170,6 +172,7 @@ public class MigrationManager {
 
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private String generalWorkspace = null;
+	private IApplicationContext appContext;
 
 	/**
      * @param context
@@ -179,6 +182,7 @@ public class MigrationManager {
      */
     public MigrationManager(IEclipseContext context, Messages msg, IEclipsePreferences eclipsePrefs) {
         this.context = context;
+        appContext = context.get(IApplicationContext.class);
         this.log = context.get(org.eclipse.e4.core.services.log.Logger.class);
         this.eclipsePrefs = eclipsePrefs; //context.get(IEclipsePreferences.class);
         this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
@@ -221,6 +225,9 @@ public class MigrationManager {
 
 		// old entities only have one DAO for all entities
 		oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
+		
+		// hide splash screen
+		appContext.applicationRunning();
 		
 		// we have to keep a certain order
 		final OldTableinfo orderedTasks[] = new OldTableinfo[]{
@@ -1032,11 +1039,15 @@ public class MigrationManager {
 		Long countOfEntitiesInTable = oldDao.countAllProperties();
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
-
-		final Map<String, String> currencySymbols = new HashMap<String, String>(); 
-		currencySymbols.put("€", "EUR");
-		currencySymbols.put("$", "USD");
-		// add more symbols if necessary
+		
+		Properties currencyProperties = new Properties();
+		try {
+			currencyProperties.load(Activator.getContext().getBundle().getResource("currency-symbols.properties").openStream());
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	    createColumnWidthPreferences();
 	    
@@ -1066,7 +1077,8 @@ public class MigrationManager {
                 	// if the currency is stored as symbol we have to convert it to an ISO code
            			// FastMoney doesn't work with symbols, therefore we have to convert this
            			if(StringUtils.length(propValue) == 1) {
-           				propValue = currencySymbols.get(propValue);
+//           				propValue = currencySymbols.get(propValue);
+           				propValue = currencyProperties.getProperty(propValue);
            			}
            			CurrencyUnit currencyCode = MonetaryCurrencies.getCurrency(propValue);
            			propValue = currencyCode.getCurrencyCode();
@@ -1101,10 +1113,13 @@ public class MigrationManager {
     private void createColumnWidthPreferences() {
 		// at first create a properties file
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
-		Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
+		Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
+		Properties columnWidthProperties = new Properties();
 		
 		log.info("propertiesFile: "+propertiesFile);
-		log.debug("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
+		if(log.isDebugEnabled()) {
+			log.debug("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
+		}
 			
 		// truncate and overwrite an existing file, or create the file if
 		// it doesn't initially exist
@@ -1171,7 +1186,6 @@ public class MigrationManager {
                     }
                     valueList.add(Integer.parseInt(oldProperty.getValue()));
                     columnWidthsMap.put(tableId, valueList);
-		            
 		        }
             }
             
@@ -1182,7 +1196,7 @@ public class MigrationManager {
             int currentHighest;
         	Integer convertedValue;
             int convertedMaxSize;
-    		String columnWidthPropertyString;
+//    		String columnWidthPropertyString;
             // now write all the collected column widths to property file
             for (String tableId : columnWidthsMap.keySet()) {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,
@@ -1222,14 +1236,12 @@ public class MigrationManager {
                     if(stringBuilder.length() > 0) {
                         stringBuilder.append(',');
                     }
-                    stringBuilder.append(i+"\\:"+convertedValueList.get(i));
+                    stringBuilder.append(i+":"+convertedValueList.get(i));
                 }
-				columnWidthPropertyString = tableId+".BODY.columnWidth.sizes="+stringBuilder.toString();
-				log.info(columnWidthPropertyString);
-                propsWriter.write(columnWidthPropertyString);
-                propsWriter.newLine();
+                columnWidthProperties.setProperty(tableId+".BODY.columnWidth.sizes", stringBuilder.toString());
+				log.info(columnWidthProperties.toString());
             }
-            
+            columnWidthProperties.store(propsWriter, "Column widths for tables (initially migrated from old values).");
             log.info("--- old data end ----");
 
         }

@@ -77,7 +77,7 @@ public class NavigationView {
 	    addAction(group, Icon.COMMAND_IMPORT, "command.webshop", CommandIds.CMD_WEBSHOP_IMPORT);
 		
 		// Create the 2nd expand bar "Data"
-	    PGroup group2 = createPGroup("main.menu.data", Icon.ICON_LETTER);
+	    PGroup group2 = createPGroup("command.data.name", Icon.ICON_LETTER);
 	    addAction(group2, Icon.COMMAND_LETTER, "command.documents", CommandIds.CMD_OPEN_DOCUMENTS);
 	    addAction(group2, Icon.COMMAND_PRODUCT, "command.products", CommandIds.CMD_OPEN_PRODUCTS);
 	    addAction(group2, Icon.COMMAND_CONTACT, "command.contacts", CommandIds.CMD_OPEN_CONTACTS);
@@ -90,7 +90,7 @@ public class NavigationView {
 	    addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_NEW_RECEIPTVOUCHER);
 
 		// Create the 3rd expand bar "Create new"
-	    PGroup group3 = createPGroup("main.menu.new", Icon.ICON_PRODUCT_NEW);
+	    PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);
 	    addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_NEW_PRODUCT);
 	    addAction(group3, Icon.COMMAND_CONTACT, "command.new.contact", CommandIds.CMD_NEW_CONTACT);
 

@@ -73,6 +73,7 @@ public class LifecycleManager {
 
     @PostContextCreate
     public void checksBeforeStartup(final IEventBroker eventBroker) {
+        IApplicationContext appContext = context.get(IApplicationContext.class);        
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
 
@@ -112,7 +113,6 @@ public class LifecycleManager {
                 log.error(sqlex, "couldn't fill with inital data! " + sqlex);
             }
         }
-        IApplicationContext appContext = context.get(IApplicationContext.class);
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
         appContext.applicationRunning();
@@ -146,7 +146,6 @@ public class LifecycleManager {
             defaultVat.setName(msg.dataDefaultVat);
             defaultVat.setDescription(msg.dataDefaultVatDescription);
             defaultVat.setTaxValue(0.0);
-            defaultVat.setDeleted(Boolean.FALSE);
             defaultVat = vatsDAO.save(defaultVat);
         }
         if(defaultVat != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
@@ -161,7 +160,6 @@ public class LifecycleManager {
             defaultShipping.setShippingValue(0.0);
             defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
             defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
-            defaultShipping.setDeleted(Boolean.FALSE);
             defaultShipping = shippingsDAO.update(defaultShipping);
             defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
@@ -178,7 +176,6 @@ public class LifecycleManager {
             defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
             defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
             defaultPayment.setDefaultPaid(Boolean.FALSE);
-            defaultPayment.setDeleted(Boolean.FALSE);
             defaultPayment = paymentsDAO.save(defaultPayment);
             defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }

@@ -40,32 +40,22 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.command.VisualRefreshCommand;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
-import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
-import org.eclipse.nebula.widgets.nattable.ui.menu.MenuItemProviders;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -379,11 +369,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         return searchAndTableComposite;
     }
 
-	/**
-	 * Returns the topic tree viewer
-	 * 
-	 * @return The topic tree viewer
-	 */
+//	/**
+//	 * Returns the topic tree viewer
+//	 * 
+//	 * @return The topic tree viewer
+//	 */
 //	public TopicTreeViewer getTopicTreeViewer() {
 //		return topicTreeViewer;
 //	}
@@ -396,36 +386,36 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	}
 
     
-    protected PopupMenuBuilder createBodyMenu(final NatTable natTable, final ListViewGridLayer<T> gridLayer) {
-        return new PopupMenuBuilder(natTable)
-                .withMenuItemProvider(new IMenuItemProvider() {
-                    @Override
-                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-                        menuItem.setText("Toggle auto spanning");
-                        menuItem.setEnabled(true);
-
-                        menuItem.addSelectionListener(new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent event) {
-                                NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-                                //get the row position for the click in the NatTable
-                                int rowPosition = natEventData.getRowPosition();
-                               // natTable.getDataValueByPosition(columnPosition, rowPosition);
-
-                                //transform the NatTable row position to the row position of the body layer stack
-                                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPosition, gridLayer.getBodyDataLayer());
-                                // extract the selected Object
-                                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-                                log.debug("Selected Object: " + selectedObject.getName());
-
-                                natTable.doCommand(new VisualRefreshCommand());
-                            }
-                        });
-                    }
-                })
-                .withStateManagerMenuItemProvider();
-    }
+//    protected PopupMenuBuilder createBodyMenu(final NatTable natTable, final ListViewGridLayer<T> gridLayer) {
+//        return new PopupMenuBuilder(natTable)
+//                .withMenuItemProvider(new IMenuItemProvider() {
+//                    @Override
+//                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
+//                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
+//                        menuItem.setText("Toggle auto spanning");
+//                        menuItem.setEnabled(true);
+//
+//                        menuItem.addSelectionListener(new SelectionAdapter() {
+//                            @Override
+//                            public void widgetSelected(SelectionEvent event) {
+//                                NatEventData natEventData = MenuItemProviders.getNatEventData(event);
+//                                //get the row position for the click in the NatTable
+//                                int rowPosition = natEventData.getRowPosition();
+//                               // natTable.getDataValueByPosition(columnPosition, rowPosition);
+//
+//                                //transform the NatTable row position to the row position of the body layer stack
+//                                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPosition, gridLayer.getBodyDataLayer());
+//                                // extract the selected Object
+//                                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+//                                log.debug("Selected Object: " + selectedObject.getName());
+//
+//                                natTable.doCommand(new VisualRefreshCommand());
+//                            }
+//                        });
+//                    }
+//                })
+//                .withStateManagerMenuItemProvider();
+//    }
     
 	/**
 	 * Create the default context menu with one addNew and one Delete action

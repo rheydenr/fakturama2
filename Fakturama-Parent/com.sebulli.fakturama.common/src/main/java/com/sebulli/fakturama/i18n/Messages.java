@@ -678,6 +678,8 @@ public class Messages {
 	public String commandCalculatorTooltip;
 	public String commandContactsName;
 	public String commandContactsTooltip;
+	public String commandDataName;
+	public String commandDataNameTooltip;
 	public String commandDocumentsName;
 	public String commandDocumentsTooltip;
 	public String commandExpenditurevouchersName;
@@ -702,6 +704,8 @@ public class Messages {
 	public String commandNewExpenditureTooltip;
 	public String commandNewInvoiceName;
 	public String commandNewLetterName;
+	public String commandNewName;
+	public String commandNewNameTooltip;
 	public String commandNewOfferName;
 	public String commandNewOrderName;
 	public String commandNewProductName;

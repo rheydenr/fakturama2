@@ -538,6 +538,11 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/description"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
+          <basic>
+            <lob/>
+          </basic>
+        </eAttributeAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/optional"/>
@@ -755,6 +760,11 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Product/description"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.15/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
+          <basic>
+            <lob/>
+          </basic>
+        </eAttributeAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Product/productCode"/>

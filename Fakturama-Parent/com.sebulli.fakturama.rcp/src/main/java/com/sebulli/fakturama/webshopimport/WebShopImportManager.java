@@ -61,6 +61,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -500,7 +501,7 @@ public class WebShopImportManager {
                     }
                 
                     log.debug("POST-String: " + postString);
-                    writer.write(postString);
+                    writer.write(postString);Object k = new IExtension[]{};
                     writer.flush();
                     writer.close();
     

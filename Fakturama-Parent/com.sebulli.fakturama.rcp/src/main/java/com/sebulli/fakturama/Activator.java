@@ -13,10 +13,20 @@
 
 package com.sebulli.fakturama;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+import org.slf4j.osgi.logservice.impl.LogServiceFactory;
+import org.slf4j.osgi.logservice.impl.LogServiceImpl;
 
 import com.sebulli.fakturama.resources.urihandler.IconURLStreamHandlerService;
 
@@ -29,11 +39,34 @@ import com.sebulli.fakturama.resources.urihandler.IconURLStreamHandlerService;
  */
 public class Activator implements BundleActivator {
 
-    // The plug-in ID
+	// The bundle ID (Bundle-SymbolicName)
     public static final String PLUGIN_ID = "com.sebulli.fakturama.rcp";
+	private static final String[] LOGSERVICE_CLASSES = {LogService.class.getName()};
+    private ServiceFactory<?> logServiceFactory = new LogServiceFactory();
+	private ServiceRegistration<?> logServiceRegistration;
+	
+	/**
+	 * If Logging using slf4j API and Logback as backend you can add Marker.
+	 * you can build a Marker- Graph - if Marker IS_BUNDLE is contained, then
+	 * the Marker Name is the Bundles Symbolic name.
+	 */
+	public static final String IS_BUNDLE_MARKER = "OSGI_BUNDLE";	 //$NON-NLS-1$
 
     // The shared instance
     private static BundleContext context;
+	
+	// logger name = class name
+	private static final Logger logger = LoggerFactory.getLogger(Activator.class);
+	
+	// The Bundle Marker: a Marker where the name is the osgi bundle symbolic name
+	// and an attached IS_BUNDLE - Marker to guarantee that the Log Framework knows its a BundleMarker
+	public static final Marker bundleMarker = createBundleMarker();
+	
+	private static final Marker createBundleMarker() {
+		Marker bundleMarker = MarkerFactory.getMarker(PLUGIN_ID);
+		bundleMarker.add(MarkerFactory.getMarker(IS_BUNDLE_MARKER));
+		return bundleMarker;
+	}
 
     /**
      * Returns the shared instance
@@ -59,6 +92,12 @@ public class Activator implements BundleActivator {
         JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
         // for using of icons from another plugin
         IconURLStreamHandlerService.getInstance().register();
+//        ContextInjectionFactory.inject(logServiceRegistration,bundleContext.);
+
+        logServiceRegistration = bundleContext.registerService(LOGSERVICE_CLASSES, logServiceFactory, null);
+
+        logger.info("Starting org.eclipsecon.logging.log4j Excample");
+		logger.debug("Here is a Log4J Bundle at the EclipseCon 2010");
    }
 
     /*
@@ -70,6 +109,7 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
+    	logServiceRegistration.unregister();
         Activator.context = null;
     }
 }
