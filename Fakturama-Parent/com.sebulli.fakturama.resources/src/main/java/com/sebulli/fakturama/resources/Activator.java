@@ -10,11 +10,9 @@
  ******************************************************************************/
 package com.sebulli.fakturama.resources;
 
-import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
@@ -22,7 +20,6 @@ public class Activator implements BundleActivator {
 	
 	static private Activator defaultInstance;
 
-	private ServiceTracker<?, ?> logTracker = null;
 	private BundleContext context;
 
 	public Activator() {
@@ -47,11 +44,6 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		if (logTracker != null) {
-			logTracker.close();
-			logTracker = null;
-		}
-
 		context = null;
 	}
 
@@ -62,14 +54,4 @@ public class Activator implements BundleActivator {
 		return context.getBundle();
 	}
 
-	public FrameworkLog getFrameworkLog() {
-		if (logTracker == null) {
-			if (context == null)
-				return null;
-			logTracker = new ServiceTracker<Object, Object>(context,
-					FrameworkLog.class.getName(), null);
-			logTracker.open();
-		}
-		return (FrameworkLog) logTracker.getService();
-	}
 }
