@@ -115,7 +115,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Inject
     @Preference
     private IEclipsePreferences preferences;
-
+    
     private EventList<VAT> vatListData;
     private EventList<VATCategory> categories;
 
@@ -144,11 +144,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @PostConstruct
     public Control createPartControl(Composite parent) {
+    	log.info("create VAT list part");
         top = super.createPartControl(parent, VAT.class, false, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
-
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
     }

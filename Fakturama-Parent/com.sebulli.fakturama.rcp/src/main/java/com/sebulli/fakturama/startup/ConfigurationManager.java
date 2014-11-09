@@ -24,7 +24,6 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -32,6 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.MigrationManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -64,17 +64,13 @@ public class ConfigurationManager {
 	
 	private Shell shell;
 
-    /**
-	 * The eclipse Logger. Level can be set via config.ini
-	 * (eclipse.log.level=TRACE|DEBUG|INFO|WARN|ERROR)
-	 */
-	private Logger log;
+	private ILogger log;
 	
 	public ConfigurationManager() {
 	    // constructor for injection framework
 	}
 
-	public ConfigurationManager(Shell shell, IEclipseContext eContext, IEclipsePreferences eclipsePrefs, Logger log, Messages msg,
+	public ConfigurationManager(Shell shell, IEclipseContext eContext, IEclipsePreferences eclipsePrefs, ILogger log, Messages msg,
 	        ITemplateResourceManager resourceManager) {
 	    this.shell = shell;
 	    this.appContext = eContext.get(IApplicationContext.class);

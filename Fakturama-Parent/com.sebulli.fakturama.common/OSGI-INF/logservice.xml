@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.sebulli.fakturama.common">
+   <implementation class="com.sebulli.fakturama.log.FakturamaLogger"/>
+   <service>
+      <provide interface="com.sebulli.fakturama.log.ILogger"/>
+   </service>
+   <!-- Other references -->
+<reference
+        interface="org.osgi.service.log.LogService"
+        name="LogService"
+        cardinality="1..1"
+        policy="static"
+        bind="setDelegate"
+        unbind="unsetDelegate"/>
+</scr:component>

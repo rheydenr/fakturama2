@@ -19,11 +19,11 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * Initializes the preference pages with default values
@@ -36,15 +36,15 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
     protected IEclipseContext context;
 
     private Messages msg;
-    private Logger log;
+    private ILogger log;
     
     public DefaultValuesInitializer() {}
     
 	/**
-     * @param log
+     * @param log2
 	 * @param msg 
      */
-    public DefaultValuesInitializer(Logger log, Messages msg) {
+    public DefaultValuesInitializer(ILogger log, Messages msg) {
         this.log = log;
         this.msg = msg;
     }
@@ -60,7 +60,7 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() { 
 		
-        log.info("Enter in default Preference Initializer");
+		log.info("Enter in default Preference Initializer");
 	    // look at Constants.DEFAULT_PREFERENCES_NODE)
 	    IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
 

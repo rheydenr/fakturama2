@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -49,6 +48,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -67,7 +67,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * These fields can't be injected since this class is NOT constructed ApplicationModel.
 	 * Therefore there's no EclipseContext from which these fields could be determined. 
 	 */
-	private Logger log;
+	private ILogger log;
 	private Messages msg;
 	private Shell parent;
 
@@ -93,7 +93,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 * @param requestedWorkspace 
 	 */
 	public InitialStartupDialog(Shell parent,
-	        IEclipsePreferences preferences, Logger log, Messages messages, String requestedWorkspace) {
+	        IEclipsePreferences preferences, ILogger log, Messages messages, String requestedWorkspace) {
 		super(parent);
 		this.parent = parent;
 		this.dirChecker = new DirectoryChecker(parent);

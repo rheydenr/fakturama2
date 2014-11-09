@@ -13,7 +13,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -34,6 +33,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
@@ -52,9 +52,9 @@ public class LifecycleManager {
 
     @Inject
     private IEclipseContext context;
-
+    
     @Inject
-    private Logger log;
+    private ILogger log;
 
     @Inject
     @Preference
@@ -76,7 +76,6 @@ public class LifecycleManager {
         IApplicationContext appContext = context.get(IApplicationContext.class);        
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
-
         // check if the db connection is set
         if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
             dbInitJob = new Job("initDb") {

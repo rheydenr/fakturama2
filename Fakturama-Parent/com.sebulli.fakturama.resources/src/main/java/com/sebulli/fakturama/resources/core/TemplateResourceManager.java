@@ -23,11 +23,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.translation.TranslationService;
+import org.osgi.service.log.LogService;
 
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -39,21 +41,20 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  */
 public class TemplateResourceManager implements ITemplateResourceManager {
     private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
-    private Logger log;   
+    
+    @Inject
+    private LogService log;   
     
     // Messages class can't be used at this point, since it isn't in context at this stage
     private TranslationService translationService;
-//    private IEclipsePreferences eclipsePrefs;
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.resources.templates.ITemplateResourceManager#createWorkspaceTemplates(java.lang.String, java.lang.String)
      */
     @Override
     public boolean createWorkspaceTemplates(String workspace, IEclipseContext context) {
-        this.log = context.get(Logger.class);
-//        this.eclipsePrefs = context.get(IEclipsePreferences.class);
         this.translationService = context.get(TranslationService.class);
-        String templateFolderName = translate("config.workspace.templates.name2"); 
+        String templateFolderName = translate("config.workspace.templates.name"); 
         
         // Exit if the workspace path is not set
         if (StringUtils.isBlank(workspace)) {
@@ -61,7 +62,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         }
 
         // Exit, if the workspace path is not valid
-        Path workspacePath = Paths.get(workspace);
+        Path workspacePath = Paths.get(workspace, templateFolderName);
         if (!Files.isDirectory(workspacePath)) {
             // Create and fill the template folder, if it does not exist.
             try {
@@ -98,7 +99,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                     resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "myHermes_de.txt"));
                 }
             } catch (IOException ioex) {
-                log.error(ioex, "couldn't create template dir in workspace");
+                log.log(LogService.LOG_ERROR, "couldn't create template dir in workspace", ioex);
                 return false; 
             }
         }
@@ -128,11 +129,11 @@ public class TemplateResourceManager implements ITemplateResourceManager {
             // Copy the file
             Files.copy(in, targetFile);
         } catch (FileNotFoundException fnfex) {
-            log.error(fnfex, "Resource file not found");
+        	log.log(LogService.LOG_ERROR, "Resource file not found", fnfex);
         } catch (FileAlreadyExistsException | DirectoryNotEmptyException dnee) {
-            log.warn("file "+targetFile.toAbsolutePath()+" already exists in target directory.");
+        	log.log(LogService.LOG_WARNING, "file "+targetFile.toAbsolutePath()+" already exists in target directory.");
         } catch (IOException ioex) {
-            log.error(ioex, "Error copying the resource file to the file system.");
+        	log.log(LogService.LOG_ERROR, "Error copying the resource file to the file system.", ioex);
         }
     }
 
