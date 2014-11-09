@@ -8,6 +8,11 @@ Composite Text {
   color: black;
 }
 
+/* highlight focused field */
+Text:focus {
+  background-color: #FAF0A2;
+}
+
 SashForm {
   background-color: #c1d5ef;
 }
