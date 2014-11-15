@@ -29,7 +29,7 @@ import com.sebulli.fakturama.i18n.Messages;
  * 
  * @author Gerd Bartelt
  */
-public class ContactPreferencePage extends FieldEditorPreferencePage implements DefaultPreferencesInitializerListener  {
+public class ContactPreferencePage extends FieldEditorPreferencePage implements IPreferencesInitializerListener  {
 
 	/**
      * 

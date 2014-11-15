@@ -18,7 +18,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
@@ -31,23 +31,13 @@ import com.sebulli.fakturama.log.ILogger;
  * @author Gerd Bartelt
  */
 public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
     @Inject
-    protected IEclipseContext context;
-
-    private Messages msg;
     private ILogger log;
-    
-    public DefaultValuesInitializer() {}
-    
-	/**
-     * @param log2
-	 * @param msg 
-     */
-    public DefaultValuesInitializer(ILogger log, Messages msg) {
-        this.log = log;
-        this.msg = msg;
-    }
 
     /**
 	 * This method is called by the preference initializer to initialize default
@@ -67,7 +57,7 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	    // TODO Later on we use registered preference pages which register itself on a registry.
 	    // But for now we use the old style way...
 	    
-//		for (DefaultPreferencesInitializerListener listener : preferencesListeners) {
+//		for (IPreferencesInitializerListener listener : preferencesListeners) {
 //			listener.setInitValues(defaultValuesNode);
 //		}
 	    

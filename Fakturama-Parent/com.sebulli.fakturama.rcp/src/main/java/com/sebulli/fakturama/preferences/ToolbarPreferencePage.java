@@ -32,7 +32,7 @@ import com.sebulli.fakturama.misc.DocumentType;
  * 
  * @author Gerd Bartelt
  */
-public class ToolbarPreferencePage extends FieldEditorPreferencePage {
+public class ToolbarPreferencePage extends FieldEditorPreferencePage implements IPreferencesInitializerListener {
     
     @Inject
     @Translation

@@ -23,8 +23,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.Preferences;
@@ -94,23 +92,21 @@ public class LifecycleManager {
             // is started the first time
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
         }
-        // at first create a (temporary) shell
-        final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
         
-        // since the ConfigurationManager is started via constructor, there's no injection possible :-(
         // TODO Change it to a service or at least a handler...
-        ConfigurationManager configMgr = new ConfigurationManager(shell, context, eclipsePrefs, log, msg, resourceManager);
+        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkAndUpdateConfiguration();
         if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
-            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
+            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
+            		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
         } else {
-            try {
-                fillWithInitialData();
-            }
-            catch (SQLException sqlex) {
-                log.error(sqlex, "couldn't fill with inital data! " + sqlex);
-            }
+			try {
+				fillWithInitialData();
+			}
+			catch (SQLException sqlex) {
+				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
+			}
         }
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
@@ -179,7 +175,7 @@ public class LifecycleManager {
             defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         
-        DefaultValuesInitializer defaultValuesInitializer = new DefaultValuesInitializer(log, msg);
+        DefaultValuesInitializer defaultValuesInitializer = ContextInjectionFactory.make(DefaultValuesInitializer.class, context);
         defaultValuesInitializer.initializeDefaultPreferences();
     }
 

@@ -24,9 +24,11 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -50,36 +52,34 @@ public class ConfigurationManager {
 	public static final String GENERAL_WORKSPACE_REQUEST = "GENERAL_WORKSPACE_REQUEST";
 	public static final String MIGRATE_OLD_DATA = "MIGRATE_OLD_DATA";
 	
+	@Inject
 	private IApplicationContext appContext;
-	protected Messages msg;
 
 	@Inject
 	protected IEclipseContext context;
 	
-	@Inject
-	@Preference
-	private IEclipsePreferences eclipsePrefs;
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 	
+	@Inject
 	private ITemplateResourceManager resourceManager;
 	
 	private Shell shell;
 
+	@Inject
 	private ILogger log;
 	
 	public ConfigurationManager() {
 	    // constructor for injection framework
+		
+        // at first create a (temporary) shell
+        shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
 	}
-
-	public ConfigurationManager(Shell shell, IEclipseContext eContext, IEclipsePreferences eclipsePrefs, ILogger log, Messages msg,
-	        ITemplateResourceManager resourceManager) {
-	    this.shell = shell;
-	    this.appContext = eContext.get(IApplicationContext.class);
-	    this.context = eContext;
-	    this.eclipsePrefs = eclipsePrefs;
-	    this.log = log;
-	    this.msg = msg;
-	    this.resourceManager = resourceManager;
-    }
 
     /**
 	 * Checks if the application was started the first time or if the workspace
@@ -131,7 +131,6 @@ public class ConfigurationManager {
             log.error(e1, "Fehler beim Aufruf des Programms.");
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Fakturama", options);
-//            appContext.setResult(null, IApplication.EXIT_OK);
             //  ExitHandler!
             System.exit(-1);  // TODO error handling?!
         }
@@ -143,11 +142,13 @@ public class ConfigurationManager {
 				selectWorkspace(requestedWorkspace, shell);
                 isRestart = true;
 			} else if (eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null) != null || requestedWorkspace == null) {
-				// Checks, whether the workspace request is set.
+				// Checks whether the workspace request is set.
 				// If yes, the workspace is set to this value and the request value is cleared.
 				// This mechanism is used because the workspace can only be changed by restarting the application.
 			    requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null);
 				if (StringUtils.isNoneBlank(requestedWorkspace)) {
+					// at first we have to copy the logfile template
+					adaptLogfile(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null), requestedWorkspace);
 				    // switch the preference from a temporary one to the right one
 					eclipsePrefs.remove(GENERAL_WORKSPACE_REQUEST);
 					eclipsePrefs.put(Constants.GENERAL_WORKSPACE, requestedWorkspace);
@@ -182,6 +183,23 @@ public class ConfigurationManager {
     		// now initialize the new workspace
     		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
 		}
+	}
+
+	/**
+	 * Changes the logfile configuration to the new location.
+	 * 
+	 * @param oldWorkspace
+	 * @param requestedWorkspace
+	 */
+	private void adaptLogfile(String oldWorkspace, String requestedWorkspace) {
+		// at first check if the configuration is set via a switch
+		// -Dlogback.configurationFile=${resource_loc:/Fakturama-Parent/com.sebulli.fakturama.common/src/main/resources/logback.xml}
+		if(System.getProperty("logback.configurationFile") != null) {
+			System.err.println("Es wurde eine eigene Konfigurationsdatei für das Logging gesetzt. Diese muß manuell auf das neue Arbeitsverzeichnis eingestellt werden.");
+		} else {
+			
+		}
+		
 	}
 
 	/** 

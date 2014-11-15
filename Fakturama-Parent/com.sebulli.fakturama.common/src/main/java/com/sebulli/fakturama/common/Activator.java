@@ -16,6 +16,10 @@ package com.sebulli.fakturama.common;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.inject.Inject;
+
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -30,14 +34,12 @@ import org.slf4j.MarkerFactory;
 
 import com.sebulli.fakturama.log.LogbackAdapter;
 
-// import org.eclipse.ui.plugin.AbstractUIPlugin;
-
 /**
  * The activator class controls the plug-in life cycle
  * 
  */
 public class Activator implements BundleActivator {
-
+	
     // The plug-in ID
     public static final String PLUGIN_ID = "com.sebulli.fakturama.common";
     
@@ -51,8 +53,8 @@ public class Activator implements BundleActivator {
     // The shared instance
     private static BundleContext context;
 
-    private LogListener m_console = new LogbackAdapter();
-    private LinkedList<LogReaderService> m_readers = new LinkedList<LogReaderService>();
+    private LogListener logAdapter = new LogbackAdapter();
+    private LinkedList<LogReaderService> logReaders = new LinkedList<LogReaderService>();
 	
 	// The Bundle Marker: a Marker where the name is the osgi bundle symbolic name
 	// and an attached IS_BUNDLE - Marker to guarantee that the Log Framework knows it's a BundleMarker
@@ -66,18 +68,19 @@ public class Activator implements BundleActivator {
 
     //  We use a ServiceListener to dynamically keep track of all the LogReaderService service being
     //  registered or unregistered
-    private ServiceListener m_servlistener = new ServiceListener() {
+    private ServiceListener logServlistener = new ServiceListener() {
 		public void serviceChanged(ServiceEvent event) {
 			BundleContext bc = event.getServiceReference().getBundle().getBundleContext();
 			LogReaderService lrs = (LogReaderService) bc.getService(event.getServiceReference());
 			if (lrs != null) {
 				if (event.getType() == ServiceEvent.REGISTERED) {
-					m_readers.add(lrs);
-					lrs.addLogListener(m_console);
+					logReaders.add(lrs);
+					EclipseContextFactory.getServiceContext(context);
+					lrs.addLogListener(logAdapter);
 				}
 				else if (event.getType() == ServiceEvent.UNREGISTERING) {
-					lrs.removeLogListener(m_console);
-					m_readers.remove(lrs);
+					lrs.removeLogListener(logAdapter);
+					logReaders.remove(lrs);
 				}
 			}
 		}
@@ -86,29 +89,30 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		Activator.context = context;
 
-		// Get a list of all the registered LogReaderService, and add the console listener
+		// Get a list of all the registered LogReaderService, and add the listener
 		ServiceTracker<LogService, LogReaderService> logReaderTracker = new ServiceTracker<LogService, LogReaderService>(context,
-				org.osgi.service.log.LogReaderService.class.getName(), null);
+				LogReaderService.class.getName(), null);
 		logReaderTracker.open();
 		Object[] readers = logReaderTracker.getServices();
 		if (readers != null) {
+//			((LogbackAdapter)logAdapter).setWorkspacePath(IS_BUNDLE_MARKER);
 			for (int i = 0; i < readers.length; i++) {
 				LogReaderService lrs = (LogReaderService) readers[i];
-				m_readers.add(lrs);
-				lrs.addLogListener(m_console);
+				logReaders.add(lrs);
+				lrs.addLogListener(logAdapter);
 			}
 		}
-
-		//        logReaderTracker.close();
 
 		// Add the ServiceListener, but with a filter so that we only receive events related to LogReaderService
 		String filter = "(objectclass=" + LogReaderService.class.getName() + ")";
 		try {
-			context.addServiceListener(m_servlistener, filter);
+			context.addServiceListener(logServlistener, filter);
 		}
 		catch (InvalidSyntaxException e) {
 			e.printStackTrace();
 		}
+
+//		logReaderTracker.close();
 	}
 
     /**
@@ -121,9 +125,9 @@ public class Activator implements BundleActivator {
     }
 
 	public void stop(BundleContext context) throws Exception {
-		for (Iterator<LogReaderService> i = m_readers.iterator(); i.hasNext();) {
+		for (Iterator<LogReaderService> i = logReaders.iterator(); i.hasNext();) {
 			LogReaderService lrs = i.next();
-			lrs.removeLogListener(m_console);
+			lrs.removeLogListener(logAdapter);
 			i.remove();
 		}
 		Activator.context = null;

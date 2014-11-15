@@ -19,12 +19,13 @@ import javax.inject.Inject;
 import org.osgi.service.log.LogService;
 
 /**
- * @author rheydenr
- *
+ * A wrapper class for the Fakturama logger. This Logger delegates all calls
+ * to the {@link LogService}, which then calls the {@link LogbackAdapter} for
+ * the "real" logging (done with SLF4J and LogBack).
  */
 public class FakturamaLogger implements ILogger {
-	
-	@Inject
+
+    @Inject
 	private LogService delegate;   
 
 	/* (non-Javadoc)
