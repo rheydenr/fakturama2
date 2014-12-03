@@ -34,7 +34,9 @@ import ca.odell.glazedlists.event.ListEventListener;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
+import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -72,7 +74,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	final boolean useAll;
 
 	// The corresponding table
-	private VATListTable viewDataSetTable;
+	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
     private TreeObjectContentProvider<T> contentProvider;
 	
 	/**
@@ -375,7 +377,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		}
 
 		// Reset the filter to the new entry
-		viewDataSetTable.setCategoryFilter(name);
+		viewDataSetTable.setCategoryFilter(name, TreeObjectType.DEFAULT_NODE);
 	}
 
 	/**
@@ -446,7 +448,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param viewDataSetTable
 	 *            The table of the view
 	 */
-	public void setTable(VATListTable viewDataSetTable) {
+	public void setTable(AbstractViewDataTable<? extends IEntity, T> viewDataSetTable) {
 		this.viewDataSetTable = viewDataSetTable;
 	}
 

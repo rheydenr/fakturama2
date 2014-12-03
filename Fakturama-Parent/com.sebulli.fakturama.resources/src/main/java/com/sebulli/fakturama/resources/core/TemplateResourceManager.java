@@ -149,5 +149,19 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         if ((args == null) || (args.length == 0)) return rc;
         return MessageFormat.format(rc, args);
     }
+
+    /**
+     * @return the translationService
+     */
+    public TranslationService getTranslationService() {
+        return translationService;
+    }
+
+    /**
+     * @param translationService the translationService to set
+     */
+    public void setTranslationService(TranslationService translationService) {
+        this.translationService = translationService;
+    }
     
 }

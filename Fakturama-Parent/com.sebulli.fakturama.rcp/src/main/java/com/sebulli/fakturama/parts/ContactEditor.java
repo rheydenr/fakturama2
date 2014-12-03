@@ -15,51 +15,24 @@
 package com.sebulli.fakturama.parts;
 
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TreeSet;
-
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.dao.ContactDAO;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Payment;
-import com.sebulli.fakturama.views.datatable.impl.ViewContactTable;
 
 /**
  * The contact editor
@@ -150,7 +123,7 @@ public class ContactEditor { // extends Editor {
 	private MPart part;
 	
 	@Inject
-	private ContactDAO contactDAO;
+	private ContactsDAO contactDAO;
 	
 	@Inject
 	@Preference(nodePath = "/configuration/contactPreferences")

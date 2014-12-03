@@ -4,4 +4,6 @@
    <service>
       <provide interface="com.sebulli.fakturama.resources.ITemplateResourceManager"/>
    </service>
+   <!--   <reference bind="setTranslationService" cardinality="1..1" interface="org.eclipse.e4.core.services.translation.TranslationService" name="TranslationService" policy="static"/>
+   -->
 </scr:component>

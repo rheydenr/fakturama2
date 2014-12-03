@@ -200,14 +200,14 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //		getSite().setSelectionProvider(tableViewer);
 		return top;
 	}
-
-    /**
-     * @return
-     */
-    protected ListViewGridLayer<T> getGridLayer() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//
+//    /**
+//     * @return
+//     */
+//    protected ListViewGridLayer<T> getGridLayer() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
     /**
      * We have to style the table a little bit...
@@ -292,7 +292,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	}
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
-	
+	abstract protected String getPopupId();
 
     /**
      * On double click: open the corresponding editor
@@ -382,7 +382,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 * Create the menu manager for the context menu
 	 */
 	protected void createMenuManager() {
-	    menuService.registerContextMenu(natTable, "com.sebulli.fakturama.vatlist.popup");
+	    menuService.registerContextMenu(natTable, getPopupId());
 	}
 
     
@@ -543,5 +543,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	}
 	
+    /**
+     * controls if the header label for the list view should be shown
+     * 
+     * @return the headerLabelEnabled
+     */
 	abstract protected boolean isHeaderLabelEnabled();
+	abstract public void removeSelectedEntry();
 }

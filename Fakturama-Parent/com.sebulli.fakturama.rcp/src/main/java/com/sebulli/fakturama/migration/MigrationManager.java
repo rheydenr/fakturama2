@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -38,11 +37,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.money.CurrencyUnit;
-import javax.money.MonetaryAmount;
 import javax.money.MonetaryCurrencies;
-import javax.money.format.AmountFormatQueryBuilder;
-import javax.money.format.MonetaryAmountFormat;
-import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,12 +56,10 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.javamoney.moneta.FastMoney;
-import org.javamoney.moneta.format.CurrencyStyle;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.Activator;
-import com.sebulli.fakturama.dao.ContactDAO;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -83,17 +76,27 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Confirmation;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.CustomDocument;
+import com.sebulli.fakturama.model.Credit;
+import com.sebulli.fakturama.model.Delivery;
+//import com.sebulli.fakturama.model.CustomDocument;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.Letter;
+import com.sebulli.fakturama.model.Offer;
+import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.PaymentCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
+import com.sebulli.fakturama.model.Proforma;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucherItem;
 import com.sebulli.fakturama.model.Shipping;
@@ -147,7 +150,7 @@ public class MigrationManager {
 	/*
 	 * all available DAO classes
 	 */
-	private ContactDAO contactDAO;
+	private ContactsDAO contactDAO;
 	private DocumentsDAO documentDAO;
 	private ExpendituresDAO expendituresDAO;
 	private PaymentsDAO paymentsDAO;
@@ -212,7 +215,7 @@ public class MigrationManager {
 
 		// initialize DAOs via EclipseContext
 		// new Entities have their own dao ;-)
-		contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
+		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
 		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
 		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
 		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
@@ -254,7 +257,7 @@ public class MigrationManager {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 					for (OldTableinfo tableinfo : orderedTasks) {
-						monitor.subTask(msg.startMigrationConvert +" " + msg.getMessageFromKey(tableinfo.getMessageKey()));
+						monitor.setTaskName(msg.startMigrationConvert +" " + msg.getMessageFromKey(tableinfo.getMessageKey()));
 						checkCancel(monitor);
 						runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
 //						monitor.worked(1);
@@ -277,7 +280,7 @@ public class MigrationManager {
 					// new Entities have their own dao ;-)
 					
 					// TODO checken, ob das wirklich sein muß (zweimal initialisieren???)
-					contactDAO = ContextInjectionFactory.make(ContactDAO.class, context);
+					contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
 					documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
 					propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
 					expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
@@ -300,7 +303,7 @@ public class MigrationManager {
 							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 								monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 								for (OldTableinfo tableinfo : orderedTasks) {
-									monitor.subTask(msg.startMigrationConvert + tableinfo.name());
+									monitor.setTaskName(msg.startMigrationConvert + tableinfo.name());
 									checkCancel(monitor);
 									runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
 			//						monitor.worked(1);
@@ -488,14 +491,46 @@ public class MigrationManager {
 		Long countOfEntitiesInTable = oldDao.countAllDocuments();
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigration);
-		Map<Integer, CustomDocument> invoiceRelevantDocuments = new HashMap<>();
-		Map<Integer, CustomDocument> invoiceDocuments = new HashMap<>();
+		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
+		Map<Integer, Document> invoiceDocuments = new HashMap<>();
 		GregorianCalendar zeroDate = new GregorianCalendar(2000, 0, 1);
 //		CategoryBuilder<DocumentItemCategory> catBuilder = new CategoryBuilder<DocumentItemCategory>(); 
 //		Map<String, DocumentItemCategory> documentItemCategories = catBuilder.buildCategoryMap(oldDao.findAllDocumentItemCategories(), DocumentItemCategory.class);
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
-				CustomDocument document = new CustomDocument();
+				Document document;
+				switch (BillingType.get(oldDocument.getCategory())) {
+                case INVOICE:
+                    document = new Invoice();
+                    break;
+                case LETTER:
+                    document = new Letter();
+                    break;
+                case ORDER:
+                    document = new Order();
+                    break;
+                case OFFER:
+                    document = new Offer();
+                    break;
+                case CONFIRMATION:
+                    document = new Confirmation();
+                    break;
+                case CREDIT:
+                    document = new Credit();
+                    break;
+                case DUNNING:
+                    document = new Dunning();
+                    break;
+                case DELIVERY:
+                    document = new Delivery();
+                    break;
+                case PROFORMA:
+                    document = new Proforma();
+                    break;
+                default:
+                    document = new Invoice();
+                    break;
+                }
 //				// save it for further use
 //				document = documentDAO.save(document);
 				if(oldDocument.getAddressid() < 0) {
@@ -503,7 +538,7 @@ public class MigrationManager {
 					 * perhaps we have to check additionally if the address stored in document
 					 * is equal to the address stored in the database :-(
 					 */
-					document.setAddress(oldDocument.getAddress());
+					document.setManualAddress(oldDocument.getAddress());
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
@@ -517,7 +552,7 @@ public class MigrationManager {
 				document.setCreationDate(getSaveParsedDate(oldDocument.getDate()));
 				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
-				// as long there's no delivery address is stored 
+				// as long there's no delivery address stored 
 				document.setDueDays(oldDocument.getDuedays());
 				document.setDunningLevel(oldDocument.getDunninglevel());
 				// store the pair for later processing
@@ -595,11 +630,11 @@ public class MigrationManager {
 		for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
 			try {
 				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
-				CustomDocument document = (CustomDocument) invoiceRelevantDocuments.get(oldDocument.getId());
+				Document document = (Document) invoiceRelevantDocuments.get(oldDocument.getId());
 				// now find the corresponding NEW document
-				CustomDocument relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
+				Document relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
-					document.setSourceDocument((CustomDocument) relatedDocument);
+					document.setSourceDocument((Document) relatedDocument);
 					documentDAO.save(document);
 				}
 			}
@@ -616,7 +651,7 @@ public class MigrationManager {
 	 * @param document
 	 * @param itemRefs
 	 */
-	private void createItems(CustomDocument document, String[] itemRefs) {
+	private void createItems(Document document, String[] itemRefs) {
 		for (String itemRef : itemRefs) {
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
 			DocumentItem item = new DocumentItem();
@@ -1082,9 +1117,9 @@ public class MigrationManager {
            			}
            			CurrencyUnit currencyCode = MonetaryCurrencies.getCurrency(propValue);
            			propValue = currencyCode.getCurrencyCode();
-           			MonetaryAmount m = FastMoney.of(0.0, currencyCode);
-           			MonetaryAmountFormat f = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.GERMANY).set(CurrencyStyle.SYMBOL).build());
-           		    f.format(m);
+//           			MonetaryAmount m = FastMoney.of(0.0, currencyCode);
+//           			MonetaryAmountFormat f = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.GERMANY).set(CurrencyStyle.SYMBOL).build());
+//           		    f.format(m);
 
                 	break;
                 default:

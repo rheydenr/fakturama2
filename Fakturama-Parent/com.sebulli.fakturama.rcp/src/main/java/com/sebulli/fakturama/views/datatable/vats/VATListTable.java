@@ -106,6 +106,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     // ID of this view
     public static final String ID = "fakturama.views.vatTable";
     
+    protected static final String POPUP_ID = "com.sebulli.fakturama.vatlist.popup";
+    
     /**
      * Event Broker for receiving update events to the list table
      */
@@ -129,11 +131,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
-
-    /**
-     * controls if the header label for the list view should be shown
-     */
-    private final boolean headerLabelEnabled = false;
 
     private ListViewGridLayer<VAT> gridLayer;
     
@@ -427,11 +424,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         //Refresh is done automagically...
     }
 	
-	/**
-     * @return the headerLabelEnabled
-     */
     protected boolean isHeaderLabelEnabled() {
-        return headerLabelEnabled;
+        return false;
     }
 
     @Override
@@ -505,5 +499,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         }
     }
 
+    protected String getPopupId() {
+        return POPUP_ID;
+    }
 }
 

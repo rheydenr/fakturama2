@@ -16,11 +16,13 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 
 @Creatable
-public class ContactDAO extends AbstractDAO<Contact> {
+public class ContactsDAO extends AbstractDAO<Contact> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -38,6 +40,23 @@ public class ContactDAO extends AbstractDAO<Contact> {
             em.close();
         }
     }
+    
+//    /**
+//     * Finds all {@link Contact}s (only "main" contacts, no delivery contacts!)
+//     */
+//    @Override
+//    public List<Contact> findAll() {
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<Contact> criteria = cb.createQuery(Contact.class);
+//        Root<Contact> root = criteria.from(Contact.class);
+//        CriteriaQuery<Contact> cq = criteria.where(
+//                cb.and(
+//                        cb.equal(root.<String>get(Contact_.firstName), oldContact.getFirstname()),
+//                        cb.equal(root.<String>get(Contact_.name), oldContact.getName())));
+//        return getEntityManager().createQuery(cq).getSingleResult();
+//        
+//        return super.findAll();
+//    }
 
     /**
      * Get a list of all categories stored for {@link Contact}s.
@@ -65,9 +84,18 @@ public class ContactDAO extends AbstractDAO<Contact> {
     	Root<Contact> root = criteria.from(Contact.class);
 		CriteriaQuery<Contact> cq = criteria.where(
 				cb.and(
-						cb.equal(root.<String>get("firstName"), oldContact.getFirstname()),
-						cb.equal(root.<String>get("name"), oldContact.getName())));
+						cb.equal(root.<String>get(Contact_.firstName), oldContact.getFirstname()),
+						cb.equal(root.<String>get(Contact_.name), oldContact.getName())));
     	return getEntityManager().createQuery(cq).getSingleResult();
-		
 	}
+	
+    /**
+     * Gets the all visible properties of this VAT object.
+     * 
+     * @return String[] of visible VAT properties
+     */
+    public String[] getVisibleProperties() {
+        return new String[] { Contact_.customerNumber.getName(), Contact_.firstName.getName(), Contact_.name.getName(),
+                Contact_.company.getName(), Contact_.address.getName() + "." +Address_.zip.getName(), Contact_.address.getName() + "." +Address_.city.getName()};
+    }	
 }

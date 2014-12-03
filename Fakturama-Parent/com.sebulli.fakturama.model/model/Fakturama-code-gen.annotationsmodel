@@ -171,7 +171,7 @@
         <eReference href="Fakturama.ecore#//Contact/address"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_ADDRESS" nullable="true"/>
-          <manyToOne>
+          <manyToOne fetch="EAGER">
             <cascade>
               <cascadePersist/>
               <cascadeMerge/>
@@ -262,16 +262,15 @@
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Document"/>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="" name="Document" qualifiedClassName="com.sebulli.fakturama.model.Document" simpleClassName="Document" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="Abstract Superclass for all types of documents (invoices, orders etc.)" name="Document" qualifiedClassName="com.sebulli.fakturama.model.Document" simpleClassName="Document" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
           <table name="FKT_DOCUMENT"/>
-          <inheritance strategy="TABLE_PER_CLASS"/>
+          <inheritance strategy="JOINED"/>
         </entity>
-        <mappedSuperclass/>
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/contact"/>

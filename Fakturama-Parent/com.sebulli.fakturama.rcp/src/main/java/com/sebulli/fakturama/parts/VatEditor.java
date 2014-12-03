@@ -129,27 +129,30 @@ public class VatEditor extends Editor<VAT> {
             // at first, check the category for a new entry
             // (the user could have written a new one into the combo field)
             String testCat = comboCategory.getText();
-            // to find the complete category we have to start with the topmost category
-            // and then lookup each of the child categories in the given path
-            String[] splittedCategories = testCat.split("/");
-            VATCategory parentCategory = null;
-            String category = "";
-            for (int i = 0; i < splittedCategories.length; i++) {
-                category += "/" + splittedCategories[i];
-                VATCategory searchCat = vatCategoriesDAO.findVATCategoryByName(category);
-                if(searchCat == null) {
-                    // not found? Then create a new one.
-                    VATCategory newCategory = new VATCategory();
-                    newCategory.setName(splittedCategories[i]);
-                    newCategory.setParent(parentCategory);
-                    vatCategoriesDAO.save(newCategory);
-                    searchCat = newCategory;
+            // if there's no category we can skip this step
+            if(StringUtils.isNotBlank(testCat)) {
+                // to find the complete category we have to start with the topmost category
+                // and then lookup each of the child categories in the given path
+                String[] splittedCategories = testCat.split("/");
+                VATCategory parentCategory = null;
+                String category = "";
+                for (int i = 0; i < splittedCategories.length; i++) {
+                    category += "/" + splittedCategories[i];
+                    VATCategory searchCat = vatCategoriesDAO.findVATCategoryByName(category);
+                    if(searchCat == null) {
+                        // not found? Then create a new one.
+                        VATCategory newCategory = new VATCategory();
+                        newCategory.setName(splittedCategories[i]);
+                        newCategory.setParent(parentCategory);
+                        vatCategoriesDAO.save(newCategory);
+                        searchCat = newCategory;
+                    }
+                    // save the parent and then dive deeper...
+                    parentCategory = searchCat;
                 }
-                // save the parent and then dive deeper...
-                parentCategory = searchCat;
+                // parentCategory now has the last found Category
+                editorVat.setCategory(parentCategory);
             }
-            // parentCategory now has the last found Category
-            editorVat.setCategory(parentCategory);
             
             /*
              * If we DON'T use update, the category is saved again and again and again

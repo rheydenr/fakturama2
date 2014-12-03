@@ -10,7 +10,7 @@ import com.sebulli.fakturama.oldmodel.OldDocuments;
 
 
 /**
- * The {@link CustomDocument} class is the implementation of {@link Document}. This class
+ * The {@link CustomDocument} class is an extension of {@link Document}. This class
  * was introduced because we have to store "user managed values". I.e., if a user changes
  * the current address or the payment or shipping info, the manually edited values gets stored in 
  * this {@link CustomDocument}. The original reference to {@link Contact}, {@link Shipping} or
@@ -21,8 +21,8 @@ import com.sebulli.fakturama.oldmodel.OldDocuments;
  * 
  * Only that attributes are contained which were also contained in {@link OldDocuments}.
  */
-@Entity()
-@Table(name = "FKT_CDOCUMENT")
+//@Entity()
+//@Table(name = "FKT_CDOCUMENT")
 public class CustomDocument extends Document {
 	
 	private VAT shippingvat;

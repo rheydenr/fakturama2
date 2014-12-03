@@ -115,7 +115,6 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 * @return String[] of visible VAT properties
 	 */
 	public String[] getVisibleProperties() {
-		String[] retval = new String[] { VAT_.name.getName(), VAT_.description.getName(), VAT_.taxValue.getName()};
-		return retval;
+		return new String[] { VAT_.name.getName(), VAT_.description.getName(), VAT_.taxValue.getName()};
 	}
 }

@@ -226,7 +226,7 @@ public class Messages {
 	public String commonButtonSavechanges;
 	public String commonButtonSavechangesquestion;
 
-	public String ErrorView264;
+	public String viewErrorlogLabel;
 
 	public String ExpenditureVoucherEditor641;
 
@@ -447,7 +447,7 @@ public class Messages {
     public String preferencesOfficeStartnewthread;
     public String preferencesOffice;
 
-	public String OfficeStarter148;
+	public String viewErrorlogName;
 	public String OfficeStarter149;
 	public String OfficeStarter150;
 

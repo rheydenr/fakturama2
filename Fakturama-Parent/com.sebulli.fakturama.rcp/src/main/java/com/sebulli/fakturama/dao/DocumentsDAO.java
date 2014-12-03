@@ -21,11 +21,11 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
-import com.sebulli.fakturama.model.CustomDocument;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 
 @Creatable
-public class DocumentsDAO extends AbstractDAO<CustomDocument> {
+public class DocumentsDAO extends AbstractDAO<Document> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -38,8 +38,8 @@ public class DocumentsDAO extends AbstractDAO<CustomDocument> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
-    protected Class<CustomDocument> getEntityClass() {
-    	return CustomDocument.class;
+    protected Class<Document> getEntityClass() {
+    	return Document.class;
     }
 
     @PreDestroy
@@ -63,11 +63,11 @@ public class DocumentsDAO extends AbstractDAO<CustomDocument> {
 		this.em = em;
 	}
 
-	public CustomDocument findByName(String name) {
+	public Document findByName(String name) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<CustomDocument> criteria = cb.createQuery(CustomDocument.class);
-	    Root<CustomDocument> root = criteria.from(CustomDocument.class);
-		CriteriaQuery<CustomDocument> cq = criteria.where(cb.equal(root.<String>get("name"), name));
+    	CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+	    Root<Document> root = criteria.from(Document.class);
+		CriteriaQuery<Document> cq = criteria.where(cb.equal(root.<String>get("name"), name));
     	return getEntityManager().createQuery(cq).getSingleResult();
 		
 	}
@@ -78,14 +78,14 @@ public class DocumentsDAO extends AbstractDAO<CustomDocument> {
      * @param dateAsISO8601String
      * @return
      */
-    public List<CustomDocument> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
+    public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
         BillingType billingType = getBillingTypeFromDocumentType(type);
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<CustomDocument> criteria = cb.createQuery(CustomDocument.class);
-        Root<CustomDocument> root = criteria.from(CustomDocument.class);
+        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+        Root<Document> root = criteria.from(Document.class);
         Instant instant = calendarWebshopDate.atZone(ZoneId.systemDefault()).toInstant();
         Date res = Date.from(instant);
-        CriteriaQuery<CustomDocument> cq = criteria.where(
+        CriteriaQuery<Document> cq = criteria.where(
                 cb.and(
                         cb.equal(root.<BillingType> get(Document_.billingType), billingType),
                         cb.equal(root.<String> get(Document_.webshopId), webshopId),
@@ -96,7 +96,7 @@ public class DocumentsDAO extends AbstractDAO<CustomDocument> {
     }
     
     /**
-     * The BillingType is added here because that was for the database modeling. The CustomDocument types
+     * The BillingType is added here because that was for the database modeling. The Document types
      * are merely for UI actions. But we have to put these two enums together.
      */
     private BillingType getBillingTypeFromDocumentType(DocumentType type) {

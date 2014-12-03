@@ -44,13 +44,18 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  * available and if the directory structure is ok. If needed, the templates are copied 
  * from resource bundle into the template directory. 
  * 
- * @author R. Heydenreich
- * 
  */
 public class ConfigurationManager {
 
 	public static final String GENERAL_WORKSPACE_REQUEST = "GENERAL_WORKSPACE_REQUEST";
 	public static final String MIGRATE_OLD_DATA = "MIGRATE_OLD_DATA";
+	
+	/**
+	 * Status for the initialization
+	 */
+	private static final int STATUS_OK = 0;
+    private static final int STATUS_RESTART = 1;
+    private static final int STATUS_INIT_WORKSPACE = 2;
 	
 	@Inject
 	private IApplicationContext appContext;
@@ -91,7 +96,7 @@ public class ConfigurationManager {
 	 */
 	public void checkAndUpdateConfiguration() {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
-		boolean isRestart = false;
+		int restart = STATUS_OK;
 		// Get the program parameters
 
 		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
@@ -140,7 +145,7 @@ public class ConfigurationManager {
 				// if no database is set then we launch the application for the first time
 				log.info("Application was started the first time or no workspace was set!");
 				selectWorkspace(requestedWorkspace, shell);
-                isRestart = true;
+                restart = STATUS_RESTART;
 			} else if (eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null) != null || requestedWorkspace == null) {
 				// Checks whether the workspace request is set.
 				// If yes, the workspace is set to this value and the request value is cleared.
@@ -164,7 +169,7 @@ public class ConfigurationManager {
 				// If not, the SelectWorkspaceAction is started to select it.
 				if (StringUtils.isBlank(requestedWorkspace)) {
 					selectWorkspace(requestedWorkspace, shell);
-					isRestart = true;
+					restart = STATUS_RESTART;
 				} else {
 					// Checks whether the workspace exists
 					// Exit if the workspace path is not valid
@@ -173,32 +178,37 @@ public class ConfigurationManager {
 						eclipsePrefs.put(Constants.GENERAL_WORKSPACE, "");
 						selectWorkspace(requestedWorkspace, shell);
 					}
+					restart = STATUS_INIT_WORKSPACE;
 				}
 			}
 			eclipsePrefs.flush();
 		} catch (BackingStoreException e) {
 			log.error(e);
 		}
-		if(!isRestart) {
+		if(restart != STATUS_OK) {
     		// now initialize the new workspace
     		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
 		}
 	}
 
 	/**
-	 * Changes the logfile configuration to the new location.
+	 * Changes the log configuration file to the new location.
 	 * 
 	 * @param oldWorkspace
 	 * @param requestedWorkspace
 	 */
 	private void adaptLogfile(String oldWorkspace, String requestedWorkspace) {
+		System.out.println("");
+//		String defaultLogConfigFile = StringUtils.defaultIfBlank(System.getProperty(EquinoxLocations.PROP_USER_AREA), 
+//				System.getProperty(EquinoxLocations.PROP_USER_AREA_DEFAULT)) + defaultLogConfigFile;
 		// at first check if the configuration is set via a switch
 		// -Dlogback.configurationFile=${resource_loc:/Fakturama-Parent/com.sebulli.fakturama.common/src/main/resources/logback.xml}
-		if(System.getProperty("logback.configurationFile") != null) {
-			System.err.println("Es wurde eine eigene Konfigurationsdatei für das Logging gesetzt. Diese muß manuell auf das neue Arbeitsverzeichnis eingestellt werden.");
-		} else {
-			
-		}
+//		if(System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY) != null) {
+//			System.err.println("Es wurde eine eigene Konfigurationsdatei für das Logging gesetzt. "
+//					+ "Diese muß manuell auf das neue Arbeitsverzeichnis eingestellt werden.");
+//		} else {
+//			
+//		}
 		
 	}
 

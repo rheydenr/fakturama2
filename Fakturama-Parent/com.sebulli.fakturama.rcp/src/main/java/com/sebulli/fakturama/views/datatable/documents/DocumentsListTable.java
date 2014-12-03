@@ -36,7 +36,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, Abstract
     private Logger log;
 
     // ID of this view
-    public static final String ID = "com.sebulli.fakturama.views.datasettable.viewDocumentTable";     
+    public static final String ID = "fakturama.views.documentTable";     
     /**
      * Event Broker for receiving update events to the list table
      */
@@ -88,6 +88,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, Abstract
      */
     @Override
     public void setCategoryFilter(String filter, com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType treeObjectType) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected String getPopupId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void removeSelectedEntry() {
         // TODO Auto-generated method stub
         
     }

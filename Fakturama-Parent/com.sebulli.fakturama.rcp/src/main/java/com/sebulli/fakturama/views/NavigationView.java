@@ -129,7 +129,7 @@ public class NavigationView {
 					handlerService.executeHandler(pCmd);
 				} else {
 					MessageDialog.openInformation(composite.getShell(),
-							"Action Info", "Webshop import can't be executed!");
+							"Action Info", "not yet implemented :-(");
 				}
 			}
 		});

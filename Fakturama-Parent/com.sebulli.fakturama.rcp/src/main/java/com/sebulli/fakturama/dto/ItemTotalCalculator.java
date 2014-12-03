@@ -12,6 +12,7 @@ import org.javamoney.moneta.FastMoney;
 
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CustomDocument;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 
 /**
@@ -51,7 +52,7 @@ public class ItemTotalCalculator {
 	 * 
 	 * @param deposit
 	 */
-	public DocumentSummary calculate(CustomDocument document) {
+	public DocumentSummary calculate(Document dataSetDocument) {
 		DocumentSummary retval = new DocumentSummary();
 		Double vatPercent;
 		String vatDescription;
@@ -66,7 +67,7 @@ public class ItemTotalCalculator {
 //		resetValues();
 
 		// Use all non-deleted items
-		for (DocumentItem item : document.getItems()) {
+		for (DocumentItem item : dataSetDocument.getItems()) {
 
 			// Get the data from each item
 			vatDescription = item.getItemVat().getDescription();
@@ -78,8 +79,8 @@ public class ItemTotalCalculator {
 			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNet()));
 
 			// If noVat is set, the VAT is 0%
-			if (document.getNoVatReference() != null) {
-				vatDescription = document.getNoVatReference().getDescription();
+			if (dataSetDocument.getNoVatReference() != null) {
+				vatDescription = dataSetDocument.getNoVatReference().getDescription();
 				vatPercent = 0.0;
 				itemVat = FastMoney.of(0.0, currencyCode);
 			}
@@ -122,14 +123,14 @@ public class ItemTotalCalculator {
 		// *** DISCOUNT ***
 		
 		// Calculate the absolute discount values
-		retval.setDiscountNet(itemsNet.multiply(document.getItemsRebate()));
-		retval.setDiscountGross(itemsGross.multiply(document.getItemsRebate()));
+		retval.setDiscountNet(itemsNet.multiply(dataSetDocument.getItemsRebate()));
+		retval.setDiscountGross(itemsGross.multiply(dataSetDocument.getItemsRebate()));
 
 		// Calculate discount
-		if (!DataUtils.DoublesAreEqual(document.getItemsRebate(), 0.0)) {
+		if (!DataUtils.DoublesAreEqual(dataSetDocument.getItemsRebate(), 0.0)) {
 
 			// Discount value = discount percent * Net value
-			MonetaryAmount discountNet = itemsNet.multiply(document.getItemsRebate());
+			MonetaryAmount discountNet = itemsNet.multiply(dataSetDocument.getItemsRebate());
 
 			// Calculate the vat value in percent from the gross value of all items
 			// and the net value of all items. So the discount's vat is the average 
@@ -142,7 +143,7 @@ public class ItemTotalCalculator {
 				discountVatPercent = 0.0;
 
 			// If noVat is set, the VAT is 0%
-			if (document.getNoVatReference() != null) {
+			if (dataSetDocument.getNoVatReference() != null) {
 				discountVatPercent = 0.0;
 			}
 
@@ -157,8 +158,8 @@ public class ItemTotalCalculator {
 				discountVatPercent = vatSummaryItem.getVatPercent();
 
 				// If noVat is set, the VAT is 0%
-				if (document.getNoVatReference() != null) {
-					discountVatDescription = document.getNoVatReference().getDescription();
+				if (dataSetDocument.getNoVatReference() != null) {
+					discountVatDescription = dataSetDocument.getNoVatReference().getDescription();
 					discountVatPercent = 0.0;
 				}
 
@@ -207,18 +208,18 @@ public class ItemTotalCalculator {
 		// calculate shipping
 
 		// Scale the shipping
-		MonetaryAmount shippingValue = FastMoney.of(document.getShippingValue() * scaleFactor, currencyCode);
+		MonetaryAmount shippingValue = FastMoney.of(dataSetDocument.getShippingValue() * scaleFactor, currencyCode);
 		Double shippingVatPercent = 0.0;
 		String shippingVatDescription = null;
 		final MonetaryAmount zero = FastMoney.of(0.0, currencyCode);
 
 		// If shippingAutoVat is not fix, the shipping vat is 
 		// an average value of the vats of the items.
-		if (!document.getShippingAutoVat().isSHIPPINGVATFIX()) {
+		if (!dataSetDocument.getShippingAutoVat().isSHIPPINGVATFIX()) {
 
 			// If the shipping is set as gross value, calculate the net value.
 			// Use the average vat of all the items.
-			if (document.getShippingAutoVat().isSHIPPINGVATGROSS()) {
+			if (dataSetDocument.getShippingAutoVat().isSHIPPINGVATGROSS()) {
 				if (!itemsGross.isEqualTo(zero)) {
 					// shippingValue * itemsNet / itemsGross
 					retval.setShippingNet(shippingValue.multiply(itemsNet.divide(itemsGross.getNumber()).getNumber()));
@@ -228,7 +229,7 @@ public class ItemTotalCalculator {
 			}
 
 			// If the shipping is set as net value, use the net value.
-			if (document.getShippingAutoVat().isSHIPPINGVATNET())
+			if (dataSetDocument.getShippingAutoVat().isSHIPPINGVATNET())
 				retval.setShippingNet(shippingValue);
 
 			// Use the average vat of all the items.
@@ -254,8 +255,8 @@ public class ItemTotalCalculator {
 				shippingVatPercent = vatSummaryItem.getVatPercent();
 
 				// If noVat is set, the VAT is 0%
-				if (document.getNoVatReference() != null) {
-					shippingVatDescription = document.getNoVatReference().getDescription();
+				if (dataSetDocument.getNoVatReference() != null) {
+					shippingVatDescription = dataSetDocument.getNoVatReference().getDescription();
 					shippingVatPercent = Double.valueOf(0.0);
 				}
 
@@ -287,8 +288,8 @@ public class ItemTotalCalculator {
 			retval.setShippingNet(shippingValue);
 
 			// If noVat is set, the VAT is 0%
-			if (document.getNoVatReference() != null) {
-				shippingVatDescription = document.getNoVatReference().getDescription();
+			if (dataSetDocument.getNoVatReference() != null) {
+				shippingVatDescription = dataSetDocument.getNoVatReference().getDescription();
 				shippingVatPercent = Double.valueOf(0.0);
 			}
 
@@ -362,7 +363,7 @@ public class ItemTotalCalculator {
 //		}
 
 		//calculate the final payment
-		retval.setDeposit(FastMoney.of(document.getDeposit(), currencyCode));
+		retval.setDeposit(FastMoney.of(dataSetDocument.getDeposit(), currencyCode));
 		retval.setFinalPayment(retval.getTotalGross().subtract(retval.getDeposit()));
 
 		// Round also the Vat summaries

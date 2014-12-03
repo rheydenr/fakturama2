@@ -14,19 +14,25 @@
 
 package com.sebulli.fakturama.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
-import com.sebulli.fakturama.views.datatable.impl.ViewContactTable;
+import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
 /**
  * This action opens the contacts in a table view.
  * 
- * @author Gerd Bartelt
  */
 public class OpenContactsHandler {
+
+    @Inject
+    private ILogger log;
 
 	/**
 	 * Run the action
@@ -36,13 +42,22 @@ public class OpenContactsHandler {
 	@Execute
 	public void execute(final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
-		partService.showPart(ViewContactTable.ID,
-				PartState.ACTIVATE);
+        MPart contactListPart = partService.findPart(ContactListTable.ID);
+        if(contactListPart != null && contactListPart.isVisible()) {
+            log.debug("part is already created!");
+            partService.showPart(contactListPart,
+                    PartState.VISIBLE);
+        } else {
+            contactListPart.setVisible(true);
+            // otherwise no content is rendered :-(
+            contactListPart.setToBeRendered(true);
+            partService.showPart(contactListPart,
+                    PartState.ACTIVATE);
+        }
 	}
 	
 	@CanExecute
 	public boolean canExecute() {
 		return true;
 	}
-
 }

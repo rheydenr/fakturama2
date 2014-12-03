@@ -1,31 +1,34 @@
 package com.sebulli.fakturama.log;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.internal.runtime.InternalPlatform;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
+import org.eclipse.e4.ui.services.events.EventBrokerFactory;
+import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * The LogbackAdaptor converts the LogEntry objects it receives into calls to
@@ -35,47 +38,75 @@ import com.sebulli.fakturama.misc.DataUtils;
  * 
  * <p>see <a href="https://code.google.com/p/osgi-logging/w/list">OSGi logging-related tools and documentation</a></p>
  * 
- * @author Rodrigo Reyes
- *
  */
-public class LogbackAdapter implements LogListener {
-	Map<Long, Logger> loggers = new HashMap<Long, Logger>();
+public class LogbackAdapter implements LogListener {    
+
+    private IEventBroker eventBroker;
     
-	// Maximum lines of the logfile
-	private static final int MAXLINES = 2000;
+    /**
+     * The token for replacing the file name in a <tt>logback.xml</tt> file.
+     */
+	public static final String LOG_FILE_NAME_TOKEN = "logFileName";
 	
-	private String workspacePath = "";
+	/**
+	 * A {@link Map} of all valid {@link Logger}s.
+	 */
+    Map<Long, Logger> loggers = new HashMap<Long, Logger>();
 
-	// The logile
-	private Path logFile;
+    /**
+     * Default constructor where initializing takes place.
+     * 
+     */
+	public LogbackAdapter() {
+		/*
+		 * We have to put the log file into {workspace}/Log directory. However,
+		 * we DON'T know at this point if the user has switched the workspace,
+		 * if the application is started the first time or 
+		 */
+		String productName = System.getProperty(InternalPlatform.PROP_PRODUCT).replaceAll("\\.product", "");
+		String workspaceLoc = InstanceScope.INSTANCE.getNode(productName).get(Constants.GENERAL_WORKSPACE, null);
+		String logFile = getLogfileName(workspaceLoc);
+		if (StringUtils.isNotBlank(logFile)) {
+			// determine the configuration file location
+			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+			// if a workspace is set we can adapt the log configuration file location
+			String defaultLogConfigFileName;
+			// at first check if the configuration is set via a switch
+			if (System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY) != null) {
+				defaultLogConfigFileName = System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY);
+			} else {
+				defaultLogConfigFileName = workspaceLoc;
+			}
+			defaultLogConfigFileName += "/" + ContextInitializer.AUTOCONFIG_FILE;
 
-	// The errortext of the errorview
-	private String errorString = "";
-
-	// Display or hide the errorview
-	private boolean showerrorview = false;
-//	
-//	public void configure() {
-//		// das suchen wir:
-//		// eclipsePrefs;
-//		EnvironmentInfo envInfo = Activator.getContext().getService(Activator.getContext().getServiceReference(EnvironmentInfo.class));
-//		
-//String[] commandLineArgs = envInfo.getCommandLineArgs();
-//String s2 = "";
-//for (int i = 0; i < commandLineArgs.length; i++) {
-//	String s = commandLineArgs[i];
-//	if(s.contentEquals("-data")) {
-//		s2 = commandLineArgs[i+1];
-//		break;
-//	}
-//}
-//		
-//		MDC.put(s2, Constants.GENERAL_WORKSPACE);
-//	}	
+			try {
+			    if(StringUtils.isNotBlank(defaultLogConfigFileName)) {
+			        Path defaultLogConfigFile = Paths.get(defaultLogConfigFileName);
+					if (!Files.exists(defaultLogConfigFile)) {
+    					// oh, there's no configuration file... 
+    					// then we create it from our own template
+    				    // 
+    				    // this doesn't work
+//    				    Activator.getContext().getBundle().getEntry("/logback.template.xml").openStream();
+    					InputStream templateStream = LogbackAdapter.class.getClassLoader().getResourceAsStream("/logback.template.xml");
+    					Files.copy(templateStream, defaultLogConfigFile);
+    				}
+    				JoranConfigurator jc = new JoranConfigurator();
+    				jc.setContext(loggerContext);
+    				loggerContext.putProperty(LOG_FILE_NAME_TOKEN, logFile);
+    				// now try to set this log file 
+    				jc.doConfigure(defaultLogConfigFileName);    		        
+			    }
+			}
+			catch (JoranException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/**
-	 * This methods is called by the LogReaderService, and dispatch them to a
-	 * set of Loggers, created with
+	 * This methods is called by the LogReaderService and dispatches all calls
+	 * to the appropriate SLF4J loggers. 
 	 */
 	public void logged(LogEntry log) {
 		if (log.getBundle() == null || log.getBundle().getSymbolicName() == null) {
@@ -83,273 +114,141 @@ public class LogbackAdapter implements LogListener {
 			// This should not happen and we don't want to log something anonymous
 			return;
 		}
-//		configure();
-		
-		// FIXME Workaround until we can get the correct workspace location for the Log file.
-		logged2(log);
 
-//		// Retrieve a Logger object, or create it if none exists.
-//		Logger logger = loggers.get(log.getBundle().getBundleId());
-//		if (logger == null) {
-//			logger = LoggerFactory.getLogger(log.getBundle().getSymbolicName());
-//			loggers.put(log.getBundle().getBundleId(), logger);
-//		}		
-//
-//		// If there is an exception available, use it, otherwise just log 
-//		// the message
-//		if (log.getException() != null) {
-//			switch (log.getLevel()) {
-//			case LogService.LOG_DEBUG:
-//				logger.debug(log.getMessage(), log.getException());
-//				break;
-//			case LogService.LOG_INFO:
-//				logger.info(log.getMessage(), log.getException());
-//				break;
-//			case LogService.LOG_WARNING:
-//				logger.warn(log.getMessage(), log.getException());
-//				break;
-//			case LogService.LOG_ERROR:
-//				logger.error(log.getMessage(), log.getException());
-//				break;
-//			}
-//		} else {
-//			switch (log.getLevel()) {
-//			case LogService.LOG_DEBUG:
-//				logger.debug(Activator.bundleMarker, log.getMessage());
-//				break;
-//			case LogService.LOG_INFO:
-//				logger.info(Activator.bundleMarker, log.getMessage());
-//				break;
-//			case LogService.LOG_WARNING:
-//				logger.warn(Activator.bundleMarker, log.getMessage());
-//				break;
-//			case LogService.LOG_ERROR:
-//				logger.error(Activator.bundleMarker, log.getMessage());
-//				break;
-//			}
-//		}
+		// Retrieve a Logger object, or create it if none exists.
+		Logger logger = loggers.get(log.getBundle().getBundleId());
+		if (logger == null) {
+			logger = LoggerFactory.getLogger(log.getBundle().getSymbolicName());
+			loggers.put(log.getBundle().getBundleId(), logger);
+		}		
+
+		// Show the error view (only if it is not just an information message)
+		if (log.getLevel() == LogService.LOG_ERROR) {
+			if(!showErrorView(log)) {
+			    logger.error(Activator.BUNDLE_MARKER, "Can't show the error message in Error View because no EventBroker is available!");
+			}
+		}
+
+		// If there is an exception available, use it, otherwise just log 
+		// the message
+		if (log.getException() != null) {
+			switch (log.getLevel()) {
+			case LogService.LOG_DEBUG:
+				logger.debug(log.getMessage(), log.getException());
+				break;
+			case LogService.LOG_INFO:
+				logger.info(log.getMessage(), log.getException());
+				break;
+			case LogService.LOG_WARNING:
+				logger.warn(log.getMessage(), log.getException());
+				break;
+			case LogService.LOG_ERROR:
+				logger.error(log.getMessage(), log.getException());
+				break;
+			}
+		} else {
+			switch (log.getLevel()) {
+			case LogService.LOG_DEBUG:
+				logger.debug(Activator.BUNDLE_MARKER, log.getMessage());
+				break;
+			case LogService.LOG_INFO:
+				logger.info(Activator.BUNDLE_MARKER, log.getMessage());
+				break;
+			case LogService.LOG_WARNING:
+				logger.warn(Activator.BUNDLE_MARKER, log.getMessage());
+				break;
+			case LogService.LOG_ERROR:
+				logger.error(Activator.BUNDLE_MARKER, log.getMessage());
+				break;
+			}
+		}
 	}
 
 	/**
-	 * Shows the error view and sets the error text
+	 * Shows the error view and sets the error text.
+	 * We post a message to all listeners. If one of them is responsible for showing
+	 * a {@link LogEntry}, it grabs this {@link LogEntry} and displays it.
+	 * 
+	 * At the moment this is the ErrorView from com.sebulli.fakturama.rcp bundle.
 	 */
-	private void showErrorView() {
-
-		// Do it not, if showerrorview flag is not set
-		if (!showerrorview)
-			return;
-
-		// Find the error view
-//		IWorkbenchWindow workbenchWindow = ApplicationWorkbenchWindowAdvisor.getActiveWorkbenchWindow(); 
-//			
-//		
-//		if (workbenchWindow != null) {
-//			IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-//			
-//			if ( workbenchPage !=null ) {
-//				try  {
-//					workbenchPage.showView(ErrorView.ID);
-//				}
-//				catch (Exception e) {
-//					return;
-//				}
-//				ErrorView view = (ErrorView) workbenchPage.findView(ErrorView.ID);
-//
-//				// Set the error text
-//				view.setErrorText(errorString);
-//			}
-//		}
-
-	}
+    private boolean showErrorView(LogEntry log) {
+        boolean retval = true;
+        if (getEventBroker() != null) {
+            getEventBroker().post("Log/Error", log);
+        } else {
+            retval = false;
+        }
+        return retval;
+    }
 
 	/**
 	 * Return the name of the log file.
+	 * @param workspaceLoc 
 	 * 
 	 * @return Name of the log file or an empty string, if workspace is not set
 	 */
-	private String getLogfileName() {
-		// Get the directory of the workspace
-		String filename = "mpf!";// Activator.getDefault().getPreferenceStore().getString("GENERAL_WORKSPACE");
-
+	private String getLogfileName(final String workspaceLoc) {
 		// Do not save log files, if there is no workspace set
-		if (filename.isEmpty()) { return ""; }
+		if (StringUtils.isBlank(workspaceLoc)) { return ""; }
 
-		// Do not save log files, if workspace is not created
-		Path directory = Paths.get(filename);
+		// Do not save log files if workspace is not created
+		Path directory = Paths.get(workspaceLoc);
 		if (Files.notExists(directory)) { return ""; }
 
-		// Create a sub folder "Log", if it does not exist yet.
+		// Create a sub folder "Log" if it does not exist yet.
 		try {
-			Files.createDirectory(directory.resolve("/Log/"));
+			directory = Files.createDirectories(directory.resolve("Log/"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		// Name of the log file
-		filename += "Error.log";
+		directory = directory.resolve("Error");  // .log is substituted in the configuration file, as there's a date before it
 
-		return filename;
+		return directory.toString();
 	}
 
-	/**
-	 * Notifies this listener that given status has been logged by a plug-in
-	 * 
-	 * @deprecated until we can get the real Workspace directory (then we use SLF4J)
-	 */
-	private void logged2(LogEntry log) {
-		try {
-			String declaringClass = "";
-			String lineNumber = "";
-			String methodName = "";
-			String lineArray[] = new String[MAXLINES];
-			StringBuilder exceptionMessage = new StringBuilder();
-			String newErrorString = "";
+    /**
+     * @return the eventBroker
+     */
+    public IEventBroker getEventBroker() {
+        if(eventBroker == null) {
+            
+            /* FIXME
+             * Ok - I know, you shouldn't do this (I know it, really!). But in this case I've no other chance to get
+             * the EventBroker service. If I use the "official" way like 
+             * 
+             * IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(Activator.getContext());
+             * IEventBroker eventBroker = (IEventBroker) eclipseContext.get(IEventBroker.class);
+             * 
+             * or 
+             * 
+             * EventBrokerFactory eventBrokerFactory = new EventBrokerFactory();
+             * eventBrokerFactory.compute(wb.getContext(), null);
+             * 
+             * I get an InjectionException because a Logger could not be found
+             * in the given context. It's only in the Workbench context. But the
+             * IWorkbench interface doesn't have a getContext() method. Therefore 
+             * I use the (internal) E4Workbench class. It works for the moment, but
+             * if anybody out there has an idea for getting the EventBroker the 
+             * right way please let me know. You are welcome!
+             */
+            
+            ServiceReference<IWorkbench> serviceReference = Activator.getContext().getServiceReference(IWorkbench.class);
+            if(serviceReference != null) {
+                E4Workbench wb = (E4Workbench) Activator.getContext().getService(serviceReference);
+                EventBrokerFactory eventBrokerFactory = new EventBrokerFactory();
+                setEventBroker((IEventBroker) eventBrokerFactory.compute(wb.getContext(), null));
+            }
+        }
+        return eventBroker;
+    }
 
-			// Add an "I:" or an "E:", depending if it is an information or
-			// an error.
-			if (log.getLevel() == LogService.LOG_INFO) {
-
-				// Information.
-				// Do not open the error view
-				newErrorString += "I:";
-
-			}
-			else {
-
-				// Error
-				// Open the error view
-				showerrorview = true;
-				newErrorString += "E:";
-			}
-
-			if (log.getException() != null) {
-
-				// Get all elements of the stack trace and search for the first
-				// element, that starts with the plugin name.
-				for (StackTraceElement element : log.getException().getStackTrace()) {
-					if (element.getClassName().startsWith(log.getBundle().getSymbolicName())) {
-						declaringClass = element.getClassName();
-						lineNumber = Integer.toString(element.getLineNumber());
-						methodName = element.getMethodName();
-						break;
-					}
-				}
-
-				// Generate the exception message.
-				exceptionMessage = new StringBuilder();
-				exceptionMessage.append(log.getMessage());
-				exceptionMessage.append(" : ");
-				exceptionMessage.append(((Exception) log.getException()).getLocalizedMessage());
-				exceptionMessage.append(" in: ");
-				exceptionMessage.append(declaringClass);
-				exceptionMessage.append("/");
-				exceptionMessage.append(methodName);
-				exceptionMessage.append("(");
-				exceptionMessage.append(lineNumber);
-				exceptionMessage.append(")");
-				exceptionMessage.append("\n").toString();
-
-				// Generate the error string
-				newErrorString += exceptionMessage;
-			}
-			else
-				// Generate the error string
-				newErrorString += log.getMessage() + "\n";
-
-			errorString += newErrorString;
-			System.err.print(newErrorString);
-
-			// Show the error view (only if it is not just an information message)
-			showErrorView();
-
-			// Get the name of the log file
-			String logFileName = getLogfileName();
-
-			// Do not log, if no workspace is set.
-			if (logFileName.isEmpty())
-				return;
-
-			// Create a File object
-			logFile = Paths.get(logFileName);
-
-			int lines = 0;
-			int lineIndex = 0;
-
-			// If the log file exists read the content
-			if (Files.exists(logFile)) {
-
-				// Open the existing file
-				BufferedReader in = Files.newBufferedReader(logFile);
-				String line = "";
-
-				// Read the existing file and store it in a buffer
-				// with a fix size. Only the newest lines are kept.
-				while ((line = in.readLine()) != null) {
-					lineArray[lineIndex] = line;
-					lines++;
-					lineIndex++;
-					lineIndex = lineIndex % MAXLINES;
-				}
-			}
-
-			// If the existing logfile has more than the MAXINES,
-			// delete it and create a new one.
-			if (lines > MAXLINES) {
-				Files.delete(logFile);
-				logFile = Paths.get(logFileName);
-			}
-
-			// Create a new file
-			BufferedWriter bos = Files.newBufferedWriter(logFile, StandardOpenOption.CREATE);
-			
-			// Write the data to the new file.
-			if (lines > MAXLINES) {
-				for (int i = 0; i < MAXLINES; i++) {
-					bos.write(lineArray[lineIndex] + "\n");
-					lineIndex++;
-					lineIndex = lineIndex % MAXLINES;
-				}
-			}
-
-			// Create a new string buffer and add the error message
-			StringBuffer str = new StringBuffer();
-			str.append(DataUtils.DateAndTimeOfNowAsLocalString());
-			str.append(" ");
-			str.append(log.getBundle().getSymbolicName());
-			str.append(": ");
-			str.append(log.getMessage());
-
-			// Add the stack trace
-			final Writer stackTrace = new StringWriter();
-			final PrintWriter printWriter = new PrintWriter(stackTrace);
-			if (log.getException() != null)
-				log.getException().printStackTrace(printWriter);
-			stackTrace.toString();
-			str.append(stackTrace.toString());
-			str.append("\n");
-
-			// Write the stack trace to the log file
-			bos.write(str.toString());
-			bos.close();
-
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @return the workspacePath
-	 */
-	public String getWorkspacePath() {
-		return workspacePath;
-	}
-
-	/**
-	 * @param workspacePath the workspacePath to set
-	 */
-	public void setWorkspacePath(String workspacePath) {
-		this.workspacePath = workspacePath;
-	}
+    /**
+     * @param eventBroker the eventBroker to set
+     */
+    public void setEventBroker(IEventBroker eventBroker) {
+        this.eventBroker = eventBroker;
+    }
 }

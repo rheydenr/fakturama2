@@ -14,21 +14,26 @@
 
 package com.sebulli.fakturama.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * This action opens the VATs in a table view.
  * 
- * @author Ralf Heydenreich
  */
 public class OpenVatsHandler {
 
+    @Inject
+    private ILogger log;
+    
 	/**
 	 * Run the action
 	 * <br />
@@ -39,7 +44,7 @@ public class OpenVatsHandler {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
 	    MPart vatPart = partService.findPart(VATListTable.ID);
 	    if(vatPart != null && vatPart.isVisible()) {
-	        System.out.println("part is already created!");
+	        log.debug("part is already created!");
     		partService.showPart(vatPart,
     				PartState.VISIBLE);
 	    } else {
@@ -55,5 +60,4 @@ public class OpenVatsHandler {
 	public boolean canExecute() {
 		return true;
 	}
-
 }

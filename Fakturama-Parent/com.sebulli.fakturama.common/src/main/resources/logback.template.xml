@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This is the configuration for the Logback logger.
      It serves as a template file which is initially copied to the 
-     configuration space (osgi.area). You have to replace 
-     the path for the workspace (which is done automatically
-     while setting the workspace path).
-     see  -->
+     workspace. The path for the workspace is replaced by the application
+	 while initializing the logger.
+-->
 <configuration>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,14 +17,14 @@
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
-      <fileNamePattern>/%X{GENERAL_WORKSPACE}/Log/Error.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>${logFileName}.%d{yyyy-MM-dd}.log</fileNamePattern>
 
       <!-- keep 30 days' worth of history -->
       <maxHistory>30</maxHistory>
     </rollingPolicy>
 
     <encoder>
-      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+      <pattern>%-4relative [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender> 
 

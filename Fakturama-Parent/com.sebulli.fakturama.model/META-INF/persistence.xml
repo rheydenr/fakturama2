@@ -10,10 +10,18 @@
 			<persistence:class>com.sebulli.fakturama.model.Contact</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ContactCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Document</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.CustomDocument</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Invoice</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Order</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Delivery</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Offer</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Letter</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Confirmation</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Credit</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Dunning</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Proforma</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.DocumentItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.DocumentItemCategory</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class>
+			<!-- <persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class> -->
 			<persistence:class>com.sebulli.fakturama.model.Expenditure</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ExpenditureItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemAccountType</persistence:class>

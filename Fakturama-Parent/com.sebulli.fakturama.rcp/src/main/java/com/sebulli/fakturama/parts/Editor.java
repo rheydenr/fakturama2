@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.dao.ContactDAO;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.IEntity;
 
@@ -88,7 +88,7 @@ public abstract class Editor<T extends IEntity> {
     protected IEventBroker evtBroker;
 
     @Inject
-	protected ContactDAO contactDAO;
+	protected ContactsDAO contactDAO;
 
 	protected StdComposite stdComposite = null;
 	protected String tableViewID = "";

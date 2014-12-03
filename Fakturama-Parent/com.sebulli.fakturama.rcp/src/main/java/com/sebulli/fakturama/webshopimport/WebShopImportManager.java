@@ -61,7 +61,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -77,7 +76,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
-import com.sebulli.fakturama.dao.ContactDAO;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -99,9 +98,10 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.CustomDocument;
+//import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
@@ -149,7 +149,7 @@ public class WebShopImportManager {
     private DocumentsDAO documentsDAO;
     
     @Inject
-    private ContactDAO contactsDAO;
+    private ContactsDAO contactsDAO;
     
     @Inject
     private ProductsDAO productsDAO;
@@ -501,7 +501,7 @@ public class WebShopImportManager {
                     }
                 
                     log.debug("POST-String: " + postString);
-                    writer.write(postString);Object k = new IExtension[]{};
+                    writer.write(postString);
                     writer.flush();
                     writer.close();
     
@@ -768,7 +768,7 @@ public class WebShopImportManager {
         	}
         
         	// Create a new order
-            CustomDocument dataSetDocument = new CustomDocument();
+            Document dataSetDocument = new Order();
         	dataSetDocument.setBillingType(BillingType.ORDER); // DocumentType.ORDER
         
         	// Set name, web shop order id and date

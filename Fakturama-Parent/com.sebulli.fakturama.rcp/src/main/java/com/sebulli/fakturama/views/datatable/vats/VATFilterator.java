@@ -24,6 +24,14 @@ public class VATFilterator implements TextFilterator<VAT> {
 	 */
 	@Override
 	public void getFilterStrings(List<String> baseList, VAT element) {
+/*
+        // Mark the columns that are used by the search function.
+        searchColumns = new String[3];
+        searchColumns[0] = "name";
+        searchColumns[1] = "description";
+        searchColumns[2] = "value";
+ */
+//	    baseList.add(element.getTaxValue());
 		baseList.add(element.getDescription());
 		baseList.add(element.getName());
 	}
