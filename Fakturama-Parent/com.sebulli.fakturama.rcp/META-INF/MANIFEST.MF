@@ -26,7 +26,9 @@ Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
  org.apache.commons.cli;bundle-version="1.2.0",
  org.apache.commons.codec;bundle-version="1.6.0",
- org.apache.commons.lang3;bundle-version="3.1.0"
+ org.apache.commons.lang3;bundle-version="3.1.0",
+ org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0",
+ org.eclipse.nebula.jface.cdatetime;bundle-version="0.14.0"
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy 

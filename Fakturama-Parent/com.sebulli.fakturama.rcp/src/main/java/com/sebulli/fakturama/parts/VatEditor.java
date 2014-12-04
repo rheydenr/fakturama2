@@ -25,7 +25,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -51,6 +50,7 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -80,7 +80,7 @@ public class VatEditor extends Editor<VAT> {
     protected VatCategoriesDAO vatCategoriesDAO;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
@@ -186,7 +186,7 @@ public class VatEditor extends Editor<VAT> {
      * a new one, a new data set is created and the local variable "vat" is set
      * to this one.<br />
      * If we get an ID from the opening command we try to open the given
-     * VAT.
+     * {@link VAT}.
      * 
      * @param parent
      *            the parent control
@@ -217,7 +217,7 @@ public class VatEditor extends Editor<VAT> {
             part.setLabel(msg.editorVatHeader);
         }
         else {
-            // Set the Editor's name to the payment name.
+            // Set the Editor's name to the VAT name.
             part.setLabel(editorVat.getName());
         }
 

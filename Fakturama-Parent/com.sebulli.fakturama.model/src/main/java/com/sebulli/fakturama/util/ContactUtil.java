@@ -5,6 +5,7 @@ package com.sebulli.fakturama.util;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 import com.sebulli.fakturama.misc.Constants;
@@ -19,7 +20,7 @@ import com.sebulli.fakturama.model.Contact;
 public class ContactUtil {
 	
 	private IEclipsePreferences eclipsePrefs;	
-	private IEclipsePreferences defaultPrefs;	
+//	private IEclipsePreferences defaultPrefs;	
 
     /**
 	 * @param eclipsePrefs
@@ -37,10 +38,10 @@ public class ContactUtil {
      */
     public String getNameWithCompany(Contact contact) {
         String line = "";
-        if (!contact.getCompany().isEmpty()) {
+        if (StringUtils.isNotBlank(contact.getCompany())) {
             line = DataUtils.getSingleLine(contact.getCompany());
-            if ((!contact.getFirstName().isEmpty()) || 
-                (!contact.getName().isEmpty()) )
+            if (StringUtils.isNotBlank(contact.getFirstName()) || 
+                StringUtils.isNotBlank(contact.getName()) )
                 line +=", ";
         }
 
@@ -55,11 +56,11 @@ public class ContactUtil {
      */
     public String getFirstAndLastName(Contact contact) {
         String line = "";
-        if (!contact.getFirstName().isEmpty()) {
+        if (StringUtils.isNotBlank(contact.getFirstName())) {
             line += contact.getFirstName();
         }
         
-        if (!contact.getName().isEmpty()) {
+        if (StringUtils.isNotBlank(contact.getName())) {
             if (!line.isEmpty())
                 line += " ";
             line += contact.getName();

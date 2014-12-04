@@ -718,7 +718,8 @@ public class MigrationManager {
 				contact.setCustomerNumber(oldContact.getNr());  // TODO check if it's correct
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-				contact.getDeliveryContacts().add(deliveryContact);
+//				contact.getDeliveryContacts().add(deliveryContact);
+                contact.setDeliveryContacts(deliveryContact);
 				contact.setDeleted(oldContact.isDeleted());
 				contact.setDiscount(oldContact.getDiscount());
 				contact.setEmail(oldContact.getEmail());

@@ -23,3 +23,4 @@ Export-Package: com.sebulli.fakturama.dbconnector,
  com.sebulli.fakturama.oldmodel,
  com.sebulli.fakturama.util
 Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.commons.lang3

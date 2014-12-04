@@ -20,6 +20,11 @@ import org.eclipse.e4.core.services.nls.Message;
 @Message(contributionURI="platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 
+    /*
+     * Tip: Suche mit \.(\w)
+     * Ersetze durch \U\1
+     */
+    
 	public String AccountSettingsPage159;
 	public String AccountSettingsPage160;
 	public String AccountSettingsPage161;
@@ -39,28 +44,28 @@ public class Messages {
 	public String preferencesBrowserShowaddressbar;
 	public String preferencesGeneral;
 
-	public String ContactEditor482;
-	public String ContactEditor483;
-	public String ContactEditor484;
-	public String ContactEditor485;
-	public String ContactEditor486;
-	public String ContactEditor487;
-	public String ContactEditor488;
-	public String ContactEditor489;
-	public String ContactEditor490;
-	public String ContactEditor491;
-	public String ContactEditor492;
-	public String ContactEditor493;
-	public String ContactEditor494;
-	public String ContactEditor495;
-	public String ContactEditor496;
-	public String ContactEditor497;
-	public String ContactEditor498;
-	public String ContactEditor499;
-	public String ContactEditor500;
-	public String ContactEditor501;
-	public String ContactEditor502;
-	public String ContactEditor503;
+    public String editorContactErrorCustomerid;
+    public String editorContactErrorNotnextfreenumber;
+    public String editorContactHintSeepreferences;
+	public String editorContactLabelAddress;
+    public String editorContactLabelBankaccount;
+    public String editorContactFieldNumberTooltip;
+    public String editorContactFieldDeliveryaddressequalsName;
+    public String editorContactFieldLastnamefirstnameName;
+    public String editorContactFieldFirstnamelastnameName;
+    public String editorContactFieldZipcityName;
+    public String editorContactHintSethomecountry;
+    public String editorContactFieldBirthdayName;
+    public String editorContactFieldBirthdayTooltip;
+    public String editorContactFieldDeliverersbirthdayTooltip;
+    public String editorContactFieldCategoryTooltip;
+    public String editorContactFieldSuppliernumberName;
+    public String editorContactFieldPaymentTooltip;
+    public String editorContactFieldDiscountTooltip;
+    public String editorContactFieldNetgrossName;
+    public String editorContactErrorCustomernumber;
+    public String editorContactLabelNotice;
+    public String editorContactFieldNumberName;
 
 	public String preferencesContactFormatSalutation;
 	public String preferencesContactFormatSalutationMen;
@@ -114,11 +119,11 @@ public class Messages {
 	public String dataDefaultPaymentPaidtext;
 	public String dataDefaultPaymentUnpaidtext;
 
-	public String DataSetContact662;
-	public String DataSetContact663;
-	public String DataSetContact664;
-	public String DataSetContact665;
-	public String DataSetContact666;
+    public String contactFieldMrName;
+    public String contactFieldMsName;
+    public String contactFieldReliabilityPoorName;
+    public String contactFieldReliabilityMediumName;
+    public String contactFieldReliabilityGoodName;
 
 	public String DataSetDocument667;
 
@@ -294,15 +299,14 @@ public class Messages {
 	public String commonFieldCountry;
 	public String commonFieldAccountholder;
 	public String commonFieldTotal;
-	public String Exporter186;
-	public String Exporter187;
-	public String Exporter188;
+    public String editorContactFieldAccountnumberName;
+    public String editorContactFieldBankcodeName;
+    public String editorContactFieldBankName;
 	public String exporterDataIban;
 	public String exporterDataBic;
-	public String Exporter191;
-	public String Exporter192;
-	public String Exporter193;
-	public String Exporter194;
+    public String editorContactFieldPaymentName;
+    public String editorContactFieldReliabilityName;
+    public String editorContactFieldMandaterefName;
 	public String exporterDataTelephone;
 	public String exporterDataTelefax;
 	public String exporterDataMobile;

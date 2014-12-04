@@ -30,7 +30,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -38,6 +37,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -116,14 +116,21 @@ public class CallEditor {
 			switch (type) {
 			case VatEditor.ID:  // fall through
 			case VATListTable.ID:
-				myPart.setLabel("VAT ");
+				myPart.setLabel(msg.commandVatsName);
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + VatEditor.class.getName());
 				myPart.setContext(EclipseContextFactory.create());
 				myPart.getProperties().put(PARAM_OBJ_ID, objId);
 				
-				MMenu popupMenu=null;
+//				MMenu popupMenu=null;
 //                myPart.getMenus().add(popupMenu);
 				break;
+				
+			case ContactEditor.ID:
+			case ContactListTable.ID:
+                myPart.setLabel(msg.commandContactsName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
+                myPart.setContext(EclipseContextFactory.create());
+                myPart.getProperties().put(PARAM_OBJ_ID, objId);
 
 			default:
 				myPart.setLabel("unknown");

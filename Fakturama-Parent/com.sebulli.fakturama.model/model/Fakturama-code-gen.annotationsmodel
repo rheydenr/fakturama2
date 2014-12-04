@@ -183,7 +183,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/deliveryContacts"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" description="" documentation="The delivery address(es) of this contact. There could be more than one entry per contact." name="deliveryContact" getter="getDeliveryContacts" defaultValue="new java.util.ArrayList&lt;com.sebulli.fakturama.model.Contact>()" setter="setDeliveryContacts" validJavaMemberName="deliveryContacts" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" description="" documentation="The delivery address(es) of this contact. There could be more than one entry per contact. At the moment there's only one contact possible!!!" name="deliveryContact" getter="getDeliveryContacts" defaultValue="null" setter="setDeliveryContacts" validJavaMemberName="deliveryContacts" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_DELIVERYCONTACT" table=""/>
         </eReferenceAnnotations>

@@ -835,7 +835,8 @@ public class WebShopImportManager {
             countryCode = LocaleUtil.findByName(contact.getDeliveryCountry());
             deliveryAddress.setCountry(countryCode);
             deliveryContact.setAddress(deliveryAddress);
-            contactItem.getDeliveryContacts().add(deliveryContact);
+//            contactItem.getDeliveryContacts().add(deliveryContact);
+            contactItem.setDeliveryContacts(deliveryContact);
             contactsDAO.save(contactItem);
         
             dataSetDocument.setContact(contactItem);

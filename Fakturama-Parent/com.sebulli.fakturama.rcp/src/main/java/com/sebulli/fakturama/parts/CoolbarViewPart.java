@@ -154,8 +154,10 @@ public class CoolbarViewPart {
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
+		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));	
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));
+		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
 		createToolItem(toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),

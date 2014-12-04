@@ -39,6 +39,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.swt.SWT;
@@ -92,7 +94,7 @@ public abstract class Editor<T extends IEntity> {
 
 	protected StdComposite stdComposite = null;
 	protected String tableViewID = "";
-	protected String editorID = "";
+	private String editorID = "";
 	protected static final int NO_ERROR = 0;
 	protected static final int ERROR_NOT_NEXT_ID = 1;
     protected DataBindingContext ctx = new DataBindingContext();
@@ -282,10 +284,9 @@ public abstract class Editor<T extends IEntity> {
 	 * @return The next document number
 	 */
 	protected String getNextNr() {
-
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "NUMBERRANGE_" + editorID.toUpperCase() + "_FORMAT";
-		String prefStrNr = "NUMBERRANGE_" + editorID.toUpperCase() + "_NR";
+		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String nrExp = "";
 		String nextNr;
@@ -296,7 +297,7 @@ public abstract class Editor<T extends IEntity> {
 		int yyyy = calendar.get(Calendar.YEAR);
 		int mm = calendar.get(Calendar.MONTH) + 1;
 		int dd = calendar.get(Calendar.DAY_OF_MONTH);
-		String lastSetNextNrDate = defaultValuePrefs.get("last_setnextnr_date_" + editorID.toLowerCase(), "2000-01-01");
+		String lastSetNextNrDate = defaultValuePrefs.get("last_setnextnr_date_" + getEditorID().toLowerCase(), "2000-01-01");
 
 		int last_yyyy = 0; 
 		int last_mm = 0; 
@@ -384,7 +385,7 @@ public abstract class Editor<T extends IEntity> {
 		int yyyy = calendar.get(Calendar.YEAR);
 		int mm = calendar.get(Calendar.MONTH) + 1;
 		int dd = calendar.get(Calendar.DAY_OF_MONTH);
-		defaultValuePrefs.put("last_setnextnr_date_" + editorID.toLowerCase(), String.format("%04d-%02d-%02d", yyyy, mm, dd));
+		defaultValuePrefs.put("last_setnextnr_date_" + getEditorID().toLowerCase(), String.format("%04d-%02d-%02d", yyyy, mm, dd));
 
 	}
 	
@@ -401,8 +402,8 @@ public abstract class Editor<T extends IEntity> {
 	protected int setNextNr(String value, String key, List<T> allDataSets) {
 
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "NUMBERRANGE_" + editorID.toUpperCase() + "_FORMAT";
-		String prefStrNr = "NUMBERRANGE_" + editorID.toUpperCase() + "_NR";
+		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String s = "";
 		int nr;
@@ -468,6 +469,26 @@ public abstract class Editor<T extends IEntity> {
 		// The result of the validation
 		return result;
 	}
+	
+//	protected void bindModelValue(T target, CDateTime source, String property) {
+//        IObservableValue model = BeansObservables.observeValue(target, property);
+//        IObservableValue uiWidget = new CDateTimeObservableValue(source);
+////        IObservableValue uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
+//
+////        if (modelToTarget != null) {
+////            ctx.bindValue(uiWidget, model, targetToModel, modelToTarget);
+////        } else {
+//            ctx.bindValue(uiWidget, model);
+////        }    
+//        
+//        source.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                getMDirtyablePart().setDirty(true);
+//            }
+//        });
+//	}
+	
 
 	/**
 	 * Binds a Java bean property to the UI widget.
@@ -485,6 +506,8 @@ public abstract class Editor<T extends IEntity> {
         IObservableValue uiWidget;
         if(source instanceof Combo) {
             uiWidget = WidgetProperties.selection().observe(source);
+        } else if(source instanceof CDateTime) {
+            uiWidget = new CDateTimeObservableValue((CDateTime) source);
         } else {
             uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
         }
@@ -616,5 +639,19 @@ public abstract class Editor<T extends IEntity> {
 	protected boolean saveAllowed() {
 		return getMDirtyablePart().isDirty();
 	}
+
+    /**
+     * @return the editorID
+     */
+    protected String getEditorID() {
+        return editorID;
+    }
+
+    /**
+     * @param editorID the editorID to set
+     */
+    protected void setEditorID(String editorID) {
+        this.editorID = editorID;
+    }
 
 }
