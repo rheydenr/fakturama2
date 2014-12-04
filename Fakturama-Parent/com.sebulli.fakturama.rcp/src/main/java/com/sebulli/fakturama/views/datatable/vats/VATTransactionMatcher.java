@@ -3,6 +3,7 @@ package com.sebulli.fakturama.views.datatable.vats;
 import ca.odell.glazedlists.matchers.Matcher;
 
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 
 final class VATTransactionMatcher implements Matcher<VAT> {
 	final String vatTransactionCode;

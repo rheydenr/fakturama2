@@ -35,8 +35,8 @@ import ca.odell.glazedlists.event.ListEventListener;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
-import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**

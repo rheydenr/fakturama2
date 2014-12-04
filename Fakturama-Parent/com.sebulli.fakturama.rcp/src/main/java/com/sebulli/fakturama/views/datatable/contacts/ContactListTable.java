@@ -55,14 +55,14 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
-import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.vats.ListViewHeaderDataProvider;
 
 /**
  * View with the table of all contacts
@@ -164,7 +164,6 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
                 case COMPANY:
                 case ZIP:
                 case CITY:
-                    // alternative: return rowObject.getFirstName();
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 default:
                     break;
@@ -177,7 +176,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
             }
 
             public int getColumnCount() {
-                return ContactListDescriptor.getContactPropertyNames().length;
+                return columnPropertyAccessor.getColumnCount();
             }
 
             public String getColumnProperty(int columnIndex) {
@@ -186,7 +185,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
             }
 
             public int getColumnIndex(String propertyName) {
-                    return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
+                    return columnPropertyAccessor.getColumnIndex(propertyName);
             }
         };
 

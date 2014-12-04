@@ -19,8 +19,8 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
-import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
 
 /**
  * @author rheydenr

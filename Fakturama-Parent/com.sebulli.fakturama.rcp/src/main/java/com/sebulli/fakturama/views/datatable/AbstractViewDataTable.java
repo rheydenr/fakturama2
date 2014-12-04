@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable.vats;
+package com.sebulli.fakturama.views.datatable;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -62,7 +62,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;

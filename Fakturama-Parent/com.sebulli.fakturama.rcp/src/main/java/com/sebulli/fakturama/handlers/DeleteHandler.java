@@ -11,7 +11,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
-import com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 
 /**
  * Handler class for deleting an item from a list.

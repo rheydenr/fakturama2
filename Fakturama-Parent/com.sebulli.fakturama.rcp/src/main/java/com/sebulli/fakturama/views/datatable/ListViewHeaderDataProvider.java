@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.views.datatable.vats;
+package com.sebulli.fakturama.views.datatable;
 
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
