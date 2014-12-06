@@ -16,12 +16,18 @@ package com.sebulli.fakturama.parts;
 
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -33,7 +39,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
@@ -52,12 +60,18 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.ReliabilityType;
+import com.sebulli.fakturama.parts.converter.CategoryConverter;
+import com.sebulli.fakturama.parts.converter.CommonConverter;
+import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -114,7 +128,7 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtNr;
 	private Combo comboPayment;
 	private ComboViewer comboPaymentViewer;
-	private Combo comboReliability;
+	private ComboViewer comboReliability;
 	private Text txtPhone;
 	private Text txtFax;
 	private Text txtMobile;
@@ -159,6 +173,9 @@ public class ContactEditor extends Editor<Contact> {
 	
 	@Inject
 	private ContactsDAO contactDAO;
+    
+    @Inject
+    private ContactCategoriesDAO contactCategoriesDAO;
 	
 	@Inject
 	@Preference  //(nodePath = "/configuration/contactPreferences")
@@ -522,12 +539,23 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
 
 		// Gender
-		comboGender = new Combo(useGender ? addressGroup : invisible, SWT.BORDER);
-		for (int i = 0; i < 4; i++) {
-			comboGender.add(getGenderString(i), i);
-		}			
+//		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
+//		comboGender.setContentProvider(ArrayContentProvider.getInstance());
+//		List<String> genderList = new ArrayList<String>();
+//		for (int i = 0; i < 4; i++) {
+//		    genderList.add(getGenderString(i));
+//		} 
+//		comboGender.setInput(genderList.toArray(new String[]{}));
+		
+        comboGender = new Combo(useGender ? addressGroup : invisible, SWT.BORDER);
+        for (int i = 0; i < 4; i++)
+            comboGender.add(getGenderString(i), i);
+        GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender);
+
+		
+//		comboGender.setLabelProvider(new ComboBoxLabelProvider(genderList.toArray(new String[]{})));
 //		comboGender.select(editorContact.getGender());
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender);
+//		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
 
 		// Title
@@ -838,12 +866,13 @@ public class ContactEditor extends Editor<Contact> {
 		// Category 
 		Label labelCategory = new Label(tabMisc, SWT.NONE);
 		//T: Label in the contact editor
-		labelCategory.setText(msg.commonFieldCompany);
+		labelCategory.setText(msg.commonFieldCategory);
 		//T: Tool Tip Text
 		labelCategory.setToolTipText(msg.editorContactFieldCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-		comboCategory = new Combo(tabMisc, SWT.BORDER);
+		createCategoryCombo(tabMisc);
+//		comboCategory = new Combo(tabMisc, SWT.BORDER);
 //		comboCategory.setText(contact.getCategory());
 		comboCategory.setToolTipText(labelCategory.getToolTipText());
 //		bindModelValue(editorContact, comboCategory, Contact_.categories);
@@ -952,17 +981,31 @@ public class ContactEditor extends Editor<Contact> {
 		//T: Label in the contact editor
 		labelReliability.setText(msg.editorContactFieldReliabilityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelReliability);
-		comboReliability = new Combo(tabMisc, SWT.BORDER);
+		comboReliability = new ComboViewer(tabMisc, SWT.BORDER);
+		comboReliability.setContentProvider(ArrayContentProvider.getInstance());
+		comboReliability.setInput(ReliabilityType.values());
+		comboReliability.setLabelProvider(new LabelProvider() {
+		    @Override
+		    public String getText(Object element) {
+		        ReliabilityType type = (ReliabilityType)element;
+		        switch (type) {
+                case NONE:
+                    return "---";
+                case POOR:
+                    return msg.contactFieldReliabilityPoorName;
+                case MEDIUM:
+                    return msg.contactFieldReliabilityMediumName;
+                case GOOD:
+                    return msg.contactFieldReliabilityGoodName;
+                default:
+                    return null;
+                }
+		    }
+		});
 
-////		comboReliability.add(DataSetContact.getReliabilityString(0), 0);
-////		comboReliability.add(DataSetContact.getReliabilityString(1), 1);
-////		comboReliability.add(DataSetContact.getReliabilityString(2), 2);
-////		comboReliability.add(DataSetContact.getReliabilityString(3), 3);
-//
 //		comboReliability.select(contact.getReliability());
-//		superviceControl(comboReliability);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboReliability);
-
+		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboReliability.getControl());
 		
 		// VAT number
 		Label labelVatNr = new Label(tabMisc, SWT.NONE);
@@ -1042,6 +1085,46 @@ public class ContactEditor extends Editor<Contact> {
 		bDelAddrEquAddr.setSelection(isEqual);
 		deliveryGroup.setVisible(!isEqual);
 	}
+
+    /**
+     * creates the combo box for the VAT category
+     * @param tabMisc 
+     */
+    private void createCategoryCombo(Composite tabMisc) {
+        // Collect all category strings as a sorted Set
+        final TreeSet<ContactCategory> categories = new TreeSet<ContactCategory>(new Comparator<ContactCategory>() {
+            @Override
+            public int compare(ContactCategory cat1, ContactCategory cat2) {
+                return cat1.getName().compareTo(cat2.getName());
+            }
+        });
+        categories.addAll(contactCategoriesDAO.findAll());
+
+        comboCategory = new Combo(tabMisc, SWT.BORDER);
+        ComboViewer viewer = new ComboViewer(comboCategory);
+        viewer.setContentProvider(new ArrayContentProvider() {
+            @Override
+            public Object[] getElements(Object inputElement) {
+                return categories.toArray();
+            }
+        });
+        
+        // Add all categories to the combo
+        viewer.setInput(categories);
+        viewer.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                return element instanceof ContactCategory ? CommonConverter.getCategoryName((ContactCategory)element, "") : null;
+            }
+        });
+
+        UpdateValueStrategy catModel2Target = new UpdateValueStrategy();
+        catModel2Target.setConverter(new CategoryConverter<ContactCategory>(ContactCategory.class));
+        
+        UpdateValueStrategy target2CatModel = new UpdateValueStrategy();
+        target2CatModel.setConverter(new StringToCategoryConverter<ContactCategory>(categories, ContactCategory.class));
+        bindModelValue(editorContact, comboCategory, Contact_.categories.getName(), target2CatModel, catModel2Target);
+    }
 
 	/**
 	 * Test, if there is a document with the same number
@@ -1143,53 +1226,53 @@ public class ContactEditor extends Editor<Contact> {
  *            Gender number
  * @return Gender as string
  */
-public String getReliabilityString(int i) {
-	return getReliabilityString(i, true);
+public String getReliabilityString(ReliabilityType type) {
+	return getReliabilityString(type, true);
 }
 
 /**
  * Get the reliability String by the number
  * 
- * @param i
+ * @param type
  *            Gender number
  * @param translate
  *            TRUE, if the string should be translated
  * @return Gender as string
  */
-public String getReliabilityString(int i, boolean translate) {
-	switch (i) {
-	case 0:
+public String getReliabilityString(ReliabilityType type, boolean translate) {
+	switch (type) {
+	case NONE:
 		return "---";
-	case 1:
+	case POOR:
 		//T: Reliability
 		return msg.contactFieldReliabilityPoorName;
-	case 2:
+	case MEDIUM:
 		//T: Reliability
 		return msg.contactFieldReliabilityMediumName;
-	case 3:
+	case GOOD:
 		//T: Reliability
 		return msg.contactFieldReliabilityGoodName;
 	}
 	return "";
 }
 
-/**
- * Get the reliability number by the string
- * 
- * @param s
- *          Reliability string
- * @return
- * 			The number
- */
-public int getReliabilityID(String s) {
-	// Test all strings
-	for (int i = 0;i < 4 ; i++) {
-		if (getReliabilityString(i,false).equalsIgnoreCase(s)) return i;
-		if (getReliabilityString(i,true).equalsIgnoreCase(s)) return i;
-	}
-	// Default = "---"
-	return 0;
-}
+///**
+// * Get the reliability number by the string
+// * 
+// * @param s
+// *          Reliability string
+// * @return
+// * 			The number
+// */
+//public int getReliabilityID(String s) {
+//	// Test all strings
+//	for (int i = 0;i < 4 ; i++) {
+//		if (getReliabilityString(i,false).equalsIgnoreCase(s)) return i;
+//		if (getReliabilityString(i,true).equalsIgnoreCase(s)) return i;
+//	}
+//	// Default = "---"
+//	return 0;
+//}
 
 @Override
 protected MDirtyable getMDirtyablePart() {

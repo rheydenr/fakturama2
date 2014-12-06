@@ -11,18 +11,18 @@ import javax.money.MonetaryAmount;
 import org.javamoney.moneta.FastMoney;
 
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.VAT;
 
 /**
  * Calculator for the document summaries.
  *
  */
-public class ItemTotalCalculator {
+public class DocumentSummaryCalculator {
 	private CurrencyUnit currencyCode;
 
-	public ItemTotalCalculator(CurrencyUnit currencyCode) {
+	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {
 		this.currencyCode = currencyCode;
 	}
 
@@ -70,8 +70,8 @@ public class ItemTotalCalculator {
 		for (DocumentItem item : dataSetDocument.getItems()) {
 
 			// Get the data from each item
-			vatDescription = item.getItemVat().getDescription();
-			vatPercent = item.getItemVat().getTaxValue();
+			vatDescription = getItemVat(item).getDescription();
+			vatPercent = getItemVat(item).getTaxValue();
 			Price price = new Price(item, scaleFactor);  // scaleFactor was always 1.0 in the old application
 			MonetaryAmount itemVat = price.getTotalVat();
 
@@ -376,5 +376,13 @@ public class ItemTotalCalculator {
 
 		return retval;
 	}
+
+    private VAT getItemVat(DocumentItem item) {
+        VAT retval = item.getItemVat();
+        if(retval == null) {
+            retval = item.getProduct().getVat();
+        }
+        return retval;
+    }
 
 }

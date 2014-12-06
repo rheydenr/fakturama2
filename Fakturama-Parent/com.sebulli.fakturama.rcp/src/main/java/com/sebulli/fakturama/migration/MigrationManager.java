@@ -17,7 +17,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,6 +98,7 @@ import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Proforma;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucherItem;
+import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -424,12 +424,11 @@ public class MigrationManager {
 				product.setName(oldProduct.getName());
 				// copy the old product picture into the new workspace
 				copyProductPicture(product, oldProduct);
-				// DON'T USE ANY OTHER CONSTRUCTOR FOR CREATING BIGDECIMAL FROM DOUBLE!!! 
-				product.setPrice1(BigDecimal.valueOf(oldProduct.getPrice1()));
-				product.setPrice2(BigDecimal.valueOf(oldProduct.getPrice2()));
-				product.setPrice3(BigDecimal.valueOf(oldProduct.getPrice3()));
-				product.setPrice4(BigDecimal.valueOf(oldProduct.getPrice4()));
-				product.setPrice5(BigDecimal.valueOf(oldProduct.getPrice5()));
+				product.setPrice1(oldProduct.getPrice1());
+				product.setPrice2(oldProduct.getPrice2());
+				product.setPrice3(oldProduct.getPrice3());
+				product.setPrice4(oldProduct.getPrice4());
+				product.setPrice5(oldProduct.getPrice5());
 				product.setQuantity(oldProduct.getQuantity());
 				product.setQuantityUnit(oldProduct.getQunit());
 				product.setSellingUnit(oldProduct.getUnit());
@@ -606,8 +605,8 @@ public class MigrationManager {
 				// get payment reference
 				Payment newPayment = paymentsDAO.findById(newPayments.get(oldDocument.getPaymentid()));
 				document.setPayment(newPayment);
-				document.setPayedValue(BigDecimal.valueOf(oldDocument.getPayvalue()));
-				document.setTotalValue(BigDecimal.valueOf(oldDocument.getTotal()));
+				document.setPayedValue(oldDocument.getPayvalue());
+				document.setTotalValue(oldDocument.getTotal());
 				document.setTransactionId(new Long(oldDocument.getTransaction()));
 				document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
 				document.setWebshopId(oldDocument.getWebshopid());
@@ -674,7 +673,7 @@ public class MigrationManager {
 			item.setOptional(oldItem.isOptional());
 			// owner field (oldItem) contains a reference to the containing document - we don't need it
 			item.setPictureName(oldItem.getPicturename());
-			item.setPrice(BigDecimal.valueOf(oldItem.getPrice()));
+			item.setPrice(oldItem.getPrice());
 			if(oldItem.getProductid() >= 0) {
 				Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
 				item.setProduct(prod);
@@ -713,7 +712,8 @@ public class MigrationManager {
 				contact.setBirthday(getSaveParsedDate(oldContact.getBirthday()));
 				if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
 					// add it to the new entity
-					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
+//					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
+                    contact.setCategories(contactCategories.get(oldContact.getCategory()));
 				}
 				contact.setCustomerNumber(oldContact.getNr());  // TODO check if it's correct
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
@@ -729,7 +729,7 @@ public class MigrationManager {
 				contact.setNote(oldContact.getNote());
 				contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
 				contact.setPhone(oldContact.getPhone());
-				contact.setReliability(oldContact.getReliability());
+				contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
 				contact.setSupplierNumber(oldContact.getSuppliernumber());
 				contact.setUseNetGross(BooleanUtils.toBooleanObject(oldContact.getUseNetGross()));
 				contact.setVatNumber(oldContact.getVatnr());
@@ -820,15 +820,15 @@ public class MigrationManager {
 						ReceiptVoucherItem item = new ReceiptVoucherItem();
 						item.setAccount(receiptVoucherItemAccountTypes.get(oldReceiptvoucherItem.getCategory()));
 						item.setName(oldReceiptvoucherItem.getName());
-						item.setPrice(BigDecimal.valueOf(oldReceiptvoucherItem.getPrice()));
+						item.setPrice(oldReceiptvoucherItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
 						item.setReceiptVoucherItemVat(newVat);
 //						receiptVoucher.addToItems(item);
 					}
 				}
 				receiptVoucher.setName(oldReceiptvoucher.getName());
-				receiptVoucher.setPaidValue(BigDecimal.valueOf(oldReceiptvoucher.getPaid()));
-				receiptVoucher.setTotalValue(BigDecimal.valueOf(oldReceiptvoucher.getTotal()));
+				receiptVoucher.setPaidValue(oldReceiptvoucher.getPaid());
+				receiptVoucher.setTotalValue(oldReceiptvoucher.getTotal());
 				receiptVouchersDAO.save(receiptVoucher);
 				subProgressMonitor.worked(1);
 			}
@@ -869,15 +869,15 @@ public class MigrationManager {
 						ExpenditureItem item = new ExpenditureItem();
 						item.setAccount(expenditureItemAccountTypes.get(oldExpenditureItem.getCategory()));
 						item.setName(oldExpenditureItem.getName());
-						item.setPrice(BigDecimal.valueOf(oldExpenditureItem.getPrice()));
+						item.setPrice(oldExpenditureItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
 						item.setVat(newVat);
 						expenditure.addToItems(item);
 					}
 				}
 				expenditure.setName(oldExpenditure.getName());
-				expenditure.setPaidValue(BigDecimal.valueOf(oldExpenditure.getPaid()));
-				expenditure.setTotalValue(BigDecimal.valueOf(oldExpenditure.getTotal()));
+				expenditure.setPaidValue(oldExpenditure.getPaid());
+				expenditure.setTotalValue(oldExpenditure.getTotal());
 				expendituresDAO.save(expenditure);
 				subProgressMonitor.worked(1);
 			}

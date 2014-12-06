@@ -7,18 +7,17 @@ import java.util.TreeSet;
 
 import org.eclipse.core.databinding.conversion.Converter;
 
-import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.AbstractCategory;
 
 /**
- * @author rheydenr
  *
  */
-public class StringToVatCategoryConverter extends Converter {
+public class StringToCategoryConverter<T extends AbstractCategory> extends Converter {
 
-    private final TreeSet<VATCategory> categories;
+    private final TreeSet<T> categories;
     
-    public StringToVatCategoryConverter(TreeSet<VATCategory> categories) {
-        super(String.class, VATCategory.class);
+    public StringToCategoryConverter(TreeSet<T> categories, Class<T> clazz) {
+        super(String.class, clazz);
         this.categories = categories;
     }
 
@@ -29,11 +28,11 @@ public class StringToVatCategoryConverter extends Converter {
     public Object convert(Object fromObject) {
         // in: "Umsatzsteuer"
         // out: VATCategory
-        // TODO Look for a better approach!
+        // TODO Look for a better approach! ==> ComboBoxLabelProvider??
         String searchString = (String)fromObject;
-        for (VATCategory vatCategory : categories) {
-            if(CommonConverter.getCategoryName(vatCategory, "").equals(searchString)) {
-                return vatCategory;
+        for (T category : categories) {
+            if(CommonConverter.getCategoryName(category, "").equals(searchString)) {
+                return category;
             }
         }
         return null;

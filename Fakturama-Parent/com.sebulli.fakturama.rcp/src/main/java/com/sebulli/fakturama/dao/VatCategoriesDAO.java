@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -73,8 +74,8 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
         VATCategory result = null;
         if(StringUtils.isNotEmpty(vatCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        	CriteriaQuery<VATCategory> cq = cb.createQuery(VATCategory.class);
-        	Root<VATCategory> rootEntity = cq.from(VATCategory.class);
+        	CriteriaQuery<VATCategory> cq = cb.createQuery(getEntityClass());
+        	Root<VATCategory> rootEntity = cq.from(getEntityClass());
         	// extract the rightmost value
             String[] splittedCategories = vatCategory.split("/");
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
@@ -116,4 +117,41 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+
+	/**
+	 * Find a {@link VATCategory} by its name. If one of the part categories doesn't exist we create it 
+	 * (if withPersistOption is set).
+	 * 
+	 * @param testCat the category to find
+	 * @param withPersistOption persist a (part) category if it doesn't exist
+	 * @return found category
+	 */
+    public VATCategory getCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        VATCategory parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                VATCategory searchCat = findVATCategoryByName(category);
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    VATCategory newCategory = new VATCategory();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+                    save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return parentCategory;
+    }
 }

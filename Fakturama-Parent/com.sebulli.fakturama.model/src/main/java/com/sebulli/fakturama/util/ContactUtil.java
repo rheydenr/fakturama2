@@ -20,14 +20,12 @@ import com.sebulli.fakturama.model.Contact;
 public class ContactUtil {
 	
 	private IEclipsePreferences eclipsePrefs;	
-//	private IEclipsePreferences defaultPrefs;	
 
     /**
 	 * @param eclipsePrefs
 	 */
 	public ContactUtil(IEclipsePreferences eclipsePrefs) {
 		this.eclipsePrefs = eclipsePrefs;
-//		defaultPrefs = eclipsePrefs.node("");
 	}
 
 	/**

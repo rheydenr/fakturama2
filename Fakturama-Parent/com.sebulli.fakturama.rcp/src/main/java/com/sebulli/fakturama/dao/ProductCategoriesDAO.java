@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +49,9 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
     	
 // von ReadAll()        query.setHierarchicalQueryClause(startWith, connectBy, orderSiblingsExpressions);
 
-    	
 		String exampleCategory = CommonConverter.getCategoryName(example, "");
-		List<ProductCategory> foundCandidates = findAllByCategoryName(exampleCategory);
+		exampleCategory = StringUtils.prependIfMissing(exampleCategory, "/", "/");
+		List<ProductCategory> foundCandidates = findByCategoryName(exampleCategory);
 		Optional<ProductCategory> s = foundCandidates.stream().filter(prodCategory -> prodCategory.getName().equalsIgnoreCase(example.getName())).findFirst();
 		result = s.isPresent() ? s.get() : null;
 		return result;
@@ -64,7 +65,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
      * @param productCategory the {@link ProductCategory} to search
      * @return {@link ProductCategory}
      */
-    public List<ProductCategory> findAllByCategoryName(String productCategory) {
+    public List<ProductCategory> findByCategoryName(String productCategory) {
     	List<ProductCategory> result = new ArrayList<ProductCategory>();
         if(StringUtils.isNotEmpty(productCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -81,9 +82,9 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
                 List<ProductCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
                 String testCat = StringUtils.removeStart(productCategory, "/");
-                for (ProductCategory vatCategory2 : tmpResultList) {
-                    if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
-                        result.add(vatCategory2);
+                for (ProductCategory prodCat : tmpResultList) {
+                    if(StringUtils.equals(CommonConverter.getCategoryName(prodCat, ""), testCat)) {
+                        result.add(prodCat);
                     }
                 }
             }
@@ -94,9 +95,50 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
         return result;
     }
     
-    
-    
-    
+
+    /**
+     * Find a {@link ProductCategory} by its name. If one of the part categories doesn't exist we create it 
+     * (if withPersistOption is set).
+     * 
+     * @param testCat the category to find
+     * @param withPersistOption persist a (part) category if it doesn't exist
+     * @return found category
+     */
+    public ProductCategory getCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        ProductCategory parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                List<ProductCategory> foundCategories = findByCategoryName(category);
+                ProductCategory searchCat = null;
+                if(!foundCategories.isEmpty()) {
+                searchCat = foundCategories.get(0);
+                }
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    ProductCategory newCategory = new ProductCategory();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+//                    save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            } 
+            if(!getEntityManager().contains(parentCategory)) {
+                parentCategory = save(parentCategory);
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return parentCategory;
+    }
 
     @PreDestroy
     public void destroy() {

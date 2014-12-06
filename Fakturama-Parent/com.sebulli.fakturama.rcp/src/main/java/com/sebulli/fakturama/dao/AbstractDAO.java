@@ -84,6 +84,8 @@ em.joinTransaction();
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
+        // merge before persist since we could have referenced entities which are already persisted 
+        object = getEntityManager().merge(object);
         getEntityManager().persist(object);
         trx.commit();
         return object;
@@ -93,7 +95,8 @@ em.joinTransaction();
         checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
-        getEntityManager().merge(object);
+        object = getEntityManager().merge(object);
+//        getEntityManager().persist(object);
         trx.commit();
         return object;
     }

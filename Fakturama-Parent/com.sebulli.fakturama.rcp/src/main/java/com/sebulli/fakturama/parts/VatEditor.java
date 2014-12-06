@@ -55,8 +55,8 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
-import com.sebulli.fakturama.parts.converter.StringToVatCategoryConverter;
-import com.sebulli.fakturama.parts.converter.VATCategoryConverter;
+import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
+import com.sebulli.fakturama.parts.converter.CategoryConverter;
 
 /**
  * The VAT editor
@@ -131,25 +131,7 @@ public class VatEditor extends Editor<VAT> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                // to find the complete category we have to start with the topmost category
-                // and then lookup each of the child categories in the given path
-                String[] splittedCategories = testCat.split("/");
-                VATCategory parentCategory = null;
-                String category = "";
-                for (int i = 0; i < splittedCategories.length; i++) {
-                    category += "/" + splittedCategories[i];
-                    VATCategory searchCat = vatCategoriesDAO.findVATCategoryByName(category);
-                    if(searchCat == null) {
-                        // not found? Then create a new one.
-                        VATCategory newCategory = new VATCategory();
-                        newCategory.setName(splittedCategories[i]);
-                        newCategory.setParent(parentCategory);
-                        vatCategoriesDAO.save(newCategory);
-                        searchCat = newCategory;
-                    }
-                    // save the parent and then dive deeper...
-                    parentCategory = searchCat;
-                }
+                VATCategory parentCategory = vatCategoriesDAO.getCategory(testCat, true);
                 // parentCategory now has the last found Category
                 editorVat.setCategory(parentCategory);
             }
@@ -252,39 +234,7 @@ public class VatEditor extends Editor<VAT> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        // Collect all category strings as a sorted Set
-        final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
-            @Override
-            public int compare(VATCategory cat1, VATCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
-        categories.addAll(vatCategoriesDAO.findAll());
-
-        comboCategory = new Combo(top, SWT.BORDER);
-        ComboViewer viewer = new ComboViewer(comboCategory);
-        viewer.setContentProvider(new ArrayContentProvider() {
-            @Override
-            public Object[] getElements(Object inputElement) {
-                return categories.toArray();
-            }
-        });
-        
-        // Add all categories to the combo
-        viewer.setInput(categories);
-        viewer.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-                return element instanceof VATCategory ? CommonConverter.getCategoryName((VATCategory)element, "") : null;
-            }
-        });
-
-        UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
-        vatCatModel2Target.setConverter(new VATCategoryConverter());
-        
-        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToVatCategoryConverter(categories));
-        bindModelValue(editorVat, comboCategory, "category", target2VatcatModel, vatCatModel2Target);
+        createCategoryCombo();
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // The description
@@ -336,6 +286,45 @@ public class VatEditor extends Editor<VAT> {
         if (!newVat) {
             stdComposite.stdButton.setEnabled(true);
         }
+    }
+
+    /**
+     * creates the combo box for the VAT category
+     */
+    private void createCategoryCombo() {
+        // Collect all category strings as a sorted Set
+        final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
+            @Override
+            public int compare(VATCategory cat1, VATCategory cat2) {
+                return cat1.getName().compareTo(cat2.getName());
+            }
+        });
+        categories.addAll(vatCategoriesDAO.findAll());
+
+        comboCategory = new Combo(top, SWT.BORDER);
+        ComboViewer viewer = new ComboViewer(comboCategory);
+        viewer.setContentProvider(new ArrayContentProvider() {
+            @Override
+            public Object[] getElements(Object inputElement) {
+                return categories.toArray();
+            }
+        });
+        
+        // Add all categories to the combo
+        viewer.setInput(categories);
+        viewer.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                return element instanceof VATCategory ? CommonConverter.getCategoryName((VATCategory)element, "") : null;
+            }
+        });
+
+        UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
+        vatCatModel2Target.setConverter(new CategoryConverter<VATCategory>(VATCategory.class));
+        
+        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
+        target2VatcatModel.setConverter(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
+        bindModelValue(editorVat, comboCategory, "category", target2VatcatModel, vatCatModel2Target);
     }
     
     @Inject

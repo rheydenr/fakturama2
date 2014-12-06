@@ -17,23 +17,35 @@ import com.sebulli.fakturama.common.Activator;
 public class LocaleUtil {
     public static final String PROP_NL = "osgi.nl"; 
     private static final Map<String, Locale> localeLookUp = new HashMap<>();
+    private static final Map<String, Locale> countryLocaleMap = new HashMap<>();
     private Locale defaultLocale = Locale.getDefault();
 
     private static LocaleUtil instance;
     
     /** Returns a reference to the {@link LocaleUtil}. */
     public static LocaleUtil getInstance() {
+        return getInstance(Activator.getContext() == null ? System.getProperty(PROP_NL) : Activator.getContext().getProperty(PROP_NL));
+    }
+    
+    public static LocaleUtil getInstance(String lang) {
         if(instance == null) {
-            instance = new LocaleUtil();
+            instance = new LocaleUtil(lang);
         }
         return instance;
     }
     
-    private LocaleUtil() {
-        String[] locales = Locale.getISOCountries();Locale.getDefault();
-        String l = Activator.getContext() == null ? System.getProperty(PROP_NL) : Activator.getContext().getProperty(PROP_NL);
-        if(!StringUtils.isEmpty(l)) {
-            Locale b = new Locale.Builder().setLanguage(l).build();
+    /**
+     * hidden constructor.
+     * 
+     */
+    private LocaleUtil() {}
+    
+    private LocaleUtil(String lang) {
+        String[] locales = Locale.getISOCountries();
+        if(!StringUtils.isEmpty(lang)) {
+            // the language code are the letters before "_"
+            lang = StringUtils.substringBefore(lang, "_");
+            Locale b = new Locale.Builder().setLanguage(lang).build();
             if(b != null) {
                 defaultLocale = b;
             }
@@ -41,8 +53,14 @@ public class LocaleUtil {
         for (String countryCode : locales) {
             Locale obj = new Locale("", countryCode);
             localeLookUp.put(countryCode, obj);
-            System.out.println("Country Code = " + obj.getCountry() + ", Country Name = " + obj.getDisplayCountry(defaultLocale));
+            countryLocaleMap.put(obj.getDisplayCountry(defaultLocale), obj);
+//            System.out.println("Country Code = " + obj.getCountry() + ", Country Name = " + obj.getDisplayCountry(defaultLocale));
         }
+    }
+    
+    public String findCodeByDisplayCountry(String country) {
+        Locale retval = countryLocaleMap.get(country);
+        return retval != null ? retval.getCountry() : null;
     }
 
     /**
@@ -52,13 +70,17 @@ public class LocaleUtil {
      * @param country
      * @return
      */
-    public static String findByName(String country) {
+    public String findByName(String country) {
         Locale countryLocaleString = localeLookUp.get(country);
-        return countryLocaleString.getDisplayCountry(Locale.GERMAN);
+        return countryLocaleString != null ? countryLocaleString.getDisplayCountry(defaultLocale) : null;
     }
     
-    public static void main(String[] args) {
-        LocaleUtil t = new LocaleUtil();
+    public Locale getDefaultLocale() {
+        return defaultLocale;
     }
-
+    
+//    public static void main(String[] args) {
+//        LocaleUtil t = new LocaleUtil();
+//    }
+//
 }

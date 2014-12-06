@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -35,10 +36,12 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -567,6 +570,21 @@ public abstract class Editor<T extends IEntity> {
                 getMDirtyablePart().setDirty(true);
             }
         });
+         
+    }
+
+    protected void bindModelValue(T target, ComboViewer source, String property) {
+        IObservableValue model = BeansObservables.observeValue(target, property);
+        IObservableValue uiWidget = ViewersObservables
+                .observeSingleSelection(source);
+        ctx.bindValue(uiWidget, model);
+
+//        source.getControl().addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                getMDirtyablePart().setDirty(true);
+//            }
+//        });
          
     }
 

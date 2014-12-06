@@ -10,12 +10,14 @@
  * 
  * Contributors:
  *     Gerd Bartelt - initial API and implementation
+ *     Ralf Heydenreich - enhancement for JavaMoney
  */
 
 package com.sebulli.fakturama.dto;
 
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.RoundedMoney;
 
@@ -27,7 +29,6 @@ import com.sebulli.fakturama.model.DocumentItem;
  * 
  * Calculate gross values from net values. Rounding of all values.
  * 
- * @author Gerd Bartelt
  */
 public class Price {
 
@@ -86,10 +87,10 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
-	public Price(DocumentItem item, Double scaleFactor) {
-		this(item.getOptional() ? 0.0 : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX").multiply(scaleFactor), item.getItemVat().getTaxValue(), item
-				.getItemRebate(), item.getNoVat(), false);	
-	}
+    public Price(DocumentItem item, Double scaleFactor) {
+        this(BooleanUtils.toBoolean(item.getOptional()) ? 0.0 : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX").multiply(scaleFactor), item
+                .getItemVat().getTaxValue(), item.getItemRebate(), item.getNoVat(), false);
+    }
 
 //	/**
 //	 * Constructor Create a price value from an expenditure item

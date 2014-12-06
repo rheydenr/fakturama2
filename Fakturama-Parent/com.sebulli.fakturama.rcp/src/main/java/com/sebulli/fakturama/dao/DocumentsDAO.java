@@ -23,6 +23,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -79,7 +80,8 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      * @return
      */
     public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
-        BillingType billingType = getBillingTypeFromDocumentType(type);
+        FakturamaModelFactory modelFactory = new FakturamaModelFactory();
+        BillingType billingType = modelFactory.createBillingTypeFromString(type.getTypeAsString());
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
         Root<Document> root = criteria.from(Document.class);
@@ -93,19 +95,5 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                       )
             );
         return getEntityManager().createQuery(cq).getResultList();
-    }
-    
-    /**
-     * The BillingType is added here because that was for the database modeling. The Document types
-     * are merely for UI actions. But we have to put these two enums together.
-     */
-    private BillingType getBillingTypeFromDocumentType(DocumentType type) {
-        BillingType retval = null;
-        for (BillingType billingType : BillingType.values()) {
-            if(billingType.name().contentEquals(type.getTypeAsString())) {
-                retval = billingType;
-            }
-        }
-        return retval;
     }
 }

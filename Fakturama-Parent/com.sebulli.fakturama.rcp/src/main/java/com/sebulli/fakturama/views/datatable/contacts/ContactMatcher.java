@@ -17,7 +17,6 @@ package com.sebulli.fakturama.views.datatable.contacts;
 import ca.odell.glazedlists.matchers.Matcher;
 
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
@@ -50,14 +49,15 @@ final class ContactMatcher implements Matcher<Contact> {
         if(!isRootNode) {
             // a contact can have more than one category,
             // therefore we have to iterate over all them
+            // TODO for now, we have only one category
             String fullCategoryName;
-            for (ContactCategory category : item.getCategories()) {
-                fullCategoryName = CommonConverter.getCategoryName(category, rootNodeName);
+//            for (ContactCategory category : item.getCategories()) {
+                fullCategoryName = CommonConverter.getCategoryName(item.getCategories(), rootNodeName);
                 if(fullCategoryName.startsWith(contactCategoryName)) {
                     found = true;
-                    break;
+//                    break;
                 }
-            }
+//            }
         }
         return isRootNode || found;
     }
