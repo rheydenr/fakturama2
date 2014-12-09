@@ -41,7 +41,7 @@
                   </children>
                 </menus>
                 <toolbar xmi:id="_sAlE4Hs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.rcp.toolbar.1">
-                  <children xsi:type="menu:HandledToolItem" xmi:id="_vvjRAHs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_vvjRAHs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_c8eN4Ey7EeOA3qmx22wNtw"/>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_DvuawHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>
               </children>
@@ -186,7 +186,6 @@
   <handlers xmi:id="_RmPTv-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.quitCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QuitHandler" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_6ClWICDaEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.rcp.handler.delete" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.DeleteHandler" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
   <handlers xmi:id="_RmPTwutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.aboutCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.AboutHandler" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
-  <handlers xmi:id="_RmPTw-tOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.handler" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.tools.emf.liveeditor/org.eclipse.e4.tools.emf.liveeditor.OpenLiveDialogHandler" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_RmPTxOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.handler.opencontacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenContactsHandler" command="_RmPT0-tOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_OXcLEJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.rcp.handler.openvats" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenVatsHandler" command="_f9TOgJNwEeOHwsccdr5WIQ"/>
   <handlers xmi:id="__VvQYEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.handler.selectWorkspace" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
@@ -201,7 +200,7 @@
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
-    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9" command="_RmPT1OtOEeKo5Ms1QUgPTw"/>
+    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9"/>
     <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.eclipse.ui.file.print.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
   </bindingTables>
   <bindingTables xmi:id="_smR5cGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingtable.viewlist" bindingContext="_c7LSgGFOEeShb_NtiSSU9w">
@@ -244,7 +243,6 @@
   <commands xmi:id="_EDLOIDtZEeOcltwCzP-ZbQ" elementId="org.eclipse.ui.window.preferences" commandName="%main.menu.file.openpreferences" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_mzJEUEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.command.selectWorkspace" commandName="%command.selectworkspace.name" description="%command.selectworkspace.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_RAuAAEf5EeO7mNzAwIZUXQ" elementId="org.eclipse.ui.file.export" commandName="%main.menu.file.export"/>
-  <commands xmi:id="_RmPT1OtOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="Show running app model" description="Show the running application model"/>
   <commands xmi:id="_huYFgEstEeOZ37-tYt-QvQ" elementId="command.new.letter" commandName="%toolbar.new.letter.name" description="%main.menu.new" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_musJMEvnEeOlALHF9EqnUg" elementId="command.new.offer" commandName="%toolbar.new.offer.name" description="%main.menu.new" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_nD_DwEvnEeOlALHF9EqnUg" elementId="command.new.order" commandName="%toolbar.new.order.name" description="%main.menu.new" category="_no8mgEstEeOZ37-tYt-QvQ"/>

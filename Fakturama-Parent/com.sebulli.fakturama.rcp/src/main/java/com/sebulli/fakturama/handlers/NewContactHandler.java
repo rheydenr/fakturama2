@@ -59,20 +59,5 @@ public class NewContactHandler/* extends NewEditorAction */{
         params.put("com.sebulli.fakturama.editors.editortype", ContactEditor.ID);
         ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
         handlerService.executeHandler(parameterizedCommand);	    
-//
-//		// cancel, if the data base is not connected.
-//		if (!DataBaseConnectionState.INSTANCE.isConnected())
-//			return;
-//
-//		// Sets the editors input
-//		UniDataSetEditorInput input = new UniDataSetEditorInput(category);
-//
-//		// Open a new Contact Editor 
-//		try {
-//			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, ContactEditor.ID);
-//		}
-//		catch (PartInitException e) {
-//			Logger.logError(e, "Error opening Editor: " + ContactEditor.ID);
-//		}
 	}
 }

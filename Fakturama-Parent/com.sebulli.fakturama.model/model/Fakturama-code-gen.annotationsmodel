@@ -97,6 +97,13 @@
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
+        <entity>
+          <entityListeners>
+            <entityListener class="com.sebulli.fakturama.model.EntityListener"/>
+          </entityListeners>
+        </entity>
+      </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/customerNumber"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="customerNumber" getter="getCustomerNumber" defaultValue="null" setter="setCustomerNumber" validJavaMemberName="customerNumber" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>

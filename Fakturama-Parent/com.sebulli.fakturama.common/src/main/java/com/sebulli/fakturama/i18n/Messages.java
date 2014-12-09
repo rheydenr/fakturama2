@@ -49,6 +49,8 @@ public class Messages {
     public String editorContactHintSeepreferences;
 	public String editorContactLabelAddress;
     public String editorContactLabelBankaccount;
+    public String editorContactFieldAccountnumberDisabledinfo;
+    public String editorContactFieldBankcodeDisabledinfo;
     public String editorContactFieldNumberTooltip;
     public String editorContactFieldDeliveryaddressequalsName;
     public String editorContactFieldLastnamefirstnameName;

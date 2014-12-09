@@ -18,6 +18,7 @@ package com.sebulli.fakturama.parts;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -61,12 +62,15 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
@@ -105,10 +109,10 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtStreet;
 	private Text txtZip;
 	private Text txtCity;
-	private Text txtCountry;
+	private ComboViewer comboCountry;
 	private CDateTime dtBirthday;
 //	private DateTime dtBirthday;
-	private Combo comboDeliveryGender;
+	private ComboViewer comboDeliveryGender;
 	private Text txtDeliveryTitle;
 	private Text txtDeliveryFirstname;
 	private Text txtDeliveryName;
@@ -117,7 +121,7 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtDeliveryStreet;
 	private Text txtDeliveryZip;
 	private Text txtDeliveryCity;
-	private Text txtDeliveryCountry;
+	private ComboViewer comboDeliveryCountry;
 	private Text txtAccountHolder;
 	private Text txtAccount;
 	private Text txtBankCode;
@@ -126,7 +130,6 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtBIC;
     private Text txtMandatRef;
 	private Text txtNr;
-	private Combo comboPayment;
 	private ComboViewer comboPaymentViewer;
 	private ComboViewer comboReliability;
 	private Text txtPhone;
@@ -176,6 +179,9 @@ public class ContactEditor extends Editor<Contact> {
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
+    
+    @Inject
+    private PaymentsDAO paymentsDao;
 	
 	@Inject
 	@Preference  //(nodePath = "/configuration/contactPreferences")
@@ -370,7 +376,7 @@ public class ContactEditor extends Editor<Contact> {
 		txtDeliveryStreet.setText(txtStreet.getText());
 		txtDeliveryZip.setText(txtZip.getText());
 		txtDeliveryCity.setText(txtCity.getText());
-		txtDeliveryCountry.setText(txtCountry.getText());
+//		txtDeliveryCountry.setText(comboCountry.getText());
 	}
 
 //	/**
@@ -411,6 +417,14 @@ public class ContactEditor extends Editor<Contact> {
 		useLastNameFirst = (contactPreferences.getInt("CONTACT_NAME_FORMAT", 1) == 1);
 		useCompany = contactPreferences.getBoolean("CONTACT_USE_COMPANY", false);
 		useCountry = contactPreferences.getBoolean("CONTACT_USE_COUNTRY", false);
+		
+		// now do some helpful initializations (needed for combo boxes)
+        Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
+		
+		Map<Integer, String> genderList = new HashMap<>();
+		for (int i = 0; i < 4; i++) {
+		    genderList.put(i, getGenderString(i));
+		} 
 
 		// Create the parent Composite
         top = new Composite(parent, SWT.NONE);
@@ -540,11 +554,6 @@ public class ContactEditor extends Editor<Contact> {
 		// Gender
 		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
 		comboGender.setContentProvider(new HashMapContentProvider());
-		
-		Map<Integer, String> genderList = new HashMap<>();
-		for (int i = 0; i < 4; i++) {
-		    genderList.put(i, getGenderString(i));
-		} 
 		comboGender.setInput(genderList);
 		comboGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
@@ -616,10 +625,14 @@ public class ContactEditor extends Editor<Contact> {
 		//T: Tool Tip Text
 		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
-		txtCountry = new Text(useCountry ? addressGroup : invisible, SWT.BORDER);
-		txtCountry.setToolTipText(labelCountry.getToolTipText());
-		bindModelValue(editorContact, txtCountry, Contact_.address.getName() + "." + Address_.country.getName(), 32);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtCountry);
+
+		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER);
+		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
+		comboCountry.setContentProvider(new StringHashMapContentProvider());
+		comboCountry.setInput(countryNames);
+		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+		bindModelValue(editorContact, comboCountry, Contact_.address.getName() + "." + Address_.country.getName());
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
 		
 		// Birthday
 		Label labelBirthday = new Label(addressGroup, SWT.NONE);
@@ -632,19 +645,11 @@ public class ContactEditor extends Editor<Contact> {
         dtBirthday = new CDateTime(addressGroup, CDT.BORDER | CDT.DROP_DOWN);
         dtBirthday.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         dtBirthday.setFormat(CDT.DATE_MEDIUM);
-		
-//		dtBirthday = new DateTime(addressGroup, SWT.DROP_DOWN);
 		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
 		GridDataFactory.swtDefaults().applyTo(dtBirthday);
-		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
-		
 		// Set the dtBirthday widget to the contact's birthday date
-//		GregorianCalendar calendar = new GregorianCalendar();
-//		if(editorContact.getBirthday() != null) {
-//			calendar = DataUtils.getCalendarFromDateString(editorContact.getBirthday());
-//		}
-//		dtBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-//
+		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
+
 		// Group: delivery address
 		deliveryGroup = new Group(tabAddress, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(deliveryGroup);
@@ -663,16 +668,16 @@ public class ContactEditor extends Editor<Contact> {
 		if (useTitle)
 			//T: "Title" (part of an address)
 			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + msg.commonFieldTitle);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
 
 		// Delivery Gender
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
-		comboDeliveryGender = new Combo(useGender ? deliveryGroup : invisible, SWT.BORDER);
-		for (int i = 0; i < 4; i++)
-			comboDeliveryGender.add(getGenderString(i), i);
-//		comboDeliveryGender.select(editorContact.getDeliveryGender());
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender);
+		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER);
+		comboDeliveryGender.setContentProvider(new HashMapContentProvider());
+        comboDeliveryGender.setInput(genderList);
+        comboDeliveryGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
 		bindModelValue(editorContact, comboDeliveryGender, Contact_.deliveryContacts.getName() +"." +Contact_.gender.getName());
-
+		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
+		
 		// Delivery Title
 		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
 		bindModelValue(editorContact, txtDeliveryTitle, Contact_.deliveryContacts.getName() +"." +Contact_.title.getName(), 32);
@@ -738,10 +743,13 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCountry.setText(msg.commonFieldCountry);
 		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
-		txtDeliveryCountry = new Text(useCountry ? deliveryGroup : invisible, SWT.BORDER);
-		txtDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		bindModelValue(editorContact, txtDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.country.getName(), 32);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryCountry);
+		comboDeliveryCountry = new ComboViewer(useCountry ? deliveryGroup : invisible, SWT.BORDER);
+		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
+        comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
+        comboDeliveryCountry.setInput(countryNames);
+        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+		bindModelValue(editorContact, comboDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.country.getName());
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday
 		Label labelDelivererBirthday = new Label(deliveryGroup, SWT.NONE);
@@ -757,14 +765,6 @@ public class ContactEditor extends Editor<Contact> {
 		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
 		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
 		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.deliveryContacts.getName() +"." +Contact_.birthday.getName());
-		
-//		// Set the dtDeliveryBirthday widget to the deliverer's birthday date
-//		if(!"".equals(contact.getDeliveryBirthday())) {
-//			calendar = DataUtils.getCalendarFromDateString(contact.getDeliveryBirthday());
-//		} else {
-//			calendar = new GregorianCalendar();
-//		}
-//		dtDeliveryBirthday.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
 		// Controls in the tab "Bank"
 
@@ -784,6 +784,8 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
 		txtAccount = new Text(tabBank, SWT.BORDER);
 		bindModelValue(editorContact, txtAccount, Contact_.account.getName(), 32);
+		txtAccount.setEnabled(false);
+		txtAccount.setToolTipText(msg.editorContactFieldAccountnumberDisabledinfo);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
 
 		// Bank code
@@ -792,6 +794,8 @@ public class ContactEditor extends Editor<Contact> {
 		labelBankCode.setText(msg.editorContactFieldBankcodeName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankCode);
 		txtBankCode = new Text(tabBank, SWT.BORDER);
+		txtBankCode.setToolTipText(msg.editorContactFieldBankcodeDisabledinfo);
+		txtBankCode.setEnabled(false);
 		bindModelValue(editorContact, txtBankCode, Contact_.bankCode.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
 
@@ -842,20 +846,7 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
 		createCategoryCombo(tabMisc);
-//		comboCategory = new Combo(tabMisc, SWT.BORDER);
-//		comboCategory.setText(contact.getCategory());
-		comboCategory.setToolTipText(labelCategory.getToolTipText());
-//		bindModelValue(editorContact, comboCategory, Contact_.categories);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
-
-		// Collect all category strings
-//		TreeSet<String> categories = new TreeSet<String>();
-//		categories.addAll(contactDAO.getCategoryStrings());
-
-		// Add all category strings to the combo
-//		for (Object category : categories) {
-//			comboCategory.add(category.toString());
-//		}
+        comboCategory.setToolTipText(labelCategory.getToolTipText());
 
 		// Suppliernumber
 		Label labelSupplier = new Label(tabMisc, SWT.NONE);
@@ -865,7 +856,6 @@ public class ContactEditor extends Editor<Contact> {
 		txtSupplierNr = new Text(tabMisc, SWT.BORDER);
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtSupplierNr);
-		
 		
 		// EMail
 		Label labelEmail = new Label(tabMisc, SWT.NONE);
@@ -920,10 +910,12 @@ public class ContactEditor extends Editor<Contact> {
 		labelPayment.setToolTipText(msg.editorContactFieldPaymentTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPayment);
-		comboPayment = new Combo(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPayment);
-		comboPayment.setToolTipText(labelPayment.getToolTipText());
-		comboPaymentViewer = new ComboViewer(comboPayment);
+		comboPaymentViewer = new ComboViewer(tabMisc, SWT.BORDER);
+		comboPaymentViewer.getCombo().setToolTipText(labelPayment.getToolTipText());
+		List<Payment> allPayments = paymentsDao.findAll();
+		comboPaymentViewer.setContentProvider(new EntityComboProvider());
+		comboPaymentViewer.setLabelProvider(new EntityLabelProvider());
+		comboPaymentViewer.setInput(allPayments);
 //		comboPaymentViewer.setContentProvider(new UniDataSetContentProvider());
 //		comboPaymentViewer.setLabelProvider(new UniDataSetLabelProvider());
 //		comboPaymentViewer.setInput(Data.INSTANCE.getPayments().getDatasets());
@@ -938,7 +930,8 @@ public class ContactEditor extends Editor<Contact> {
 //		catch (IndexOutOfBoundsException e) {
 //			comboPayment.setText("invalid");
 //		}
-//		superviceControl(comboPayment);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPaymentViewer.getCombo());
+        bindModelValue(editorContact, comboPaymentViewer, Contact_.payment.getName());
 
 		// Reliability
 		Label labelReliability = new Label(tabMisc, SWT.NONE);
@@ -1085,6 +1078,7 @@ public class ContactEditor extends Editor<Contact> {
         UpdateValueStrategy target2CatModel = new UpdateValueStrategy();
         target2CatModel.setConverter(new StringToCategoryConverter<ContactCategory>(categories, ContactCategory.class));
         bindModelValue(editorContact, comboCategory, Contact_.categories.getName(), target2CatModel, catModel2Target);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
     }
 
 	/**

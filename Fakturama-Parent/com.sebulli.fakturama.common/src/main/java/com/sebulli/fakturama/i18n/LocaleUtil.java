@@ -6,6 +6,9 @@ package com.sebulli.fakturama.i18n;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,6 +24,7 @@ public class LocaleUtil {
     private Locale defaultLocale = Locale.getDefault();
 
     private static LocaleUtil instance;
+    private SortedMap<String, String> localeCountryMap;
     
     /** Returns a reference to the {@link LocaleUtil}. */
     public static LocaleUtil getInstance() {
@@ -77,6 +81,26 @@ public class LocaleUtil {
     
     public Locale getDefaultLocale() {
         return defaultLocale;
+    }
+
+    /**
+     * @return the countrylocalemap
+     */
+    public Map<String, Locale> getCountryLocaleMap() {
+        return countryLocaleMap;
+    }
+
+    public Map<String, String> getLocaleCountryMap() {
+        if(localeCountryMap == null) {
+            Map<String, String> tmpMap = new HashMap<String, String>();
+            for (Entry<String, Locale> entry : countryLocaleMap.entrySet()) {
+                tmpMap.put(entry.getValue().getCountry(), entry.getKey());
+            }
+            ValueComparator bvc = new ValueComparator(tmpMap);
+            localeCountryMap = new TreeMap<>(bvc);
+            localeCountryMap.putAll(tmpMap);
+        }
+        return localeCountryMap;
     }
     
 //    public static void main(String[] args) {

@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -507,6 +506,10 @@ public abstract class Editor<T extends IEntity> {
     protected void bindModelValue(T target, final Scrollable source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IObservableValue model = BeansObservables.observeValue(target, property);
         IObservableValue uiWidget;
+        /*
+         * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
+         * Otherwise you get ALWAYS a dirty editor!
+         */
         if(source instanceof Combo) {
             uiWidget = WidgetProperties.selection().observe(source);
         } else if(source instanceof CDateTime) {
@@ -525,6 +528,13 @@ public abstract class Editor<T extends IEntity> {
             ((Combo)source).addModifyListener(new ModifyListener() {
                 @Override
                 public void modifyText(ModifyEvent e) {
+                    getMDirtyablePart().setDirty(true);
+                }
+            });
+        } else if(source instanceof CDateTime) {
+            ((CDateTime)source).addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
                     getMDirtyablePart().setDirty(true);
                 }
             });
