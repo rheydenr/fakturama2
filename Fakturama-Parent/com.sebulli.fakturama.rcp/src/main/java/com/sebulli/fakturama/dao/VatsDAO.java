@@ -1,7 +1,9 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.annotation.PreDestroy;
@@ -9,8 +11,10 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -92,6 +96,21 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	    attribVector.addElement(VAT_.taxValue.getName());
 	    map.put(getEntityClass(), attribVector);
 	    return map;
+	}
+	
+	@Override
+	protected Set<Predicate> getRestrictions(VAT object, CriteriaBuilder cb, Root<VAT> product) {
+        Set<Predicate> restrictions = new HashSet<>();
+	    // Only the name and the
+	    // values are compared If the name is not set, only the values are used.
+	    // If the name of the DataSet to test is empty, than search for an entry with at least the same VAT value
+	    if(StringUtils.isNotBlank(object.getName())) {
+	        restrictions.add(cb.equal(product.get(VAT_.name), object.getName()));
+	    }
+	    // if tax value is not set we create an irregular value to compare
+	    // (forcing create a new object)
+        restrictions.add(cb.equal(product.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(-10.0)));
+	    return restrictions;
 	}
 
 	/**

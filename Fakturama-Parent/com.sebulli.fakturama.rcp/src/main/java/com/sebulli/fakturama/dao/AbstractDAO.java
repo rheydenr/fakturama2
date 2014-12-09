@@ -15,8 +15,10 @@ package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -24,6 +26,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -155,7 +158,56 @@ em.joinTransaction();
         }
         return retval;
     }
+    
+    /**
+     * <P>Find or create an Entity based on given Entity. This method is used e.g.
+     * for web shop import where a new contact is only created if it doesn't exist. 
+     * </P><P>
+     * This method is analogous to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
+     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)}.
+     * @param contact Entity to test
+     * @return found or newly created Entity
+     */
+    public T findOrCreate(T object) {
+        T retval = null;
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
+        Root<T> root = query.from(getEntityClass());
+        Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
+        CriteriaQuery<T> select = query.select(root);
+        for (Predicate predicate : restrictions) {
+            select = select.where(predicate);
+        }
+
+        List<T> resultList = getEntityManager().createQuery(select).getResultList();
+        try {
+            if (resultList.isEmpty()) {
+                retval = save(object);
+            }
+            else {
+                retval = resultList.get(0);
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return retval;
+    }
   
+    /**
+     * Restrictions for {@link AbstractDAO#findOrCreate} method.
+     * 
+     * @param object
+     * @param criteriaBuilder
+     * @param root
+     * @see AbstractDAO#findOrCreate(Object)
+     * @return {@link Set}
+     */
+    protected Set<Predicate> getRestrictions(T object, CriteriaBuilder criteriaBuilder, Root<T> root) {
+        return new HashSet<>();
+    }
+
     @SuppressWarnings("unchecked")
     public T findByExample(T example) {
         ReadAllQuery query = new ReadAllQuery(getEntityClass());

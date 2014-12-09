@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -58,6 +57,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
@@ -317,11 +317,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 // when calling the editor command.
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
-                Command callEditor = commandService.getCommand("com.sebulli.fakturama.command.callEditor");
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(selectedObject.getId()));
                 params.put("com.sebulli.fakturama.editors.editortype", getEditorId());
-                ParameterizedCommand parameterizedCommand = ParameterizedCommand.generateCommand(callEditor, params);
+                ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
             }
         });

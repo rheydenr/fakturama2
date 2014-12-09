@@ -33,6 +33,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -127,7 +128,7 @@ public class LifecycleManager {
         catch (InterruptedException e) {
             log.info("ready to go ahead and look for default values in db.");
         }
-        
+        FakturamaModelFactory modelFactory = new FakturamaModelFactory();
         VatsDAO vatsDAO = context.get(VatsDAO.class);
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
@@ -135,27 +136,31 @@ public class LifecycleManager {
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         // Set the default values to this entries
         Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
-        VAT defaultVat = null;
+        VAT defaultVat = modelFactory.createVAT();
+        defaultVat.setName(msg.dataDefaultVat);
+        defaultVat.setDescription(msg.dataDefaultVatDescription);
+        defaultVat.setTaxValue(0.0);
         if(vatsDAO.getCount() == 0L) {
-            defaultVat = new VAT();
-            defaultVat.setName(msg.dataDefaultVat);
-            defaultVat.setDescription(msg.dataDefaultVatDescription);
-            defaultVat.setTaxValue(0.0);
             defaultVat = vatsDAO.save(defaultVat);
+        } else if(defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
+            defaultVat = vatsDAO.findOrCreate(defaultVat);
         }
         if(defaultVat != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
             defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
         
-        Shipping defaultShipping;
-        if(shippingsDAO.getCount() == 0L) {
-            defaultShipping = new Shipping();
-            defaultShipping.setName(msg.dataDefaultShipping);
-            defaultShipping.setDescription(msg.dataDefaultShippingDescription);
-            defaultShipping.setShippingValue(0.0);
-            defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
-            defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
-            defaultShipping = shippingsDAO.update(defaultShipping);
+        Shipping defaultShipping = modelFactory.createShipping();
+        defaultShipping.setName(msg.dataDefaultShipping);
+        defaultShipping.setDescription(msg.dataDefaultShippingDescription);
+        defaultShipping.setShippingValue(0.0);
+        defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
+        defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
+        if (shippingsDAO.getCount() == 0L) {
+            defaultShipping = shippingsDAO.save(defaultShipping);
+        } else if(defaultNode.getLong(Constants.DEFAULT_SHIPPING, 0L) == 0L) {
+            defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
+        }
+        if(defaultShipping != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
             defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
 

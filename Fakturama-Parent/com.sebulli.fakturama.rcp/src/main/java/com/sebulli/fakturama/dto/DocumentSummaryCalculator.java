@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryRounding;
+import javax.money.MonetaryRoundings;
 
 import org.javamoney.moneta.FastMoney;
 
@@ -57,6 +59,8 @@ public class DocumentSummaryCalculator {
 		Double vatPercent;
 		String vatDescription;
 		Double scaleFactor = 1.0;
+		int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
+		MonetaryRounding rounding = MonetaryRoundings.getDefaultRounding();
 
 		// This Vat summary contains only the VAT entries of this document,
 		// whereas the the parameter vatSummaryItems is a global VAT summary
@@ -99,9 +103,9 @@ public class DocumentSummaryCalculator {
 		// *** round sum of items
 		
 		// round to full net cents
-//		if (netgross == DocumentSummary.ROUND_NET_VALUES) {
-//			this.itemsNet.round();
-//		} 
+		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
+//		    retval.setItemsNet(retval.getItemsNet().with(rounding));
+		} 
 		
 		// Gross value is the sum of net and VAT value
 		retval.setTotalNet(retval.getItemsNet());
@@ -109,12 +113,12 @@ public class DocumentSummaryCalculator {
 		retval.setTotalGross(retval.getTotalGross().add(retval.getTotalVat()));
 		
 		// round to full gross cents
-//		if (netgross == DocumentSummary.ROUND_GROSS_VALUES) {
-//			this.itemsGross.round();
-//			this.itemsNet.set(this.itemsGross.asDouble() - this.totalVat.asDouble() );
-//			this.totalNet.set(this.itemsNet.asDouble());
-//		}
-//		this.totalGross.set(this.itemsGross.asDouble());
+		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
+//			retval.getItemsGross().round();
+		    retval.setItemsNet(retval.getItemsGross().subtract(retval.getTotalVat()));
+		    retval.setTotalNet(retval.getItemsNet());
+		}
+		retval.setTotalGross(retval.getItemsGross());
 		
 		MonetaryAmount itemsNet = retval.getItemsNet();
 		MonetaryAmount itemsGross = retval.getItemsGross();
@@ -185,24 +189,24 @@ public class DocumentSummaryCalculator {
 			retval.setTotalVat(retval.getTotalVat().add(discountVatValue));
 			retval.setTotalNet(retval.getTotalNet().add(discountNet));
 			
-//			// round to full net cents
-//			if (netgross == DocumentSummary.ROUND_NET_VALUES) {
+			// round to full net cents
+			if (netGross == DocumentSummary.ROUND_NET_VALUES) {
 //				this.discountNet.round();
 //				this.totalNet.round();
-//			} 
-//			
-//			if (netgross != DocumentSummary.ROUND_GROSS_VALUES) {
-//				this.totalGross.set(this.totalNet.asDouble() + this.totalVat.asDouble());
-//			}
-//			
-//			// round to full gross cents
-//			if (netgross == DocumentSummary.ROUND_GROSS_VALUES) {
+			} 
+			
+			if (netGross != DocumentSummary.ROUND_GROSS_VALUES) {
+				retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat()));
+			}
+			
+			// round to full gross cents
+			if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //				this.discountGross.round();
-//				this.totalGross.add(this.discountGross.asDouble());
+			    retval.setTotalGross(retval.getTotalGross().add(retval.getDiscountGross()));
 //				this.totalGross.round();
-//				this.discountNet.set(this.discountGross.asDouble() - discountVatValue);
-//				this.totalNet.set(this.totalGross.asDouble() - this.totalVat.asDouble());
-//			}
+			    retval.setDiscountNet(retval.getDiscountGross().subtract(discountVatValue));
+			    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()));
+			}
 		}
 
 		// calculate shipping
@@ -276,9 +280,7 @@ public class DocumentSummaryCalculator {
 
 				// Adjust the vat summary item by the shipping part
 				documentVatSummaryItems.add(shippingVatSummaryItem);
-
 			}
-
 		}
 
 		// If shippingAutoVat is fix set, the shipping vat is 
@@ -301,66 +303,65 @@ public class DocumentSummaryCalculator {
 
 			// Adjust the vat summary item by the shipping part
 			documentVatSummaryItems.add(shippingVatSummaryItem);
-
 		}
 
-//		// round to full net cents
-//		if (netgross == DocumentSummary.ROUND_NET_VALUES) {
+		// round to full net cents
+		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
 //			this.shippingNet.round();
 //			this.totalNet.round();
-//		} 
-//		
+		} 
+		
 		retval.setShippingGross(retval.getShippingNet().add(retval.getShippingVat()));
 		
-//		// round to full gross cents
-//		if (netgross == DocumentSummary.ROUND_GROSS_VALUES) {
+		// round to full gross cents
+		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //			this.shippingGross.round();
 //			this.totalGross.round();
-//			this.totalNet.set(this.totalGross.asDouble() - this.totalVat.asDouble());
-//			this.shippingNet.set(this.shippingGross.asDouble() - this.shippingVat.asDouble());
-//		}
+		    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()));
+		    retval.setShippingNet(retval.getShippingGross().subtract(retval.getShippingVat()));
+		}
 
 		
 		// Add the shipping to the documents sum.
 		retval.setTotalVat(retval.getTotalVat().add(retval.getShippingVat()));
 		retval.setTotalNet(retval.getTotalNet().add(retval.getShippingNet()));
-		retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat()));
+		retval.setTotalGross(retval.getTotalNet().add(retval.getShippingVat()));
 
-//		// Finally, round the values
-//		if (netgross == DocumentSummary.ROUND_NET_VALUES) {
+		// Finally, round the values
+		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
 //			this.totalNet.round();
 //			this.totalVat.round();
-//			this.totalGross.set(this.totalNet.asDouble() + this.totalVat.asDouble());
-//		} else if (netgross == DocumentSummary.ROUND_GROSS_VALUES) {
+		    retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat()));
+		} else if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //			this.totalGross.round();
 //			this.totalVat.round();
-//			this.totalNet.set(this.totalGross.asDouble() - this.totalVat.asDouble());
-//		} else {
+		    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()));
+		} else {
 //			this.totalNet.round();
 //			this.totalGross.round();
-//			this.totalVat.set(this.totalGross.asDouble() - this.totalNet.asDouble());
-//		}
-//
+			retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
+		}
+
 //		this.discountNet.round();
 //		this.discountGross.round();
-//
+
 //		this.itemsNet.round();
 //		this.itemsGross.round();
-//
-//		// Finally, round the values
-//		if (netgross == DocumentSummary.ROUND_NET_VALUES) {
+
+		// Finally, round the values
+		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
 //			this.shippingNet.round();
 //			this.shippingVat.round();
-//			this.shippingGross.set(this.shippingNet.asDouble() + this.shippingVat.asDouble());
-//		} else if (netgross == DocumentSummary.ROUND_GROSS_VALUES) {
+			retval.setShippingGross(retval.getShippingNet().add(retval.getShippingVat()));
+		} else if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //			this.shippingGross.round();
 //			this.shippingVat.round();
-//			this.shippingNet.set(this.shippingGross.asDouble() - this.shippingVat.asDouble());
-//		} else {
+		    retval.setShippingNet(retval.getShippingGross().subtract(retval.getShippingVat()));
+		} else {
 //			this.shippingNet.round();
 //			this.shippingGross.round();
-//			this.shippingVat.set(this.shippingGross.asDouble() - this.shippingVat.asDouble());
-//		}
+		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingVat()));
+		}
 
 		//calculate the final payment
 		retval.setDeposit(FastMoney.of(dataSetDocument.getDeposit(), currencyCode));

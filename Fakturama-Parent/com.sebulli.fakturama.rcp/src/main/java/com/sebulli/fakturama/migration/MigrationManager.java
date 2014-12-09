@@ -548,7 +548,7 @@ public class MigrationManager {
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
 				document.setBillingType(BillingType.get(oldDocument.getCategory()));
 				document.setCustomerRef(oldDocument.getCustomerref());
-				document.setCreationDate(getSaveParsedDate(oldDocument.getDate()));
+//				document.setCreationDate(getSaveParsedDate(oldDocument.getDate()));
 				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 

@@ -45,7 +45,7 @@ Additional code for JavaBeans
 		if(«this.name» != null) {
 	   		retval &= «this.name» == other.«this.getter»();
 	   	}
-   		«ELSE»//true /* this is for the id */«ENDIF»
+   		«ELSE» «ENDIF»
 	«ELSEIF this.type == 'java.util.Date' || this.type == 'java.lang.Integer' || this.type == 'java.lang.String' || this.type == 'java.lang.Double' || this.type == 'java.lang.Boolean' -»
 		if(«this.name» != null) {
 		  retval &= «this.name».compareTo(other.«this.getter»()) == 0;

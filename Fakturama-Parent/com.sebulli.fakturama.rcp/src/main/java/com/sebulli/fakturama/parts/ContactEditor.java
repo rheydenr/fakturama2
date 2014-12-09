@@ -16,10 +16,9 @@ package com.sebulli.fakturama.parts;
 
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -97,7 +96,8 @@ public class ContactEditor extends Editor<Contact> {
 
     private TabFolder tabFolder;
 	private Text textNote;
-	private Combo comboGender;
+//	private Combo comboGender;
+	private ComboViewer comboGender;
 	private Text txtTitle;
 	private Text txtFirstname;
 	private Text txtName;
@@ -362,7 +362,7 @@ public class ContactEditor extends Editor<Contact> {
 	 * Copy all the address data to the delivery address
 	 */
 	private void copyAddressToDeliveryAdress() {
-		comboDeliveryGender.select(comboGender.getSelectionIndex());
+//		comboDeliveryGender.select(comboGender.getSelectionIndex());
 		txtDeliveryTitle.setText(txtTitle.getText());
 		txtDeliveryFirstname.setText(txtFirstname.getText());
 		txtDeliveryName.setText(txtName.getText());
@@ -498,7 +498,6 @@ public class ContactEditor extends Editor<Contact> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
 		txtNr = new Text(customerNrComposite, SWT.BORDER);
-//		txtNr.setText(editorContact.getCustomerNumber());
 		txtNr.setToolTipText(labelNr.getToolTipText());
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtNr);
@@ -539,28 +538,20 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
 
 		// Gender
-//		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
-//		comboGender.setContentProvider(ArrayContentProvider.getInstance());
-//		List<String> genderList = new ArrayList<String>();
-//		for (int i = 0; i < 4; i++) {
-//		    genderList.add(getGenderString(i));
-//		} 
-//		comboGender.setInput(genderList.toArray(new String[]{}));
+		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
+		comboGender.setContentProvider(new HashMapContentProvider());
 		
-        comboGender = new Combo(useGender ? addressGroup : invisible, SWT.BORDER);
-        for (int i = 0; i < 4; i++)
-            comboGender.add(getGenderString(i), i);
-        GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender);
-
-		
-//		comboGender.setLabelProvider(new ComboBoxLabelProvider(genderList.toArray(new String[]{})));
-//		comboGender.select(editorContact.getGender());
-//		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
+		Map<Integer, String> genderList = new HashMap<>();
+		for (int i = 0; i < 4; i++) {
+		    genderList.put(i, getGenderString(i));
+		} 
+		comboGender.setInput(genderList);
+		comboGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
+		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
 
 		// Title
 		txtTitle = new Text(useTitle ? addressGroup : invisible, SWT.BORDER);
-//		txtTitle.setText(editorContact.getTitle());
 		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtTitle);
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
 
@@ -583,8 +574,6 @@ public class ContactEditor extends Editor<Contact> {
 			txtName = new Text(addressGroup, SWT.BORDER);
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtName);
 		}
-//		txtFirstname.setText(editorContact.getFirstName());
-//		txtName.setText(editorContact.getName());
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
 
@@ -604,7 +593,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
 		txtStreet = new Text(addressGroup, SWT.BORDER);
-//		txtStreet.setText(editorContact.getAddress().getStreet());
 		bindModelValue(editorContact, txtStreet, Contact_.address.getName() + "." + Address_.street.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
 		setTabOrder(txtCompany, txtStreet);
@@ -615,11 +603,9 @@ public class ContactEditor extends Editor<Contact> {
 		labelCity.setText(msg.editorContactFieldZipcityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
 		txtZip = new Text(addressGroup, SWT.BORDER);
-//		txtZip.setText(editorContact.getAddress().getZip());
 		bindModelValue(editorContact, txtZip, Contact_.address.getName() + "." + Address_.zip.getName(), 16);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtZip);
 		txtCity = new Text(addressGroup, SWT.BORDER);
-//		txtCity.setText(editorContact.getAddress().getCity());
 		bindModelValue(editorContact, txtCity, Contact_.address.getName() + "." + Address_.city.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCity);
 
@@ -631,7 +617,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
 		txtCountry = new Text(useCountry ? addressGroup : invisible, SWT.BORDER);
-//		txtCountry.setText(editorContact.getAddress().getCountry());
 		txtCountry.setToolTipText(labelCountry.getToolTipText());
 		bindModelValue(editorContact, txtCountry, Contact_.address.getName() + "." + Address_.country.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtCountry);
@@ -690,7 +675,6 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Delivery Title
 		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-//		txtDeliveryTitle.setText(editorContact.getDeliveryTitle());
 		bindModelValue(editorContact, txtDeliveryTitle, Contact_.deliveryContacts.getName() +"." +Contact_.title.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
 
@@ -714,8 +698,6 @@ public class ContactEditor extends Editor<Contact> {
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
 
 		}
-//		txtDeliveryFirstname.setText(contact.getDeliveryFirstname());
-//		txtDeliveryName.setText(contact.getDeliveryName());
 		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.deliveryContacts.getName() +"." +Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtDeliveryName, Contact_.deliveryContacts.getName() +"." +Contact_.name.getName(), 64);
 
@@ -725,7 +707,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCompany.setText(msg.commonFieldCompany);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
 		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-//		txtDeliveryCompany.setText(DataUtils.makeOSLineFeeds(contact.getDeliveryCompany()));
 		bindModelValue(editorContact, txtDeliveryCompany, Contact_.deliveryContacts.getName() +"." +Contact_.company.getName(), 64);
 		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
 
@@ -735,7 +716,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
 		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-//		txtDeliveryStreet.setText(contact.getDeliveryStreet());
 		bindModelValue(editorContact, txtDeliveryStreet, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
 		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
@@ -746,11 +726,9 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCity.setText(msg.editorContactFieldZipcityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
 		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-//		txtDeliveryZip.setText(contact.getDeliveryZip());
 		bindModelValue(editorContact, txtDeliveryZip, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
 		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-//		txtDeliveryCity.setText(contact.getDeliveryCity());
 		bindModelValue(editorContact, txtDeliveryCity, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
 
@@ -761,9 +739,8 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
 		txtDeliveryCountry = new Text(useCountry ? deliveryGroup : invisible, SWT.BORDER);
-//		txtDeliveryCountry.setText(contact.getDeliveryCountry());
 		txtDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		bindModelValue(editorContact, txtDeliveryZip, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.country.getName(), 32);
+		bindModelValue(editorContact, txtDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.country.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryCountry);
 		
 		// Deliverer's Birthday
@@ -797,7 +774,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelAccountHolder.setText(msg.commonFieldAccountholder);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccountHolder);
 		txtAccountHolder = new Text(tabBank, SWT.BORDER);
-//		txtAccountHolder.setText(contact.getAccountHolder());
 		bindModelValue(editorContact, txtAccountHolder, Contact_.accountHolder.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccountHolder);
 
@@ -807,7 +783,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelAccount.setText(msg.editorContactFieldAccountnumberName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
 		txtAccount = new Text(tabBank, SWT.BORDER);
-//		txtAccount.setText(contact.getAccount());
 		bindModelValue(editorContact, txtAccount, Contact_.account.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
 
@@ -817,7 +792,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelBankCode.setText(msg.editorContactFieldBankcodeName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankCode);
 		txtBankCode = new Text(tabBank, SWT.BORDER);
-//		txtBankCode.setText(contact.getBankCode());
 		bindModelValue(editorContact, txtBankCode, Contact_.bankCode.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
 
@@ -827,7 +801,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelBankName.setText(msg.editorContactFieldBankName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankName);
 		txtBankName = new Text(tabBank, SWT.BORDER);
-//		txtBankName.setText(contact.getBankName());
 		bindModelValue(editorContact, txtBankName, Contact_.bankName.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankName);
 
@@ -837,7 +810,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelIBAN.setText(msg.exporterDataIban);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelIBAN);
 		txtIBAN = new Text(tabBank, SWT.BORDER);
-//		txtIBAN.setText(contact.getIban());
 		bindModelValue(editorContact, txtIBAN, Contact_.iban.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtIBAN);
 
@@ -847,7 +819,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelBIC.setText(msg.exporterDataBic);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBIC);
 		txtBIC = new Text(tabBank, SWT.BORDER);
-//		txtBIC.setText(contact.getBic());
 		bindModelValue(editorContact, txtBIC, Contact_.bic.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBIC);
         
@@ -857,7 +828,6 @@ public class ContactEditor extends Editor<Contact> {
         labelMandate.setText(msg.editorContactFieldMandaterefName);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelMandate);
         txtMandatRef = new Text(tabBank, SWT.BORDER);
-//        txtMandatRef.setText(contact.getStringValueByKey("mandat_ref"));
         bindModelValue(editorContact,txtMandatRef, Contact_.mandateReference.getName(), 32);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMandatRef); 
 
@@ -893,7 +863,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelSupplier.setText(msg.editorContactFieldSuppliernumberName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelSupplier);
 		txtSupplierNr = new Text(tabMisc, SWT.BORDER);
-//		txtSupplierNr.setText(StringUtils.defaultString(contact.getSupplierNumber()));
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtSupplierNr);
 		
@@ -904,7 +873,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelEmail.setText(msg.exporterDataEmail);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelEmail);
 		txtEmail = new Text(tabMisc, SWT.BORDER);
-//		txtEmail.setText(StringUtils.defaultString(contact.getEmail()));
 		bindModelValue(editorContact, txtEmail, Contact_.email.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtEmail);
 
@@ -914,7 +882,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelTel.setText(msg.exporterDataTelephone);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTel);
 		txtPhone = new Text(tabMisc, SWT.BORDER);
-//		txtPhone.setText(StringUtils.defaultString(contact.getPhone()));
 		bindModelValue(editorContact, txtPhone, Contact_.phone.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtPhone);
 
@@ -924,7 +891,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelFax.setText(msg.exporterDataTelefax);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelFax);
 		txtFax = new Text(tabMisc, SWT.BORDER);
-//		txtFax.setText(contact.getFax());
 		bindModelValue(editorContact, txtFax, Contact_.fax.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFax);
 
@@ -934,7 +900,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelMobile.setText(msg.exporterDataMobile);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelMobile);
 		txtMobile = new Text(tabMisc, SWT.BORDER);
-//		txtMobile.setText(contact.getMobile());
 		bindModelValue(editorContact, txtMobile, Contact_.mobile.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMobile);
 
@@ -944,7 +909,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelWebsite.setText(msg.exporterDataWebsite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebsite);
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
-//		txtWebsite.setText(contact.getWebsite());
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
 
@@ -1013,7 +977,6 @@ public class ContactEditor extends Editor<Contact> {
 		labelVatNr.setText(msg.exporterDataVatno);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVatNr);
 		txtVatNr = new Text(tabMisc, SWT.BORDER);
-//		txtVatNr.setText(contact.getVatNumber());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtVatNr);
 
@@ -1026,7 +989,6 @@ public class ContactEditor extends Editor<Contact> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
 		txtDiscount = new Text(tabMisc, SWT.BORDER);
-//		txtDiscount.setText(DataUtils.DoubleToFormatedPercent(contact.getDiscount()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount);
 ////		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
 ////		txtDiscount.addFocusListener(new FocusAdapter() {
@@ -1056,11 +1018,11 @@ public class ContactEditor extends Editor<Contact> {
 		comboUseNetGross.add(msg.productDataNet);
 		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
 		comboUseNetGross.add(msg.productDataGross);
-////
-////		// If the value is -1, use 0 instead
-////		if (contact.getUseNetGross()<0)
-////			contact.setUseNetGross(0); 
-////		comboUseNetGross.select(contact.getUseNetGross());
+
+		// If the value is -1, use 0 instead
+//		if (editorContact.getUseNetGross()<0)
+//			contact.setUseNetGross(0); 
+//		comboUseNetGross.select(contact.getUseNetGross());
 //		
 //		superviceControl(comboUseNetGross);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboUseNetGross);
@@ -1068,9 +1030,8 @@ public class ContactEditor extends Editor<Contact> {
 		// Controls in tab "Note"
 
 		// The note
-//		String note = DataUtils.makeOSLineFeeds(contact.getNote());
+//		String note = DataUtils.makeOSLineFeeds(editorContact.getNote());
 		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI);
-//		textNote.setText(note);
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
 
 //		// If the note is not empty, display it,

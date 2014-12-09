@@ -144,6 +144,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @PostConstruct
     public Control createPartControl(Composite parent) {
     	log.info("create VAT list part");
+    	
+    	// TEST only!!!
+//    	VATDao dao = new VATDao();
+//    	dao.getAll();
+//    	
         top = super.createPartControl(parent, VAT.class, false, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);

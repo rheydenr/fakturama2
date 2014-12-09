@@ -1,8 +1,6 @@
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
@@ -65,47 +63,21 @@ public class ProductsDAO extends AbstractDAO<Product> {
 						cb.equal(root.<String>get(Product_.name), oldProduct.getName())));
     	return getEntityManager().createQuery(cq).getSingleResult();
 	}
-	
+
     /**
-     * Only the names and the item numbers are compared.
-     * 
      * @param object
+     * @param cb
+     * @param product
      * @return
      */
-    public Product addIfNewForWebshop(Product object) {
-        Product retval = null;
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Product> query = cb.createQuery(Product.class);
-        Root<Product> product = query.from(Product.class);
+    protected Set<Predicate> getRestrictions(Product object, CriteriaBuilder cb, Root<Product> product) {
         Set<Predicate> restrictions = new HashSet<>();
         if (object.getWebshopId() != null && object.getWebshopId() > 0) {
             restrictions.add(cb.equal(product.get(Product_.webshopId), object.getWebshopId()));
         }
-        if (StringUtils.isNotBlank(object.getItemNumber())) {
-            restrictions.add(cb.equal(product.get(Product_.itemNumber), object.getItemNumber()));
-        }
-        if (StringUtils.isNotBlank(object.getName())) {
-            restrictions.add(cb.equal(product.get(Product_.name), object.getName()));
-        }
-        CriteriaQuery<Product> select = query.select(product);
-        for (Predicate predicate : restrictions) {
-            select = select.where(predicate);
-        }
-
-        List<Product> resultList = getEntityManager().createQuery(select).getResultList();
-        try {
-            if (resultList.isEmpty()) {
-                retval = save(object);
-            }
-            else {
-                retval = resultList.get(0);
-            }
-        }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return retval;
+        restrictions.add(cb.equal(product.get(Product_.itemNumber), StringUtils.defaultString(object.getItemNumber())));
+        restrictions.add(cb.equal(product.get(Product_.name), StringUtils.defaultString(object.getName())));
+        return restrictions;
     }
 	
 	public Product findById(Product object) {

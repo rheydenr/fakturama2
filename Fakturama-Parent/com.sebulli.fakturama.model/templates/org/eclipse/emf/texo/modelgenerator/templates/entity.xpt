@@ -24,7 +24,7 @@ package «ePackageAnnotation.packagePath»;
  * <!-- end-model-doc -->
 «ENDIF-»
  * @generated
-*/
+ */
 «modelController.getJavaAnnotations(this.EClass, "type")»
 public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 «IF this.classExtends.size > 0-» extends «this.classExtends.get(0)-»«ENDIF-»
@@ -87,6 +87,24 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 		 */
 		«modelController.getJavaAnnotations(featureAnnotation.EStructuralFeature, "getter")-»
 		public «featureAnnotation.type» «featureAnnotation.getter»() {
+		«REM»
+		
+		/*
+		INFO: «modelController.getAnnotationManager().getAnnotation(featureAnnotation.EStructuralFeature, this.EClass)»
+				«LET this.EAttribute.getEAnnotation("http://www.fakturama.org/CustomValue") AS custAnno»
+					«IF custAnno != null-»
+				INFO: 
+						getSource «custAnno.getSource()»
+						getEModelElement «custAnno.getEModelElement()»
+						getDetails «custAnno.getDetails()»
+						getReferences «custAnno.getReferences()»
+						getContents «custAnno.getContents()»
+					«ENDIF-»
+				«ENDLET»
+		*
+		*/
+		
+		«ENDREM»
 		«IF isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile-»
 			«IF featureAnnotation.many && featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess-»
 				«IF ((EReferenceModelGenAnnotation)featureAnnotation).useList-»

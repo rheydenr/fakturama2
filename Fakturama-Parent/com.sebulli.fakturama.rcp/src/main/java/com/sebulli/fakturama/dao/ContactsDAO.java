@@ -1,15 +1,19 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
@@ -41,22 +45,29 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         }
     }
     
-//    /**
-//     * Finds all {@link Contact}s (only "main" contacts, no delivery contacts!)
-//     */
-//    @Override
-//    public List<Contact> findAll() {
-//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Contact> criteria = cb.createQuery(Contact.class);
-//        Root<Contact> root = criteria.from(Contact.class);
-//        CriteriaQuery<Contact> cq = criteria.where(
-//                cb.and(
-//                        cb.equal(root.<String>get(Contact_.firstName), oldContact.getFirstname()),
-//                        cb.equal(root.<String>get(Contact_.name), oldContact.getName())));
-//        return getEntityManager().createQuery(cq).getSingleResult();
-//        
-//        return super.findAll();
-//    }
+    @Override
+    protected Set<Predicate> getRestrictions(Contact object, CriteriaBuilder cb, Root<Contact> root) {
+        /* Customer number, first
+         * name, name and ZIP are compared. Customer number is only compared, if it
+         * is set.
+         */
+        Set<Predicate> restrictions = new HashSet<>();
+        // Compare customer number, only if it is set.
+        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
+            restrictions.add(cb.equal(root.get(Contact_.customerNumber), object.getCustomerNumber()));
+        }
+        // if the value is not set (null), then we use the empty String for comparison. 
+        // Then we get no result (which is correct).
+        restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(object.getFirstName())));
+        restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(object.getName())));
+        if (object.getAddress() != null) {
+            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
+        } else {
+            // set to an undefined value so we get no result (then the contact is not found in the database)
+            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
+        }
+        return restrictions;
+    }
 
     /**
      * Get a list of all categories stored for {@link Contact}s.

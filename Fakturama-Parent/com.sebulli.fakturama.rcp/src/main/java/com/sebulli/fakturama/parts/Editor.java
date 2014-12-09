@@ -578,13 +578,13 @@ public abstract class Editor<T extends IEntity> {
         IObservableValue uiWidget = ViewersObservables
                 .observeSingleSelection(source);
         ctx.bindValue(uiWidget, model);
-
-//        source.getControl().addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent e) {
-//                getMDirtyablePart().setDirty(true);
-//            }
-//        });
+        
+        source.getCombo().addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                getMDirtyablePart().setDirty(true);
+            }
+        });
          
     }
 

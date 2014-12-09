@@ -25,6 +25,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -59,9 +61,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
@@ -74,6 +79,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
+import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -147,6 +154,9 @@ public class WebShopImportManager {
     
     @Inject
     private ProductsDAO productsDAO;
+    
+    @Inject
+    private ContactsDAO contactsDAO;
     
     @Inject
     private ShippingCategoriesDAO shippingCategoriesDAO;
@@ -255,12 +265,15 @@ public class WebShopImportManager {
 
     // true, if the product's EAN number is imported as item number
     private Boolean useEANasItemNr = false;
-
 	private String generalWorkspace;
+    private ProductUtil productUtil;
+    private MathContext mathContext = new MathContext(5);
+
 	
 	@PostConstruct
 	public void initialize() {
 		generalWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
+		productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
 	/**
@@ -755,7 +768,6 @@ public class WebShopImportManager {
         	// Check, if this order is still existing
         	// date="2011-08-04 15:35:52"
         	LocalDateTime calendarWebshopDate = LocalDateTime.parse(webshopDate, DateTimeFormatter.ISO_DATE_TIME);
-//        	Date calendarWebshopDate = DataUtils.getCalendarFromDateString(webshopDate).getTime();
             if(!documentsDAO.findDocumentByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
         		return;
         	}
@@ -789,11 +801,11 @@ public class WebShopImportManager {
 			String shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY, "");
 			if(StringUtils.isNotEmpty(shopCategory)) {
     			ContactCategory contactCat = contactCatBuilder.buildCategoryFromString(shopCategory, ContactCategory.class);
+    			// later we have more than one category per contact
 //    			contactItem.addToCategories(contactCat);
                 contactItem.setCategories(contactCat);
 			}
 			
-			Address address = fakturamaModelFactory.createAddress();
 			// set explicit the customers data
 			contactItem.setCustomerNumber(contact.getId());
             contactItem.setFirstName(contact.getFirstname());
@@ -801,13 +813,16 @@ public class WebShopImportManager {
             contactItem.setCompany(contact.getCompany());
             contactItem.setPhone(contact.getPhone());
             contactItem.setEmail(contact.getEmail());
+            
+            Address address = fakturamaModelFactory.createAddress();
             address.setStreet(contact.getStreet());
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
-            
             address.setCountry(countryCode);
+            
             contactItem.setAddress(address);
+            contactItem = contactsDAO.findOrCreate(contactItem);
 //            contactItem.setSupplierNumber(contact.get); ==> is not transfered from connector!!!
 
             Address deliveryAddress = fakturamaModelFactory.createAddress();
@@ -835,10 +850,10 @@ public class WebShopImportManager {
                     deliveryContact.setGender(Integer.valueOf(2));
 
                 deliveryContact.setAddress(deliveryAddress);
+                deliveryContact = contactsDAO.findOrCreate(deliveryContact);
                 //   contactItem.getDeliveryContacts().add(deliveryContact);
                 contactItem.setDeliveryContacts(deliveryContact);
             }
-//            contactsDAO.save(contactItem);
         
             dataSetDocument.setContact(contactItem);
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact
@@ -865,7 +880,7 @@ public class WebShopImportManager {
         	    itemName = itemType.getName();
         	    
     			// Convert VAT percent value to a factor (100% -> 1.00)
-    			Double vatPercent = 0.0;
+    			Double vatPercent = NumberUtils.DOUBLE_ZERO;
     			try {
     				vatPercent = Double.valueOf(itemType.getVatpercent()).doubleValue() / 100;
     			}
@@ -889,14 +904,12 @@ public class WebShopImportManager {
 				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
 				priceNet = priceGross.divide(1 + vatPercent);
     
+                // Add the VAT value to the data base, if it is a new one
     			VAT vat = getOrCreateVAT(itemType.getVatname(), vatPercent);
     
     			// Get the category of the imported products from the preferences
     			shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY, "");
-    
-				if (!shopCategory.isEmpty() && !shopCategory.endsWith("/")) {
-					shopCategory += "/";
-				}
+    			shopCategory = StringUtils.appendIfMissing(shopCategory, "/", "/");
     
                 // Import the item as a new product
     			// Use item name as item model, if model is empty
@@ -913,8 +926,9 @@ public class WebShopImportManager {
     			itemDescription = new StringBuffer();
     			for (AttributeType attribute : itemType.getAttribute()) {
     				// Get all attributes
-					if (itemDescription.length() > 0)
+					if (itemDescription.length() > 0) {
 						itemDescription.append(", ");
+					}
 					itemDescription.append(attribute.getOption()).append(": ");
 					itemDescription.append(attribute.getValue());
     			}
@@ -933,19 +947,30 @@ public class WebShopImportManager {
     			//product.setProductId(itemType.getProductid());
     
     			// Add the new product to the data base, if it's not existing yet
-    			Product newOrExistingProduct = productsDAO.addIfNewForWebshop(product);
+    			Product newOrExistingProduct = productsDAO.findOrCreate(product);
     			// Get the picture from the existing product  ==> TODO WHY???
 //    			product.setPictureName(newOrExistingProduct.getPictureName());
     
     			// Add this product to the list of items
     			DocumentItem item = fakturamaModelFactory.createDocumentItem();
     			//(Double.valueOf(itemQuantity), product, itemDiscountDouble);
+    			/*
+    			 * per default some other values are set from product
+        this(-1, product.getStringValueByKey("name"), product.getIntValueByKey("id"), product.getStringValueByKey("itemnr"), false, "", -1, false, quantity,
+                product.getStringValueByKey("description"), product.getPriceByQuantity(quantity), product.getIntValueByKey("vatid"), discount, 0.0, "", "", false,
+                product.getStringValueByKey("picturename"), false, product.getStringValueByKey("qunit"));
+
+    			 */
+    			item.setName(newOrExistingProduct.getName());
+    			item.setItemNumber(newOrExistingProduct.getItemNumber());
+    			item.setDescription(newOrExistingProduct.getDescription());
     			item.setQuantity(Double.valueOf(itemType.getQuantity()));
-    			item.setQuantityUnit(itemType.getQunit());
+    			item.setQuantityUnit(StringUtils.isBlank(itemType.getQunit()) ? newOrExistingProduct.getQuantityUnit() : itemType.getQunit());
     			item.setProduct(newOrExistingProduct);
     			item.setItemVat(vat);
-    			item.setPrice(ProductUtil.getInstance().getPriceByQuantity(newOrExistingProduct, item.getQuantity()));  
-    			item.setItemRebate(itemType.getDiscount().doubleValue());
+    			double discount = new BigDecimal(itemType.getDiscount()).round(mathContext).doubleValue();
+                item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));  
+    			item.setItemRebate(discount);
     			
                 // search for owning document
 //    			item.setOwningDocument((CustomDocument) dataSetDocument);
@@ -959,7 +984,7 @@ public class WebShopImportManager {
     		// Import the shipping data
     		if (shippingType != null) {
     			// Get the VAT value as double
-    			Double shippingVatPercent = 0.0;
+    			Double shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 				shippingVatPercent = Double.valueOf(shippingType.getVatpercent()).doubleValue() / 100;
     
     			// Get the shipping gross value
@@ -967,7 +992,7 @@ public class WebShopImportManager {
     
     			// Get the category of the imported shipping from the preferences
     			shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY, "");   
-    			VAT shippingvat = getOrCreateVAT(shippingType.getVatname(), shippingVatPercent);
+    			VAT shippingvat = getOrCreateVAT(shippingType.getVatname(), shippingVatPercent);//vatsDAO.findOrCreate(shippingvat);
     
     			// Add the shipping to the data base, if it's a new shipping
     			Shipping shipping = fakturamaModelFactory.createShipping();
@@ -978,20 +1003,19 @@ public class WebShopImportManager {
     			shipping.setShippingValue(shippingGross);
     			shipping.setShippingVat(shippingvat);
     			shipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
-    			shipping = shippingsDAO.addIfNew(shipping);
+    			shipping = shippingsDAO.findOrCreate(shipping);
     
     			// Set the document entries for the shipping
                 dataSetDocument.setShipping(shipping);
-    			String s = "";
+                dataSetDocument.setShippingAutoVat(ShippingVatType.SHIPPINGVATFIX);
+                dataSetDocument.setShippingValue(shippingGross);
+    			String s = msg.importWebshopInfoWebshopno + " ";
     
     			// Use the order ID of the web shop as customer reference for
     			// imports web shop orders
-    			if (webshopId.length() <= 5) {
-    				s = "00000".substring(webshopId.length(), 5);
-    			}
-    			s += webshopId;
+    			s += StringUtils.leftPad(webshopId, 5, '0');
     			//T: Text of the web shop reference
-    			dataSetDocument.setCustomerRef(msg.importWebshopInfoWebshopno + " " + s);
+    			dataSetDocument.setCustomerRef(s);
     		}
         
         	// Get the payment (s)
@@ -1002,7 +1026,7 @@ public class WebShopImportManager {
     			payment.setName(paymentType.getName());
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);
-    			payment = paymentsDAO.addIfNew(payment);
+    			payment = paymentsDAO.findOrCreate(payment);
             	dataSetDocument.setPayment(payment);
     		}
         
@@ -1010,9 +1034,9 @@ public class WebShopImportManager {
         	dataSetDocument.setProgress(10);
         
         	// Set the document data
-        	dataSetDocument.setWebshopDate(Date.from(instant));
+        	dataSetDocument.setOrderDate(Date.from(instant));
+//        	dataSetDocument.setCreationDate(Date.from(Instant.now()));
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());
-        
     	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : 0.0);
         	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
         
@@ -1064,7 +1088,7 @@ public class WebShopImportManager {
             vat.setDescription(vatName);
             vat.setTaxValue(vatPercent);
             try {
-            vat = vatsDAO.addIfNew(vat);
+                vat = vatsDAO.addIfNew(vat);
             }
             catch (SQLException e1) {
                 log.error(e1);
@@ -1087,7 +1111,7 @@ public class WebShopImportManager {
             String pictureName;
 
             // Convert VAT percent value to a factor (100% -> 1.00)
-            Double vatPercentDouble = 0.0;
+            Double vatPercentDouble = NumberUtils.DOUBLE_ZERO;
             vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
 
             // Convert the gross or net string to a money value
@@ -1133,7 +1157,7 @@ public class WebShopImportManager {
             }
 
             // Convert the quantity string to a double value
-            Double quantity = product.getQuantity() != null ? product.getQuantity().doubleValue() : 0.0;
+            Double quantity = product.getQuantity() != null ? product.getQuantity().doubleValue() : NumberUtils.DOUBLE_ZERO;
             // Create a new product object
             productItem = fakturamaModelFactory.createProduct();
             productItem.setName(productName);
@@ -1149,13 +1173,11 @@ public class WebShopImportManager {
             productItem.setQuantity(quantity);
             productItem.setWebshopId(product.getId() != null ? product.getId().longValue() : Long.valueOf(0));
             productItem.setQuantityUnit(product.getQunit());
+            productItem.setDateAdded(Date.from(Instant.now()));
 
             // Add a new product to the data base, if it not exists yet	
-            Product existingProduct = productsDAO.findByExample(productItem);
-            if (existingProduct == null) {
-                productsDAO.save(productItem);
-            }
-            else {
+            Product existingProduct = productsDAO.findOrCreate(productItem);
+            if (existingProduct != null) {
                 // Update data
                 existingProduct.clearCategories();
                 productItem.getCategories().forEach(cat -> existingProduct.addToCategories(cat));

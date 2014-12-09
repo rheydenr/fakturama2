@@ -47,7 +47,6 @@ public class CloseHandler {
     public void execute(
             final MApplication application,
             final EModelService modelService,
-           /* final @Active MPart activePart2, */
             final EPartService partService)
             throws InvocationTargetException, InterruptedException {
         // at first find the PartStack "detailpanel"
@@ -55,11 +54,9 @@ public class CloseHandler {
         MPart activePart = (MPart)documentPartStack.getSelectedElement();
         // ask before closing
         if(activePart != null) {
-            // the parts are NOT removed when they are hidden
-            if (activePart.isDirty() && partService.savePart(activePart, true)) {
-                partService.hidePart(activePart, false);
-            } else {
-                partService.hidePart(activePart, false);                
+            // the parts are removed when they are hidden
+            if (partService.savePart(activePart, true)) {
+                partService.hidePart(activePart, true);
             }
         }
     }

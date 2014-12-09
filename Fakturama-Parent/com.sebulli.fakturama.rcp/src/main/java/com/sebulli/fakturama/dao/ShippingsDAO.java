@@ -1,12 +1,17 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
@@ -14,6 +19,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Shipping;
+import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.oldmodel.OldShippings;
 
 @Creatable
@@ -59,6 +65,16 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
         return getEntityManager().createQuery(cq).getSingleResult();
     }
     
+    @Override
+    protected Set<Predicate> getRestrictions(Shipping object, CriteriaBuilder criteriaBuilder, Root<Shipping> root) {
+        Set<Predicate> restrictions = new HashSet<>();
+        /*
+         * Only the names and the values are compared.
+         */
+        restrictions.add(criteriaBuilder.equal(root.get(Shipping_.name), StringUtils.defaultString(object.getName())));
+        restrictions.add(criteriaBuilder.equal(root.get(Shipping_.shippingValue), object.getShippingValue() != null ? object.getShippingValue() : Double.valueOf(0.0)));
+        return restrictions;
+    }
  
 	/**
 	 * @return the em

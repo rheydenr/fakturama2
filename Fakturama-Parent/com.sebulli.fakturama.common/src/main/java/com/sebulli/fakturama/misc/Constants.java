@@ -159,5 +159,50 @@ public class Constants {
 	 * 
 	 */
 	public static final String PREFERENCES_WEBSHOP_AUTHORIZATION_USER = "WEBSHOP_AUTHORIZATION_USER";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_PICTURE = "PRODUCT_USE_PICTURE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_QUANTITY = "PRODUCT_USE_QUANTITY";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_WEIGHT = "PRODUCT_USE_WEIGHT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_VAT = "PRODUCT_USE_VAT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_SCALED_PRICES = "PRODUCT_SCALED_PRICES";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_NET_GROSS = "PRODUCT_USE_NET_GROSS";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_DESCRIPTION = "PRODUCT_USE_DESCRIPTION";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_QUNIT = "PRODUCT_USE_QUNIT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_PRODUCT_USE_ITEMNR = "PRODUCT_USE_ITEMNR";
     
 }

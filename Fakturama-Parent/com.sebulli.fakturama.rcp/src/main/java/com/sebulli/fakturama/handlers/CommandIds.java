@@ -29,6 +29,8 @@ public final class CommandIds {
 	public static final String CMD_OPEN_LISTS = "com.sebulli.fakturama.command.openLists";
 	public static final String CMD_OPEN_EXPENDITUREVOUCHERS = "com.sebulli.fakturama.command.openExpenditureVouchers";
 	public static final String CMD_OPEN_RECEIPTVOUCHERS = "com.sebulli.fakturama.command.openReceiptVouchers";
+	
+	public static final String CMD_CALL_EDITOR = "com.sebulli.fakturama.command.callEditor";
 
     public static final String CMD_NEW_CONTACT = "command.new.contact";
     public static final String CMD_NEW_PRODUCT = "command.new.product";

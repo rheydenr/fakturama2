@@ -1,12 +1,13 @@
 package com.sebulli.fakturama.parts;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -155,6 +156,10 @@ public class CoolbarViewPart {
 		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
 		
+		Map<String, Object> params = new HashMap<>();
+		params.put("com.sebulli.fakturama.editors.editortype", ContactEditor.ID);
+//		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
+//		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));
 		
@@ -221,17 +226,22 @@ public class CoolbarViewPart {
 	
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, boolean show) {
-		createToolItem(toolBar, commandId, null, iconImage, null, show);
+		createToolItem(toolBar, commandId, null, iconImage, null, show, null);
+	}
+	
+	private void createToolItem(final ToolBar toolBar, final String commandId, 
+			final Image iconImage, boolean show, Map<String, Object> params) {
+		createToolItem(toolBar, commandId, null, iconImage, null, show, params);
 	}
 	
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, final Image disabledIcon, boolean show) {
-		createToolItem(toolBar, commandId, null, iconImage, disabledIcon, show);
+		createToolItem(toolBar, commandId, null, iconImage, disabledIcon, show, null);
 	}
 
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final String tooltip, final Image iconImage, boolean show) {
-		createToolItem(toolBar, commandId, tooltip, iconImage, null, show);
+		createToolItem(toolBar, commandId, tooltip, iconImage, null, show, null);
 	}
 	
 	/**
@@ -246,22 +256,23 @@ public class CoolbarViewPart {
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
 	 */
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
-			final String tooltip, final Image iconImage, final Image disabledIcon, boolean show) {
+			final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
+			Map<String, Object> params) {
 	    
 	    if(!show) {
 	        return;
 	    }
 	    
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-		final Command cmd = cmdService.getCommand(commandId);
+        final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
-			item.setText(cmd.getName());
-			item.setToolTipText((tooltip != null) ? tooltip : cmd.getDescription());
+			item.setText(pCmd.getCommand().getName());
+			item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
 			if(disabledIcon != null) {
 				item.setDisabledImage(disabledIcon);
 			}
 			
-			item.setEnabled(cmd.isEnabled());
+			item.setEnabled(pCmd.getCommand().isEnabled());
 		}
 		catch (NotDefinedException e1) {
 			log.error(e1, "Fehler! ");
@@ -269,7 +280,6 @@ public class CoolbarViewPart {
 		item.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ParameterizedCommand pCmd = new ParameterizedCommand(cmd, null);
 				if (handlerService.canExecute(pCmd)) {
 					handlerService.executeHandler(pCmd);
 				} else {

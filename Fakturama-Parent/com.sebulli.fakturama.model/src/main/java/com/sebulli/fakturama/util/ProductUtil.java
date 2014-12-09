@@ -3,11 +3,12 @@
  */
 package com.sebulli.fakturama.util;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
+import javax.inject.Inject;
 
-import com.sebulli.fakturama.common.Activator;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.extensions.Preference;
+
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Product;
 
 /**
@@ -15,23 +16,10 @@ import com.sebulli.fakturama.model.Product;
  *
  */
 public final class ProductUtil {
-    
-    private IEclipsePreferences eclipsePrefs;   
-    private static ProductUtil instance;
-    
-    public static ProductUtil getInstance() {
-        if(instance == null) {
-            instance = new ProductUtil();
-        }
-        return instance;
-    }
-    
-    private ProductUtil() {
-        IEclipseContext serviceContext = EclipseContextFactory.getServiceContext(Activator.getContext());
-        eclipsePrefs = serviceContext.get(IEclipsePreferences.class);
-    }
-
-    
+       
+    @Inject
+    @Preference(nodePath="/instance/com.sebulli.fakturama.rcp")
+    private IEclipsePreferences eclipsePrefs;
     
     /**
      * Create the picture name based on the product's item number Remove illegal
@@ -82,8 +70,7 @@ public final class ProductUtil {
         int blockQuantity = 0;
         int newQuantity;
         int scaledPrices;
-        
-        scaledPrices = eclipsePrefs.getInt("PRODUCT_SCALED_PRICES", Integer.valueOf(1));
+        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
 
         // search all used blocks
         // no reflection used because of unwanted side effects...

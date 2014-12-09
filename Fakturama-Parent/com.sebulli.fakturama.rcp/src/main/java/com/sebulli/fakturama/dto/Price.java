@@ -89,7 +89,7 @@ public class Price {
 	 */
     public Price(DocumentItem item, Double scaleFactor) {
         this(BooleanUtils.toBoolean(item.getOptional()) ? 0.0 : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX").multiply(scaleFactor), item
-                .getItemVat().getTaxValue(), item.getItemRebate(), item.getNoVat(), false);
+                .getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false);
     }
 
 //	/**
