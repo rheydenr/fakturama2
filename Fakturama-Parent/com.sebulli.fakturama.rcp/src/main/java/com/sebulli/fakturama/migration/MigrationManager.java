@@ -24,10 +24,12 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -35,8 +37,6 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.money.CurrencyUnit;
-import javax.money.MonetaryCurrencies;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
@@ -1047,7 +1046,8 @@ public class MigrationManager {
 				shipping.setDescription(oldShipping.getDescription());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
 					// add it to the new entity
-					shipping.addToCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
+//					shipping.addToCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
+                    shipping.setCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
 				}
 				
 				VAT newVat = vatsDAO.findById(newVats.get(oldShipping.getVatid()));
@@ -1075,15 +1075,6 @@ public class MigrationManager {
 		Long countOfEntitiesInTable = oldDao.countAllProperties();
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
-		
-		Properties currencyProperties = new Properties();
-		try {
-			currencyProperties.load(Activator.getContext().getBundle().getResource("currency-symbols.properties").openStream());
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 	    createColumnWidthPreferences();
 	    
@@ -1110,18 +1101,24 @@ public class MigrationManager {
                     propValue = Long.toString(newPayment.getId());
                     break;
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
-                	// if the currency is stored as symbol we have to convert it to an ISO code
-           			// FastMoney doesn't work with symbols, therefore we have to convert this
+                	// if the currency is stored as symbol we have to convert it to an ISO code.
+           			// Money doesn't work with symbols, therefore we have to convert this.
+                    // Try to determine a Locale from symbol
+                    Locale currencyLocale = Locale.getDefault();
            			if(StringUtils.length(propValue) == 1) {
-//           				propValue = currencySymbols.get(propValue);
-           				propValue = currencyProperties.getProperty(propValue);
+                        Currency jdkCurrency = Currency.getInstance(currencyLocale);
+           		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
+           		        if(currencySymbol.contentEquals(propValue)) {
+           		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
+           		            log.info("The currency locale was set to " + currencyLocale.toLanguageTag()+". "
+           		                    + "Please check this in the general settings.");
+           		        } else {
+           		            // Since most of the Fakturama users are from Germany we choose "de/DE" as default locale.
+           		            log.error("Can't determine the currency locale. Please choose the right locale "
+           		                    + "in the general settings dialog. Locale is temporarily set to de/DE.");
+           		            propValue = "de/DE";
+           		        }
            			}
-           			CurrencyUnit currencyCode = MonetaryCurrencies.getCurrency(propValue);
-           			propValue = currencyCode.getCurrencyCode();
-//           			MonetaryAmount m = FastMoney.of(0.0, currencyCode);
-//           			MonetaryAmountFormat f = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.GERMANY).set(CurrencyStyle.SYMBOL).build());
-//           		    f.format(m);
-
                 	break;
                 default:
                     break;

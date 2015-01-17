@@ -270,7 +270,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="shippingVat" lowerBound="1"
         eType="#//VAT"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="categories" ordered="false"
-        upperBound="-1" eType="#//ShippingCategory"/>
+        eType="#//ShippingCategory"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ShippingCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Tenant" eSuperTypes="#//IEntity"/>

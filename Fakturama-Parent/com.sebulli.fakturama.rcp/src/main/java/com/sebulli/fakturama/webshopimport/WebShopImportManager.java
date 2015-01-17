@@ -625,7 +625,7 @@ public class WebShopImportManager {
                 }
     
                 // Store the time of now
-                String now = DataUtils.DateAsISO8601String();
+                String now = DataUtils.getInstance().DateAsISO8601String();
                 eclipsePrefs.put("lastwebshopimport", now);
                 
                 localMonitor.done();
@@ -863,7 +863,7 @@ public class WebShopImportManager {
         	// Get the comments
         	for (CommentType commentType : order.getComments()) {
         		// Get the comment text
-    			commentDate = DataUtils.DateAndTimeAsLocalString(commentType.getDate());
+    			commentDate = DataUtils.getInstance().DateAndTimeAsLocalString(commentType.getDate());
     			commentText = commentType.getTextcontent();
     			if (comment.length() > 0) {
     				comment.append('\n');
@@ -998,7 +998,8 @@ public class WebShopImportManager {
     			Shipping shipping = fakturamaModelFactory.createShipping();
     			shipping.setName(shippingType.getName());
     			ShippingCategory newShippingCategory = shippingCategoriesDAO.getCategory(shopCategory, true);
-    			shipping.addToCategories(newShippingCategory);
+//    			shipping.addToCategories(newShippingCategory);
+    			shipping.setCategories(newShippingCategory);
     			shipping.setDescription(shippingType.getName());
     			shipping.setShippingValue(shippingGross);
     			shipping.setShippingVat(shippingvat);
@@ -1066,7 +1067,7 @@ public class WebShopImportManager {
         		String error = msg.toolbarNewOrderName + ":";
         		error += " " + webshopId + "\n";
         		error += msg.importWebshopInfoTotalsum;
-        		error += "\n" + DataUtils.DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()) + "\n";
+        		error += "\n" + DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()) + "\n";
         		error += msg.importWebshopErrorTotalsumincorrect;
         		error += "\n" + defaultFormat.format(calcTotal) + "\n";
         		error += msg.importWebshopErrorTotalsumcheckit;

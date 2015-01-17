@@ -36,8 +36,10 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -72,7 +74,7 @@ public class CallEditor {
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
-            
+            // TODO close other parts if this is set in preferences!
             IEclipseContext stackContext = null;
             for (MContext contexts : modelService.findElements(documentPartStack, null, MContext.class, null)) {
                 if(((MPart)contexts).getElementId().contentEquals(DOCVIEW_PARTDESCRIPTOR_ID)) {
@@ -98,7 +100,7 @@ public class CallEditor {
         if (objId != null) {
     		// at first we look for an existing Part
             for (MPart mPart : parts) {
-    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), DOCVIEW_PART_ID) && mPart.getContext() != null) {
+    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type) && mPart.getContext() != null) {
     				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
     				if (StringUtils.equalsIgnoreCase(object, objId)) {
     					myPart = mPart;
@@ -111,6 +113,7 @@ public class CallEditor {
 		// if not found then we create a new one from a part descriptor
 		if (myPart == null) {
 			myPart = partService.createPart(DOCVIEW_PART_ID);
+			myPart.setElementId(type);
 			stack.getChildren().add(myPart);
 			// we have to distinguish the different editors here
 			switch (type) {
@@ -120,18 +123,21 @@ public class CallEditor {
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + VatEditor.class.getName());
 				myPart.setContext(EclipseContextFactory.create());
 				myPart.getProperties().put(PARAM_OBJ_ID, objId);
-				
-//				MMenu popupMenu=null;
-//                myPart.getMenus().add(popupMenu);
 				break;
-				
-			case ContactEditor.ID:
-			case ContactListTable.ID:
+			case ShippingEditor.ID:
+			case ShippingListTable.ID:
+                myPart.setLabel(msg.commandShippingsName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
+                myPart.setContext(EclipseContextFactory.create());
+                myPart.getProperties().put(PARAM_OBJ_ID, objId);
+                break;
+            case ContactEditor.ID:
+            case ContactListTable.ID:
                 myPart.setLabel(msg.commandContactsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
                 myPart.setContext(EclipseContextFactory.create());
                 myPart.getProperties().put(PARAM_OBJ_ID, objId);
-
+                break;
 			default:
 				myPart.setLabel("unknown");
 				myPart.setContext(EclipseContextFactory.create());

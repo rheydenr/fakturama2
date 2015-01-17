@@ -80,7 +80,7 @@ public enum ShippingListDescriptor {
         return null;
     }
 
-    public static final String[] getVATPropertyNames() {
+    public static final String[] getShippingPropertyNames() {
         return new String[]{
         ShippingListDescriptor.NAME.getPropertyName(), 
         ShippingListDescriptor.DESCRIPTION.getPropertyName(), 

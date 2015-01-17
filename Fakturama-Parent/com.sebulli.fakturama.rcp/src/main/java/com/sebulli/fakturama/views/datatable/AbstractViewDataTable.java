@@ -74,6 +74,12 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  * 
  */
 public abstract class AbstractViewDataTable<T extends IEntity, C extends AbstractCategory> {
+
+    /**
+     * Path for the default values configuration in the Preference store
+     */
+    protected static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
+
     public static final String ROOT_NODE_NAME = "all";
 
     /**

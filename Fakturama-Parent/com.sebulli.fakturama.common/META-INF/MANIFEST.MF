@@ -40,3 +40,6 @@ Import-Package: ch.qos.logback.classic;version="1.0.7",
  org.slf4j;version="1.7.2"
 Bundle-Activator: com.sebulli.fakturama.common.Activator
 Service-Component: OSGI-INF/logservice.xml
+Bundle-ClassPath: .,
+ lib/moneta-1.0-RC1.jar,
+ lib/money-api-1.0-RC1.jar

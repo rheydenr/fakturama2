@@ -14,16 +14,36 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.Collator;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.money.CurrencyUnit;
+import javax.money.MonetaryAmount;
+import javax.money.MonetaryCurrencies;
+import javax.money.MonetaryRounding;
+import javax.money.MonetaryRoundings;
+import javax.money.RoundingQueryBuilder;
 
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.javamoney.moneta.RoundedMoney;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -41,6 +61,10 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
     @Inject
     @Translation
     protected Messages msg;
+    private ComboFieldEditor currencyLocaleCombo;
+    private StringFieldEditor example;
+    private BooleanFieldEditor cashCheckbox;
+    private BooleanFieldEditor thousandsSeparatorCheckbox;
 
 	/**
 	 * Constructor
@@ -57,22 +81,154 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 */
 	@Override
 	public void createFieldEditors() {
+        int index = 0;
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.GENERAL_PREFERENCE_PAGE);
 
-		//T: Preference page "General"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
 
-		//T: Preference page "General"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
-		//T: Preference page "General"
-		addField(new StringFieldEditor(Constants.PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
-		
-		//T: Preference page "General"
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousendseparator, getFieldEditorParent()));
+//		addField(new StringFieldEditor(Constants.PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
+        
+        Locale[] locales = NumberFormat.getAvailableLocales();
+        final Collator collator = Collator.getInstance(Locale.getDefault());
+        collator.setStrength(Collator.SECONDARY);
+        
+          Arrays.sort(locales, new Comparator<Locale>() {
+              @Override
+              public int compare(Locale o1, Locale o2) {
+                  return collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry());
+              }
+          });
+          
+        List<Locale> currencyLocaleList = new ArrayList<>();
+        for (int i = 0; i < locales.length; ++i) {
+            if (locales[i].getCountry().length() == 0) {
+               continue; // Skip language-only locales
+            }
+            currencyLocaleList.add(locales[i]);
+        }
+        
+        String[][] currencyLocales = new String[currencyLocaleList.size()][2];
+        for (Locale locale : currencyLocaleList) {
+            currencyLocales[index][0] = locale.getDisplayCountry() + " (" + locale.getDisplayLanguage() + ")";
+            currencyLocales[index][1] = locale.getLanguage() + "/"+locale.getCountry();
+            index++;
+        }
+        
+        currencyLocaleCombo = new ComboFieldEditor(Constants.PREFERENCE_CURRENCY_LOCALE, msg.preferencesGeneralCurrencyLocale, currencyLocales, getFieldEditorParent());
+        addField(currencyLocaleCombo);
+        
+        example = new StringFieldEditor(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, msg.preferencesGeneralCurrencyExample, getFieldEditorParent());
+        example.setEnabled(false, getFieldEditorParent());
+        addField(example);
+
+        cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, getFieldEditorParent());
+        cashCheckbox.getDescriptionControl(getFieldEditorParent()).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
+        String localeString = getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE);
+        if(!localeString.endsWith("CH")) {
+            cashCheckbox.setEnabled(false, getFieldEditorParent());
+        }
+        addField(cashCheckbox);
+        
+        thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
+        addField(thousandsSeparatorCheckbox);
 	}
 	
+	/**
+	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
+	 */
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if (event.getSource() instanceof ComboFieldEditor) {
+            String newValue = (String) event.getNewValue();
+            String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue());
+            example.setStringValue(exampleFormat);
+        } else if(event.getSource() instanceof BooleanFieldEditor
+                && (((BooleanFieldEditor)event.getSource()).getPreferenceName()
+                    .equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)
+                    ||((BooleanFieldEditor)event.getSource()).getPreferenceName()
+                    .equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR))
+                ) {
+            boolean useThousandsSeparator = thousandsSeparatorCheckbox.getBooleanValue();
+            boolean useCashRounding = cashCheckbox.getBooleanValue();
+            String preferenceName = ((BooleanFieldEditor)event.getSource()).getPreferenceName();
+            if (preferenceName.equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)) {
+                useCashRounding = (Boolean) event.getNewValue();
+            }
+            if (preferenceName.equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR)) {
+                useThousandsSeparator = (Boolean) event.getNewValue();
+            }
+            // WHO HAS MADE THE getComboBoxControl() METHOD PRIVATE??? WHY???
+            Method privateStringMethod, privateValueMethod;
+            try {
+                privateStringMethod = ComboFieldEditor.class.
+                        getDeclaredMethod("getComboBoxControl", Composite.class);
+                privateStringMethod.setAccessible(true);
+                Combo returnValue = (Combo)
+                        privateStringMethod.invoke(currencyLocaleCombo, getFieldEditorParent());
+                privateValueMethod = ComboFieldEditor.class.
+                        getDeclaredMethod("getValueForName", String.class);
+                privateValueMethod.setAccessible(true);
+                String localeString = returnValue.getText();
+                String value = (String)privateValueMethod.invoke(currencyLocaleCombo, localeString);
+                
+                String exampleFormat = calculateExampleCurrencyFormatString(value, useThousandsSeparator, useCashRounding);
+                example.setStringValue(exampleFormat);
+            }
+            catch (NoSuchMethodException | SecurityException | IllegalAccessException 
+                    | IllegalArgumentException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        super.propertyChange(event);
+    }
+
+    /**
+     * Calculates an example string which contains a formatted currency amount
+     * based on given locale string ("language/COUNTRY").
+     * 
+     * @param locale
+     *            locale string
+     * @return formatted example value
+     */
+    private String calculateExampleCurrencyFormatString(String localeString, 
+            boolean useThousandsSeparator, boolean currencyCheckboxEnabled) {
+        double myNumber = -1234.56864;
+        String retval = "";
+        Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
+        Matcher matcher = pattern.matcher(localeString);
+        if (matcher.matches() && matcher.groupCount() > 1) {
+            String s = matcher.group(1);
+            String s2 = matcher.group(2);
+            Locale locale = new Locale(s, s2);
+
+            NumberFormat form = NumberFormat.getCurrencyInstance(locale);
+            form.setGroupingUsed(useThousandsSeparator);
+            retval = form.format(myNumber);
+            if (locale.getCountry().equals("CH")) {
+                if(cashCheckbox != null) {
+                    cashCheckbox.setEnabled(true, getFieldEditorParent());
+                }
+                if(currencyCheckboxEnabled) {
+                    CurrencyUnit usd = MonetaryCurrencies.getCurrency(locale);
+                    MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+                    MonetaryRounding mro = MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
+                            .setCurrency(usd)
+                            .set("cashRounding", true) // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                            .build());
+                    retval = form.format(rounded.with(mro).getNumber());
+                }
+            } else {
+                if(cashCheckbox != null) {
+                    cashCheckbox.setEnabled(false, getFieldEditorParent());
+                }
+            }
+        }
+        return retval;
+    }
+
 	@Override
 	public String getDescription() {
 	    return msg.preferencesGeneral;
@@ -87,7 +243,10 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	public static void syncWithPreferencesFromDatabase(boolean write) {
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_GENERAL_CURRENCY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_LOCALE, write);
+        PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
+        PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
+        PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, write);
 	}
 
 	/**
@@ -100,15 +259,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
 		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
 
-		//Set the currency symbol of the default locale
-		String currency = "$";
-		try {
-			NumberFormat numberFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
-			currency = numberFormatter.getCurrency().getSymbol();
-		}
-		catch (Exception e) {
-		}
-		node.setDefault(Constants.PREFERENCE_GENERAL_CURRENCY, currency);
+		//Set the default currency locale from current locale
+		Locale defaultLocale = Locale.getDefault();
+		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
+        String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
+                true, false);
+		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
+        node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
+        node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
+        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
 	}
 
 	/**
@@ -118,7 +277,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 */
 	@Override
 	public boolean performOk() {
-		DataUtils.updateCurrencySymbol();
+		DataUtils.getInstance().refresh();
 		return super.performOk();
 	}
 
@@ -129,7 +288,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 */
 	@Override
 	protected void performApply() {
-		DataUtils.updateCurrencySymbol();
+        DataUtils.getInstance().refresh();
 		super.performApply();
 	}
 
@@ -140,7 +299,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 */
 	@Override
 	protected void performDefaults() {
-		DataUtils.updateCurrencySymbol();
+        DataUtils.getInstance().refresh();
 		super.performDefaults();
 	}
 

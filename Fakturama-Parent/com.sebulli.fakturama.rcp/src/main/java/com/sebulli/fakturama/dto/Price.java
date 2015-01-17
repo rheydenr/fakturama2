@@ -270,7 +270,7 @@ public class Price {
 	 * @return VAT as formated string
 	 */
 	public String getVatPercent() {
-		return DataUtils.DoubleToFormatedPercent(vatPercent);
+		return DataUtils.getInstance().DoubleToFormatedPercent(vatPercent);
 	}
 
 	/**

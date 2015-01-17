@@ -24,7 +24,7 @@ public enum ContactListDescriptor {
     NO("customerNumber", "common.field.number", 0, 60), 
     FIRSTNAME("firstName", "common.field.firstname", 1, 200), 
     LASTNAME("name", "common.field.name", 2, 120), 
-    COMPANY("description", "common.field.description", 3, 150), 
+    COMPANY("company", "common.field.company", 3, 150), 
     ZIP("address.zip", "common.field.zipcode", 4, 50),
     CITY("address.city", "common.field.city", 5, 80),
     ;

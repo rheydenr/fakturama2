@@ -16,19 +16,26 @@ package com.sebulli.fakturama.common;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
+import org.osgi.service.prefs.Preferences;
+import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import com.sebulli.fakturama.log.LogbackAdapter;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -48,6 +55,8 @@ public class Activator implements BundleActivator {
 
     /** The shared instance */
     private static BundleContext context;
+    
+    private static Preferences preferences;
 
     private LogListener logAdapter;
     private LinkedList<LogReaderService> logReaders = new LinkedList<LogReaderService>();
@@ -109,11 +118,21 @@ public class Activator implements BundleActivator {
 		catch (InvalidSyntaxException e) {
 			e.printStackTrace();
 		}
-
+		
+		// get Preferences
+		ServiceReference<IPreferencesService> servRef = context.getServiceReference(IPreferencesService.class);
+		preferences = context.getService(servRef).getRootNode().node("/instance/com.sebulli.fakturama.rcp");
 		// don't close the tracker, else the logger won't work!
 		//		logReaderTracker.close();
 	}
 	
+    /**
+     * @return the preferences
+     */
+    public static Preferences getPreferences() {
+        return preferences;
+    }
+
     /**
      * Returns the shared instance
      * 

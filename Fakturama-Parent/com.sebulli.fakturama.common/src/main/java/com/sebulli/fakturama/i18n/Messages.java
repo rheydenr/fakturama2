@@ -354,7 +354,11 @@ public class Messages {
 	public String preferencesGeneralCollapsenavbar;
 	public String preferencesGeneralCloseeditors;
 	public String preferencesGeneralCurrency;
-	public String preferencesGeneralThousendseparator;
+	public String preferencesGeneralThousandseparator;
+	public String preferencesGeneralCurrencyLocale;
+	public String preferencesGeneralCurrencyExample;
+	public String preferencesGeneralCurrencyCashrounding;
+	public String preferencesGeneralCurrencyCashroundingTooltip;
 
 	public String ImportOptionPage122;
 	public String ImportOptionPage123;
@@ -532,17 +536,17 @@ public class Messages {
 
 	public String productFieldItemno;
 
-	public String ShippingEditor529;
-	public String ShippingEditor530;
-	public String ShippingEditor531;
-	public String ShippingEditor532;
-	public String ShippingEditor533;
-	public String ShippingEditor534;
-	public String ShippingEditor535;
-	public String ShippingEditor536;
-	public String ShippingEditor537;
-	public String ShippingEditor538;
-	public String ShippingEditor539;
+    public String editorShippingTitle;
+    public String editorShippingNameTooltip;
+    public String editorShippingCategoryTooltip;
+    public String editorShippingFieldAutovatcalculationName;
+    public String editorShippingFieldAutovatcalculationTooltip;
+    public String editorShippingFieldAutovatConstantName;
+    public String editorShippingFieldAutovatFromvalueGross;
+    public String editorShippingFieldAutovatFromvalueNet;
+    public String editorShippingDefaultTooltip;
+    public String editorShippingDefaultButton;
+    public String editorShippingDefaultButtonTooltip;
 
 	public String TextEditor540;
 	public String TextEditor541;

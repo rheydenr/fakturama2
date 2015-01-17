@@ -3,6 +3,8 @@
  */
 package com.sebulli.fakturama.misc;
 
+import java.util.Locale;
+
 
 /**
  * Common constants for the Fakturama project.
@@ -204,5 +206,20 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_PRODUCT_USE_ITEMNR = "PRODUCT_USE_ITEMNR";
+
+    /**
+     * The {@link Locale} for currency (might be different from application locale!)
+     */
+    public static final String PREFERENCE_CURRENCY_LOCALE = "PREFERENCE_CURRENCY_LOCALE";
+
+    /**
+     * Use cash rounding (Switzerland only). This is for rounding of full 0.05 SFr.
+     */
+    public static final String PREFERENCES_CURRENCY_USE_CASHROUNDING = "PREFERENCES_CURRENCY_USE_CASHROUNDING";
+
+    /**
+     * This preference is read-only and only used for an example string (formatting of a currency amount)
+     */
+    public static final String PREFERENCE_CURRENCY_FORMAT_EXAMPLE = "PREFERENCE_CURRENCY_FORMAT_EXAMPLE";
     
 }

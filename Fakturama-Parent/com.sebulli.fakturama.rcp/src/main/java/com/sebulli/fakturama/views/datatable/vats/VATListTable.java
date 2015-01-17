@@ -89,11 +89,6 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  */
 public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
-    /**
-     * Path for the default values configuration in the Preference store
-     */
-    protected static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
-
     @Inject
     @Translation
     protected Messages msg;
@@ -144,11 +139,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @PostConstruct
     public Control createPartControl(Composite parent) {
     	log.info("create VAT list part");
-    	
-    	// TEST only!!!
-//    	VATDao dao = new VATDao();
-//    	dao.getAll();
-//    	
         top = super.createPartControl(parent, VAT.class, false, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);

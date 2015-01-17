@@ -60,8 +60,8 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Shipping> criteria = cb.createQuery(Shipping.class);
         Root<Shipping> root = criteria.from(Shipping.class);
-        CriteriaQuery<Shipping> cq = criteria.where(cb.and(cb.equal(root.<String> get("description"), oldShipping.getDescription()),
-                cb.equal(root.<String> get("name"), oldShipping.getName())));
+        CriteriaQuery<Shipping> cq = criteria.where(cb.and(cb.equal(root.get(Shipping_.description), oldShipping.getDescription()),
+                cb.equal(root.get(Shipping_.name), oldShipping.getName())));
         return getEntityManager().createQuery(cq).getSingleResult();
     }
     
@@ -75,7 +75,16 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
         restrictions.add(criteriaBuilder.equal(root.get(Shipping_.shippingValue), object.getShippingValue() != null ? object.getShippingValue() : Double.valueOf(0.0)));
         return restrictions;
     }
- 
+    
+/**
+ * Gets the all visible properties of this Shipping object.
+ * 
+ * @return String[] of visible Shipping properties
+ */
+public String[] getVisibleProperties() {
+    return new String[] { Shipping_.name.getName(), Shipping_.description.getName(), Shipping_.shippingValue.getName()};
+}
+
 	/**
 	 * @return the em
 	 */

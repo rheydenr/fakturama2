@@ -54,6 +54,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
@@ -324,7 +325,7 @@ public class VatEditor extends Editor<VAT> {
         
         UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
         target2VatcatModel.setConverter(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
-        bindModelValue(editorVat, comboCategory, "category", target2VatcatModel, vatCatModel2Target);
+        bindModelValue(editorVat, comboCategory, VAT_.category.getName(), target2VatcatModel, vatCatModel2Target);
     }
     
     @Inject

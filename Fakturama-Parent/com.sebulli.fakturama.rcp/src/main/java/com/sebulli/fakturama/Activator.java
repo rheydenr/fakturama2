@@ -13,6 +13,8 @@
 
 package com.sebulli.fakturama;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
@@ -52,6 +54,8 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
+
+        EclipseContextFactory.getServiceContext(context).get(IEclipsePreferences.class);
 
         // background color for focused widgets
         JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));

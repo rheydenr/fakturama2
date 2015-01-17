@@ -37,7 +37,7 @@ public class ContactUtil {
     public String getNameWithCompany(Contact contact) {
         String line = "";
         if (StringUtils.isNotBlank(contact.getCompany())) {
-            line = DataUtils.getSingleLine(contact.getCompany());
+            line = DataUtils.getInstance().getSingleLine(contact.getCompany());
             if (StringUtils.isNotBlank(contact.getFirstName()) || 
                 StringUtils.isNotBlank(contact.getName()) )
                 line +=", ";

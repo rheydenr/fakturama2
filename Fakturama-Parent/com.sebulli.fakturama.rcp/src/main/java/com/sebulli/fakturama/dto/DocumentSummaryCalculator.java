@@ -131,7 +131,7 @@ public class DocumentSummaryCalculator {
 		retval.setDiscountGross(itemsGross.multiply(dataSetDocument.getItemsRebate()));
 
 		// Calculate discount
-		if (!DataUtils.DoublesAreEqual(dataSetDocument.getItemsRebate(), 0.0)) {
+		if (!DataUtils.getInstance().DoublesAreEqual(dataSetDocument.getItemsRebate(), 0.0)) {
 
 			// Discount value = discount percent * Net value
 			MonetaryAmount discountNet = itemsNet.multiply(dataSetDocument.getItemsRebate());

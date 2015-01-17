@@ -46,14 +46,6 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage {
      * 
      */
     public static final String PREFERENCES_YOURCOMPANY_COMPANY_BANK = "YOURCOMPANY_COMPANY_BANK";
-//    /**
-//     * 
-//     */
-//    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE = "YOURCOMPANY_COMPANY_BANKCODE";
-//    /**
-//     * 
-//     */
-//    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR = "YOURCOMPANY_COMPANY_BANKACCOUNTNR";
     /**
      * 
      */
@@ -159,12 +151,6 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage {
 
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, msg.preferencesYourcompanyTaxoffice, getFieldEditorParent()));
-
-//		//T: Preference page "Your company"
-//		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR, msg.preferencesYourcompanyBankaccount, getFieldEditorParent()));
-//		
-//		//T: Preference page "Your company"
-//		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE, msg.preferencesYourcompanyBankcode, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_BANK, msg.preferencesYourcompanyBankname, getFieldEditorParent()));

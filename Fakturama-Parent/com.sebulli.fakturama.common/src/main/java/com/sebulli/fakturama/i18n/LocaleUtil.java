@@ -9,10 +9,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.common.Activator;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  *
@@ -31,6 +34,11 @@ public class LocaleUtil {
         return getInstance(Activator.getContext() == null ? System.getProperty(PROP_NL) : Activator.getContext().getProperty(PROP_NL));
     }
     
+    /**
+     * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
+     * @param lang the language code to be used
+     * @return a {@link LocaleUtil} instance
+     */
     public static LocaleUtil getInstance(String lang) {
         if(instance == null) {
             instance = new LocaleUtil(lang);
@@ -79,12 +87,16 @@ public class LocaleUtil {
         return countryLocaleString != null ? countryLocaleString.getDisplayCountry(defaultLocale) : null;
     }
     
+    /**
+     * The default {@link Locale} currently in use.
+     * @return
+     */
     public Locale getDefaultLocale() {
         return defaultLocale;
     }
 
     /**
-     * @return the countrylocalemap
+     * @return the countryLocaleMap
      */
     public Map<String, Locale> getCountryLocaleMap() {
         return countryLocaleMap;
@@ -103,8 +115,17 @@ public class LocaleUtil {
         return localeCountryMap;
     }
     
-//    public static void main(String[] args) {
-//        LocaleUtil t = new LocaleUtil();
-//    }
-//
+    public Locale getCurrencyLocale() {
+        String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, "en/US");
+        Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
+        Locale currencyLocale = getDefaultLocale();
+        Matcher matcher = pattern.matcher(localeString);
+        if (matcher.matches() && matcher.groupCount() > 1) {
+            String s = matcher.group(1);
+            String s2 = matcher.group(2);
+            currencyLocale = new Locale(s, s2);
+        }
+        return currencyLocale;
+        
+    }
 }

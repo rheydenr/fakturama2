@@ -31,9 +31,8 @@ import com.sebulli.fakturama.parts.ContactEditor;
 /**
  * This action creates a new contact in an editor.
  * 
- * @author Gerd Bartelt
  */
-public class NewContactHandler/* extends NewEditorAction */{
+public class NewContactHandler {
     
     @Inject
     @Translation
