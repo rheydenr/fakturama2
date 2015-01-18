@@ -175,7 +175,6 @@ public class LifecycleManager {
             defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
             defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
             defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
-            defaultPayment.setDefaultPaid(Boolean.FALSE);
             defaultPayment = paymentsDAO.save(defaultPayment);
             defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }

@@ -87,7 +87,7 @@ public class NavigationView {
 	    addAction(group2, Icon.COMMAND_TEXT, "command.texts", CommandIds.CMD_OPEN_TEXTS);
 	    addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS);
 	    addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
-	    addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_NEW_RECEIPTVOUCHER);
+	    addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS);
 
 		// Create the 3rd expand bar "Create new"
 	    PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);

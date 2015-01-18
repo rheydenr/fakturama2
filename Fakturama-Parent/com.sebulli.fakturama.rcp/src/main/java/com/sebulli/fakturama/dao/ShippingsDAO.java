@@ -75,15 +75,15 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
         restrictions.add(criteriaBuilder.equal(root.get(Shipping_.shippingValue), object.getShippingValue() != null ? object.getShippingValue() : Double.valueOf(0.0)));
         return restrictions;
     }
-    
-/**
- * Gets the all visible properties of this Shipping object.
- * 
- * @return String[] of visible Shipping properties
- */
-public String[] getVisibleProperties() {
-    return new String[] { Shipping_.name.getName(), Shipping_.description.getName(), Shipping_.shippingValue.getName()};
-}
+
+    /**
+     * Gets the all visible properties of this Shipping object.
+     * 
+     * @return String[] of visible Shipping properties
+     */
+    public String[] getVisibleProperties() {
+        return new String[] { Shipping_.name.getName(), Shipping_.description.getName(), Shipping_.shippingValue.getName() };
+    }
 
 	/**
 	 * @return the em

@@ -91,7 +91,6 @@ import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Payment;
-import com.sebulli.fakturama.model.PaymentCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Proforma;
@@ -928,15 +927,16 @@ public class MigrationManager {
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<PaymentCategory> catBuilder = new CategoryBuilder<PaymentCategory>(); 
-		Map<String, PaymentCategory> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), PaymentCategory.class);
+		CategoryBuilder<Account> catBuilder = new CategoryBuilder<Account>(); 
+		Map<String, Account> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), Account.class);
 		for (OldPayments oldPayment : oldDao.findAllPayments()) {
 			try {
 				Payment payment = new Payment();
 				payment.setName(oldPayment.getName());
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
-				payment.setDefaultPaid(oldPayment.isDefaultpaid());
+				// unused field
+//				payment.setDefaultPaid(oldPayment.isDefaultpaid());
 				payment.setDeleted(oldPayment.isDeleted());
 				payment.setDiscountDays(oldPayment.getDiscountdays());
 				payment.setDiscountValue(oldPayment.getDiscountvalue());

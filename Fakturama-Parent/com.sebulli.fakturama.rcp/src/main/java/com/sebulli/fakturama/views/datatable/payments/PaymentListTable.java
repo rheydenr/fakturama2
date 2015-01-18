@@ -1,14 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 2014 Original authors and others.
+/* 
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
+ * 
+ * Copyright (C) 2015 www.fakturama.org
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     Original authors and others - initial API and implementation
- ******************************************************************************/
-package com.sebulli.fakturama.views.datatable.shippings;
+ *     The Fakturama Team - initial API and implementation
+ */
+ 
+package com.sebulli.fakturama.views.datatable.payments;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -17,8 +21,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
@@ -36,6 +38,8 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -62,18 +66,16 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
-import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
-import com.sebulli.fakturama.dao.ShippingsDAO;
+import com.sebulli.fakturama.dao.AccountDAO;
+import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Shipping;
-import com.sebulli.fakturama.model.ShippingCategory;
-import com.sebulli.fakturama.parts.ShippingEditor;
+import com.sebulli.fakturama.model.Account;
+import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -81,10 +83,9 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
- * Builds the Shipping list table.
- *
+ * Builds the Payment list table.
  */
-public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingCategory> {
+public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
 
     @Inject
     @Translation
@@ -98,9 +99,9 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     private UISynchronize synch;
 
     // ID of this view
-    public static final String ID = "fakturama.views.shippingTable";
+    public static final String ID = "fakturama.views.paymentTable";
     
-    protected static final String POPUP_ID = "com.sebulli.fakturama.shippinglist.popup";
+    protected static final String POPUP_ID = "com.sebulli.fakturama.paymentlist.popup";
     
     /**
      * Event Broker for receiving update events to the list table
@@ -112,31 +113,33 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Preference
     private IEclipsePreferences preferences;
     
-    private EventList<Shipping> shippingListData;
-    private EventList<ShippingCategory> categories;
+    
+    private EventList<Payment> paymentListData;
+    private EventList<Account> categories;
 
     private Control top;
     
     @Inject
-    private ShippingsDAO shippingsDAO;
+    private PaymentsDAO paymentsDAO;
 
     @Inject
-    private ShippingCategoriesDAO shippingCategoriesDAO;
+    private AccountDAO accountDAO;
     
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
-    private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
+    private static final String PERCENTVALUE_CELL_LABEL = "PercentValue_Cell_LABEL";
+    private static final String INTEGERVALUE_CELL_LABEL = "IntegerValue_Cell_LABEL";
 
-    private ListViewGridLayer<Shipping> gridLayer;
+    private ListViewGridLayer<Payment> gridLayer;
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-    protected FilterList<Shipping> treeFilteredIssues;
+    protected FilterList<Payment> treeFilteredIssues;
     private SelectionLayer selectionLayer;
 
     @PostConstruct
     public Control createPartControl(Composite parent) {
-    	log.info("create Shipping list part");
-        top = super.createPartControl(parent, Shipping.class, false, true, ID);
+        log.info("create Payment list part");
+        top = super.createPartControl(parent, Payment.class, false, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -147,14 +150,14 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Override
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
-        //DefaultNatTableStyleConfiguration and the ConfigRegistry manually	
+        //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new ShippingTableConfiguration());
+        natTable.addConfiguration(new PaymentTableConfiguration());
         addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
-        //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
+        //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
@@ -167,27 +170,29 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         natTable.configure();
     }
-	
+    
     protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
-        shippingListData = GlazedLists.eventList(shippingsDAO.findAll(true));
+        paymentListData = GlazedLists.eventList(paymentsDAO.findAll(true));
 
         // get the visible properties to show in list view
-        String[] propertyNames = shippingsDAO.getVisibleProperties();
+        String[] propertyNames = paymentsDAO.getVisibleProperties();
 
-        final IColumnPropertyAccessor<Shipping> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Shipping>(propertyNames);
+        final IColumnPropertyAccessor<Payment> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Payment>(propertyNames);
         
         // Add derived 'default' column
-        final IColumnPropertyAccessor<Shipping> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Shipping>() {
+        final IColumnPropertyAccessor<Payment> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Payment>() {
 
-            public Object getDataValue(Shipping rowObject, int columnIndex) {
-                ShippingListDescriptor descriptor = ShippingListDescriptor.getDescriptorFromColumn(columnIndex);
+            public Object getDataValue(Payment rowObject, int columnIndex) {
+                PaymentListDescriptor descriptor = PaymentListDescriptor.getDescriptorFromColumn(columnIndex);
                 switch (descriptor) {
                 case DEFAULT:
-                    return rowObject.getId() == getDefaultShippingId();
+                    return rowObject.getId() == getDefaultPaymentId();
                 case NAME:
                 case DESCRIPTION:
-                case VALUE:
+                case DISCOUNT:
+                case DISCDAYS:
+                case NETDAYS:
                     // alternative: return rowObject.getFirstName();
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex - 1);
                 default:
@@ -196,22 +201,22 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
                 return null;
             }
 
-            public void setDataValue(Shipping rowObject, int columnIndex, Object newValue) {
+            public void setDataValue(Payment rowObject, int columnIndex, Object newValue) {
                 throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
             public int getColumnCount() {
-                return ShippingListDescriptor.getShippingPropertyNames().length;
+                return PaymentListDescriptor.getPaymentPropertyNames().length;
             }
 
             public String getColumnProperty(int columnIndex) {
-                ShippingListDescriptor descriptor = ShippingListDescriptor.getDescriptorFromColumn(columnIndex);
+                PaymentListDescriptor descriptor = PaymentListDescriptor.getDescriptorFromColumn(columnIndex);
                 return msg.getMessageFromKey(descriptor.getMessageKey());
             }
 
             public int getColumnIndex(String propertyName) {
-                if (ShippingListDescriptor.DEFAULT.getPropertyName().equals(propertyName)) {
-                    return ShippingListDescriptor.DEFAULT.getPosition();
+                if (PaymentListDescriptor.DEFAULT.getPropertyName().equals(propertyName)) {
+                    return PaymentListDescriptor.DEFAULT.getPosition();
                 } else {
                     return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
                 }
@@ -220,35 +225,34 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<Shipping>(propertyNames, derivedColumnPropertyAccessor); 
+        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<Payment>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
-        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, new ShippingFilterator());
+        final MatcherEditor<Payment> textMatcherEditor = new TextWidgetMatcherEditor<Payment>(searchText, new PaymentFilterator());
         
         // Filtered list for Search text field filter
-        final FilterList<Shipping> textFilteredIssues = new FilterList<Shipping>(shippingListData, textMatcherEditor);
+        final FilterList<Payment> textFilteredIssues = new FilterList<Payment>(paymentListData, textMatcherEditor);
 
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<Shipping>(textFilteredIssues);
+        treeFilteredIssues = new FilterList<Payment>(textFilteredIssues);
 
         //create the body layer stack
-        final IRowDataProvider<Shipping> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Shipping>(treeFilteredIssues, columnPropertyAccessor);
+        final IRowDataProvider<Payment> firstBodyDataProvider = 
+                new GlazedListsDataProvider<Payment>(treeFilteredIssues, columnPropertyAccessor);
         
         //build the grid layer
-        gridLayer = new ListViewGridLayer<Shipping>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
+        gridLayer = new ListViewGridLayer<Payment>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-        GlazedListsEventLayer<Shipping> shippingListEventLayer = new GlazedListsEventLayer<Shipping>(tableDataLayer, shippingListData);
+        for (PaymentListDescriptor descriptor : PaymentListDescriptor.values()) {
+            tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
+        }
+        GlazedListsEventLayer<Payment> paymentListEventLayer = new GlazedListsEventLayer<Payment>(tableDataLayer, paymentListData);
 
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
-        shippingListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        paymentListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         
         // Custom selection configuration
         selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
@@ -257,26 +261,28 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
 
-        IRowIdAccessor<Shipping> rowIdAccessor = new IRowIdAccessor<Shipping>() {
+        IRowIdAccessor<Payment> rowIdAccessor = new IRowIdAccessor<Payment>() {
             @Override
-            public Serializable getRowId(Shipping rowObject) {
+            public Serializable getRowId(Payment rowObject) {
                 return rowObject.getId();
             }
         };
         
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<Shipping> selectionModel = new RowSelectionModel<Shipping>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
+        RowSelectionModel<Payment> selectionModel = new RowSelectionModel<Payment>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
 //         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Shipping>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Payment>());
 
         // now is the time where we can create the NatTable itself
 
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently. In this case render as an image.
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.VALUE.getPosition(), MONEYVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.DISCOUNT.getPosition(), PERCENTVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.DISCDAYS.getPosition(), INTEGERVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.NETDAYS.getPosition(), INTEGERVALUE_CELL_LABEL);
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
                 SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
@@ -294,66 +300,64 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     /**
      * @return the gridLayer
      */
-    protected ListViewGridLayer<Shipping> getGridLayer() {
+    protected ListViewGridLayer<Payment> getGridLayer() {
         return gridLayer;
     }
 
     @Override
-    protected TopicTreeViewer<ShippingCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
-        categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
+    protected TopicTreeViewer<Account> createCategoryTreeViewer(Composite top) {
+        topicTreeViewer = new TopicTreeViewer<Account>(top, msg, false, true);
+        categories = GlazedLists.eventList(accountDAO.findAll());
         topicTreeViewer.setInput(categories);
-        // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
-        // Eins von beiden muß es doch geben, oder?
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
         return topicTreeViewer;
     }
 
     /**
-     * reads the default Shipping value from preference store and returns the
-     * appropriate Shipping-ID value from database
+     * reads the default Payment value from preference store and returns the
+     * appropriate Payment-ID value from database
      * 
      * @return
      */
-    private long getDefaultShippingId() {
-        return preferences.getLong(Constants.DEFAULT_SHIPPING, 1L);
+    private long getDefaultPaymentId() {
+        return preferences.getLong(Constants.DEFAULT_PAYMENT, 1L);
     }
     
-    /**
-     * Handle an incoming refresh command. This could be initiated by an editor 
-     * which has just saved a new element (document, Shipping, payment etc). Here we ONLY
-     * listen to "ShippingEditor" events.<br />
-     * The tree of {@link ShippingCategory}s is updated because we use a GlazedList for
-     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
-     * react on every change of the underlying list (here in the field <code>categories</code>).
-     * If the content of <code>categories</code> changes, the change event is fired and the 
-     * {@link TopicTreeViewer} is updated.
-     * 
-     * @param message an incoming message
-     */
-    @Inject
-    @Optional
-    public void handleRefreshEvent(@EventTopic(ShippingEditor.EDITOR_ID) String message) {
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        shippingListData.clear();
-        shippingListData.addAll(shippingsDAO.findAll());
-        categories.clear();
-        categories.addAll(shippingCategoriesDAO.findAll());
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(true);
-            }
-        });
-    }
+//    /**
+//     * Handle an incoming refresh command. This could be initiated by an editor 
+//     * which has just saved a new element (document, Payment, payment etc). Here we ONLY
+//     * listen to "PaymentEditor" events.<br />
+//     * The tree of {@link Account}s is updated because we use a GlazedList for
+//     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
+//     * react on every change of the underlying list (here in the field <code>categories</code>).
+//     * If the content of <code>categories</code> changes, the change event is fired and the 
+//     * {@link TopicTreeViewer} is updated.
+//     * 
+//     * @param message an incoming message
+//     */
+//    @Inject
+//    @Optional
+//    public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
+//        synch.syncExec(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                top.setRedraw(false);
+//            }
+//        });
+//        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+//        paymentListData.clear();
+//        paymentListData.addAll(paymentsDAO.findAll());
+//        categories.clear();
+//        categories.addAll(accountDAO.findAll());
+//        synch.syncExec(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                top.setRedraw(true);
+//            }
+//        });
+//    }
 
     /**
      * We have to style the table a little bit...
@@ -365,7 +369,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         DefaultSelectionStyleConfiguration selectionStyle = createDefaultSelectionStyle();
 
         // Add all style configurations to NatTable
-//        natTable.setBackground(GUIHelper.getColor(242, 242, 242));
         natTable.addConfiguration(selectionStyle);
     }
 
@@ -403,12 +406,12 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         filterLabel.pack(true);
 
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new ShippingMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        treeFilteredIssues.setMatcher(new PaymentMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
         //   contentProvider.setTreeObject(treeObject);
 
         //Refresh is done automagically...
     }
-	
+    
     protected boolean isHeaderLabelEnabled() {
         return false;
     }
@@ -423,62 +426,72 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
      */
     @Override
     protected String getEditorId() {
-        return ShippingEditor.ID;
+        return "mpf"; //PaymentEditor.ID;
     }
 
-    class ShippingTableConfiguration extends AbstractRegistryConfiguration {
+    class PaymentTableConfiguration extends AbstractRegistryConfiguration {
 
-		@Override
-		public void configureRegistry(IConfigRegistry configRegistry) {
-			Style styleLeftAligned = new Style();
-			styleLeftAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
-			Style styleRightAligned = new Style();
-			styleRightAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
-			Style styleCentered = new Style();
-			styleCentered.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
+        @Override
+        public void configureRegistry(IConfigRegistry configRegistry) {
+            Style styleLeftAligned = new Style();
+            styleLeftAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
+            Style styleRightAligned = new Style();
+            styleRightAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
+            Style styleCentered = new Style();
+            styleCentered.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
 
-			// default style for the most of the cells
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
-			                                       styleLeftAligned, 				// value of the attribute
-			                                       DisplayMode.NORMAL, 				// apply during normal rendering i.e not during selection or edit
-			                                       GridRegion.BODY.toString()); 	// apply the above for all cells with this label
+            // default style for the most of the cells
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
+                                                   styleLeftAligned,                // value of the attribute
+                                                   DisplayMode.NORMAL,              // apply during normal rendering i.e not during selection or edit
+                                                   GridRegion.BODY.toString());     // apply the above for all cells with this label
 
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.CELL_PAINTER, 
-					new DefaultCheckmarkPainter(),
-					DisplayMode.NORMAL, DEFAULT_CELL_LABEL);
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-					styleCentered, 		
-					DisplayMode.NORMAL, 			
-					DEFAULT_CELL_LABEL); 
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, 
+                    new DefaultCheckmarkPainter(),
+                    DisplayMode.NORMAL, DEFAULT_CELL_LABEL);
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleCentered,      
+                    DisplayMode.NORMAL,             
+                    DEFAULT_CELL_LABEL); 
 
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-					styleRightAligned, 		
-					DisplayMode.NORMAL, 			
-					MONEYVALUE_CELL_LABEL ); 
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.DISPLAY_CONVERTER,
-					new MoneyDisplayConverter(),
-					DisplayMode.NORMAL,
-					MONEYVALUE_CELL_LABEL);
-		}
-	}
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleRightAligned,      
+                    DisplayMode.NORMAL,             
+                    PERCENTVALUE_CELL_LABEL ); 
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new PercentageDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    PERCENTVALUE_CELL_LABEL);
+
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleRightAligned,      
+                    DisplayMode.NORMAL,             
+                    INTEGERVALUE_CELL_LABEL ); 
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultIntegerDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    INTEGERVALUE_CELL_LABEL);
+        }
+    }
 
     public void removeSelectedEntry() {
         if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            Shipping objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+            Payment objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
             try {
                 // don't delete the entry because it could be referenced
                 // from another entity
                 objToDelete.setDeleted(Boolean.TRUE);
-                shippingsDAO.save(objToDelete);
+                paymentsDAO.save(objToDelete);
             }
             catch (SQLException e) {
-                log.error(e, "can't save the current Shipping: " + objToDelete.toString());
+                log.error(e, "can't save the current Payment: " + objToDelete.toString());
             }
     
-            // Refresh the table view of all Shippings
-            evtBroker.post("ShippingEditor", "update");
+            // Refresh the table view of all Payment
+            evtBroker.post("PaymentEditor", "update");
         } else {
             log.debug("no rows selected!");
         }
@@ -487,5 +500,5 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     protected String getPopupId() {
         return POPUP_ID;
     }
-}
 
+}

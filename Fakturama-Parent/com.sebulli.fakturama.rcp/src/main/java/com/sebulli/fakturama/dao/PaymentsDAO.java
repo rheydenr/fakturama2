@@ -75,7 +75,17 @@ public class PaymentsDAO extends AbstractDAO<Payment> {
         restrictions.add(criteriaBuilder.equal(root.get(Payment_.name), StringUtils.defaultString(object.getName())));
         return restrictions;
 	}
- 
+
+    /**
+     * Gets the all visible properties of this Shipping object.
+     * 
+     * @return String[] of visible Shipping properties
+     */
+    public String[] getVisibleProperties() {
+        return new String[] { Payment_.name.getName(), Payment_.description.getName(), 
+                Payment_.discountValue.getName(), Payment_.discountDays.getName(), Payment_.netDays.getName() };
+    }
+
 	/**
 	 * @return the em
 	 */

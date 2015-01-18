@@ -26,7 +26,6 @@
 			<persistence:class>com.sebulli.fakturama.model.ExpenditureItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemAccountType</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Payment</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.PaymentCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Product</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductOptions</persistence:class>

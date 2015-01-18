@@ -24,8 +24,8 @@ public enum PaymentListDescriptor {
     NAME("name", "common.field.name", 1, 120),
     DESCRIPTION("description", "common.field.description", 2, 200),
     DISCOUNT("discountValue", "common.field.discount", 3, 50),
-    DISCDAYS("discountDays", "common.field.discount.days", 3, 70),
-    NETDAYS("netDays", "common.field.net.days", 3, 70),
+    DISCDAYS("discountDays", "common.field.discount.days", 4, 70),
+    NETDAYS("netDays", "common.field.net.days", 5, 70),
     ;
 
     private String propertyName, messageKey;
@@ -80,7 +80,7 @@ public enum PaymentListDescriptor {
         return null;
     }
     
-    public static final String[] getVATPropertyNames() {
+    public static final String[] getPaymentPropertyNames() {
         return new String[]{
         PaymentListDescriptor.DEFAULT.getPropertyName(), 
         PaymentListDescriptor.NAME.getPropertyName(), 
