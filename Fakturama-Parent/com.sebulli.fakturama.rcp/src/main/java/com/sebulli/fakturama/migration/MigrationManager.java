@@ -731,7 +731,7 @@ public class MigrationManager {
 				contact.setPhone(oldContact.getPhone());
 				contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
 				contact.setSupplierNumber(oldContact.getSuppliernumber());
-				contact.setUseNetGross(BooleanUtils.toBooleanObject(oldContact.getUseNetGross()));
+				contact.setUseNetGross(Integer.valueOf(oldContact.getUseNetGross()).shortValue());
 				contact.setVatNumber(oldContact.getVatnr());
 				contact.setVatNumberValid(BooleanUtils.toBooleanObject(oldContact.getVatnrvalid()));
 				contact.setWebsite(oldContact.getWebsite());

@@ -74,7 +74,9 @@ import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
+import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
+import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -143,7 +145,7 @@ public class ContactEditor extends Editor<Contact> {
 	private Combo comboCategory;
 	private Group deliveryGroup;
 	private Button bDelAddrEquAddr;
-	private Combo comboUseNetGross;
+	private ComboViewer comboUseNetGross;
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
@@ -916,22 +918,13 @@ public class ContactEditor extends Editor<Contact> {
 		comboPaymentViewer.setContentProvider(new EntityComboProvider());
 		comboPaymentViewer.setLabelProvider(new EntityLabelProvider());
 		comboPaymentViewer.setInput(allPayments);
-//		comboPaymentViewer.setContentProvider(new UniDataSetContentProvider());
-//		comboPaymentViewer.setLabelProvider(new UniDataSetLabelProvider());
-//		comboPaymentViewer.setInput(Data.INSTANCE.getPayments().getDatasets());
-
-//		int paymentId = contact.getPayment();
-//		try {
-////			if (paymentId >= 0)
-////				comboPaymentViewer.setSelection(new StructuredSelection(Data.INSTANCE.getPayments().getDatasetById(paymentId)), true);
-////			else
-//				comboPayment.setText("");
-//		}
-//		catch (IndexOutOfBoundsException e) {
-//			comboPayment.setText("invalid");
-//		}
+        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
+        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
+        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
+        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPaymentViewer.getCombo());
-        bindModelValue(editorContact, comboPaymentViewer, Contact_.payment.getName());
+        bindModelValue(editorContact, comboPaymentViewer.getCombo(), Contact_.payment.getName(),
+                target2PaymentModel, paymentModel2Target);
 
 		// Reliability
 		Label labelReliability = new Label(tabMisc, SWT.NONE);
@@ -960,7 +953,6 @@ public class ContactEditor extends Editor<Contact> {
 		    }
 		});
 
-//		comboReliability.select(contact.getReliability());
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboReliability.getControl());
 		
@@ -983,7 +975,7 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
 		txtDiscount = new Text(tabMisc, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount);
-////		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
+		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
 ////		txtDiscount.addFocusListener(new FocusAdapter() {
 ////			public void focusLost(FocusEvent e) {
 ////				txtDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(txtDiscount.getText())));
@@ -1004,21 +996,36 @@ public class ContactEditor extends Editor<Contact> {
 		//T: Label in the contact editor
 		labelNetGross.setText(msg.editorContactFieldNetgrossName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNetGross);
-		comboUseNetGross = new Combo(tabMisc, SWT.BORDER);
-
-		comboUseNetGross.add("---");
+		comboUseNetGross = new ComboViewer(tabMisc, SWT.BORDER);
+		comboUseNetGross.setContentProvider(ArrayContentProvider.getInstance());
+//		comboUseNetGross.setInput(new String[]{"---", msg.productDataNet, msg.productDataGross});
+		comboUseNetGross.setInput(new Short[]{0, 1, 2});
+		comboUseNetGross.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                Short type = (Short)element;
+                switch (type) {
+                case 0:
+                    return "---";
+                case 1:
 		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
-		comboUseNetGross.add(msg.productDataNet);
+                    return msg.productDataNet;
+                case 2:
 		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
-		comboUseNetGross.add(msg.productDataGross);
-
+                    return msg.productDataGross;
+                default:
+                    return null;
+                }
+            }
+        });
+		
 		// If the value is -1, use 0 instead
-//		if (editorContact.getUseNetGross()<0)
-//			contact.setUseNetGross(0); 
-//		comboUseNetGross.select(contact.getUseNetGross());
-//		
-//		superviceControl(comboUseNetGross);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboUseNetGross);
+		if (editorContact.getUseNetGross()<0) {
+		    editorContact.setUseNetGross((short)0);
+		}
+
+        bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboUseNetGross.getCombo());
 
 		// Controls in tab "Note"
 

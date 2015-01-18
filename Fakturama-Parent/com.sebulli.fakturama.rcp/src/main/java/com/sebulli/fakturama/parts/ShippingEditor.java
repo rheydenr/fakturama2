@@ -280,12 +280,6 @@ public class ShippingEditor extends Editor<Shipping> {
         textName.setToolTipText(labelName.getToolTipText());
 
         bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
-//        textName.addModifyListener(new ModifyListener() {
-//            @Override
-//            public void modifyText(ModifyEvent e) {
-//                getMDirtyablePart().setDirty(true);
-//            }
-//        });
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // Shipping category

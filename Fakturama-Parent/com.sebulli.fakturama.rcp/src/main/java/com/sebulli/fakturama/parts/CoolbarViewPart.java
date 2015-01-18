@@ -20,9 +20,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.action.CoolBarManager;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -207,14 +205,6 @@ public class CoolbarViewPart {
     @Inject
     @Optional
     void dirtyChanged(@UIEventTopic(UIEvents.Dirtyable.TOPIC_DIRTY) Event eventData) {
-//        for (IContributionItem item : coolbarmgr.getItems()) {
-//            IToolBarManager toolBarManager = ((ToolBarContributionItem) item).getToolBarManager();
-//            for (IContributionItem toolBarItem : toolBarManager.getItems()) {
-//                System.out.println("YEAH");
-//
-//            }
-//        }
-        
         for (ToolBar toolBar : coolBarsByKey) {
             for (ToolItem toolItem : toolBar.getItems()) {
                 ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
@@ -223,16 +213,6 @@ public class CoolbarViewPart {
                 }
             }
         }
-        
-//        coolBarsByKey.forEach(item->{
-//            ParameterizedCommand pCmd = (ParameterizedCommand) item.getData(TOOLITEM_COMMAND);
-//            if(pCmd != null) {
-//                item.setEnabled(pCmd.getCommand().isEnabled());
-//            }
-//        });
-//        for (ToolItem item : coolBarsByKey.iterator().next().getItems()) {
-//            item.g
-//        }
     }
 	
 //

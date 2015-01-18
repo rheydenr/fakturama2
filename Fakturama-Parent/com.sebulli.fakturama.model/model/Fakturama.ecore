@@ -65,7 +65,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="note" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="payment" eType="#//Payment"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="reliability" eType="#//ReliabilityType"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="useNetGross" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="useNetGross" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EShortObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="vatNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="vatNumberValid" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="website" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
