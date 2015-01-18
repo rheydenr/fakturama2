@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.widget;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

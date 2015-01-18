@@ -1,11 +1,11 @@
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.widget;
 
 import java.util.Map;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-final class HashMapContentProvider implements IStructuredContentProvider {
+final public class HashMapContentProvider implements IStructuredContentProvider {
     @SuppressWarnings("unchecked")
     @Override
     public Object[] getElements(Object inputElement) {

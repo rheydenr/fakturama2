@@ -12,10 +12,9 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.widget;
 
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
@@ -23,14 +22,13 @@ import org.eclipse.swt.widgets.Composite;
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
- * Controls a text widget that contains the net value of a price. This control
- * interacts with a GrossText control, that contains the gross value. If the
- * value of this control is changes, also the corresponding gross control is
- * modified.
+ * Controls a text widget that contains the gross value of a price. This control
+ * interacts with a NetText control, that contains the net value. If the value
+ * of this control is changes, also the corresponding net control is modified.
  * 
  * @author Gerd Bartelt
  */
-public class NetText {
+public class GrossText {
 
 	// The  net value
 	private Double netValue;
@@ -38,16 +36,18 @@ public class NetText {
 	// VAT value as factor
 	private Double vatValue;
 
-	// The text control 
-	private FormattedText netText;
+	// The corresponding text control that contains the net value
+	private NetText netText;
 
-	// The corresponding text control that contains the gross value
+	// The text control 
 	private FormattedText grossText;
 
 	/**
 	 * Constructor that creates the text widget and connects it with the
 	 * corresponding net widget.
 	 * 
+	 * @param editor
+	 *            The editor that contains this widget.
 	 * @param parent
 	 *            The parent control.
 	 * @param style
@@ -57,36 +57,34 @@ public class NetText {
 	 * @param vat
 	 *            The vat value ( factor )
 	 */
-	public NetText(Composite parent, int style, Double net, Double vat) {
+	public GrossText(Composite parent, int style, Double net, Double vat) {
 
 		// Set the local variables
 		this.netValue = net;
 		this.vatValue = vat;
 
 		// Create the text widget
-		this.netText = new FormattedText(parent, style);
-		this.netText.setFormatter(new MoneyFormatter());
-		netText.setValue(netValue);
+		this.grossText = new FormattedText(parent, style);
+		this.grossText.setFormatter(new MoneyFormatter());
+		grossText.setValue(netValue * (1 + vat));
 
-//		// Set the text of the NetText, based on the GrossText's value.
+//		// Set the text of the GrossText, based on the NetText's value.
 //		// Do this, if the text widget is selected (If "ENTER" is pressed).
-//		netText.getControl().addSelectionListener(new SelectionAdapter() {
+//		grossText.getControl().addSelectionListener(new SelectionAdapter() {
 //			@Override
 //			public void widgetDefaultSelected(SelectionEvent e) {
-//			    System.out.println("INFO: " + netText.getValue() + "; " + netValue);
-////				netText.setValue(netValue);
+//				grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble(netValue, vatValue));
 //			}
 //		});
 
-		// Set the text of the GrossText, based on the NetText's value
-		netText.getControl().addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                if (netText.getControl().isFocusControl()) {
-                    grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getValue(), vatValue));
-                } else {
-                    netText.getControl().notifyListeners(SWT.FocusOut, null);
-                }
-		    }
+		// Set the text of the NetText, based on the GrossText's value
+		grossText.getControl().addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				if (grossText.getControl().isFocusControl()) {
+					Double netVal = DataUtils.getInstance().calculateNetFromGrossAsDouble((Double)grossText.getValue(), vatValue);
+                    netText.getNetText().setValue(netVal);
+				}
+			}
 		});
 
 	}
@@ -98,11 +96,11 @@ public class NetText {
 	 *            True, if visible
 	 */
 	public void setVisible(boolean visible) {
-		netText.getControl().setVisible(visible);
+		grossText.getControl().setVisible(visible);
 	}
 
 	/**
-	 * Get a reference of the gross text widget
+	 * Get a reference of the text widget
 	 * 
 	 * @return The text widget.
 	 */
@@ -111,31 +109,33 @@ public class NetText {
 	}
 
 	/**
-	 * Set a reference to the gross text widget
+	 * Set a reference to the net text widget
 	 * 
-	 * @param grossT
-	 *            The gtoss text widget
+	 * @param netT
+	 *            The net text widget
 	 */
-	public void setGrossText(FormattedText grossT) {
-		this.grossText = grossT;
+	public void setNetText(NetText netT) {
+		this.netText = netT;
 	}
 
 	/**
-	 * Update the Vat factor.
+	 * Update the Vat factor and recalculate the text of the gross text based on
+	 * the net text.
 	 * 
 	 * @param vatValue
 	 *            The Vat value as factor.
 	 */
 	public void setVatValue(Double vatValue) {
 		this.vatValue = vatValue;
+		grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble(netValue, vatValue));
 	}
 
 	/**
-	 * Get a reference of the text widget
+	 * Get a reference of the net text widget
 	 * 
 	 * @return The net text widget.
 	 */
-	public FormattedText getNetText() {
+	public NetText getNetText() {
 		return netText;
 	}
 

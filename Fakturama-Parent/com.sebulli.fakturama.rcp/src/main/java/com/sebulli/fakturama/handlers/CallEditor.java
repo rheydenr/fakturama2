@@ -39,6 +39,7 @@ import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
@@ -127,6 +128,13 @@ public class CallEditor {
 			case ShippingEditor.ID:
 			case ShippingListTable.ID:
                 myPart.setLabel(msg.commandShippingsName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
+                myPart.setContext(EclipseContextFactory.create());
+                myPart.getProperties().put(PARAM_OBJ_ID, objId);
+                break;
+//			case PaymentEditor.ID:
+			case PaymentListTable.ID:
+                myPart.setLabel(msg.commandPaymentsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
                 myPart.setContext(EclipseContextFactory.create());
                 myPart.getProperties().put(PARAM_OBJ_ID, objId);

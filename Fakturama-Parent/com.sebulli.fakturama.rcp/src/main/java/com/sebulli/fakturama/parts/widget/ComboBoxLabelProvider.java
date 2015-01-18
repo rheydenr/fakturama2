@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.parts;
+package com.sebulli.fakturama.parts.widget;
 
 import java.util.Map;
 

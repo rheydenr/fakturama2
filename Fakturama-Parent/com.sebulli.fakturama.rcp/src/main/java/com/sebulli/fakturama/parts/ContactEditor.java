@@ -77,6 +77,12 @@ import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
+import com.sebulli.fakturama.parts.widget.ComboBoxLabelProvider;
+import com.sebulli.fakturama.parts.widget.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.EntityLabelProvider;
+import com.sebulli.fakturama.parts.widget.HashMapContentProvider;
+import com.sebulli.fakturama.parts.widget.StringComboBoxLabelProvider;
+import com.sebulli.fakturama.parts.widget.StringHashMapContentProvider;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
