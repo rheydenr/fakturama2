@@ -82,7 +82,14 @@
               </children>
               <children xsi:type="basic:Part" xmi:id="_wuLLsE8JEeOddfJz0XevPw" elementId="fakturama.views.paymentTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.payments.PaymentListTable" label="%command.payments.name" iconURI="icon://COMMAND_PAYMENT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>
-                <toolbar xmi:id="_2ONFAJ9fEeSsrbN2MYndng" elementId="com.sebulli.fakturama.rcp.toolbar.3"/>
+                <menus xsi:type="menu:PopupMenu" xmi:id="_hYGcAJ9jEeSsrbN2MYndng" elementId="com.sebulli.fakturama.paymentlist.popup" label="Payment list popup">
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_nhVrIJ9jEeSsrbN2MYndng" elementId="com.sebulli.fakturama.paymentlist.popup.addentry" label="%main.menu.new.payment" iconURI="icon://COMMAND_PLUS" tooltip="%main.menu.new.payment.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_0ww50J9jEeSsrbN2MYndng" elementId="com.sebulli.fakturama.paymentlist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" mnemonics="DEL" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+                </menus>
+                <toolbar xmi:id="_2ONFAJ9fEeSsrbN2MYndng" elementId="com.sebulli.fakturama.rcp.toolbar.3">
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_IIYEMJ9jEeSsrbN2MYndng" elementId="com.sebulli.fakturama.listview.payment.add" iconURI="icon://COMMAND_PLUS" tooltip="%main.menu.new.payment.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_YAgagJ9jEeSsrbN2MYndng" elementId="com.sebulli.fakturama.listview.payment.delete" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+                </toolbar>
               </children>
               <children xsi:type="basic:Part" xmi:id="_6S31EE8JEeOddfJz0XevPw" elementId="fakturama.views.textTable" toBeRendered="false" visible="false" label="%command.texts.name" iconURI="icon://COMMAND_TEXT">
                 <tags>NoMove</tags>
