@@ -17,34 +17,25 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.money.CurrencyUnit;
-import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
-import javax.money.format.MonetaryAmountFormat;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -55,32 +46,23 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.javamoney.moneta.CurrencyUnitBuilder;
-import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.model.VATCategory;
-import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
@@ -120,6 +102,7 @@ public class ShippingEditor extends Editor<Shipping> {
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.shippingEditor";
+    public static final String EDITOR_ID = "ShippingEditor";
 
     // SWT widgets of the editor
     private Composite top;
@@ -211,7 +194,7 @@ public class ShippingEditor extends Editor<Shipping> {
         part.setLabel(editorShipping.getName());
         
 		// Refresh the table view of all Shippings (this also refreshes the tree of categories)
-        evtBroker.post("ShippingEditor", "update");
+        evtBroker.post(EDITOR_ID, "update");
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
@@ -238,7 +221,7 @@ public class ShippingEditor extends Editor<Shipping> {
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
-            editorShipping = shippingDao.findById(objId);
+            editorShipping = shippingDao.findById(objId, true);
         }
 
         // test, if the editor is opened to create a new data set. This is,
@@ -295,7 +278,14 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
         textName.setToolTipText(labelName.getToolTipText());
+
         bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
+//        textName.addModifyListener(new ModifyListener() {
+//            @Override
+//            public void modifyText(ModifyEvent e) {
+//                getMDirtyablePart().setDirty(true);
+//            }
+//        });
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // Shipping category
@@ -620,14 +610,22 @@ public class ShippingEditor extends Editor<Shipping> {
 
     }
 
-    @Inject
-    @Optional
-    public void partActivation(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) 
-      Event event) {
-      // do something
-//      System.out.println("Got Part");
-    }     
-    
+    @PreDestroy
+    public void beforeClose() {
+        shippingDao.findById(editorShipping.getId(), true);
+        editorShipping = null;
+        top = null;
+//        textName = null;
+//        textDescription = null;
+//         comboVat = null;
+//         comboViewer = null;
+//         comboAutoVat = null;
+//         netText = null;
+//         grossText = null;
+//         comboCategory = null;
+        
+    }
+   
     @Override
     protected String getDefaultEntryKey() {
         return Constants.DEFAULT_SHIPPING;

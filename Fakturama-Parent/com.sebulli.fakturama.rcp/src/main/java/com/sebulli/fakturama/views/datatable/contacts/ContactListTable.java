@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
@@ -40,6 +41,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -237,7 +239,11 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
 //         Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Contact>());
 
-        final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
+        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
         // Register your custom cell painter, cell style, against the label applied to the cell.
         //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());

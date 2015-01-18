@@ -18,6 +18,7 @@ import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -26,15 +27,30 @@ import org.eclipse.swt.widgets.Shell;
 
 public class SaveHandler {
     
-	@CanExecute
-	public boolean canExecute(
-	        final EPartService partService,
-	        @Active MDirtyable dirtyable) {
+
+    @CanExecute
+    public boolean canExecute(EPartService partService) {
+        if (partService != null) {
+            MDirtyable dirtyable = partService.getActivePart();
 		if (dirtyable == null) {
 			return false;
 		}
 		return dirtyable.isDirty();
-	}
+            //return !partService.getDirtyParts().isEmpty();
+        }
+        return false;
+    }
+
+    
+//	@CanExecute
+//	public boolean canExecute(
+//	        /*final EPartService partService,*/
+//	        @Optional /*@Active*/ MDirtyable dirtyable) {
+//		if (dirtyable == null) {
+//			return false;
+//		}
+//		return dirtyable.isDirty();
+//	}
 
 	@Execute
 	public void execute(

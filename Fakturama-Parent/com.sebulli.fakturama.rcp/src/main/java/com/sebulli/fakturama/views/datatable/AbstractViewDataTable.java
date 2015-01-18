@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.views.datatable;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -242,9 +243,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     public void onStart(NatTable natTable) {
         Properties properties = new Properties();
         String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
-        Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
+        Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
 
-        try {
+        try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
+            properties.load(propertiesInputStream);
             log.debug("Loading NatTable state from " + Constants.VIEWTABLE_PREFERENCES_FILE);
             properties.load(Files.newInputStream(propertiesFile, StandardOpenOption.READ));
             natTable.loadState(getTableId(), properties);
@@ -262,10 +264,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     public void onStop(NatTable natTable) {
         Properties properties = new Properties();
         String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
-        Path propertiesFile = Paths.get(requestedWorkspace + FileSystems.getDefault().getSeparator()+Constants.VIEWTABLE_PREFERENCES_FILE);
-        natTable.saveState(getTableId(), properties);
+        Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
 
-        try {
+        try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
+            properties.load(propertiesInputStream);
+            natTable.saveState(getTableId(), properties);
             log.info("Saving NatTable state to " + Constants.VIEWTABLE_PREFERENCES_FILE);
             properties.store(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE), "NatTable state");
         } catch (IOException ioex) {

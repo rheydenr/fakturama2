@@ -28,6 +28,8 @@ public class LocaleUtil {
 
     private static LocaleUtil instance;
     private SortedMap<String, String> localeCountryMap;
+
+    private static Locale currencyLocale = null;
     
     /** Returns a reference to the {@link LocaleUtil}. */
     public static LocaleUtil getInstance() {
@@ -116,14 +118,16 @@ public class LocaleUtil {
     }
     
     public Locale getCurrencyLocale() {
-        String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, "en/US");
-        Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
-        Locale currencyLocale = getDefaultLocale();
-        Matcher matcher = pattern.matcher(localeString);
-        if (matcher.matches() && matcher.groupCount() > 1) {
-            String s = matcher.group(1);
-            String s2 = matcher.group(2);
-            currencyLocale = new Locale(s, s2);
+        if(currencyLocale == null) {
+            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, "en/US");
+            Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
+            currencyLocale = getDefaultLocale();
+            Matcher matcher = pattern.matcher(localeString);
+            if (matcher.matches() && matcher.groupCount() > 1) {
+                String s = matcher.group(1);
+                String s2 = matcher.group(2);
+                currencyLocale = new Locale(s, s2);
+            }
         }
         return currencyLocale;
         

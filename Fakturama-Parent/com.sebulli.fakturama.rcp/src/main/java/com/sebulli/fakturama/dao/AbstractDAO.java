@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.FlushModeType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -111,11 +112,19 @@ em.joinTransaction();
      * @return List<T>
      */
     public List<T> findAll() {
+        return findAll(false);
+    }
+    
+    public List<T> findAll(boolean forceRead) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
         CriteriaQuery<T> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
-        return getEntityManager().createQuery(cq).getResultList();
+        TypedQuery<T> query = getEntityManager().createQuery(cq);
+        if(forceRead) {
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        }
+        return query.getResultList();
     }
 
     /**
@@ -131,15 +140,34 @@ em.joinTransaction();
         CriteriaQuery<T> cq = criteria.where(cb.equal(root.<String> get("name"), entityName));
         return getEntityManager().createQuery(cq).getSingleResult();
     }
-
+    
     /**
-     * Finds a {@link T} by id.
-     * 
-     * @param id
-     * @return
+     * Finds a {@link T} by id. 
+     * @param id the primary key to search
+     * @return found object
      */
     public T findById(long id) {
-    	return getEntityManager().find(getEntityClass(), id);
+        return findById(id, false);
+    }
+
+    /**
+     * Finds a {@link T} by id. If parameter <code>forceReadFromDatabase</code> is set, the value from
+     * database is forced to read, else it will get from session cache. This is necessary e.g. if you 
+     * changed an object in an editor, then didn't save the changes and after close you again
+     * open the editor with the same object. Without forced read you get the previously changed (but not saved!)
+     * object. This is because the databinding works down to the entity object.
+     * 
+     * @param id the primary key to search
+     * @param forceReadFromDatabase don't use a previously cached object, but refresh 
+     *  object with database content
+     * @return found object
+     */
+    public T findById(long id, boolean forceReadFromDatabase) {
+    	T find = getEntityManager().find(getEntityClass(), id);
+    	if(forceReadFromDatabase) {
+    	    getEntityManager().refresh(find);
+    	}
+        return find;
     }
     
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    

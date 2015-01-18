@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
@@ -162,12 +163,18 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
+        
+        /*
+         * Set the background color for this table. Could only set here, because otherwise 
+         * it would be overwritten with default configurations.
+         */
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
         natTable.configure();
     }
 	
     protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
-        shippingListData = GlazedLists.eventList(shippingsDAO.findAll());
+        shippingListData = GlazedLists.eventList(shippingsDAO.findAll(true));
 
         // get the visible properties to show in list view
         String[] propertyNames = shippingsDAO.getVisibleProperties();
@@ -275,7 +282,10 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.VALUE.getPosition(), MONEYVALUE_CELL_LABEL);
 
-        final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
+        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
@@ -325,10 +335,11 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
      * 
      * @param message an incoming message
      */
-    @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("ShippingEditor") String message) {
+    @Inject
+    @Optional
+    public void handleRefreshEvent(@EventTopic(ShippingEditor.EDITOR_ID) String message) {
         synch.syncExec(new Runnable() {
-            
+
             @Override
             public void run() {
                 top.setRedraw(false);
@@ -340,11 +351,12 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         categories.clear();
         categories.addAll(shippingCategoriesDAO.findAll());
         synch.syncExec(new Runnable() {
-           
+
             @Override
             public void run() {
-        top.setRedraw(true);
-            }});
+                top.setRedraw(true);
+            }
+        });
     }
 
     /**

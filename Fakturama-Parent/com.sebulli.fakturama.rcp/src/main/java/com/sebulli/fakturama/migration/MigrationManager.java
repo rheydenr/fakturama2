@@ -121,6 +121,7 @@ import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -1186,6 +1187,7 @@ public class MigrationManager {
                     case "PRODUCTS":
                         break;
                     case "SHIPPINGS":
+                        tableId = ShippingListTable.ID;
                         break;
                     case "TEXTS":
                         break;

@@ -18,8 +18,11 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -33,6 +36,7 @@ import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
@@ -48,6 +52,8 @@ import com.sebulli.fakturama.resources.core.IconSize;
  *
  */
 public class CoolbarViewPart {
+    
+    private static final String TOOLITEM_COMMAND = "toolitem_command";
 
 	@Inject
 	private ECommandService cmdService;
@@ -197,6 +203,38 @@ public class CoolbarViewPart {
 //	    coolbarmgr.update(true);
 //	    createControls(top);
 	}
+	
+    @Inject
+    @Optional
+    void dirtyChanged(@UIEventTopic(UIEvents.Dirtyable.TOPIC_DIRTY) Event eventData) {
+//        for (IContributionItem item : coolbarmgr.getItems()) {
+//            IToolBarManager toolBarManager = ((ToolBarContributionItem) item).getToolBarManager();
+//            for (IContributionItem toolBarItem : toolBarManager.getItems()) {
+//                System.out.println("YEAH");
+//
+//            }
+//        }
+        
+        for (ToolBar toolBar : coolBarsByKey) {
+            for (ToolItem toolItem : toolBar.getItems()) {
+                ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
+                if(pCmd != null) {
+                    toolItem.setEnabled(pCmd.getCommand().isEnabled());
+                }
+            }
+        }
+        
+//        coolBarsByKey.forEach(item->{
+//            ParameterizedCommand pCmd = (ParameterizedCommand) item.getData(TOOLITEM_COMMAND);
+//            if(pCmd != null) {
+//                item.setEnabled(pCmd.getCommand().isEnabled());
+//            }
+//        });
+//        for (ToolItem item : coolBarsByKey.iterator().next().getItems()) {
+//            item.g
+//        }
+    }
+	
 //
 //    @Inject
 //    @Optional
@@ -229,10 +267,10 @@ public class CoolbarViewPart {
 		createToolItem(toolBar, commandId, null, iconImage, null, show, null);
 	}
 	
-	private void createToolItem(final ToolBar toolBar, final String commandId, 
-			final Image iconImage, boolean show, Map<String, Object> params) {
-		createToolItem(toolBar, commandId, null, iconImage, null, show, params);
-	}
+//	private void createToolItem(final ToolBar toolBar, final String commandId, 
+//			final Image iconImage, boolean show, Map<String, Object> params) {
+//		createToolItem(toolBar, commandId, null, iconImage, null, show, params);
+//	}
 	
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, final Image disabledIcon, boolean show) {
@@ -273,6 +311,7 @@ public class CoolbarViewPart {
 			}
 			
 			item.setEnabled(pCmd.getCommand().isEnabled());
+			item.setData(TOOLITEM_COMMAND, pCmd);
 		}
 		catch (NotDefinedException e1) {
 			log.error(e1, "Fehler! ");

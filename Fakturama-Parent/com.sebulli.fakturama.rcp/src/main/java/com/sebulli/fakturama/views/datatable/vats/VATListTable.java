@@ -43,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
@@ -280,7 +281,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
 
-        final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
+        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
