@@ -245,9 +245,8 @@ public class VatEditor extends Editor<VAT> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
         textDescription = new Text(top, SWT.BORDER);
-        //		textDescription.setText(editorVat.getDescription());
         textDescription.setToolTipText(labelDescription.getToolTipText());
-        bindModelValue(editorVat, textDescription, "description", 250);
+        bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textDescription);
 
         // The value
@@ -260,7 +259,7 @@ public class VatEditor extends Editor<VAT> {
         GridData data = new GridData();
         data.widthHint = 200;
         textValue.getControl().setLayoutData(data);
-        bindModelValue(editorVat, textValue, "taxValue", 16);
+        bindModelValue(editorVat, textValue, VAT_.taxValue.getName(), 16);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
         // Create the composite to make this VAT to the standard VAT. 

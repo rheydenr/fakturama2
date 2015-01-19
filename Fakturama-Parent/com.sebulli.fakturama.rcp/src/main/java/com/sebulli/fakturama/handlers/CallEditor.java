@@ -36,6 +36,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
@@ -132,10 +133,10 @@ public class CallEditor {
                 myPart.setContext(EclipseContextFactory.create());
                 myPart.getProperties().put(PARAM_OBJ_ID, objId);
                 break;
-//			case PaymentEditor.ID:
+			case PaymentEditor.ID:
 			case PaymentListTable.ID:
                 myPart.setLabel(msg.commandPaymentsName);
-                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + PaymentEditor.class.getName());
                 myPart.setContext(EclipseContextFactory.create());
                 myPart.getProperties().put(PARAM_OBJ_ID, objId);
                 break;

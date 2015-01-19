@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -118,7 +119,46 @@ public class AccountDAO extends AbstractDAO<Account> {
         return result;
     }
     
- 
+    /**
+     * Find a {@link Account} by its name. If one of the part categories doesn't exist we create it 
+     * (if withPersistOption is set).
+     * 
+     * @param testCat the category to find
+     * @param withPersistOption persist a (part) category if it doesn't exist
+     * @return found category
+     */
+    public Account getCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        Account parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                Account searchCat = findAccountByName(category);
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    Account newCategory = new Account();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+//                    save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            } 
+            if(!getEntityManager().contains(parentCategory)) {
+                parentCategory = save(parentCategory);
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return parentCategory;
+    }
+
     /**
      * @return the em
      */

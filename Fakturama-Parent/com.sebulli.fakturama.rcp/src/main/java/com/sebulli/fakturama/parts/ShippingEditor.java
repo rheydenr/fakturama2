@@ -76,7 +76,7 @@ import com.sebulli.fakturama.parts.widget.ShippingVatTypeContentProvider;
 import com.sebulli.fakturama.parts.widget.ShippingVatTypeLabelProvider;
 
 /**
- * The VAT editor
+ * The Shipping editor
  */
 public class ShippingEditor extends Editor<Shipping> {
 

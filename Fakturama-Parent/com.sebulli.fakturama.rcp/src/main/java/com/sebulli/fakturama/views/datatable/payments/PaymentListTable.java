@@ -72,6 +72,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
@@ -426,7 +427,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
      */
     @Override
     protected String getEditorId() {
-        return "mpf"; //PaymentEditor.ID;
+        return PaymentEditor.ID;
     }
 
     class PaymentTableConfiguration extends AbstractRegistryConfiguration {

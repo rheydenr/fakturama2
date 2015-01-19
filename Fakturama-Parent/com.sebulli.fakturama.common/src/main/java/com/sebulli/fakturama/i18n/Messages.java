@@ -482,22 +482,24 @@ public class Messages {
 
 	public String parcelServiceName;
 
-	public String PaymentEditor625;
-	public String PaymentEditor626;
-	public String PaymentEditor627;
-	public String PaymentEditor628;
-	public String PaymentEditor629;
-	public String PaymentEditor630;
-	public String PaymentEditor631;
-	public String PaymentEditor632;
-	public String PaymentEditor633;
-	public String PaymentEditor634;
-	public String PaymentEditor635;
-	public String PaymentEditor636;
-	public String PaymentEditor637;
-	public String PaymentEditor638;
-	public String PaymentEditor639;
-
+    public String editorPaymentNameTooltip;
+    public String editorPaymentAccountTooltip;
+    public String editorPaymentDiscount;
+    public String editorPaymentDiscountTooltip;
+    public String editorPaymentDiscountDays;
+    public String editorPaymentDiscountDaysTooltip;
+    public String editorPaymentNetdaysTooltip;
+    public String editorPaymentPaidName;
+    public String editorPaymentPaidTooltip;
+    public String editorPaymentUnpaidName;
+    public String editorPaymentUnpaidTooltip;
+    public String editorPaymentPlaceholderInfo;
+    public String editorPaymentDefaultTooltip;
+    public String editorPaymentDefaultButtonName;
+    public String editorPaymentDefaultButtonHint;
+    public String editorPaymentDepositName;
+    public String editorPaymentDepositTooltip;
+    
 	public String ProductEditor516;
 	public String ProductEditor517;
 	public String ProductEditor519;
@@ -603,8 +605,8 @@ public class Messages {
 	public String VoucherEditor547;
 	public String VoucherEditor548;
 	public String VoucherEditor549;
-	public String VoucherEditor550;
-	public String VoucherEditor551;
+    public String commonFieldAccount;
+    public String VoucherEditor551;
 	public String VoucherEditor552;
 	public String VoucherEditor553;
 	public String VoucherEditor554;
