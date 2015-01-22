@@ -12,12 +12,17 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
 /**
- * ImagePainter for the default checkmark (used in views tables).
+ * {@link ImagePainter} for all sorts of Images in a NatTable.
  */
-public class DefaultCheckmarkPainter extends ImagePainter {
+public class CellImagePainter extends ImagePainter {
 	
 	@Override
 	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-		return (boolean) cell.getDataValue() ? Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize) : null;
+	    Image retval = null;
+	    Icon icon = (Icon) cell.getDataValue();
+	    if(icon != null) {
+	        retval = icon.getImage(IconSize.DefaultIconSize);
+	    }
+		return retval;
 	}
 }

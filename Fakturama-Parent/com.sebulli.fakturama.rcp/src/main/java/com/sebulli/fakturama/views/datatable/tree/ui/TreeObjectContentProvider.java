@@ -78,8 +78,7 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 			
 			// Count the category strings
 			if (this.topicTreeViewer.inputElement instanceof List) {
-				Object[] entries = this.topicTreeViewer.inputElement.toArray();
-				entryCnt = entries.length;
+				entryCnt = this.topicTreeViewer.inputElement.size();
 			}
 
 			// Hide the Tree viewer, if there is no tree element
@@ -113,7 +112,7 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 	            retval = currentNode;
 	        } else {
 	            TreeObject node = addEntry(currentNode, entry.getParent());
-	            String checkPath = "/" + (this.topicTreeViewer.all != null ? this.topicTreeViewer.all.getName() : this.topicTreeViewer.root.getName()) + "/" + categoryName;
+	            String checkPath = "/" + (this.topicTreeViewer.all != null ? this.topicTreeViewer.all.getName() : this.topicTreeViewer.root.getName())/* + "/"*/ + categoryName;
 	            TreeObject childNode = node.findNode(checkPath);
 	            if(childNode == null) {
 	                childNode = new TreeObject(entry.getName());

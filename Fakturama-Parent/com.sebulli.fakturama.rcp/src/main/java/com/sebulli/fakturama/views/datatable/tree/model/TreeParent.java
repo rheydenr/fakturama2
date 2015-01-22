@@ -2,6 +2,8 @@ package com.sebulli.fakturama.views.datatable.tree.model;
 
 import java.util.ArrayList;
 
+import com.sebulli.fakturama.resources.core.Icon;
+
 /**
  * This class represents a tree object, that can be the parent of an other
  * tree object
@@ -31,7 +33,7 @@ public class TreeParent extends TreeObject {
 	 *            The name of the new object
 	 * @icon The name of the icon
 	 */
-	public TreeParent(String name, String icon) {
+	public TreeParent(String name, Icon icon) {
 		super(name, icon);
 		children = new ArrayList<TreeObject>();
 	}

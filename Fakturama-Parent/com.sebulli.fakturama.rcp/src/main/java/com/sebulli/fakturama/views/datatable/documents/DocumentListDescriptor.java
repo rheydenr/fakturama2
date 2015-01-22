@@ -14,6 +14,8 @@
 
     package com.sebulli.fakturama.views.datatable.documents;
 
+import com.sebulli.fakturama.model.Document_;
+
     /**
      * Enum for describing a Contact list. This contains the name of the displayed
      * values, the position of the columns and a default width of each column
@@ -22,14 +24,13 @@
      */
     public enum DocumentListDescriptor {
 
-        // TODO CHANGE messageKeys and propertyNames!!!
-        ICON("icon", "icon", 0, 20), 
-        DOCUMENT("document", "common.label.default", 1, 80), 
-        DATE("name", "common.field.name", 2, 80), 
-        NAME("description", "common.field.description", 3, 200), 
-        STATE("taxValue", "common.field.value", 4, 100),
-        TOTAL("taxValue", "common.field.value", 5, 70),
-        PRINTED("printed", "common.field.value", 6, 60),
+        ICON("$documenttype", null, 0, 20), 
+        DOCUMENT(Document_.name.getName(), "common.field.document", 1, 80), 
+        DATE(Document_.documentDate.getName(), "common.field.date", 2, 80), 
+        NAME(Document_.addressFirstLine.getName(), "common.field.name", 3, 200), 
+        STATE("$status", "common.field.state", 4, 100),
+        TOTAL(Document_.totalValue.getName(), "common.field.total", 5, 70),
+        PRINTED("$printed", "common.field.printed", 6, 60),
         ;
 
         private String propertyName, messageKey;
@@ -87,7 +88,7 @@
          * 
          * @return properties of Contacts type
          */
-        public static final String[] getContactPropertyNames() {
+        public static final String[] getDocumentPropertyNames() {
             return new String[] { 
                     DocumentListDescriptor.ICON.getPropertyName(), 
                     DocumentListDescriptor.DOCUMENT.getPropertyName(),

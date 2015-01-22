@@ -22,15 +22,15 @@ package com.sebulli.fakturama.misc;
 public enum DocumentType {
  // all 8 data types
  NONE(0, "None", "None", false, false, true, false, 1, "none"),
- LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "Letters", false, false, false, false, 1, "main.menu.new.letter"),
- OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "Offers", true, true, false, false, 1, "main.menu.new.offer"),
- ORDER(3, "toolbar.new.order.name" /*"Order"*/, "Orders", true, true, false, false, 1, "main.menu.new.order"),
- CONFIRMATION(4, "toolbar.new.confirmation.name" /*"Confirmation"*/, "Confirmations", true, true, false, false, 1, "main.menu.new.confirmation"),
- INVOICE(5, "toolbar.new.invoice.name" /*"Invoice"*/, "Invoices", true, true, true, false, 1, "main.menu.new.invoice"),
- DELIVERY(6, "toolbar.new.deliverynote.name" /*"Delivery Note"*/, "Delivery Notes", true, false, false, true, 1, "main.menu.new.deliverynote"),
- CREDIT(7, "toolbar.new.document.credit.name" /*"Credit"*/, "Credit Items", true, true, true, true, -1, "main.menu.new.credit"),
- DUNNING(8, "toolbar.new.document.dunning.name" /*"Dunning"*/, "Dunning Letters", false, false, false, true, 1, "main.menu.new.dunning"),
- PROFORMA(9, "toolbar.new.document.proforma.name" /*"Proforma"*/, "Proforma Invoices", true, true, false, false, 1, "main.menu.new.proforma");
+ LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "document.type.letter.plural", false, false, false, false, 1, "main.menu.new.letter"),
+ OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "document.type.offer.plural", true, true, false, false, 1, "main.menu.new.offer"),
+ ORDER(3, "toolbar.new.order.name" /*"Order"*/, "document.type.order.plural", true, true, false, false, 1, "main.menu.new.order"),
+ CONFIRMATION(4, "toolbar.new.confirmation.name" /*"Confirmation"*/, "document.type.confirmation.plural", true, true, false, false, 1, "main.menu.new.confirmation"),
+ INVOICE(5, "toolbar.new.invoice.name" /*"Invoice"*/, "document.type.invoice.plural", true, true, true, false, 1, "main.menu.new.invoice"),
+ DELIVERY(6, "toolbar.new.deliverynote.name" /*"Delivery Note"*/, "document.type.deliverynote.plural", true, false, false, true, 1, "main.menu.new.deliverynote"),
+ CREDIT(7, "toolbar.new.document.credit.name" /*"Credit"*/, "document.type.credititems.plural", true, true, true, true, -1, "main.menu.new.credit"),
+ DUNNING(8, "toolbar.new.document.dunning.name" /*"Dunning"*/, "document.type.dunning.plural", false, false, false, true, 1, "main.menu.new.dunning"),
+ PROFORMA(9, "document.type.proforma" /*"Proforma"*/, "document.type.proforma.plural", true, true, false, false, 1, "main.menu.new.proforma");
 	
 	// 9 types.
 	public final static int MAXID = DocumentType.values().length;
@@ -153,6 +153,18 @@ public enum DocumentType {
 		}
 		return retval;
 	}
+	
+	public static DocumentType findDocumentTypeByClass(Class clazz) {
+        DocumentType retval = null;
+        int typeCount = values().length;
+        for (int i = 0; i < typeCount; i++) {
+            if(getTypeAsString(i).equalsIgnoreCase(clazz.getSimpleName())) {
+                retval = findByKey(i);
+                break;
+            }
+        }
+        return retval;
+	}
 
 	/**
 	 * Convert from a document type String to the corresponding integer
@@ -265,39 +277,8 @@ public enum DocumentType {
 	 * @return The {@link DocumentType} as localized string
 	 */
 	public static String getPluralString(DocumentType documentType) {
-		return DocumentType.getPluralString(documentType);
+		return documentType.getPluralDescription();
 	}
-
-	// /**
-	// * JFace DocumentType content provider Provides all Document types as an
-	// * String array
-	// *
-	// * @author Gerd Bartelt
-	// */
-	// public static class DocumentTypeContentProvider implements
-	// IStructuredContentProvider {
-	// public Object[] getElements(Object inputElement) {
-	//
-	// // Get all document types
-	// ArrayList<String> strings = new ArrayList<String>();
-	// for (int i = 1; i <= MAXID; i++)
-	// strings.add(getString(i));
-	//
-	// // Convert them to an Array
-	// return strings.toArray();
-	// }
-	//
-	// @Override
-	// public void dispose() {
-	// }
-	//
-	// @Override
-	// public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-	// {
-	// viewer.refresh();
-	// }
-	//
-	// }
 
 	/**
 	 * Get the text to create a new instance of this document

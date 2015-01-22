@@ -114,7 +114,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     @Preference
     private IEclipsePreferences preferences;
     
-    
     private EventList<Payment> paymentListData;
     private EventList<Account> categories;
 

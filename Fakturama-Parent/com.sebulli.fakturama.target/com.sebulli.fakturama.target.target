@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="217">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="220">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
@@ -77,21 +77,21 @@
 <repository location="http://download.eclipse.org/gemini/updates/dbaccess/1.1.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20150108-1540"/>
 <unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.15.0.v20141107-1620"/>
 <unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20140808-1908"/>
 <unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20141107-1620"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20141128-1046"/>
 <repository location="http://download.vogella.com/luna/e4tools"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201412011502"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201412011502"/>
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201412011502"/>
-<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201412230843"/>
+<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201412011459"/>
-<repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
+<unit id="org.eclipse.nebula.feature.feature.group" version="1.0.0.201412230843"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201412230843"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201412230843"/>
+<repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

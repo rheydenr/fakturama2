@@ -127,7 +127,7 @@ public class Messages {
     public String contactFieldReliabilityMediumName;
     public String contactFieldReliabilityGoodName;
 
-	public String DataSetDocument667;
+    public String documentOrderStateNotshipped;
 
 	public String DataSetListNames668;
 	public String DataSetListNames669;
@@ -218,16 +218,16 @@ public class Messages {
     public String preferencesDocumentLabelDepositrow;
     public String preferencesDocumentLabelFinalrow;
     
-	public String DocumentType678;
-	public String DocumentType679;
-	public String DocumentType680;
-	public String DocumentType681;
-	public String DocumentType682;
-	public String DocumentType683;
-	public String DocumentType684;
-	public String DocumentType685;
-	public String DocumentType686;
-	public String DocumentType687;
+    public String documentTypeProforma;
+    public String documentTypeLetterPlural;
+    public String documentTypeOfferPlural;
+    public String documentTypeOrderPlural;
+    public String documentTypeConfirmationPlural;
+    public String documentTypeInvoicePlural;
+    public String documentTypeDeliverynotePlural;
+    public String documentTypeCredititemsPlural;
+    public String documentTypeDunningPlural;
+    public String documentTypeProformaPlural;
 
 	public String commonButtonSetdefault;
 	public String commonButtonSavechanges;
@@ -564,13 +564,15 @@ public class Messages {
 	public String topictreeAllCustomersTooltip;
 	public String topictreeTransaction;
 
-	public String UniDataSetTableColumn280;
-	public String UniDataSetTableColumn281;
-	public String UniDataSetTableColumn282;
-	public String UniDataSetTableColumn283;
-	public String UniDataSetTableColumn284;
-	public String UniDataSetTableColumn285;
-	public String UniDataSetTableColumn286;
+    public String documentOrderStatePaid;
+    public String documentOrderStateUnpaid;
+    public String UniDataSetTableColumn282;
+    public String documentOrderStateOpen;
+    public String documentOrderStateInprogress;
+    public String documentOrderStateShipped;
+    public String documentOrderStateClosed;
+    public String documentDeliveryStateHasinvoice;
+    public String documentDeliveryStateHasnoinvoice;
 
 	public String UpdateAction111;
 
@@ -585,7 +587,8 @@ public class Messages {
 
 	public String commonFieldNumber;
 
-	public String documentFieldPrinted;
+    public String commonFieldPrinted;
+    public String commonFieldState;
 
 	public String commonFieldDiscount;  // TODO evtl. "rebate" ???
 	public String commonFieldDiscountDays;
@@ -943,6 +946,9 @@ public class Messages {
      * @return message or (if not found) the key itself (enclosed in "!")
      */
     public String getMessageFromKey(final String key) {
+        if(key == null) {
+            return "";
+        }
 		String retval = key.replaceAll("-", ".");
 		// try to make the string representation of this key via reflection
 

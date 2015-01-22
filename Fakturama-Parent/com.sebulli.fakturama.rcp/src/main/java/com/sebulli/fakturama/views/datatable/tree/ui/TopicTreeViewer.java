@@ -35,6 +35,8 @@ import ca.odell.glazedlists.event.ListEventListener;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
@@ -109,15 +111,17 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Add a transaction and contact entry
 		if (useDocumentAndContactFilter) {
-			transactionItem = new TreeObject("---", "document_10.png");
+			transactionItem = new TreeObject("---", Icon.TREE_DOCUMENT);
 			transactionItem.setNodeType(TreeObjectType.TRANSACTIONS_ROOTNODE);
 			//T: Tool Tip Text
 			transactionItem.setToolTip(msg.topictreeAllDocumentsTooltip);
-
-			contactItem = new TreeObject("---", "contact_10.png");
+			root.addChild(transactionItem);
+			
+			contactItem = new TreeObject("---", Icon.TREE_CONTACT);
 			contactItem.setNodeType(TreeObjectType.CONTACTS_ROOTNODE);
 			//T: Tool Tip Text
 			contactItem.setToolTip(msg.topictreeAllCustomersTooltip);
+			root.addChild(contactItem);
 		}
 		
 		
@@ -206,20 +210,6 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		// FIXME ???
 		if (inputElement != null) {
 //		    internalTreeViewer.refresh();
-//		    root.accept(new IModelVisitor() {
-//                
-//                @Override
-//                public void visitMovingBox(TreeParent box, Object passAlongArgument) {
-//                    // TODO Auto-generated method stub
-//                    
-//                }
-//                
-//                @Override
-//                public void visitBook(TreeObject book, Object passAlongArgument) {
-//                    // TODO Auto-generated method stub
-//                    
-//                }
-//            }, root);
 //			inputElement.resetCategoryChanged();
 		}
 	}
@@ -257,18 +247,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		public Image getImage(Object obj) {
 
 			// Get the icon string of the element
-			String icon = ((TreeObject) obj).getIcon();
+			Icon icon = ((TreeObject) obj).getIcon();
 			if (icon != null) {
-//					// Load the icon by the icon name from the image map
-//					return imageMap.get(icon);
+				// Load the icon by the icon name from the image map
+				return icon.getImage(IconSize.DefaultIconSize);
 			}
-
-			// Return a "dot" icon for parent elements
-			/*
-			 * FIXME
-			 * This causes the expand button beside the parent node ("all") appearing very small.
-			 */
-//			if (obj instanceof TreeObject) { return Icon.TREE_DOT.getImage(IconSize.MiniIconSize); }
 
 			// Return no icon
 			return null;

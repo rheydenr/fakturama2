@@ -15,16 +15,12 @@
 package com.sebulli.fakturama.misc;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -36,18 +32,14 @@ import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.RoundedMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
-import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
 /**
  * This class provides static functions to convert and format data like double
@@ -60,7 +52,7 @@ public class DataUtils {
     private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
     static boolean useThousandsSeparator = false;
-    private static DataUtils instance;
+    private static DataUtils instance = null;
     private static NumberFormat currencyFormat;
     private static MonetaryRounding mro = null;
     private static MonetaryAmountFormat monetaryAmountFormat;
@@ -111,6 +103,17 @@ public class DataUtils {
                         .setTyped(CurrencyStyle.SYMBOL)
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
                         .build());
+    }
+    
+    public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
+        return MonetaryCurrencies.getCurrency(currencyLocale);
+    }
+    
+    public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
+        return MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
+                .setCurrency(currencyUnit)
+                .set("cashRounding", true)
+                .build());
     }
     
     /**
@@ -432,6 +435,16 @@ public class DataUtils {
 //            LOG.error(String.format("Can't parse '%s' as money. Please check the format!", value));
         }
         return retval;
+    }
+
+    public String formatCurrency(double myNumber, Locale locale) {
+        CurrencyUnit usd = DataUtils.getInstance().getCurrencyUnit(locale);
+        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+        MonetaryRounding mro = DataUtils.getInstance().getRounding(usd);
+        MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(locale).setTyped(CurrencyStyle.SYMBOL)
+                .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
+                .build());
+        return format.format(rounded.with(mro));
     }
 
     //

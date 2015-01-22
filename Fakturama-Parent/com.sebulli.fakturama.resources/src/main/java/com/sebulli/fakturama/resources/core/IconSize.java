@@ -13,7 +13,6 @@ package com.sebulli.fakturama.resources.core;
 /**
  * Definition of various image sizes for transparent using with Icon class.
  * 
- * @author rheydenr
  *
  */
 public enum IconSize {

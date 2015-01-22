@@ -27,12 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-import javax.money.CurrencyUnit;
-import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
-import javax.money.MonetaryRounding;
-import javax.money.MonetaryRoundings;
-import javax.money.RoundingQueryBuilder;
 
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -43,7 +37,6 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.javamoney.moneta.RoundedMoney;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -212,13 +205,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
                     cashCheckbox.setEnabled(true, getFieldEditorParent());
                 }
                 if(currencyCheckboxEnabled) {
-                    CurrencyUnit usd = MonetaryCurrencies.getCurrency(locale);
-                    MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
-                    MonetaryRounding mro = MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
-                            .setCurrency(usd)
-                            .set("cashRounding", true) // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                            .build());
-                    retval = form.format(rounded.with(mro).getNumber());
+                    /*
+                     * Can't work directly with JavaMoney classes (ServiceProviders) since
+                     * they already loaded by DataUtils and therefore the classloader gets
+                     * confused.
+                     */
+                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale);
                 }
             } else {
                 if(cashCheckbox != null) {

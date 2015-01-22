@@ -3,6 +3,7 @@ package com.sebulli.fakturama.views.datatable.tree.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
@@ -16,7 +17,7 @@ public class TreeObject {
     private String name;
     private String command;
     private String toolTip;
-    private String icon;
+    private Icon icon;
     private TreeObject parent;
     private TreeObjectType nodeType;
     private List<TreeObject> children = new ArrayList<>();
@@ -41,7 +42,7 @@ public class TreeObject {
      * @param icon
      *            Icon of the tree object
      */
-    public TreeObject(String name, String icon) {
+    public TreeObject(String name, Icon icon) {
         this(name, null, icon);
     }
 
@@ -55,7 +56,7 @@ public class TreeObject {
      * @param icon
      *            Icon of the tree object
      */
-    public TreeObject(String name, String command, String icon) {
+    public TreeObject(String name, String command, Icon icon) {
         this.name = name;
         this.command = command;
         this.icon = icon;
@@ -113,7 +114,7 @@ public class TreeObject {
      * 
      * @return The icon
      */
-    public String getIcon() {
+    public Icon getIcon() {
         return icon;
     }
 
@@ -316,6 +317,11 @@ public class TreeObject {
      */
     public TreeObject findNode(String checkPath) {
         TreeObject retval = null;
+        
+//        // if this path is with a "root" entry as start node
+//        if(checkPath.startsWith("//")) {
+//            checkPath = checkPath.replaceAll("//", "/");
+//        }
         for (TreeObject treeObject : children) {
             if (treeObject.getFullPathName().equals(checkPath)) {
                 retval = treeObject;

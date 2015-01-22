@@ -43,6 +43,9 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
+import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -157,6 +160,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new VATTableConfiguration());
         addCustomStyling(natTable);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
@@ -283,7 +287,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
                 SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
-        natTable.setBackground(GUIHelper.COLOR_WHITE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
@@ -478,6 +481,12 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 					new PercentageDisplayConverter(),
 					DisplayMode.NORMAL,
 					TAXVALUE_CELL_LABEL);
+			CellPainterWrapper painter = new PaddingDecorator(new TextPainter(), 0, 10, 0, 0);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER,
+                    painter,
+                    DisplayMode.NORMAL,
+                    TAXVALUE_CELL_LABEL);
 		}
 	}
 
