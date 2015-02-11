@@ -22,8 +22,6 @@ import com.sebulli.fakturama.handlers.MarkOrderAsActionHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
-import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
@@ -32,8 +30,9 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 public class DocumentMatcher implements Matcher<Document> {
     final String documentCategoryName;
     final boolean isRootNode;
-    private final String rootNodeName;
+    private final TreeObjectType treeObjectType;
     private Messages msg;
+    private long parsedTransactionId = 0L; // only for convenience & performance
     
     /**
      * Constructor
@@ -43,46 +42,60 @@ public class DocumentMatcher implements Matcher<Document> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      * @param msg 
      */
-    public DocumentMatcher(String pDocumentCategoryName, TreeObjectType treeObjectType, String rootNodeName, Messages msg) {
-        this.documentCategoryName = StringUtils.prependIfMissing(pDocumentCategoryName, "/", "/");
+    public DocumentMatcher(String pDocumentCategoryName, TreeObjectType treeObjectType, Messages msg) {
+        if(treeObjectType != TreeObjectType.CONTACTS_ROOTNODE && treeObjectType != TreeObjectType.TRANSACTIONS_ROOTNODE) {
+            this.documentCategoryName = StringUtils.prependIfMissing(pDocumentCategoryName, "/", "/");
+        } else {
+            this.documentCategoryName = pDocumentCategoryName;
+        }
         this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
-        this.rootNodeName = "/" + rootNodeName + "/";
         this.msg = msg;
+        this.treeObjectType = treeObjectType;
+        if(StringUtils.isNumeric(pDocumentCategoryName)) {
+            parsedTransactionId = Long.parseLong(pDocumentCategoryName);
+        }
     }
 
     @Override
     public boolean matches(Document item) {
         boolean found = false;
         if(!isRootNode) {
-            DocumentType obj = DocumentType.findDocumentTypeByClass(item.getClass());
-            if (obj != null) {
-                switch (obj) {
-//                case LETTER:
-//                    return Icon.ICON_LETTER;
-//                case OFFER:
-//                    return Icon.ICON_OFFER;
-                case ORDER:
-                    String fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-                    if(fullCategoryName.startsWith(documentCategoryName)) {
-                        found = true;
+            if(treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
+                // treat the filter as a transaction ID
+                found = documentCategoryName.contentEquals("/---") || item.getTransactionId() == parsedTransactionId;
+            } else if(treeObjectType == TreeObjectType.CONTACTS_ROOTNODE) {
+                found = documentCategoryName.contentEquals("/---") || StringUtils.equals(item.getAddressFirstLine(), documentCategoryName);
+            } else {
+                DocumentType docType = DocumentType.findDocumentTypeByClass(item.getClass());
+                if (docType != null) {
+                    switch (docType) {
+    //                case LETTER:
+    //                    return Icon.ICON_LETTER;
+    //                case OFFER:
+    //                    return Icon.ICON_OFFER;
+                    case ORDER:
+                        String fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
+                        if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals("/---")) {
+                            found = true;
+                        }
+                         break;
+                        
+    //                    return Icon.ICON_ORDER;
+    //                case CONFIRMATION:
+    //                    return Icon.ICON_CONFIRMATION;
+    //                case INVOICE:
+    //                    return Icon.ICON_INVOICE;
+    //                case DELIVERY:
+    //                    return Icon.ICON_DELIVERY;
+    //                case CREDIT:
+    //                    return Icon.ICON_CREDIT;
+    //                case DUNNING:
+    //                    return Icon.ICON_DUNNING;
+    //                case PROFORMA:
+    //                    return Icon.ICON_PROFORMA;
+                    default:
+                        break;
                     }
-                     break;
-                    
-//                    return Icon.ICON_ORDER;
-//                case CONFIRMATION:
-//                    return Icon.ICON_CONFIRMATION;
-//                case INVOICE:
-//                    return Icon.ICON_INVOICE;
-//                case DELIVERY:
-//                    return Icon.ICON_DELIVERY;
-//                case CREDIT:
-//                    return Icon.ICON_CREDIT;
-//                case DUNNING:
-//                    return Icon.ICON_DUNNING;
-//                case PROFORMA:
-//                    return Icon.ICON_PROFORMA;
-                default:
-                    break;
                 }
             }
         }
@@ -127,6 +140,8 @@ public class DocumentMatcher implements Matcher<Document> {
                         break;
                     }
                     break;
+                    default:
+                        break;
                 }
                 return category;
             }

@@ -30,6 +30,10 @@ public class MarkOrderAsActionHandler {
 	
 	// progress of the order. Value from 0 to 100 (percent)
 	int progress;
+	
+	public MarkOrderAsActionHandler() {
+	    super();
+	}
 
 	/**
 	 * Constructor Instead of using a value for the states "pending",
@@ -41,7 +45,7 @@ public class MarkOrderAsActionHandler {
 	 * @param text
 	 * @param progress
 	 */
-	public MarkOrderAsActionHandler( int progress) {
+	public MarkOrderAsActionHandler(int progress) {
 		super();
 		this.progress = progress;
 //

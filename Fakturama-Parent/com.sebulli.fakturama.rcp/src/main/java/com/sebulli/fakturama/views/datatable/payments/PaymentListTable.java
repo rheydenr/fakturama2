@@ -417,7 +417,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     }
 
     @Override
-    protected String getTableId() {
+    public String getTableId() {
         return ID;
     }
 

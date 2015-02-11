@@ -13,11 +13,20 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -36,8 +45,11 @@ import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsData
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
@@ -47,6 +59,7 @@ import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
+import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -63,13 +76,16 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DummyStringCategory;
-import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
@@ -94,9 +110,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private Logger log;
 
     //  this is for synchronizing the UI thread
-  @Inject    
-  private UISynchronize synch;
-
+    @Inject
+    private UISynchronize sync;
 
     // ID of this view
     public static final String ID = "fakturama.views.documentTable";     
@@ -119,6 +134,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     @Inject
     private DocumentsDAO documentsDAO;
+    
+    @Inject
+    private ContactsDAO contactsDAO;
+
+    @Inject
+    private MApplication application;
+    
+    @Inject
+    private EModelService modelService;
+    
+    @Inject
+    private ECommandService commandService;
    
     private static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
     private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
@@ -132,6 +159,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     protected FilterList<Document> treeFilteredIssues;
     private SelectionLayer selectionLayer;
 
+    private ContactUtil contactUtil;
+
     @PostConstruct
     public Control createPartControl(Composite parent) {
         log.info("create Document list part");
@@ -139,7 +168,17 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        
+        // On creating, set the unpaid invoices
+        topicTreeViewer.selectItemByName(
+                String.format("%s/%s", 
+                        msg.getMessageFromKey(DocumentType.INVOICE.getPluralDescription()), 
+                        msg.documentOrderStateUnpaid)
+                );
+
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
+        contactUtil = new ContactUtil(preferences);            
+        
         return top;
     }
 
@@ -160,12 +199,40 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.addConfiguration(new SingleClickSortConfiguration());
         
         /*
+         * add feedback behavior to nattable (i.e., if a cell is selected, inform the
+         * TreeTable about it) 
+         */
+        natTable.addLayerListener(new ILayerListener() {
+            // Default selection behavior selects cells by default.
+            public void handleLayerEvent(ILayerEvent event) {
+                if (event instanceof CellSelectionEvent) {
+                    CellSelectionEvent cellEvent = (CellSelectionEvent) event;
+                    
+                    //transform the NatTable row position to the row position of the body layer stack
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, cellEvent.getRowPosition(), gridLayer.getBodyDataLayer());
+                    // extract the selected Object
+                    Document selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                    
+                    // Set the transaction and the contact filter
+                    if (selectedObject != null) {
+                        if(selectedObject.getTransactionId() != null) {
+                            topicTreeViewer.setTransaction(selectedObject.getTransactionId());
+                        }
+                        topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getContact());
+                    }
+                }
+            }
+        });
+
+        /*
          * Set the background color for this table. Could only set here, because otherwise 
          * it would be overwritten with default configurations.
          */
         natTable.setBackground(GUIHelper.COLOR_WHITE);
+
         natTable.configure();
     }
+    
     
     protected NatTable createListTable(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
@@ -257,6 +324,25 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // Custom selection configuration
         selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
         
+        // register right click as a selection event for the whole row
+//        natTable.getUiBindingRegistry().registerMouseDownBinding(
+//                new MouseEventMatcher(SWT.NONE, GridRegion.ROW_HEADER, MouseEventMatcher.RIGHT_BUTTON),
+//
+//                new IMouseAction() {
+//
+//                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+//                                
+//                    @Override
+//                    public void run(NatTable natTable, MouseEvent event) {
+//
+//                        int rowPosition = natTable.getRowPositionByY(event.y);
+//
+//                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+//                            selectRowAction.run(natTable, event);
+//                        }                   
+//                    }
+//                });
+        
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
@@ -311,44 +397,39 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+        
         return topicTreeViewer;
     }
     
-//    /**
-//     * Handle an incoming refresh command. This could be initiated by an editor 
-//     * which has just saved a new element (document, Document, payment etc). Here we ONLY
-//     * listen to "PaymentEditor" events.<br />
-//     * The tree of {@link Account}s is updated because we use a GlazedList for
-//     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
-//     * react on every change of the underlying list (here in the field <code>categories</code>).
-//     * If the content of <code>categories</code> changes, the change event is fired and the 
-//     * {@link TopicTreeViewer} is updated.
-//     * 
-//     * @param message an incoming message
-//     */
-//    @Inject
-//    @Optional
-//    public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
-//        synch.syncExec(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                top.setRedraw(false);
-//            }
-//        });
-//        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-//        paymentListData.clear();
-//        paymentListData.addAll(paymentsDAO.findAll());
-//        categories.clear();
-//        categories.addAll(accountDAO.findAll());
-//        synch.syncExec(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                top.setRedraw(true);
-//            }
-//        });
-//    }
+    /**
+     * Handle an incoming refresh command. This could be initiated by an editor 
+     * which has just saved a new element (document, Document, payment etc). Here we ONLY
+     * listen to "DocumentEditor" events.<br />
+     * The tree of Categories is not updated because it is a (more or less) static tree.
+     * 
+     * @param message an incoming message
+     */
+    @Inject
+    @Optional
+    public void handleRefreshEvent(@EventTopic("DocumentEditor") String message) {
+        sync.syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                top.setRedraw(false);
+            }
+        });
+        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+        documentListData.clear();
+        documentListData.addAll(documentsDAO.findAll(true));
+        sync.syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                top.setRedraw(true);
+            }
+        });
+    }
 
     /**
      * We have to style the table a little bit...
@@ -392,19 +473,88 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // Display the localized list names.
         // or the document type
             if (isHeaderLabelEnabled()) {
-                filterLabel.setText(StringUtils.removeStart(filter, "/"));
+                // TreeObjectType.CONTACTS_ROOTNODE and TreeObjectType.TRANSACTIONS_ROOTNODE
+                // both have the same default name, therefore we only test for one of these node types.
+                if(filter.endsWith(TreeObjectType.CONTACTS_ROOTNODE.getDefaultName())) {
+                    filterLabel.setText(" ");
+                } else {
+                    if (treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
+                        filterLabel.setText(msg.topictreeLabelThistransaction);
+                    } else {
+                        filterLabel.setText(StringUtils.removeStart(filter, "/"));
+                    }
+                }
             }
-        }
-
-        filterLabel.pack(true);
-
+ 
         // Reset transaction and contact filter, set category filter
         treeFilteredIssues.setMatcher(new DocumentMatcher(filter, 
                 treeObjectType,
-                ((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName(),
                 msg));
+       }
+
+       filterLabel.pack(true);
 
         //Refresh is done automagically...
+    }
+    
+    
+    public void changeToolbarItem(TreeObject treeObject) {
+        MPart part = (MPart) modelService.find(ID, application);
+        MToolBar toolbar = part.getToolbar();
+        for (MToolBarElement tbElem : toolbar.getChildren()) {
+            if(tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
+                HandledToolItemImpl toolItem = (HandledToolItemImpl)tbElem;
+                if(treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
+                    toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
+                } else {
+                    toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(DocumentType.ORDER.getSingularKey()));
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void setContactFilter(long filter) {
+        // Set the label with the filter string
+      Contact contact = contactsDAO.findById(filter);
+      if(contact != null) {
+        setCategoryFilter(contactUtil.getNameWithCompany(contact), TreeObjectType.CONTACTS_ROOTNODE);
+//          filterLabel.setText(contactUtil.getNameWithCompany(contact));
+//          filterLabel.pack(true);
+      }
+//
+        // Reset transaction and category filter, set contact filter
+      
+//      contentProvider.setContactFilter(filter);
+//      contentProvider.setTransactionFilter(-1);
+//      contentProvider.setCategoryFilter("");
+
+//      // Reset the addNew action. 
+//      if (addNewAction != null) {
+//          addNewAction.setCategory("");
+//      }
+
+//        this.refresh();
+    }
+    
+    @Override
+    public void setTransactionFilter(long filter,  TreeObject treeObject) {
+        setCategoryFilter(Long.toString(filter), TreeObjectType.TRANSACTIONS_ROOTNODE);
+
+//      // Set the label with the filter string
+//      filterLabel.setText("Dieser Vorgang");
+//      filterLabel.pack(true);
+
+        // Reset category and contact filter, set transaction filter
+//      contentProvider.setTransactionFilter(filter);
+//      contentProvider.setContactFilter(-1);
+//      contentProvider.setCategoryFilter("");
+
+//      // Reset the addNew action. 
+//      if (addNewAction != null) {
+//          addNewAction.setCategory("");
+//      }
+//      this.refresh();
     }
     
     protected boolean isHeaderLabelEnabled() {
@@ -412,7 +562,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     }
 
     @Override
-    protected String getTableId() {
+    public String getTableId() {
         return ID;
     }
 
@@ -421,7 +571,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     @Override
     protected String getEditorId() {
-        return PaymentEditor.ID;
+        return "DocumentEditor";      // TODO change to Constant
     }
 
     class DocumentTableConfiguration extends AbstractRegistryConfiguration {

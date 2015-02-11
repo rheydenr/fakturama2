@@ -254,7 +254,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#getTableId()
      */
     @Override
-    protected String getTableId() {
+    public String getTableId() {
         return ID;
     }
 

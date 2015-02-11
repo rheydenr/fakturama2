@@ -57,10 +57,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -166,6 +168,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
         createDefaultContextMenu();
+        
 //        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();  // works!
 //        natTable.setMenu(contextMenu);
 //        natTable.getUiBindingRegistry().registerMouseDownBinding(
@@ -205,14 +208,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //		getSite().setSelectionProvider(tableViewer);
 		return top;
 	}
-//
-//    /**
-//     * @return
-//     */
-//    protected ListViewGridLayer<T> getGridLayer() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
 
     /**
      * We have to style the table a little bit...
@@ -282,7 +277,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 *  
 	 * @return unique identifier
 	 */
-	abstract protected String getTableId();
+	abstract public String getTableId();
 	
 
     /**
@@ -326,8 +321,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
                 Map<String, Object> params = new HashMap<>();
-                params.put("com.sebulli.fakturama.rcp.cmdparam.objId", Long.toString(selectedObject.getId()));
-                params.put("com.sebulli.fakturama.editors.editortype", getEditorId());
+                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                if(selectedObject instanceof Document) {
+                    params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
+                }
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
             }
@@ -484,22 +482,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 * @param filter
 	 *            The new filter string
 	 */
-	public void setTransactionFilter(int filter, TreeObjectType treeObjectType) {
-
-		// Set the label with the filter string
-		filterLabel.setText("Dieser Vorgang");
-		filterLabel.pack(true);
-
-		// Reset category and contact filter, set transaction filter
-//		contentProvider.setTransactionFilter(filter);
-//		contentProvider.setContactFilter(-1);
-//		contentProvider.setCategoryFilter("");
-
-//		// Reset the addNew action. 
-//		if (addNewAction != null) {
-//			addNewAction.setCategory("");
-//		}
-		this.refresh();
+	public void setTransactionFilter(long filter, TreeObject treeObject) {
+	    // per default this method does nothing
 	}
 
 	/**
@@ -508,23 +492,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 * @param filter
 	 *            The new filter string
 	 */
-	public void setContactFilter(int filter) {
-
-		// Set the label with the filter string
-//		filterLabel.setText(Data.INSTANCE.getContacts().getDatasetById(filter).getName(false));
-		filterLabel.pack(true);
-
-		// Reset transaction and category filter, set contact filter
-//		contentProvider.setContactFilter(filter);
-//		contentProvider.setTransactionFilter(-1);
-//		contentProvider.setCategoryFilter("");
-
-//		// Reset the addNew action. 
-//		if (addNewAction != null) {
-//			addNewAction.setCategory("");
-//		}
-
-		this.refresh();
+	public void setContactFilter(long filter) {
+	    // per default this method does nothing
 	}
 
 	/**
@@ -565,7 +534,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         // they are disposed properly (required by SWT)
         // Setup selection styling
         DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
-        selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
+   //     selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
         selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
         selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
         selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);

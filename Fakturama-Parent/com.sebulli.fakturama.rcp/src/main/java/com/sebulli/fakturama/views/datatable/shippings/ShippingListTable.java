@@ -414,7 +414,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     }
 
     @Override
-    protected String getTableId() {
+    public String getTableId() {
         return ID;
     }
 

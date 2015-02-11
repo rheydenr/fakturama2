@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 
@@ -117,6 +118,9 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 	            if(childNode == null) {
 	                childNode = new TreeObject(entry.getName());
 	                childNode.setNodeType(TreeObjectType.DEFAULT_NODE);
+	                if(entry instanceof DummyStringCategory) {
+	                    childNode.setDocType(((DummyStringCategory)entry).getDocType());
+	                }
 	                node.addChild(childNode);
 	            }
 	            retval = childNode;

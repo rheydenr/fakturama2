@@ -23,9 +23,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
@@ -132,6 +130,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
     public List<DummyStringCategory> getCategoryStrings() {
         List<DummyStringCategory> resultList = new ArrayList<>();
         Query q = getEntityManager().createQuery("select distinct type(d) from Document d where d.deleted = false");
+        @SuppressWarnings("unchecked")
         List<Class<? extends Document>> typeList = q.getResultList();
         for (Class<? extends Document> document : typeList) {
             
@@ -139,6 +138,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             if (document.getName().contentEquals(Order.class.getName())) {
                 // add order documents
                 List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.ORDER,
                         msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.ORDER)),
                         msg.documentOrderStateNotshipped, 
                         msg.documentOrderStateShipped);
@@ -149,12 +149,12 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             if (document.getName().contentEquals(Invoice.class.getName())) {
                 // add invoice documents
                 List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.INVOICE,
                         msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.INVOICE)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
                 resultList.addAll(cats);
             }
-            
         }
         return resultList;
     }
@@ -166,18 +166,17 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      * 
      * @return List of {@link DummyStringCategory}s
      */
-    private List<DummyStringCategory> createDummyCategories(String... pCategory) {
+    private List<DummyStringCategory> createDummyCategories(DocumentType docType, String... pCategory) {
         List<DummyStringCategory> retList = new ArrayList<>();
         DummyStringCategory parent = null;
         for (String string : pCategory) {
             if(parent == null) {
-                parent = new DummyStringCategory(string);
+                parent = new DummyStringCategory(string, docType);
                 retList.add(parent);
             } else {
-                DummyStringCategory cat = new DummyStringCategory(string);
+                DummyStringCategory cat = new DummyStringCategory(string, docType);
                 cat.setParent(parent);
                 retList.add(cat);
-//                parent = cat;
             }
         }
         return retList;

@@ -14,19 +14,26 @@
 
 package com.sebulli.fakturama.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.nebula.widgets.pgroup.PGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.ExpandAdapter;
+import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
@@ -35,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -53,9 +61,15 @@ public class NavigationView {
 	@Inject
 	private ECommandService commandService;
 	
+    @Inject
+    @Preference
+    private IEclipsePreferences preferences;
+	
 	@Inject
 	@Translation
 	protected Messages msg;
+	
+	private List<PGroup> groupList = new ArrayList<>();
 
     private Composite composite;
     
@@ -148,7 +162,20 @@ public class NavigationView {
 	    gd.grabExcessHorizontalSpace = true;
 	    group.setLayoutData(gd);
 	    group.setLayout(new GridLayout());
-		return group;
+	    
+	    group.addExpandListener(new ExpandAdapter() {
+	        @Override
+	        public void itemExpanded(ExpandEvent e) {
+	            PGroup current = (PGroup)e.getSource();
+	            // Collapse expand bar items, or not
+	            if (preferences.getBoolean(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, Boolean.FALSE)) {
+	                groupList.stream().filter(g -> g != current).forEach(g -> g.setExpanded(false));
+	            }
+	        }
+        });
+	    
+	    groupList.add(group);
+        return group;
 	}
 
 	/**

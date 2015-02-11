@@ -86,6 +86,9 @@ public class VatEditor extends Editor<VAT> {
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
 
+    // for UI sync
+    public static final String EDITOR_ID = "VatEditor";
+
     // SWT widgets of the editor
     private Composite top;
     private Text textName;

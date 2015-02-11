@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -34,10 +35,12 @@ import ca.odell.glazedlists.event.ListEventListener;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
@@ -111,13 +114,13 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Add a transaction and contact entry
 		if (useDocumentAndContactFilter) {
-			transactionItem = new TreeObject("---", Icon.TREE_DOCUMENT);
+			transactionItem = new TreeObject(TreeObjectType.TRANSACTIONS_ROOTNODE.getDefaultName(), Icon.TREE_DOCUMENT);
 			transactionItem.setNodeType(TreeObjectType.TRANSACTIONS_ROOTNODE);
 			//T: Tool Tip Text
 			transactionItem.setToolTip(msg.topictreeAllDocumentsTooltip);
 			root.addChild(transactionItem);
 			
-			contactItem = new TreeObject("---", Icon.TREE_CONTACT);
+			contactItem = new TreeObject(TreeObjectType.CONTACTS_ROOTNODE.getDefaultName(), Icon.TREE_CONTACT);
 			contactItem.setNodeType(TreeObjectType.CONTACTS_ROOTNODE);
 			//T: Tool Tip Text
 			contactItem.setToolTip(msg.topictreeAllCustomersTooltip);
@@ -135,8 +138,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				
 				// Update the category, transaction and contact filter
 				String categoryFilter = "";
-				int transactionFilter = -1;
-				int contactFilter = -1;
+				long transactionFilter = -1;
+				long contactFilter = -1;
 				ISelection selection = event.getSelection();
 
 				// Get the selection
@@ -167,7 +170,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 				else if (transactionFilter >= 0)
 					// Set the transaction filter
-					viewDataSetTable.setTransactionFilter(transactionFilter, treeObject.getNodeType());
+					viewDataSetTable.setTransactionFilter(transactionFilter, treeObject);
 
 				else {
 					if (!useAll && categoryFilter.isEmpty()) {
@@ -177,6 +180,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 						// Set the category filter
 						viewDataSetTable.setCategoryFilter(categoryFilter, treeObject.getNodeType());
 					}
+				}
+				
+				if(viewDataSetTable.getTableId().contentEquals(DocumentsListTable.ID)) {
+				    ((DocumentsListTable)viewDataSetTable).changeToolbarItem(treeObject);
 				}
 			}
 		});
@@ -284,7 +291,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param transactionId
 	 *            ID of the transaction
 	 */
-	public void setTransaction(String name, int transactionId) {
+	public void setTransaction(long transactionId) {
 		if (transactionItem == null)
 			return;
 
@@ -295,7 +302,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		//T: Topic Tree Viewer transaction title
 		transactionItem.setName(msg.topictreeTransaction);
 		
-//		refreshTree();
+        internalTreeViewer.refresh();
 	}
 
 	/**
@@ -313,12 +320,13 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	/**
 	 * Select an item by its name
 	 * 
-	 * @param name
+	 * @param pName
 	 *            of the item to select
 	 */
-	public void selectItemByName(String name) {
+	public void selectItemByName(final String pName) {
 		boolean found = false;
 		boolean allScanned = true;
+		String name = pName;
 
 		//Split the name into parts, separated by a slash "/"
 		String[] nameParts = name.split("/");
@@ -353,15 +361,39 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				children = newParent.getItems();
 		}
 
-		// Select the item, if it was found
-		if (found && allScanned) {
-			getTree().setSelection(newParent);
-			internalTreeViewer.setSelection(internalTreeViewer.getSelection(), true);
-		}
+        // Select the item, if it was found
+        if (found && allScanned) {
+            getTree().setSelection(newParent);
+            internalTreeViewer.setSelection(internalTreeViewer.getSelection(), true);
+        } else {
+            TreeObject firstNode = findFirstNamedNode();
+            if(firstNode == null) {
+                name = TreeObjectType.TRANSACTIONS_ROOTNODE.getDefaultName();
+            } else {
+                internalTreeViewer.setSelection(new StructuredSelection(firstNode), true);
+                name = firstNode.getFullPathName();
+            }
+        }
 
 		// Reset the filter to the new entry
 		viewDataSetTable.setCategoryFilter(name, TreeObjectType.DEFAULT_NODE);
 	}
+	
+    /**
+     * Looks for the first named node in a Tree (the root node my be an unnamed
+     * node).
+     * 
+     * @return <code>null</code> if no node is available
+     */
+    private TreeObject findFirstNamedNode() {
+        TreeObject node = ((TreeObject) internalTreeViewer.getInput());
+        if (node != null && node.getName().isEmpty() && node.getChildren().length > 0) {
+            node = node.getChildren()[0];
+        } else {
+            node = null;
+        }
+        return node;
+    }
 
 	/**
 	 * Set the contact Filter
@@ -371,12 +403,15 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param contactId
 	 *            ID of the contact
 	 */
-	public void setContact(String name, int contactId) {
+	public void setContact(String name, Contact contact) {
 		if (contactItem == null)
 			return;
-		contactItem.setContactId(contactId);
+		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);
+		internalTreeViewer.refresh();
 	}
+	
+	
 
 	/**
 	 * Sets the input of the tree

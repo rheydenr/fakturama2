@@ -3,6 +3,7 @@ package com.sebulli.fakturama.views.datatable.tree.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
@@ -20,9 +21,10 @@ public class TreeObject {
     private Icon icon;
     private TreeObject parent;
     private TreeObjectType nodeType;
+    private DocumentType docType;
     private List<TreeObject> children = new ArrayList<>();
-    private int transactionId = -1;
-    private int contactId = -1;
+    private long transactionId = -1;
+    private long contactId = -1;
  
     /**
      * Constructor Create a tree object by name
@@ -132,7 +134,7 @@ public class TreeObject {
      * 
      * @return Transaction ID
      */
-    public int getTransactionId() {
+    public long getTransactionId() {
         return this.transactionId;
     }
 
@@ -141,7 +143,7 @@ public class TreeObject {
      * 
      * @return Contact ID
      */
-    public int getContactId() {
+    public long getContactId() {
         return this.contactId;
     }
 
@@ -161,7 +163,7 @@ public class TreeObject {
      * @param transactionId
      *            ID to set
      */
-    public void setTransactionId(int transactionId) {
+    public void setTransactionId(long transactionId) {
         this.transactionId = transactionId;
     }
 
@@ -171,7 +173,7 @@ public class TreeObject {
      * @param contactId
      *            ID to set
      */
-    public void setContactId(int contactId) {
+    public void setContactId(long contactId) {
         this.contactId = contactId;
     }
 
@@ -270,6 +272,20 @@ public class TreeObject {
      */
     public void setNodeType(TreeObjectType nodeType) {
         this.nodeType = nodeType;
+    }
+
+    /**
+     * @return the docType
+     */
+    public DocumentType getDocType() {
+        return docType;
+    }
+
+    /**
+     * @param docType the docType to set
+     */
+    public void setDocType(DocumentType docType) {
+        this.docType = docType;
     }
 
     /**

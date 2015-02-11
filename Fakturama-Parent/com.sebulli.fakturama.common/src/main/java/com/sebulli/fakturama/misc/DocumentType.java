@@ -300,5 +300,5 @@ public enum DocumentType {
     public static String getNewTextKey(DocumentType documentType) {
         return documentType.getNewText();
     }	
-
+    
 }

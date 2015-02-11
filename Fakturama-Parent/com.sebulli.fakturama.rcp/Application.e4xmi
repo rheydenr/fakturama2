@@ -29,8 +29,14 @@
               <children xsi:type="basic:Part" xmi:id="_RmPTrOtOEeKo5Ms1QUgPTw" elementId="fakturama.views.documentTable" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.documents.DocumentsListTable" label="%page.documents" iconURI="icon://COMMAND_LETTER" tooltip="" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>
                 <variables>datalists</variables>
+                <menus xsi:type="menu:PopupMenu" xmi:id="_C8AVIK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup" label="Document list popup">
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_OBxvsK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.addentry" iconURI="icon://COMMAND_PLUS">
+                    <parameters xmi:id="_ZJg5IK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.rcp.parameter.12" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_PB4h0K_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+                </menus>
                 <toolbar xmi:id="_CDzlgKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.rcp.toolbar.4">
-                  <children xsi:type="menu:HandledToolItem" xmi:id="_wSiX0KHQEeSunu0FbOq_OA" elementId="com.sebulli.fakturama.listview.document.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_wSiX0KHQEeSunu0FbOq_OA" elementId="com.sebulli.fakturama.listview.document.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
                     <parameters xmi:id="_hZ8WcKHREeSunu0FbOq_OA" elementId="com.sebulli.fakturama.rcp.parameter.11" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
                   </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_UszVcKHREeSunu0FbOq_OA" elementId="com.sebulli.fakturama.listview.document.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
@@ -235,6 +241,8 @@
   <handlers xmi:id="_JQthYDxfEeS-t56iKjyYpA" elementId="com.sebulli.fakturama.handler.webShopImportManager" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.webshopimport.WebShopImportManager" command="_-hDgwDxeEeS-t56iKjyYpA"/>
   <handlers xmi:id="_h5-B0EOAEeSkjYQl_biqUA" elementId="com.sebulli.fakturama.handler.openCalculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenCalculatorHandler" command="_-UipAEy_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_TsyuYG3mEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ErrorViewHandler" command="_VpeoEG3nEeS8E6Dq10mFSA"/>
+  <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.markaspaid" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
+  <handlers xmi:id="_7FowcK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.markasunpaid" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_Yv5ssEEUEeSEOrX6Mzhm6Q"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -261,6 +269,7 @@
   <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="open editor" description="%command.open.contact.tooltip">
     <parameters xmi:id="_P3fboDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.cmdparam.objId" name="object Id" typeId=""/>
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>
+    <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
   </commands>
   <commands xmi:id="__1BmsCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openPayments" commandName="%command.payments.name" description="%command.payments.tooltip"/>
   <commands xmi:id="_Y1nWUCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openShippings" commandName="%command.shippings.name"/>

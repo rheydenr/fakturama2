@@ -23,7 +23,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- * @author rheydenr
  *
  */
 public class SpecialCellValueProvider {

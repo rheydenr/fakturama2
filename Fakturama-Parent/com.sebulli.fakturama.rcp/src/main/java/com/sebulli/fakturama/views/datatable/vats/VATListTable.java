@@ -339,7 +339,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @param message an incoming message
      */
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("VatEditor") String message) {
+    public void handleRefreshEvent(@EventTopic(VatEditor.EDITOR_ID) String message) {
         synch.syncExec(new Runnable() {
             
             @Override
@@ -434,7 +434,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     }
 
     @Override
-    protected String getTableId() {
+    public String getTableId() {
         return ID;
     }
 

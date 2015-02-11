@@ -563,6 +563,7 @@ public class Messages {
 	public String topictreeAllDocumentsTooltip;
 	public String topictreeAllCustomersTooltip;
 	public String topictreeTransaction;
+	public String topictreeLabelThistransaction;
 
     public String documentOrderStatePaid;
     public String documentOrderStateUnpaid;

@@ -35,11 +35,16 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
@@ -53,7 +58,9 @@ public class CallEditor {
     
     private static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
 
-    public static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.editor.objId";
+    public static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.cmdparam.objId";
+    public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
+    public static final String PARAM_EDITOR_TYPE = "com.sebulli.fakturama.editors.editortype";
 
     private static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docview";
     private static final String DOCVIEW_PARTDESCRIPTOR_ID = "com.sebulli.fakturama.rcp.docdetail";
@@ -72,6 +79,7 @@ public class CallEditor {
 	public void execute( 
 	        @Named("com.sebulli.fakturama.editors.editortype") String editorType,
 			@Optional @Named("com.sebulli.fakturama.rcp.cmdparam.objId") String objId,
+			@Optional @Named("com.sebulli.fakturama.editors.category") String category,
             final MApplication application,
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
@@ -83,10 +91,9 @@ public class CallEditor {
                     stackContext = contexts.getContext();
                 }
             }
- //           MPartStack stack = (MPartStack)modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
 
 			// Define  the editor and try to open it
-			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack), PartState.ACTIVATE);
+			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category), PartState.ACTIVATE);
 	}
 	
 	/**
@@ -94,9 +101,10 @@ public class CallEditor {
 	 * 
 	 * @param title
 	 * @param objId
+	 * @param category 
 	 * @return
 	 */
-	private MPart createEditorPart(String type, String objId, IEclipseContext stackContext, MPartStack stack) {
+	private MPart createEditorPart(String type, String objId, IEclipseContext stackContext, MPartStack stack, String category) {
 		MPart myPart = null;
 		Collection<MPart> parts = partService.getParts();
         if (objId != null) {
@@ -116,6 +124,8 @@ public class CallEditor {
 		if (myPart == null) {
 			myPart = partService.createPart(DOCVIEW_PART_ID);
 			myPart.setElementId(type);
+			myPart.setContext(EclipseContextFactory.create());
+			myPart.getProperties().put(PARAM_OBJ_ID, objId);
 			stack.getChildren().add(myPart);
 			// we have to distinguish the different editors here
 			switch (type) {
@@ -123,33 +133,32 @@ public class CallEditor {
 			case VATListTable.ID:
 				myPart.setLabel(msg.commandVatsName);
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + VatEditor.class.getName());
-				myPart.setContext(EclipseContextFactory.create());
-				myPart.getProperties().put(PARAM_OBJ_ID, objId);
 				break;
 			case ShippingEditor.ID:
 			case ShippingListTable.ID:
                 myPart.setLabel(msg.commandShippingsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
-                myPart.setContext(EclipseContextFactory.create());
-                myPart.getProperties().put(PARAM_OBJ_ID, objId);
                 break;
 			case PaymentEditor.ID:
 			case PaymentListTable.ID:
                 myPart.setLabel(msg.commandPaymentsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + PaymentEditor.class.getName());
-                myPart.setContext(EclipseContextFactory.create());
-                myPart.getProperties().put(PARAM_OBJ_ID, objId);
                 break;
             case ContactEditor.ID:
             case ContactListTable.ID:
                 myPart.setLabel(msg.commandContactsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
-                myPart.setContext(EclipseContextFactory.create());
-                myPart.getProperties().put(PARAM_OBJ_ID, objId);
+                break;
+            case DocumentsListTable.ID:
+            case DocumentEditor.ID:
+                BillingType billingType = BillingType.getByName(category);
+                DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
+                myPart.setLabel(msg.getMessageFromKey(docType.getSingularKey()));
+                myPart.getProperties().put(PARAM_CATEGORY, category);
                 break;
 			default:
 				myPart.setLabel("unknown");
-				myPart.setContext(EclipseContextFactory.create());
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
 				break;
 			}
