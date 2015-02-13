@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -65,8 +66,13 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.util.CellEdgeEnum;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -84,6 +90,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DummyStringCategory;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -116,7 +123,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     // ID of this view
     public static final String ID = "fakturama.views.documentTable";     
     
-    protected static final String POPUP_ID = "com.sebulli.fakturama.documentlist.popup";
+    protected static final String POPUP_ID = "com.sebulli.fakturama.document.popup";
     /**
      * Event Broker for receiving update events to the list table
      */
@@ -160,11 +167,13 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private SelectionLayer selectionLayer;
 
     private ContactUtil contactUtil;
+    private IEclipseContext context;
 
     @PostConstruct
-    public Control createPartControl(Composite parent) {
+    public Control createPartControl(Composite parent, IEclipseContext context) {
         log.info("create Document list part");
         top = super.createPartControl(parent, Document.class, false, true, ID);
+        this.context = context;
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -229,6 +238,25 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
          * it would be overwritten with default configurations.
          */
         natTable.setBackground(GUIHelper.COLOR_WHITE);
+        
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+
+                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                            selectRowAction.run(natTable, event);
+                        }                   
+                    }
+                });
 
         natTable.configure();
     }
@@ -323,25 +351,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         
         // Custom selection configuration
         selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-        
-        // register right click as a selection event for the whole row
-//        natTable.getUiBindingRegistry().registerMouseDownBinding(
-//                new MouseEventMatcher(SWT.NONE, GridRegion.ROW_HEADER, MouseEventMatcher.RIGHT_BUTTON),
-//
-//                new IMouseAction() {
-//
-//                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
-//                                
-//                    @Override
-//                    public void run(NatTable natTable, MouseEvent event) {
-//
-//                        int rowPosition = natTable.getRowPositionByY(event.y);
-//
-//                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
-//                            selectRowAction.run(natTable, event);
-//                        }                   
-//                    }
-//                });
         
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
@@ -511,6 +520,28 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 }
             }
         }
+        
+        // for controlling of the visibility of popup commands
+        part.getMenus()
+                .stream()
+                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .forEach(
+                        popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("orderActive"))
+                                .forEach(foundEntry -> foundEntry.setVisible(treeObject.getDocType() == DocumentType.ORDER)));
+        part.getMenus()
+                .stream()
+                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .forEach(
+                        popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("deliveryActive"))
+                                .forEach(foundEntry -> foundEntry.setVisible(treeObject.getDocType() == DocumentType.DELIVERY)));
+        
+        DocumentType tmpDocType = java.util.Optional.ofNullable(treeObject.getDocType()).orElse(DocumentType.NONE);
+        part.getMenus()
+                .stream()
+                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .forEach(
+                        popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("canBePaidActive"))
+                                .forEach(foundEntry -> foundEntry.setVisible(tmpDocType.canBePaid())));
     }
     
     @Override
@@ -571,7 +602,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     @Override
     protected String getEditorId() {
-        return "DocumentEditor";      // TODO change to Constant
+        return DocumentEditor.EDITOR_ID;
     }
 
     class DocumentTableConfiguration extends AbstractRegistryConfiguration {

@@ -89,7 +89,6 @@
 <unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
 <unit id="org.slf4j.api.source" version="1.7.2.v20121108-1250"/>
 <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
 <unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
 <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>

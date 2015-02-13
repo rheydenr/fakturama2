@@ -30,9 +30,62 @@
                 <tags>NoMove</tags>
                 <variables>datalists</variables>
                 <menus xsi:type="menu:PopupMenu" xmi:id="_C8AVIK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup" label="Document list popup">
-                  <children xsi:type="menu:HandledMenuItem" xmi:id="_OBxvsK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.addentry" iconURI="icon://COMMAND_PLUS">
-                    <parameters xmi:id="_ZJg5IK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.rcp.parameter.12" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_9Hy-sLPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspending" visible="false" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_ZsoasEEUEeSEOrX6Mzhm6Q">
+                    <tags>canBePaidActive</tags>
                   </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_9BV0kLPKEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasprocessing" visible="false" label="%main.menu.edit.markasprocessing" iconURI="icon://COMMAND_ORDER_PROCESSING" command="_-MIdoEEUEeSEOrX6Mzhm6Q">
+                    <tags>canBePaidActive</tags>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_NPeQELPLEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasshipped" visible="false" label="%main.menu.edit.markasshipped" iconURI="icon://COMMAND_ORDER_SHIPPED" command="_gPQaMEEUEeSEOrX6Mzhm6Q">
+                    <tags>canBePaidActive</tags>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_jCvIELPLEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.removeref" visible="false" label="%main.menu.edit.removeinvoicereference" iconURI="icon://COMMAND_REMOVE_INVOICEREF">
+                    <tags>deliveryActive</tags>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_4KxxcLPOEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasunpaid" visible="false" label="%main.menu.edit.markasunpaid" iconURI="icon://COMMAND_ERROR" command="_Yv5ssEEUEeSEOrX6Mzhm6Q">
+                    <tags>orderActive</tags>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_TspngLPOEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspaid" visible="false" label="%main.menu.edit.markaspaid" iconURI="icon://COMMAND_CONFIRMATION" command="_EcW7AEEUEeSEOrX6Mzhm6Q">
+                    <tags>orderActive</tags>
+                  </children>
+                  <children xsi:type="menu:MenuSeparator" xmi:id="_ZDzzELPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.menuseparator.6"/>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_OBxvsK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.addnewletter" label="%main.menu.new.letter" iconURI="icon://COMMAND_LETTER" tooltip="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_ZJg5IK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.rcp.parameter.12" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_qGE-ELPCEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.13" name="com.sebulli.fakturama.editors.category" value="LETTER"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_BjtGILPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewoffer" label="%main.menu.new.offer" iconURI="icon://COMMAND_OFFER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_YbU-ILPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.14" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_a1bpELPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.15" name="com.sebulli.fakturama.editors.category" value="OFFER"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_itS9MLPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addneworder" label="%main.menu.new.order" iconURI="icon://COMMAND_ORDER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_sJ-6ELPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.16" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_w_0AkLPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.17" name="com.sebulli.fakturama.editors.category" value="ORDER"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_9eiLELPDEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewconfirmation" label="%main.menu.new.confirmation" iconURI="icon://COMMAND_CONFIRMATION" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_x9EdkLPEEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.18" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_0z3rkLPEEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.19" name="com.sebulli.fakturama.editors.category" value="CONFIRMATION"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_3x14kLPEEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewinvoice" label="%main.menu.new.invoice" iconURI="icon://COMMAND_INVOICE" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_BD8WELPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.20" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_D-Z8ELPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.21" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_JuE0oLPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewdelivery" label="%main.menu.new.deliverynote" iconURI="icon://COMMAND_DELIVERY" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_XU86ALPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.22" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_askWELPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.23" name="com.sebulli.fakturama.editors.category" value="DELIVERY"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_dB4AkLPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewcredit" label="%main.menu.new.credit" iconURI="icon://COMMAND_CREDIT" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_njUmELPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.24" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_qToxkLPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.25" name="com.sebulli.fakturama.editors.category" value="CREDIT"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_tu1tILPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewdunning" label="%main.menu.new.dunning" iconURI="icon://COMMAND_DUNNING" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_3McQALPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.26" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_6RWygLPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.27" name="com.sebulli.fakturama.editors.category" value="DUNNING"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_8gQTALPFEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.addnewproforma" label="%main.menu.new.proforma" iconURI="icon://COMMAND_PROFORMA" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_HO18oLPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.28" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+                    <parameters xmi:id="_NrpoALPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.29" name="com.sebulli.fakturama.editors.category" value="PROFORMA"/>
+                  </children>
+                  <children xsi:type="menu:MenuSeparator" xmi:id="_ispu4LPBEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.menuseparator.5"/>
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_PB4h0K_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </menus>
                 <toolbar xmi:id="_CDzlgKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.rcp.toolbar.4">

@@ -21,7 +21,7 @@ package com.sebulli.fakturama.misc;
  */
 public enum DocumentType {
  // all 8 data types
- NONE(0, "None", "None", false, false, true, false, 1, "none"),
+ NONE(0, "None", "None", false, false, false, false, 1, "none"),
  LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "document.type.letter.plural", false, false, false, false, 1, "main.menu.new.letter"),
  OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "document.type.offer.plural", true, true, false, false, 1, "main.menu.new.offer"),
  ORDER(3, "toolbar.new.order.name" /*"Order"*/, "document.type.order.plural", true, true, false, false, 1, "main.menu.new.order"),

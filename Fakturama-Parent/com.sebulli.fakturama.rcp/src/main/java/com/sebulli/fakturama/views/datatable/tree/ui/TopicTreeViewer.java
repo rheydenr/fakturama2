@@ -184,6 +184,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				
 				if(viewDataSetTable.getTableId().contentEquals(DocumentsListTable.ID)) {
 				    ((DocumentsListTable)viewDataSetTable).changeToolbarItem(treeObject);
+				    // change popup menu
+				    
 				}
 			}
 		});

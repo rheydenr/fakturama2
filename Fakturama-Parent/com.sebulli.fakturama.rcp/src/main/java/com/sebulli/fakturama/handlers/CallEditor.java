@@ -77,9 +77,9 @@ public class CallEditor {
 	 */
 	@Execute
 	public void execute( 
-	        @Named("com.sebulli.fakturama.editors.editortype") String editorType,
-			@Optional @Named("com.sebulli.fakturama.rcp.cmdparam.objId") String objId,
-			@Optional @Named("com.sebulli.fakturama.editors.category") String category,
+	        @Named(PARAM_EDITOR_TYPE) String editorType,
+			@Optional @Named(PARAM_OBJ_ID) String objId,
+			@Optional @Named(PARAM_CATEGORY) String category,
             final MApplication application,
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
@@ -154,7 +154,7 @@ public class CallEditor {
                 BillingType billingType = BillingType.getByName(category);
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
-                myPart.setLabel(msg.getMessageFromKey(docType.getSingularKey()));
+                myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
                 myPart.getProperties().put(PARAM_CATEGORY, category);
                 break;
 			default:
