@@ -314,7 +314,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
                 // extract the selected Object
                 T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-                log.debug("Selected Object: " + selectedObject.getName());
+//                log.debug("Selected Object: " + selectedObject.getName());
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
                 // when calling the editor command.
@@ -332,7 +332,13 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         });
     }
 
-
+    /**
+     * Returns the actually marked document in a table. Can be overwritten. May return <code>null</code>!
+     * 
+     * @return
+     */
+    public T getSelectedObject() { return null;}
+    
     /**
      * Component for the Search field and the item table
      * 

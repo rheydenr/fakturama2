@@ -396,8 +396,8 @@ public class Messages {
 	public String ListEditor474;
 	public String ListEditor475;
 
-	public String MarkOrderAsAction81;
-	public String MarkOrderAsAction82;
+    public String commandMarkorderCompleted;
+    public String commandMarkorderWarnStockzero;
 
 	public String MoveEntryDownAction61;
 	public String MoveEntryDownAction62;

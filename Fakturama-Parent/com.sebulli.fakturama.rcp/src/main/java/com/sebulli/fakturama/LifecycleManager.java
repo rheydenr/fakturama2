@@ -44,7 +44,6 @@ import com.sebulli.fakturama.startup.ConfigurationManager;
 
 /**
  * The LifecycleManager controls the start and the end of an application.
- * @author rheydenr
  *
  */
 public class LifecycleManager {

@@ -38,6 +38,7 @@
     <eLiterals name="CREDIT" value="7"/>
     <eLiterals name="DUNNING" value="8"/>
     <eLiterals name="PROFORMA" value="9"/>
+    <eLiterals name="NONE" literal="NONE"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Contact" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>

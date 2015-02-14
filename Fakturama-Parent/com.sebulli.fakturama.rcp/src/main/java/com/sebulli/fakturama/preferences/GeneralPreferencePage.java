@@ -18,13 +18,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.Collator;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -58,6 +57,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
     private StringFieldEditor example;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
+    private BooleanFieldEditor useCurrencySymbolCheckbox;
 
 	/**
 	 * Constructor
@@ -79,7 +79,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.GENERAL_PREFERENCE_PAGE);
 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
-
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
 //		addField(new StringFieldEditor(Constants.PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
@@ -87,22 +86,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
         Locale[] locales = NumberFormat.getAvailableLocales();
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY);
-        
-          Arrays.sort(locales, new Comparator<Locale>() {
-              @Override
-              public int compare(Locale o1, Locale o2) {
-                  return collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry());
-              }
-          });
-          
-        List<Locale> currencyLocaleList = new ArrayList<>();
-        for (int i = 0; i < locales.length; ++i) {
-            if (locales[i].getCountry().length() == 0) {
-               continue; // Skip language-only locales
-            }
-            currencyLocaleList.add(locales[i]);
-        }
-        
+        List<Locale> currencyLocaleList = Arrays.stream(locales).sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
+                .filter(l -> l.getCountry().length() != 0).collect(Collectors.toList());
         String[][] currencyLocales = new String[currencyLocaleList.size()][2];
         for (Locale locale : currencyLocaleList) {
             currencyLocales[index][0] = locale.getDisplayCountry() + " (" + locale.getDisplayLanguage() + ")";
@@ -124,6 +109,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
             cashCheckbox.setEnabled(false, getFieldEditorParent());
         }
         addField(cashCheckbox);
+
+        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, "use currency symbol", getFieldEditorParent());
+        addField(useCurrencySymbolCheckbox);
         
         thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
         addField(thousandsSeparatorCheckbox);
@@ -142,7 +130,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
                 && (((BooleanFieldEditor)event.getSource()).getPreferenceName()
                     .equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)
                     ||((BooleanFieldEditor)event.getSource()).getPreferenceName()
-                    .equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR))
+                    .equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR)
+                    ||((BooleanFieldEditor)event.getSource()).getPreferenceName()
+                    .equals(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))
                 ) {
             boolean useThousandsSeparator = thousandsSeparatorCheckbox.getBooleanValue();
             boolean useCashRounding = cashCheckbox.getBooleanValue();
@@ -210,9 +200,10 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
                      * they already loaded by DataUtils and therefore the classloader gets
                      * confused.
                      */
-                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale);
+                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale, useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true);
                 }
             } else {
+                retval = DataUtils.getInstance().formatCurrency(myNumber, locale, useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true);
                 if(cashCheckbox != null) {
                     cashCheckbox.setEnabled(false, getFieldEditorParent());
                 }
@@ -260,6 +251,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
         node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
+        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true);
 	}
 
 	/**

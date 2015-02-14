@@ -18,9 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
-import com.sebulli.fakturama.handlers.MarkOrderAsActionHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
@@ -128,14 +128,15 @@ public class DocumentMatcher implements Matcher<Document> {
                     break;
                 case ORDER:
                     // .. and the state of the shipping
-                    switch (item.getProgress()) {
-                    case 0:
-                    case MarkOrderAsActionHandler.PENDING:
-                    case MarkOrderAsActionHandler.PROCESSING:
+                    OrderState progress = OrderState.findByProgressValue(item.getProgress());
+                    switch (progress) {
+                    case NONE:
+                    case PENDING:
+                    case PROCESSING:
                         category += "/" + msg.documentOrderStateNotshipped;
                         break;
-                    case MarkOrderAsActionHandler.SHIPPED:
-                    case MarkOrderAsActionHandler.COMPLETED:
+                    case SHIPPED:
+                    case COMPLETED:
                         category += "/" + msg.documentOrderStateShipped;
                         break;
                     }

@@ -87,6 +87,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DummyStringCategory;
@@ -169,10 +170,13 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private ContactUtil contactUtil;
     private IEclipseContext context;
 
+    private MPart listTablePart;
+
     @PostConstruct
     public Control createPartControl(Composite parent, IEclipseContext context) {
         log.info("create Document list part");
         top = super.createPartControl(parent, Document.class, false, true, ID);
+        listTablePart = (MPart) modelService.find(ID, application);
         this.context = context;
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
@@ -249,11 +253,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                                 
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
-
                         int rowPosition = natTable.getRowPositionByY(event.y);
-
                         if(!selectionLayer.isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
+                            changePopupEntries(null);
                         }                   
                     }
                 });
@@ -508,8 +511,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     
     public void changeToolbarItem(TreeObject treeObject) {
-        MPart part = (MPart) modelService.find(ID, application);
-        MToolBar toolbar = part.getToolbar();
+        MToolBar toolbar = listTablePart.getToolbar();
         for (MToolBarElement tbElem : toolbar.getChildren()) {
             if(tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
                 HandledToolItemImpl toolItem = (HandledToolItemImpl)tbElem;
@@ -520,28 +522,42 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 }
             }
         }
-        
+        changePopupEntries(treeObject.getDocType());
+    }
+
+    /**
+     * @param documentType
+     * @param part
+     */
+    protected void changePopupEntries(DocumentType documentType) {
+        BillingType selectedObjectType = (getSelectedObject() != null) ? getSelectedObject().getBillingType() : BillingType.NONE;
+
         // for controlling of the visibility of popup commands
-        part.getMenus()
+        // according to the supplementary information (tag name) the visibility is set for the
+        // appropriate commands.
+        listTablePart.getMenus()
                 .stream()
                 .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("orderActive"))
-                                .forEach(foundEntry -> foundEntry.setVisible(treeObject.getDocType() == DocumentType.ORDER)));
-        part.getMenus()
+                                .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.ORDER
+                                || selectedObjectType == BillingType.ORDER)));
+        listTablePart.getMenus()
                 .stream()
                 .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("deliveryActive"))
-                                .forEach(foundEntry -> foundEntry.setVisible(treeObject.getDocType() == DocumentType.DELIVERY)));
+                                .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.DELIVERY
+                                || selectedObjectType == BillingType.DELIVERY)));
         
-        DocumentType tmpDocType = java.util.Optional.ofNullable(treeObject.getDocType()).orElse(DocumentType.NONE);
-        part.getMenus()
+        boolean canBePaid = java.util.Optional.ofNullable(documentType).orElse(DocumentType.NONE).canBePaid()
+                || DocumentType.findByKey(selectedObjectType.getValue()).canBePaid();
+        listTablePart.getMenus()
                 .stream()
                 .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("canBePaidActive"))
-                                .forEach(foundEntry -> foundEntry.setVisible(tmpDocType.canBePaid())));
+                                .forEach(foundEntry -> foundEntry.setVisible(canBePaid)));
     }
     
     @Override
@@ -694,6 +710,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         } else {
             log.debug("no rows selected!");
         }
+    }
+    
+    @Override
+    public Document getSelectedObject() {
+        Document selectedObject = null;
+        int[] fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
+        if(fullySelectedRowPositions.length > 0 && fullySelectedRowPositions[0] > -1) {
+            selectedObject = gridLayer.getBodyDataProvider().getRowObject(fullySelectedRowPositions[0]);
+        } else {
+            log.debug("no rows selected!");
+        }
+        return selectedObject;
     }
 
     protected String getPopupId() {

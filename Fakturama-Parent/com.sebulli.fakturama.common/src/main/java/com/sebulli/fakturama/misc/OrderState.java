@@ -3,11 +3,14 @@
  */
 package com.sebulli.fakturama.misc;
 
+import java.util.Arrays;
+
 /**
  * Order states.
  *
  */
 public enum OrderState {
+    NONE(0),
     PENDING(10),
     PROCESSING(50),
     SHIPPED(90),
@@ -28,5 +31,9 @@ public enum OrderState {
      */
     public final int getState() {
         return state;
+    }
+    
+    public static OrderState findByProgressValue(Integer progress) {
+        return Arrays.stream(OrderState.values()).filter(os -> os.getState() == progress).findFirst().get();
     }
 }

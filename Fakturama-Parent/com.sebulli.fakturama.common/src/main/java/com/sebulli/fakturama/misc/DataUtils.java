@@ -437,14 +437,20 @@ public class DataUtils {
         return retval;
     }
 
-    public String formatCurrency(double myNumber, Locale locale) {
+    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol) {
         CurrencyUnit usd = DataUtils.getInstance().getCurrencyUnit(locale);
         MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
         MonetaryRounding mro = DataUtils.getInstance().getRounding(usd);
-        MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(locale).setTyped(CurrencyStyle.SYMBOL)
+        MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
+                AmountFormatQueryBuilder.of(locale)
+                .setTyped(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                 .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
                 .build());
         return format.format(rounded.with(mro));
+    }
+    
+    public String formatCurrency(double myNumber, Locale locale) {
+        return formatCurrency(myNumber, locale, true);
     }
 
     //

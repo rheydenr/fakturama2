@@ -16,9 +16,9 @@ package com.sebulli.fakturama.views.datatable.documents;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.sebulli.fakturama.handlers.MarkOrderAsActionHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.resources.core.Icon;
 
@@ -267,15 +267,16 @@ public class SpecialCellValueProvider {
                         return Icon.COMMAND_ERROR;
                     }
                 case ORDER:
-                    switch (rowObject.getProgress()) {
-                    case 0:
-                    case MarkOrderAsActionHandler.PENDING:
+                    OrderState progress = OrderState.findByProgressValue(rowObject.getProgress());
+                    switch (progress) {
+                    case NONE:
+                    case PENDING:
                         return Icon.COMMAND_ORDER_PENDING;
-                    case MarkOrderAsActionHandler.PROCESSING:
+                    case PROCESSING:
                         return Icon.COMMAND_ORDER_PROCESSING;
-                    case MarkOrderAsActionHandler.SHIPPED:
+                    case SHIPPED:
                         return Icon.COMMAND_ORDER_SHIPPED;
-                    case MarkOrderAsActionHandler.COMPLETED:
+                    case COMPLETED:
                         return Icon.COMMAND_CHECKED;
                     }
                     break;

@@ -24,7 +24,7 @@ public class DeleteHandler {
     	return activePart.getObject() instanceof AbstractViewDataTable;
     }
 
-    @SuppressWarnings("rawtypes")  // here we  don't need a generic...
+    @SuppressWarnings("rawtypes")  // here we don't need a generic...
     @Execute
     public void handleDelete(@Optional @Named("com.sebulli.fakturama.cmddelparam.objId") String objId,
             @Active MPart activePart) {

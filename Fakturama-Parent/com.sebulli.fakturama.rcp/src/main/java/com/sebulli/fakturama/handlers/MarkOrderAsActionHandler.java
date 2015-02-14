@@ -14,68 +14,90 @@
 
 package com.sebulli.fakturama.handlers;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+
+import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.OrderState;
+import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.util.ProductUtil;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
+import com.sebulli.fakturama.webshopimport.WebShopImportManager;
+
 
 /**
  * This action marks an entry in the order table as pending, processing, shipped
  * or checked.
  * 
- * @author Gerd Bartelt
  */
 public class MarkOrderAsActionHandler {
 
-	public final static int PENDING = 10;
-	public final static int PROCESSING = 50;
-	public final static int SHIPPED = 90;
-	public final static int COMPLETED = 100;
+    @Inject
+    @Translation
+    private Messages msg;
+//    
+//    @Inject
+//    private Logger log;
+    
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+
+    @Inject
+    private ProductsDAO productsDAO;
+    
+    @Inject
+    private DocumentsDAO documentsDAO;
+
+    @Inject
+    private ECommandService cmdService;
+    
+    @Inject
+    private EHandlerService handlerService;
+    
+    public static final String PARAM_STATUS = "com.sebulli.fakturama.command.order.markas.progress";
+    public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
 	
-	// progress of the order. Value from 0 to 100 (percent)
-	int progress;
-	
-	public MarkOrderAsActionHandler() {
-	    super();
+	@Execute
+	public void markOrderAs(@Active MPart activePart,
+	        @Named(PARAM_STATUS) String status,
+	        @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+	    OrderState progress = OrderState.NONE;
+	    progress = OrderState.valueOf(status);
+	    @SuppressWarnings("rawtypes")
+        AbstractViewDataTable currentListtable = (AbstractViewDataTable)activePart.getObject();
+	    markOrderAs(parent, (Document)currentListtable.getSelectedObject(), progress, null, false, activePart.getContext());
 	}
 
-	/**
-	 * Constructor Instead of using a value for the states "pending",
-	 * "processing", "shipped" or "checked" a progress value from 0 to 100
-	 * (percent) is used.
-	 * 
-	 * So it's possible to insert states between these.
-	 * 
-	 * @param text
-	 * @param progress
-	 */
-	public MarkOrderAsActionHandler(int progress) {
-		super();
-		this.progress = progress;
-//
-//		// Correlation between progress value and state.
-//		// Depending on the state, the icon and the command ID is selected.
-//		switch (progress) {
-//		case 0:
-//		case PENDING:
-//			//T: Text of the action
-//			this.setText(_("mark as \"pending\""));
-//			setSettings(ICommandIds.CMD_MARK_ORDER_AS, "/icons/16/order_pending_16.png");
-//			break;
-//		case PROCESSING:
-//			//T: Text of the action
-//			this.setText(_("mark as \"processing\""));
-//			setSettings(ICommandIds.CMD_MARK_ORDER_AS, "/icons/16/order_processing_16.png");
-//			break;
-//		case SHIPPED:
-//			//T: Text of the action
-//			this.setText(_("mark as \"shipped\""));
-//			setSettings(ICommandIds.CMD_MARK_ORDER_AS, "/icons/16/order_shipped_16.png");
-//			break;
-//		case COMPLETED:
-//			//T: Text of the action
-//			this.setText(_("mark as \"completed\""));
-//			setSettings(ICommandIds.CMD_MARK_ORDER_AS, "/icons/16/checked_16.png");
-//			break;
-//		}
-
-	}
 
 	/**
 	 * Set the progress of the order to a new state. Do it also in the web shop.
@@ -87,102 +109,89 @@ public class MarkOrderAsActionHandler {
 	 *            The new progress value (0-100%)
 	 * @param comment
 	 *            The comment of the confirmation email.
+	 * @param iEclipseContext 
 	 */
-	public static void markOrderAs(Object uds, int progress, String comment, boolean sendNotification) {
+	public void markOrderAs(Shell parent, Document uds, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
+			// Do it only, if it is an order.
+			if (uds.getBillingType() == BillingType.ORDER) {
+						try {
+				
+			    OrderState progress_old = OrderState.findByProgressValue(uds.getProgress());
+				// Stock
+			    List<DocumentItem> items = uds.getItems();
+				if (progress==OrderState.SHIPPED && progress_old != OrderState.SHIPPED) // mark as shipped - take from stock
+				{
+					for (DocumentItem item : items) {
+						Product id = item.getProduct();
+						Double quantity_order = item.getQuantity();
+						Product product = productsDAO.findById(id);
+						Double quantity_stock =  product.getQuantity();
+						product.setQuantity(quantity_stock - quantity_order);
+						if (quantity_stock - quantity_order <= 0)
+						{
+							String name = product.getName();
+							String cat = product.getCategories().get(0).getName();
+							MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero+" " + name + "/" + cat);
+						}
+                            productsDAO.update(product);
+					}
+				}
+				else if (progress_old == OrderState.SHIPPED && progress != OrderState.SHIPPED)  // mark as processing or lower - add to stock
+				{
+                    for (DocumentItem item : items) {
+                        Product id = item.getProduct();
+                        Double quantity_order = item.getQuantity();
+						
+                        Product product = productsDAO.findById(id);
+                        Double quantity_stock =  product.getQuantity();
+                        product.setQuantity(quantity_stock + quantity_order);
+                        productsDAO.update(product);
+					}
+				}
+				// end patch
 
-//		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-//
-//		if (uds instanceof DataSetDocument) {
-//
-//			// Do it only, if it is an order.
-//			if (DocumentType.getType(uds.getIntValueByKey("category")) == DocumentType.ORDER) {
-//				
-//				// begin Patch from Grucknak, see http://fakturama.sebulli.com/phorum/read.php?4,2503
-//				int progress_old = uds.getIntValueByKey("progress");
-//				// Stock
-//				if (progress==SHIPPED && progress_old != SHIPPED) // mark as shipped - take from stock
-//				{
-//					ArrayList<DataSetItem> items = uds.getItems().getActiveDatasets();
-//					for (DataSetItem item : items) {
-//						int id = item.getIntValueByKey("productid");
-//						int quantity_order = item.getIntValueByKey("quantity");
-//						
-//						ArrayList<DataSetProduct> products = Data.INSTANCE.getProducts().getActiveDatasets();
-//						for (DataSetProduct product : products) {
-//							if (product.getIntValueByKey("id") == id)
-//							{
-//								int quantity_stock =  product.getIntValueByKey("quantity");
-//								product.setIntValueByKey("quantity", quantity_stock - quantity_order);
-//								if ((quantity_stock - quantity_order) <= 0)
-//								{
-//									String name = product.getFormatedStringValueByKey("name");
-//									String cat = product.getFormatedStringValueByKey("category");
-//									MessageBox mb = new MessageBox(workbenchWindow.getShell(), SWT.ICON_WARNING);
-//									//T: Stock is less or equal to zero for product / category
-//									mb.setMessage(_("Stock is less or equal to zero for product / category: ") + name + "/" + cat);
-//									//T: Title of a message box
-//									mb.setText(_("Information"));
-//									mb.open();
-//								}
-//								Data.INSTANCE.getProducts().updateDataSet(product);
-//								break;
-//							}
-//						}
-//					}
-//				}
-//				else if (progress_old == SHIPPED && progress != SHIPPED)  // mark as processing or lower - add to stock
-//				{
-//					ArrayList<DataSetItem> items = uds.getItems().getActiveDatasets();
-//					for (DataSetItem item : items) {
-//						int id = item.getIntValueByKey("productid");
-//						int quantity_order = item.getIntValueByKey("quantity");
-//						
-//						ArrayList<DataSetProduct> products = Data.INSTANCE.getProducts().getActiveDatasets();
-//						for (DataSetProduct product : products) {
-//							if (product.getIntValueByKey("id") == id)
-//							{
-//								int quantity_stock =  product.getIntValueByKey("quantity");								
-//								product.setIntValueByKey("quantity", quantity_stock + quantity_order);
-//
-//								Data.INSTANCE.getProducts().updateDataSet(product);
-//								break;
-//							}
-//						}
-//					}
-//				}
-//				// end patch
-//
-//				// change the state
-//				uds.setIntValueByKey("progress", progress);
-//
-//				// also in the database
-//				Data.INSTANCE.updateDataSet(uds);
-//
-//				// Change the state also in the webshop
-//				if (!uds.getStringValueByKey("webshopid").isEmpty() && Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_ENABLED")) {
-//					// Start a new web shop import manager in a
-//					// progress Monitor Dialog
-//					WebShopImportManager webShopImportManager = new WebShopImportManager();
-//					// Send a request to the web shop import manager.
-//					// He will update the state in the web shop the next time,
-//					// we synchronize with the shop.
-//					WebShopImportManager.updateOrderProgress(uds, comment, sendNotification);
+				// change the state
+				uds.setProgress(progress.getState());
+
+				// also in the database
+				documentsDAO.update(uds);
+
+				// Change the state also in the webshop
+				if (!uds.getWebshopId().isEmpty() && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
+
+				    // Start a new web shop import manager in a
+					// progress Monitor Dialog
+				    WebShopImportManager webShopImportManager = new WebShopImportManager(); 
+		            ContextInjectionFactory.inject(webShopImportManager, iEclipseContext);
+//				    webShopImportManager.initialize();
+					webShopImportManager.updateOrderProgress(uds, comment, sendNotification);
+					// Send a request to the web shop import manager.
+					// It will update the state in the web shop the next time
+					// when we synchronize with the shop.
+			        Map<String, Object> parameters = new HashMap<>();
+			        parameters.put(WebShopImportHandler.PARAM_IS_GET_PRODUCTS, "FALSE");
+			        ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT_MGR, parameters);
+			        /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
 //					webShopImportManager.prepareChangeState();
 //
 //					try {
-//						new ProgressMonitorDialog(workbenchWindow.getShell()).run(true, true, webShopImportManager);
+//
+//			            ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
+//			            progressMonitorDialog.run(true, true, webShopImportManager);
 //					}
 //					catch (InvocationTargetException e) {
-//						Logger.logError(e, "Error running web shop import manager.");
+//						log.error(e, "Error running web shop import manager.");
 //					}
 //					catch (InterruptedException e) {
-//						Logger.logError(e, "Web shop import manager was interrupted.");
+//						log.error(e, "Web shop import manager was interrupted.");
 //					}
-//
-//				}
-//
-//			}
-//		}
+
+				}
+                        }
+                        catch (SQLException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }}
 
 	}
 

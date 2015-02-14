@@ -60,6 +60,7 @@ import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,6 +69,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -90,6 +92,7 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.DocumentSummaryCalculator;
+import com.sebulli.fakturama.handlers.WebShopImportHandler;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
@@ -279,7 +282,7 @@ public class WebShopImportManager {
 	/**
 	 * Prepare the web shop import to request products and orders.
 	 */
-	public void prepareGetProductsAndOrders() {
+	private void prepareGetProductsAndOrders() {
 		getProducts = true;
 		getOrders = true;
 	}
@@ -287,7 +290,7 @@ public class WebShopImportManager {
 	/**
 	 * Prepare the web shop import to change the state of an order.
 	 */
-	public void prepareChangeState() {
+	private void prepareChangeState() {
 		getProducts = false;
 		getOrders = false;
 	}
@@ -302,9 +305,14 @@ public class WebShopImportManager {
 	 * @throws InterruptedException
 	 */
 	@Execute
-	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
+	        @Optional @Named(WebShopImportHandler.PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
 	    ExecutionResult result = null;
-	    prepareGetProductsAndOrders();
+	    if(BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
+	        prepareGetProductsAndOrders();
+	    } else {
+	        prepareChangeState();
+	    }
         try {
             ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
             IRunnableWithProgress op = new WebShopImportWorker();
@@ -368,9 +376,9 @@ public class WebShopImportManager {
 		String value = Integer.toString(webshopState);
 
 		//Replace the "," by "&comma;
-		comment = comment.replace("%2C", "%26comma%3B");
+		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%2C", "%26comma%3B");
 		//Replace the "=" by "&equal;
-		comment = comment.replace("%3D", "%26equal%3B");
+		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%3D", "%26equal%3B");
 		
 		if (notify)
 			value += "*" + comment;
@@ -436,9 +444,9 @@ public class WebShopImportManager {
             String authorizationUser = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER);
             String authorizationPassword = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD);
             
-   			String currencyPreference = eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR");
-   			currencyCode = MonetaryCurrencies.getCurrency(currencyPreference);
-
+//   			String currencyPreference = eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR");
+   			currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+//   			currencyCode = MonetaryCurrencies.getCurrency(currencyPreference);
             
             // Check empty URL
             if (address.isEmpty()) {
