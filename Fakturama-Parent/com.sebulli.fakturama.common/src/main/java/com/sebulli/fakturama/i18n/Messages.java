@@ -473,8 +473,8 @@ public class Messages {
 	public String preferencesOptionalitems;
 	public String preferencesOptionalitemsItemlabel;
 
-	public String OrderStatusDialog262;
-	public String OrderStatusDialog263;
+    public String dialogOrderstatusTitle;
+    public String dialogOrderstatusFieldNotify;
 
 	public String ParcelServiceFormFiller648;
 	public String ParcelServiceFormFiller649;

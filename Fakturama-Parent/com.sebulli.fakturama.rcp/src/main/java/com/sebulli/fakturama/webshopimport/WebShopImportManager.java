@@ -52,7 +52,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 import javax.xml.bind.JAXBContext;

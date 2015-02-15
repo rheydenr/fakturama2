@@ -39,13 +39,13 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
      * @return the (shared) default rounding instances matching, never null.
      */
     public MonetaryRounding getRounding(RoundingQuery roundingQuery) {
-        if (roundingQuery.getTimestamp() != null) {
-            return null;
-        }
+//        if (roundingQuery.getTimestamp() != null) {
+//            return null;
+//        }
         CurrencyUnit currency = roundingQuery.getCurrency();
         if (currency != null) {
-            RoundingMode roundingMode = roundingQuery.getTyped(RoundingMode.class, RoundingMode.HALF_EVEN);
-            if (roundingQuery.getBoolean("cashRounding", false)) {
+            RoundingMode roundingMode = roundingQuery.get(RoundingMode.class/*, RoundingMode.HALF_EVEN*/);
+            if (roundingQuery.getBoolean("cashRounding"/*, false*/)) {
                 if (currency.getCurrencyCode().equals("CHF")) {
                     return new FakturamaCashRounding(currency, RoundingMode.HALF_UP, 5);
                 } else {
@@ -58,8 +58,8 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
         if (scale == null) {
             scale = 2;
         }
-        MathContext mc = roundingQuery.get(MathContext.class, null);
-        RoundingMode roundingMode = roundingQuery.get(RoundingMode.class, null);
+        MathContext mc = roundingQuery.get(MathContext.class/*, null*/);
+        RoundingMode roundingMode = roundingQuery.get(RoundingMode.class/*, null*/);
         if (roundingMode != null || mc != null) {
             if (mc != null) {
                 return new FakturamaRounding(scale, mc.getRoundingMode());

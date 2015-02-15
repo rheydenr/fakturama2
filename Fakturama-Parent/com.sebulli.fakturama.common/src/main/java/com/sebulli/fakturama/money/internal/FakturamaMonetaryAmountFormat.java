@@ -71,11 +71,11 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
             String p2 = pattern.substring(index + 1);
             if (isLiteralPattern(p1, style)) {
                 tokens.add(new LiteralToken(p1));
-                tokens.add(new CurrencyToken(style.getTyped(CurrencyStyle.class), style.
-                        getTyped(Locale.class)));
+                tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style.
+                        get(Locale.class)));
             } else {
                 tokens.add(new AmountNumberToken(style, p1));
-                tokens.add(new CurrencyToken(style.getTyped(CurrencyStyle.class), style.getTyped(Locale.class)));
+                tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style.get(Locale.class)));
             }
             if (!p2.isEmpty()) {
                 if (isLiteralPattern(p2, style)) {
@@ -85,8 +85,8 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
                 }
             }
         } else if (index == 0) { // currency placement before
-            tokens.add(new CurrencyToken(style.getTyped(CurrencyStyle.class), style
-                    .getTyped(Locale.class)));
+            tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style
+                    .get(Locale.class)));
             tokens.add(new AmountNumberToken(style, pattern.substring(1)));
         } else { // no currency
             tokens.add(new AmountNumberToken(style, pattern));
@@ -179,7 +179,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         CurrencyUnit unit = ctx.getParsedCurrency();
         Number num = ctx.getParsedNumber();
         if (Objects.isNull(unit)) {
-            unit = this.amountFormatContext.getTyped(CurrencyUnit.class);
+            unit = this.amountFormatContext.get(CurrencyUnit.class);
         }
         if (Objects.isNull(num)) {
             throw new MonetaryParseException(text.toString(), -1);
@@ -202,7 +202,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
     }
 
     @Override
-    public AmountFormatContext getAmountFormatContext() {
+    public AmountFormatContext getContext() {
         return this.amountFormatContext;
     }
 
@@ -221,8 +221,8 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         } else {
             // split into (potential) plus, minus patterns
             char patternSeparator = ';';
-            if (Objects.nonNull(amountFormatContext.getTyped(DecimalFormatSymbols.class))) {
-                patternSeparator = amountFormatContext.getTyped(DecimalFormatSymbols.class).getPatternSeparator();
+            if (Objects.nonNull(amountFormatContext.get(DecimalFormatSymbols.class))) {
+                patternSeparator = amountFormatContext.get(DecimalFormatSymbols.class).getPatternSeparator();
             }
             String[] plusMinusPatterns = pattern.split(String.valueOf(patternSeparator));
             initPattern(plusMinusPatterns[0], this.positiveTokens, amountFormatContext);

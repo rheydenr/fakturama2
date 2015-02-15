@@ -48,8 +48,8 @@ public class FakturamaFormatProviderSpi implements MonetaryAmountFormatProviderS
     @Override
     public Collection<MonetaryAmountFormat> getAmountFormats(AmountFormatQuery amountFormatQuery){
         Objects.requireNonNull(amountFormatQuery, "AmountFormatContext required");
-        if(!amountFormatQuery.getProviders().isEmpty() &&
-                !amountFormatQuery.getProviders().contains(getProviderName())){
+        if(!amountFormatQuery.getProviderNames().isEmpty() &&
+                !amountFormatQuery.getProviderNames().contains(getProviderName())){
             return Collections.emptySet();
         }
         if(!(amountFormatQuery.getFormatName() == null || DEFAULT_STYLE.equals(amountFormatQuery.getFormatName()))){

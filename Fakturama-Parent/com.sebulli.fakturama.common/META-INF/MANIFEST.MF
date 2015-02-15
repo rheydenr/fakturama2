@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.e4.core.services,
  javax.inject,
  org.eclipse.equinox.ds;bundle-version="1.4.200",
  org.apache.commons.lang3;bundle-version="3.3.2",
- org.eclipse.core.runtime;bundle-version="3.10.0"
+ org.eclipse.core.runtime;bundle-version="3.10.0",
+ org.javamoney.osgi;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: ch.qos.logback.classic;version="1.0.7",
@@ -39,7 +40,6 @@ Import-Package: ch.qos.logback.classic;version="1.0.7",
  org.osgi.util.tracker;version="1.5.1",
  org.slf4j;version="1.7.2"
 Bundle-Activator: com.sebulli.fakturama.common.Activator
-Service-Component: OSGI-INF/logservice.xml
-Bundle-ClassPath: .,
- lib/moneta-1.0-RC1.jar,
- lib/money-api-1.0-RC1.jar
+Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,
+ OSGI-INF/rounding_provider.xml
+Bundle-ClassPath: .

@@ -32,6 +32,7 @@ import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.swt.widgets.DateTime;
 import org.javamoney.moneta.RoundedMoney;
@@ -100,7 +101,7 @@ public class DataUtils {
 //                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 5)                    // scale wird nur verwendet, wenn kein Pattern angegeben ist
 //                        .set(MyMonetaryAmountFormat.KEY_GROUPING_SIZES, new int[]{2, 3, 4}) // kann unterschiedliche Gruppierungen beinhalten (wer macht denn sowas???)
 //                        .set(MyMonetaryAmountFormat.KEY_GROUPING_SEPARATORS, new char[]{'.', '#', '~'})
-                        .setTyped(CurrencyStyle.SYMBOL)
+                        .set(CurrencyStyle.SYMBOL)
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
                         .build());
     }
@@ -443,7 +444,7 @@ public class DataUtils {
         MonetaryRounding mro = DataUtils.getInstance().getRounding(usd);
         MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(locale)
-                .setTyped(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
+                .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                 .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
                 .build());
         return format.format(rounded.with(mro));
@@ -915,19 +916,21 @@ public class DataUtils {
 //
 //        return d;
 //    }
-//    
-//    /**
-//     * Remove all carriage returns from a string
-//     * 
-//     * @param s
-//     *      The string with the carriage returns
-//     * @return
-//     *      The new string without them
-//     */
-//    public static String removeCR(String s) {
-//        return s.replaceAll("\r", "");
-//    }
-//
+    
+    /**
+     * Remove all carriage returns from a string
+     * 
+     * @param s
+     *      The string with the carriage returns
+     * @return
+     *      The new string without them
+     * 
+     * @deprecated can be replaced by {@link StringUtils#chomp};
+     */
+    public String removeCR(String s) {
+        return s.replaceAll("\r", "");
+    }
+
 //    /**
 //     * convert all LineFeeds to OS dependent LineFeeds
 //     * 

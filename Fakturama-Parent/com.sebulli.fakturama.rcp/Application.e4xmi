@@ -277,7 +277,6 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" elementId="about" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.help.about" iconURI="icon://COMMAND_APP" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
       </children>
     </mainMenu>
-    <windows xsi:type="basic:Dialog" xmi:id="_3eg-wNF5EeO1uoHhDamhog" elementId="com.sebulli.fakturama.rcp.dialog.0" toBeRendered="false" visible="false" label="test" tooltip="migman"/>
     <trimBars xmi:id="_6zLE0EvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.rcp.trimbar.0">
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.rcp.toolcontrol.0" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>

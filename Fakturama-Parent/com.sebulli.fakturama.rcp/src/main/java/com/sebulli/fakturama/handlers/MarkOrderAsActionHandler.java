@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.handlers;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -28,28 +29,31 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.dialogs.OrderStatusDialog;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Product;
-import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.webshopimport.WebShopImportManager;
 
@@ -64,9 +68,9 @@ public class MarkOrderAsActionHandler {
     @Inject
     @Translation
     private Messages msg;
-//    
-//    @Inject
-//    private Logger log;
+    
+    @Inject
+    private Logger log;
     
     @Inject
     @Preference
@@ -82,15 +86,21 @@ public class MarkOrderAsActionHandler {
     private ECommandService cmdService;
     
     @Inject
+    private EModelService modelService;
+
+    @Inject
+    private MApplication application;
+    
+    @Inject
     private EHandlerService handlerService;
     
     public static final String PARAM_STATUS = "com.sebulli.fakturama.command.order.markas.progress";
     public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
 	
-	@Execute
-	public void markOrderAs(@Active MPart activePart,
-	        @Named(PARAM_STATUS) String status,
-	        @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+//	@Execute
+	public void markOrderAs(/*@Active */MPart activePart,
+	        /*@Named(PARAM_STATUS) */String status,
+	        /*@Named(IServiceConstants.ACTIVE_SHELL)*/ Shell parent) {
 	    OrderState progress = OrderState.NONE;
 	    progress = OrderState.valueOf(status);
 	    @SuppressWarnings("rawtypes")
@@ -199,89 +209,63 @@ public class MarkOrderAsActionHandler {
 	 * Run the action Search all views to get the selected element. If a view
 	 * with an selection is found, change the state, if it was an order.
 	 */
-	public void run() {
-//
-//		// cancel, if the data base is not connected.
-//		if (!DataBaseConnectionState.INSTANCE.isConnected())
-//			return;
-//
-//		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-//		IWorkbenchPage page = workbenchWindow.getActivePage();
-//
-//		// Get the active part (view)
-//		IWorkbenchPart part = null;
-//		if (page != null)
-//			part = page.getActivePart();
-//
-//		ISelection selection;
-//
-//		// Cast the part to ViewDataSetTable
-//		if (part instanceof ViewDataSetTable) {
-//
-//			ViewDataSetTable view = (ViewDataSetTable) part;
-//
-//			// does the view exist ?
-//			if (view != null) {
-//
-//				//get the selection
-//				selection = view.getSite().getSelectionProvider().getSelection();
-//
-//				if (selection != null && selection instanceof IStructuredSelection) {
-//
-//					Object obj = ((IStructuredSelection) selection).getFirstElement();
-//
-//					// If there is a selection let change the state
-//					if (obj != null) {
-//
-//						// Get the document
-//						DataSetDocument uds = (DataSetDocument) obj;
-//						// and the type of the document
-//						DocumentType documentType = DocumentType.getType(uds.getCategory());
-//
-//						// Exit, if it was not an order
-//						if (documentType != DocumentType.ORDER)
-//							return;
-//						
-//
-//						String comment = "";
-//						boolean notify = false;
-//
-//						// Notify the customer only if the web shop is enabled
-//						if (Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_ENABLED")) {
-//							if ((progress == PROCESSING) && Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_NOTIFY_PROCESSING")
-//									|| ((progress == SHIPPED) && Activator.getDefault().getPreferenceStore().getBoolean("WEBSHOP_NOTIFY_SHIPPED"))) {
-//
-//								OrderStatusDialog dlg = new OrderStatusDialog(workbenchWindow.getShell());
-//
-//								if (dlg.open() == Window.OK) {
-//
-//									// User clicked OK; update the label with the input
-//									try {
-//										// Encode the comment to send it via HTTP POST request
-//										comment = java.net.URLEncoder.encode(dlg.getComment(), "UTF-8");
-//									}
-//									catch (UnsupportedEncodingException e) {
-//										Logger.logError(e, "Error encoding comment.");
-//										comment = "";
-//									}
-//								}
-//								else
-//									return;
-//
-//								notify = dlg.getNotify();
-//							}
-//							
-//						}
-//
-//						// Mark the order as ...
-//						markOrderAs(uds, progress, comment, notify);
+    @Execute
+	public void run(@Active MPart activePart,
+            @Named(PARAM_STATUS) String status,
+            @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+
+        OrderState progress = OrderState.NONE;
+        progress = OrderState.valueOf(status);
+        @SuppressWarnings("rawtypes")
+        AbstractViewDataTable currentListtable = (AbstractViewDataTable)activePart.getObject();
+        Document uds = (Document)currentListtable.getSelectedObject();
+						// Get the document
+						// and the type of the document
+						DocumentType documentType = DocumentType.findByKey(uds.getBillingType().getValue());
+
+						// Exit, if it was not an order
+						if (documentType != DocumentType.ORDER)
+							return;
+
+						String comment = "";
+						boolean notify = false;
+
+						// Notify the customer only if the web shop is enabled
+						if (eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
+							if (progress == OrderState.PROCESSING && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_NOTIFY_PROCESSING, Boolean.FALSE)
+									|| (progress == OrderState.SHIPPED && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_NOTIFY_SHIPPED, Boolean.FALSE))) {
+						        
+//						        MDialog dlg = (MDialog)modelService.find("com.sebulli.fakturama.dialog.orderstatus", application);
+//						        dlg.setVisible(true);
+//						        modelService.bringToTop(dlg);
+							    
+							    OrderStatusDialog dlg = new OrderStatusDialog(parent, msg);
+							    
+								if (dlg.open() == Window.OK) {
+
+									// User clicked OK; update the label with the input
+									try {
+										// Encode the comment to send it via HTTP POST request
+										comment = java.net.URLEncoder.encode(dlg.getComment(), "UTF-8");
+									}
+									catch (UnsupportedEncodingException e) {
+										log.error(e, "Error encoding comment.");
+										comment = "";
+									}
+								}
+								else
+									return;
+
+								notify = dlg.getNotify();
+							}
+							
+						}
+
+						// Mark the order as ...
+				        markOrderAs(parent, uds, progress, comment, notify, activePart.getContext());
 //
 //						// Refresh the table with orders.
 //						view.refresh();
 //
-//					}
-//				}
-//			}
-//		}
 	}
 }
