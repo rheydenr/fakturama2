@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="RoundedMoney Amount Factory Provider">
+   <implementation class="org.javamoney.moneta.internal.RoundedMoneyAmountFactoryProvider"/>
+   <service>
+      <provide interface="javax.money.spi.MonetaryAmountFactoryProviderSpi"/>
+   </service>
+</scr:component>
