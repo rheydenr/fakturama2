@@ -45,11 +45,13 @@
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_jCvIELPLEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.removeref" visible="false" label="%main.menu.edit.removeinvoicereference" iconURI="icon://COMMAND_REMOVE_INVOICEREF">
                     <tags>deliveryActive</tags>
                   </children>
-                  <children xsi:type="menu:HandledMenuItem" xmi:id="_4KxxcLPOEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasunpaid" visible="false" label="%main.menu.edit.markasunpaid" iconURI="icon://COMMAND_ERROR" command="_Yv5ssEEUEeSEOrX6Mzhm6Q">
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_4KxxcLPOEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasunpaid" visible="false" label="%main.menu.edit.markasunpaid" iconURI="icon://COMMAND_ERROR" command="_EcW7AEEUEeSEOrX6Mzhm6Q">
                     <tags>canBePaidActive</tags>
+                    <parameters xmi:id="_h5q9ULYzEeS5rIeEw_qxwQ" elementId="com.sebulli.fakturama.rcp.parameter.36" name="com.sebulli.fakturama.command.document.markas.state" value="UNPAID"/>
                   </children>
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_TspngLPOEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspaid" visible="false" label="%main.menu.edit.markaspaid" iconURI="icon://COMMAND_CONFIRMATION" command="_EcW7AEEUEeSEOrX6Mzhm6Q">
                     <tags>canBePaidActive</tags>
+                    <parameters xmi:id="_j-bDULYzEeS5rIeEw_qxwQ" elementId="com.sebulli.fakturama.rcp.parameter.37" name="com.sebulli.fakturama.command.document.markas.state" value="PAID"/>
                   </children>
                   <children xsi:type="menu:MenuSeparator" xmi:id="_ZDzzELPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.menuseparator.6"/>
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_OBxvsK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup.addnewletter" label="%main.menu.new.letter" iconURI="icon://COMMAND_LETTER" tooltip="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
@@ -201,9 +203,11 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_UKnaEEgCEeO7mNzAwIZUXQ" elementId="menu:main.menu.edit.delete.id" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Y608kEgJEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ofrxkEgJEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markaspaid.id" label="%main.menu.edit.markaspaid" iconURI="icon://COMMAND_CHECKED" tooltip="" command="_EcW7AEEUEeSEOrX6Mzhm6Q">
-          <parameters xmi:id="_RIoGMENtEeSkjYQl_biqUA" elementId="main.menu.edit.markaspaid.parameter" name="com.sebulli.fakturama.command.markas" value="PAID"/>
+          <parameters xmi:id="_RIoGMENtEeSkjYQl_biqUA" elementId="main.menu.edit.markaspaid.param" name="com.sebulli.fakturama.command.document.markas.state" value="PAID"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_G3IRIEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markasunpaid.id" label="%main.menu.edit.markasunpaid" iconURI="icon://COMMAND_ERROR" tooltip="" command="_Yv5ssEEUEeSEOrX6Mzhm6Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_G3IRIEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markasunpaid.id" label="%main.menu.edit.markasunpaid" iconURI="icon://COMMAND_ERROR" tooltip="" command="_EcW7AEEUEeSEOrX6Mzhm6Q">
+          <parameters xmi:id="_zUZzALYsEeS5rIeEw_qxwQ" elementId="com.sebulli.fakturama.rcp.parameter.35" name="com.sebulli.fakturama.command.document.markas.state" value="UNPAID"/>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_OnpnIEgKEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.2"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_QK_CIEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markaspending.id" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_bFPksLPZEeS-Jtapb6hhEg">
           <parameters xmi:id="_Tksu8LPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.30" name="com.sebulli.fakturama.command.order.markas.progress" value="PENDING"/>
@@ -303,8 +307,7 @@
   <handlers xmi:id="_JQthYDxfEeS-t56iKjyYpA" elementId="com.sebulli.fakturama.handler.webShopImportManager" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.webshopimport.WebShopImportManager" command="_-hDgwDxeEeS-t56iKjyYpA"/>
   <handlers xmi:id="_h5-B0EOAEeSkjYQl_biqUA" elementId="com.sebulli.fakturama.handler.openCalculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenCalculatorHandler" command="_-UipAEy_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_TsyuYG3mEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ErrorViewHandler" command="_VpeoEG3nEeS8E6Dq10mFSA"/>
-  <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markaspaid" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
-  <handlers xmi:id="_7FowcK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markasunpaid" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_Yv5ssEEUEeSEOrX6Mzhm6Q"/>
+  <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
@@ -377,14 +380,11 @@
   <commands xmi:id="_ayiaoCDaEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.command.delete" commandName="%main.menu.edit.delete.name" description="delete a selected entry" category="_ck9sUCTREeS9z6SQNducwg">
     <parameters xmi:id="_h6jJsCDbEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.cmddelparam.objId" name="object id"/>
   </commands>
-  <commands xmi:id="_EcW7AEEUEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markaspaid" commandName="%main.menu.edit.markaspaid" description="marks an document as &quot;paid&quot;" category="_ck9sUCTREeS9z6SQNducwg">
-    <parameters xmi:id="_d8-uMEEXEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.markas" name="PAID"/>
+  <commands xmi:id="_EcW7AEEUEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markaspaid" commandName="mark document as..." description="mark document as (paid or unpaid)" category="_ck9sUCTREeS9z6SQNducwg">
+    <parameters xmi:id="_d8-uMEEXEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markas.state" name="Paid or unpaid indicator" optional="false"/>
   </commands>
-  <commands xmi:id="_Yv5ssEEUEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markasunpaid" commandName="%main.menu.edit.markasunpaid" description="marks a document as &quot;unpaid&quot;" category="_ck9sUCTREeS9z6SQNducwg">
-    <parameters xmi:id="_CpsGsEEYEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markasunpaid.param1" name="UNPAID"/>
-  </commands>
-  <commands xmi:id="_bFPksLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas" commandName="mark order as..." description="mark order as...">
-    <parameters xmi:id="_hNiYoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId=""/>
+  <commands xmi:id="_bFPksLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas" commandName="mark order as..." description="mark order as..." category="_ck9sUCTREeS9z6SQNducwg">
+    <parameters xmi:id="_hNiYoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="" optional="false"/>
   </commands>
   <commands xmi:id="_VpeoEG3nEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.command" commandName="Show error view"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

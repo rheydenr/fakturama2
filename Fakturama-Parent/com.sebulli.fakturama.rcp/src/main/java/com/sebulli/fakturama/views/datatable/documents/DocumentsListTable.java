@@ -7,13 +7,14 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -151,9 +152,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     @Inject
     private EModelService modelService;
-    
-    @Inject
-    private ECommandService commandService;
    
     private static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
     private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
@@ -168,7 +166,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private SelectionLayer selectionLayer;
 
     private ContactUtil contactUtil;
-    private IEclipseContext context;
 
     private MPart listTablePart;
 
@@ -177,7 +174,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         log.info("create Document list part");
         top = super.createPartControl(parent, Document.class, false, true, ID);
         listTablePart = (MPart) modelService.find(ID, application);
-        this.context = context;
+//        this.context = context;
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -223,15 +220,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     
                     //transform the NatTable row position to the row position of the body layer stack
                     int bodyRowPos = LayerUtil.convertRowPosition(natTable, cellEvent.getRowPosition(), gridLayer.getBodyDataLayer());
-                    // extract the selected Object
-                    Document selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-                    
-                    // Set the transaction and the contact filter
-                    if (selectedObject != null) {
-                        if(selectedObject.getTransactionId() != null) {
-                            topicTreeViewer.setTransaction(selectedObject.getTransactionId());
+                    if(bodyRowPos > -1) {
+                        // extract the selected Object
+                        Document selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                        
+                        // Set the transaction and the contact filter
+                        if (selectedObject != null) {
+                            if(selectedObject.getTransactionId() != null) {
+                                topicTreeViewer.setTransaction(selectedObject.getTransactionId());
+                            }
+                            topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getContact());
+                            changePopupEntries(null);
                         }
-                        topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getContact());
                     }
                 }
             }
@@ -369,6 +369,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
         RowSelectionModel<Document> selectionModel = new RowSelectionModel<Document>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
+        selectionModel.setMultipleSelectionAllowed(true);
 //         Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Document>());
 
@@ -713,15 +714,24 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     }
     
     @Override
-    public Document getSelectedObject() {
-        Document selectedObject = null;
+    public Document[] getSelectedObjects() {
+        List<Document> selectedObjects = new ArrayList<>();
         int[] fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
         if(fullySelectedRowPositions.length > 0 && fullySelectedRowPositions[0] > -1) {
-            selectedObject = gridLayer.getBodyDataProvider().getRowObject(fullySelectedRowPositions[0]);
+            for (int i = 0; i < fullySelectedRowPositions.length; i++) {
+                selectedObjects.add(gridLayer.getBodyDataProvider().getRowObject(fullySelectedRowPositions[i]));
+            }
         } else {
             log.debug("no rows selected!");
         }
-        return selectedObject;
+        return selectedObjects.toArray(new Document[selectedObjects.size()]);
+    }
+    
+    
+    @Override
+    public Document getSelectedObject() {
+        Document[] selectedObjects = getSelectedObjects();
+        return selectedObjects != null && selectedObjects.length > 0 ? selectedObjects[0] : null;
     }
 
     protected String getPopupId() {

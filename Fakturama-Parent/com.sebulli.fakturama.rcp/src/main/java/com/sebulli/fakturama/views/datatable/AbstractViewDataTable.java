@@ -333,9 +333,16 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     }
 
     /**
+     * Returns the actually marked rows in a table. Can be overwritten.
+     * 
+     * @return selected rows in a list table
+     */
+    public T[] getSelectedObjects() { return null; }
+    
+    /**
      * Returns the actually marked document in a table. Can be overwritten. May return <code>null</code>!
      * 
-     * @return
+     * @return selected row in a list table
      */
     public T getSelectedObject() { return null;}
     

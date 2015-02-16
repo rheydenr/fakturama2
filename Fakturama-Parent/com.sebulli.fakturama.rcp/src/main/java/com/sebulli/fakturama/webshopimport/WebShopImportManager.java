@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -585,7 +586,7 @@ public class WebShopImportManager {
                     Files.createFile(logFile);
     
                     // Create a buffered writer to write the imported data to the file system
-                    logBuffer = Files.newBufferedWriter(logFile);
+                    logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"));
                 }
 
 				// 4. Get the instance of the required JAXB Root Class from the

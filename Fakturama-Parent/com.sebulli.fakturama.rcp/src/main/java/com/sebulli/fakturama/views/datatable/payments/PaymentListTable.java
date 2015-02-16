@@ -25,7 +25,6 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -96,8 +95,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     private Logger log;
 
 //    this is for synchronizing the UI thread
-    @Inject    
-    private UISynchronize synch;
+//    @Inject    
+//    private UISynchronize synch;
 
     // ID of this view
     public static final String ID = "fakturama.views.paymentTable";

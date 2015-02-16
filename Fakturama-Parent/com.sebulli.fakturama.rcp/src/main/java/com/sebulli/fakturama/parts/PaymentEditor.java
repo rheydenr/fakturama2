@@ -48,8 +48,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import ca.odell.glazedlists.EventList;
-
 import com.sebulli.fakturama.dao.AccountDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -87,8 +85,8 @@ public class PaymentEditor extends Editor<Payment> {
     @Preference
     private IEclipsePreferences preferences;
     
-    private EventList<Payment> paymentListData;
-    private EventList<Account> categories;
+//    private EventList<Payment> paymentListData;
+//    private EventList<Account> categories;
 
     @Inject
     private PaymentsDAO paymentsDAO;
