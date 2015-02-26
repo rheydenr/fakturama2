@@ -106,15 +106,12 @@ public class ShippingCategoriesDAO extends AbstractDAO<ShippingCategory> {
                     ShippingCategory newCategory = new ShippingCategory();
                     newCategory.setName(splittedCategories[i]);
                     newCategory.setParent(parentCategory);
-//                    save(newCategory);
+                    newCategory = save(newCategory);
                     searchCat = newCategory;
                 }
                 // save the parent and then dive deeper...
                 parentCategory = searchCat;
             } 
-            if(!getEntityManager().contains(parentCategory)) {
-                parentCategory = save(parentCategory);
-            }
         }
         catch (SQLException e) {
             // TODO Auto-generated catch block

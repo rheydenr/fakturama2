@@ -25,12 +25,16 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
+import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Order;
+import com.sebulli.fakturama.model.ReceiptVoucher;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -153,6 +157,48 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                         msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.INVOICE)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
+                resultList.addAll(cats);
+            }
+            
+            // Dunnings
+            if (document.getName().contentEquals(Dunning.class.getName())) {
+                // add dunning documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.DUNNING,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DUNNING)),
+                        msg.documentOrderStateUnpaid,
+                        msg.documentOrderStatePaid);
+                resultList.addAll(cats);
+            }
+            
+            // Deliveries
+            if (document.getName().contentEquals(Delivery.class.getName())) {
+                // add dunning documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.DELIVERY,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DELIVERY)),
+                        msg.documentDeliveryStateHasinvoice,
+                        msg.documentDeliveryStateHasnoinvoice);
+                resultList.addAll(cats);
+            }
+            
+            // Credits
+            if (document.getName().contentEquals(ReceiptVoucher.class.getName())) {
+                // add credit documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.CREDIT,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.CREDIT)),
+                        msg.documentOrderStateUnpaid,
+                        msg.documentOrderStatePaid);
+                resultList.addAll(cats);
+            }
+            
+            // Letters
+            if (document.getName().contentEquals(Letter.class.getName())) {
+                // add letter documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.LETTER,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.LETTER)));
                 resultList.addAll(cats);
             }
         }

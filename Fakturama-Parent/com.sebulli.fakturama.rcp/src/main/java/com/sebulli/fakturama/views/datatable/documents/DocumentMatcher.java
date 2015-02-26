@@ -28,6 +28,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  *
  */
 public class DocumentMatcher implements Matcher<Document> {
+    private static final String NO_SELECTION_ROOT = "/---";
     final String documentCategoryName;
     final boolean isRootNode;
     private final TreeObjectType treeObjectType;
@@ -62,9 +63,9 @@ public class DocumentMatcher implements Matcher<Document> {
         if(!isRootNode) {
             if(treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
                 // treat the filter as a transaction ID
-                found = documentCategoryName.contentEquals("/---") || item.getTransactionId() == parsedTransactionId;
+                found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || item.getTransactionId() == parsedTransactionId;
             } else if(treeObjectType == TreeObjectType.CONTACTS_ROOTNODE) {
-                found = documentCategoryName.contentEquals("/---") || StringUtils.equals(item.getAddressFirstLine(), documentCategoryName);
+                found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || StringUtils.equals(item.getAddressFirstLine(), documentCategoryName);
             } else {
                 DocumentType docType = DocumentType.findDocumentTypeByClass(item.getClass());
                 if (docType != null) {
@@ -75,16 +76,18 @@ public class DocumentMatcher implements Matcher<Document> {
     //                    return Icon.ICON_OFFER;
                     case ORDER:
                         String fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-                        if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals("/---")) {
+                        if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {
                             found = true;
                         }
-                         break;
-                        
-    //                    return Icon.ICON_ORDER;
+                        break;
     //                case CONFIRMATION:
     //                    return Icon.ICON_CONFIRMATION;
-    //                case INVOICE:
-    //                    return Icon.ICON_INVOICE;
+                    case INVOICE:
+                        fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
+                        if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {
+                            found = true;
+                        }
+                        break;
     //                case DELIVERY:
     //                    return Icon.ICON_DELIVERY;
     //                case CREDIT:

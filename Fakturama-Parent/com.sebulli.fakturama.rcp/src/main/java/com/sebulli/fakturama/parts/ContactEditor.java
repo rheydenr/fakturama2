@@ -67,6 +67,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Address_;
+import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
@@ -782,7 +783,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelAccountHolder.setText(msg.commonFieldAccountholder);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccountHolder);
 		txtAccountHolder = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtAccountHolder, Contact_.accountHolder.getName(), 64);
+		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccountHolder);
 
 		// Account number
@@ -791,7 +792,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelAccount.setText(msg.editorContactFieldAccountnumberName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
 		txtAccount = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtAccount, Contact_.account.getName(), 32);
+		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.account.getName(), 32);
 		txtAccount.setEnabled(false);
 		txtAccount.setToolTipText(msg.editorContactFieldAccountnumberDisabledinfo);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
@@ -804,7 +805,7 @@ public class ContactEditor extends Editor<Contact> {
 		txtBankCode = new Text(tabBank, SWT.BORDER);
 		txtBankCode.setToolTipText(msg.editorContactFieldBankcodeDisabledinfo);
 		txtBankCode.setEnabled(false);
-		bindModelValue(editorContact, txtBankCode, Contact_.bankCode.getName(), 32);
+		bindModelValue(editorContact, txtBankCode, Contact_.bankAccount.getName() +"." +BankAccount_.bankCode.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
 
 		// Name of the bank
@@ -813,7 +814,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelBankName.setText(msg.editorContactFieldBankName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankName);
 		txtBankName = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtBankName, Contact_.bankName.getName(), 64);
+		bindModelValue(editorContact, txtBankName, Contact_.bankAccount.getName() +"." +BankAccount_.bankName.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankName);
 
 		// IBAN Bank code
@@ -822,7 +823,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelIBAN.setText(msg.exporterDataIban);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelIBAN);
 		txtIBAN = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtIBAN, Contact_.iban.getName(), 32);
+		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtIBAN);
 
 		// BIC
@@ -831,7 +832,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelBIC.setText(msg.exporterDataBic);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBIC);
 		txtBIC = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtBIC, Contact_.bic.getName(), 32);
+		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBIC);
         
         // Customer's Mandat reference

@@ -756,7 +756,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     retval = msg.documentOrderStateInprogress;
                     break;
                 case COMMAND_CHECKED:
-                    retval = msg.documentOrderStateClosed;
+                    retval = msg.documentOrderStatePaid;
+//                    retval = msg.documentOrderStateClosed;
+                    break;
+                case COMMAND_ERROR:
+                    retval = msg.documentOrderStateUnpaid;
                     break;
                 default:
                     break;

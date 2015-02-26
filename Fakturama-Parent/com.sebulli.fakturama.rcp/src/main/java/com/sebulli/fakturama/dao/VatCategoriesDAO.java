@@ -120,7 +120,7 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
 
 	/**
 	 * Find a {@link VATCategory} by its name. If one of the part categories doesn't exist we create it 
-	 * (if withPersistOption is set).
+	 * (if {@code withPersistOption} is set to <code>true</code>).
 	 * 
 	 * @param testCat the category to find
 	 * @param withPersistOption persist a (part) category if it doesn't exist
@@ -141,7 +141,7 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
                     VATCategory newCategory = new VATCategory();
                     newCategory.setName(splittedCategories[i]);
                     newCategory.setParent(parentCategory);
-                    save(newCategory);
+                    newCategory = save(newCategory);
                     searchCat = newCategory;
                 }
                 // save the parent and then dive deeper...

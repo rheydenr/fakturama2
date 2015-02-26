@@ -100,7 +100,7 @@
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
           <entityListeners>
-            <entityListener class="com.sebulli.fakturama.model.EntityListener"/>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
           </entityListeners>
         </entity>
       </eClassAnnotations>
@@ -252,6 +252,12 @@
         <eAttribute href="Fakturama.ecore#//Contact/mandateReference"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The mandate reference for this contact (which in this case is a customer). Used for SEPA direct debit." name="mandateReference" getter="getMandateReference" defaultValue="null" setter="setMandateReference" validJavaMemberName="mandateReference" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.4/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//Contact/bankAccount"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_BANKACCOUNT"/>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//ContactCategory"/>
@@ -270,7 +276,7 @@
           <table name="FKT_DOCUMENT"/>
           <inheritance strategy="JOINED"/>
           <entityListeners>
-            <entityListener class="com.sebulli.fakturama.model.EntityListener"/>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
           </entityListeners>
         </entity>
       </eClassAnnotations>

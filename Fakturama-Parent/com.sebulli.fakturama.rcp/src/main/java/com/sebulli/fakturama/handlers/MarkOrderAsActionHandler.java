@@ -271,10 +271,6 @@ public class MarkOrderAsActionHandler {
 
             // Mark the order as ...
             markOrderAs(parent, document, progress, comment, notify, activePart.getContext());
-            //
-            //						// Refresh the table with orders.
-            //						view.refresh();
-            //
         }
     }
 }

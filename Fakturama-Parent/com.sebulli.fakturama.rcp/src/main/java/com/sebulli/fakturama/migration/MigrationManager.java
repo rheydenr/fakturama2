@@ -17,12 +17,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,15 +60,19 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
+import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
+import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.i18n.Messages;
@@ -73,27 +80,20 @@ import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
-import com.sebulli.fakturama.model.Confirmation;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.Credit;
-import com.sebulli.fakturama.model.Delivery;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
-import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
-import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.ItemAccountType;
-import com.sebulli.fakturama.model.Letter;
-import com.sebulli.fakturama.model.Offer;
-import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
-import com.sebulli.fakturama.model.Proforma;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucherItem;
 import com.sebulli.fakturama.model.ReliabilityType;
@@ -150,15 +150,24 @@ public class MigrationManager {
 	 * all available DAO classes
 	 */
 	private ContactsDAO contactDAO;
+	private ContactCategoriesDAO contactCategoriesDAO;
 	private DocumentsDAO documentDAO;
 	private ExpendituresDAO expendituresDAO;
 	private PaymentsDAO paymentsDAO;
 	private ProductsDAO productsDAO;
+	private ProductCategoriesDAO productCategoriesDAO;
 	private PropertiesDAO propertiesDAO;
 	private ReceiptVouchersDAO receiptVouchersDAO;
 	private ShippingsDAO shippingsDAO;
+	private ShippingCategoriesDAO shippingCategoriesDAO;
 	private TextsDAO textDAO;
 	private VatsDAO vatsDAO;
+	private VatCategoriesDAO vatCategoriesDAO;
+	
+	/**
+	 * the model factory
+	 */
+	private FakturamaModelFactory modelFactory;
 	
 	// These Maps are for assigning the old entities to the new one (needed for lookup)
 	private Map<Integer, Long> newContacts = new HashMap<Integer, Long>();
@@ -172,9 +181,10 @@ public class MigrationManager {
 	 */
 	private OldEntitiesDAO oldDao;
 
-	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private String generalWorkspace = null;
 	private IApplicationContext appContext;
+    private final GregorianCalendar zeroDate;
 
 	/**
      * @param context
@@ -189,9 +199,12 @@ public class MigrationManager {
         this.eclipsePrefs = eclipsePrefs; //context.get(IEclipsePreferences.class);
         this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
         this.msg = msg;
+        this.modelFactory = new FakturamaModelFactory();
+        zeroDate = new GregorianCalendar(2000, 0, 1);
     }
 
     public MigrationManager() {
+        zeroDate = new GregorianCalendar(2000, 0, 1);
 	}
 
 	/**
@@ -215,14 +228,18 @@ public class MigrationManager {
 		// initialize DAOs via EclipseContext
 		// new Entities have their own dao ;-)
 		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
+		contactCategoriesDAO = ContextInjectionFactory.make(ContactCategoriesDAO.class, context);
 		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
 		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
 		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
 		paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
 		productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
+		productCategoriesDAO = ContextInjectionFactory.make(ProductCategoriesDAO.class, context);
 		receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
 		shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
+		shippingCategoriesDAO = ContextInjectionFactory.make(ShippingCategoriesDAO.class, context);
 		vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
+        vatCategoriesDAO = ContextInjectionFactory.make(VatCategoriesDAO.class, context);
 		textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
 
 		// old entities only have one DAO for all entities
@@ -274,24 +291,6 @@ public class MigrationManager {
 				public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
 					eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
 					eclipsePrefs.flush();
-			
-					// initialize DAOs via EclipseContext
-					// new Entities have their own dao ;-)
-					
-					// TODO checken, ob das wirklich sein muß (zweimal initialisieren???)
-					contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
-					documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
-					propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
-					expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
-					paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
-					productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
-					receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
-					shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
-					vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
-					textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
-			
-					// old entities only have one DAO for all entities
-					oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
 			
 					// now start a ProgressMonitorDialog for tracing the progress of migration
 					ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
@@ -406,7 +405,7 @@ public class MigrationManager {
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		for (OldProducts oldProduct : oldDao.findAllProducts()) {
 			try {
-				Product product = new Product();
+				Product product = modelFactory.createProduct();
 				product.setBlock1(oldProduct.getBlock1());
 				product.setBlock2(oldProduct.getBlock2());
 				product.setBlock3(oldProduct.getBlock3());
@@ -417,7 +416,7 @@ public class MigrationManager {
 				product.setDescription(oldProduct.getDescription());
 				if(StringUtils.isNotBlank(oldProduct.getCategory()) && productCategories.containsKey(oldProduct.getCategory())) {
 					// add it to the new entity
-					product.addToCategories(productCategories.get(oldProduct.getCategory()));
+					product.addToCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
 				}
 				product.setItemNumber(oldProduct.getItemnr());
 				product.setName(oldProduct.getName());
@@ -432,12 +431,15 @@ public class MigrationManager {
 				product.setQuantityUnit(oldProduct.getQunit());
 				product.setSellingUnit(oldProduct.getUnit());
 				// find the VAT entry
-				VAT newVat = vatsDAO.findById(newVats.get(oldProduct.getVatid()));
-				product.setVat(newVat);
+				Long vatId = newVats.get(oldProduct.getVatid());
+				if(vatId != null) {
+				    VAT newVat = vatsDAO.findById(vatId);
+				    product.setVat(newVat);
+				}
 				product.setWebshopId(new Long(oldProduct.getWebshopid()));
 				product.setWeight(oldProduct.getWeight());
 				
-				productsDAO.save(product);
+				product = productsDAO.save(product);
 				newProducts.put(oldProduct.getId(), product.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -491,42 +493,41 @@ public class MigrationManager {
 		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigration);
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
 		Map<Integer, Document> invoiceDocuments = new HashMap<>();
-		GregorianCalendar zeroDate = new GregorianCalendar(2000, 0, 1);
-//		CategoryBuilder<DocumentItemCategory> catBuilder = new CategoryBuilder<DocumentItemCategory>(); 
+		//		CategoryBuilder<DocumentItemCategory> catBuilder = new CategoryBuilder<DocumentItemCategory>(); 
 //		Map<String, DocumentItemCategory> documentItemCategories = catBuilder.buildCategoryMap(oldDao.findAllDocumentItemCategories(), DocumentItemCategory.class);
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
 				Document document;
 				switch (BillingType.get(oldDocument.getCategory())) {
                 case INVOICE:
-                    document = new Invoice();
+                    document = modelFactory.createInvoice();
                     break;
                 case LETTER:
-                    document = new Letter();
+                    document = modelFactory.createLetter();
                     break;
                 case ORDER:
-                    document = new Order();
+                    document = modelFactory.createOrder();
                     break;
                 case OFFER:
-                    document = new Offer();
+                    document = modelFactory.createOffer();
                     break;
                 case CONFIRMATION:
-                    document = new Confirmation();
+                    document = modelFactory.createConfirmation();
                     break;
                 case CREDIT:
-                    document = new Credit();
+                    document = modelFactory.createCredit();
                     break;
                 case DUNNING:
-                    document = new Dunning();
+                    document = modelFactory.createDunning();
                     break;
                 case DELIVERY:
-                    document = new Delivery();
+                    document = modelFactory.createDelivery();
                     break;
                 case PROFORMA:
-                    document = new Proforma();
+                    document = modelFactory.createProforma();
                     break;
                 default:
-                    document = new Invoice();
+                    document = modelFactory.createOrder();
                     break;
                 }
 //				// save it for further use
@@ -595,15 +596,20 @@ public class MigrationManager {
 				
 				document.setOrderDate(getSaveParsedDate(oldDocument.getOrderdate()));
 				document.setServiceDate(getSaveParsedDate(oldDocument.getServicedate()));
-				// if "paydate" is set and *NOT* 2000-01-01 then the document is paid - we don't need a "paid" flag
+				// if "paydate" is set and *NOT* 2000-01-01 then the document is paid
+				// the "Mark as paid" command could change this state, too. Therefore we need an extra attribute.
+				document.setPaid(oldDocument.isPaid());
 				Date payDate = getSaveParsedDate(oldDocument.getPaydate());
 				if(payDate.compareTo(zeroDate.getTime()) != 0) {
 					document.setPayDate(payDate);
 				}
 				
 				// get payment reference
-				Payment newPayment = paymentsDAO.findById(newPayments.get(oldDocument.getPaymentid()));
-				document.setPayment(newPayment);
+				Long paymentId = newPayments.get(oldDocument.getPaymentid());
+				if(paymentId != null) {
+                    Payment newPayment = paymentsDAO.findById(paymentId);
+    				document.setPayment(newPayment);
+				}
 				document.setPayedValue(oldDocument.getPayvalue());
 				document.setTotalValue(oldDocument.getTotal());
 				document.setTransactionId(new Long(oldDocument.getTransaction()));
@@ -628,7 +634,7 @@ public class MigrationManager {
 		for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
 			try {
 				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
-				Document document = (Document) invoiceRelevantDocuments.get(oldDocument.getId());
+				Document document = invoiceRelevantDocuments.get(oldDocument.getId());
 				// now find the corresponding NEW document
 				Document relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
@@ -652,7 +658,7 @@ public class MigrationManager {
 	private void createItems(Document document, String[] itemRefs) {
 		for (String itemRef : itemRefs) {
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
-			DocumentItem item = new DocumentItem();
+			DocumentItem item = modelFactory.createDocumentItem();
 //						if(StringUtils.isNotBlank(oldItem.getCategory()) && documentItemCategories.containsKey(oldItem.getCategory())) {
 //							// add it to the new entity
 //							item.addToCategories(documentItemCategories.get(oldItem.getCategory()));
@@ -662,9 +668,10 @@ public class MigrationManager {
 			item.setItemNumber(oldItem.getItemnr());
 			item.setName(oldItem.getName());
 			// find the VAT entry
-			VAT vatRef = vatsDAO.findById(newVats.get(oldItem.getVatid()));
+			Long vatId = newVats.get(oldItem.getVatid());
+            VAT vatRef = vatId != null ?  vatsDAO.findById(vatId) : null;
 			if(vatRef == null) {
-				log.error("no entry for " + oldItem.getVatname() + " found. (old) Item ID=" + oldItem.getId());
+				log.error("no VAT " + oldItem.getVatname() + " entry for an item found. (old) Item ID=" + oldItem.getId());
 			} else {
 				item.setItemVat(vatRef);
 			}
@@ -700,19 +707,23 @@ public class MigrationManager {
 		for (OldContacts oldContact : oldDao.findAllContacts()) {
 			try {
 				Contact contact = createBaseContactFromOldContact(false, oldContact);
-				contact.setAccount(oldContact.getAccount());
-				contact.setAccountHolder(oldContact.getAccountHolder());
-				
-				if(StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
-					contact.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", "")));  // could run into trouble if bankCode contains spaces
-				}
-				contact.setBankName(oldContact.getBankName());
-				contact.setBic(oldContact.getBic());
+                if (StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
+                    BankAccount bankAccount = modelFactory.createBankAccount();
+                    bankAccount.setAccount(oldContact.getAccount());
+                    bankAccount.setAccountHolder(oldContact.getAccountHolder());
+
+                    bankAccount.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", ""))); // could run into trouble if bankCode contains spaces
+                    bankAccount.setBankName(oldContact.getBankName());
+                    bankAccount.setIban(oldContact.getIban());
+                    bankAccount.setBic(oldContact.getBic());
+                    contact.setBankAccount(bankAccount);
+                }
 				contact.setBirthday(getSaveParsedDate(oldContact.getBirthday()));
+//				contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
 				if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
 					// add it to the new entity
 //					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
-                    contact.setCategories(contactCategories.get(oldContact.getCategory()));
+                    contact.setCategories(contactCategoriesDAO.getCategory(oldContact.getCategory(), true));
 				}
 				contact.setCustomerNumber(oldContact.getNr());  // TODO check if it's correct
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
@@ -723,10 +734,11 @@ public class MigrationManager {
 				contact.setDiscount(oldContact.getDiscount());
 				contact.setEmail(oldContact.getEmail());
 				contact.setFax(oldContact.getFax());
-				contact.setIban(oldContact.getIban());
 				contact.setMobile(oldContact.getMobile());
 				contact.setNote(oldContact.getNote());
-				contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
+				if(oldContact.getPayment() > -1) {
+				    contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
+				}
 				contact.setPhone(oldContact.getPhone());
 				contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
 				contact.setSupplierNumber(oldContact.getSuppliernumber());
@@ -735,7 +747,7 @@ public class MigrationManager {
 				contact.setVatNumberValid(BooleanUtils.toBooleanObject(oldContact.getVatnrvalid()));
 				contact.setWebsite(oldContact.getWebsite());
 				contact.setMandateReference(oldContact.getMandatRef());
-				contactDAO.save(contact);
+				contact = contactDAO.save(contact);
 				
 				// store it for further using (only ID for memory saving)
 				newContacts.put(oldContact.getId(), contact.getId());
@@ -751,7 +763,7 @@ public class MigrationManager {
 	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
 		Contact contact = null;
 		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
-			contact = new Contact();
+			contact = modelFactory.createContact();
 			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
 			contact.setGender(isDeliveryAddress ? oldContact.getDeliveryGender() : oldContact.getGender());
@@ -759,7 +771,7 @@ public class MigrationManager {
 			contact.setTitle(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryTitle(), oldContact.getTitle()));
 			
 			// create address
-			Address address = new Address();
+			Address address = modelFactory.createAddress();
 			address.setStreet(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryStreet(), oldContact.getStreet()));
 			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
@@ -780,12 +792,15 @@ public class MigrationManager {
 	private Date getSaveParsedDate(String dateValue) {
 		Date retval = null;
 		if(StringUtils.isNotEmpty(dateValue)) {
-			try {
-				retval = sdf.parse(dateValue);
-			}
-			catch (ParseException e) {
-				log.error(String.format("error while parsing date value [%s]", dateValue));
-			}
+		    if(dateValue.length() < 11) {
+    			Optional<LocalDate> parsedDate = Optional.ofNullable(LocalDate.parse(dateValue));
+                retval = parsedDate.isPresent() ? Date.from(parsedDate.get().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()) : zeroDate.getTime();
+		    } else {
+		        // there're really entries such as '2014-12-27 21:16: 3' in the database... strange...
+		        String correctDateTime = dateValue.replaceAll(" ", "~").replaceFirst("~", "T").replaceAll("~", "0");
+		        Optional<LocalDateTime> parsedDateTime = Optional.ofNullable(LocalDateTime.parse(correctDateTime));
+                retval = parsedDateTime.isPresent() ? Date.from(parsedDateTime.get().atZone(ZoneId.systemDefault()).toInstant()) : zeroDate.getTime();
+		    }
 		}
 		return retval;
 	}
@@ -798,7 +813,7 @@ public class MigrationManager {
 		Map<String, ItemAccountType> receiptVoucherItemAccountTypes = buildItemAccountTypeMap(VOUCHERTYPE_RECEIPT);
 		for (OldReceiptvouchers oldReceiptvoucher : oldDao.findAllReceiptvouchers()) {
 			try {
-				ReceiptVoucher receiptVoucher = new ReceiptVoucher();
+				ReceiptVoucher receiptVoucher = modelFactory.createReceiptVoucher();
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getCategory()) && receiptVoucherAccounts.containsKey(oldReceiptvoucher.getCategory())) {
 					receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
 				}
@@ -807,8 +822,8 @@ public class MigrationManager {
 				receiptVoucher.setDocumentNumber(oldReceiptvoucher.getDocumentnr());
 				receiptVoucher.setDoNotBook(oldReceiptvoucher.isDonotbook());
 				if(StringUtils.isNotEmpty(oldReceiptvoucher.getDate())) {
-					Date receiptVoucherDate = sdf.parse(oldReceiptvoucher.getDate());
-					receiptVoucher.setReceiptVoucherDate(receiptVoucherDate);
+					LocalDate receiptVoucherDate = LocalDate.parse(oldReceiptvoucher.getDate());
+					receiptVoucher.setReceiptVoucherDate(Date.from(receiptVoucherDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
 				}
 				receiptVoucher.setReceiptVoucherNumber(oldReceiptvoucher.getNr());
 				// each Expenditure has its own items
@@ -816,7 +831,7 @@ public class MigrationManager {
 					String[] itemRefs = oldReceiptvoucher.getItems().split(",");
 					for (String itemRef : itemRefs) {
 						OldReceiptvoucheritems oldReceiptvoucherItem = oldDao.findReceiptvoucherItem(itemRef);
-						ReceiptVoucherItem item = new ReceiptVoucherItem();
+						ReceiptVoucherItem item = modelFactory.createReceiptVoucherItem();
 						item.setAccount(receiptVoucherItemAccountTypes.get(oldReceiptvoucherItem.getCategory()));
 						item.setName(oldReceiptvoucherItem.getName());
 						item.setPrice(oldReceiptvoucherItem.getPrice());
@@ -831,7 +846,7 @@ public class MigrationManager {
 				receiptVouchersDAO.save(receiptVoucher);
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | ParseException e) {
+			catch (SQLException e) {
 				log.error("error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
 			}
 		}
@@ -847,7 +862,7 @@ public class MigrationManager {
 		Map<String, ItemAccountType> expenditureItemAccountTypes = buildItemAccountTypeMap(VOUCHERTYPE_EXPENDITURE);
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
 			try {
-				Expenditure expenditure = new Expenditure();
+				Expenditure expenditure = modelFactory.createExpenditure();
 				if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
 					expenditure.setAccount(expenditureAccounts.get(oldExpenditure.getCategory()));
 				}
@@ -856,7 +871,8 @@ public class MigrationManager {
 				expenditure.setDocumentNumber(oldExpenditure.getDocumentnr());
 				expenditure.setDoNotBook(oldExpenditure.isDonotbook());
 				if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
-					Date expenditureDate = sdf.parse(oldExpenditure.getDate());
+				    LocalDate parsedDate = LocalDate.parse(oldExpenditure.getDate());
+					Date expenditureDate = Date.from(parsedDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 					expenditure.setExpenditureDate(expenditureDate);
 				}
 				expenditure.setExpenditureNumber(oldExpenditure.getNr());
@@ -865,7 +881,7 @@ public class MigrationManager {
 					String[] itemRefs = oldExpenditure.getItems().split(",");
 					for (String itemRef : itemRefs) {
 						OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
-						ExpenditureItem item = new ExpenditureItem();
+						ExpenditureItem item = modelFactory.createExpenditureItem();
 						item.setAccount(expenditureItemAccountTypes.get(oldExpenditureItem.getCategory()));
 						item.setName(oldExpenditureItem.getName());
 						item.setPrice(oldExpenditureItem.getPrice());
@@ -880,7 +896,7 @@ public class MigrationManager {
 				expendituresDAO.save(expenditure);
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | ParseException e) {
+			catch (SQLException e) {
 				log.error("error while migrating Expenditure. (old) ID=" + oldExpenditure.getId());
 			}
 		}
@@ -897,7 +913,7 @@ public class MigrationManager {
 			resultSet = oldDao.findAllReceiptVoucherItemCategories();
 		}
 		for (String oldVoucherItemCategory : resultSet) {
-			ItemAccountType itemAccountType = new ItemAccountType();
+			ItemAccountType itemAccountType = modelFactory.createItemAccountType();
 			itemAccountType.setName(oldVoucherItemCategory);
 			itemAccountTypes.put(oldVoucherItemCategory, itemAccountType);
 		}
@@ -914,7 +930,7 @@ public class MigrationManager {
 			resultSet = oldDao.findAllReceiptvoucherCategories();
 		}
 		for (String oldVoucherCategory : resultSet) {
-			Account account = new Account();
+			Account account = modelFactory.createAccount();
 			account.setName(oldVoucherCategory);
 			expenditureAccounts.put(oldVoucherCategory, account);
 		}
@@ -931,7 +947,7 @@ public class MigrationManager {
 		Map<String, Account> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), Account.class);
 		for (OldPayments oldPayment : oldDao.findAllPayments()) {
 			try {
-				Payment payment = new Payment();
+				Payment payment = modelFactory.createPayment();
 				payment.setName(oldPayment.getName());
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
@@ -946,7 +962,7 @@ public class MigrationManager {
 					// add it to the new entity
 					payment.setCategory(paymentCategories.get(oldPayment.getCategory()));
 				}
-				paymentsDAO.save(payment);
+				payment = paymentsDAO.save(payment);
 				newPayments.put(oldPayment.getId(), payment.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -972,7 +988,7 @@ public class MigrationManager {
 		Map<String, TextCategory> textCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllTextCategories(), TextCategory.class);
 		for (OldTexts oldTexts : oldDao.findAllTexts()) {
 			try {
-				TextModule text = new TextModule();
+				TextModule text = modelFactory.createTextModule();
 				text.setName(oldTexts.getName());
 				text.setText(oldTexts.getText());
 				text.setDeleted(Boolean.FALSE);
@@ -1005,16 +1021,17 @@ public class MigrationManager {
 		Map<String, VATCategory> vatCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllVatCategories(), VATCategory.class);
 		for (OldVats oldVat : oldDao.findAllVats()) {
 			try {
-				VAT vat = new VAT();
+				VAT vat = modelFactory.createVAT();
 				vat.setName(oldVat.getName());
-				vat.setTaxValue(oldVat.getValue());
+				vat.setTaxValue(roundValue(oldVat.getValue()));
 				vat.setDeleted(oldVat.isDeleted());
 				vat.setDescription(oldVat.getDescription());
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
-					vat.setCategory(vatCategoriesMap.get(oldVat.getCategory()));
+				    // get VatCategory from DAO since it may not be stored
+					vat.setCategory(vatCategoriesDAO.getCategory(oldVat.getCategory(), true));
 				}
-				vatsDAO.save(vat);
+				vat = vatsDAO.save(vat);
 				newVats.put(oldVat.getId(), vat.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -1039,21 +1056,21 @@ public class MigrationManager {
 		Map<String, ShippingCategory> shippingCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllShippingCategories(), ShippingCategory.class);
 		for (OldShippings oldShipping : oldDao.findAllShippings()) {
 			try {
-				Shipping shipping = new Shipping();
+				Shipping shipping = modelFactory.createShipping();
 				shipping.setName(oldShipping.getName());
-				shipping.setShippingValue(oldShipping.getValue());
-				shipping.setDeleted(oldShipping.isDeleted());
+				shipping.setShippingValue(roundValue(oldShipping.getValue()));
+				shipping.setDeleted(oldShipping.isDeleted());  // should be ALWAYS false!
 				shipping.setAutoVat(ShippingVatType.get(oldShipping.getAutovat()));
 				shipping.setDescription(oldShipping.getDescription());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
 					// add it to the new entity
 //					shipping.addToCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
-                    shipping.setCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
+                    shipping.setCategories(shippingCategoriesDAO.getCategory(oldShipping.getCategory(), true));
 				}
 				
 				VAT newVat = vatsDAO.findById(newVats.get(oldShipping.getVatid()));
 				shipping.setShippingVat(newVat);
-				shippingsDAO.save(shipping);
+				shipping = shippingsDAO.save(shipping);
 				newShippings.put(oldShipping.getId(), shipping.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -1081,7 +1098,7 @@ public class MigrationManager {
 	    
         for (OldProperties oldProperty : oldDao.findAllPropertiesWithoutColumnWidthProperties()) {
 			try {
-				UserProperty prop = new UserProperty();
+				UserProperty prop = modelFactory.createUserProperty();
 				prop.setName(oldProperty.getName());
 				String propValue = oldProperty.getValue();
 
@@ -1111,13 +1128,13 @@ public class MigrationManager {
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
            		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
-           		            log.info("The currency locale was set to " + currencyLocale.toLanguageTag()+". "
+           		            log.info("The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
            		        } else {
            		            // Since most of the Fakturama users are from Germany we choose "de/DE" as default locale.
-           		            log.error("Can't determine the currency locale. Please choose the right locale "
-           		                    + "in the general settings dialog. Locale is temporarily set to de/DE.");
            		            propValue = "de/DE";
+           		            log.error("Can't determine the currency locale. Please choose the right locale "
+           		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
            			}
                 	break;
@@ -1295,4 +1312,15 @@ public class MigrationManager {
 		if (monitor.isCanceled()) { throw new InterruptedException(); }
 	}
 
+	/**
+	 * Rounds a value up to 5 digits after decimal point.
+	 * 
+	 * @param value the value to round
+	 * @return rounded value
+	 */
+	private double roundValue(double value) {
+	     int scale = 5;
+	     BigDecimal b = new BigDecimal(value);
+	     return b.setScale(scale,BigDecimal.ROUND_HALF_UP).doubleValue();
+	}
 }

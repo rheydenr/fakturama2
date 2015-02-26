@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -102,7 +103,44 @@ public class ContactCategoriesDAO extends AbstractDAO<ContactCategory> {
         return result;
     }
     
- 
+
+    /**
+     * Find a {@link ContactCategory} by its name. If one of the part categories doesn't exist we create it 
+     * (if {@code withPersistOption} is set to <code>true</code>).
+     * 
+     * @param testCat the category to find
+     * @param withPersistOption persist a (part) category if it doesn't exist
+     * @return found category
+     */
+    public ContactCategory getCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        ContactCategory parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                ContactCategory searchCat = findContactCategoryByName(category);
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    ContactCategory newCategory = new ContactCategory();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+                    newCategory = save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return parentCategory;
+    }
+
 	/**
 	 * @return the em
 	 */

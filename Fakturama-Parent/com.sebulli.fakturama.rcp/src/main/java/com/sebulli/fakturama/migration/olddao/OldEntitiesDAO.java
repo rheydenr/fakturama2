@@ -120,11 +120,11 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [Shippings] * * * * * * * * * * * * * * * * * * * * * */ 
 	
 	public Long countAllShippings() {
-		return em.createQuery("select count(s) from OldShippings s", Long.class).getSingleResult();
+		return em.createQuery("select count(s) from OldShippings s where s.deleted = false", Long.class).getSingleResult();
 	}
 	
 	public List<OldShippings> findAllShippings() {
-		return em.createQuery("select s from OldShippings s", OldShippings.class).getResultList();
+		return em.createQuery("select s from OldShippings s where s.deleted = false", OldShippings.class).getResultList();
 	}
 	
 	public List<String> findAllShippingCategories() {
@@ -137,11 +137,11 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [VATs] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllVats() {
-		return em.createQuery("select count(v) from OldVats v", Long.class).getSingleResult();
+		return em.createQuery("select count(v) from OldVats v where v.deleted = false", Long.class).getSingleResult();
 	}
 	
 	public List<OldVats> findAllVats() {
-		return em.createQuery("select v from OldVats v", OldVats.class).getResultList();
+		return em.createQuery("select v from OldVats v where v.deleted = false", OldVats.class).getResultList();
 	}
 
 	public List<String> findAllVatCategories() {

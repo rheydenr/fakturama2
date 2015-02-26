@@ -89,8 +89,8 @@ public final class CommandIds {
 	public static final String CMD_WEBSHOP_IMPORT = "com.sebulli.fakturama.command.webShopImport";
 	public static final String CMD_WEBSHOP_IMPORT_MGR = "com.sebulli.fakturama.command.webShopImportManager";
 
-	public static final String CMD_MARK_ORDER_AS = "com.sebulli.fakturama.command.markOrderAs";
-	public static final String CMD_MARK_DOCUMENT_AS_PAID = "com.sebulli.fakturama.command.markDocumentAsPaid";
+	public static final String CMD_MARK_ORDER_AS = "com.sebulli.fakturama.command.order.markas";
+	public static final String CMD_MARK_DOCUMENT_AS = "com.sebulli.fakturama.command.document.markas";
 
 	public static final String CMD_IMPORT_CSV = "com.sebulli.fakturama.command.importCSV";
 
@@ -107,7 +107,7 @@ public final class CommandIds {
 	public static final String CMD_MOVE_UP = "com.sebulli.fakturama.command.moveEntryUp";
 	public static final String CMD_MOVE_DOWN = "com.sebulli.fakturama.command.moveEntryDown";
 	
-	public static final String CMD_REOGANIZE_DOCUMENTS = "com.sebulli.fakturama.command.reorganizeDocuments";
+	public static final String CMD_REORGANIZE_DOCUMENTS = "com.sebulli.fakturama.command.reorganizeDocuments";
 	
 	
 }

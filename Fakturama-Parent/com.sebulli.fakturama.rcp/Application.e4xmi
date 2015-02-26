@@ -380,7 +380,7 @@
   <commands xmi:id="_ayiaoCDaEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.command.delete" commandName="%main.menu.edit.delete.name" description="delete a selected entry" category="_ck9sUCTREeS9z6SQNducwg">
     <parameters xmi:id="_h6jJsCDbEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.cmddelparam.objId" name="object id"/>
   </commands>
-  <commands xmi:id="_EcW7AEEUEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markaspaid" commandName="mark document as..." description="mark document as (paid or unpaid)" category="_ck9sUCTREeS9z6SQNducwg">
+  <commands xmi:id="_EcW7AEEUEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markas" commandName="mark document as..." description="mark document as (paid or unpaid)" category="_ck9sUCTREeS9z6SQNducwg">
     <parameters xmi:id="_d8-uMEEXEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markas.state" name="Paid or unpaid indicator" optional="false"/>
   </commands>
   <commands xmi:id="_bFPksLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas" commandName="mark order as..." description="mark order as..." category="_ck9sUCTREeS9z6SQNducwg">

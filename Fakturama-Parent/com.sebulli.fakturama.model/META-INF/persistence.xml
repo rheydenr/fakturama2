@@ -7,6 +7,7 @@
 			<persistence:class>com.sebulli.fakturama.model.AbstractCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Account</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Address</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.BankAccount</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Contact</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ContactCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Document</persistence:class>
@@ -40,6 +41,9 @@
 			<persistence:class>com.sebulli.fakturama.model.UserProperty</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VAT</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
+			
+			<!--  later on we could use LocalDate; here we have to convert the values -->
+			<!--  persistence:class>com.sebulli.fakturama.model.LocalDateConverter</persistence:class -->
 		<persistence:exclude-unlisted-classes>true</persistence:exclude-unlisted-classes>
 		<persistence:properties>
 			<!-- update database automagically ;-)  -->

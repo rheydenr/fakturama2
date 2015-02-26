@@ -110,9 +110,6 @@ public class MarkDocumentAsPaidHandler {
                     }
                 }
             }
-            //	
-            //					// Refresh the table with orders.
-            //					view.refresh();
         }
     }
 }

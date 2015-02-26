@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.model;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -10,13 +11,13 @@ public class EntityListener {
 
     @PrePersist
     public void aboutToInsert(IEntity document) {
-        document.setDateAdded(Calendar.getInstance().getTime());
+        document.setDateAdded(Date.from(Instant.now()));
         document.setModifiedBy((String) EntityListener.currentUser.get());
     }
 
     @PreUpdate
     public void aboutToUpdate(IEntity document) {
-        document.setModified(Calendar.getInstance().getTime());
+        document.setModified(Date.from(Instant.now()));
         document.setModifiedBy((String) EntityListener.currentUser.get());
     }
 
