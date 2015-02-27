@@ -25,6 +25,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Confirmation;
+import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
@@ -33,8 +35,9 @@ import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Letter;
+import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
-import com.sebulli.fakturama.model.ReceiptVoucher;
+import com.sebulli.fakturama.model.Proforma;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -119,7 +122,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      */
     public String[] getVisibleProperties() {
         return new String[] { Document_.name.getName(), Document_.addressFirstLine.getName(), 
-                Document_.documentDate.getName(), Document_.totalValue.getName() };
+                Document_.serviceDate.getName(), Document_.totalValue.getName() };
     }
 
     /**
@@ -138,6 +141,23 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         List<Class<? extends Document>> typeList = q.getResultList();
         for (Class<? extends Document> document : typeList) {
             
+            // Letters
+            if (document.getName().contentEquals(Letter.class.getName())) {
+                // add letter documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.LETTER,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.LETTER)));
+                resultList.addAll(cats);
+            }
+            
+            if (document.getName().contentEquals(Offer.class.getName())) {
+                // add order documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.OFFER,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.OFFER)));
+                resultList.addAll(cats);
+            }
+            
             // Orders
             if (document.getName().contentEquals(Order.class.getName())) {
                 // add order documents
@@ -149,23 +169,20 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                 resultList.addAll(cats);
             }
             
+            if (document.getName().contentEquals(Confirmation.class.getName())) {
+                // add letter documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.CONFIRMATION,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.CONFIRMATION)));
+                resultList.addAll(cats);
+            }
+            
             // Invoices
             if (document.getName().contentEquals(Invoice.class.getName())) {
                 // add invoice documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.INVOICE,
                         msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.INVOICE)),
-                        msg.documentOrderStateUnpaid,
-                        msg.documentOrderStatePaid);
-                resultList.addAll(cats);
-            }
-            
-            // Dunnings
-            if (document.getName().contentEquals(Dunning.class.getName())) {
-                // add dunning documents
-                List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.DUNNING,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DUNNING)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
                 resultList.addAll(cats);
@@ -183,7 +200,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             }
             
             // Credits
-            if (document.getName().contentEquals(ReceiptVoucher.class.getName())) {
+            if (document.getName().contentEquals(Credit.class.getName())) {
                 // add credit documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.CREDIT,
@@ -193,14 +210,25 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                 resultList.addAll(cats);
             }
             
-            // Letters
-            if (document.getName().contentEquals(Letter.class.getName())) {
-                // add letter documents
+            // Dunnings
+            if (document.getName().contentEquals(Dunning.class.getName())) {
+                // add dunning documents
                 List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.LETTER,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.LETTER)));
+                        DocumentType.DUNNING,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DUNNING)),
+                        msg.documentOrderStateUnpaid,
+                        msg.documentOrderStatePaid);
                 resultList.addAll(cats);
             }
+            
+            if (document.getName().contentEquals(Proforma.class.getName())) {
+                // add letter documents
+                List<DummyStringCategory> cats = createDummyCategories(
+                        DocumentType.PROFORMA,
+                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.PROFORMA)));
+                resultList.addAll(cats);
+            }
+            
         }
         return resultList;
     }

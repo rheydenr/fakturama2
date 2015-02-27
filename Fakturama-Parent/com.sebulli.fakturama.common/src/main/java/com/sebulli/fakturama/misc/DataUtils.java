@@ -18,6 +18,9 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -732,18 +735,17 @@ public class DataUtils {
         GregorianCalendar calendar = new GregorianCalendar();
         return getDateAndTimeAsString(calendar);
     }
-//
-//    /**
-//     * Returns the date and time of now in a localized format.
-//     * 
-//     * @return Date and time as formated String
-//     */
-//    public static String DateAndTimeOfNowAsISO8601String() {
-//
-//        GregorianCalendar calendar = new GregorianCalendar();
-//        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-//        return df.format(calendar.getTime());
-//    }
+
+    /**
+     * Returns the date and time of now in a localized format.
+     * 
+     * @return Date and time as formated String
+     */
+    public String DateAndTimeOfNowAsISO8601String() {
+
+        LocalDateTime dateTime = LocalDateTime.now();
+        return dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+    }
     
     
     /**

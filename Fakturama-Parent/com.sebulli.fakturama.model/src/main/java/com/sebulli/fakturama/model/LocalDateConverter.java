@@ -1,7 +1,10 @@
 package com.sebulli.fakturama.model;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
@@ -24,7 +27,13 @@ public class LocalDateConverter implements AttributeConverter<LocalDate, Date> {
 
     @Override
     public LocalDate convertToEntityAttribute(Date value) {
-        Instant instant = value.toInstant();
-        return LocalDate.from(instant);
+        LocalDate retval = null;
+        if(value != null) {
+        Instant instant = Instant.ofEpochMilli(value.getTime());
+        retval = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+//        Instant instant = value.toInstant();
+//            retval = LocalDate.from(instant);
+        }
+        return retval;
     }
 }

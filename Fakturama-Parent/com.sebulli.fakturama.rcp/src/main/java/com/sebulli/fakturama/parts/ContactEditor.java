@@ -1027,7 +1027,7 @@ public class ContactEditor extends Editor<Contact> {
         });
 		
 		// If the value is -1, use 0 instead
-		if (editorContact.getUseNetGross()<0) {
+		if (editorContact.getUseNetGross()== null || editorContact.getUseNetGross()<0) {
 		    editorContact.setUseNetGross((short)0);
 		}
 

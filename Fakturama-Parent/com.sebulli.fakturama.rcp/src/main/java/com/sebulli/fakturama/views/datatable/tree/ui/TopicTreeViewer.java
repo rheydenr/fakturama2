@@ -406,7 +406,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 *            ID of the contact
 	 */
 	public void setContact(String name, Contact contact) {
-		if (contactItem == null)
+		if (contactItem == null || contact == null)
 			return;
 		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);

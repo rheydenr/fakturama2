@@ -149,5 +149,5 @@ public class OSDependent {
 		return isMacOSX();
 	}
 
-	// getNewline is part of the java.nio.Filesystem class
+	// getNewline is now System.lineSeparator()
 }

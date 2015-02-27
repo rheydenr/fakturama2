@@ -43,7 +43,7 @@
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
 			
 			<!--  later on we could use LocalDate; here we have to convert the values -->
-			<!--  persistence:class>com.sebulli.fakturama.model.LocalDateConverter</persistence:class -->
+			<!-- persistence:class>com.sebulli.fakturama.model.LocalDateConverter</persistence:class-->
 		<persistence:exclude-unlisted-classes>true</persistence:exclude-unlisted-classes>
 		<persistence:properties>
 			<!-- update database automagically ;-)  -->

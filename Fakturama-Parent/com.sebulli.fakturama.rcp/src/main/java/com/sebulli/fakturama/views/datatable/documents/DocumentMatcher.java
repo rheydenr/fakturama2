@@ -69,36 +69,10 @@ public class DocumentMatcher implements Matcher<Document> {
             } else {
                 DocumentType docType = DocumentType.findDocumentTypeByClass(item.getClass());
                 if (docType != null) {
-                    switch (docType) {
-    //                case LETTER:
-    //                    return Icon.ICON_LETTER;
-    //                case OFFER:
-    //                    return Icon.ICON_OFFER;
-                    case ORDER:
                         String fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
                         if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {
                             found = true;
                         }
-                        break;
-    //                case CONFIRMATION:
-    //                    return Icon.ICON_CONFIRMATION;
-                    case INVOICE:
-                        fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-                        if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {
-                            found = true;
-                        }
-                        break;
-    //                case DELIVERY:
-    //                    return Icon.ICON_DELIVERY;
-    //                case CREDIT:
-    //                    return Icon.ICON_CREDIT;
-    //                case DUNNING:
-    //                    return Icon.ICON_DUNNING;
-    //                case PROFORMA:
-    //                    return Icon.ICON_PROFORMA;
-                    default:
-                        break;
-                    }
                 }
             }
         }
