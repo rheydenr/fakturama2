@@ -382,8 +382,8 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="odtPath" getter="getOdtPath" defaultValue="null" setter="setOdtPath" validJavaMemberName="odtPath" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Document/payedValue"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="The amount of what is payed (relevant for partial payment)." name="payedValue" getter="getPayedValue" defaultValue="null" setter="setPayedValue" validJavaMemberName="payedValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
+        <eAttribute href="Fakturama.ecore#//Document/paidValue"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="The amount of what is paid (relevant for partial payment)." name="payedValue" getter="getPaidValue" defaultValue="null" setter="setPaidValue" validJavaMemberName="paidValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/payDate"/>
@@ -475,6 +475,17 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/shippingValue"/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//Document/invoiceReference"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="This is a reference to the invoice for this transaction."/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_INVOICE"/>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Document/deposit"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Indicator that shows if the paid value is only a deposit. If so, this fflag is set to &lt;code>true&lt;/code>."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">

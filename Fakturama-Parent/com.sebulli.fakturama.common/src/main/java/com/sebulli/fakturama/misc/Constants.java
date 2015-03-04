@@ -226,5 +226,110 @@ public class Constants {
      * Use currency symbol or ISO code (3-letter-code)
      */
     public static final String PREFERENCES_CURRENCY_USE_SYMBOL = "PREFERENCE_CURRENCY_USE_SYMBOL";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_FINALPAYMENT_TEXT = "FINALPAYMENT_TEXT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DEPOSIT_TEXT = "DEPOSIT_TEXT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_MESSAGES = "DOCUMENT_MESSAGES";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD = "DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG = "DOCUMENT_CUSTOMER_STATISTICS_DIALOG";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE = "DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE = "DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS = "DOCUMENT_USE_DISCOUNT_ALL_ITEMS";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM = "DOCUMENT_USE_DISCOUNT_EACH_ITEM";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_USE_ITEM_POS = "DOCUMENT_USE_ITEM_POS";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE = "DOCUMENT_USE_PREVIEW_PICTURE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG = "DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT = "DOCUMENT_COPY_MESSAGE_FROM_PARENT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_DOCUMENT_USE_NET_GROSS = "DOCUMENT_USE_NET_GROSS";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT = "OPTIONALITEMS_OPTIONALITEM_TEXT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT = "OPTIONALITEMS_PRICE_REPLACEMENT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPTIONALITEMS_REPLACE_PRICE = "OPTIONALITEMS_REPLACE_PRICE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPTIONALITEMS_USE = "OPTIONALITEMS_USE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_BROWSER_SHOW_URL_BAR = "BROWSER_SHOW_URL_BAR";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_BROWSER_TYPE = "BROWSER_TYPE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_GENERAL_WEBBROWSER_URL = "GENERAL_WEBBROWSER_URL";
     
 }

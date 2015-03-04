@@ -24,6 +24,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the document settings
@@ -32,19 +33,6 @@ import com.sebulli.fakturama.i18n.Messages;
  */
 public class BrowserPreferencePage extends FieldEditorPreferencePage {
     
-    /**
-     * 
-     */
-    public static final String PREFERENCES_BROWSER_SHOW_URL_BAR = "BROWSER_SHOW_URL_BAR";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_BROWSER_TYPE = "BROWSER_TYPE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_GENERAL_WEBBROWSER_URL = "GENERAL_WEBBROWSER_URL";
-
     @Inject
     @Translation
     protected Messages msg;
@@ -68,14 +56,14 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.BROWSER_PREFERENCE_PAGE);
 
 		//T: Preference page "Webbrowser" - URL of the start page
-		addField(new StringFieldEditor(PREFERENCES_GENERAL_WEBBROWSER_URL, msg.preferencesBrowserUrl, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, msg.preferencesBrowserUrl, getFieldEditorParent()));
 		
 		//T: Preference page "Webbrowser" 
-		addField(new ComboFieldEditor(PREFERENCES_BROWSER_TYPE, msg.preferencesBrowserType, new String[][] { { "---", "0" }, { "WebKit", "1" }, { "Mozilla", "2" }
+		addField(new ComboFieldEditor(Constants.PREFERENCES_BROWSER_TYPE, msg.preferencesBrowserType, new String[][] { { "---", "0" }, { "WebKit", "1" }, { "Mozilla", "2" }
 			 }, getFieldEditorParent()));
 		
 		//T: Preference page "Webbrowser" 
-		addField(new BooleanFieldEditor(PREFERENCES_BROWSER_SHOW_URL_BAR, msg.preferencesBrowserShowaddressbar, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, msg.preferencesBrowserShowaddressbar, getFieldEditorParent()));
 
 	}
 
@@ -94,9 +82,9 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_GENERAL_WEBBROWSER_URL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_BROWSER_TYPE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_BROWSER_SHOW_URL_BAR, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_TYPE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, write);
 		
 	}
 
@@ -108,9 +96,9 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
 	 */
 	public void setInitValues(IPreferenceStore node) {
 //		node.setDefault(PREFERENCES_GENERAL_WEBBROWSER_URL, OpenBrowserEditorAction.FAKTURAMA_PROJECT_URL);
-	    node.setDefault(PREFERENCES_GENERAL_WEBBROWSER_URL, "");
-	    node.setDefault(PREFERENCES_BROWSER_TYPE, "0");
-	    node.setDefault(PREFERENCES_BROWSER_SHOW_URL_BAR, true);
+	    node.setDefault(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
+	    node.setDefault(Constants.PREFERENCES_BROWSER_TYPE, "0");
+	    node.setDefault(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, true);
 	}
 
 

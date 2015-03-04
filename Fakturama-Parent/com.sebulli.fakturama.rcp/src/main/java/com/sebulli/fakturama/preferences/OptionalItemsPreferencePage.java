@@ -23,6 +23,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the optional items settings
@@ -38,22 +39,6 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
     bugs (typically your translation team's web or email address).  */
 
     
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT = "OPTIONALITEMS_OPTIONALITEM_TEXT";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT = "OPTIONALITEMS_PRICE_REPLACEMENT";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPTIONALITEMS_REPLACE_PRICE = "OPTIONALITEMS_REPLACE_PRICE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPTIONALITEMS_USE = "OPTIONALITEMS_USE";
     @Inject
     @Translation
     protected Messages msg;
@@ -79,13 +64,13 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.OPTIONAL_ITEMS_PREFERENCE_PAGE);
 
 		//T: Preference page "Optional items" 
-		addField(new BooleanFieldEditor(PREFERENCES_OPTIONALITEMS_USE, msg.preferencesOptionalitemsUse, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPTIONALITEMS_USE, msg.preferencesOptionalitemsUse, getFieldEditorParent()));
 		//T: Preference page "Optional items" 
-		addField(new BooleanFieldEditor(PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, msg.preferencesOptionalitemsReplaceprice, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, msg.preferencesOptionalitemsReplaceprice, getFieldEditorParent()));
 		//T: Preference page "Optional items" 
-		addField(new StringFieldEditor(PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, msg.preferencesOptionalitemsPricereplacement, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, msg.preferencesOptionalitemsPricereplacement, getFieldEditorParent()));
 		//T: Preference page "Optional items" 
-		addField(new StringFieldEditor(PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsLabel, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsLabel, getFieldEditorParent()));
 
 	}
 
@@ -104,10 +89,10 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPTIONALITEMS_USE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_USE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, write);
 		}
 
 	/**
@@ -117,11 +102,11 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node, Messages msg) {
-		node.setDefault(PREFERENCES_OPTIONALITEMS_USE, false);
-		node.setDefault(PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, true);
-		node.setDefault(PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, "---");
+		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_USE, false);
+		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, true);
+		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, "---");
 		//T: Preference page "Optional Items" - placeholder text for "optional item"
-		node.setDefault(PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsItemlabel);
+		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, msg.preferencesOptionalitemsItemlabel);
 	}
 
 }

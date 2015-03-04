@@ -19,6 +19,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -56,14 +57,17 @@ import com.sebulli.fakturama.views.datatable.vats.VATListTable;
  */
 public class CallEditor {
     
+    public static final String DETAIL_PARTSTACK_ID = "com.sebulli.fakturama.rcp.detailpanel";
+
     private static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
 
     public static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.cmdparam.objId";
     public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
+    public static final String PARAM_DUPLICATE = "com.sebulli.fakturama.document.duplicate";
     public static final String PARAM_EDITOR_TYPE = "com.sebulli.fakturama.editors.editortype";
 
-    private static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docview";
-    private static final String DOCVIEW_PARTDESCRIPTOR_ID = "com.sebulli.fakturama.rcp.docdetail";
+    public static final String DOCVIEW_PARTDESCRIPTOR_ID = "com.sebulli.fakturama.rcp.docview";
+    public static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docdetail";
 
     @Inject
     @Translation
@@ -74,26 +78,29 @@ public class CallEditor {
 
 	/**
 	 * Execute the command
+	 * @param duplicate if a document is a duplicate of an other, set this to <code>true</code>
 	 */
 	@Execute
 	public void execute( 
 	        @Named(PARAM_EDITOR_TYPE) String editorType,
 			@Optional @Named(PARAM_OBJ_ID) String objId,
 			@Optional @Named(PARAM_CATEGORY) String category,
+            @Optional @Named(PARAM_DUPLICATE) String duplicate,
             final MApplication application,
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
-            MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+            MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
             // TODO close other parts if this is set in preferences!
             IEclipseContext stackContext = null;
             for (MContext contexts : modelService.findElements(documentPartStack, null, MContext.class, null)) {
-                if(((MPart)contexts).getElementId().contentEquals(DOCVIEW_PARTDESCRIPTOR_ID)) {
+                if(((MPart)contexts).getElementId().contentEquals(DOCVIEW_PART_ID)) {
                     stackContext = contexts.getContext();
+                    break;
                 }
             }
 
 			// Define  the editor and try to open it
-			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category), PartState.ACTIVATE);
+			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category, duplicate), PartState.ACTIVATE);
 	}
 	
 	/**
@@ -104,7 +111,7 @@ public class CallEditor {
 	 * @param category 
 	 * @return
 	 */
-	private MPart createEditorPart(String type, String objId, IEclipseContext stackContext, MPartStack stack, String category) {
+	private MPart createEditorPart(String type, String objId, IEclipseContext stackContext, MPartStack stack, String category, String duplicate) {
 		MPart myPart = null;
 		Collection<MPart> parts = partService.getParts();
         if (objId != null) {
@@ -122,7 +129,7 @@ public class CallEditor {
         
 		// if not found then we create a new one from a part descriptor
 		if (myPart == null) {
-			myPart = partService.createPart(DOCVIEW_PART_ID);
+			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
 			myPart.setContext(EclipseContextFactory.create());
 			myPart.getProperties().put(PARAM_OBJ_ID, objId);
@@ -156,6 +163,7 @@ public class CallEditor {
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
                 myPart.getProperties().put(PARAM_CATEGORY, category);
+                myPart.getProperties().put(PARAM_DUPLICATE, duplicate);
                 break;
 			default:
 				myPart.setLabel("unknown");

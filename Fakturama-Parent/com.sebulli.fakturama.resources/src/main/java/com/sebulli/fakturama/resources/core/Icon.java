@@ -98,6 +98,7 @@ public enum Icon {
 	DOCEDIT_LIST,
 	DOCEDIT_PLUS_LIST,
 	DOCEDIT_PRODUCT_LIST,
+	DOCEDIT_DELIVERY_NOTE_LIST,
 
 	// treeview icons (10x10)
 	TREE_CONTACT,
@@ -196,10 +197,10 @@ public enum Icon {
 	 * @return an {@link Image}
 	 */
 	public Image getImage(IconSize is) {
-		Image image = JFaceResources.getImageRegistry().get(this.name());
+		Image image = JFaceResources.getImageRegistry().get(this.name()+is.name());
 		if (image == null) {
 			addIconImageDescriptor(this.name(), is);
-			image = JFaceResources.getImageRegistry().get(this.name());
+			image = JFaceResources.getImageRegistry().get(this.name()+is.name());
 		}
 		return image;
 	}
@@ -209,10 +210,10 @@ public enum Icon {
 	 */
 	public ImageDescriptor getImageDescriptor(IconSize is) {
 		ImageDescriptor id = null;
-		id = JFaceResources.getImageRegistry().getDescriptor(this.name());
+		id = JFaceResources.getImageRegistry().getDescriptor(this.name()+is.name());
 		if (id == null) {
 			addIconImageDescriptor(this.name(), is);
-			id = JFaceResources.getImageRegistry().getDescriptor(this.name());
+			id = JFaceResources.getImageRegistry().getDescriptor(this.name()+is.name());
 		}
 		return id;
 	}
@@ -262,7 +263,7 @@ public enum Icon {
 					.getBundle(),
 					new Path("icons/" + is.name + "/" + fileName), null);
 			ImageDescriptor id = ImageDescriptor.createFromURL(fileLocation);
-			JFaceResources.getImageRegistry().put(name, id);
+			JFaceResources.getImageRegistry().put(name + is.name(), id);
 		} catch (MissingResourceException | IllegalArgumentException e) {
 			return false;
 		}

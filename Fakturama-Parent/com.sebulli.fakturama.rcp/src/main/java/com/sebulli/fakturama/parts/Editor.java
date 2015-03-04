@@ -401,7 +401,7 @@ public abstract class Editor<T extends IEntity> {
 	 * @return Errorcode, if the document number is correctly set to the next
 	 *         free number.
 	 */
-	protected int setNextNr(String value, String key, List<T> allDataSets) {
+	protected int setNextNr(String value, String key) {
 
 		// Create the string of the preference store for format and number
 		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";

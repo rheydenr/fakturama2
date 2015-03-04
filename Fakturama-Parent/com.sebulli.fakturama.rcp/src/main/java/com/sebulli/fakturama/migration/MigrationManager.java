@@ -548,7 +548,6 @@ public class MigrationManager {
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
 				document.setBillingType(BillingType.get(oldDocument.getCategory()));
 				document.setCustomerRef(oldDocument.getCustomerref());
-//				document.setCreationDate(getSaveParsedDate(oldDocument.getDate()));
 				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 
@@ -594,11 +593,17 @@ public class MigrationManager {
 				document.setPdfPath(oldDocument.getPdfpath());
 				document.setPrintTemplate(oldDocument.getPrintedtemplate());
 				
+				document.setConsultant(oldDocument.getConsultant());
+				document.setPrinted(oldDocument.isPrinted());
+//				document.setNetGross(oldDocument.getNetGross());
+				//document.setDeposit(oldDocument.Deposit);
+				document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
 				document.setOrderDate(getSaveParsedDate(oldDocument.getOrderdate()));
 				document.setServiceDate(getSaveParsedDate(oldDocument.getServicedate()));
 				// if "paydate" is set and *NOT* 2000-01-01 then the document is paid
 				// the "Mark as paid" command could change this state, too. Therefore we need an extra attribute.
 				document.setPaid(oldDocument.isPaid());
+				document.setPaidValue(oldDocument.getPayvalue());
 				Date payDate = getSaveParsedDate(oldDocument.getPaydate());
 				if(payDate.compareTo(zeroDate.getTime()) != 0) {
 					document.setPayDate(payDate);
@@ -610,7 +615,7 @@ public class MigrationManager {
                     Payment newPayment = paymentsDAO.findById(paymentId);
     				document.setPayment(newPayment);
 				}
-				document.setPayedValue(oldDocument.getPayvalue());
+				document.setPaidValue(oldDocument.getPayvalue());
 				document.setTotalValue(oldDocument.getTotal());
 				document.setTransactionId(new Long(oldDocument.getTransaction()));
 				document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
@@ -620,6 +625,8 @@ public class MigrationManager {
 				// find the Shipping entry
 				Shipping newShipping = shippingsDAO.findById(newShippings.get(oldDocument.getShippingid()));
 				document.setShipping(newShipping);
+                document.setShippingAutoVat(ShippingVatType.get(oldDocument.getShippingautovat()));
+                document.setShippingValue(oldDocument.getShipping());
 
 				documentDAO.save(document);
 				subProgressMonitor.worked(1);
@@ -1029,7 +1036,7 @@ public class MigrationManager {
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
 				    // get VatCategory from DAO since it may not be stored
-					vat.setCategory(vatCategoriesDAO.getCategory(oldVat.getCategory(), true));
+					vat.setCategory(vatCategoriesDAO.getOrCreateCategory(oldVat.getCategory(), true));
 				}
 				vat = vatsDAO.save(vat);
 				newVats.put(oldVat.getId(), vat.getId());

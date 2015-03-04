@@ -1,7 +1,9 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -24,6 +26,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.oldmodel.OldVats;
 
@@ -33,6 +36,9 @@ public class VatsDAO extends AbstractDAO<VAT> {
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    private VatCategoriesDAO vatCategoriesDAO;
 
 	@Inject
 	@GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -126,6 +132,57 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get(VAT_.description), oldVat.getDescription()),
 				cb.equal(root.<String> get(VAT_.name), oldVat.getName())));
 		return getEntityManager().createQuery(cq).getSingleResult();
+	}
+
+	/**
+     * Get all active (undeleted) data sets with a specified category.
+     * 
+     * Return only those elements that are in the specified category and those
+     * where no category is set.
+     * 
+     * @param category
+     *            The preferred category. If it's empty, return all.
+     * 
+     * @return ArrayList with all undeleted data sets
+     */
+	public List<VAT> findVATPrefereCategory(String category) {
+	    VATCategory vATCategory = vatCategoriesDAO.findVATCategoryByName(category);
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
+        Root<VAT> root = criteria.from(VAT.class);
+        CriteriaQuery<VAT> cq = criteria.where(
+                cb.or(
+                        cb.equal(root.<VATCategory>get(VAT_.category.getName()), vATCategory),
+                        cb.isNull(root.<VATCategory>get(VAT_.category.getName()))));
+        return getEntityManager().createQuery(cq).getResultList();
+	}
+
+	/**
+	 * Provides a list with all VAT entries with a value of "0%"
+	 * 
+	 * @return
+	 */
+	public List<VAT> findNoVATEntries() {
+        //T: Name of a VAT entry that indicates that VAT is not 0%
+        VAT dummyVat = new VAT();
+        dummyVat.setName(msg.widgetNovatproviderWithvatLabel);
+        dummyVat.setTaxValue(Double.valueOf(0.0));
+	    VATCategory vATCategory = vatCategoriesDAO.findVATCategoryByName(msg.dataVatSalestax);
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
+        Root<VAT> root = criteria.from(VAT.class);
+        CriteriaQuery<VAT> cq = criteria.where(
+                cb.and(
+                    cb.equal(root.<Double> get(VAT_.taxValue), Double.valueOf(0.0)),
+                    cb.or(
+                            cb.equal(root.<VATCategory>get(VAT_.category.getName()), vATCategory),
+                            cb.isNull(root.<VATCategory>get(VAT_.category.getName()))))
+                
+                );
+        List<VAT> resultList = new ArrayList<>();
+        resultList.add(dummyVat);
+        resultList.addAll(getEntityManager().createQuery(cq).getResultList());
+        return resultList;
 	}
 	     
 	/**

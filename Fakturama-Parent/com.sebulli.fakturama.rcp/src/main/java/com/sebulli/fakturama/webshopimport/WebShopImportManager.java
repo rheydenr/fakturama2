@@ -749,7 +749,7 @@ public class WebShopImportManager {
          * @throws SQLException 
          */
         private void createOrderFromXMLOrderNode(OrderType order, String lang) throws SQLException {
-        	ContactUtil contactUtil = new ContactUtil(eclipsePrefs);   			
+        	ContactUtil contactUtil = ContactUtil.getInstance(eclipsePrefs);   			
         	
     		// Order data
     		String webshopId;

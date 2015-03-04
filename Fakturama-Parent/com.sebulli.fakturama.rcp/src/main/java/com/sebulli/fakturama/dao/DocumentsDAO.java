@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -32,8 +33,10 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.Dunning_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.Invoice_;
 import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
@@ -88,7 +91,6 @@ public class DocumentsDAO extends AbstractDAO<Document> {
 	    Root<Document> root = criteria.from(Document.class);
 		CriteriaQuery<Document> cq = criteria.where(cb.equal(root.<String>get(Document_.name), name));
     	return getEntityManager().createQuery(cq).getSingleResult();
-		
 	}
 
     /**
@@ -254,6 +256,27 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             }
         }
         return retList;
+    }
+
+    public List<Invoice> findPaidInvoices() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
+        Root<Invoice> root = criteria.from(Invoice.class);
+        CriteriaQuery<Invoice> cq = criteria.where(cb.equal(root.<Boolean>get(Invoice_.paid), true));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    public void updateDunnings(Document document, boolean isPaid, Date paidDate, Double paidValue) {
+// UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
+        criteria
+            .set(Dunning_.paid, isPaid)
+            .set(Dunning_.payDate, paidDate)
+            .set(Dunning_.paidValue, paidValue)
+            .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
+            ;
+        getEntityManager().createQuery(criteria);
     }
     
 }

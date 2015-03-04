@@ -88,7 +88,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="customerRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="deliveryContact" eType="#//Contact"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dueDays" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dunningLevel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" unique="false" upperBound="-1"
@@ -104,7 +104,7 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="odtPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="payedValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paidValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="paid" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="payDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="payment" eType="#//Payment"
@@ -128,6 +128,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="netGross" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EShortObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="printed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invoiceReference" eType="#//Invoice"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItem" eSuperTypes="#//IEntity">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>

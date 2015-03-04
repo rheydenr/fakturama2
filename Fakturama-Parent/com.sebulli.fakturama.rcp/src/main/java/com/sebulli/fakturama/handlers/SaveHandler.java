@@ -1,12 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2010 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2010 IBM Corporation and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors:
- *     IBM Corporation - initial API and implementation
+ * Contributors: IBM Corporation - initial API and implementation
  *******************************************************************************/
 package com.sebulli.fakturama.handlers;
 
@@ -24,41 +22,34 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.Shell;
 
 public class SaveHandler {
-    
 
     @CanExecute
     public boolean canExecute(EPartService partService) {
         if (partService != null) {
             MDirtyable dirtyable = partService.getActivePart();
-		if (dirtyable == null) {
-			return false;
-		}
-		return dirtyable.isDirty();
+            if (dirtyable == null) { return false; }
+            return dirtyable.isDirty();
             //return !partService.getDirtyParts().isEmpty();
         }
         return false;
     }
 
-    
-//	@CanExecute
-//	public boolean canExecute(
-//	        /*final EPartService partService,*/
-//	        @Optional /*@Active*/ MDirtyable dirtyable) {
-//		if (dirtyable == null) {
-//			return false;
-//		}
-//		return dirtyable.isDirty();
-//	}
+    //	@CanExecute
+    //	public boolean canExecute(
+    //	        /*final EPartService partService,*/
+    //	        @Optional /*@Active*/ MDirtyable dirtyable) {
+    //		if (dirtyable == null) {
+    //			return false;
+    //		}
+    //		return dirtyable.isDirty();
+    //	}
 
-	@Execute
-	public void execute(
-			IEclipseContext context,
-			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			final EPartService partService)
-			throws InvocationTargetException, InterruptedException {
-		final MPart activePart = partService.getActivePart();
+    @Execute
+    public void execute(IEclipseContext context, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, final EPartService partService)
+            throws InvocationTargetException, InterruptedException {
+        final MPart activePart = partService.getActivePart();
         if (activePart != null) {
-		    partService.savePart(activePart, false);
-		}
-	}
+            partService.savePart(activePart, false);
+        }
+    }
 }

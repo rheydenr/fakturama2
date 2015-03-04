@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -175,9 +177,13 @@ public class CoolbarViewPart {
 		
 		ToolBar toolBar4 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
-		        getPreference(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));	
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
-		        getPreference(Constants.TOOLBAR_SHOW_OPEN_BROWSER));	
+		        getPreference(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
+		
+		params.clear();
+		params.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.toString(true));
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
+		        null, getPreference(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params);	
+		
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
 		        getPreference(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR));	
 		finishToolbar(coolbar1, toolBar4);	

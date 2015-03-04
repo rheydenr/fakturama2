@@ -135,7 +135,7 @@ public class VatEditor extends Editor<VAT> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                VATCategory parentCategory = vatCategoriesDAO.getCategory(testCat, true);
+                VATCategory parentCategory = vatCategoriesDAO.getOrCreateCategory(testCat, true);
                 // parentCategory now has the last found Category
                 editorVat.setCategory(parentCategory);
             }

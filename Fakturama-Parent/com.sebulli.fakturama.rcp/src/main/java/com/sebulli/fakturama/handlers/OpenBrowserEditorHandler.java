@@ -1,132 +1,167 @@
-/* 
+/*
  * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
  * 
  * Copyright (C) 2012 Gerd Bartelt
  * 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
+ * All rights reserved. This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- *     Gerd Bartelt - initial API and implementation
+ * Contributors: Gerd Bartelt - initial API and implementation
  */
 
 package com.sebulli.fakturama.handlers;
 
+import java.util.Collection;
+import java.util.Locale;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MContext;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+
+import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.parts.BrowserEditor;
 
 /**
  * This action opens the project website in an editor.
  * 
  * @author Gerd Bartelt
  */
-public class OpenBrowserEditorHandler/* extends Action*/ {
+public class OpenBrowserEditorHandler {
 
-	//T: Text of the action to open the webbrowser
-	public final static String ACTIONTEXT = "Web Browser"; 
-//
-//	// URL of the Fakturama project site
-//	public final static String FAKTURAMA_PROJECT_URL = "http://www.fakturama.org/";
-//	
-//	// Open the Fakturama forum
-//	private boolean useFakturamaProjectURL;
-//	
-//	/**
-//	 * Constructor
-//	 */
-//	public OpenBrowserEditorHandler(boolean useFakturamaProjectURL) {
-//		super("www.fakturama.org");
-//
-//		this.useFakturamaProjectURL = useFakturamaProjectURL;
-//		
-//		//T: Tool Tip Text
-//		setToolTipText(_("Open the project web site www.fakturama.org") );
-//
-//		// The id is used to refer to the action in a menu or toolbar
-//		setId(CommandIds.CMD_OPEN_BROWSER_EDITOR);
-//
-//		// Associate the action with a pre-defined command, to allow key
-//		// bindings.
-//		setActionDefinitionId(CommandIds.CMD_OPEN_BROWSER_EDITOR);
-//
-//		// sets a default 16x16 pixel icon.
-//		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/www_16.png"));
-//	}
-//
-//	/**
-//	 * Run the action
-//	 * 
-//	 * Set the URL and open the editor.
-//	 */
-//	@Override
-//	public void run() {
-//
-//		// Get the active workbench window
-//		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-//
-//		// Sets the URL
-//		String url;
-//		if (this.useFakturamaProjectURL)
-//			url = FAKTURAMA_PROJECT_URL;
-//		else {
-//			url = Activator.getDefault().getPreferenceStore().getString("GENERAL_WEBBROWSER_URL");
-//
-//			// In case of an empty URL: use the start page
-//			if (url.isEmpty() || url.equals("http://www.fakturama.org/"))
-//				url = "file://" +
-//					Workspace.INSTANCE.getWorkspace() + "/" +
-//					Workspace.INSTANCE.getTemplateFolderName() +  
-//					"/Start/start.html";
-//			
-//		}
-//
-//		// In case of an URL with only "-" do not show an editor
-//		if (url.equals("-"))
-//			return;
-//
-//		
-//		// Add the "http://" or "file://"
-//		if ((!url.toLowerCase().startsWith("http://")) && 
-//			(!url.toLowerCase().startsWith("file://")) )
-//			url = "http://" + url;
-//		
-//		// Check, if the URL is the Fakturama project
-//		boolean isFakturamaProjectUrl = url.equalsIgnoreCase(FAKTURAMA_PROJECT_URL);
-//			
-//		// Add version and language a a GET parameter
-//		// The language is uses, if the project website can generate
-//		// localized content.
-//		if (isFakturamaProjectUrl) {
-//			url += "?version=" + Activator.getDefault().getBundle().getVersion();
-//			url += "&lang=" + Locale.getDefault().getCountry();
-//		}
-//
-//		// Sets the URL as input for the editor.
-//		BrowserEditorInput input;
-//		if (isFakturamaProjectUrl)
-//			//T: Short description of start page 
-//			input = new BrowserEditorInput(url, _("Fakturama Project"), true);
-//		else
-//			//T: Short description of start page 
-//			input = new BrowserEditorInput(url, _("Start"), false);
-//
-//		// Open the editor
-//		try {
-//			if (workbenchWindow != null) {
-//				IWorkbenchPage page = workbenchWindow.getActivePage();
-//				if (page != null) {
-//
-//					// If the browser editor is already open, reset the URL
-//					BrowserEditor browserEditor = (BrowserEditor) page.findEditor(input);
-//					if (browserEditor != null)
-//						browserEditor.resetUrl();
-//
-//					page.openEditor(input, BrowserEditor.ID);
-//				}
-//			}
-//		}
-//		catch (PartInitException e) {
-//			Logger.logError(e, "Error opening Editor: " + BrowserEditor.ID);
-//		}
-//	}
+    //T: Text of the action to open the webbrowser
+    public final static String ACTIONTEXT = "Web Browser";
+
+    public static final String PARAM_URL = "com.sebulli.fakturama.command.browser.url";
+    public static final String PARAM_USE_PROJECT_URL = "com.sebulli.fakturama.command.browser.useprojecturl";
+
+    // URL of the Fakturama project site
+    public final static String FAKTURAMA_PROJECT_URL = "http://www.fakturama.org/";
+
+    @Inject
+    @Translation
+    protected Messages msg;
+
+    @Inject
+    private EPartService partService;
+
+    @Inject
+    @Preference
+    protected IEclipsePreferences preferences;
+
+    @Inject
+    @Preference(nodePath = Constants.DEFAULT_PREFERENCES_NODE)
+    private IEclipsePreferences eclipseDefaultPrefs;
+
+    /**
+     * Run the action
+     * 
+     * Set the URL and open the editor.
+     */
+    @Execute
+    public void run(@Optional @Named(PARAM_URL) String paramUrl, @Optional @Named(PARAM_USE_PROJECT_URL) String useFakturamaProjectURL,
+            final MApplication application, final EModelService modelService) throws ExecutionException {
+        // If we had a selection lets open the editor
+        MPartStack documentPartStack = (MPartStack) modelService.find(CallEditor.DETAIL_PARTSTACK_ID, application);
+
+        // Sets the URL
+        String url;
+        if (BooleanUtils.toBoolean(useFakturamaProjectURL))
+            url = FAKTURAMA_PROJECT_URL;
+        else {
+            url = preferences.get(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
+
+            // In case of an empty URL: use the start page
+            if (url.isEmpty() || url.equals("http://www.fakturama.org/"))
+                url = "file://" + preferences.get(Constants.GENERAL_WORKSPACE, "") + "/" + msg.configWorkspaceTemplatesName + "/Start/start.html";
+
+        }
+
+        // In case of an URL with only "-" do not show an editor
+        if (url.equals("-"))
+            return;
+
+        // Add the "http://" or "file://"
+        if ((!url.toLowerCase().startsWith("http://")) && (!url.toLowerCase().startsWith("file://")))
+            url = "http://" + url;
+
+        // Check, if the URL is the Fakturama project
+        boolean isFakturamaProjectUrl = url.equalsIgnoreCase(FAKTURAMA_PROJECT_URL);
+
+        // Add version and language a a GET parameter
+        // The language is uses, if the project website can generate
+        // localized content.
+        if (isFakturamaProjectUrl) {
+            url += "?version=" + Activator.getContext().getBundle().getVersion();
+            url += "&lang=" + Locale.getDefault().getCountry();
+        }
+
+        // Open the editor
+        IEclipseContext stackContext = null;
+        for (MContext contexts : modelService.findElements(documentPartStack, null, MContext.class, null)) {
+            if (((MPart) contexts).getElementId().contentEquals(CallEditor.DOCVIEW_PART_ID)) {
+                stackContext = contexts.getContext();
+                break;
+            }
+        }
+
+        partService.showPart(createEditorPart(stackContext, documentPartStack, isFakturamaProjectUrl, url), PartState.ACTIVATE);
+
+    }
+
+    private MPart createEditorPart(IEclipseContext stackContext, MPartStack stack, boolean isFakturamaProjectUrl, String url) {
+        MPart myPart = null;
+        Collection<MPart> parts = partService.getParts();
+        // at first we look for an existing Part
+        for (MPart mPart : parts) {
+            if (StringUtils.equalsIgnoreCase(mPart.getElementId(), BrowserEditor.ID) && mPart.getContext() != null) {
+                myPart = mPart;
+                break;
+            }
+        }
+
+        // if not found then we create a new one from a part descriptor
+        if (myPart == null) {
+            myPart = partService.createPart(CallEditor.DOCVIEW_PARTDESCRIPTOR_ID);
+            myPart.setElementId(BrowserEditor.ID);
+            myPart.setContext(EclipseContextFactory.create());
+            myPart.getProperties().put(PARAM_URL, url);
+
+            // Sets the URL as input for the editor.
+            if (isFakturamaProjectUrl)
+                //T: Short description of start page 
+                myPart.setLabel(msg.commandBrowserOpenUrllabel);
+            else
+                //T: Short description of start page 
+                myPart.setLabel(msg.commandBrowserOpenStartpage);
+
+            myPart.getProperties().put(PARAM_USE_PROJECT_URL, Boolean.toString(isFakturamaProjectUrl));
+            stack.getChildren().add(myPart);
+        }
+        else {
+            // If the browser editor is already open, reset the URL
+            ((BrowserEditor) myPart).resetUrl();
+        }
+        return myPart;
+    }
 }

@@ -364,7 +364,7 @@ public class DocumentSummaryCalculator {
 		}
 
 		//calculate the final payment
-		retval.setDeposit(FastMoney.of(dataSetDocument.getDeposit(), currencyCode));
+//		retval.setDeposit(FastMoney.of(dataSetDocument.getPaidValue(), currencyCode));
 		retval.setFinalPayment(retval.getTotalGross().subtract(retval.getDeposit()));
 
 		// Round also the Vat summaries

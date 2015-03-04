@@ -187,7 +187,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 );
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
-        contactUtil = new ContactUtil(preferences);            
+        contactUtil = ContactUtil.getInstance(preferences);            
         
         return top;
     }
@@ -619,7 +619,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     @Override
     protected String getEditorId() {
-        return DocumentEditor.EDITOR_ID;
+        return DocumentEditor.ID;
     }
 
     class DocumentTableConfiguration extends AbstractRegistryConfiguration {
