@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="234">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="238">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.persistence.sdk.feature.group" version="2.5.2.v20140319-9ad6abd"/>
@@ -21,20 +21,11 @@
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140909-1633"/>
-<unit id="org.eclipse.pde.source.feature.group" version="3.10.0.v20140925-0400"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140925-0400"/>
-<unit id="org.eclipse.platform.ide" version="4.4.1.M20140925-0400"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.2.v20150204-1316"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.10.1.v20150204-1700"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.4.2.v20150204-1700"/>
+<unit id="org.eclipse.platform.ide" version="4.4.2.M20150204-1700"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.30"/>
-<unit id="org.apache.commons.feature.feature.group" version="3.2.0"/>
-<unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201408152323"/>
-<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
-<unit id="org.mihalis.opal.feature.feature.group" version="1.0.0.201408152225"/>
-<unit id="org.javamoney.feature.feature.group" version="1.0.0.201410202327"/>
-<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.h2.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -84,13 +75,22 @@
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201502231632"/>
+<unit id="org.javamoney.feature.feature.group" version="1.0.0.201503082213"/>
+<unit id="org.slf4j.osgi.feature.feature.group" version="1.0.0.201503082213"/>
+<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.30"/>
+<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
+<unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201503082213"/>
+<unit id="org.apache.commons.feature.feature.group" version="3.2.0"/>
+<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201503091341"/>
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201502231632"/>
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201502231632"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201502231632"/>
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201503091337"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201503091337"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201503091337"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>

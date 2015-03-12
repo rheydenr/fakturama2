@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -37,6 +36,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
@@ -163,11 +163,11 @@ public class CoolbarViewPart {
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("com.sebulli.fakturama.editors.editortype", ContactEditor.ID);
+		params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
 //		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
 //		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
-		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));
+		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR/*CommandIds.CMD_NEW_CONTACT*/, msg.commandNewContactTooltip, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
+		        null, getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	

@@ -7,18 +7,18 @@ import org.eclipse.jface.viewers.LabelProvider;
 /**
  * An <code>ILabelProvider</code> that assists in rendering labels.
  */
-public class ComboBoxLabelProvider extends LabelProvider {
+public class ComboBoxLabelProvider<K, V> extends LabelProvider {
 
     /**
      * The values.
      */
-    private Map<Integer, String> values;
+    private Map<K, V> values;
 
     /**
      * @param values the possible label values that this 
      * <code>ILabelProvider</code> may return.
      */
-    public ComboBoxLabelProvider(Map<Integer, String> values) {
+    public ComboBoxLabelProvider(Map<K, V> values) {
         this.values = values;
     }
 
@@ -33,12 +33,14 @@ public class ComboBoxLabelProvider extends LabelProvider {
      */
     public String getText(Object element) {
         String retval = "";
-        if (element != null && element instanceof Integer) {
-            retval = values.get(element);
-        } else {
-            retval = values.get(Integer.valueOf(0));
+        Object index;
+        if (element instanceof Integer) {
+            index = element != null ? element : Integer.valueOf(0);
+            retval = (String) values.get(index);
+        } else if(element instanceof Short) {
+            index = element != null ? element : Short.valueOf((short)0);
+            retval = (String) values.get(index);
         }
-        
         return retval;
     }
 }

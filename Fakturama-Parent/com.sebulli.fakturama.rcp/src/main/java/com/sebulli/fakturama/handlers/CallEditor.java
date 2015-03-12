@@ -59,7 +59,7 @@ public class CallEditor {
     
     public static final String DETAIL_PARTSTACK_ID = "com.sebulli.fakturama.rcp.detailpanel";
 
-    private static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
+    public static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
 
     public static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.cmdparam.objId";
     public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
@@ -131,6 +131,7 @@ public class CallEditor {
 		if (myPart == null) {
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
+			myPart.setVisible(true);
 			myPart.setContext(EclipseContextFactory.create());
 			myPart.getProperties().put(PARAM_OBJ_ID, objId);
 			stack.getChildren().add(myPart);

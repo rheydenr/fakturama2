@@ -29,6 +29,7 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Confirmation;
 import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
+import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
@@ -266,8 +267,20 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         return getEntityManager().createQuery(cq).getResultList();
     }
 
+    /**
+     * Update Dunnings which are related to a certain invoice.
+     * 
+     * @param document the invoice which is related
+     * @param isPaid is it paid?
+     * @param paidDate paid date
+     * @param paidValue paid value
+     */
     public void updateDunnings(Document document, boolean isPaid, Date paidDate, Double paidValue) {
-// UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
+//      UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
+//      // TODO What if "payvalue" is not the total sum? Is it paid?
+//          dunning.setPaid(bPaid.getSelection());
+//          dunning.setStringValueByKey("paydate", DataUtils.getDateTimeAsString(dtPaidDate));
+//          dunning.setDoubleValueByKey("payvalue", paidValue.getValueAsDouble());
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
         criteria
@@ -276,7 +289,27 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             .set(Dunning_.paidValue, paidValue)
             .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
             ;
-        getEntityManager().createQuery(criteria);
+        getEntityManager().createQuery(criteria).executeUpdate();
+    }
+
+    /**
+     * Selects all given Deliveries (which don't have an invoice reference) by ID.
+     * 
+     * @param selectedIds
+     * @return
+     */
+    public List<Delivery> findSelectedDeliveries(List<Long> selectedIds) {
+        // setCategoryFilter(DocumentType.getPluralString(DocumentType.DELIVERY) + "/" + DataSetDocument.getStringHASNOINVOICE());
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Delivery> criteria = cb.createQuery(Delivery.class);
+        Root<Delivery> root = criteria.from(Delivery.class);
+        CriteriaQuery<Delivery> cq = criteria.where(
+                cb.and(
+                        cb.isNull(root.get(Delivery_.invoiceReference)),
+                        root.get(Delivery_.id).in(selectedIds)
+                       )
+                );
+        return getEntityManager().createQuery(cq).getResultList();
     }
     
 }

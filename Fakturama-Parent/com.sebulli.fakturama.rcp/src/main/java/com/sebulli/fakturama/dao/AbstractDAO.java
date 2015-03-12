@@ -129,7 +129,7 @@ em.joinTransaction();
     /**
      * Finds a t with its name.
      * 
-     * @param name the name of the entity
+     * @param entityName the name of the entity
      * @return T
      */
     public T findByName(String entityName) {

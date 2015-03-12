@@ -14,6 +14,13 @@
 
 package com.sebulli.fakturama.preferences;
 
+import javax.inject.Inject;
+
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.extensions.Preference;
+
+import com.sebulli.fakturama.dao.PropertiesDAO;
+
 
 /**
  * Write or read preference settings to or from the data base
@@ -21,6 +28,13 @@ package com.sebulli.fakturama.preferences;
  * @author Gerd Bartelt
  */
 public class PreferencesInDatabase {
+
+    @Inject
+    @Preference
+    private IEclipsePreferences preferences;
+    
+    @Inject
+    private PropertiesDAO propertiesDAO;
 
 	/**
 	 * Load one preference from the data base
@@ -39,10 +53,10 @@ public class PreferencesInDatabase {
 	 * @param key
 	 *            The key of the preference value
 	 */
-	private static void savePreferenceValue(String key) {
-//		String s = Activator.getDefault().getPreferenceStore().getString(key);
-//		if (s != null && Data.INSTANCE != null)
-//			Data.INSTANCE.setProperty(key, s);
+	private void savePreferenceValue(String key) {
+		String s = preferences.get(key, "");
+		if (s != null && propertiesDAO != null)
+		    propertiesDAO.setProperty(key, s);
 	}
 
 	/**
@@ -54,17 +68,17 @@ public class PreferencesInDatabase {
 	 *            True, if the value should be written
 	 */
 	public static void syncWithPreferencesFromDatabase(String key, boolean write) {
-		if (write)
-			savePreferenceValue(key);
-		else
-			loadPreferenceValue(key);
+//		if (write)
+//			savePreferenceValue(key);
+//		else
+//			loadPreferenceValue(key);
 	}
 
 	/**
 	 * Load or save all preference values from database of the following
 	 * preference pages.
 	 */
-	public static void loadOrSavePreferencesFromOrInDatabase(boolean save) {
+	public void loadOrSavePreferencesFromOrInDatabase(boolean save) {
 		ToolbarPreferencePage.syncWithPreferencesFromDatabase(save);
 		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
 		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
@@ -86,7 +100,7 @@ public class PreferencesInDatabase {
 	 * Load all preference values from database of the following preference
 	 * pages.
 	 */
-	public static void loadPreferencesFromDatabase() {
+	public void loadPreferencesFromDatabase() {
 		loadOrSavePreferencesFromOrInDatabase(false);
 	}
 
@@ -94,7 +108,7 @@ public class PreferencesInDatabase {
 	 * Write all preference values to database of the following preference
 	 * pages.
 	 */
-	public static void savePreferencesInDatabase() {
+	public void savePreferencesInDatabase() {
 		loadOrSavePreferencesFromOrInDatabase(true);
 	}
 

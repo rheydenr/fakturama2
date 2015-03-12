@@ -71,7 +71,7 @@ public class LifecycleManager {
 
     @PostContextCreate
     public void checksBeforeStartup(final IEventBroker eventBroker) {
-        IApplicationContext appContext = context.get(IApplicationContext.class);        
+        IApplicationContext appContext = context.get(IApplicationContext.class);  
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
@@ -108,10 +108,28 @@ public class LifecycleManager {
 				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
 			}
         }
+        
+//        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
+//        preferencesInDatabase.loadPreferencesFromDatabase();
+        
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
         appContext.applicationRunning();
     }
+    
+//    @ProcessRemovals
+//    public void postInit(EHandlerService handlerService/*,ECommandService commandService*/) {
+//        
+//        Map<String, Object> parameters = new HashMap<>();
+//        parameters.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.TRUE.toString());
+//        EHandlerService handlerService = ContextInjectionFactory.make(EHandlerService.class, context);
+//        ECommandService commandService = ContextInjectionFactory.make(ECommandService.class, context);     
+//        ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_OPEN_BROWSER_EDITOR, parameters);
+//        if (handlerService.canExecute(pCmd)) {
+//            handlerService.executeHandler(pCmd);
+//        } 
+//        
+//    }
 
     /**
      * Some steps to do before workbench is showing.

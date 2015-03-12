@@ -181,11 +181,11 @@ public class Messages {
     public String editorDocumentFieldDeposit;
     public String editorDocumentZerovatTooltip;
     public String editorDocumentCreateduplicate;
-    public String editorDocumentSelectaddressTooltip;
-    public String editorDocumentSelectaddress;
+    public String dialogSelectaddressTooltip;
+    public String dialogSelectaddressTitle;
     public String editorDocumentItems;
-    public String editorDocumentSelectproductTooltip;
-    public String editorDocumentSelectproduct;
+    public String dialogSelectproductTooltip;
+    public String dialogSelectproductTitle;
     public String editorDocumentAdditemTooltip;
     public String editorDocumentDeleteitemTooltip;
     public String editorDocumentFieldPosition;

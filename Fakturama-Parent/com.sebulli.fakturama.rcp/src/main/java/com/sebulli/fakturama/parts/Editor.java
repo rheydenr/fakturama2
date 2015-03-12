@@ -16,7 +16,6 @@ package com.sebulli.fakturama.parts;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

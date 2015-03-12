@@ -5,11 +5,16 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -17,6 +22,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -32,6 +38,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -41,7 +48,11 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -53,6 +64,8 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
@@ -80,7 +93,13 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     private Logger log;
     
     @Inject    
-    private UISynchronize synch;
+    private UISynchronize sync;
+
+    @Inject
+    private EHandlerService handlerService;
+
+    @Inject
+    private ECommandService commandService;
 
     // ID of this view
     public static final String ID = "fakturama.views.contactTable";
@@ -108,6 +127,8 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
     
+    private MPart activePart;
+    
     private ListViewGridLayer<Contact> gridLayer;
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -115,14 +136,58 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     private SelectionLayer selectionLayer;
 
     @PostConstruct
-    public Control createPartControl(Composite parent) {
+    public Control createPartControl(Composite parent, MPart activePart) {
         log.info("create Contact list part");
         top = super.createPartControl(parent, Contact.class, false, true, ID);
+        this.activePart = activePart;
+        // if another click handler is set we use it
         // Listen to double clicks
-        hookDoubleClickCommand(natTable, gridLayer);
+        Object commandId = activePart.getContext().get("fakturama.datatable.contacts.clickhandler");
+        if(commandId != null) {
+            hookDoubleClickCommand(natTable, gridLayer, (String) commandId);
+        } else {
+            hookDoubleClickCommand(natTable, gridLayer);
+        }
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
+    }
+    
+    private void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<Contact> gridLayer, String commandId) {
+        // Add a double click listener
+        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+            @Override
+            public void run(NatTable natTable, MouseEvent event) {
+                //get the row position for the click in the NatTable
+                int rowPos = natTable.getRowPositionByY(event.y);
+                //transform the NatTable row position to the row position of the body layer stack
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                // extract the selected Object
+                Contact selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                // Call the corresponding editor. The editor is set
+                // in the variable "editor", which is used as a parameter
+                // when calling the editor command.
+                // in E4 we create a new Part (or use an existing one with the same ID)
+                // from PartDescriptor
+                Map<String, Object> params = new HashMap<>();
+                ParameterizedCommand parameterizedCommand;
+                if(commandId != null) {
+                    evtBroker.post("DialogSelection/Contact", Long.toString(selectedObject.getId()));
+                    activePart.getParent().setVisible(false);
+                } else {
+                    params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                    params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                    handlerService.executeHandler(parameterizedCommand);
+                }
+            }
+        });
+    }
+    
+    @Override
+    protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<Contact> gridLayer) {
+        hookDoubleClickCommand(nattable, gridLayer, null);
     }
     
     @Override
@@ -280,7 +345,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic("ContactEditor") String message) {
-        synch.syncExec(new Runnable() {
+        sync.syncExec(new Runnable() {
             
             @Override
             public void run() {
@@ -292,7 +357,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         contactListData.addAll(contactDAO.findAll());
         categories.clear();
         categories.addAll(contactCategoriesDAO.findAll());
-        synch.syncExec(new Runnable() {
+        sync.syncExec(new Runnable() {
            
             @Override
             public void run() {
@@ -366,4 +431,8 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         return POPUP_ID;
     }
 
+//    @Focus
+//    public void focus() {
+//        top.forceFocus();
+//    }
 }

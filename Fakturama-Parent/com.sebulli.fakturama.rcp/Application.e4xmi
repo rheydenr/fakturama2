@@ -6,9 +6,9 @@
       <children xsi:type="advanced:Perspective" xmi:id="_RmPTpOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspective" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Fakturama Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_OJDuMG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.rcp.partsashcontainer.0" containerData="2000">
-            <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation View" tooltip=""/>
+            <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation View" tooltip=""/>
             <children xsi:type="basic:PartStack" xmi:id="_n4EDAG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.errorview.partstack" containerData="2000">
-              <children xsi:type="basic:Part" xmi:id="_QYYFcG0kEeSXL4Yk4alD9Q" elementId="part:com.sebulli.fakturama.views.errorView" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.ErrorView" label="%view.errorlog.name" iconURI="icon://COMMAND_ERROR" closeable="true"/>
+              <children xsi:type="basic:Part" xmi:id="_QYYFcG0kEeSXL4Yk4alD9Q" elementId="part:com.sebulli.fakturama.views.errorView" visible="false" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.ErrorView" label="%view.errorlog.name" iconURI="icon://COMMAND_ERROR" closeable="true"/>
             </children>
           </children>
           <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTqOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.datapanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" selectedElement="_VxkroOtOEeKo5Ms1QUgPTw">
@@ -18,7 +18,10 @@
               <children xsi:type="basic:PartStack" xmi:id="_RmPTqetOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detailpanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="17000" selectedElement="_RmPTqutOEeKo5Ms1QUgPTw">
                 <tags>NoAutoCollapse</tags>
                 <tags>documentWindow</tags>
-                <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="Detail View" closeable="true"/>
+                <children xsi:type="basic:Part" xmi:id="_bjXPkMWqEeSbcZY_cifi_g" elementId="com.sebulli.fakturama.rcp.part.samplePart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.SamplePart" label="Sample Part" closeable="true"/>
+                <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="%command.browser.open.startpage" closeable="true">
+                  <tags>documentWindow</tags>
+                </children>
               </children>
               <children xsi:type="basic:PartStack" xmi:id="_XhoUAOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.calculatorpanel" visible="false" containerData="6500" selectedElement="_Y1hk0OtOEeKo5Ms1QUgPTw">
                 <children xsi:type="basic:Part" xmi:id="_Y1hk0OtOEeKo5Ms1QUgPTw" elementId="part:com.sebulli.fakturama.views.calculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.Calculator" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" tooltip="" closeable="true"/>
@@ -178,13 +181,16 @@
             </children>
           </children>
         </children>
-        <windows xsi:type="basic:Dialog" xmi:id="_GMm-0L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%editor.document.selectaddress" tooltip="Select a contact">
-          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.dialogs.SelectContactDialog"/>
+        <windows xsi:type="basic:Dialog" xmi:id="_GMm-0L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%dialog.selectaddress.title" tooltip="%dialog.selectaddress.tooltip" width="800" height="550">
+          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.ContactListTable" label="Contacts selection dialog">
+            <properties key="fakturama.datatable.contacts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
+          </children>
         </windows>
-        <windows xsi:type="basic:Dialog" xmi:id="_FBhH4L-XEeSGvuNl8B-b9A" elementId="fakturama.dialog.selectdeliverynotes" toBeRendered="false" visible="false" label="%dialog.selectdeliverynotes.title"/>
-        <windows xsi:type="basic:Dialog" xmi:id="_VUwosL-eEeSGvuNl8B-b9A" elementId="com.sebulli.fakturama.rcp.dialog.editordocumentselecttexttitle" toBeRendered="false" visible="false" selectedElement="_aKpZkL-eEeSGvuNl8B-b9A" label="%editor.document.selecttext.title">
+        <windows xsi:type="basic:Dialog" xmi:id="_FBhH4L-XEeSGvuNl8B-b9A" elementId="fakturama.dialog.selectdeliverynotes" toBeRendered="false" visible="false" label="%dialog.selectdeliverynotes.title" width="800" height="550"/>
+        <windows xsi:type="basic:Dialog" xmi:id="_VUwosL-eEeSGvuNl8B-b9A" elementId="fakturama.dialog.selecttext" toBeRendered="false" visible="false" selectedElement="_aKpZkL-eEeSGvuNl8B-b9A" label="%dialog.selecttext.title" width="800" height="550">
           <children xsi:type="basic:Part" xmi:id="_aKpZkL-eEeSGvuNl8B-b9A" elementId="com.sebulli.fakturama.rcp.part.0" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.dialogs.SelectTextDialog"/>
         </windows>
+        <windows xsi:type="basic:Dialog" xmi:id="_7hlEYMg2EeSV-dFmKAsTIA" elementId="fakturama.dialog.select.product" toBeRendered="false" visible="false" label="%dialog.selectproduct.title" tooltip="%dialog.selectproduct.tooltip" width="800" height="550"/>
       </children>
     </children>
     <mainMenu xmi:id="_RmPTrutOEeKo5Ms1QUgPTw" elementId="menu:main.menu.file.id" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
@@ -335,7 +341,6 @@
     <children xmi:id="_c7LSgGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingcontext.viewlist" name="In List Views" description="Binding context for using in list views (VATs, documents etc.)"/>
   </rootContext>
   <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
-    <tags>documentWindow</tags>
     <tags>removeOnHide</tags>
   </descriptors>
   <menuContributions xmi:id="_whirwDCTEeS4jqk9NJEl2w" elementId="com.sebulli.fakturama.rcp.menucontribution.0"/>
@@ -402,6 +407,10 @@
     <parameters xmi:id="_hNiYoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="" optional="false"/>
   </commands>
   <commands xmi:id="_VpeoEG3nEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.command" commandName="Show error view"/>
+  <commands xmi:id="_epsVUMUQEeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem" commandName="Select item" description="selects an item (Contact, Product etc.) in a dialog">
+    <parameters xmi:id="_kukB0MUQEeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.objId" name="the selected object id" typeId="" optional="false"/>
+    <parameters xmi:id="_JbW54MUREeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.partid" name="the ID of the calling part (since we have to close it)" typeId="" optional="false"/>
+  </commands>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

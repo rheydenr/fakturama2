@@ -26,7 +26,7 @@ import com.sebulli.fakturama.Activator;
  * 
  * @author Gerd Bartelt
  */
-public class SelectDeliveryNoteDialog extends SelectDataSetDialog {
+public class SelectDeliveryNoteDialog  {
 
 //	protected ViewDataSetTableContentProvider contentProvider;
 //	protected int contactID = -1;

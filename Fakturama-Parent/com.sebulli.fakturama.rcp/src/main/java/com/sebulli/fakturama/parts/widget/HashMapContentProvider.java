@@ -5,12 +5,12 @@ import java.util.Map;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-final public class HashMapContentProvider implements IStructuredContentProvider {
+final public class HashMapContentProvider<K, V> implements IStructuredContentProvider {
     @SuppressWarnings("unchecked")
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof Map) {
-            return ((Map<Integer, String>) inputElement).keySet().toArray();
+            return ((Map<K, V>) inputElement).keySet().toArray();
         }
         return new Object[0];
     }

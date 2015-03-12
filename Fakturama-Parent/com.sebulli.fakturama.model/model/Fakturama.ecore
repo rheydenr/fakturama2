@@ -89,8 +89,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deliveryContact" eType="#//Contact"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dueDays" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dunningLevel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invoiceReference" eType="#//Invoice"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" unique="false" upperBound="-1"
         eType="#//DocumentItem"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemsRebate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
@@ -100,6 +101,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message2" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message3" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="netGross" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="noVatReference" eType="#//VAT"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="odtPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -110,6 +112,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="payment" eType="#//Payment"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="pdfPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="printed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="printTemplate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="progress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="serviceDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
@@ -125,10 +128,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="transactionId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="netGross" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EShortObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="printed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="invoiceReference" eType="#//Invoice"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItem" eSuperTypes="#//IEntity">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
@@ -148,6 +147,17 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemVat" eType="#//VAT"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItemCategory" eSuperTypes="#//AbstractCategory"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Invoice" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Order" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Letter" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Offer" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Dunning" eSuperTypes="#//Document">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dunningLevel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Delivery" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Credit" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Confirmation" eSuperTypes="#//Document"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Proforma" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//Account"
@@ -353,13 +363,4 @@
     <eLiterals name="MEDIUM" value="2"/>
     <eLiterals name="GOOD" value="3"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Invoice" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Order" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Letter" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Offer" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Dunning" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Delivery" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Credit" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Confirmation" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Proforma" eSuperTypes="#//Document"/>
 </ecore:EPackage>

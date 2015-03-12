@@ -77,11 +77,6 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  */
 public abstract class AbstractViewDataTable<T extends IEntity, C extends AbstractCategory> {
 
-    /**
-     * Path for the default values configuration in the Preference store
-     */
-    protected static final String DEFAULT_VALUE_PREFERENCES = "/configuration/defaultValues";
-
     public static final String ROOT_NODE_NAME = "all";
 
     /**
@@ -117,8 +112,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	protected Composite top;
 	
 	protected TableColumnLayout tableColumnLayout;
-//	protected ViewDataTableContentProvider contentProvider;
-//	protected DataTableColumn stdIconColumn = null;
 
 	// Filter the table 
 	protected Label filterLabel;
@@ -129,12 +122,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	// Name of the editor to edit the UniDataSets
 	protected String editor = "";
-
-//	// Action to create new dataset in the editor
-//	protected NewEditorAction addNewAction = null;
-//
-//	// Menu manager of the context menu
-//	protected MenuManager menuManager;
 
 	// The standard UniDataSet
 	protected String stdPropertyKey = null;

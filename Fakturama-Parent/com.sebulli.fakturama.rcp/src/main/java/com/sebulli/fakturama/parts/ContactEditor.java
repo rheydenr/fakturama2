@@ -562,9 +562,9 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Gender
 		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
-		comboGender.setContentProvider(new HashMapContentProvider());
+		comboGender.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboGender.setInput(genderList);
-		comboGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
+		comboGender.setLabelProvider(new ComboBoxLabelProvider<Integer, String>(genderList));
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
 
@@ -681,7 +681,7 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Delivery Gender
 		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER);
-		comboDeliveryGender.setContentProvider(new HashMapContentProvider());
+		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
         comboDeliveryGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
 		bindModelValue(editorContact, comboDeliveryGender, Contact_.deliveryContacts.getName() +"." +Contact_.gender.getName());

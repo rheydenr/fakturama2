@@ -25,7 +25,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  * an item has the selected category (selected from tree viewer).
  *
  */
-final class ContactMatcher implements Matcher<Contact> {
+final public class ContactMatcher implements Matcher<Contact> {
     final String contactCategoryName;
     final boolean isRootNode;
     private final String rootNodeName;

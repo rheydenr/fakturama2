@@ -3,6 +3,7 @@
  */
 package com.sebulli.fakturama.startup;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -172,17 +173,18 @@ public class ConfigurationManager {
 					restart = STATUS_RESTART;
 				} else {
 					// Checks whether the workspace exists
-					// Exit if the workspace path is not valid
+					// If not, create one
 				    Path workspacePath = Paths.get(requestedWorkspace);
-					if (!Files.exists(workspacePath, LinkOption.NOFOLLOW_LINKS)) {
-						eclipsePrefs.put(Constants.GENERAL_WORKSPACE, "");
-						selectWorkspace(requestedWorkspace, shell);
-					}
+				    Files.createDirectories(workspacePath);
+//					if (!Files.exists(workspacePath, LinkOption.NOFOLLOW_LINKS)) {
+//						eclipsePrefs.put(Constants.GENERAL_WORKSPACE, "");
+//						selectWorkspace(requestedWorkspace, shell);
+//					}
 					restart = STATUS_INIT_WORKSPACE;
 				}
 			}
 			eclipsePrefs.flush();
-		} catch (BackingStoreException e) {
+		} catch (BackingStoreException | IOException e) {
 			log.error(e);
 		}
 		if(restart != STATUS_OK) {
@@ -219,6 +221,7 @@ public class ConfigurationManager {
 	 * @param shell
 	 */
 	private void selectWorkspace(String requestedWorkspace, Shell shell) {
+	    // you can't use the ModelService because it isn't available at this moment :-(
 		InitialStartupDialog startDialog = new InitialStartupDialog(shell, eclipsePrefs, log, msg, requestedWorkspace);
 		if (startDialog.open() != Window.OK) {
 			// close the application

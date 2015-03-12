@@ -1,0 +1,7 @@
+rm -rf ./fakturama/.svn/
+rm -rf ./fakturama/DEBIAN/.svn/
+rm -rf ./fakturama/usr/.svn/
+rm -rf ./fakturama/usr/share/.svn/
+rm -rf ./fakturama/usr/share/applications/.svn/
+rm -rf ./fakturama/usr/share/pixmaps/.svn/
+fakeroot dpkg -b ./fakturama Fakturama_Linux_32Bit_1_6_7.deb

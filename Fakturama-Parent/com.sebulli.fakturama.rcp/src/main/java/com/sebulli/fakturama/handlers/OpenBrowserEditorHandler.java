@@ -24,13 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -117,19 +115,10 @@ public class OpenBrowserEditorHandler {
         }
 
         // Open the editor
-        IEclipseContext stackContext = null;
-        for (MContext contexts : modelService.findElements(documentPartStack, null, MContext.class, null)) {
-            if (((MPart) contexts).getElementId().contentEquals(CallEditor.DOCVIEW_PART_ID)) {
-                stackContext = contexts.getContext();
-                break;
-            }
-        }
-
-        partService.showPart(createEditorPart(stackContext, documentPartStack, isFakturamaProjectUrl, url), PartState.ACTIVATE);
-
+        partService.showPart(createEditorPart(documentPartStack, isFakturamaProjectUrl, url), PartState.ACTIVATE);
     }
 
-    private MPart createEditorPart(IEclipseContext stackContext, MPartStack stack, boolean isFakturamaProjectUrl, String url) {
+    private MPart createEditorPart(MPartStack stack, boolean isFakturamaProjectUrl, String url) {
         MPart myPart = null;
         Collection<MPart> parts = partService.getParts();
         // at first we look for an existing Part
@@ -146,7 +135,7 @@ public class OpenBrowserEditorHandler {
             myPart.setElementId(BrowserEditor.ID);
             myPart.setContext(EclipseContextFactory.create());
             myPart.getProperties().put(PARAM_URL, url);
-
+            myPart.setContributionURI(CallEditor.BASE_CONTRIBUTION_URI + BrowserEditor.class.getName());
             // Sets the URL as input for the editor.
             if (isFakturamaProjectUrl)
                 //T: Short description of start page 
@@ -156,11 +145,14 @@ public class OpenBrowserEditorHandler {
                 myPart.setLabel(msg.commandBrowserOpenStartpage);
 
             myPart.getProperties().put(PARAM_USE_PROJECT_URL, Boolean.toString(isFakturamaProjectUrl));
-            stack.getChildren().add(myPart);
+            if(stack == null) {
+                stack = (MPartStack) partService.createPart(CallEditor.DOCVIEW_PART_ID);
+            }
+                stack.getChildren().add(myPart);
         }
         else {
             // If the browser editor is already open, reset the URL
-            ((BrowserEditor) myPart).resetUrl();
+            ((BrowserEditor) myPart.getObject()).resetUrl(url);
         }
         return myPart;
     }

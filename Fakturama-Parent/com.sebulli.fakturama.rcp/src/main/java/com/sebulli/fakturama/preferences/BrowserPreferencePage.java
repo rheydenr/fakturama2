@@ -95,7 +95,6 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage {
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-//		node.setDefault(PREFERENCES_GENERAL_WEBBROWSER_URL, OpenBrowserEditorAction.FAKTURAMA_PROJECT_URL);
 	    node.setDefault(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
 	    node.setDefault(Constants.PREFERENCES_BROWSER_TYPE, "0");
 	    node.setDefault(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, true);

@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
@@ -97,4 +98,12 @@ public class ProductsDAO extends AbstractDAO<Product> {
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+
+    public List<Product> findSelectedProducts(List<Long> selectedIds) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Product> criteria = cb.createQuery(Product.class);
+        Root<Product> root = criteria.from(Product.class);
+        CriteriaQuery<Product> cq = criteria.where(root.get(Product_.id).in(selectedIds));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
 }

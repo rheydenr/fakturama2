@@ -87,9 +87,11 @@ import com.sebulli.fakturama.model.ContactCategory;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
@@ -120,6 +122,8 @@ import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
+import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
@@ -199,7 +203,7 @@ public class MigrationManager {
         this.eclipsePrefs = eclipsePrefs; //context.get(IEclipsePreferences.class);
         this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
         this.msg = msg;
-        this.modelFactory = new FakturamaModelFactory();
+        this.modelFactory = FakturamaModelPackage.MODELFACTORY;
         zeroDate = new GregorianCalendar(2000, 0, 1);
     }
 
@@ -422,14 +426,15 @@ public class MigrationManager {
 				product.setName(oldProduct.getName());
 				// copy the old product picture into the new workspace
 				copyProductPicture(product, oldProduct);
-				product.setPrice1(oldProduct.getPrice1());
-				product.setPrice2(oldProduct.getPrice2());
-				product.setPrice3(oldProduct.getPrice3());
-				product.setPrice4(oldProduct.getPrice4());
-				product.setPrice5(oldProduct.getPrice5());
+				product.setPrice1(roundValue(oldProduct.getPrice1()));
+				product.setPrice2(roundValue(oldProduct.getPrice2()));
+				product.setPrice3(roundValue(oldProduct.getPrice3()));
+				product.setPrice4(roundValue(oldProduct.getPrice4()));
+				product.setPrice5(roundValue(oldProduct.getPrice5()));
 				product.setQuantity(oldProduct.getQuantity());
 				product.setQuantityUnit(oldProduct.getQunit());
 				product.setSellingUnit(oldProduct.getUnit());
+//				product.setProductCode(oldProduct.gProductCode());
 				// find the VAT entry
 				Long vatId = newVats.get(oldProduct.getVatid());
 				if(vatId != null) {
@@ -481,9 +486,8 @@ public class MigrationManager {
 					Files.createDirectories(outputFile);
 				Files.copy(oldFile, outputFile);
 			} catch (IOException e) {
-				log.error(e, "error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:");
+				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:n"+e.getMessage());
 			}
-
 		}
 	}
 
@@ -552,11 +556,13 @@ public class MigrationManager {
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 
 				document.setDueDays(oldDocument.getDuedays());
-				document.setDunningLevel(oldDocument.getDunninglevel());
+				if(document.getBillingType() == BillingType.DUNNING) {
+				    ((Dunning)document).setDunningLevel(oldDocument.getDunninglevel());
+				}
 				// store the pair for later processing
 				// if the old Document has an InvoiceId and that ID is the same as the Document's ID
 				// then we have to store it for further processing.
-				// if the Invoiceid is the same as the document's id then it's the invoice itself
+				// if the Invoice Id is the same as the document's id then it's the invoice itself
 				if(oldDocument.getInvoiceid() >= 0) {
 					if (oldDocument.getId() != oldDocument.getInvoiceid()) {
 						invoiceRelevantDocuments.put(oldDocument.getId(), document);
@@ -575,6 +581,7 @@ public class MigrationManager {
 				document.setMessage3(oldDocument.getMessage3());
 				// The document number is the document name
 				document.setName(oldDocument.getName());
+				document.setNetGross(oldDocument.getNetgross());
 				if(oldDocument.isNovat()) {
 					// find the VAT entry
 					VAT noVatRef = vatsDAO.findByName(oldDocument.getNovatname());
@@ -595,8 +602,7 @@ public class MigrationManager {
 				
 				document.setConsultant(oldDocument.getConsultant());
 				document.setPrinted(oldDocument.isPrinted());
-//				document.setNetGross(oldDocument.getNetGross());
-				//document.setDeposit(oldDocument.Deposit);
+				document.setDeposit(oldDocument.isIsdeposit());
 				document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
 				document.setOrderDate(getSaveParsedDate(oldDocument.getOrderdate()));
 				document.setServiceDate(getSaveParsedDate(oldDocument.getServicedate()));
@@ -683,10 +689,11 @@ public class MigrationManager {
 				item.setItemVat(vatRef);
 			}
 			// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
+			item.setNoVat(oldItem.isNovat());
 			item.setOptional(oldItem.isOptional());
 			// owner field (oldItem) contains a reference to the containing document - we don't need it
 			item.setPictureName(oldItem.getPicturename());
-			item.setPrice(oldItem.getPrice());
+			item.setPrice(roundValue(oldItem.getPrice()));
 			if(oldItem.getProductid() >= 0) {
 				Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
 				item.setProduct(prod);
@@ -699,7 +706,6 @@ public class MigrationManager {
 //			item.setWeight(oldItem.getWeight());
 			
 			// the owning document is _always_ the document which was given as parameter herein
-//   			item.setOwningDocument(document);
 			document.addToItems(item);
 		}
 	}
@@ -958,6 +964,7 @@ public class MigrationManager {
 				payment.setName(oldPayment.getName());
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
+				payment.setDepositText(oldPayment.getDeposittext());
 				// unused field
 //				payment.setDefaultPaid(oldPayment.isDefaultpaid());
 				payment.setDeleted(oldPayment.isDeleted());
@@ -1200,13 +1207,14 @@ public class MigrationManager {
                         tableId = ContactListTable.ID;
                         break;
                     case "DOCUMENTS":
-//                        tableId = DocumentsListTable.ID;
+                        tableId = DocumentsListTable.ID;
                         break;
                     case "ITEMS":
                         break;
                     case "LIST":
                         break;
                     case "PAYMENTS":
+                        tableId = PaymentListTable.ID;
                         break;
                     case "PRODUCTS":
                         break;
@@ -1319,15 +1327,17 @@ public class MigrationManager {
 		if (monitor.isCanceled()) { throw new InterruptedException(); }
 	}
 
-	/**
-	 * Rounds a value up to 5 digits after decimal point.
-	 * 
-	 * @param value the value to round
-	 * @return rounded value
-	 */
-	private double roundValue(double value) {
-	     int scale = 5;
-	     BigDecimal b = new BigDecimal(value);
-	     return b.setScale(scale,BigDecimal.ROUND_HALF_UP).doubleValue();
-	}
+    /**
+     * Rounds a value up to 5 digits after decimal point. This is used mostly
+     * for currency values or some percentage values.
+     * 
+     * @param value
+     *            the value to round
+     * @return rounded value
+     */
+    private double roundValue(double value) {
+        int scale = 5;
+        BigDecimal b = new BigDecimal(value);
+        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
 }

@@ -75,7 +75,6 @@ public class ErrorViewHandler {
                     newErrorString += errorLogEntry.getMessage();
                 }
                 
-                ((ErrorView)errorPart.getObject()).setErrorText(newErrorString);
                 if (errorPart.isVisible()) {
                     partService.showPart(errorPart,
                             PartState.VISIBLE);
@@ -87,6 +86,7 @@ public class ErrorViewHandler {
                     partService.showPart(errorPart,
                             PartState.ACTIVATE);
                 }
+                ((ErrorView)errorPart.getObject()).setErrorText(newErrorString);
             }
         }
         catch (IllegalStateException ise) {

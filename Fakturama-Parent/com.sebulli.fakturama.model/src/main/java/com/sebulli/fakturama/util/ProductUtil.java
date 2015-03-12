@@ -18,7 +18,7 @@ import com.sebulli.fakturama.model.Product;
 public final class ProductUtil {
        
     @Inject
-    @Preference(nodePath="/instance/com.sebulli.fakturama.rcp")
+    @Preference//(nodePath="/instance/com.sebulli.fakturama.rcp")
     private IEclipsePreferences eclipsePrefs;
     
     /**

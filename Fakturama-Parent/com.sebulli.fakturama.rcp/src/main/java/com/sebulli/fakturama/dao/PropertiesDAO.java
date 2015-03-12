@@ -1,5 +1,7 @@
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -28,12 +30,12 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-//    @GeminiPersistenceContext(unitName = "mysql-datasource")
-//    @GeminiPersistenceContext(unitName = "origin-datasource")
+    //    @GeminiPersistenceContext(unitName = "mysql-datasource")
+    //    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
     protected Class<UserProperty> getEntityClass() {
-    	return UserProperty.class;
+        return UserProperty.class;
     }
 
     @PreDestroy
@@ -42,7 +44,7 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
             getEntityManager().close();
         }
     }
-    
+
     /**
      * Finds a {@link UserProperty} by a given {@link OldProperties}.
      * 
@@ -58,17 +60,45 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
         return getEntityManager().createQuery(cq).getSingleResult();
     }
 
-	/**
-	 * @return the em
-	 */
-	protected EntityManager getEntityManager() {
-		return em;
-	}
+    /**
+     * @return the em
+     */
+    protected EntityManager getEntityManager() {
+        return em;
+    }
 
-	/**
-	 * @param em the em to set
-	 */
-	protected void setEntityManager(EntityManager em) {
-		this.em = em;
-	}
+    /**
+     * @param em
+     *            the em to set
+     */
+    protected void setEntityManager(EntityManager em) {
+        this.em = em;
+    }
+
+    /**
+     * Updates a user property. If the given property isn't available then it
+     * will be created.
+     * 
+     * @param key
+     * @param value
+     */
+    public void setProperty(String key, String value) {
+        try {
+            UserProperty prop = findByName(key);
+            if (prop != null) {
+                prop.setValue(value);
+                update(prop);
+            }
+            else {
+                prop = new UserProperty();
+                prop.setName(key);
+                prop.setValue(value);
+                save(prop);
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

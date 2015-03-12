@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -54,7 +55,8 @@ import com.sebulli.fakturama.resources.core.IconSize;
 
 public class InitialStartupDialog extends TitleAreaDialog {
 
-	private static final String DEFAULT_JDBC_CLASS = "org.apache.derby.jdbc.EmbeddedDriver";
+//	private static final String DEFAULT_JDBC_CLASS = "org.apache.derby.jdbc.EmbeddedDriver";
+	private static final String DEFAULT_JDBC_CLASS = "org.hsqldb.jdbc.JDBCDriver";
     private Text txtWorkdir, txtOldWorkdir, txtJdbcUrl, txtUser, txtPassword;
 	private ComboViewer comboDriver;
 
@@ -82,6 +84,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	private List<ServiceReference<DataSourceFactory>> connectionProviders = new ArrayList<>();
     private int jdbcClassComboIndex = 0;
     private final DirectoryChecker dirChecker;
+    private Composite dbSettings;
+    private Button btnUseDefaultDb;
 
 	/**
 	 * Create the dialog.
@@ -104,21 +108,22 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		parent.setText(msg.startFirstSelectWorkdir);
 		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
 		Collection<ServiceReference<DataSourceFactory>> serviceReferences;
-        String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "");
+        String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "org.hsqldb.jdbc.JDBCDriver");
 		try {
 			// get all available Datasources (which are registered in OSGi context
 			// and store them in a hash for using in ComboBox
 			serviceReferences = bundleContext.getServiceReferences(DataSourceFactory.class, null);
+//			serviceReferences.stream()
 			int i = 0;
 			for (ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
-//				DataSourceFactory s = (DataSourceFactory) bundleContext.getService(serviceReference);
 				connectionProviders.add(serviceReference);
 				if(StringUtils.equalsIgnoreCase((String)serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), oldJdbcDriverClass)) {
 				    jdbcClassComboIndex = i;
 				}
-				log.info(String.format("adding [%s (%s)] as DB Connection Provider", 
+				log.info(String.format("adding [%s (%s), %s] as DB Connection Provider", 
 						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME),
-						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION)));
+						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION),
+						StringUtils.substringAfterLast((String) serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), ".")));
 				i++;
 			}
 
@@ -127,10 +132,15 @@ public class InitialStartupDialog extends TitleAreaDialog {
             // jdbc:derby://localhost:1527/<databasename>;user=<username>;password=<password>
             // jdbc:derby://localhost:1527/c:/my-db-dir/my-db-name;user=<username>;password=<password>
             jdbcUrlMap.put("org.apache.derby.jdbc.ClientDriver", "jdbc:derby://localhost:1527/<databasename>");
+            jdbcUrlMap.put("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby://localhost:1527/<databasename>");
             
             // MySQL
             // jdbc:mysql://[<host>][:<port>]/<database>[?propertyName1][=propertyValue1][&propertyName2][=propertyValue2]...
             jdbcUrlMap.put("com.mysql.jdbc.Driver", "jdbc:mysql://[<host>][:<port>]/<database>");
+            
+            // HSQL (File) => this is the original setting from Fakturama 1.x
+            // "jdbc:hsqldb:file:/path/to/database;shutdown=true
+            jdbcUrlMap.put("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:/path/to/database;shutdown=true");
 
 		}
 		catch (InvalidSyntaxException e) {
@@ -188,12 +198,28 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		btnOldDirChooser.setToolTipText(msg.startFirstSelectOldworkdirVerbose);
 		btnOldDirChooser.addSelectionListener(new DirectoryChooser(txtOldWorkdir, true));
 		
+        btnUseDefaultDb = new Button(container, SWT.CHECK);
+        btnUseDefaultDb.setText("use default DB settings");
+        btnUseDefaultDb.setSelection(true);
+        btnUseDefaultDb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        btnUseDefaultDb.setToolTipText("Create the DB in working directory with default settings.");
+        btnUseDefaultDb.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                dbSettings.setVisible(!((Button)e.getSource()).getSelection());
+            }
+        });
+		
+		dbSettings = new Composite(container, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(dbSettings);
+        dbSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        dbSettings.setVisible(false);  // hide initially
 		// 3rd row
-		Label lblDatabase = new Label(container, SWT.NONE);
+		Label lblDatabase = new Label(dbSettings, SWT.NONE);
 		lblDatabase.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDatabase.setText(msg.startFirstSelectDbCredentialsName);
 		
-		comboDriver = new ComboViewer(container, SWT.NONE);
+		comboDriver = new ComboViewer(dbSettings, SWT.NONE);
 		comboDriver.setContentProvider(ArrayContentProvider.getInstance());
 		comboDriver.setInput(connectionProviders);
 		comboDriver.setLabelProvider(new LabelProvider() {
@@ -202,8 +228,9 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			public String getText(Object element) {
 				String driverName = (String) ((ServiceReference<DataSourceFactory>)element).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
 				String jdbcVersion = (String) ((ServiceReference<DataSourceFactory>)element).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION);
+				String scope = StringUtils.substringAfterLast((String) ((ServiceReference<DataSourceFactory>)element).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), ".");
 				if(jdbcVersion != null) {
-					driverName = String.format("%s (%s)", driverName, jdbcVersion);
+					driverName = String.format("%s (%s), %s", driverName, jdbcVersion, scope);
 				}
 				return driverName;
 			}
@@ -223,28 +250,28 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		combo.select(jdbcClassComboIndex);
 
 		// 4th row
-		Label lblJdbcurl = new Label(container, SWT.NONE);
+		Label lblJdbcurl = new Label(dbSettings, SWT.NONE);
 		lblJdbcurl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblJdbcurl.setText(msg.startFirstSelectDbCredentialsJdbc);
 		
-		txtJdbcUrl = new Text(container, SWT.BORDER);
+		txtJdbcUrl = new Text(dbSettings, SWT.BORDER);
 		// if an old value is set, we use it
 		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, "jdbc:derby:memory:test;create=true"));
 		txtJdbcUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		// 5th row
-		Label lblUser = new Label(container, SWT.NONE);
+		Label lblUser = new Label(dbSettings, SWT.NONE);
 		lblUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblUser.setText(msg.startFirstSelectDbCredentialsUser);
-		txtUser = new Text(container, SWT.BORDER);
+		txtUser = new Text(dbSettings, SWT.BORDER);
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		txtUser.setText(preferences.get(PersistenceUnitProperties.JDBC_USER, ""));
 
-		Label lblPassword = new Label(container, SWT.NONE);
+		Label lblPassword = new Label(dbSettings, SWT.NONE);
 		lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPassword.setText(msg.startFirstSelectDbCredentialsPassword);
 
-		txtPassword = new Text(container, SWT.BORDER | SWT.PASSWORD);
+		txtPassword = new Text(dbSettings, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		txtPassword.setText(preferences.get(PersistenceUnitProperties.JDBC_PASSWORD, ""));
 
@@ -288,25 +315,34 @@ public class InitialStartupDialog extends TitleAreaDialog {
 
 		// storing DB credentials
 		try {
-			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
-			preferences.put(PersistenceUnitProperties.JDBC_URL, txtJdbcUrl.getText());
-			preferences.put(PersistenceUnitProperties.JDBC_USER, txtUser.getText());
-			preferences.put(PersistenceUnitProperties.JDBC_PASSWORD, txtPassword.getText());   // TODO encrypt!!!
-			preferences.putBoolean("jdbc_reconnect", true);
-			preferences.flush();
-		
-			dirChecker.checkPreviousVersion(txtOldWorkdir.getText());
-			
-			// handle workdir
 			workspace = txtWorkdir.getText();
+			
+			// handle workdir and JDBC connection
 			if (!workspace.isEmpty()) {
+    			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
+    			
+    			// for default DB setting we use the workdir as DB store
+    			if(btnUseDefaultDb.getSelection()) {
+    			    String jdbcUrl = String.format("jdbc:hsqldb:file:%s/Database/Database;shutdown=true", workspace);
+    			    preferences.put(PersistenceUnitProperties.JDBC_URL, jdbcUrl);
+    			    preferences.put(PersistenceUnitProperties.JDBC_USER, "sa");
+    			    preferences.put(PersistenceUnitProperties.JDBC_PASSWORD, "");
+    			} else {
+    			    preferences.put(PersistenceUnitProperties.JDBC_URL, txtJdbcUrl.getText());
+    			    preferences.put(PersistenceUnitProperties.JDBC_USER, txtUser.getText());
+    			    preferences.put(PersistenceUnitProperties.JDBC_PASSWORD, txtPassword.getText());   // TODO encrypt!!!
+    			}
+    			preferences.putBoolean("jdbc_reconnect", true);
+    			preferences.flush();
+    		
+    			dirChecker.checkPreviousVersion(txtOldWorkdir.getText());
 				// Store the requested directory in a preference value
 				preferences.put(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, workspace);
 				preferences.flush();
 				// restarting application
 				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
-				super.okPressed();
 			}
+			super.okPressed();
 		} catch (BackingStoreException e) {
 			log.error(e);
 		}

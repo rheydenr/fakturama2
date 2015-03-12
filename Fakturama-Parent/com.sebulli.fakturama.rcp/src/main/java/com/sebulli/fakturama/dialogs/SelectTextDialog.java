@@ -26,7 +26,7 @@ import com.sebulli.fakturama.Activator;
  * 
  * @author Gerd Bartelt
  */
-public class SelectTextDialog extends SelectDataSetDialog {
+public class SelectTextDialog  {
 
 //	/**
 //	 * Constructor

@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -26,6 +27,7 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -64,9 +66,8 @@ public class BrowserEditor {
     @Preference
     protected IEclipsePreferences preferences;
     
-    @Inject
-    @Preference(nodePath=Constants.DEFAULT_PREFERENCES_NODE)
-    private IEclipsePreferences eclipseDefaultPrefs;
+    @Inject @Optional
+    private IPreferenceStore pref;
 
     @Inject
     private Logger log;
@@ -114,6 +115,8 @@ public class BrowserEditor {
         if (this.isFakturamaProjectUrl)
             url = OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL;
         else {
+//            pref.getString("CONTACT_FORMAT_GREETING_COMPANY");
+//            preferences.get("CONTACT_FORMAT_GREETING_COMPANY", pref.getString("CONTACT_FORMAT_GREETING_COMPANY"));
             url = preferences.get(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
 
             // In case of an empty URL: use the start page
@@ -126,10 +129,13 @@ public class BrowserEditor {
         }
 
         // In case of an URL with only "-" do not show an editor
-        if (url.equals("-"))
+        if (url.equals("-")) {
+            // if we do this, the initial view gets damaged!
+//            part.setVisible(false);
             return;
+        }
 		
-		showURLbar = getBooleanPreference(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, true);
+		showURLbar = getBooleanPreference(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR);
 
 		GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
@@ -154,13 +160,8 @@ public class BrowserEditor {
 			//T: Browser Editor
 			//T: Tool Tip Text
 			backButton.setToolTipText(msg.editorBrowserButtonBack);
+			backButton.setImage(Icon.BROWSER_BROWSER_BACK.getImage(IconSize.BrowserIconSize));
 
-			try {
-				backButton.setImage(Icon.BROWSER_BROWSER_BACK.getImage(IconSize.BrowserIconSize));
-			}
-			catch (Exception e) {
-				log.error(e, "Icon not found");
-			}
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(backButton);
 			backButton.addMouseListener(new MouseAdapter() {
 
@@ -176,13 +177,8 @@ public class BrowserEditor {
 			//T: Browser Editor
 			//T: Tool Tip Text
 			forwardButton.setToolTipText(msg.editorBrowserButtonForward);
+			forwardButton.setImage(Icon.BROWSER_BROWSER_FORWARD.getImage(IconSize.BrowserIconSize));
 
-			try {
-				forwardButton.setImage(Icon.BROWSER_BROWSER_FORWARD.getImage(IconSize.BrowserIconSize));
-			}
-			catch (Exception e) {
-				log.error(e, "Icon not found");
-			}
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(forwardButton);
 			forwardButton.addMouseListener(new MouseAdapter() {
 
@@ -200,13 +196,8 @@ public class BrowserEditor {
 			//T: Browser Editor
 			//T: Tool Tip Text
 			reloadButton.setToolTipText(msg.editorBrowserButtonReload);
+			reloadButton.setImage(Icon.BROWSER_BROWSER_RELOAD.getImage(IconSize.BrowserIconSize));
 
-			try {
-				reloadButton.setImage(Icon.BROWSER_BROWSER_RELOAD.getImage(IconSize.BrowserIconSize));
-			}
-			catch (Exception e) {
-				log.error(e, "Icon not found");
-			}
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(reloadButton);
 			reloadButton.addMouseListener(new MouseAdapter() {
 
@@ -223,13 +214,8 @@ public class BrowserEditor {
 			//T: Browser Editor
 			//T: Tool Tip Text
 			stopButton.setToolTipText(msg.editorBrowserButtonStop);
+			stopButton.setImage(Icon.BROWSER_BROWSER_STOP.getImage(IconSize.BrowserIconSize));
 
-			try {
-				stopButton.setImage(Icon.BROWSER_BROWSER_STOP.getImage(IconSize.BrowserIconSize));
-			}
-			catch (Exception e) {
-				log.error(e, "Icon not found");
-			}
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(stopButton);
 			stopButton.addMouseListener(new MouseAdapter() {
 
@@ -247,13 +233,8 @@ public class BrowserEditor {
 			//T: Browser Editor
 			//T: Tool Tip Text
 			hButton.setToolTipText(msg.editorBrowserButtonHome);
+			hButton.setImage(Icon.BROWSER_BROWSER_HOME.getImage(IconSize.BrowserIconSize));
 
-			try {
-				hButton.setImage(Icon.BROWSER_BROWSER_HOME.getImage(IconSize.BrowserIconSize));
-			}
-			catch (Exception e) {
-				log.error(e, "Icon not found");
-			}
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(hButton);
 			hButton.addMouseListener(new MouseAdapter() {
 
@@ -302,7 +283,7 @@ public class BrowserEditor {
 			int browserStyle = SWT.NONE;
 			
 			// Use the browser style from the preferences
-			int browserType = getIntPreference(Constants.PREFERENCES_BROWSER_TYPE, 0);
+			int browserType = getIntPreference(Constants.PREFERENCES_BROWSER_TYPE);
 			
 			if (browserType == 1)
 				browserStyle = SWT.WEBKIT;
@@ -397,10 +378,12 @@ public class BrowserEditor {
 	
 	/**
 	 * Go to the start page (fakturama.sebulli.com)
+	 * @param url 
 	 */
-	public void resetUrl() {
+	public void resetUrl(String url) {
 
 		// set the URL
+	    this.url = url;
 		if (browser != null)
 			browser.setUrl(url);
 	}
@@ -420,9 +403,9 @@ public class BrowserEditor {
 	/**
 	 * Fills the form of the parcel service with the address data
 	 */
-	//public void fillForm(Browser browser, IEditorInput editorInput) {
-	//	this.browser = browser;
-	//}
+	public void fillForm(Browser browser) {
+		this.browser = browser;
+	}
 	
 	/**
 	 * Test the parcel service form.
@@ -433,12 +416,12 @@ public class BrowserEditor {
 	}
 
     
-    private int getIntPreference(String preference, int defaultValue) {
-        return preferences.getInt(preference, eclipseDefaultPrefs.getInt(preference, defaultValue));
+    private int getIntPreference(String preference) {
+        return preferences.getInt(preference, pref.getInt(preference));
     }
 
-    private boolean getBooleanPreference(String preference, boolean defaultValue) {
-        return preferences.getBoolean(preference, eclipseDefaultPrefs.getBoolean(preference, defaultValue));
+    private boolean getBooleanPreference(String preference) {
+        return preferences.getBoolean(preference, pref.getBoolean(preference));
     }
 
 }
