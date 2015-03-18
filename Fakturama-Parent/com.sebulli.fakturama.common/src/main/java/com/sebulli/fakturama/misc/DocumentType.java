@@ -143,7 +143,7 @@ public enum DocumentType {
 	 * @return The DocumentType that corresponds to the String
 	 */
 	public static DocumentType findDocumentTypeByDescription(String documentType) {
-		DocumentType retval = null;
+		DocumentType retval = DocumentType.NONE;
 		for (DocumentType selfDocumentType : values()) {
 			if (selfDocumentType.getSingularKey().equalsIgnoreCase(
 					documentType)) {
@@ -155,7 +155,7 @@ public enum DocumentType {
 	}
 	
 	public static DocumentType findDocumentTypeByClass(Class clazz) {
-        DocumentType retval = null;
+        DocumentType retval = DocumentType.NONE;
         int typeCount = values().length;
         for (int i = 0; i < typeCount; i++) {
             if(getTypeAsString(i).equalsIgnoreCase(clazz.getSimpleName())) {
@@ -191,7 +191,7 @@ public enum DocumentType {
 	 * @return The DocumentType
 	 */
 	public static DocumentType findByKey(int key) {
-		DocumentType retval = null;
+		DocumentType retval = DocumentType.NONE;
 		for (DocumentType selfDocumentType : values()) {
 			if (selfDocumentType.getKey() == key) {
 				retval = selfDocumentType;

@@ -46,13 +46,7 @@
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Address"/>
-      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
-        <entity>
-          <entityListeners>
-            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
-          </entityListeners>
-        </entity>
-      </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="Address" qualifiedClassName="com.sebulli.fakturama.model.Address" simpleClassName="Address" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
@@ -505,13 +499,6 @@
       <eClass href="Fakturama.ecore#//DocumentItem"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="Holds an item of a document." name="DocumentItem" qualifiedClassName="com.sebulli.fakturama.model.DocumentItem" simpleClassName="DocumentItem" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
-      </eClassAnnotations>
-      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
-        <entity>
-          <entityListeners>
-            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
-          </entityListeners>
-        </entity>
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//DocumentItem/category"/>

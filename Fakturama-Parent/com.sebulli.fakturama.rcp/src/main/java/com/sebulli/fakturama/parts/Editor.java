@@ -14,8 +14,8 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -294,29 +294,23 @@ public abstract class Editor<T extends IEntity> {
 		int nr;
 
 		// Store the date of now to a property
-		Calendar calendar = new GregorianCalendar();
-		int yyyy = calendar.get(Calendar.YEAR);
-		int mm = calendar.get(Calendar.MONTH) + 1;
-		int dd = calendar.get(Calendar.DAY_OF_MONTH);
+		LocalDate now = LocalDate.now();
+		int yyyy = now.getYear();
+		int mm = now.getMonthValue();
+		int dd = now.getDayOfMonth();
 		String lastSetNextNrDate = defaultValuePrefs.get("last_setnextnr_date_" + getEditorID().toLowerCase(), "2000-01-01");
 
 		int last_yyyy = 0; 
 		int last_mm = 0; 
 		int last_dd = 0; 
 
-		// Get the year, month and date of a string like "2011-12-24"
-		if (lastSetNextNrDate.length() == 10) {
-			try {
-				/*
-				 * TODO use org.apache.commons.convert
-						Class DateTimeConverters.StringToDate
-				 */
-				last_yyyy = Integer.parseInt(lastSetNextNrDate.substring(0, 4));
-				last_mm = Integer.parseInt(lastSetNextNrDate.substring(5, 7));
-				last_dd = Integer.parseInt(lastSetNextNrDate.substring(8, 10));
-			}
-			catch (Exception e){ /* TODO give a reasonable Exception! */};
-		}
+        // Get the year, month and date of a string like "2011-12-24"
+        if (lastSetNextNrDate.length() == 10) {
+            LocalDate localDate = LocalDate.parse(lastSetNextNrDate);
+            last_yyyy = localDate.getYear();
+            last_mm = localDate.getMonthValue();
+            last_dd = localDate.getDayOfMonth();
+        }
 		
 		// Get the last (it's the next free) document number from the preferences
 		format = defaultValuePrefs.get(prefStrFormat, "NO_DEFAULT_VALUE");
@@ -382,12 +376,8 @@ public abstract class Editor<T extends IEntity> {
 		defaultValuePrefs.putInt(prefStrNr, nr);
 
 		// Store the date of now to a property
-		Calendar calendar = new GregorianCalendar();
-		int yyyy = calendar.get(Calendar.YEAR);
-		int mm = calendar.get(Calendar.MONTH) + 1;
-		int dd = calendar.get(Calendar.DAY_OF_MONTH);
-		defaultValuePrefs.put("last_setnextnr_date_" + getEditorID().toLowerCase(), String.format("%04d-%02d-%02d", yyyy, mm, dd));
-
+		LocalDate now = LocalDate.now();
+		defaultValuePrefs.put("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
 	}
 	
 	

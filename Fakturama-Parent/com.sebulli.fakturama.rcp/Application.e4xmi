@@ -241,26 +241,51 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FTj6sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.payments.id" label="%command.payments.name" iconURI="icon://COMMAND_PAYMENT" command="__1BmsCY8EeSOztFzZzvbWw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FtMisEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.shippings.id" label="%command.shippings.name" iconURI="icon://COMMAND_SHIPPING" command="_Y1nWUCY9EeSOztFzZzvbWw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUjsEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.vats.id" label="%command.vats.name" iconURI="icon://COMMAND_VAT" mnemonics="" command="_f9TOgJNwEeOHwsccdr5WIQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GYrIoEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.texts.id" label="%command.texts.name" iconURI="icon://COMMAND_TEXT"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_JKS7sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.lists.id" label="%command.lists.name" iconURI="icon://COMMAND_LIST"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_J3O6MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.receiptvouchers.id" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GYrIoEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.texts.id" label="%command.texts.name" iconURI="icon://COMMAND_TEXT" command="_fXJwsCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_JKS7sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.lists.id" label="%command.lists.name" iconURI="icon://COMMAND_LIST" command="_kmeVQCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_rAi1sCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_J3O6MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.receiptvouchers.id" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER" command="_xbxzwCY9EeSOztFzZzvbWw"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_X0yC4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.new.id" label="%main.menu.new">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_VrJiQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.document.id" label="%main.menu.new.letter" iconURI="icon://COMMAND_LETTER" tooltip="%main.menu.new: %main.menu.new.letter" command="_huYFgEstEeOZ37-tYt-QvQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_WQN-MEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.offer.id" label="%main.menu.new.offer" iconURI="icon://COMMAND_OFFER" command="_musJMEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Wk5NsEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.order.id" label="%main.menu.new.order" iconURI="icon://COMMAND_ORDER" command="_nD_DwEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_XJhkwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.confirmation.id" label="%main.menu.new.confirmation" iconURI="icon://COMMAND_CONFIRMATION" command="_nXSaQEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Xc07QEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.invoice.id" label="%main.menu.new.invoice" iconURI="icon://COMMAND_INVOICE" command="_nzNhQEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_XuO0UEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.delivery.id" label="%main.menu.new.deliverynote" iconURI="icon://COMMAND_DELIVERY" command="_octxQEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YATbwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.credit.id" label="%main.menu.new.credit" iconURI="icon://COMMAND_CREDIT" command="_o10NwEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YYQowEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.dunning.id" label="%main.menu.new.dunning" iconURI="icon://COMMAND_DUNNING" command="_pO1xwEvnEeOlALHF9EqnUg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YrjYMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.proforma.id" label="%main.menu.new.proforma" iconURI="icon://COMMAND_PROFORMA" command="_plRUwEvnEeOlALHF9EqnUg"/>
+      <children xsi:type="menu:Menu" xmi:id="_X0yC4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.new.id" label="%main.menu.new" mnemonics="U">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_VrJiQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.document.id" label="%main.menu.new.letter" iconURI="icon://COMMAND_LETTER" tooltip="%main.menu.new: %main.menu.new.letter" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+          <parameters xmi:id="_b4buYM0CEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.39" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_rxlYYM0CEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.40" name="com.sebulli.fakturama.editors.category" value="LETTER"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_WQN-MEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.offer.id" label="%main.menu.new.offer" iconURI="icon://COMMAND_OFFER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+          <parameters xmi:id="_klFqkM0EEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.41" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_nS7J0M0EEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.42" name="com.sebulli.fakturama.editors.category" value="OFFER"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Wk5NsEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.order.id" label="%main.menu.new.order" iconURI="icon://COMMAND_ORDER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+          <parameters xmi:id="_qnG3YM0EEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.43" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_s7HhYM0EEeSO-rn3gDcQLw" elementId="com.sebulli.fakturama.rcp.parameter.44" name="com.sebulli.fakturama.editors.category" value="ORDER"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_XJhkwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.confirmation.id" label="%main.menu.new.confirmation" iconURI="icon://COMMAND_CONFIRMATION" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+          <parameters xmi:id="_88vFcM21EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.45" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_-xlHMM21EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.46" name="com.sebulli.fakturama.editors.category" value="CONFIRMATION"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Xc07QEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.invoice.id" label="%main.menu.new.invoice" iconURI="icon://COMMAND_INVOICE" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+          <parameters xmi:id="_GZHgUM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.47" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_PVQU4M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.52" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_XuO0UEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.delivery.id" label="%main.menu.new.deliverynote" iconURI="icon://COMMAND_DELIVERY" command="_octxQEvnEeOlALHF9EqnUg">
+          <parameters xmi:id="_JOd80M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.48" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_RWGyUM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.53" name="com.sebulli.fakturama.editors.category" value="DELIVERY"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YATbwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.credit.id" label="%main.menu.new.credit" iconURI="icon://COMMAND_CREDIT" command="_o10NwEvnEeOlALHF9EqnUg">
+          <parameters xmi:id="_J-r40M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.49" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_R__c0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.54" name="com.sebulli.fakturama.editors.category" value="CREDIT"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YYQowEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.dunning.id" label="%main.menu.new.dunning" iconURI="icon://COMMAND_DUNNING" command="_pO1xwEvnEeOlALHF9EqnUg">
+          <parameters xmi:id="_Kn0VYM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.50" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_StA64M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.55" name="com.sebulli.fakturama.editors.category" value="DUNNING"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YrjYMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.proforma.id" label="%main.menu.new.proforma" iconURI="icon://COMMAND_PROFORMA" command="_plRUwEvnEeOlALHF9EqnUg">
+          <parameters xmi:id="_LSJr0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.51" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+          <parameters xmi:id="_TxXT0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.56" name="com.sebulli.fakturama.editors.category" value="PROFORMA"/>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_c5QuwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.sep02.id"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Y_eZwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.product.id" label="%main.menu.new.product.name" iconURI="icon://COMMAND_PRODUCT" command="_MFWfwEy7EeOA3qmx22wNtw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZWvqQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.contact.id" label="%main.menu.new.contact.name" iconURI="icon://COMMAND_CONTACT" command="_A9gvoDtXEeOcltwCzP-ZbQ">
-          <parameters xmi:id="_ByqYEHuwEeSFwer2JIsM3w" elementId="com.sebulli.fakturama.menu.newcontact.handler.param0" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.contactEditor"/>
-        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZWvqQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.contact.id" label="%main.menu.new.contact.name" iconURI="icon://COMMAND_CONTACT" mnemonics="K" command="_c8eN4Ey7EeOA3qmx22wNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ZoNNsEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.payment.id" label="%main.menu.new.payment" iconURI="icon://COMMAND_PAYMENT" mnemonics="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_Lc-YIIAMEeShutWH80SHMA" elementId="com.sebulli.fakturama.rcp.parameter.8" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.paymentEditor"/>
         </children>
@@ -287,13 +312,13 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_bkIEgEmSEeOdI62MMt4VXQ" elementId="menu:main.menu.open_www.id" label="%command.browser.name" iconURI="icon://COMMAND_WWW" tooltip="%command.browser.tooltip" command="_qPSyAEy_EeOA3qmx22wNtw">
           <parameters xmi:id="_bRkK0MK-EeSdRN1ye95QZQ" elementId="com.sebulli.fakturama.rcp.parameter.38" name="com.sebulli.fakturama.command.browser.useprojecturl" value="TRUE"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_NVowEEmTEeOdI62MMt4VXQ" elementId="org.eclipse.ui.help.helpContents" label="%main.menu.help.contents"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Ynw5sEmVEeOdI62MMt4VXQ" elementId="helpSearch" label="%main.menu.help.search"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZEcOoEmVEeOdI62MMt4VXQ" elementId="dynamicHelp" label="%main.menu.help.dynamic"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_NVowEEmTEeOdI62MMt4VXQ" elementId="org.eclipse.ui.help.helpContents" label="%main.menu.help.contents" enabled="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Ynw5sEmVEeOdI62MMt4VXQ" elementId="helpSearch" label="%main.menu.help.search" enabled="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZEcOoEmVEeOdI62MMt4VXQ" elementId="dynamicHelp" label="%main.menu.help.dynamic" enabled="false"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_n_ajsEmWEeOdI62MMt4VXQ" elementId="com.sebulli.fakturama.rcp.menuseparator.3"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZbomoEmVEeOdI62MMt4VXQ" elementId="intro" label="%main.menu.help.intro"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZbomoEmVEeOdI62MMt4VXQ" elementId="intro" label="%main.menu.help.intro" enabled="false"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_oRa5sEmWEeOdI62MMt4VXQ" elementId="com.sebulli.fakturama.rcp.menuseparator.4"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZyEJoEmVEeOdI62MMt4VXQ" elementId="resetPerspective" label="%main.menu.help.reset"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZyEJoEmVEeOdI62MMt4VXQ" elementId="resetPerspective" label="%main.menu.help.reset" enabled="false"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" elementId="about" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.help.about" iconURI="icon://COMMAND_APP" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
       </children>
     </mainMenu>
@@ -315,17 +340,18 @@
   <handlers xmi:id="_OXcLEJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.rcp.handler.openvats" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenVatsHandler" command="_f9TOgJNwEeOHwsccdr5WIQ"/>
   <handlers xmi:id="_UsMLoIAKEeShutWH80SHMA" elementId="com.sebulli.fakturama.rcp.handler.openshippings" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenShippingsHandler" command="_Y1nWUCY9EeSOztFzZzvbWw"/>
   <handlers xmi:id="_UyxmEKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.rcp.handler.opendocuments" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenDocumentsHandler" command="_Gp8DIKAaEeSCTeF-q1OtSg"/>
+  <handlers xmi:id="_ZBS4gENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.handler.webShopImport" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.WebShopImportHandler" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
   <handlers xmi:id="__VvQYEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.handler.selectWorkspace" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
+  <handlers xmi:id="_YEaEsMExEeSyj41D59qmtg" elementId="com.sebulli.fakturama.handler.openbrowser" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenBrowserEditorHandler" command="_qPSyAEy_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_jFM_cEs2EeOZ37-tYt-QvQ" elementId="com.sebulli.fakturama.new.letter.handler" command="_huYFgEstEeOZ37-tYt-QvQ"/>
   <handlers xmi:id="_NdhkECY6EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.new.product.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.NewProductHandler" command="_MFWfwEy7EeOA3qmx22wNtw"/>
+  <handlers xmi:id="_te9tsM2mEeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.new.contact.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.NewContactHandler" command="_c8eN4Ey7EeOA3qmx22wNtw"/>
   <handlers xmi:id="_7l2HYDtWEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.openDetailEditor" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CallEditor" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
-  <handlers xmi:id="_ZBS4gENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.handler.webShopImport" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.WebShopImportHandler" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
   <handlers xmi:id="_JQthYDxfEeS-t56iKjyYpA" elementId="com.sebulli.fakturama.handler.webShopImportManager" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.webshopimport.WebShopImportManager" command="_-hDgwDxeEeS-t56iKjyYpA"/>
   <handlers xmi:id="_h5-B0EOAEeSkjYQl_biqUA" elementId="com.sebulli.fakturama.handler.openCalculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenCalculatorHandler" command="_-UipAEy_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_TsyuYG3mEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ErrorViewHandler" command="_VpeoEG3nEeS8E6Dq10mFSA"/>
   <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
-  <handlers xmi:id="_YEaEsMExEeSyj41D59qmtg" elementId="com.sebulli.fakturama.handler.openbrowser" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenBrowserEditorHandler" command="_qPSyAEy_EeOA3qmx22wNtw"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -362,7 +388,7 @@
   <commands xmi:id="_xbxzwCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openReceiptVouchers" commandName="%command.receiptvouchers.name"/>
   <commands xmi:id="_c8eN4Ey7EeOA3qmx22wNtw" elementId="command.new.contact" commandName="%toolbar.new.contact.name" description="%command.new.contact.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_MFWfwEy7EeOA3qmx22wNtw" elementId="command.new.product" commandName="%toolbar.new.product.name" description="%command.new.product.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
-  <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip"/>
+  <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId=""/>
   </commands>

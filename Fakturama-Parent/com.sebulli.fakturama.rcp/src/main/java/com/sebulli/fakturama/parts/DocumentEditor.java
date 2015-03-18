@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.parts;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +42,6 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -49,15 +49,9 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.action.CoolBarManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -74,8 +68,6 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -83,11 +75,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -110,7 +100,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
@@ -150,7 +139,7 @@ import com.sebulli.fakturama.util.ProductUtil;
 public class DocumentEditor extends Editor<Document> {
 
 	// Editor's ID
-//    public static final String EDITOR_ID = "DocumentEditor";
+    public static final String EDITOR_ID = "DocumentEditor";
 	public static final String ID = "com.sebulli.fakturama.editors.documentEditor";
     
     private static final String TOOLITEM_COMMAND = "toolitem_command";
@@ -337,7 +326,6 @@ public class DocumentEditor extends Editor<Document> {
 		document.setPrinted(Boolean.TRUE);
 		// Refresh the table view
 		//refreshView();
-		//checkDirty();
 
 	}
 	
@@ -785,7 +773,8 @@ public class DocumentEditor extends Editor<Document> {
 
 			// .. get the document type (=the category) to ..
 			String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
-			documentType = DocumentType.findDocumentTypeByDescription(category);
+			BillingType billingType = BillingType.get(category);
+			documentType = DocumentType.findByKey(billingType.getValue());
 			if (documentType == DocumentType.NONE)
 				documentType = DocumentType.ORDER;
 
@@ -822,6 +811,7 @@ public class DocumentEditor extends Editor<Document> {
 			if (duplicated) {
 				document.setSourceDocument(parentDoc);
 			}
+            document.setBillingType(billingType);
 
 			// Copy the entry "message", or reset it to ""
 			if (!getBooleanPreference(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false)) {
@@ -829,9 +819,6 @@ public class DocumentEditor extends Editor<Document> {
 				document.setMessage2("");
 				document.setMessage3("");
 			}
-			
-			// Set the editor ID to the document type
-			setEditorID(documentType.getTypeAsString());
 
 			// get the parents document type
 			if (parentDoc != null) {
@@ -853,7 +840,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 			// Set the editors name
-            part.setLabel(documentType.getNewText());
+//            part.setLabel(documentType.getNewText());
 
 			// In a new document, set some standard values
 			if (!duplicated) {
@@ -932,8 +919,9 @@ public class DocumentEditor extends Editor<Document> {
 		// these items are copied back to the document and to the data base.
 		items = document.getItems();
 
-		billingAddress = ContactUtil.getInstance(preferences).getAddressAsString(document.getContact());
-		deliveryAddress = ContactUtil.getInstance(preferences).getAddressAsString(document.getDeliveryContact());
+		ContactUtil contactUtil = ContactUtil.getInstance(preferences);
+        billingAddress = contactUtil.getAddressAsString(document.getContact());
+		deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
 //				// Set the sign
 //				if (parentSign != documentType.sign())
@@ -1281,7 +1269,7 @@ public class DocumentEditor extends Editor<Document> {
 			//T: Tool Tip Text
 			dueDaysLabel.setToolTipText(msg.editorDocumentDuedaysTooltip);
 
-			GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(dueDaysLabel);
+			GridDataFactory.swtDefaults().indent(20, 0).align(SWT.END, SWT.CENTER).applyTo(dueDaysLabel);
 
 			// Creates the due days spinner
 			spDueDays = new Spinner(paidDataContainer, SWT.BORDER | SWT.RIGHT);
@@ -1302,7 +1290,6 @@ public class DocumentEditor extends Editor<Document> {
 					duedays = spDueDays.getSelection();
 					calendar.add(Calendar.DAY_OF_MONTH, duedays );
 					dtIssueDate.setSelection(calendar.getTime());
-//					checkDirty();
 				}
 			});
 
@@ -1320,7 +1307,7 @@ public class DocumentEditor extends Editor<Document> {
 			// Create the issue date widget
 			dtIssueDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
-			GridDataFactory.swtDefaults().applyTo(dtIssueDate);
+			GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					// Calculate the difference between the date of the
@@ -1333,7 +1320,6 @@ public class DocumentEditor extends Editor<Document> {
 					int days = (int) (difference / (1000 * 60 * 60 * 24));
 					duedays = days;
 					spDueDays.setSelection(days);
-//					checkDirty();
 				}
 			});
 
@@ -1359,7 +1345,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		dtPaidDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 		dtPaidDate.setToolTipText(paidDateLabel.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtPaidDate);
+		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(dtPaidDate);
 
 		// Set the paid date to the documents "paydate" parameter
 		dtPaidDate.setSelection(document.getPayDate());
@@ -1495,8 +1481,6 @@ public class DocumentEditor extends Editor<Document> {
 				updateIssueDate();
 			}
 		}
-//		checkDirty();
-
 	}
 	
 	
@@ -1514,39 +1498,7 @@ public class DocumentEditor extends Editor<Document> {
 //		printAction = new CreateOODocumentAction();
 //		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
 
-		// Show an info dialog, if this is a regular customer
-        if (documentType == DocumentType.ORDER && getBooleanPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true)) {
-			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
-			
-			if (getIntPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, 1) == 1) {
-				customerStaticstics.setContact(document.getContact());
-				customerStaticstics.setAddress(document.getManualAddress());
-	            customerStaticstics.makeStatistics(true);
-			} else {	
-                customerStaticstics.setContact(document.getContact());
-                customerStaticstics.makeStatistics(false);
-			}
-			
-			if (customerStaticstics.isRegularCustomer()) {
-
-				//T: Message Dialog
-				MessageDialog.openInformation(parent.getShell(), 
-						//T: Title of the customer statistics dialog
-						msg.dialogMessageboxTitleInfo,
-						document.getAddressFirstLine() + " " +
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart1 + " "+ customerStaticstics.getOrdersCount().toString() + " " + 
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart2 + "\n" + 
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart3 + " " + customerStaticstics.getLastOrderDate()  + "\n" +
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart4 + " " + customerStaticstics.getInvoices() + "\n" +
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart5 +" " + DataUtils.getInstance().doubleToFormattedPrice(customerStaticstics.getTotal()));
-			
-			}
-		}
+		showOrderStatisticDialog(parent);
 		
 		// Get some settings from the preference store
 		if (netgross == DocumentSummary.NOTSPECIFIED) {
@@ -1588,7 +1540,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Container for the document number and the date
 		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
+		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(5).applyTo(nrDateNetGrossComposite);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
 
 		// The document number is the document name
@@ -1606,7 +1558,7 @@ public class DocumentEditor extends Editor<Document> {
 		//T: Tool Tip Text
 		labelDate.setToolTipText(msg.editorDocumentDateTooltip);
 		
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDate);
+		GridDataFactory.swtDefaults().indent(20, 0).align(SWT.END, SWT.CENTER).applyTo(labelDate);
 
 		// Document date
 		dtDate = new CDateTime(nrDateNetGrossComposite, CDT.BORDER | CDT.DROP_DOWN);
@@ -1620,11 +1572,10 @@ public class DocumentEditor extends Editor<Document> {
 //					GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
 //					calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
 //					dtIssueDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-//					checkDirty();
 				}
 			}
 		});
-		GridDataFactory.swtDefaults().applyTo(dtDate);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(dtDate);
 		
 		// Set the dtDate widget to the documents date
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
@@ -1644,7 +1595,7 @@ public class DocumentEditor extends Editor<Document> {
 		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboNetGross.setLabelProvider(new ComboBoxLabelProvider<Integer, String>(netGrossContent));
 		comboNetGross.setInput(netGrossContent);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).grab(false, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboNetGross.getControl());
+		GridDataFactory.swtDefaults().indent(20, 0).hint(100, SWT.DEFAULT).applyTo(comboNetGross.getControl());
 		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -1652,7 +1603,6 @@ public class DocumentEditor extends Editor<Document> {
 				netgross = comboNetGross.getCombo().getSelectionIndex();
 				// recalculate the total sum
 				calculate();
-//				checkDirty();
 				updateUseGross(false);
 			}
 
@@ -1666,14 +1616,14 @@ public class DocumentEditor extends Editor<Document> {
 	
 		// The titleComposite contains the title and the document icon
 		Composite titleComposite = new Composite(top, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(titleComposite);
+		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(titleComposite);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.BOTTOM).span(2, 1).grab(true, false).applyTo(titleComposite);
 
 		// Set the title in large letters
 		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
 		String documentTypeString = msg.getMessageFromKey(DocumentType.findByKey(document.getBillingType().getValue()).getSingularKey());
 		if (documentType == DocumentType.DUNNING) {
-			documentTypeString = Integer.toString(dunningLevel) + ". " + documentTypeString;
+			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
 		}
 		labelDocumentType.setText(documentTypeString);
 		makeLargeLabel(labelDocumentType);
@@ -1681,46 +1631,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the document icon
 		Label labelDocumentTypeIcon = new Label(titleComposite, SWT.NONE);
-		try {
-		    Icon icon = null;
-		    switch (documentType) {
-            case INVOICE:
-                icon = Icon.ICON_INVOICE;
-                break;
-            case OFFER:
-                icon = Icon.ICON_OFFER;
-                break;
-            case ORDER:
-                icon = Icon.ICON_ORDER;
-                break;
-            case CREDIT:
-                icon = Icon.ICON_CREDIT;
-                break;
-            case DUNNING:
-                icon = Icon.ICON_DUNNING;
-                break;
-            case PROFORMA:
-                icon = Icon.ICON_PROFORMA;
-                break;
-            case LETTER:
-                icon = Icon.ICON_LETTER;
-                break;
-            case CONFIRMATION:
-                icon = Icon.ICON_CONFIRMATION;
-                break;
-            case DELIVERY:
-                icon = Icon.ICON_DELIVERY;
-                break;
-            default:
-                icon = Icon.ICON_ORDER;
-                break;
-            }
-			labelDocumentTypeIcon
+		Icon icon = createDocumentIcon();
+		labelDocumentTypeIcon
 					.setImage(icon.getImage(IconSize.ToolbarIconSize));
-		}
-		catch (IllegalArgumentException e) {
-			log.error(e, "Icon not found");
-		}
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.TOP).grab(true, false).applyTo(labelDocumentTypeIcon);
 
 		// Customer reference label
@@ -1729,16 +1642,13 @@ public class DocumentEditor extends Editor<Document> {
 		labelCustomerRef.setText(msg.editorDocumentFieldCustref);
 		//T: Tool Tip Text
 		labelCustomerRef.setToolTipText(msg.editorDocumentFieldCustrefTooltip);
-
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCustomerRef);
 
 		// Customer reference 
 		txtCustomerRef = new Text(top, SWT.BORDER); 
-		txtCustomerRef.setText(document.getCustomerRef()); 
 		txtCustomerRef.setToolTipText(labelCustomerRef.getToolTipText());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
-	 	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(txtCustomerRef);
-				
+	 	GridDataFactory.fillDefaults().hint(400, SWT.DEFAULT).applyTo(txtCustomerRef);
 				
 		// The extra settings composite contains additional fields like
 		// the no-Vat widget or a reference to the invoice
@@ -1757,6 +1667,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Consultant
 		txtConsultant = new Text(xtraSettingsComposite, SWT.BORDER);
 		txtConsultant.setToolTipText(labelConsultant.getToolTipText());
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(txtConsultant);
 		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
 		
 		boolean useOrderDate = (documentType != DocumentType.ORDER);
@@ -1773,7 +1684,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Service date
 		dtServiceDate = new CDateTime(useOrderDate ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
 		dtServiceDate.setToolTipText(labelServiceDate.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtServiceDate);
+		GridDataFactory.fillDefaults().minSize(150, SWT.DEFAULT).grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtServiceDate);
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 
 		// Set the dtDate widget to the documents date
@@ -1798,7 +1709,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Order date
 		dtOrderDate = new CDateTime(useOrderDate ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
 		dtOrderDate.setToolTipText(labelOrderDate.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtOrderDate);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtOrderDate);
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
 
 		// Set the dtDate widget to the documents date
@@ -1870,7 +1781,6 @@ public class DocumentEditor extends Editor<Document> {
 
 					// recalculate the total sum
 					calculate();
-//					checkDirty();
 				}
 			}
 		});
@@ -1896,7 +1806,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Toolbar
 //        coolbarmgr = new CoolBarManager(SWT.NONE);
-        IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);
+//        IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);
 //        coolbarmgr.add(toolbarmgr);
         
 //        CoolBar coolbar1 = coolbarmgr.createControl(copyGroup);
@@ -1906,55 +1816,71 @@ public class DocumentEditor extends Editor<Document> {
 //		ToolBarManager tbmDuplicate = new ToolBarManager(toolBarDuplicateDocument);
 
         String tooltipPrefix = msg.commandNewTooltip + " ";
-
+        
 		// Add buttons, depending on the document type
 		switch (documentType) {
 		case OFFER:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_ORDER, tooltipPrefix + msg.mainMenuNewOrder,
-	                Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_INVOICE, tooltipPrefix + msg.mainMenuNewInvoice,
-	                Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_PROFORMA, tooltipPrefix + msg.mainMenuNewProforma,
-	                Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
+	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.ORDER));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+	                tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.INVOICE));
+        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                , createCommandParams(DocumentType.PROFORMA));
 			break;
 		case ORDER:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_CONFIRMATION, tooltipPrefix + msg.mainMenuNewConfirmation,
-	                Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_DELIVERY, tooltipPrefix + msg.mainMenuNewDeliverynote,
-	                Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_INVOICE, tooltipPrefix + msg.mainMenuNewInvoice,
-                    Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_PROFORMA, tooltipPrefix + msg.mainMenuNewProforma,
-                    Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
+	                tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.CONFIRMATION));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+	                tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.PROFORMA));
 			break;
 		case CONFIRMATION:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_DELIVERY, tooltipPrefix + msg.mainMenuNewDeliverynote,
-                    Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_INVOICE, tooltipPrefix + msg.mainMenuNewInvoice,
-                    Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_PROFORMA, tooltipPrefix + msg.mainMenuNewProforma,
-                    Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.PROFORMA));
 			break;
 		case INVOICE:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_DELIVERY, tooltipPrefix + msg.mainMenuNewDeliverynote,
-	                Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_CREDIT, tooltipPrefix + msg.mainMenuNewCredit,
-	                Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_DUNNING, tooltipPrefix + msg.mainMenuNewDunning,
-	                Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewCreditName, 
+                    tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.CREDIT));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentDunningName, 
+	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DUNNING));
 			break;
 		case DELIVERY:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_INVOICE, tooltipPrefix + msg.mainMenuNewInvoice,
-	                Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
 			break;
 		case DUNNING:
 		    String action = String.format("%s%s.%s", tooltipPrefix, Integer.toString(dunningLevel + 1),msg.mainMenuNewDunning);
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_DUNNING, action,
-                    Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, action, 
+	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DUNNING));
 			break;
 		case PROFORMA:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_NEW_INVOICE, tooltipPrefix + msg.mainMenuNewInvoice,
-	                Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
 			break;
 		default:
 			copyGroup.setVisible(false);
@@ -2132,7 +2058,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Add a multi line text field for the message.
 		txtMessage = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-		txtMessage.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage()));
+//		txtMessage.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage()));
 		txtMessage.setToolTipText(messageLabel.getToolTipText());
 		
 		GridDataFactory.defaultsFor(txtMessage).minSize(80, 50).applyTo(txtMessage);
@@ -2142,7 +2068,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (noOfMessageFields >= 2) {
 			// Add a multi line text field for the message.
 			txtMessage2 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-			txtMessage2.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage2()));
+//			txtMessage2.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage2()));
 			
 			GridDataFactory.defaultsFor(txtMessage2).minSize(80, 50).applyTo(txtMessage2);
 			txtMessage2.setToolTipText(messageLabel.getToolTipText());
@@ -2152,7 +2078,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (noOfMessageFields >= 3) {
 			// Add a multi line text field for the message.
 			txtMessage3 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-			txtMessage3.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage3()));
+//			txtMessage3.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage3()));
 			txtMessage3.setToolTipText(messageLabel.getToolTipText());
 			
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
@@ -2252,7 +2178,6 @@ public class DocumentEditor extends Editor<Document> {
 				itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
 					public void focusLost(FocusEvent e) {
 						calculate();
-//						checkDirty();
 //						itemsDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(itemsDiscount.getValue())));
 
 					}
@@ -2264,7 +2189,6 @@ public class DocumentEditor extends Editor<Document> {
 						if (e.keyCode == 13) {
 //							itemsDiscount.getValue();
 							calculate();
-//							checkDirty();
 						}
 					}
 				});
@@ -2309,7 +2233,6 @@ public class DocumentEditor extends Editor<Document> {
 						shippingVatDescription = shippingVat.getDescription();
 						shippingAutoVat = shipping.getAutoVat();
 						calculate();
-//						checkDirty();
 					}
 				}
 			});
@@ -2324,14 +2247,12 @@ public class DocumentEditor extends Editor<Document> {
 			shippingAutoVat = document.getShippingAutoVat();
 			shippingVatDescription = shippingVat.getDescription();
 
-			// Set the combo
-//			comboViewerShipping.setText(shipping.getDescription());
-
 	        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
 	        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
 	        
 	        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
 	        target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class));
+			// Set the combo
 	        bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
 
 			// Shipping value field
@@ -2345,7 +2266,6 @@ public class DocumentEditor extends Editor<Document> {
 
 				public void focusLost(FocusEvent e) {
 					changeShippingValue();
-//					checkDirty();
 				}
 			});
 
@@ -2354,7 +2274,6 @@ public class DocumentEditor extends Editor<Document> {
 				public void keyPressed(KeyEvent e) {
 					if (e.keyCode == 13) {
 						changeShippingValue();
-//						checkDirty();
 					}
 				}
 			});
@@ -2415,10 +2334,9 @@ public class DocumentEditor extends Editor<Document> {
 					// ... Recreate the paid composite
 					public void widgetSelected(SelectionEvent e) {
 						createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
-//						checkDirty();
 					}
 				});
-//
+
 				// Combo to select the payment
 				comboPayment = new Combo(paidContainer, SWT.BORDER);
 				comboViewerPayment = new ComboViewer(comboPayment);
@@ -2472,7 +2390,99 @@ public class DocumentEditor extends Editor<Document> {
 			calculate();
 		}
 	}
-	
+
+    /**
+     * 
+     */
+    protected Icon createDocumentIcon() {
+        Icon icon = null;
+        try {
+		    switch (documentType) {
+            case INVOICE:
+                icon = Icon.ICON_INVOICE;
+                break;
+            case OFFER:
+                icon = Icon.ICON_OFFER;
+                break;
+            case ORDER:
+                icon = Icon.ICON_ORDER;
+                break;
+            case CREDIT:
+                icon = Icon.ICON_CREDIT;
+                break;
+            case DUNNING:
+                icon = Icon.ICON_DUNNING;
+                break;
+            case PROFORMA:
+                icon = Icon.ICON_PROFORMA;
+                break;
+            case LETTER:
+                icon = Icon.ICON_LETTER;
+                break;
+            case CONFIRMATION:
+                icon = Icon.ICON_CONFIRMATION;
+                break;
+            case DELIVERY:
+                icon = Icon.ICON_DELIVERY;
+                break;
+            default:
+                icon = Icon.ICON_ORDER;
+                break;
+            }
+		}
+		catch (IllegalArgumentException e) {
+			log.error(e, "Icon not found");
+		}
+        return icon;
+    }
+
+    /**
+     * @param parent
+     */
+    protected void showOrderStatisticDialog(Composite parent) {
+        // Show an info dialog, if this is a regular customer
+        if (documentType == DocumentType.ORDER && getBooleanPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true)) {
+			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
+			
+			if (getIntPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, 1) == 1) {
+				customerStaticstics.setContact(document.getContact());
+				customerStaticstics.setAddress(document.getManualAddress());
+	            customerStaticstics.makeStatistics(true);
+			} else {	
+                customerStaticstics.setContact(document.getContact());
+                customerStaticstics.makeStatistics(false);
+			}
+			
+			if (customerStaticstics.isRegularCustomer()) {
+
+				//T: Message Dialog
+				MessageDialog.openInformation(parent.getShell(), 
+						//T: Title of the customer statistics dialog
+						msg.dialogMessageboxTitleInfo,
+						document.getAddressFirstLine() + " " +
+						//T: Part of the customer statistics dialog
+						msg.dialogCustomerStatisticsPart1 + " "+ customerStaticstics.getOrdersCount().toString() + " " + 
+						//T: Part of the customer statistics dialog
+						msg.dialogCustomerStatisticsPart2 + "\n" + 
+						//T: Part of the customer statistics dialog
+						msg.dialogCustomerStatisticsPart3 + " " + customerStaticstics.getLastOrderDate()  + "\n" +
+						//T: Part of the customer statistics dialog
+						msg.dialogCustomerStatisticsPart4 + " " + customerStaticstics.getInvoices() + "\n" +
+						//T: Part of the customer statistics dialog
+						msg.dialogCustomerStatisticsPart5 +" " + DataUtils.getInstance().doubleToFormattedPrice(customerStaticstics.getTotal()));
+			
+			}
+		}
+    }
+
+    private Map<String, Object> createCommandParams(DocumentType docType) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
+        params.put(CallEditor.PARAM_CATEGORY, docType.name());
+        return params;
+    }
+
+
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
@@ -2579,7 +2589,6 @@ public class DocumentEditor extends Editor<Document> {
 //                    if (newItem!= null)
 //                        tableViewerItems.reveal(newItem);
                     calculate();
-//                    checkDirty();
       
                     // Renumber all Items
                     renumberItems();
@@ -2611,7 +2620,6 @@ public class DocumentEditor extends Editor<Document> {
                       selecteMessageField.setText(s1 + s2 + s3);
 
                       selecteMessageField.setSelection(s1.length() + s2.length());
-////                        checkDirty();
                   }
                 break;
             default:
@@ -2629,13 +2637,13 @@ public class DocumentEditor extends Editor<Document> {
     }
 
     private void createToolItem(final ToolBar toolBar, final String commandId, 
-            final String tooltip, final Image iconImage) {
+            final String commandName, final String tooltip, final Image iconImage,
+            Map<String, Object> params) {
         
         ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-        Map<String, Object> params = new HashMap<>();
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
         try {
-            item.setText(pCmd.getCommand().getName());
+            item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
             item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
             item.setEnabled(pCmd.getCommand().isEnabled());
             item.setData(TOOLITEM_COMMAND, pCmd);
@@ -2703,6 +2711,11 @@ public class DocumentEditor extends Editor<Document> {
 //	}
 //
     
+	@Override
+	protected String getEditorID() {
+	    return documentType.getTypeAsString();
+	}
+	
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;

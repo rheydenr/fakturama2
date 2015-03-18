@@ -78,6 +78,7 @@ import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
@@ -738,11 +739,13 @@ public class MigrationManager {
 //					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
                     contact.setCategories(contactCategoriesDAO.getCategory(oldContact.getCategory(), true));
 				}
-				contact.setCustomerNumber(oldContact.getNr());  // TODO check if it's correct
+				contact.setCustomerNumber(oldContact.getNr());
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
-				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-//				contact.getDeliveryContacts().add(deliveryContact);
-                contact.setDeliveryContacts(deliveryContact);
+				if(!isAddressEqualToDeliveryAdress(oldContact)) {
+    				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
+    //				contact.getDeliveryContacts().add(deliveryContact);
+                    contact.setDeliveryContacts(deliveryContact);
+				}
 				contact.setDeleted(oldContact.isDeleted());
 				contact.setDiscount(oldContact.getDiscount());
 				contact.setEmail(oldContact.getEmail());
@@ -772,7 +775,26 @@ public class MigrationManager {
 		}
 		subProgressMonitor.done();
 	}
-	
+
+    /**
+     * Returns, if the address is equal to the delivery address
+     * 
+     * @return True, if both are equal
+     */
+    private boolean isAddressEqualToDeliveryAdress(OldContacts oldContact) {
+        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
+        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
+        if (!oldContact.getDeliveryFirstname().equals(oldContact.getFirstname())) { return false; }
+        if (!oldContact.getDeliveryName().equals(oldContact.getName())) { return false; }
+        if (!oldContact.getDeliveryCompany().equals(oldContact.getCompany())) { return false; }
+        if (!oldContact.getDeliveryStreet().equals(oldContact.getStreet())) { return false; }
+        if (!oldContact.getDeliveryZip().equals(oldContact.getZip())) { return false; }
+        if (!oldContact.getDeliveryCity().equals(oldContact.getCity())) { return false; }
+        if (!oldContact.getDeliveryCountry().equals(oldContact.getCountry())) { return false; }
+
+        return true;
+    }
+
 	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
 		Contact contact = null;
 		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
@@ -1133,11 +1155,19 @@ public class MigrationManager {
                     propValue = Long.toString(newPayment.getId());
                     break;
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
+                    double myNumber = -1234.56864;
+                    String retval = "";
                 	// if the currency is stored as symbol we have to convert it to an ISO code.
            			// Money doesn't work with symbols, therefore we have to convert this.
                     // Try to determine a Locale from symbol
                     Locale currencyLocale = Locale.getDefault();
+           			// the key has to be changed, too!
+           			prop.setName(Constants.PREFERENCE_CURRENCY_LOCALE);
+           			UserProperty propUseSymbol = modelFactory.createUserProperty();
+           			propUseSymbol.setName(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
+       			    propUseSymbol.setValue(Boolean.FALSE.toString());  // default
            			if(StringUtils.length(propValue) == 1) {
+           			    propUseSymbol.setValue(Boolean.TRUE.toString());
                         Currency jdkCurrency = Currency.getInstance(currencyLocale);
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
@@ -1146,12 +1176,21 @@ public class MigrationManager {
            		                    + "Please check this in the general settings.");
            		        } else {
            		            // Since most of the Fakturama users are from Germany we choose "de/DE" as default locale.
+           		            currencyLocale = Locale.GERMANY;
            		            propValue = "de/DE";
            		            log.error("Can't determine the currency locale. Please choose the right locale "
            		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
            			}
-                	break;
+                    retval = DataUtils.getInstance().formatCurrency(myNumber, currencyLocale, Boolean.parseBoolean(propUseSymbol.getValue()));
+                    UserProperty propFormatExample = modelFactory.createUserProperty();
+                    propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
+                    propFormatExample.setValue(retval);
+                    propertiesDAO.save(propUseSymbol);
+                    eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
+                    propertiesDAO.save(propFormatExample);
+                    eclipsePrefs.put(propFormatExample.getName(), propFormatExample.getValue());
+               	break;
                 default:
                     break;
                 }

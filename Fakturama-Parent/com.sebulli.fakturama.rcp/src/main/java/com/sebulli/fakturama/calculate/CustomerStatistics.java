@@ -77,6 +77,8 @@ public class CustomerStatistics {
 	private Contact contact = null;
 	private String address = "";
 	
+	public CustomerStatistics() {}
+	
 	/**
 	 * Constructor
 	 * 		Generates a statistic

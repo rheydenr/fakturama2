@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -52,6 +53,8 @@ public class SamplePart {
 		txtInput.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		cdateTime1 = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
+
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(cdateTime1);
         cdateTime2 = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
         cdateTime3 = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
 

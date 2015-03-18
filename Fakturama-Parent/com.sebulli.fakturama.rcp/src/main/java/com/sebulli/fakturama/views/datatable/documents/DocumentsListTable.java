@@ -8,13 +8,18 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -85,6 +90,8 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -510,17 +517,37 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         //Refresh is done automagically...
     }
     
-    
+    /**
+     * Change the toolbar buttons (add/delete) so that they match the current viewed document types. I.e.,
+     * if invoices are shown then the "add"-button creates a new invoice etc.
+     * 
+     * @param treeObject
+     */
     public void changeToolbarItem(TreeObject treeObject) {
         MToolBar toolbar = listTablePart.getToolbar();
         for (MToolBarElement tbElem : toolbar.getChildren()) {
-            if(tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
-                HandledToolItemImpl toolItem = (HandledToolItemImpl)tbElem;
-                if(treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
+            if (tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
+                HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
+                ParameterizedCommand wbCommand = toolItem.getWbCommand();
+                Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
+                if (treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
-                } else {
-                    toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(DocumentType.ORDER.getSingularKey()));
+                    parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getDocType().name());
                 }
+                else {
+                    toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(DocumentType.ORDER.getSingularKey()));
+                    parameterMap.put(CallEditor.PARAM_CATEGORY, DocumentType.ORDER.name());
+                }
+                if (wbCommand != null) {
+                    wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
+                }
+                else {
+                    // during the initialization phase the command is null, therefore we have to create a 
+                    // new command
+                    parameterMap.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
+                    wbCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, parameterMap);
+                }
+                toolItem.setWbCommand(wbCommand);
             }
         }
         changePopupEntries(treeObject.getDocType());

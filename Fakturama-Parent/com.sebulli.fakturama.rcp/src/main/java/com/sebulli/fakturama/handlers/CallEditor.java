@@ -19,7 +19,6 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -102,6 +101,11 @@ public class CallEditor {
 			// Define  the editor and try to open it
 			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category, duplicate), PartState.ACTIVATE);
 	}
+//	
+//	@CanExecute
+//	public boolean canExecute(@Named(PARAM_EDITOR_TYPE) String editorType) {
+//	    return true; // we can *always* create a new editor!
+//	}
 	
 	/**
 	 * create a new Part from a PartDescriptor if no one exists.

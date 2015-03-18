@@ -55,8 +55,8 @@ public class NewContactHandler {
 	@Execute
 	public void run() {
         Map<String, Object> params = new HashMap<>();
-        params.put("com.sebulli.fakturama.editors.editortype", ContactEditor.ID);
-        ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
+        ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_NEW_CONTACT, params);
         handlerService.executeHandler(parameterizedCommand);	    
 	}
 }

@@ -100,10 +100,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     protected Messages msg;
 
     @Inject
-    private EHandlerService handlerService;
+    protected EHandlerService handlerService;
 
     @Inject
-    private ECommandService commandService;
+    protected ECommandService commandService;
     
     @Inject
     private EMenuService menuService;

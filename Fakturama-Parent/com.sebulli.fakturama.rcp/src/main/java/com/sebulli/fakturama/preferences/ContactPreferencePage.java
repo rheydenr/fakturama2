@@ -23,6 +23,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the contact settings
@@ -31,44 +32,7 @@ import com.sebulli.fakturama.i18n.Messages;
  */
 public class ContactPreferencePage extends FieldEditorPreferencePage implements IPreferencesInitializerListener  {
 
-	/**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_COUNTRY = "CONTACT_USE_COUNTRY";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_COMPANY = "CONTACT_USE_COMPANY";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_NAME_FORMAT = "CONTACT_NAME_FORMAT";
-    /**
-     * 
-     */
-    private static final String PREFERENCES_CONTACT_USE_TITLE = "CONTACT_USE_TITLE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_GENDER = "CONTACT_USE_GENDER";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_NOTE = "CONTACT_USE_NOTE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_MISC = "CONTACT_USE_MISC";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_BANK = "CONTACT_USE_BANK";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_CONTACT_USE_DELIVERY = "CONTACT_USE_DELIVERY";
-
-    @Inject
+	@Inject
     @Translation
     protected Messages msg;
 
@@ -91,33 +55,33 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.CONTACT_PREFERENCE_PAGE);
 
 		//T: Preference page "Contact" - Label checkbox "Use delivery address"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_DELIVERY, msg.preferencesContactUsedelivery, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_DELIVERY, msg.preferencesContactUsedelivery, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use bank account"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_BANK, msg.preferencesContactUsebankaccount, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_BANK, msg.preferencesContactUsebankaccount, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use miscellaneous"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_MISC, msg.preferencesContactUsemiscpage, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_MISC, msg.preferencesContactUsemiscpage, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use page notice"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_NOTE, msg.preferencesContactUsenotepage, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_NOTE, msg.preferencesContactUsenotepage, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use gender"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_GENDER, msg.preferencesContactUsegender, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_GENDER, msg.preferencesContactUsegender, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use title"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_TITLE, msg.preferencesContactUsetitle, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_TITLE, msg.preferencesContactUsetitle, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label format of the name
-		addField(new RadioGroupFieldEditor(PREFERENCES_CONTACT_NAME_FORMAT, msg.preferencesContactNameformat, 2, 
+		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_CONTACT_NAME_FORMAT, msg.preferencesContactNameformat, 2, 
 		        new String[][] { { msg.preferencesContactFirstlastname, "0" },
 				{ msg.preferencesContactLastfirstname, "1" } }, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use company field"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_COMPANY, msg.preferencesContactUsecompany, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_COMPANY, msg.preferencesContactUsecompany, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use Country Field"
-		addField(new BooleanFieldEditor(PREFERENCES_CONTACT_USE_COUNTRY, msg.preferencesContactUsecountry, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_COUNTRY, msg.preferencesContactUsecountry, getFieldEditorParent()));
 
 	}
 
@@ -137,15 +101,15 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_DELIVERY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_BANK, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_MISC, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_NOTE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_GENDER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_TITLE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_NAME_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_COMPANY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_CONTACT_USE_COUNTRY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_DELIVERY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_BANK, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_MISC, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_NOTE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_GENDER, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_TITLE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_NAME_FORMAT, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COMPANY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
 	}
 
 	/* (non-Javadoc)
@@ -153,15 +117,15 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 	 */
 	@Override
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_CONTACT_USE_DELIVERY, true);
-		node.setDefault(PREFERENCES_CONTACT_USE_BANK, false);
-		node.setDefault(PREFERENCES_CONTACT_USE_MISC, true);
-		node.setDefault(PREFERENCES_CONTACT_USE_NOTE, true);
-		node.setDefault(PREFERENCES_CONTACT_USE_GENDER, true);
-		node.setDefault(PREFERENCES_CONTACT_USE_TITLE, false);
-		node.setDefault(PREFERENCES_CONTACT_NAME_FORMAT, "0");
-		node.setDefault(PREFERENCES_CONTACT_USE_COMPANY, true);
-		node.setDefault(PREFERENCES_CONTACT_USE_COUNTRY, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_DELIVERY, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_BANK, false);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_MISC, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_NOTE, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_GENDER, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_TITLE, false);
+		node.setDefault(Constants.PREFERENCES_CONTACT_NAME_FORMAT, "0");
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COMPANY, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COUNTRY, true);
 	}
 
 }

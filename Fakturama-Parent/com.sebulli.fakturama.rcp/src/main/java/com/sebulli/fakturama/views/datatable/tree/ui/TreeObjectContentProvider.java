@@ -113,7 +113,7 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 	            retval = currentNode;
 	        } else {
 	            TreeObject node = addEntry(currentNode, entry.getParent());
-	            String checkPath = "/" + (this.topicTreeViewer.all != null ? this.topicTreeViewer.all.getName() : this.topicTreeViewer.root.getName())/* + "/"*/ + categoryName;
+	            String checkPath = (this.topicTreeViewer.all != null ? "/" + this.topicTreeViewer.all.getName() : this.topicTreeViewer.root.getName()) + "/" + categoryName;
 	            TreeObject childNode = node.findNode(checkPath);
 	            if(childNode == null) {
 	                childNode = new TreeObject(entry.getName());

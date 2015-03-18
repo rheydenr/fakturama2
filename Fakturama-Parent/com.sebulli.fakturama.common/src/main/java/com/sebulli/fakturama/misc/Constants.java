@@ -331,5 +331,50 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_GENERAL_WEBBROWSER_URL = "GENERAL_WEBBROWSER_URL";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_COUNTRY = "CONTACT_USE_COUNTRY";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_COMPANY = "CONTACT_USE_COMPANY";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_NAME_FORMAT = "CONTACT_NAME_FORMAT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_TITLE = "CONTACT_USE_TITLE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_GENDER = "CONTACT_USE_GENDER";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_NOTE = "CONTACT_USE_NOTE";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_MISC = "CONTACT_USE_MISC";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_BANK = "CONTACT_USE_BANK";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_CONTACT_USE_DELIVERY = "CONTACT_USE_DELIVERY";
     
 }

@@ -52,7 +52,6 @@ import com.sebulli.fakturama.resources.core.IconSize;
 /**
  * This class represents the navigation view of the workbench
  * 
- * @author Gerd Bartelt
  */
 public class NavigationView {
     // ID of this view

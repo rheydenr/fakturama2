@@ -1,9 +1,10 @@
 /**
  * 
  */
-package com.sebulli.fakturama.dto;
+package com.sebulli.fakturama.calculate;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -12,6 +13,10 @@ import javax.money.MonetaryRoundings;
 
 import org.javamoney.moneta.FastMoney;
 
+import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.Price;
+import com.sebulli.fakturama.dto.VatSummaryItem;
+import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -104,7 +109,7 @@ public class DocumentSummaryCalculator {
 		
 		// round to full net cents
 		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
-//		    retval.setItemsNet(retval.getItemsNet().with(rounding));
+		    retval.setItemsNet(retval.getItemsNet().with(rounding));
 		} 
 		
 		// Gross value is the sum of net and VAT value
@@ -364,7 +369,7 @@ public class DocumentSummaryCalculator {
 		}
 
 		//calculate the final payment
-//		retval.setDeposit(FastMoney.of(dataSetDocument.getPaidValue(), currencyCode));
+		retval.setDeposit(FastMoney.of(dataSetDocument.getPaidValue(), currencyCode));
 		retval.setFinalPayment(retval.getTotalGross().subtract(retval.getDeposit()));
 
 		// Round also the Vat summaries
@@ -379,11 +384,7 @@ public class DocumentSummaryCalculator {
 	}
 
     private VAT getItemVat(DocumentItem item) {
-        VAT retval = item.getItemVat();
-        if(retval == null) {
-            retval = item.getProduct().getVat();
-        }
-        return retval;
+        return Optional.ofNullable(item.getItemVat()).orElse(item.getProduct().getVat());
     }
 
 }

@@ -66,6 +66,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.Contact;
@@ -369,42 +370,23 @@ public class ContactEditor extends Editor<Contact> {
 	 */
 	private void deliveryAddressIsEqual(boolean isEqual) {
 		deliveryGroup.setVisible(!isEqual);
-		if (isEqual)
-			copyAddressToDeliveryAdress();
-	}
-
-	/**
-	 * Copy all the address data to the delivery address
-	 */
-	private void copyAddressToDeliveryAdress() {
-//		comboDeliveryGender.select(comboGender.getSelectionIndex());
-		txtDeliveryTitle.setText(txtTitle.getText());
-		txtDeliveryFirstname.setText(txtFirstname.getText());
-		txtDeliveryName.setText(txtName.getText());
-		txtDeliveryCompany.setText(txtCompany.getText());
-		txtDeliveryStreet.setText(txtStreet.getText());
-		txtDeliveryZip.setText(txtZip.getText());
-		txtDeliveryCity.setText(txtCity.getText());
-//		txtDeliveryCountry.setText(comboCountry.getText());
+//		if (isEqual)
+//			copyAddressToDeliveryAdress();
 	}
 
 //	/**
-//	 * Returns, if the address is equal to the delivery address
-//	 * 
-//	 * @return True, if both are equal
+//	 * Copy all the address data to the delivery address
 //	 */
-//	private boolean isAddressEqualToDeliveryAdress() {
-//		if (comboDeliveryGender.getSelectionIndex() != comboGender.getSelectionIndex()) { return false; }
-//		if (!txtDeliveryTitle.getText().equals(txtTitle.getText())) { return false; }
-//		if (!txtDeliveryFirstname.getText().equals(txtFirstname.getText())) { return false; }
-//		if (!txtDeliveryName.getText().equals(txtName.getText())) { return false; }
-//		if (!txtDeliveryCompany.getText().equals(txtCompany.getText())) { return false; }
-//		if (!txtDeliveryStreet.getText().equals(txtStreet.getText())) { return false; }
-//		if (!txtDeliveryZip.getText().equals(txtZip.getText())) { return false; }
-//		if (!txtDeliveryCity.getText().equals(txtCity.getText())) { return false; }
-//		if (!txtDeliveryCountry.getText().equals(txtCountry.getText())) { return false; }
-//
-//		return true;
+//	private void copyAddressToDeliveryAdress() {
+////		comboDeliveryGender.select(comboGender.getSelectionIndex());
+//		txtDeliveryTitle.setText(txtTitle.getText());
+//		txtDeliveryFirstname.setText(txtFirstname.getText());
+//		txtDeliveryName.setText(txtName.getText());
+//		txtDeliveryCompany.setText(txtCompany.getText());
+//		txtDeliveryStreet.setText(txtStreet.getText());
+//		txtDeliveryZip.setText(txtZip.getText());
+//		txtDeliveryCity.setText(txtCity.getText());
+////		txtDeliveryCountry.setText(comboCountry.getText());
 //	}
 
 	/**
@@ -417,15 +399,15 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Some of this editos's control elements can be hidden.
 		// Get the these settings from the preference store
-		useDelivery = contactPreferences.getBoolean("CONTACT_USE_DELIVERY", false);
-		useBank = contactPreferences.getBoolean("CONTACT_USE_BANK", false );
-		useMisc = contactPreferences.getBoolean("CONTACT_USE_MISC", false);
-		useNote = contactPreferences.getBoolean("CONTACT_USE_NOTE", false);
-		useGender = contactPreferences.getBoolean("CONTACT_USE_GENDER", false);
-		useTitle = contactPreferences.getBoolean("CONTACT_USE_TITLE", false);
-		useLastNameFirst = (contactPreferences.getInt("CONTACT_NAME_FORMAT", 1) == 1);
-		useCompany = contactPreferences.getBoolean("CONTACT_USE_COMPANY", false);
-		useCountry = contactPreferences.getBoolean("CONTACT_USE_COUNTRY", false);
+		useDelivery = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY, false);
+		useBank = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK, false );
+		useMisc = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC, false);
+		useNote = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE, false);
+		useGender = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER, false);
+		useTitle = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE, false);
+		useLastNameFirst = (contactPreferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT, 1) == 1);
+		useCompany = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY, false);
+		useCountry = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY, false);
 		
 		// now do some helpful initializations (needed for combo boxes)
         Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
@@ -683,7 +665,7 @@ public class ContactEditor extends Editor<Contact> {
 		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER);
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
-        comboDeliveryGender.setLabelProvider(new ComboBoxLabelProvider(genderList));
+        comboDeliveryGender.setLabelProvider(new ComboBoxLabelProvider<Integer, String>(genderList));
 		bindModelValue(editorContact, comboDeliveryGender, Contact_.deliveryContacts.getName() +"." +Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
 		

@@ -57,7 +57,7 @@ public class LifecycleManager {
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
-    
+
     @Inject
     @Translation
     protected Messages msg;

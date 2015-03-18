@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -105,8 +106,8 @@ public class PaymentEditor extends Editor<Payment> {
 	private Text textName;
 	private Text textDescription;
 	private FormattedText textDiscountValue;
-	private Text textDiscountDays;
-	private Text textNetDays;
+	private FormattedText textDiscountDays;
+	private FormattedText textNetDays;
 	private Text textPaid;
 	private Text textDepositPaid;
 	private Text textUnpaid;
@@ -241,7 +242,7 @@ public class PaymentEditor extends Editor<Payment> {
 		
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		textName = new Text(top, SWT.BORDER);
-		textName.setText(payment.getName());
+//		textName.setText(StringUtils.defaultString(payment.getName()));
 		textName.setToolTipText(labelName.getToolTipText());
 
         bindModelValue(payment, textName, Payment_.name.getName(), 32);
@@ -292,10 +293,11 @@ public class PaymentEditor extends Editor<Payment> {
 		labelDiscountDays.setToolTipText(msg.editorPaymentDiscountDaysTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscountDays);
-		textDiscountDays = new Text(top, SWT.BORDER);
-		textDiscountDays.setToolTipText(labelDiscountDays.getToolTipText());
+		textDiscountDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
+		textDiscountDays.setFormatter(new NumberFormatter());
+		textDiscountDays.getControl().setToolTipText(labelDiscountDays.getToolTipText());
         bindModelValue(payment, textDiscountDays, Payment_.discountDays.getName(), 8);
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountDays);
+		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountDays.getControl());
 
 		// Payment days to pay the net value
 		Label labelNetDays = new Label(top, SWT.NONE);
@@ -304,10 +306,11 @@ public class PaymentEditor extends Editor<Payment> {
 		//T: Tool Tip Text
 		labelNetDays.setToolTipText(msg.editorPaymentNetdaysTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNetDays);
-		textNetDays = new Text(top, SWT.BORDER);
-		textNetDays.setToolTipText(labelNetDays.getToolTipText());
+		textNetDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
+		textNetDays.setFormatter(new NumberFormatter());
+		textNetDays.getControl().setToolTipText(labelNetDays.getToolTipText());
         bindModelValue(payment, textNetDays, Payment_.netDays.getName(), 8);
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textNetDays);
+		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textNetDays.getControl());
 
 		// Label for the "paid" text message
 		Label labelPaid = new Label(top, SWT.NONE);
@@ -385,9 +388,9 @@ public class PaymentEditor extends Editor<Payment> {
         // Get the ID of the standard entity from preferences
         try {
             stdID = defaultValuePrefs.getLong(getDefaultEntryKey(), 1L);
+            stdPayment = paymentsDAO.findById(stdID);
         } catch (NumberFormatException | NullPointerException e) {
             stdID = 1L;
-        } finally {
             stdPayment = paymentsDAO.findById(stdID);
         }
 

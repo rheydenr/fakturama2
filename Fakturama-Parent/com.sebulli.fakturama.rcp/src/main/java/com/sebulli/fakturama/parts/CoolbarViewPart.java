@@ -41,6 +41,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -129,45 +130,40 @@ public class CoolbarViewPart {
 			
 		ToolBar toolBar2 = new ToolBar(coolbar1, SWT.FLAT);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
-		createToolItem(toolBar2, CommandIds.CMD_NEW_LETTER, 
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewLetterName,
 				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_OFFER, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER), createCommandParams(DocumentType.LETTER));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOfferName,
 				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_ORDER, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER), createCommandParams(DocumentType.OFFER));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
 				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_CONFIRMATION, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER), createCommandParams(DocumentType.ORDER));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
 				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_INVOICE, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION), createCommandParams(DocumentType.CONFIRMATION));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
 				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_DELIVERY, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE), createCommandParams(DocumentType.INVOICE));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
 				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_CREDIT, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY), createCommandParams(DocumentType.DELIVERY));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewCreditName, 
 				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_DUNNING, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT), createCommandParams(DocumentType.CREDIT));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentDunningName, 
 				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING));
-		createToolItem(toolBar2, CommandIds.CMD_NEW_PROFORMA, 
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING), createCommandParams(DocumentType.DUNNING));
+		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
 				tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA));
+				, null, getPreference(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
 		finishToolbar(coolbar1, toolBar2);
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
-		
-		Map<String, Object> params = new HashMap<>();
-		params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
-//		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-//		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
-		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR/*CommandIds.CMD_NEW_CONTACT*/, msg.commandNewContactTooltip, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        null, getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
+		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
+		        getPreference(Constants.TOOLBAR_SHOW_NEW_CONTACT));
 		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
@@ -179,15 +175,23 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
 		        getPreference(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
 		
-		params.clear();
+        Map<String, Object> params = new HashMap<>();
+		params = new HashMap<>();
 		params.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.toString(true));
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName , msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
 		        null, getPreference(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params);	
 		
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
 		        getPreference(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR));	
 		finishToolbar(coolbar1, toolBar4);	
 	}
+
+    private Map<String, Object> createCommandParams(DocumentType docType) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
+        params.put(CallEditor.PARAM_CATEGORY, docType.name());
+        return params;
+    }
 
     /**
      * Helper method for getting a preference. At first, it looks in the regular Eclipse
@@ -250,22 +254,12 @@ public class CoolbarViewPart {
 	
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, boolean show) {
-		createToolItem(toolBar, commandId, null, iconImage, null, show, null);
+		createToolItem(toolBar, commandId, null, null, iconImage, null, show, null);
 	}
-	
-//	private void createToolItem(final ToolBar toolBar, final String commandId, 
-//			final Image iconImage, boolean show, Map<String, Object> params) {
-//		createToolItem(toolBar, commandId, null, iconImage, null, show, params);
-//	}
 	
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, final Image disabledIcon, boolean show) {
-		createToolItem(toolBar, commandId, null, iconImage, disabledIcon, show, null);
-	}
-
-	private void createToolItem(final ToolBar toolBar, final String commandId, 
-			final String tooltip, final Image iconImage, boolean show) {
-		createToolItem(toolBar, commandId, tooltip, iconImage, null, show, null);
+		createToolItem(toolBar, commandId, null, null, iconImage, disabledIcon, show, null);
 	}
 	
 	/**
@@ -280,7 +274,7 @@ public class CoolbarViewPart {
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
 	 */
 	private void createToolItem(final ToolBar toolBar, final String commandId, 
-			final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
+			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
 			Map<String, Object> params) {
 	    
 	    if(!show) {
@@ -290,7 +284,7 @@ public class CoolbarViewPart {
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
-			item.setText(pCmd.getCommand().getName());
+			item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
 			item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
 			if(disabledIcon != null) {
 				item.setDisabledImage(disabledIcon);
