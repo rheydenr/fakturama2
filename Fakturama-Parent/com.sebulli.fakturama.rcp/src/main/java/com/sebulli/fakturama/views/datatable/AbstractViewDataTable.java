@@ -125,17 +125,14 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	// The standard UniDataSet
 	protected String stdPropertyKey = null;
-
-	// The selected tree object
-	private TreeObject treeObject = null;
 	
 	protected NatTable natTable;
 
 	/**
 	 * Creates the SWT controls for this workbench part.
 	 */
-	public Control createPartControl(Composite parent, Class<?> elementClass, boolean useDocumentAndContactFilter, boolean useAll, String contextHelpId) {
-		// Create the top composite
+	public Control createPartControl(Composite parent, Class<?> elementClass, boolean useFilter, String contextHelpId) {
+	    // Create the top composite
 		top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
@@ -147,15 +144,23 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         topicTreeViewer = createCategoryTreeViewer(top); 
 //		GridDataFactory.swtDefaults().hint(10, -1).applyTo(topicTreeViewer.getTree());
 
+        if(useFilter) {
         // Create the composite that contains the search field and the table
-        Composite searchAndTableComposite = createSearchAndTableComposite(top);
-        natTable = createListTable(searchAndTableComposite);
+            Composite searchAndTableComposite = createSearchAndTableComposite(top);
+            natTable = createListTable(searchAndTableComposite);
+        } else {
+            natTable = createListTable(top);
+        }
+        
         addCustomStyling(natTable);
         
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
-        createDefaultContextMenu();
         
+        // TODO Test only. MenuService can't be injected from DocumentItemsList table :-(
+        if(useFilter) {
+            createDefaultContextMenu();
+        }
 //        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();  // works!
 //        natTable.setMenu(contextMenu);
 //        natTable.getUiBindingRegistry().registerMouseDownBinding(
@@ -191,8 +196,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //			}
 //		});
 
-//		// Set selection provider
-//		getSite().setSelectionProvider(tableViewer);
 		return top;
 	}
 
@@ -458,15 +461,15 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	    natTable.setFocus();
 	}
 
-	/**
-	 * Set a reference to the tree object
-	 * 
-	 * @param treeObject
-	 * 		The tree object
-	 */
-	public void setTreeObject(TreeObject treeObject){
-		this.treeObject = treeObject;
-	}
+//	/**
+//	 * Set a reference to the tree object
+//	 * 
+//	 * @param treeObject
+//	 * 		The tree object
+//	 */
+//	public void setTreeObject(TreeObject treeObject){
+//		this.selectedTreeObject = treeObject;
+//	}
 
 	/**
 	 * Set the category filter
@@ -524,6 +527,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @return the headerLabelEnabled
      */
 	abstract protected boolean isHeaderLabelEnabled();
+	
+	/**
+	 * Deletes the selected entry (or entries, if multiple selection is enabled) from the items table).
+	 */
 	abstract public void removeSelectedEntry();
 
     /**

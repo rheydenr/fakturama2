@@ -68,27 +68,27 @@ public class Price {
 //	private MonetaryAmount totalGrossRounded;
 //
 	/**
-	 * Constructor Create a price value from an item
+	 * Create a price value from an item
 	 * 
 	 * @param item
-	 *            Item as UniDataSet
+	 *            Item as DocumentItem
 	 */
 	public Price(DocumentItem item) {
-		this(item.getOptional() ? 0.0 : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX"), item.getItemVat().getTaxValue(), item
+		this(item.getOptional() ? Double.valueOf(0.0) : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX"), item.getItemVat().getTaxValue(), item
 				.getItemRebate(), item.getNoVat(), false);
 	}
 
 	/**
-	 * Constructor Create a price value from an item and a scale factor
+	 * Create a price value from an item and a scale factor
 	 * 
 	 * @param item
-	 *            Item as UniDataSet
+	 *            Item as DocumentItem
 	 *            
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
     public Price(DocumentItem item, Double scaleFactor) {
-        this(BooleanUtils.toBoolean(item.getOptional()) ? 0.0 : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX").multiply(scaleFactor), item
+        this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), FastMoney.of(item.getPrice(), "XXX").multiply(scaleFactor), item
                 .getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false);
     }
 
@@ -99,7 +99,7 @@ public class Price {
 //	 *            Item as UniDataSet
 //	 */
 //	public Price(DataSetVoucherItem item) {
-//		this(1.0, item.getPrice(), item.getItemVat().getTaxValue(), 0.0, false, false);
+//		this(1.0, item.getPrice(), item.getItemVat().getTaxValue(), Double.valueOf(0.0), false, false);
 //	}
 //
 //	/**
@@ -112,7 +112,7 @@ public class Price {
 //	 * 				Scale factor of this expenditure item
 //	 */
 //	public Price(DataSetVoucherItem item, Double scaleFactor) {
-//		this(1.0, item.getDoubleValueByKey("price") * scaleFactor, item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value"), 0.0, false, false);
+//		this(1.0, item.getDoubleValueByKey("price") * scaleFactor, item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value"), Double.valueOf(0.0), false, false);
 //	}
 
 	
@@ -123,7 +123,7 @@ public class Price {
 	 *            Net value
 	 */
 	public Price(MonetaryAmount net) {
-		this(net, 0.0);
+		this(net, Double.valueOf(0.0));
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class Price {
 	 *            VAT
 	 */
 	public Price(MonetaryAmount net, Double vatPercent) {
-		this(1.0, net, vatPercent, 0.0, false, false);
+		this(1.0, net, vatPercent, Double.valueOf(0.0), false, false);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class Price {
 	 * @param vatPercent
 	 *            VAT value
 	 * @param noVat
-	 *            true, if VAT should be 0.0
+	 *            true, if VAT should be Double.valueOf(0.0)
 	 * @param asGross
 	 *            true, if price is a gross value
 	 */
@@ -168,15 +168,15 @@ public class Price {
 	 * @param discount
 	 *            Discount value
 	 * @param noVat
-	 *            True, if VAT is 0.0
+	 *            <code>true</code> if VAT is 0.0
 	 * @param asGross
-	 *            True, if price is a gross value
+	 *            <code>true</code> if price is a gross value
 	 */
 	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross) {
 
 		// if noVat is set, the vat value is set to 0.0
 		if (noVat)
-			this.vatPercent = 0.0;
+			this.vatPercent = Double.valueOf(0.0);
 		else
 			this.vatPercent = vatPercent;
 
@@ -216,7 +216,7 @@ public class Price {
 		// If the discount is -30% (-0.3), the discount factor is 0.7
 		// Only discount values in the range -100% to -0% are allowed
 		Double discountFactor = (1 + this.discount);
-		if ((discountFactor > 1.0) || (discountFactor <= 0.0)) {
+		if ((discountFactor > 1.0) || (discountFactor <= Double.valueOf(0.0))) {
 // TODO			Logger.logError("Discount value out of range: " + String.valueOf(this.discount));
 			discountFactor = 1.0;
 		}

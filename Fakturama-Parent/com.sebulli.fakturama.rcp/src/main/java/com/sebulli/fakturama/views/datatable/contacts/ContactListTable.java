@@ -105,6 +105,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     public static final String ID = "fakturama.views.contactTable";
 
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
+    public static final String SELECTED_CONTACT_ID = "fakturama.contactlist.selectedcontactid";
      
     /**
      * Event Broker for receiving update events to the list table
@@ -138,12 +139,12 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @PostConstruct
     public Control createPartControl(Composite parent, MPart activePart) {
         log.info("create Contact list part");
-        top = super.createPartControl(parent, Contact.class, false, true, ID);
+        top = super.createPartControl(parent, Contact.class, true, ID);
         this.activePart = activePart;
         // if another click handler is set we use it
         // Listen to double clicks
-        Object commandId = activePart.getContext().get("fakturama.datatable.contacts.clickhandler");
-        if(commandId != null) {
+        Object commandId = this.activePart.getProperties().get("fakturama.datatable.contacts.clickhandler");
+        if(commandId != null) { // exactly it would be "com.sebulli.fakturama.command.selectitem"
             hookDoubleClickCommand(natTable, gridLayer, (String) commandId);
         } else {
             hookDoubleClickCommand(natTable, gridLayer);
@@ -173,7 +174,14 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
                 Map<String, Object> params = new HashMap<>();
                 ParameterizedCommand parameterizedCommand;
                 if(commandId != null) {
-                    evtBroker.post("DialogSelection/Contact", Long.toString(selectedObject.getId()));
+                    // If we don't give a target document number the event will  be catched by *all*
+                    // open editors which listens to this event. This is (obviously :-) ) not
+                    // the intended behavior...
+                    Map<String, Object> eventParams = new HashMap<>();
+                    // the transientData HashMap contains the target document number
+                    eventParams.putAll(activePart.getParent().getTransientData());
+                    eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
+                    evtBroker.post("DialogSelection/Contact", eventParams);
                     activePart.getParent().setVisible(false);
                 } else {
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
@@ -430,9 +438,4 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     protected String getPopupId() {
         return POPUP_ID;
     }
-
-//    @Focus
-//    public void focus() {
-//        top.forceFocus();
-//    }
 }

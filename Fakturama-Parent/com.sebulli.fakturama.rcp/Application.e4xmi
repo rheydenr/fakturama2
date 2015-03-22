@@ -368,8 +368,8 @@
   </rootContext>
   <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
+    <menus xsi:type="menu:PopupMenu" xmi:id="_DptF8M51EeSoO9Ue6R_q3g" elementId="com.sebulli.fakturama.documentitemlist.popup" label="Document items list popup"/>
   </descriptors>
-  <menuContributions xmi:id="_whirwDCTEeS4jqk9NJEl2w" elementId="com.sebulli.fakturama.rcp.menucontribution.0"/>
   <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.command.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%command.contacts.name" description="%command.contacts.tooltip"/>
   <commands xmi:id="_OkPpoCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openProducts" commandName="%command.products.name" description="%command.products.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_f9TOgJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.command.openVats" commandName="%command.vats.name" description="%command.vats.tooltip"/>

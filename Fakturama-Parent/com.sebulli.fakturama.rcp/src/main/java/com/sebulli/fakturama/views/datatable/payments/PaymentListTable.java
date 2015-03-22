@@ -138,7 +138,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     @PostConstruct
     public Control createPartControl(Composite parent) {
         log.info("create Payment list part");
-        top = super.createPartControl(parent, Payment.class, false, true, ID);
+        top = super.createPartControl(parent, Payment.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);

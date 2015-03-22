@@ -20,6 +20,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
@@ -36,23 +37,9 @@ public class SpecialCellValueProvider {
         this.msg = msg;
     }
 
-    //
-    //    public String getCellValue() {
-    //                UniDataSet uds = (UniDataSet) cell.getElement();
-    //
-    //                // Fill the cell with a UniData value, if the dataKey
-    //                // does not start with a "$"
-    //                if (!dataKey.startsWith("$")) {
-    //                    cell.setText(getText(uds, dataKey));
-    //                }
-    //
-    //
-    //                // Fill the cell with an mark, if optional is set
-    //                else if (dataKey.equals("$Row")) {
-    //                    int i = ((DataSetItem)uds).row;
-    //                    cell.setText(Integer.toString(i));
-    //                }
-    //
+    
+        public Object getCellValue(IEntity rowObject, String dataKey) {
+            Object retval = null;
     //                // Fill the cell with an mark, if optional is set
     //                else if (dataKey.equals("$Optional")) {
     //                    if (uds.getBooleanValueByKey("optional")){
@@ -68,26 +55,6 @@ public class SpecialCellValueProvider {
     //                    }
     //                    else
     //                        cell.setImage(null);
-    //                }
-    //
-    //                
-    //                
-    //                // Fill the cell with the icon for standard ID
-    //                else if (dataKey.equals("$stdId")) {
-    //                    if (stdId == uds.getIntValueByKey("id"))
-    //                        cell.setImage(CHECKED);
-    //                    else
-    //                        cell.setImage(null);
-    //                    /*
-    //                    if (stdId == uds.getIntValueByKey("id")) {
-    //                        Color color = new Color(null, 0xff, 0xb8, 0x00);
-    //                        int columns = cell.getViewerRow().getColumnCount();
-    //                        for (int i=0; i<columns; i++)
-    //                             cell.getViewerRow().setBackground(i, color);
-    //                        color.dispose();
-    //
-    //                    }*/
-    //
     //                }
     //
     //                // Fill the cell with the icon for standard ID
@@ -109,51 +76,51 @@ public class SpecialCellValueProvider {
     //                }
     //                
     //                
-    //
-    //                // Fill the cell a small preview picture
-    //                else if (dataKey.equals("$ProductPictureSmall")) {
-    //                    String pictureName = ((UniDataSet) cell.getElement()).getStringValueByKey("picturename");
-    //                    
-    //                    try {
-    //                        // Display the picture, if a product picture is set.
-    //                        if (!pictureName.isEmpty()) {
-    //
-    //
-    //                            // Load the image, based on the picture name
-    //                            Image image = new Image(display,  Workspace.INSTANCE.getWorkspace() + Workspace.productPictureFolderName + pictureName);
-    //
-    //                            // Get the pictures size
-    //                            int width = image.getBounds().width;
-    //                            int height = image.getBounds().height;
-    //
-    //                            // Scale the image to 64x48 Pixel
-    //                            if ((width != 0) && (height != 0)) {
-    //
-    //                                // Picture is more width than height.
-    //                                if (width >= ((64*height)/48)) {
-    //                                    height = (height * 64) / width;
-    //                                    width = 64;
-    //                                }
-    //                                else { //if (height > ((48*width)/64)) {
-    //                                    width = (width * 48) / height;
-    //                                    height = 48;
-    //                                }
-    //
-    //                            }
-    //                            
-    //                            // Scale the product picture and place it into the 64x48 pixel image
-    //                            Image baseImage = new Image(display, 64, 48);
-    //                            GC gc = new GC(baseImage);
-    //                            gc.drawImage(new Image(display, image.getImageData().scaledTo(width, height)), (64-width)/2, (48-height)/2);
-    //                            gc.dispose();
-    //
-    //                            cell.setImage(baseImage);
-    //
-    //                        }
-    //                    }
-    //                    catch (Exception e) {
-    //                    }
-    //                }
+//    
+//                    // Fill the cell a small preview picture
+//                    /*else*/ if (dataKey.equals("$ProductPictureSmall")) {
+//                        String pictureName = ((DocumentItem)rowObject).getPictureName();
+//                        
+//                        try {
+//                            // Display the picture, if a product picture is set.
+//                            if (!pictureName.isEmpty()) {
+//    
+//    
+//                                // Load the image, based on the picture name
+//                                Image image = new Image(display,  Workspace.INSTANCE.getWorkspace() + Workspace.productPictureFolderName + pictureName);
+//    
+//                                // Get the pictures size
+//                                int width = image.getBounds().width;
+//                                int height = image.getBounds().height;
+//    
+//                                // Scale the image to 64x48 Pixel
+//                                if ((width != 0) && (height != 0)) {
+//    
+//                                    // Picture is more width than height.
+//                                    if (width >= ((64*height)/48)) {
+//                                        height = (height * 64) / width;
+//                                        width = 64;
+//                                    }
+//                                    else { //if (height > ((48*width)/64)) {
+//                                        width = (width * 48) / height;
+//                                        height = 48;
+//                                    }
+//    
+//                                }
+//                                
+//                                // Scale the product picture and place it into the 64x48 pixel image
+//                                Image baseImage = new Image(display, 64, 48);
+//                                GC gc = new GC(baseImage);
+//                                gc.drawImage(new Image(display, image.getImageData().scaledTo(width, height)), (64-width)/2, (48-height)/2);
+//                                gc.dispose();
+//    
+//                                cell.setImage(baseImage);
+//    
+//                            }
+//                        }
+//                        catch (Exception e) {
+//                        }
+//                    }
     //
     //                // Fill the cell with the VAT value
     //                else if (dataKey.equals("$vatbyid")) {
@@ -165,11 +132,6 @@ public class SpecialCellValueProvider {
     //                    cell.setText(((UniDataSet) cell.getElement()).getStringValueByKeyFromOtherTable("vatid.VATS:name"));
     //                }
     //
-    //                // Fill the cell with the total net value of the item
-    //                else if (dataKey.equals("$ItemNetTotal")) {
-    //                    cell.setText(new Price(((DataSetItem) cell.getElement())).getTotalNetRounded().asFormatedString());
-    //                }
-    //
     //                // Fill the cell with the VAT (percent) value of the item
     //                else if (dataKey.equals("$ItemVatPercent")) {
     //                    cell.setText(new Price(((DataSetItem) cell.getElement())).getVatPercent());
@@ -179,12 +141,7 @@ public class SpecialCellValueProvider {
     //                else if (dataKey.equals("$VoucherItemVatPercent")) {
     //                    cell.setText(new Price(((DataSetVoucherItem) cell.getElement())).getVatPercent());
     //                }
-    //
-    //                // Fill the cell with the total gross value of the item
-    //                else if (dataKey.equals("$ItemGrossTotal")) {
-    //                    cell.setText(new Price(((DataSetItem) cell.getElement())).getTotalGrossRounded().asFormatedString());
-    //                }
-    //
+     //
     //                // Fill the cell with the gross price of the item
     //                else if (dataKey.equals("$ItemGrossPrice")) {
     //                    cell.setText(new Price(((DataSetItem) cell.getElement())).getUnitGross().asFormatedString());
@@ -208,10 +165,10 @@ public class SpecialCellValueProvider {
     //                    cell.setText(new Price(product.getDoubleValueByKey("price1"), product.getDoubleValueByKeyFromOtherTable("vatid.VATS:value")).getUnitGross()
     //                            .asFormatedString());
     //                }
-    //
-    //            }
+    return retval;
+                }
 
-    public Object getDataValue(Document rowObject, DocumentListDescriptor descriptor, int columnIndex) {
+    public Object getDataValue(Document rowObject, DocumentListDescriptor descriptor) {
         switch (descriptor) {
         // Fill the cell with the icon of the document type
         case ICON:

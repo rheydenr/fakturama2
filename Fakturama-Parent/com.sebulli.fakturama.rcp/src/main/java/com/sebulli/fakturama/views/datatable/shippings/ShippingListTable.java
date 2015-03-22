@@ -136,7 +136,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @PostConstruct
     public Control createPartControl(Composite parent) {
     	log.info("create Shipping list part");
-        top = super.createPartControl(parent, Shipping.class, false, true, ID);
+        top = super.createPartControl(parent, Shipping.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);

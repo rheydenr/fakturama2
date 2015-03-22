@@ -304,6 +304,9 @@ public class Messages {
 	public String commonFieldCountry;
 	public String commonFieldAccountholder;
 	public String commonFieldTotal;
+	public String commonFieldOptional;
+    public String commonFieldPicture;
+    public String commonFieldUnitprice;
     public String editorContactFieldAccountnumberName;
     public String editorContactFieldBankcodeName;
     public String editorContactFieldBankName;

@@ -1267,22 +1267,9 @@ public class MigrationManager {
                     case "VOUCHERS":
                         break;
                     case "DIALOG":
+                        // these settings can be silently ignored since we use the list table parts instead
                         // e.g., COLUMNWIDTH_DIALOG_CONTACTS_CITY
-                        String[] splittedString = matcher.group(2).split("_");
-                        // TODO implement!
-                        switch (splittedString[0]) {
-                        case "CONTACTS":
-                            tableId="DIALOG";
-                            break;
-                        case "PRODUCTS":
-                            break;
-
-                        case "TEXTS":
-                            break;
-                        default:
-                            break;
-                        }
-                        break;
+                        continue;
                     default:
                         break;
                     }

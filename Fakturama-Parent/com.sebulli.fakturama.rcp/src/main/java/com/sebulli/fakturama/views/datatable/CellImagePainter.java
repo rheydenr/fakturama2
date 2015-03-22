@@ -15,14 +15,21 @@ import com.sebulli.fakturama.resources.core.IconSize;
  * {@link ImagePainter} for all sorts of Images in a NatTable.
  */
 public class CellImagePainter extends ImagePainter {
-	
-	@Override
-	protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
-	    Image retval = null;
-	    Icon icon = (Icon) cell.getDataValue();
-	    if(icon != null) {
-	        retval = icon.getImage(IconSize.DefaultIconSize);
-	    }
-		return retval;
-	}
+    
+    public static final int MAX_IMAGE_PREVIEW_WIDTH = 250;
+
+    @Override
+    protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
+        Image retval = null;
+        Object dataValue = cell.getDataValue();
+        if (dataValue instanceof Icon) {
+            Icon icon = (Icon) dataValue;
+            if (icon != null) {
+                retval = icon.getImage(IconSize.DefaultIconSize);
+            }
+        } else if (dataValue instanceof Image) {
+            retval = (Image)dataValue;
+        }
+        return retval;
+    }
 }

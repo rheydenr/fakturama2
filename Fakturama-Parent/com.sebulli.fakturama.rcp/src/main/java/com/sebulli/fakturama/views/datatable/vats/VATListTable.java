@@ -143,7 +143,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @PostConstruct
     public Control createPartControl(Composite parent) {
     	log.info("create VAT list part");
-        top = super.createPartControl(parent, VAT.class, false, true, ID);
+        top = super.createPartControl(parent, VAT.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -481,7 +481,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 					new PercentageDisplayConverter(),
 					DisplayMode.NORMAL,
 					TAXVALUE_CELL_LABEL);
-			CellPainterWrapper painter = new PaddingDecorator(new TextPainter(), 0, 10, 0, 0);
+            // have a little space between cell border and value
+			CellPainterWrapper painter = new PaddingDecorator(new TextPainter(), 0, 5, 0, 0);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
                     painter,

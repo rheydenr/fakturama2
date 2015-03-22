@@ -18,8 +18,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -179,7 +177,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @PostConstruct
     public Control createPartControl(Composite parent, IEclipseContext context) {
         log.info("create Document list part");
-        top = super.createPartControl(parent, Document.class, false, true, ID);
+        top = super.createPartControl(parent, Document.class, true, ID);
         listTablePart = (MPart) modelService.find(ID, application);
 //        this.context = context;
         // Listen to double clicks
@@ -290,7 +288,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 case ICON:
                 case STATE:
                 case PRINTED:
-                    return specialCellValueProvider.getDataValue(rowObject, descriptor, columnIndex);
+                    return specialCellValueProvider.getDataValue(rowObject, descriptor);
                 case DATE:
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 case DOCUMENT:
@@ -529,6 +527,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
             if (tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
                 HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
                 ParameterizedCommand wbCommand = toolItem.getWbCommand();
+                @SuppressWarnings("unchecked")
                 Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
                 if (treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
@@ -677,10 +676,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     CellConfigAttributes.CELL_PAINTER, 
                     new CellImagePainter(),
                     DisplayMode.NORMAL, ICON_CELL_LABEL);
-//            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-//                    styleCentered,      
-//                    DisplayMode.NORMAL,             
-//                    ICON_CELL_LABEL); 
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleCentered,      
+                    DisplayMode.NORMAL,             
+                    ICON_CELL_LABEL); 
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER, 
@@ -691,12 +690,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     new StateDisplayConverter(),
                     DisplayMode.NORMAL,
                     STATE_CELL_LABEL);
-            
-//            configRegistry.registerConfigAttribute(
-//                    CellConfigAttributes.CELL_PAINTER,
-//                    painter,
-//                    DisplayMode.NORMAL,
-//                    MONEYVALUE_CELL_LABEL);
+
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
@@ -734,7 +728,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
             }
     
             // Refresh the table view of all Document
-            evtBroker.post("DocumentEditor", "update");
+            evtBroker.post(DocumentEditor.EDITOR_ID, "update");
         } else {
             log.debug("no rows selected!");
         }

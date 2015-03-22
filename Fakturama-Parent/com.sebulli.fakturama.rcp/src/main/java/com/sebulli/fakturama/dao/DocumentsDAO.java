@@ -31,6 +31,8 @@ import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentItem_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -119,9 +121,9 @@ public class DocumentsDAO extends AbstractDAO<Document> {
     }
 
     /**
-     * Gets the all visible properties of this Shipping object.
+     * Gets the all visible properties of this Documents object.
      * 
-     * @return String[] of visible Shipping properties
+     * @return String[] of visible Documents properties
      */
     public String[] getVisibleProperties() {
         return new String[] { Document_.name.getName(), Document_.addressFirstLine.getName(), 
