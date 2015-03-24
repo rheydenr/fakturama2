@@ -7,6 +7,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -18,12 +19,16 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+
+import com.sebulli.fakturama.model.IEntity;
 
 /**
  * Factory for assembling GridLayer and the child layers - with support for
@@ -31,13 +36,15 @@ import ca.odell.glazedlists.SortedList;
  *    
  * @see {@linkplain http://www.glazedlists.com/}
  */
-public class ListViewGridLayer<T> extends GridLayer {
+public class ListViewGridLayer<T extends IEntity> extends GridLayer {
 
 	private ColumnOverrideLabelAccumulator columnLabelAccumulator;
 	private DataLayer bodyDataLayer;
 	private DefaultBodyLayerStack bodyLayerStack;
-	private ListDataProvider<T> bodyDataProvider;
-	private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayerStack;
+    private GlazedListsDataProvider<T> bodyDataProvider;
+    private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayerStack;
+    private ViewportLayer viewportLayer;
+    private SelectionLayer selectionLayer;
 
 	public ListViewGridLayer(EventList<T> eventList,
 									String[] propertyNames,
@@ -77,7 +84,7 @@ public class ListViewGridLayer<T> extends GridLayer {
 		// Body - with list event listener
 		//	NOTE: Remember to use the SortedList constructor with 'null' for the Comparator
 		SortedList<T> sortedList = new SortedList<T>(eventList, null);
-		bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
+		bodyDataProvider = new GlazedListsDataProvider<T>(sortedList, columnPropertyAccessor);
 
 		bodyDataLayer = new DataLayer(bodyDataProvider);
 		GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, eventList);

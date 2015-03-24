@@ -12,8 +12,10 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLay
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import ca.odell.glazedlists.SortedList;
 
@@ -40,6 +42,7 @@ public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform
 				bodyLayerStack);
 	}
 	
+	@Deprecated
 	public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
 			SortedList<T> sortedList,
 			IColumnPropertyAccessor<T> columnPropertyAccessor, 
@@ -61,7 +64,29 @@ public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform
 
 		setUnderlyingLayer(sortHeaderLayer);
 	}
-	
+	   
+    public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
+            SortedList<T> sortedList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor, 
+            IConfigRegistry configRegistry,
+            ViewportLayer viewportLayer, SelectionLayer selectionLayer) {
+        
+        this.dataProvider = dataProvider;
+        this.dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+        this.columnHeaderLayer = new ColumnHeaderLayer(dataLayer, viewportLayer, selectionLayer);
+
+        SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
+                                                columnHeaderLayer, 
+                                                new GlazedListsSortModel<T>(
+                                                        sortedList, 
+                                                        columnPropertyAccessor,
+                                                        configRegistry, 
+                                                        dataLayer), 
+                                                false);
+
+        setUnderlyingLayer(sortHeaderLayer);
+    }
+
 	@Override
 	public void setClientAreaProvider(IClientAreaProvider clientAreaProvider) {
 		super.setClientAreaProvider(clientAreaProvider);
