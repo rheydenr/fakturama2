@@ -62,7 +62,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
@@ -205,7 +204,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DocumentTableConfiguration());
-        addCustomStyling(natTable);
+
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
@@ -447,19 +446,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 top.setRedraw(true);
             }
         });
-    }
-
-    /**
-     * We have to style the table a little bit...
-     * 
-     * @param natTable
-     *            the {@link NatTable} to style
-     */
-    private void addCustomStyling(NatTable natTable) {
-        DefaultSelectionStyleConfiguration selectionStyle = createDefaultSelectionStyle();
-
-        // Add all style configurations to NatTable
-        natTable.addConfiguration(selectionStyle);
     }
 
     /**

@@ -355,7 +355,10 @@
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
-    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9"/>
+    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+      <parameters xmi:id="_QC3lkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.57" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+      <parameters xmi:id="_YDkFkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.58" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
+    </bindings>
     <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.eclipse.ui.file.print.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
   </bindingTables>
   <bindingTables xmi:id="_smR5cGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingtable.viewlist" bindingContext="_c7LSgGFOEeShb_NtiSSU9w">

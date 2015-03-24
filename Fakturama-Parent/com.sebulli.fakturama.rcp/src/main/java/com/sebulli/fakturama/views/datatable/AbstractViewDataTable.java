@@ -43,6 +43,7 @@ import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -195,6 +196,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //				}
 //			}
 //		});
+        
+//        natTable.setTheme(new ModernNatTableThemeConfiguration());
 
 		return top;
 	}
@@ -208,13 +211,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         // NOTE: Getting the colors and fonts from the GUIHelper ensures that
         // they are disposed properly (required by SWT)
         // Setup selection styling
-        DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
-        selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
-        selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
-        selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
-        selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
-        selectionStyle.anchorBgColor = GUIHelper.getColor(217, 232, 251);
-        selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
+        DefaultSelectionStyleConfiguration selectionStyle = createDefaultSelectionStyle();
 
         // Add all style configurations to NatTable
         natTable.addConfiguration(selectionStyle);

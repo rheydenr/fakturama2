@@ -238,7 +238,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
 
         //create the body layer stack
         final IRowDataProvider<Payment> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Payment>(treeFilteredIssues, columnPropertyAccessor);
+                new GlazedListsDataProvider<Payment>(treeFilteredIssues, derivedColumnPropertyAccessor);
         
         //build the grid layer
         gridLayer = new ListViewGridLayer<Payment>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);

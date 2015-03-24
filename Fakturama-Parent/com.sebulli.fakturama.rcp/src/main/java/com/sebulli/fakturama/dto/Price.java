@@ -68,7 +68,7 @@ public class Price {
 //	private MonetaryAmount totalGrossRounded;
 //
 	/**
-	 * Create a price value from an item
+	 * Create a price value from an item. Remember: Each item's price is given as net value.
 	 * 
 	 * @param item
 	 *            Item as DocumentItem

@@ -62,18 +62,14 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
-import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -97,7 +93,6 @@ import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
@@ -429,38 +424,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         }
     }
     
-    /**
-     * We have to style the table a little bit...
-     * 
-     * @param natTable
-     *            the {@link NatTable} to style
-     */
-    private void addCustomStyling(NatTable natTable) {
-        // NOTE: Getting the colors and fonts from the GUIHelper ensures that
-        // they are disposed properly (required by SWT)
-        // Setup selection styling
-        DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
-        selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
-        selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
-        selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
-        selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
-        selectionStyle.anchorBgColor = GUIHelper.getColor(217, 232, 251);
-        selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
-
-        // Add all style configurations to NatTable
-        natTable.setBackground(GUIHelper.getColor(242, 242, 242));
-        natTable.addConfiguration(selectionStyle);
-    }
 
     @Override
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
         natTable.setConfigRegistry(configRegistry);
-        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
+//        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new DocumentItemTableConfiguration());
-        addCustomStyling(natTable);
+        natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));

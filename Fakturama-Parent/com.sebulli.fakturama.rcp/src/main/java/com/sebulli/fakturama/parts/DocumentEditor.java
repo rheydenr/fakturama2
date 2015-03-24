@@ -39,7 +39,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
@@ -1581,7 +1580,7 @@ public class DocumentEditor extends Editor<Document> {
 		// the no-Vat widget or a reference to the invoice
 		Composite xtraSettingsComposite = new Composite(top, SWT.BORDER);
 		GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).applyTo(xtraSettingsComposite);
-		GridDataFactory.fillDefaults().span(1, 2).minSize(200, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(xtraSettingsComposite);
+		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(xtraSettingsComposite);
 		
 		// Consultant label
 		Label labelConsultant = new Label(xtraSettingsComposite, SWT.NONE);
@@ -1924,6 +1923,7 @@ public class DocumentEditor extends Editor<Document> {
 		        .withDocument(document)
 		        .withNetGross(netgross)
 		        .withUseGross(useGross)
+//		        .withContainer(this)
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
@@ -2095,7 +2095,7 @@ public class DocumentEditor extends Editor<Document> {
 				GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(discountLabel);
 				
 				// Discount field
-				itemsDiscount = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+				itemsDiscount = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
 				itemsDiscount.setFormatter(new PercentFormatter());
 				itemsDiscount.setValue(document.getItemsRebate());
 				itemsDiscount.getControl().setToolTipText(discountLabel.getToolTipText());
@@ -2186,8 +2186,9 @@ public class DocumentEditor extends Editor<Document> {
 	        bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
 
 			// Shipping value field
-			shippingValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+			shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
 			shippingValue.setValue(shipping.getShippingValue());
+			shippingValue.setFormatter(new MoneyFormatter());
 			shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
 			GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
 
@@ -2208,7 +2209,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			});
 
-			bindModelValue(document, shippingValue, Document_.shipping.getName(), 12);
+// FIXME here the VALUE is meant, not the Name!!!			bindModelValue(document, shippingValue, Document_.shipping.getName(), 12);
 
 			// VAT label
 			Label vatLabel = new Label(totalComposite, SWT.NONE);
@@ -2560,7 +2561,7 @@ public class DocumentEditor extends Editor<Document> {
             }
         }
     }
-	
+
     private int getIntPreference(String preference, int defaultValue) {
         return preferences.getInt(preference, eclipseDefaultPrefs.getInt(preference, defaultValue));
     }
@@ -2568,6 +2569,26 @@ public class DocumentEditor extends Editor<Document> {
     private boolean getBooleanPreference(String preference, boolean defaultValue) {
         return preferences.getBoolean(preference, eclipseDefaultPrefs.getBoolean(preference, defaultValue));
     }
+    
+
+    /**
+     * Searches for the standard {@link Shipping} entry. 
+     */
+    public Shipping lookupDefaultShippingValue() {
+        long stdID = 1L;
+        Shipping retval = null;
+
+        // Get the ID of the standard entity from preferences
+        try {
+            stdID = preferences.getLong(getDefaultEntryKey(), 1L);
+        } catch (NumberFormatException | NullPointerException e) {
+            stdID = 1L;
+        } finally {
+            retval = shippingsDAO.findById(stdID);
+        }
+        return retval;
+    }
+
 
     private void createToolItem(final ToolBar toolBar, final String commandId, 
             final String commandName, final String tooltip, final Image iconImage,
@@ -2654,4 +2675,21 @@ public class DocumentEditor extends Editor<Document> {
         return part;
     }
 
+    /**
+     * This method is for setting the dirty state to <code>true</code>. This happens
+     * if e.g. the items list has changed. It is initiated if a certain event occurs.
+     */
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    protected void handleAddItemToList(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
+        if (event != null) {
+            // the event has already all given params in it since we created them as Map
+            String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
+            // at first we have to check if the message is for us
+            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+                // silently ignore this event
+                return; 
+            }
+       getMDirtyablePart().setDirty(true);
+    }}
 }

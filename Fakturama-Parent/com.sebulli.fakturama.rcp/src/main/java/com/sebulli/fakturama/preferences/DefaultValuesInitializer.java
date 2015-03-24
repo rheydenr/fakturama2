@@ -17,15 +17,11 @@ package com.sebulli.fakturama.preferences;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Initializes the preference pages with default values
@@ -42,7 +38,7 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
     private ILogger log;
     
     @Inject
-    private IEclipseContext ctx;
+    private IPreferenceStore defaultValuesNode;
 
     /**
 	 * This method is called by the preference initializer to initialize default
@@ -57,7 +53,6 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 		
 		log.info("Enter in default Preference Initializer");
 	    // look at Constants.DEFAULT_PREFERENCES_NODE)
-	    IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.DEFAULT_PREFERENCES_NODE);   
 	    // TODO Later on we use registered preference pages which register itself on a registry.
 	    // But for now we use the old style way...
 	    
@@ -81,6 +76,5 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 		new OptionalItemsPreferencePage().setInitValues(defaultValuesNode, msg);
 		new WebShopAuthorizationPreferencePage().setInitValues(defaultValuesNode);
 		new BrowserPreferencePage().setInitValues(defaultValuesNode);
-	    ctx.set(IPreferenceStore.class, defaultValuesNode);
 	}
 }

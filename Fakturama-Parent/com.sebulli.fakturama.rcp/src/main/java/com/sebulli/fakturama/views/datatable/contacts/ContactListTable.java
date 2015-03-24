@@ -179,6 +179,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
                     // the intended behavior...
                     Map<String, Object> eventParams = new HashMap<>();
                     // the transientData HashMap contains the target document number
+                    // (was set in MouseEvent handler)
                     eventParams.putAll(activePart.getParent().getTransientData());
                     eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
                     evtBroker.post("DialogSelection/Contact", eventParams);
@@ -280,7 +281,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
 
         //create the body layer stack
         final IRowDataProvider<Contact> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Contact>(treeFilteredIssues, columnPropertyAccessor);
+                new GlazedListsDataProvider<Contact>(treeFilteredIssues, derivedColumnPropertyAccessor);
         
         //build the grid layer
         gridLayer = new ListViewGridLayer<Contact>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);

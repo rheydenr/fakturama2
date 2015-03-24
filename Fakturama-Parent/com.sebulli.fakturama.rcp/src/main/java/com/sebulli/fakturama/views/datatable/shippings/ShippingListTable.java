@@ -234,7 +234,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
         //create the body layer stack
         final IRowDataProvider<Shipping> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Shipping>(treeFilteredIssues, columnPropertyAccessor);
+                new GlazedListsDataProvider<Shipping>(treeFilteredIssues, derivedColumnPropertyAccessor);
         
         //build the grid layer
         gridLayer = new ListViewGridLayer<Shipping>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -22,11 +23,14 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
+import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -151,9 +155,13 @@ public class LifecycleManager {
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
+        
+        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.DEFAULT_PREFERENCES_NODE);   
+        context.set(IPreferenceStore.class, defaultValuesNode);
+        
         // Set the default values to this entries
         Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
-        VAT defaultVat = modelFactory.createVAT();
+        VAT defaultVat = modelFactory.createVAT(); //defaultValuesNode.getString(Constants.DEFAULT_VAT);
         defaultVat.setName(msg.dataDefaultVat);
         defaultVat.setDescription(msg.dataDefaultVatDescription);
         defaultVat.setTaxValue(0.0);
@@ -196,6 +204,13 @@ public class LifecycleManager {
             defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         
+        try {
+            defaultNode.flush();
+        }
+        catch (BackingStoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         DefaultValuesInitializer defaultValuesInitializer = ContextInjectionFactory.make(DefaultValuesInitializer.class, context);
         defaultValuesInitializer.initializeDefaultPreferences();
     }
