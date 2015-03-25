@@ -1,32 +1,37 @@
 package com.sebulli.fakturama.views.datatable;
 
-import java.util.Map;
+import java.io.Serializable;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
+import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.sort.command.SortColumnCommand;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransformedList;
 
 import com.sebulli.fakturama.model.IEntity;
 
@@ -46,13 +51,82 @@ public class ListViewGridLayer<T extends IEntity> extends GridLayer {
     private ViewportLayer viewportLayer;
     private SelectionLayer selectionLayer;
 
-	public ListViewGridLayer(EventList<T> eventList,
-									String[] propertyNames,
-									Map<String, String> propertyToLabelMap,
-									IConfigRegistry configRegistry) {
-		this(eventList, propertyNames, propertyToLabelMap, configRegistry, true);
-	}
+    public ListViewGridLayer(EntityGridListLayer<T> entityGridListLayer) {
+        super(false);
+//        this.columnLabelAccumulator = entityGridListLayer.
+        this.bodyDataLayer = entityGridListLayer.getBodyDataLayer();
+//        this.bodyLayerStack = entityGridListLayer.getBodyLayerStack();
+        this.bodyDataProvider = entityGridListLayer.getBodyDataProvider();
+    }
+    
+    
+    
+    public ListViewGridLayer(EventList<T> eventList,
+            IColumnPropertyAccessor<T> columnPropertyAccessor,
+            IDataProvider columnHeaderDataProvider,
+            IConfigRegistry configRegistry,
+            boolean useDefaultConfiguration,
+            boolean showRowHeader) {
+        
+        super(useDefaultConfiguration);
+        
+        // Body - with list event listener
+        TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+        
+        //use the SortedList constructor with 'null' for the Comparator because the Comparator
+        //will be set by configuration
+        SortedList<T> sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+        //  NOTE: Remember to use the SortedList constructor with 'null' for the Comparator
+        bodyDataProvider = new GlazedListsDataProvider<T>(sortedList, columnPropertyAccessor);
 
+        bodyDataLayer = new DataLayer(getBodyDataProvider());
+        GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<T>(getBodyDataLayer(), eventList);
+//        bodyLayerStack = new DefaultBodyLayerStack(glazedListsEventLayer);
+        RowReorderLayer rowReorderLayer = new RowReorderLayer(glazedListsEventLayer); 
+        selectionLayer = new SelectionLayer(rowReorderLayer);
+//       Select complete rows
+      selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
+
+        IRowIdAccessor<T> rowIdAccessor = new IRowIdAccessor<T>() {
+            @Override
+            public Serializable getRowId(T rowObject) {
+                return rowObject.getId();
+            }
+        };
+
+      //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
+      RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(getSelectionLayer(), getBodyDataProvider(), rowIdAccessor, false);
+      selectionModel.setMultipleSelectionAllowed(true);
+      selectionLayer.setSelectionModel(selectionModel);
+      viewportLayer = new ViewportLayer(getSelectionLayer());
+        
+        // Column header
+        columnHeaderLayerStack = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, 
+                                                        sortedList, 
+                                                        columnPropertyAccessor, 
+                                                        configRegistry, 
+                                                        viewportLayer, getSelectionLayer());
+
+        // Row header
+        IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(getBodyDataProvider(), showRowHeader);
+        IUniqueIndexLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+        RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, viewportLayer, getSelectionLayer());
+
+        // Corner
+        IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
+        IUniqueIndexLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+        CornerLayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayerStack);
+
+        // Grid
+//      GridLayer gridLayer = new GridLayer(viewportLayer, columnHeaderLayerStack, rowHeaderLayer, cornerLayer);
+        setBodyLayer(viewportLayer);
+        setColumnHeaderLayer(columnHeaderLayerStack);
+        setRowHeaderLayer(rowHeaderLayer);
+        setCornerLayer(cornerLayer);
+        
+    }
+    
+    
 	/**
 	 * The underlying {@link DataLayer} created is able to handle Events raised by GlazedLists
 	 * and fire corresponding NatTable events.
@@ -60,19 +134,7 @@ public class ListViewGridLayer<T extends IEntity> extends GridLayer {
 	 * The {@link SortHeaderLayer} triggers sorting on the the underlying SortedList when
 	 * a {@link SortColumnCommand} is received.
 	 */
-	public ListViewGridLayer(EventList<T> eventList,
-									String[] propertyNames,
-									Map<String, String> propertyToLabelMap,
-									IConfigRegistry configRegistry,
-									boolean useDefaultConfiguration) {
-		
-		this(eventList,
-				new ReflectiveColumnPropertyAccessor<T>(propertyNames),
-				new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
-				configRegistry,
-				useDefaultConfiguration);
-	}
-	
+    @Deprecated
 	public ListViewGridLayer(EventList<T> eventList,
 			IColumnPropertyAccessor<T> columnPropertyAccessor,
 			IDataProvider columnHeaderDataProvider,
@@ -116,36 +178,46 @@ public class ListViewGridLayer<T extends IEntity> extends GridLayer {
 	
 	/**
 	 * This class is for viewing row headers.
-	 * @author rheydenr
 	 *
 	 */
-	class ListViewRowHeaderDataProvider implements IDataProvider  {
+    class ListViewRowHeaderDataProvider implements IDataProvider  {
 
-		protected final IDataProvider bodyDataProvider;
+        protected final IDataProvider bodyDataProvider;
+        
+        /** 
+         * A row header has either one column (and is visible then) or zero column (and is invisible then).
+         */
+        private final int columnCount;
+        
+        public ListViewRowHeaderDataProvider(IDataProvider bodyDataProvider) {
+            this(bodyDataProvider, false);
+        }
 
-		public ListViewRowHeaderDataProvider(IDataProvider bodyDataProvider) {
-			this.bodyDataProvider = bodyDataProvider;
-		}
-		@Override
-		public Object getDataValue(int columnIndex, int rowIndex) {
-			return null;
-		}
+        public ListViewRowHeaderDataProvider(IDataProvider bodyDataProvider, boolean showRowHeader) {
+            this.bodyDataProvider = bodyDataProvider;
+            this.columnCount = showRowHeader ? 1 : 0;
+        }
+        
+        @Override
+        public Object getDataValue(int columnIndex, int rowIndex) {
+            return Integer.valueOf(rowIndex + 1);
+        }
 
-		@Override
-		public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public int getColumnCount() {
-			return 0;
-		}
+        @Override
+        public int getColumnCount() {
+            return columnCount;
+        }
 
-		public int getRowCount() {
-			return bodyDataProvider.getRowCount();
-		}
-		
-	}
+        public int getRowCount() {
+            return bodyDataProvider.getRowCount();
+        }
+        
+    }
 	
 	public ColumnOverrideLabelAccumulator getColumnLabelAccumulator() {
 		return columnLabelAccumulator;
@@ -171,4 +243,18 @@ public class ListViewGridLayer<T extends IEntity> extends GridLayer {
 	public DefaultBodyLayerStack getBodyLayerStack() {
 		return bodyLayerStack;
 	}
+
+    /**
+     * @return the viewportLayer
+     */
+    public ViewportLayer getViewportLayer() {
+        return viewportLayer;
+    }
+
+    /**
+     * @return the selectionLayer
+     */
+    public SelectionLayer getSelectionLayer() {
+        return selectionLayer;
+    }
 }

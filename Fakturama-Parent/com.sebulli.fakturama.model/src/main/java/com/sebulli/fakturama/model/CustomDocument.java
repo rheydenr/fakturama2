@@ -15,11 +15,11 @@ import com.sebulli.fakturama.oldmodel.OldDocuments;
  * the current address or the payment or shipping info, the manually edited values gets stored in 
  * this {@link CustomDocument}. The original reference to {@link Contact}, {@link Shipping} or
  * {@link Payment} (if any) is deleted (set to <code>null</code>). The getters are transparent in this case. E.g., if someone
- * wants to get the shippingvatdescription he only calls <i>one</i> getter. If a {@link Shipping}
- * is stored, then he gets the VAT description from this {@link Shipping}. If the description was
- * changed manually, he gets the shippingvatdescription stored in this concrete document.<br />
+ * wants to get the {@link #shippingdescription} he only calls <i>one</i> getter. If a {@link Shipping}
+ * is stored, then he gets the {@link VAT} description from this {@link Shipping}. If the description was
+ * changed manually, he gets the {@link #shippingdescription} stored in this concrete document.<br />
  * 
- * Only that attributes are contained which were also contained in {@link OldDocuments}.
+ * Only those attributes are contained which were also contained in {@link OldDocuments}.
  */
 //@Entity()
 //@Table(name = "FKT_CDOCUMENT")

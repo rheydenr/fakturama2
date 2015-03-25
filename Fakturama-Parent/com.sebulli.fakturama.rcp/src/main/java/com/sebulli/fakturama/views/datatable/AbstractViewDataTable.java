@@ -288,7 +288,38 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @param nattable
      * @param gridLayer
      */
+	@Deprecated
     protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<T> gridLayer) {
+        // Add a double click listener
+        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+            @Override
+            public void run(NatTable natTable, MouseEvent event) {
+                //get the row position for the click in the NatTable
+                int rowPos = natTable.getRowPositionByY(event.y);
+                //transform the NatTable row position to the row position of the body layer stack
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                // extract the selected Object
+                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+//                log.debug("Selected Object: " + selectedObject.getName());
+                // Call the corresponding editor. The editor is set
+                // in the variable "editor", which is used as a parameter
+                // when calling the editor command.
+                // in E4 we create a new Part (or use an existing one with the same ID)
+                // from PartDescriptor
+                Map<String, Object> params = new HashMap<>();
+                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                if(selectedObject instanceof Document) {
+                    params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
+                }
+                ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                handlerService.executeHandler(parameterizedCommand);
+            }
+        });
+    }
+    
+    protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<T> gridLayer) {
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 

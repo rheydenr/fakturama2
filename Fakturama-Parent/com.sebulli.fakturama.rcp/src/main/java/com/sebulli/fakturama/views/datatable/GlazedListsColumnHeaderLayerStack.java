@@ -17,13 +17,15 @@ import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
+import com.sebulli.fakturama.model.IEntity;
+
 import ca.odell.glazedlists.SortedList;
 
 /**
  * Column header layer stack, with a {@link SortHeaderLayer}.
  * 	Utilizes {@link GlazedListsSortModel} for sorting
  */
-public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform {
+public class GlazedListsColumnHeaderLayerStack<T extends IEntity> extends AbstractLayerTransform {
 	private IDataProvider dataProvider;
 	private DefaultColumnHeaderDataLayer dataLayer;
 	private ColumnHeaderLayer columnHeaderLayer;
@@ -40,6 +42,27 @@ public class GlazedListsColumnHeaderLayerStack<T> extends AbstractLayerTransform
 				columnPropertyAccessor, 
 				configRegistry,
 				bodyLayerStack);
+	}
+	public GlazedListsColumnHeaderLayerStack(IDataProvider dataProvider,
+			IColumnPropertyAccessor<T> columnPropertyAccessor, 
+			IConfigRegistry configRegistry,
+			BodyLayerStack<T> bodyLayerStack) {
+		
+		this.dataProvider = dataProvider;
+		dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
+		columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+
+		SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
+												columnHeaderLayer, 
+												new GlazedListsSortModel<T>(
+												        bodyLayerStack.getSortedList(), 
+														columnPropertyAccessor,
+														configRegistry, 
+														dataLayer), 
+												false);
+
+		setUnderlyingLayer(sortHeaderLayer);
+	    
 	}
 	
 	@Deprecated

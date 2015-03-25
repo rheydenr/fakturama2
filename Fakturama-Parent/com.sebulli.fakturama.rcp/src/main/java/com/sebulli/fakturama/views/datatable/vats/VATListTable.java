@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.vats;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
@@ -34,30 +33,28 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
+import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -74,6 +71,7 @@ import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
+import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
@@ -129,7 +127,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
 
     private ListViewGridLayer<VAT> gridLayer;
-    
+    private EntityGridListLayer<VAT> gridListLayer;
+
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<VAT> treeFilteredIssues;
@@ -140,7 +139,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     	log.info("create VAT list part");
         top = super.createPartControl(parent, VAT.class, true, ID);
         // Listen to double clicks
-        hookDoubleClickCommand(natTable, gridLayer);
+        hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
@@ -164,13 +163,97 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.configure();
     }
 	
-    protected NatTable createListTable(Composite searchAndTableComposite) {       
+    @Deprecated
+    protected NatTable createListTable2(Composite searchAndTableComposite) {       
         // fill the underlying data source (GlazedList)
         vatListData = GlazedLists.eventList(vatsDAO.findAll());
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
 
+        final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
+
+        //build the column header layer
+        // Column header data provider includes derived properties
+        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<VAT>(propertyNames, derivedColumnPropertyAccessor); 
+
+        // matcher input Search text field 
+        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
+        
+        // Filtered list for Search text field filter
+        final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(vatListData, textMatcherEditor);
+
+        // build the list for the tree-filtered values (i.e., the value list which is affected by
+        // tree selection)
+        treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
+
+        //create the body layer stack
+        //build the grid layer
+        gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, 
+                configRegistry, false, false);
+        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        tableDataLayer.setColumnPercentageSizing(true);
+        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
+        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
+//        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, vatListData);
+
+        // add a label accumulator to be able to register converter
+        // this is crucial for using custom values display
+//        vatListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        
+        // Custom selection configuration
+        selectionLayer = gridLayer.getSelectionLayer();
+        
+        // for further use, if we need it...
+        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
+        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
+
+//        IRowIdAccessor<VAT> rowIdAccessor = new IRowIdAccessor<VAT>() {
+//            @Override
+//            public Serializable getRowId(VAT rowObject) {
+//                return rowObject.getId();
+//            }
+//        };
+//        
+//        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
+//        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
+//        selectionLayer.setSelectionModel(selectionModel);
+////         Select complete rows
+//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
+
+        // now is the time where we can create the NatTable itself
+
+        // Label accumulator - adds labels to all cells with the given data value
+        //      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
+        //          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
+        //      cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
+
+        // Create a label accumulator - adds custom labels to all cells which we
+        // wish to render differently. In this case render as an image.
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
+        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
+
+        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
+        
+        // Register label accumulator
+        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
+
+        // Register your custom cell painter, cell style, against the label applied to the cell.
+        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
+        return natTable;
+    }
+
+    /**
+     * @param propertyNames
+     * @return
+     */
+    private IColumnPropertyAccessor<VAT> createColumnPropertyAccessor(String[] propertyNames) {
         final IColumnPropertyAccessor<VAT> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<VAT>(propertyNames);
         
         // Add derived 'default' column
@@ -213,10 +296,20 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
                 }
             }
         };
+        return derivedColumnPropertyAccessor;
+    }
+    
+    
+    
+    
+    public NatTable createListTable(Composite searchAndTableComposite) {
 
-        //build the column header layer
-        // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<VAT>(propertyNames, derivedColumnPropertyAccessor); 
+        vatListData = GlazedLists.eventList(vatsDAO.findAll());
+
+        // get the visible properties to show in list view
+        String[] propertyNames = vatsDAO.getVisibleProperties();
+
+        final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
         // matcher input Search text field 
         final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
@@ -227,76 +320,54 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
         treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
-
-        //create the body layer stack
-        final IRowDataProvider<VAT> firstBodyDataProvider = 
-                new GlazedListsDataProvider<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor);
+       
+        gridListLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         
-        //build the grid layer
-        gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
-        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
         tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
         tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
         tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
         tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, vatListData);
 
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-        vatListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        
-        // Custom selection configuration
-        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-        IRowIdAccessor<VAT> rowIdAccessor = new IRowIdAccessor<VAT>() {
-            @Override
-            public Serializable getRowId(VAT rowObject) {
-                return rowObject.getId();
-            }
-        };
-        
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-        selectionLayer.setSelectionModel(selectionModel);
-//         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
-
-        // now is the time where we can create the NatTable itself
-
-        // Label accumulator - adds labels to all cells with the given data value
-        //      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
-        //          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
-        //      cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
-
-        // Create a label accumulator - adds custom labels to all cells which we
-        // wish to render differently. In this case render as an image.
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
         columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
+       
+        // Register label accumulator
+        gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
 
-        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+        //turn the auto configuration off as we want to add our header menu configuration
+        NatTable natTable = new NatTable(searchAndTableComposite, gridListLayer.getGridLayer(), false);
+        
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
-        // Register label accumulator
-        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
-
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
+        postConfigureNatTable(natTable);
+        
+        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
         return natTable;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /**
      * @return the gridLayer
      */
-    protected ListViewGridLayer<VAT> getGridLayer() {
-        return gridLayer;
+    protected EntityGridListLayer<VAT> getGridLayer() {
+        return gridListLayer;
     }
 
     @Override

@@ -797,7 +797,7 @@ public class WebShopImportManager {
         	// First get all contacts. Normally there is only one
             ContactType contact = order.getContact();        
 
-			Contact contactItem = fakturamaModelFactory.createContact();
+			Contact contactItem = fakturamaModelFactory.createDebitor();
 			// Convert a gender character "m" or "f" to the gender number 
 			// 1 or 2
 			if (contact.getGender().equals("m"))
@@ -846,7 +846,7 @@ public class WebShopImportManager {
                     || !StringUtils.equals(contact.getDeliveryFirstname(), contactItem.getFirstName())
                     || !StringUtils.equals(contact.getDeliveryLastname(), contactItem.getName())
                     || !StringUtils.equals(contact.getDeliveryCompany(), contactItem.getCompany())) {
-                Contact deliveryContact = fakturamaModelFactory.createContact();
+                Contact deliveryContact = fakturamaModelFactory.createDebitor();
 
                 deliveryContact.setFirstName(contact.getDeliveryFirstname());
                 deliveryContact.setName(contact.getDeliveryLastname());

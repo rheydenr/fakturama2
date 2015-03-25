@@ -798,7 +798,7 @@ public class MigrationManager {
 	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
 		Contact contact = null;
 		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
-			contact = modelFactory.createContact();
+			contact = modelFactory.createDebitor();
 			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
 			contact.setGender(isDeliveryAddress ? oldContact.getDeliveryGender() : oldContact.getGender());

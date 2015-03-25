@@ -72,6 +72,7 @@ import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
@@ -198,6 +199,7 @@ public class ContactEditor extends Editor<Contact> {
 	protected IEclipsePreferences contactPreferences;
 
     private ContactUtil contactUtil;
+    private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
 
 	/**
 	 * Saves the contents of this part
@@ -343,7 +345,7 @@ public class ContactEditor extends Editor<Contact> {
 		if (newContact) {
 
 			// Create a new data set
-			editorContact = new Contact();  // TODO category?
+			editorContact = modelFactory.createDebitor();  // TODO category?
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			part.setLabel(msg.commandNewContactName);
 
