@@ -30,7 +30,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
+public class OptionalItemsPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
 	
 	/* TRANSLATORS: The placeholder indicates the bug-reporting address
@@ -101,7 +101,7 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node, Messages msg) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_USE, false);
 		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, true);
 		node.setDefault(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, "---");

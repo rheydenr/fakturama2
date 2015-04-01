@@ -16,7 +16,6 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -32,14 +31,14 @@ import com.sebulli.fakturama.misc.DocumentType;
  * 
  * @author Gerd Bartelt
  */
-public class ToolbarPreferencePage extends FieldEditorPreferencePage implements IPreferencesInitializerListener {
+public class ToolbarPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
     @Inject
     @Translation
     protected Messages msg;
-    
-    @Inject
-    protected IEventBroker eventBroker;
+//    
+//    @Inject
+//    protected IEventBroker eventBroker;
 
 	/**
 	 * Constructor
@@ -96,20 +95,20 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName, getFieldEditorParent()));
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
-	 */
-	@Override
-	public boolean performOk() {
-	    eventBroker.post("TOOLBARPREFS", "jaa");
-	    return super.performOk();
-	}
-	
-	@Override
-	public String getDescription() {
-	    return msg.preferencesToolbarIcons;
-	}
-
+//	/* (non-Javadoc)
+//	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
+//	 */
+//	@Override
+//	public boolean performOk() {
+//	    eventBroker.post("TOOLBARPREFS", "jaa");
+//	    return super.performOk();
+//	}
+//	
+//	@Override
+//	public String getDescription() {
+//	    return msg.preferencesToolbarIcons;
+//	}
+//
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 

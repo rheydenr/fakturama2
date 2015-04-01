@@ -9,6 +9,8 @@
 			<persistence:class>com.sebulli.fakturama.model.Address</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.BankAccount</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Contact</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Debitor</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Creditor</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ContactCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Document</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Invoice</persistence:class>
@@ -21,10 +23,9 @@
 			<persistence:class>com.sebulli.fakturama.model.Dunning</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Proforma</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.DocumentItem</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.DocumentItemCategory</persistence:class>
-			<!-- <persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class> -->
 			<persistence:class>com.sebulli.fakturama.model.Expenditure</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ExpenditureItem</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemAccountType</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Payment</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Product</persistence:class>
@@ -32,12 +33,13 @@
 			<persistence:class>com.sebulli.fakturama.model.ProductOptions</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ReceiptVoucher</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ReceiptVoucherItem</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Role</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Shipping</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ShippingCategory</persistence:class>
-			<!-- <persistence:class>com.sebulli.fakturama.model.Tenant</persistence:class> -->
+			<persistence:class>com.sebulli.fakturama.model.Tenant</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextModule</persistence:class>
-			<!-- <persistence:class>com.sebulli.fakturama.model.User</persistence:class> -->
+			<persistence:class>com.sebulli.fakturama.model.User</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.UserProperty</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VAT</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
@@ -49,7 +51,7 @@
 			<!-- update database automagically ;-)  -->
 			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
-			<persistence:property name="eclipselink.logging.level" value="SEVERE" />
+			<persistence:property name="eclipselink.logging.level" value="INFO" />
 		</persistence:properties>
 	</persistence:persistence-unit>
 

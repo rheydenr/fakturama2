@@ -1,5 +1,5 @@
 /*
- * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
  * 
  * Copyright (C) 2013 Ralf Heydenreich
  * 
@@ -11,7 +11,6 @@
  * Contributors: Ralf Heydenreich - initial API and implementation
  */
 /**
- * @author rheydenr
- * 
+ * This package contains classes for the migration of old Fakturama data. 
  */
 package com.sebulli.fakturama.migration;

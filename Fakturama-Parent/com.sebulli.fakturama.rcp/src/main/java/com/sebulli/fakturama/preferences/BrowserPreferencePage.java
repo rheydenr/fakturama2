@@ -31,7 +31,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class BrowserPreferencePage extends FieldEditorPreferencePage {
+public class BrowserPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
     @Inject
     @Translation

@@ -67,17 +67,17 @@ public class ContactCategoriesDAO extends AbstractDAO<ContactCategory> {
      * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
      * and then check the parent. 
      * 
-     * @param vatCategory the Category to search
+     * @param pContactCategory the Category to search
      * @return {@link ContactCategory}
      */
-    public ContactCategory findContactCategoryByName(String vatCategory) {
+    public ContactCategory findContactCategoryByName(String pContactCategory) {
         ContactCategory result = null;
-        if(StringUtils.isNotEmpty(vatCategory)) {
+        if(StringUtils.isNotEmpty(pContactCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         	CriteriaQuery<ContactCategory> cq = cb.createQuery(ContactCategory.class);
         	Root<ContactCategory> rootEntity = cq.from(ContactCategory.class);
         	// extract the rightmost value
-            String[] splittedCategories = vatCategory.split("/");
+            String[] splittedCategories = pContactCategory.split("/");
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
     		CriteriaQuery<ContactCategory> selectQuery = cq.select(rootEntity)
     		        .where(cb.and(
@@ -88,10 +88,10 @@ public class ContactCategoriesDAO extends AbstractDAO<ContactCategory> {
             try {
                 List<ContactCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
-                String testCat = StringUtils.removeStart(vatCategory, "/");
-                for (ContactCategory vatCategory2 : tmpResultList) {
-                    if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
-                        result = vatCategory2;
+                String testCat = StringUtils.removeStart(pContactCategory, "/");
+                for (ContactCategory contactCategoryEntry : tmpResultList) {
+                    if(StringUtils.equals(CommonConverter.getCategoryName(contactCategoryEntry, ""), testCat)) {
+                        result = contactCategoryEntry;
                         break;
                     }
                 }

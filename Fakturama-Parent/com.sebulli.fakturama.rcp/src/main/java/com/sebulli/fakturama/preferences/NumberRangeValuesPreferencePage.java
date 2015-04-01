@@ -28,7 +28,7 @@ import com.sebulli.fakturama.i18n.Messages;
  * 
  * @author Gerd Bartelt
  */
-public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage {
+public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
     /**
      * 

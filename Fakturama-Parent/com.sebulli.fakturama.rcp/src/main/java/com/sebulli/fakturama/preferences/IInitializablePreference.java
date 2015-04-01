@@ -2,7 +2,7 @@ package com.sebulli.fakturama.preferences;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-public interface IPreferencesInitializerListener {
+public interface IInitializablePreference {
 
 	/**
 	 * Set the default values for this preference page

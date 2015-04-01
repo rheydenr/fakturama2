@@ -5,13 +5,15 @@ package com.sebulli.fakturama.misc;
 
 import java.util.Locale;
 
+import org.eclipse.core.runtime.preferences.InstanceScope;
+
 
 /**
  * Common constants for the Fakturama project.
  *
  */
 public class Constants {
-    public static final String DEFAULT_PREFERENCES_NODE="/default/com.sebulli.fakturama.preferences";
+    public static final String DEFAULT_PREFERENCES_NODE="/" + InstanceScope.SCOPE + "/default/com.sebulli.fakturama.rcp";
     
     public static final String VIEWTABLE_PREFERENCES_FILE = "fakturamaviews.properties";
     public static final String GENERAL_WORKSPACE = "GENERAL_WORKSPACE";

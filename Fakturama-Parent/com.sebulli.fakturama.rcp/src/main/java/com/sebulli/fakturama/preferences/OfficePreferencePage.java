@@ -16,7 +16,6 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -37,7 +36,7 @@ import com.sebulli.fakturama.office.OfficeStarter;
  * 
  * @author Gerd Bartelt
  */
-public class OfficePreferencePage extends FieldEditorPreferencePage {
+public class OfficePreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
 	/**
      * 
@@ -69,8 +68,8 @@ public class OfficePreferencePage extends FieldEditorPreferencePage {
     protected Messages msg;
 
     @Inject
-    @Preference("/configuration/defaultValues")
-    private IEclipsePreferences eclipsePrefs;
+    @Preference(value=InstanceScope.SCOPE)
+    private IPreferenceStore preferences;
 
     /**
 	 * Constructor
@@ -90,7 +89,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage {
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.OPENOFFICE_PREFERENCE_PAGE);
 
-		String defaultValue = eclipsePrefs.get(PREFERENCES_OPENOFFICE_PATH, "");
+		String defaultValue = preferences.getString(PREFERENCES_OPENOFFICE_PATH);
 		if (!defaultValue.isEmpty())
 			//T: Preference page "Office" - Label: Example of the default path. Format: (e.g. PATH).
 			//T: Only the "e.g." is translated

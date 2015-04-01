@@ -12,12 +12,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -112,10 +110,6 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
      */
     @Inject
     protected IEventBroker evtBroker;
-
-    @Inject
-    @Preference
-    private IEclipsePreferences preferences;
 
     private EventList<Contact> contactListData;
     private EventList<ContactCategory> categories;

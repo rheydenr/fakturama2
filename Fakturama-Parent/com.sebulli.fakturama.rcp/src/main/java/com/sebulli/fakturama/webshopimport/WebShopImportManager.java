@@ -83,12 +83,12 @@ import org.javamoney.moneta.FastMoney;
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.dao.CategoryDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
-import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -162,7 +162,7 @@ public class WebShopImportManager {
     private ContactsDAO contactsDAO;
     
     @Inject
-    private ShippingCategoriesDAO shippingCategoriesDAO;
+    private CategoryDAO shippingCategoriesDAO;
     
     @Inject
     private ShippingsDAO shippingsDAO;
@@ -792,7 +792,7 @@ public class WebShopImportManager {
         	Instant instant = calendarWebshopDate.atZone(ZoneId.systemDefault()).toInstant();
         	dataSetDocument.setWebshopDate(Date.from(instant));
         
-            CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<ContactCategory>();
+            CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(log);
    
         	// First get all contacts. Normally there is only one
             ContactType contact = order.getContact();        

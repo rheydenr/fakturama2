@@ -14,31 +14,36 @@
 
 package com.sebulli.fakturama.preferences;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.osgi.service.log.LogService;
 
-import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.log.ILogger;
+import com.opcoach.e4.preferences.ScopedPreferenceStore;
+import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Initializes the preference pages with default values
  * 
- * @author Gerd Bartelt
  */
 public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
     
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private ILogger log;
+    private List<IInitializablePreference> classesToInit = new ArrayList<>();
     
-    @Inject
-    private IPreferenceStore defaultValuesNode;
+    /**
+     * Register an initializable preference page to this Initializer.
+     *  
+     * @param preferencePage
+     */
+    public void registerPreferencePage(IInitializablePreference preferencePage) {
+        classesToInit.add(preferencePage);
+    }
 
     /**
 	 * This method is called by the preference initializer to initialize default
@@ -50,31 +55,38 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 *      #initializeDefaultPreferences()
 	 */
 	public void initializeDefaultPreferences() { 
+		LogService log = EclipseContextFactory.getServiceContext(Activator.getContext()).get(LogService.class);
+		log.log(LogService.LOG_INFO, "Enter in default Preference Initializer");
+	    // TODO Later on we use registered preference pages which register itself on a registry:
 		
-		log.info("Enter in default Preference Initializer");
-	    // look at Constants.DEFAULT_PREFERENCES_NODE)
-	    // TODO Later on we use registered preference pages which register itself on a registry.
-	    // But for now we use the old style way...
-	    
-//		for (IPreferencesInitializerListener listener : preferencesListeners) {
-//			listener.setInitValues(defaultValuesNode);
+		IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp", Constants.DEFAULT_PREFERENCES_NODE);   
+//		for (IInitializablePreference iInitializablePreference : classesToInit) {
+//		    iInitializablePreference.setInitValues(defaultValuesNode);
 //		}
-	    
+
+		// But for now we use the old style way...	
+		List<Class<? extends IInitializablePreference>> classesToInit = new ArrayList<>();
+		classesToInit.add(ContactFormatPreferencePage.class);
+        classesToInit.add(DocumentPreferencePage.class);
+        classesToInit.add(NumberRangeFormatPreferencePage.class);
+        classesToInit.add(WebShopImportPreferencePage.class);
+        classesToInit.add(OptionalItemsPreferencePage.class);
+        classesToInit.add(ContactFormatPreferencePage.class);
+        classesToInit.add(ToolbarPreferencePage.class);
+        classesToInit.add(ContactPreferencePage.class);
+        classesToInit.add(GeneralPreferencePage.class);
+        classesToInit.add(NumberRangeValuesPreferencePage.class);
+        classesToInit.add(OfficePreferencePage.class);
+        classesToInit.add(ProductPreferencePage.class);
+        classesToInit.add(YourCompanyPreferencePage.class);
+        classesToInit.add(ExportPreferencePage.class);
+        classesToInit.add(WebShopAuthorizationPreferencePage.class);
+        classesToInit.add(BrowserPreferencePage.class);
+		
 	    // Initialize every single preference page
-		new ToolbarPreferencePage().setInitValues(defaultValuesNode);
-		new ContactPreferencePage().setInitValues(defaultValuesNode);
-		new ContactFormatPreferencePage().setInitValues(defaultValuesNode, msg);
-		new DocumentPreferencePage().setInitValues(defaultValuesNode, msg);
-		new GeneralPreferencePage().setDefaultValues(defaultValuesNode);
-		new NumberRangeValuesPreferencePage().setInitValues(defaultValuesNode);
-		new NumberRangeFormatPreferencePage().setInitValues(defaultValuesNode, msg);
-		new OfficePreferencePage().setInitValues(defaultValuesNode);
-		new ProductPreferencePage().setInitValues(defaultValuesNode);
-		new WebShopImportPreferencePage().setInitValues(defaultValuesNode, msg);
-		new YourCompanyPreferencePage().setInitValues(defaultValuesNode);
-		new ExportPreferencePage().setInitValues(defaultValuesNode);
-		new OptionalItemsPreferencePage().setInitValues(defaultValuesNode, msg);
-		new WebShopAuthorizationPreferencePage().setInitValues(defaultValuesNode);
-		new BrowserPreferencePage().setInitValues(defaultValuesNode);
+		for (Class<? extends IInitializablePreference> clazz : classesToInit) {
+		    IInitializablePreference p = ContextInjectionFactory.make(clazz, EclipseContextFactory.getServiceContext(Activator.getContext()));
+    		p.setInitValues(defaultValuesNode);
+        }
 	}
 }

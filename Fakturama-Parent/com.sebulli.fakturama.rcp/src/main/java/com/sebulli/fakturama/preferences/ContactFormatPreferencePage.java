@@ -29,7 +29,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class ContactFormatPreferencePage extends FieldEditorPreferencePage {
+public class ContactFormatPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
     @Inject
     @Translation
@@ -104,7 +104,8 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node, Messages msg) {
+	@Override
+	public void setInitValues(IPreferenceStore node/*, Messages msg*/) {
 		
 		//T: Preference page "Contact Format" - Example format Strings (Common Salutation)
 		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, msg.dataDefaultContactFormatSalutation);

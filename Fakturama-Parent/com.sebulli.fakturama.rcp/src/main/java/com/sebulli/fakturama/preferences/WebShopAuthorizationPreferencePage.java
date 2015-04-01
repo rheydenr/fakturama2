@@ -30,7 +30,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePage {
+public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
  
     @Inject
     @Translation

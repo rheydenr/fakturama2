@@ -22,13 +22,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.pgroup.PGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -64,8 +65,8 @@ public class NavigationView {
     private ECommandService commandService;
 
     @Inject
-    @Preference
-    private IEclipsePreferences preferences;
+    @Preference(value=InstanceScope.SCOPE)
+    private IPreferenceStore preferences;
 
     @Inject
     @Translation
@@ -180,7 +181,7 @@ public class NavigationView {
             public void itemExpanded(ExpandEvent e) {
                 PGroup current = (PGroup) e.getSource();
                 // Collapse expand bar items, or not
-                if (preferences.getBoolean(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, Boolean.FALSE)) {
+                if (preferences.getBoolean(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR)) {
                     groupList.stream().filter(g -> g != current).forEach(g -> g.setExpanded(false));
                 }
             }

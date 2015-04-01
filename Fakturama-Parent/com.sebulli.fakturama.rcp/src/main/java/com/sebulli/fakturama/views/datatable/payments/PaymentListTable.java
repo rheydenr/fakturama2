@@ -64,12 +64,12 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
-import com.sebulli.fakturama.dao.AccountDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -84,7 +84,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 /**
  * Builds the Payment list table.
  */
-public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
+public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCategory> {
 
     @Inject
     @Translation
@@ -113,7 +113,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     private IEclipsePreferences preferences;
     
     private EventList<Payment> paymentListData;
-    private EventList<Account> categories;
+    private EventList<VoucherCategory> categories;
 
     private Control top;
     
@@ -121,7 +121,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     private PaymentsDAO paymentsDAO;
 
     @Inject
-    private AccountDAO accountDAO;
+    private VoucherCategoriesDAO accountDAO;
     
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String PERCENTVALUE_CELL_LABEL = "PercentValue_Cell_LABEL";
@@ -302,8 +302,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
     }
 
     @Override
-    protected TopicTreeViewer<Account> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<Account>(top, msg, false, true);
+    protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
+        topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(accountDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
@@ -324,7 +324,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
 //     * Handle an incoming refresh command. This could be initiated by an editor 
 //     * which has just saved a new element (document, Payment, payment etc). Here we ONLY
 //     * listen to "PaymentEditor" events.<br />
-//     * The tree of {@link Account}s is updated because we use a GlazedList for
+//     * The tree of {@link VoucherCategory}s is updated because we use a GlazedList for
 //     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
 //     * react on every change of the underlying list (here in the field <code>categories</code>).
 //     * If the content of <code>categories</code> changes, the change event is fired and the 
@@ -475,7 +475,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, Account> {
             }
     
             // Refresh the table view of all Payment
-            evtBroker.post("PaymentEditor", "update");
+            evtBroker.post(PaymentEditor.EDITOR_ID, "update");
         } else {
             log.debug("no rows selected!");
         }

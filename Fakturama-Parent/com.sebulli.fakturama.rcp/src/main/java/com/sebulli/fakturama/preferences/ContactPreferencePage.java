@@ -30,7 +30,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class ContactPreferencePage extends FieldEditorPreferencePage implements IPreferencesInitializerListener  {
+public class ContactPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference  {
 
 	@Inject
     @Translation

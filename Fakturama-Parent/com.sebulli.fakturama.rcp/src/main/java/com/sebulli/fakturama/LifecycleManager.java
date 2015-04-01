@@ -27,8 +27,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -42,7 +40,6 @@ import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.preferences.DefaultValuesInitializer;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
@@ -112,28 +109,11 @@ public class LifecycleManager {
 				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
 			}
         }
-        
-//        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
-//        preferencesInDatabase.loadPreferencesFromDatabase();
-        
+
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
         appContext.applicationRunning();
     }
-    
-//    @ProcessRemovals
-//    public void postInit(EHandlerService handlerService/*,ECommandService commandService*/) {
-//        
-//        Map<String, Object> parameters = new HashMap<>();
-//        parameters.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.TRUE.toString());
-//        EHandlerService handlerService = ContextInjectionFactory.make(EHandlerService.class, context);
-//        ECommandService commandService = ContextInjectionFactory.make(ECommandService.class, context);     
-//        ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_OPEN_BROWSER_EDITOR, parameters);
-//        if (handlerService.canExecute(pCmd)) {
-//            handlerService.executeHandler(pCmd);
-//        } 
-//        
-//    }
 
     /**
      * Some steps to do before workbench is showing.
@@ -156,63 +136,54 @@ public class LifecycleManager {
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         
-        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.DEFAULT_PREFERENCES_NODE);   
+        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp",
+                Constants.DEFAULT_PREFERENCES_NODE);
         context.set(IPreferenceStore.class, defaultValuesNode);
         
         // Set the default values to this entries
-        Preferences defaultNode = eclipsePrefs.node("/configuration/defaultValues");
         VAT defaultVat = modelFactory.createVAT(); //defaultValuesNode.getString(Constants.DEFAULT_VAT);
         defaultVat.setName(msg.dataDefaultVat);
         defaultVat.setDescription(msg.dataDefaultVatDescription);
-        defaultVat.setTaxValue(0.0);
-        if(vatsDAO.getCount() == 0L) {
+        defaultVat.setTaxValue(Double.valueOf(0.0));
+        if(vatsDAO.getCount() == Long.valueOf(0L)) {
             defaultVat = vatsDAO.save(defaultVat);
-        } else if(defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
+        } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
         }
-        if(defaultVat != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
-            defaultNode.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
+        if(defaultVat != null && defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
+            defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         }
         
         Shipping defaultShipping = modelFactory.createShipping();
         defaultShipping.setName(msg.dataDefaultShipping);
         defaultShipping.setDescription(msg.dataDefaultShippingDescription);
-        defaultShipping.setShippingValue(0.0);
+        defaultShipping.setShippingValue(Double.valueOf(0.0));
         defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
-        defaultShipping.setShippingVat(vatsDAO.findById(defaultNode.getLong(Constants.DEFAULT_VAT, 1)));
-        if (shippingsDAO.getCount() == 0L) {
+        defaultShipping.setShippingVat(vatsDAO.findById(defaultValuesNode.getLong(Constants.DEFAULT_VAT)));
+        if (shippingsDAO.getCount() == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.save(defaultShipping);
-        } else if(defaultNode.getLong(Constants.DEFAULT_SHIPPING, 0L) == 0L) {
+        } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
         }
-        if(defaultShipping != null && defaultNode.getLong(Constants.DEFAULT_VAT, 0L) == 0L) {
-            defaultNode.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+        if(defaultShipping != null && defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
+            defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
 
         Payment defaultPayment;
-        if(paymentsDAO.getCount() == 0L) {
+        if(paymentsDAO.getCount() == Long.valueOf(0L)) {
             defaultPayment = new Payment();
             defaultPayment.setName(msg.dataDefaultPayment);
             defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
-            defaultPayment.setDiscountValue(0.0);
-            defaultPayment.setDiscountDays(0);
-            defaultPayment.setDiscountDays(0);
+            defaultPayment.setDiscountValue(Double.valueOf(0.0));
+            defaultPayment.setDiscountDays(Integer.valueOf(0));
+            defaultPayment.setDiscountDays(Integer.valueOf(0));
             defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
             defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
             defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
             defaultPayment = paymentsDAO.save(defaultPayment);
-            defaultNode.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
-        
-        try {
-            defaultNode.flush();
-        }
-        catch (BackingStoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        DefaultValuesInitializer defaultValuesInitializer = ContextInjectionFactory.make(DefaultValuesInitializer.class, context);
-        defaultValuesInitializer.initializeDefaultPreferences();
+        // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
     }
 
     @ProcessAdditions

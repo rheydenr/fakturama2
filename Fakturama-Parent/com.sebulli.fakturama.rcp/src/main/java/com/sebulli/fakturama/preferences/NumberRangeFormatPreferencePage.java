@@ -28,7 +28,7 @@ import com.sebulli.fakturama.i18n.Messages;
  * 
  * @author Gerd Bartelt
  */
-public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage {
+public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
     /**
      * 
@@ -151,7 +151,7 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node, Messages msg) {
+	public void setInitValues(IPreferenceStore node) {
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Customer" with {6nr} for a 6 digits number
 		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, msg.preferencesNumberrangeFormatCustomernoValue);
 		//Preference page "Number Range Format" - Default value: Abbreviation for "Product/Item" with {6nr} for a 6 digits number

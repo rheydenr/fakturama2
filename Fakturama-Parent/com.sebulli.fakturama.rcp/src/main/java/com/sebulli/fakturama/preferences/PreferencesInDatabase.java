@@ -16,8 +16,9 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.PropertiesDAO;
 
@@ -30,8 +31,8 @@ import com.sebulli.fakturama.dao.PropertiesDAO;
 public class PreferencesInDatabase {
 
     @Inject
-    @Preference
-    private IEclipsePreferences preferences;
+    @Preference(value=InstanceScope.SCOPE)
+    private IPreferenceStore preferences;
     
     @Inject
     private PropertiesDAO propertiesDAO;
@@ -54,7 +55,7 @@ public class PreferencesInDatabase {
 	 *            The key of the preference value
 	 */
 	private void savePreferenceValue(String key) {
-		String s = preferences.get(key, "");
+		String s = preferences.getString(key);
 		if (s != null && propertiesDAO != null)
 		    propertiesDAO.setProperty(key, s);
 	}

@@ -65,7 +65,7 @@ public class ConfigurationManager {
 	protected IEclipseContext context;
 	
     @Inject
-    @Preference
+    @Preference(value="instance")
     private IEclipsePreferences eclipsePrefs;
     
     @Inject

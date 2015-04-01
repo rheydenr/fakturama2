@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.migration.olddao;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -30,10 +31,8 @@ import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
 
 /**
- * DAO for the old entites. This dao is for ALL old entities, since we use it
+ * DAO for the old entities. This DAO is for <i>all</i> old entities, since we use it
  * only for migration and therefore we only need some basic finder methods.
- * 
- * @author R. Heydenreich
  * 
  */
 @Creatable
@@ -45,7 +44,7 @@ public class OldEntitiesDAO {
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, value = "org.hsqldb.jdbc.JDBCDriver"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, value = "sa"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, value = ""),
-			@GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "FINE"),
+			@GeminiPersistenceProperty(name = PersistenceUnitProperties.LOGGING_LEVEL, value = "INFO"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
 			@GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
 	private EntityManager em;
@@ -119,14 +118,19 @@ public class OldEntitiesDAO {
 	
 	/* * * * * * * * * * * * * * * * * * [Shippings] * * * * * * * * * * * * * * * * * * * * * */ 
 	
-	public Long countAllShippings() {
-		return em.createQuery("select count(s) from OldShippings s where s.deleted = false", Long.class).getSingleResult();
+	public Long countAllShippings() {// where s.deleted = false
+		return em.createQuery("select count(s) from OldShippings s", Long.class).getSingleResult();
 	}
 	
-	public List<OldShippings> findAllShippings() {
-		return em.createQuery("select s from OldShippings s where s.deleted = false", OldShippings.class).getResultList();
+	public List<OldShippings> findAllShippings() { // where s.deleted = false
+		return em.createQuery("select s from OldShippings s", OldShippings.class).getResultList();
 	}
 	
+    /**
+     * Finds all Shipping categories from non-deleted old Shipping entries. They are in the form of "/root/cat1/cat2".
+     * 
+     * @return List of Strings with all old Shipping categories
+     */
 	public List<String> findAllShippingCategories() {
 		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and s.category <> ''", String.class).getResultList();
 	}
@@ -136,14 +140,19 @@ public class OldEntitiesDAO {
 	}
 	/* * * * * * * * * * * * * * * * * * [VATs] * * * * * * * * * * * * * * * * * * * * * */ 
 
-	public Long countAllVats() {
-		return em.createQuery("select count(v) from OldVats v where v.deleted = false", Long.class).getSingleResult();
+	public Long countAllVats() {// where v.deleted = false
+		return em.createQuery("select count(v) from OldVats v", Long.class).getSingleResult();
 	}
 	
-	public List<OldVats> findAllVats() {
-		return em.createQuery("select v from OldVats v where v.deleted = false", OldVats.class).getResultList();
+	public List<OldVats> findAllVats() {// where v.deleted = false
+		return em.createQuery("select v from OldVats v", OldVats.class).getResultList();
 	}
 
+	/**
+	 * Finds all VAT categories from non-deleted old VAT entries. They are in the form of "/root/cat1/cat2".
+	 * 
+	 * @return List of Strings with all old VAT categories
+	 */
 	public List<String> findAllVatCategories() {
 		return em.createQuery("select distinct v.category from OldVats v where v.deleted = false and v.category <> ''", String.class).getResultList();
 	}
@@ -163,8 +172,21 @@ public class OldEntitiesDAO {
 		return em.createQuery("select l from OldList l where l.deleted = false and l.category like 'country%' order by l.value, l.id", OldList.class).getResultList();
 	}
 	
-	public List<String> findAllListCategories() {
-		return em.createQuery("select distinct l.category from OldList l where l.deleted = false and l.category <> ''", String.class).getResultList();
+	/**
+	 * Finds all entries from {@link OldList} which represent an account. {@link OldList} also
+	 * contains the country codes for all countries (ISO codes). These codes are not converted because
+	 * we use the country code information from {@link Locale} class.<br>
+	 * We can select all (other) entries because in the old Fakturama application <i>each</i> List entry
+	 * (which is not a country code entry) has a category named 'billing_accounts'. Fakturama doesn't accept
+	 * user defined categories in this area. <br>
+	 * Therefore we can select these entries according to this category. <br>
+	 * The accounts are used in Payments, ReceiptVouchers and ExpenditureVouchers.
+	 * 
+	 * @return 
+	 */
+	public List<OldList> findAllAccounts() {
+		return em.createQuery("select a from OldList a where a.category = 'billing_accounts'", 
+		        OldList.class).getResultList();
 	}
 	
 	/* * * * * * * * * * * * * * * * * * [Texts] * * * * * * * * * * * * * * * * * * * * * */ 
@@ -218,22 +240,27 @@ public class OldEntitiesDAO {
 		query.setParameter("id", id);
 		return query.getSingleResult();
 	}
-
-	public List<String> findAllDocumentItemCategories() {
-		return em.createQuery("select distinct oi.category from OldItems oi where oi.deleted = false and oi.category <> ''", String.class).getResultList();
-	}
-
+	
+//  not used!
+//	public List<String> findAllDocumentItemCategories() {
+//		return em.createQuery("select distinct oi.category from OldItems oi where oi.deleted = false and oi.category <> ''", String.class).getResultList();
+//	}
 
 	/* * * * * * * * * * * * * * * * * * [Payments section] * * * * * * * * * * * * * * * * * * * * * */ 
 
-	public Long countAllPayments() {
-		return em.createQuery("select count(p) from OldPayments p where p.deleted = false", Long.class).getSingleResult();
+	public Long countAllPayments() {// where p.deleted = false
+		return em.createQuery("select count(p) from OldPayments p", Long.class).getSingleResult();
 	}
 	
-	public List<OldPayments> findAllPayments() {
-		return em.createQuery("select p from OldPayments p where p.deleted = false", OldPayments.class).getResultList();
+	public List<OldPayments> findAllPayments() {// where p.deleted = false
+		return em.createQuery("select p from OldPayments p", OldPayments.class).getResultList();
 	}
-
+    
+    /**
+     * Finds all Payment categories from non-deleted old Payment entries. They are in the form of "/root/cat1/cat2".
+     * 
+     * @return List of Strings with all old Payment categories
+     */
 	public List<String> findAllPaymentCategories() {
 		return em.createQuery("select distinct p.category from OldPayments p where p.deleted = false and p.category <> ''", String.class).getResultList();
 	}
@@ -252,7 +279,7 @@ public class OldEntitiesDAO {
 		return em.createQuery("select e from OldExpenditures e where e.deleted = false", OldExpenditures.class).getResultList();
 	}
 	
-	public List<String> findAllExpenditureCategories() {
+	public List<String> findAllExpenditureVoucherCategories() {
 		return em.createQuery("select distinct e.category from OldExpenditures e where e.deleted = false and e.category <> ''", String.class).getResultList();
 	}
 
@@ -264,15 +291,7 @@ public class OldEntitiesDAO {
 	 */
 	public OldExpenditureitems findExpenditureItem(String itemRef) {
 		return em.find(OldExpenditureitems.class, Integer.valueOf(itemRef));
-//		TypedQuery<OldExpenditureitems> query = em.createQuery("select ei from OldExpenditureitems ei where ei.id = :itemRef", OldExpenditureitems.class);
-//		query.setParameter("itemRef", itemRef);
-//		return query.getSingleResult();
 	}
-
-	public List<String> findAllExpenditureItemCategories() {
-		return em.createQuery("select distinct ei.category from OldExpenditureitems ei where ei.deleted = false and ei.category <> ''", String.class).getResultList();
-	}
-
 	
 	/* * * * * * * * * * * * * * * * * * [Receiptvouchers section] * * * * * * * * * * * * * * * * * * * * * */ 
 	
@@ -288,15 +307,25 @@ public class OldEntitiesDAO {
 		return em.createQuery("select distinct r.category from OldReceiptvouchers r where r.deleted = false and r.category <> ''", String.class).getResultList();
 	}
 
-	public List<String> findAllReceiptVoucherItemCategories() {
-		return em.createQuery("select distinct ri.category from OldReceiptvoucheritems ri where ri.deleted = false and ri.category <> ''", String.class).getResultList();
+	/**
+	 * Finds all voucher item categories. These are located in the old LIST table, therefore
+	 * we select the values from there and not from Receipt/Expenditure value tables. The 
+	 * category is 'billing_accounts' because only these entries are used for item accounts.
+	 * 
+	 * @return List of distinct accounts for voucher items
+	 */
+	public List<OldList> findAllVoucherItemCategories() {
+		return em.createQuery("select distinct vi from OldLists vi where category = 'billing_accounts'", OldList.class).getResultList();
 	}
 
+	/**
+	 * Finds a {@link OldReceiptvoucheritems} object by its id. 
+	 * 
+	 * @param itemRef id of {@link OldReceiptvoucheritems} object
+	 * @return the {@link OldReceiptvoucheritems} object 
+	 */
 	public OldReceiptvoucheritems findReceiptvoucherItem(String itemRef) {
 		return em.find(OldReceiptvoucheritems.class, Integer.valueOf(itemRef));
-//		TypedQuery<OldReceiptvoucheritems> query = em.createQuery("select ri from OldReceiptvoucheritems ri where ri.id = :itemRef", OldReceiptvoucheritems.class);
-//		query.setParameter("itemRef", itemRef);
-//		return query.getSingleResult();
 	}
 
 	
@@ -310,6 +339,11 @@ public class OldEntitiesDAO {
 		return em.createQuery("select p from OldProducts p where p.deleted = false", OldProducts.class).getResultList();
 	}
 	
+    /**
+     * Finds all Product categories from non-deleted old Product entries. They are in the form of "/root/cat1/cat2".
+     * 
+     * @return List of Strings with all old Product categories
+     */
 	public List<String> findAllProductCategories() {
 		return em.createQuery("select distinct p.category from OldProducts p where p.deleted = false and p.category <> ''", String.class).getResultList();
 	}

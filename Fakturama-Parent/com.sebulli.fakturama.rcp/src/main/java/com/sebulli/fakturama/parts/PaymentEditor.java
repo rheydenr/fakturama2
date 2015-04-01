@@ -49,14 +49,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.dao.AccountDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
+import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
@@ -74,6 +74,7 @@ public class PaymentEditor extends Editor<Payment> {
     @Inject
     private Logger log;
 
+	// Editor's ID
     public static final String EDITOR_ID = "PaymentEditor";
 
     /**
@@ -93,9 +94,8 @@ public class PaymentEditor extends Editor<Payment> {
     private PaymentsDAO paymentsDAO;
 
     @Inject
-    private AccountDAO accountDAO;
+    private VoucherCategoriesDAO accountDAO;
 
-	// Editor's ID
 	public static final String ID = "com.sebulli.fakturama.editors.paymentEditor";
 
 	// This UniDataSet represents the editor's input 
@@ -113,7 +113,7 @@ public class PaymentEditor extends Editor<Payment> {
 	private Text textUnpaid;
 	private Combo comboCategory;
 
-	// defines, if the payment is new created
+	// defines if the payment is newly created
 	private boolean newPayment;
     private MPart part;
 
@@ -144,7 +144,7 @@ public class PaymentEditor extends Editor<Payment> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                Account parentCategory = accountDAO.getCategory(testCat, true);
+                VoucherCategory parentCategory = accountDAO.getOrCreateCategory(testCat, true);
                 // parentCategory now has the last found Category
                 payment.setCategory(parentCategory);
             }
@@ -412,9 +412,9 @@ public class PaymentEditor extends Editor<Payment> {
      */
     private void createCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<Account> categories = new TreeSet<Account>(new Comparator<Account>() {
+        final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
             @Override
-            public int compare(Account cat1, Account cat2) {
+            public int compare(VoucherCategory cat1, VoucherCategory cat2) {
                 return cat1.getName().compareTo(cat2.getName());
             }
         });
@@ -434,15 +434,15 @@ public class PaymentEditor extends Editor<Payment> {
         viewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof Account ? CommonConverter.getCategoryName((Account)element, "") : null;
+                return element instanceof VoucherCategory ? CommonConverter.getCategoryName((VoucherCategory)element, "") : null;
             }
         });
 
         UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
-        vatCatModel2Target.setConverter(new CategoryConverter<Account>(Account.class));
+        vatCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
         
         UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToCategoryConverter<Account>(categories, Account.class));
+        target2VatcatModel.setConverter(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
         bindModelValue(payment, comboCategory, Payment_.category.getName(), target2VatcatModel, vatCatModel2Target);
     }
 

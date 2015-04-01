@@ -28,7 +28,7 @@ import com.sebulli.fakturama.i18n.Messages;
  * 
  * @author Gerd Bartelt
  */
-public class YourCompanyPreferencePage extends FieldEditorPreferencePage {
+public class YourCompanyPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
     /**
      * 

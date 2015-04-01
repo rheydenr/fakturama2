@@ -31,7 +31,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class WebShopImportPreferencePage extends FieldEditorPreferencePage {
+public class WebShopImportPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
 
     @Inject
@@ -131,7 +131,7 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node, Messages msg) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_WEBSHOP_ENABLED, true);
 		
 		//T: Preference page "Web Shop Import" - Country specific URL of demo shop

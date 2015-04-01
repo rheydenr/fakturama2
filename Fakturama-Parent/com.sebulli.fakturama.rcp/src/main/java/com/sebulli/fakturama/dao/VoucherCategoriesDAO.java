@@ -32,15 +32,16 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.sebulli.fakturama.model.Account;
-import com.sebulli.fakturama.model.Account_;
+import com.sebulli.fakturama.model.VATCategory_;
+import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 
 /**
  *
  */
 @Creatable
-public class AccountDAO extends AbstractDAO<Account> {
+public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
+
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
@@ -54,8 +55,8 @@ public class AccountDAO extends AbstractDAO<Account> {
 //    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
 
-    protected Class<Account> getEntityClass() {
-        return Account.class;
+    protected Class<VoucherCategory> getEntityClass() {
+        return VoucherCategory.class;
     }
 
     @PreDestroy
@@ -66,48 +67,48 @@ public class AccountDAO extends AbstractDAO<Account> {
     }
     
     /**
-     * Get all {@link Account}s from Database.
+     * Get all {@link VoucherCategory}s from Database.
      *
-     * @return List<Account> 
+     * @return List<VoucherCategory> 
      */
-    public List<Account> findAll() {
+    public List<VoucherCategory> findAll() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Account> cq = cb.createQuery(Account.class);
-        CriteriaQuery<Account> selectQuery = cq.select(cq.from(Account.class));
+        CriteriaQuery<VoucherCategory> cq = cb.createQuery(VoucherCategory.class);
+        CriteriaQuery<VoucherCategory> selectQuery = cq.select(cq.from(VoucherCategory.class));
         return getEntityManager().createQuery(selectQuery).getResultList();
-//      return getEntityManager().createQuery("select p from Account p", Account.class).getResultList();
+//      return getEntityManager().createQuery("select p from VoucherCategory p", VoucherCategory.class).getResultList();
     }
     
     /**
-     * Finds a {@link Account} by its name. Category in this case is a String separated by 
+     * Finds a {@link VoucherCategory} by its name. Category in this case is a String separated by 
      * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
      * and then check the parent. 
      * 
-     * @param account the Category to search
-     * @return {@link Account}
+     * @param vatCategory the Category to search
+     * @return {@link VoucherCategory}
      */
-    public Account findAccountByName(String account) {
-        Account result = null;
-        if(StringUtils.isNotEmpty(account)) {
+    public VoucherCategory findVATCategoryByName(String vatCategory) {
+        VoucherCategory result = null;
+        if(StringUtils.isNotEmpty(vatCategory)) {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-            CriteriaQuery<Account> cq = cb.createQuery(Account.class);
-            Root<Account> rootEntity = cq.from(Account.class);
+            CriteriaQuery<VoucherCategory> cq = cb.createQuery(getEntityClass());
+            Root<VoucherCategory> rootEntity = cq.from(getEntityClass());
             // extract the rightmost value
-            String[] splittedCategories = account.split("/");
+            String[] splittedCategories = vatCategory.split("/");
             String leafCategory = splittedCategories[splittedCategories.length - 1];        
-            CriteriaQuery<Account> selectQuery = cq.select(rootEntity)
+            CriteriaQuery<VoucherCategory> selectQuery = cq.select(rootEntity)
                     .where(cb.and(
-                                cb.equal(rootEntity.get(Account_.name), leafCategory) /*,
-                                cb.equal(rootEntity.get(Account_.parent), Account.class)
+                                cb.equal(rootEntity.get(VATCategory_.name), leafCategory) /*,
+                                cb.equal(rootEntity.get(VATCategory_.parent), VoucherCategory.class)
                                ,
-                                cb.equal(rootEntity.get(Account_.deleted), false)*/));
+                                cb.equal(rootEntity.get(VATCategory_.deleted), false)*/));
             try {
-                List<Account> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
+                List<VoucherCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
-                String testCat = StringUtils.removeStart(account, "/");
-                for (Account tmpAccount : tmpResultList) {
-                    if(StringUtils.equals(CommonConverter.getCategoryName(tmpAccount, ""), testCat)) {
-                        result = tmpAccount;
+                String testCat = StringUtils.removeStart(vatCategory, "/");
+                for (VoucherCategory vatCategory2 : tmpResultList) {
+                    if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
+                        result = vatCategory2;
                         break;
                     }
                 }
@@ -119,46 +120,7 @@ public class AccountDAO extends AbstractDAO<Account> {
         return result;
     }
     
-    /**
-     * Find a {@link Account} by its name. If one of the part categories doesn't exist we create it 
-     * (if withPersistOption is set).
-     * 
-     * @param testCat the category to find
-     * @param withPersistOption persist a (part) category if it doesn't exist
-     * @return found category
-     */
-    public Account getCategory(String testCat, boolean withPersistOption) {
-        // to find the complete category we have to start with the topmost category
-        // and then lookup each of the child categories in the given path
-        String[] splittedCategories = testCat.split("/");
-        Account parentCategory = null;
-        String category = "";
-        try {
-            for (int i = 0; i < splittedCategories.length; i++) {
-                category += "/" + splittedCategories[i];
-                Account searchCat = findAccountByName(category);
-                if (searchCat == null) {
-                    // not found? Then create a new one.
-                    Account newCategory = new Account();
-                    newCategory.setName(splittedCategories[i]);
-                    newCategory.setParent(parentCategory);
-//                    save(newCategory);
-                    searchCat = newCategory;
-                }
-                // save the parent and then dive deeper...
-                parentCategory = searchCat;
-            } 
-            if(!getEntityManager().contains(parentCategory)) {
-                parentCategory = save(parentCategory);
-            }
-        }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return parentCategory;
-    }
-
+ 
     /**
      * @return the em
      */
@@ -172,4 +134,42 @@ public class AccountDAO extends AbstractDAO<Account> {
     protected void setEntityManager(EntityManager em) {
         this.em = em;
     }
+
+    /**
+     * Find a {@link VoucherCategory} by its name. If one of the part categories doesn't exist we create it 
+     * (if {@code withPersistOption} is set to <code>true</code>).
+     * 
+     * @param testCat the category to find
+     * @param withPersistOption persist a (part) category if it doesn't exist
+     * @return found category
+     */
+    public VoucherCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        VoucherCategory parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                VoucherCategory searchCat = findVATCategoryByName(category);
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    VoucherCategory newCategory = new VoucherCategory();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+                    newCategory = save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            }
+        }
+        catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return parentCategory;
+    }
+
 }

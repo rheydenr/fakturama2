@@ -61,7 +61,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
-import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
+import com.sebulli.fakturama.dao.CategoryDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -120,7 +120,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     private ShippingsDAO shippingsDAO;
 
     @Inject
-    private ShippingCategoriesDAO shippingCategoriesDAO;
+    private CategoryDAO shippingCategoriesDAO;
     
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";

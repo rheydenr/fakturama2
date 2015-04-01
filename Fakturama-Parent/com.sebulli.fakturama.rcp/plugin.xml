@@ -135,5 +135,11 @@
             name="%page.browser">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.sebulli.fakturama.preferences.DefaultValuesInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

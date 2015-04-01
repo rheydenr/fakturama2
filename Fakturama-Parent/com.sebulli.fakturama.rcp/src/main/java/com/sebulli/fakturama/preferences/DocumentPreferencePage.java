@@ -32,7 +32,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class DocumentPreferencePage extends FieldEditorPreferencePage {
+public class DocumentPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
 	
 	/* TRANSLATORS: The placeholder indicates the bug-reporting address
@@ -141,7 +141,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setInitValues(IPreferenceStore node, Messages msg) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, "1");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, false);

@@ -48,7 +48,7 @@ import com.sebulli.fakturama.misc.DataUtils;
  * 
  * @author Gerd Bartelt
  */
-public class GeneralPreferencePage extends FieldEditorPreferencePage {
+public class GeneralPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
     @Inject
     @Translation
@@ -238,7 +238,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage {
 	 * @param node
 	 *            The preference node
 	 */
-	public void setDefaultValues(IPreferenceStore node) {
+	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
 		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
 

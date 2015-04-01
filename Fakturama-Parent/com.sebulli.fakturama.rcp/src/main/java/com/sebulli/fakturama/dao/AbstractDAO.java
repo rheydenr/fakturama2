@@ -40,6 +40,13 @@ import org.eclipse.persistence.queries.ReadAllQuery;
  */
 public abstract class AbstractDAO<T> {
 	
+    /**
+     * Persists the given object.
+     * 
+     * @param object the object to persist
+     * @return the persisted object
+     * @throws SQLException if an error is occurred
+     */
     public T save(T object) throws SQLException {
         
 /*

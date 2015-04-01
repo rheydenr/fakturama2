@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Date;
@@ -35,6 +36,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,7 +83,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.Account;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
@@ -108,11 +111,13 @@ import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 import com.sebulli.fakturama.oldmodel.OldDocuments;
 import com.sebulli.fakturama.oldmodel.OldExpenditureitems;
 import com.sebulli.fakturama.oldmodel.OldExpenditures;
 import com.sebulli.fakturama.oldmodel.OldItems;
+import com.sebulli.fakturama.oldmodel.OldList;
 import com.sebulli.fakturama.oldmodel.OldPayments;
 import com.sebulli.fakturama.oldmodel.OldProducts;
 import com.sebulli.fakturama.oldmodel.OldProperties;
@@ -121,6 +126,7 @@ import com.sebulli.fakturama.oldmodel.OldReceiptvouchers;
 import com.sebulli.fakturama.oldmodel.OldShippings;
 import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
+import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
@@ -132,21 +138,25 @@ import com.sebulli.fakturama.views.datatable.vats.VATListTable;
  * Migration Tool for converting old data to new one. This affects only database
  * data, not templates or other plain files.
  * 
- * @author R. Heydenreich
- * 
  */
 public class MigrationManager {
-	private static final int VOUCHERTYPE_RECEIPT = 1;
-	private static final int VOUCHERTYPE_EXPENDITURE = 2;
+	private static final int MAX_LOGENTRY_WIDTH = 80;
 
 	@Inject
 	private IEclipseContext context;
 
 	@Inject
 	private Logger log;
+	
+	private java.util.logging.Logger migLogUser;
 
 	private IEclipsePreferences eclipsePrefs;
-	
+
+// this doesn't work because the IPreferenceStore isn't set at this stage
+//	@Inject
+//    @Preference(value=InstanceScope.SCOPE)
+//    private IPreferenceStore preferences;
+
 	@Inject
 	@Translation
 	protected Messages msg;
@@ -175,18 +185,17 @@ public class MigrationManager {
 	private FakturamaModelFactory modelFactory;
 	
 	// These Maps are for assigning the old entities to the new one (needed for lookup)
-	private Map<Integer, Long> newContacts = new HashMap<Integer, Long>();
-	private Map<Integer, Long> newVats     = new HashMap<Integer, Long>();
-	private Map<Integer, Long> newShippings =new HashMap<Integer, Long>();
-	private Map<Integer, Long> newPayments = new HashMap<Integer, Long>();
-	private Map<Integer, Long> newProducts = new HashMap<Integer, Long>();
+	private Map<Integer, Long> newContacts  = new HashMap<>();
+	private Map<Integer, Long> newVats      = new HashMap<>();
+	private Map<Integer, Long> newShippings = new HashMap<>();
+	private Map<Integer, Long> newPayments  = new HashMap<>();
+	private Map<Integer, Long> newProducts  = new HashMap<>();
 	
 	/*
 	 * there's only one DAO for old data
 	 */
 	private OldEntitiesDAO oldDao;
 
-//	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private String generalWorkspace = null;
 	private IApplicationContext appContext;
     private final GregorianCalendar zeroDate;
@@ -201,7 +210,7 @@ public class MigrationManager {
         this.context = context;
         appContext = context.get(IApplicationContext.class);
         this.log = context.get(org.eclipse.e4.core.services.log.Logger.class);
-        this.eclipsePrefs = eclipsePrefs; //context.get(IEclipsePreferences.class);
+        this.eclipsePrefs = eclipsePrefs;
         this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
         this.msg = msg;
         this.modelFactory = FakturamaModelPackage.MODELFACTORY;
@@ -220,18 +229,28 @@ public class MigrationManager {
 	 */
 	@Execute
 	public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
-		// build jdbc connection string; can't be null at this point since we've checked it above (within the caller)
+		// build JDBC connection string; can't be null at this point since we've checked it above (within the caller)
 		final String oldWorkDir = eclipsePrefs.get(ConfigurationManager.MIGRATE_OLD_DATA, null);
-		// hard coded old database name
-//		final String hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
+		final String hsqlConnectionString;
 		
-		// ****** FIXME TEST ONLY
-		final String hsqlConnectionString = "jdbc:hsqldb:hsql://localhost/Fakturama";   // for connection with a HSQLDB Server
+		/*
+		 * For convenience, I've introduced a switch for using the server variant of the old
+		 * HSQL DB since I have to look at the DB with several tools while Fakturama is started.
+		 * This switch is intentionally undocumented in migration documentation.
+		 */
+		if(System.getProperty("fakturama.use.dbserver") == null) {
+		    // hard coded old database name
+            hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
+		} else {
+		    hsqlConnectionString = "jdbc:hsqldb:hsql://localhost/Fakturama";   // for connection with a HSQLDB Server
+		}
 		eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
 		eclipsePrefs.flush();
+		
+		initMigLog();
 
 		// initialize DAOs via EclipseContext
-		// new Entities have their own dao ;-)
+		// new Entities have their own DAO ;-)
 		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
 		contactCategoriesDAO = ContextInjectionFactory.make(ContactCategoriesDAO.class, context);
 		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
@@ -278,7 +297,7 @@ public class MigrationManager {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 					for (OldTableinfo tableinfo : orderedTasks) {
-						monitor.setTaskName(msg.startMigrationConvert +" " + msg.getMessageFromKey(tableinfo.getMessageKey()));
+						monitor.setTaskName(String.format("%s %s", msg.startMigrationConvert, msg.getMessageFromKey(tableinfo.getMessageKey())));
 						checkCancel(monitor);
 						runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
 //						monitor.worked(1);
@@ -343,10 +362,47 @@ public class MigrationManager {
 		    eclipsePrefs.flush();
 			log.info(msg.startMigrationEnd);
 		}
+        String tmpStr = String.format("* %s %s", StringUtils.rightPad("Start:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
 	}
 	
 
 	/**
+	 * Initialize the information file for the user. This is done by simply using the
+	 * java.util.Logging class.  
+	 */
+    private void initMigLog() {
+        // We have to configure the log file output and location.
+        // The creation of this (very special) Logger is done manually.
+        try {
+            LogManager.getLogManager().addLogger(java.util.logging.Logger.getLogger(MigrationManager.class.getName()));
+            migLogUser = LogManager.getLogManager().getLogger(MigrationManager.class.getName());
+            migLogUser.setLevel(Level.INFO);
+            FileHandler fh = new FileHandler(generalWorkspace + "/migInfo.log", false);
+            MigrationLogFormatter formatter = new MigrationLogFormatter();
+            fh.setFormatter(formatter);
+            migLogUser.addHandler(fh);
+            
+            // write some initial information to the log file
+            migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
+            String tmpStr = "Migration info log file for the conversion of old Fakturama data.";
+            migLogUser.info("*" + StringUtils.center(tmpStr, MAX_LOGENTRY_WIDTH-2) + "*");
+            migLogUser.info("*" + StringUtils.repeat(' ',  MAX_LOGENTRY_WIDTH-2) + "*");
+            tmpStr = String.format("* %s %s", StringUtils.rightPad("Start:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
+            tmpStr = String.format("* %s %s", StringUtils.rightPad("Workspace path:", 20), generalWorkspace);
+            migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
+            // TODO maybe we could write down some other useful information? version of old application?
+            migLogUser.info("*" + StringUtils.repeat(' ',  MAX_LOGENTRY_WIDTH-2) + "*");
+            migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
+            migLogUser.info(" ");
+        }
+        catch (SecurityException | IOException e) {
+            log.error(e, "error creating migration user info file.");
+        }
+    }
+
+    /**
 	 * This method switches to the migration methods.
 	 * 
 	 * @param subProgressMonitor {@link SubProgressMonitor}
@@ -354,7 +410,7 @@ public class MigrationManager {
 	 * @throws InterruptedException
 	 */
 	private void runMigration(SubProgressMonitor subProgressMonitor, OldTableinfo tableinfo) throws InterruptedException {
-		
+	    migLogUser.info(String.format("Start converting %s ", msg.getMessageFromKey(tableinfo.getMessageKey())));
 		try {
 			switch (tableinfo) {
 			case Properties:
@@ -369,7 +425,7 @@ public class MigrationManager {
 			case Lists:
 				// Country Codes are no user definable data; they will be read
 				// from java Locale.
-				
+				// The Account entries are converted while migrating the Vouchers.
 				break;
 			case Texts:
 				runMigrateTextsSubTask(subProgressMonitor);
@@ -395,6 +451,7 @@ public class MigrationManager {
 			default:
 				break;
 			}
+	        migLogUser.info(String.format("End converting %s%n", msg.getMessageFromKey(tableinfo.getMessageKey())));
 		}
 		catch (RuntimeException rex) {
 			log.error(rex, "error while migrating "+tableinfo.name()+"; Reason: " + rex.getMessage());
@@ -404,9 +461,10 @@ public class MigrationManager {
 
 	private void runMigrateProductsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllProducts();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigration);
-		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<ProductCategory>(); 
+        subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		for (OldProducts oldProduct : oldDao.findAllProducts()) {
 			try {
@@ -487,19 +545,19 @@ public class MigrationManager {
 					Files.createDirectories(outputFile);
 				Files.copy(oldFile, outputFile);
 			} catch (IOException e) {
-				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:n"+e.getMessage());
+				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason: "+e.getMessage());
+				migLogUser.info("!!! error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:\n"+e.getMessage());
 			}
 		}
 	}
 
 	private void runMigrateDocumentsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllDocuments();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(" " + countOfEntitiesInTable + " " + msg.startMigration);
+        subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
 		Map<Integer, Document> invoiceDocuments = new HashMap<>();
-		//		CategoryBuilder<DocumentItemCategory> catBuilder = new CategoryBuilder<DocumentItemCategory>(); 
-//		Map<String, DocumentItemCategory> documentItemCategories = catBuilder.buildCategoryMap(oldDao.findAllDocumentItemCategories(), DocumentItemCategory.class);
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
 				Document document;
@@ -524,6 +582,7 @@ public class MigrationManager {
                     break;
                 case DUNNING:
                     document = modelFactory.createDunning();
+                    ((Dunning)document).setDunningLevel(oldDocument.getDunninglevel());
                     break;
                 case DELIVERY:
                     document = modelFactory.createDelivery();
@@ -535,8 +594,6 @@ public class MigrationManager {
                     document = modelFactory.createOrder();
                     break;
                 }
-//				// save it for further use
-//				document = documentDAO.save(document);
 				if(oldDocument.getAddressid() < 0) {
 					/* manually edited address => store in the data container!
 					 * perhaps we have to check additionally if the address stored in document
@@ -557,9 +614,6 @@ public class MigrationManager {
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 
 				document.setDueDays(oldDocument.getDuedays());
-				if(document.getBillingType() == BillingType.DUNNING) {
-				    ((Dunning)document).setDunningLevel(oldDocument.getDunninglevel());
-				}
 				// store the pair for later processing
 				// if the old Document has an InvoiceId and that ID is the same as the Document's ID
 				// then we have to store it for further processing.
@@ -670,13 +724,12 @@ public class MigrationManager {
 	 * @param itemRefs
 	 */
 	private void createItems(Document document, String[] itemRefs) {
-		for (String itemRef : itemRefs) {
+	    for (int i = 0; i < itemRefs.length; i++) {
+            String itemRef = itemRefs[i];
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
 			DocumentItem item = modelFactory.createDocumentItem();
-//						if(StringUtils.isNotBlank(oldItem.getCategory()) && documentItemCategories.containsKey(oldItem.getCategory())) {
-//							// add it to the new entity
-//							item.addToCategories(documentItemCategories.get(oldItem.getCategory()));
-//						}
+			// the position was formerly determined through the order how they stay in documents entry
+			item.setPosNr(Integer.valueOf(i));
 			item.setDescription(oldItem.getDescription());
 			item.setItemRebate(oldItem.getDiscount());
 			item.setItemNumber(oldItem.getItemnr());
@@ -685,14 +738,15 @@ public class MigrationManager {
 			Long vatId = newVats.get(oldItem.getVatid());
             VAT vatRef = vatId != null ?  vatsDAO.findById(vatId) : null;
 			if(vatRef == null) {
-				log.error("no VAT " + oldItem.getVatname() + " entry for an item found. (old) Item ID=" + oldItem.getId());
+				migLogUser.info("!!! no VAT " + oldItem.getVatname() + " entry for an item found or entry deleted. (old) Item ID=" + oldItem.getId());
 			} else {
 				item.setItemVat(vatRef);
 			}
-			// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
+			// since we now have a reference to a valid VAT we don't need the fields "vatdescription" and "vatname"
 			item.setNoVat(oldItem.isNovat());
 			item.setOptional(oldItem.isOptional());
 			// owner field (oldItem) contains a reference to the containing document - we don't need it
+			// the "shared" field we also don't need
 			item.setPictureName(oldItem.getPicturename());
 			item.setPrice(roundValue(oldItem.getPrice()));
 			if(oldItem.getProductid() >= 0) {
@@ -713,10 +767,11 @@ public class MigrationManager {
 
 	private void runMigrateContactsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllContacts();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<ContactCategory> catBuilder = new CategoryBuilder<ContactCategory>(); 
+		CategoryBuilder<ContactCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ContactCategory> contactCategories = catBuilder.buildCategoryMap(oldDao.findAllContactCategories(), ContactCategory.class);
 		for (OldContacts oldContact : oldDao.findAllContacts()) {
 			try {
@@ -770,7 +825,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException | RuntimeException e) {
-				log.error("error while migrating Contact. (old) ID=" + oldContact.getId()+"; Reason: " + e.getMessage());
+				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Reason: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -842,10 +897,14 @@ public class MigrationManager {
 
 	private void runMigrateReceiptvouchersSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllReceiptvouchers();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
-		Map<String, Account> receiptVoucherAccounts = buildAccountMap(VOUCHERTYPE_RECEIPT);
-		Map<String, ItemAccountType> receiptVoucherItemAccountTypes = buildItemAccountTypeMap(VOUCHERTYPE_RECEIPT);
+
+        CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
+        Map<String, VoucherCategory> receiptVoucherAccounts = catBuilder.buildCategoryMap(oldDao.findAllReceiptvoucherCategories(), VoucherCategory.class);
+
+		Map<String, ItemAccountType> receiptVoucherItemAccountTypes = buildItemAccountTypeMap();
 		for (OldReceiptvouchers oldReceiptvoucher : oldDao.findAllReceiptvouchers()) {
 			try {
 				ReceiptVoucher receiptVoucher = modelFactory.createReceiptVoucher();
@@ -882,7 +941,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error("error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
+				migLogUser.info("!!! error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -890,11 +949,15 @@ public class MigrationManager {
 
 	private void runMigrateExpendituresSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllPayments();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		Map<String, Account> expenditureAccounts = buildAccountMap(VOUCHERTYPE_EXPENDITURE);
-		Map<String, ItemAccountType> expenditureItemAccountTypes = buildItemAccountTypeMap(VOUCHERTYPE_EXPENDITURE);
+
+        CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
+        Map<String, VoucherCategory> expenditureAccounts = catBuilder.buildCategoryMap(oldDao.findAllReceiptvoucherCategories(), VoucherCategory.class);
+
+        Map<String, ItemAccountType> expenditureItemAccountTypes = buildItemAccountTypeMap();
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
 			try {
 				Expenditure expenditure = modelFactory.createExpenditure();
@@ -932,54 +995,39 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error("error while migrating Expenditure. (old) ID=" + oldExpenditure.getId());
+				migLogUser.info("!!! error while migrating Expenditure. (old) ID=" + oldExpenditure.getId());
 			}
 		}
 		subProgressMonitor.done();
 	}
 
 
-	private Map<String, ItemAccountType> buildItemAccountTypeMap(int type) {
+	private Map<String, ItemAccountType> buildItemAccountTypeMap() {
 		Map<String, ItemAccountType> itemAccountTypes = new HashMap<String, ItemAccountType>();
-		List<String> resultSet;
-		if(type == VOUCHERTYPE_EXPENDITURE) {
-			resultSet = oldDao.findAllExpenditureItemCategories();
-		} else {
-			resultSet = oldDao.findAllReceiptVoucherItemCategories();
-		}
-		for (String oldVoucherItemCategory : resultSet) {
-			ItemAccountType itemAccountType = modelFactory.createItemAccountType();
-			itemAccountType.setName(oldVoucherItemCategory);
-			itemAccountTypes.put(oldVoucherItemCategory, itemAccountType);
-		}
+		List<OldList> resultSet = oldDao.findAllVoucherItemCategories();
+		for (OldList oldVoucherItemCategory : resultSet) {
+		    ItemAccountType itemAccountType = modelFactory.createItemAccountType();
+		    itemAccountType.setName(oldVoucherItemCategory.getName());
+		    itemAccountType.setValue(oldVoucherItemCategory.getValue());
+		    itemAccountTypes.put(oldVoucherItemCategory.getName(), itemAccountType);
+        }
 		return itemAccountTypes;
 	}
 
 
-	private Map<String, Account> buildAccountMap(int type) {
-		Map<String, Account> expenditureAccounts = new HashMap<String, Account>();
-		List<String> resultSet;
-		if(type == VOUCHERTYPE_EXPENDITURE) {
-			resultSet = oldDao.findAllExpenditureCategories();
-		} else {
-			resultSet = oldDao.findAllReceiptvoucherCategories();
-		}
-		for (String oldVoucherCategory : resultSet) {
-			Account account = modelFactory.createAccount();
-			account.setName(oldVoucherCategory);
-			expenditureAccounts.put(oldVoucherCategory, account);
-		}
-		return expenditureAccounts;
-	}
-
-
+    /**
+     * Migration of the Payments table (DataSetPayment). The created objects will be stored in a {@link Map} for later use (only the IDs).
+     * 
+     * @param subProgressMonitor the {@link SubProgressMonitor}
+     */
 	private void runMigratePaymentsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllPayments();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<Account> catBuilder = new CategoryBuilder<Account>(); 
-		Map<String, Account> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), Account.class);
+		CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
+		Map<String, VoucherCategory> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), VoucherCategory.class);
 		for (OldPayments oldPayment : oldDao.findAllPayments()) {
 			try {
 				Payment payment = modelFactory.createPayment();
@@ -987,9 +1035,9 @@ public class MigrationManager {
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());
 				payment.setDepositText(oldPayment.getDeposittext());
-				// unused field
+				// unused field since the default payment is stored in preferences
 //				payment.setDefaultPaid(oldPayment.isDefaultpaid());
-				payment.setDeleted(oldPayment.isDeleted());
+				payment.setDeleted(oldPayment.isDeleted()); // sometimes we need deleted entries (for some items)
 				payment.setDiscountDays(oldPayment.getDiscountdays());
 				payment.setDiscountValue(oldPayment.getDiscountvalue());
 				payment.setDescription(oldPayment.getDescription());
@@ -1003,7 +1051,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error("error while migrating Payment. (old) ID=" + oldPayment.getId());
+				migLogUser.info("!!! error while migrating Payment. (old) ID=" + oldPayment.getId());
 			}
 		}
 		subProgressMonitor.done();
@@ -1017,10 +1065,11 @@ public class MigrationManager {
 	 */
 	private void runMigrateTextsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllTexts();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<TextCategory> catBuilder = new CategoryBuilder<TextCategory>(); 
+		CategoryBuilder<TextCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, TextCategory> textCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllTextCategories(), TextCategory.class);
 		for (OldTexts oldTexts : oldDao.findAllTexts()) {
 			try {
@@ -1036,31 +1085,30 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error("error while migrating Text. (old) ID=" + oldTexts.getId());
+				migLogUser.info("!!! error while migrating Text. (old) ID=" + oldTexts.getId());
 			}
 		}
 		subProgressMonitor.done();
 	}
 
-
 	/**
-	 * Migration of the Vats table (DataSetVAT)
+	 * Migration of the VATs table (DataSetVAT). The created objects will be stored in a {@link Map} for later use (only the IDs).
 	 * 
 	 * @param subProgressMonitor the {@link SubProgressMonitor}
 	 */
 	private void runMigrateVatsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllVats();
+		migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
-		// use a HashMap as a simple cache
-		CategoryBuilder<VATCategory> catBuilder = new CategoryBuilder<VATCategory>(); 
+		CategoryBuilder<VATCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, VATCategory> vatCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllVatCategories(), VATCategory.class);
 		for (OldVats oldVat : oldDao.findAllVats()) {
 			try {
 				VAT vat = modelFactory.createVAT();
 				vat.setName(oldVat.getName());
 				vat.setTaxValue(roundValue(oldVat.getValue()));
-				vat.setDeleted(oldVat.isDeleted());
+				vat.setDeleted(oldVat.isDeleted()); // sometimes we need deleted entries (for some items)
 				vat.setDescription(oldVat.getDescription());
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
@@ -1068,34 +1116,36 @@ public class MigrationManager {
 					vat.setCategory(vatCategoriesDAO.getOrCreateCategory(oldVat.getCategory(), true));
 				}
 				vat = vatsDAO.save(vat);
+				// use a HashMap as a simple cache
 				newVats.put(oldVat.getId(), vat.getId());
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error(e, "error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
+			    migLogUser.info("!!! error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
 	}
 
 	/**
-	 * Migration of the Shipping table (DataSetShipping)
+	 * Migration of the Shipping table (DataSetShipping). The created objects will be stored in a {@link Map} for later use (only the IDs).
 	 * 
 	 * @param subProgressMonitor the {@link SubProgressMonitor}
 	 */
 	private void runMigrateShippingsSubTask(SubProgressMonitor subProgressMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllShippings();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<ShippingCategory> catBuilder = new CategoryBuilder<ShippingCategory>(); 
+		CategoryBuilder<ShippingCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ShippingCategory> shippingCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllShippingCategories(), ShippingCategory.class);
 		for (OldShippings oldShipping : oldDao.findAllShippings()) {
 			try {
 				Shipping shipping = modelFactory.createShipping();
 				shipping.setName(oldShipping.getName());
 				shipping.setShippingValue(roundValue(oldShipping.getValue()));
-				shipping.setDeleted(oldShipping.isDeleted());  // should be ALWAYS false!
+				shipping.setDeleted(oldShipping.isDeleted());  // sometimes we need deleted entries (for some items)
 				shipping.setAutoVat(ShippingVatType.get(oldShipping.getAutovat()));
 				shipping.setDescription(oldShipping.getDescription());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
@@ -1111,7 +1161,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException e) {
-				log.error("error while migrating Shipping. (old) ID=" + oldShipping.getId());
+				migLogUser.info("!!! error while migrating Shipping. (old) ID=" + oldShipping.getId());
 			}
 		}
 		subProgressMonitor.done();
@@ -1127,6 +1177,7 @@ public class MigrationManager {
 	 */
 	private void runMigratePropertiesSubTask(SubProgressMonitor subProgressMonitor) throws InterruptedException {
 		Long countOfEntitiesInTable = oldDao.countAllProperties();
+        migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 
@@ -1155,7 +1206,7 @@ public class MigrationManager {
                     propValue = Long.toString(newPayment.getId());
                     break;
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
-                    double myNumber = -1234.56864;
+                    double exampleNumber = -1234.56864;
                     String retval = "";
                 	// if the currency is stored as symbol we have to convert it to an ISO code.
            			// Money doesn't work with symbols, therefore we have to convert this.
@@ -1166,23 +1217,25 @@ public class MigrationManager {
            			UserProperty propUseSymbol = modelFactory.createUserProperty();
            			propUseSymbol.setName(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
        			    propUseSymbol.setValue(Boolean.FALSE.toString());  // default
+       			    
+       			    // try to interpret the currency symbol
            			if(StringUtils.length(propValue) == 1) {
            			    propUseSymbol.setValue(Boolean.TRUE.toString());
                         Currency jdkCurrency = Currency.getInstance(currencyLocale);
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
            		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
-           		            log.info("The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
+           		            migLogUser.info("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
            		        } else {
            		            // Since most of the Fakturama users are from Germany we choose "de/DE" as default locale.
            		            currencyLocale = Locale.GERMANY;
            		            propValue = "de/DE";
-           		            log.error("Can't determine the currency locale. Please choose the right locale "
+           		            migLogUser.info("!!! Can't determine the currency locale. Please choose the right locale "
            		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
            			}
-                    retval = DataUtils.getInstance().formatCurrency(myNumber, currencyLocale, Boolean.parseBoolean(propUseSymbol.getValue()));
+                    retval = DataUtils.getInstance().formatCurrency(exampleNumber, currencyLocale, Boolean.parseBoolean(propUseSymbol.getValue()));
                     UserProperty propFormatExample = modelFactory.createUserProperty();
                     propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
                     propFormatExample.setValue(retval);
@@ -1202,7 +1255,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException sqlex) {
-				log.error("error while migrating UserProperty. (old) ID=" + oldProperty.getId());
+				migLogUser.info("!!! error while migrating UserProperty. (old) ID=" + oldProperty.getId());
 			}
 		}
 		subProgressMonitor.done();
@@ -1221,6 +1274,7 @@ public class MigrationManager {
 		Properties columnWidthProperties = new Properties();
 		
 		log.info("propertiesFile: "+propertiesFile);
+        log.info("properties file for column widths: "+propertiesFile);
 		if(log.isDebugEnabled()) {
 			log.debug("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
 		}
@@ -1249,6 +1303,7 @@ public class MigrationManager {
                         tableId = DocumentsListTable.ID;
                         break;
                     case "ITEMS":
+                        tableId = DocumentItemListTable.ID;
                         break;
                     case "LIST":
                         break;
@@ -1289,7 +1344,6 @@ public class MigrationManager {
             int currentHighest;
         	Integer convertedValue;
             int convertedMaxSize;
-//    		String columnWidthPropertyString;
             // now write all the collected column widths to property file
             for (String tableId : columnWidthsMap.keySet()) {
                 // format: tableId.BODY.columnWidth.sizes=0\:49,1\:215,2\:90,

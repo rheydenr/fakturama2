@@ -8,7 +8,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//AbstractCategory"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Account" eSuperTypes="#//AbstractCategory"/>
+  <eClassifiers xsi:type="ecore:EClass" name="VoucherCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Address" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="street" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -128,6 +128,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="transactionId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="additionalInfo" eType="#//IndividualDocumentInfo"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItem" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
@@ -145,6 +147,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantityUnit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemVat" eType="#//VAT"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="gtin" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="posNr" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Invoice" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Order" eSuperTypes="#//Document"/>
@@ -159,7 +162,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="Proforma" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//Account"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//VoucherCategory"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="expenditureDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="discounted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
@@ -192,7 +195,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"
         defaultValueLiteral="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ItemAccountType" eSuperTypes="#//AbstractCategory"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ItemAccountType" eSuperTypes="#//IEntity">
+    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Payment" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -200,10 +206,11 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="discountValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="netDays" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="category" ordered="false"
-        eType="#//Account"/>
+        eType="#//VoucherCategory"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="paidText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="unpaidText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="depositText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Product" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
@@ -238,24 +245,15 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="weight" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="gtin" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ProductOptions">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="attribute" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ProductOptions" eSuperTypes="#//IEntity">
+    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="attributeValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sequenceNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ProductCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucher" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//Account"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//VoucherCategory"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="receiptVoucherDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="discounted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -266,20 +264,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="paidValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucherItem">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucherItem" eSuperTypes="#//IEntity">
+    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//ItemAccountType"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vat" eType="#//VAT"/>
   </eClassifiers>
@@ -292,28 +280,34 @@
         eType="#//VAT"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="categories" ordered="false"
         eType="#//ShippingCategory"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ShippingCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Tenant" eSuperTypes="#//IEntity"/>
-  <eClassifiers xsi:type="ecore:EClass" name="TextModule">
+  <eClassifiers xsi:type="ecore:EClass" name="TextModule" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="text" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="categories" ordered="false"
         upperBound="-1" eType="#//TextCategory"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="modified" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TextCategory" eSuperTypes="#//AbstractCategory"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IndividualDocumentInfo" eSuperTypes="#//IEntity">
+    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="manualAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deliveryAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingAutoVat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingVatDescription"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippingVatValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVatName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="noVatDescription" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="User" eSuperTypes="#//IEntity">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="password" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="tenant" eType="#//Tenant"/>
@@ -322,18 +316,8 @@
         eType="#//Role"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//IEntity"/>
-  <eClassifiers xsi:type="ecore:EClass" name="UserProperty">
+  <eClassifiers xsi:type="ecore:EClass" name="UserProperty" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"
-        iD="true">
-      <eAnnotations source="texo.java.annotation" references="#//VAT">
-        <details key="field" value="@javax.persistence.Id"/>
-      </eAnnotations>
-      <eAnnotations source="texo.java.annotation" references="http://www.eclipse.org/emf/2002/Ecore#//ELongObject/%http:%2F%2F%2Forg%2Feclipse%2Femf%2Fecore%2Futil%2FExtendedMetaData%/@details.0 #//UserProperty/id #//TextModule/id">
-        <details key="field" value="@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)&#xD;&#xA;"/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="VAT" eSuperTypes="#//IEntity">
@@ -342,6 +326,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="taxValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="category" ordered="false"
         eType="#//VATCategory"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="VATCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EEnum" name="ShippingVatType">

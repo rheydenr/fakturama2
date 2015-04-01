@@ -18,8 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -63,11 +62,8 @@ public class BrowserEditor {
     protected Messages msg;
     
     @Inject
-    @Preference
-    protected IEclipsePreferences preferences;
-    
-    @Inject @Optional
-    private IPreferenceStore pref;
+    @Preference(value=InstanceScope.SCOPE)
+    private IPreferenceStore preferences;
 
     @Inject
     private Logger log;
@@ -117,12 +113,12 @@ public class BrowserEditor {
         else {
 //            pref.getString("CONTACT_FORMAT_GREETING_COMPANY");
 //            preferences.get("CONTACT_FORMAT_GREETING_COMPANY", pref.getString("CONTACT_FORMAT_GREETING_COMPANY"));
-            url = preferences.get(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
+            url = preferences.getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
             if (url.isEmpty() || url.equals("http://www.fakturama.org/"))
                 url = "file://" +
-                    preferences.get(Constants.GENERAL_WORKSPACE, "") + "/" +
+                    preferences.getString(Constants.GENERAL_WORKSPACE) + "/" +
                     msg.configWorkspaceTemplatesName +  
                     "/Start/start.html";
             
@@ -305,7 +301,7 @@ public class BrowserEditor {
 						if (urlText != null) {
 						    
 							String startUrl = "file://" +
-									preferences.get(Constants.GENERAL_WORKSPACE, "") + "/" +
+									preferences.getString(Constants.GENERAL_WORKSPACE) + "/" +
 									msg.configWorkspaceTemplatesName +  
 									"/Start/start.html";
 
@@ -417,11 +413,11 @@ public class BrowserEditor {
 
     
     private int getIntPreference(String preference) {
-        return preferences.getInt(preference, pref.getInt(preference));
+        return preferences.getInt(preference);
     }
 
     private boolean getBooleanPreference(String preference) {
-        return preferences.getBoolean(preference, pref.getBoolean(preference));
+        return preferences.getBoolean(preference);
     }
 
 }
