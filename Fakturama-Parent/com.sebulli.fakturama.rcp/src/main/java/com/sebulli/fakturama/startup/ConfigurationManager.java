@@ -21,6 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -65,7 +66,7 @@ public class ConfigurationManager {
 	protected IEclipseContext context;
 	
     @Inject
-    @Preference(value="instance")
+    @Preference(value=InstanceScope.SCOPE)
     private IEclipsePreferences eclipsePrefs;
     
     @Inject

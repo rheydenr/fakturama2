@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.money.MonetaryAmount;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -31,8 +32,6 @@ import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentItem;
-import com.sebulli.fakturama.model.DocumentItem_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -277,7 +276,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      * @param paidDate paid date
      * @param paidValue paid value
      */
-    public void updateDunnings(Document document, boolean isPaid, Date paidDate, Double paidValue) {
+    public void updateDunnings(Document document, boolean isPaid, Date paidDate, MonetaryAmount paidValue) {
 //      UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
 //      // TODO What if "payvalue" is not the total sum? Is it paid?
 //          dunning.setPaid(bPaid.getSelection());
@@ -288,7 +287,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         criteria
             .set(Dunning_.paid, isPaid)
             .set(Dunning_.payDate, paidDate)
-            .set(Dunning_.paidValue, paidValue)
+            .set(Dunning_.paidValue, paidValue.getNumber().doubleValue())
             .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
             ;
         getEntityManager().createQuery(criteria).executeUpdate();

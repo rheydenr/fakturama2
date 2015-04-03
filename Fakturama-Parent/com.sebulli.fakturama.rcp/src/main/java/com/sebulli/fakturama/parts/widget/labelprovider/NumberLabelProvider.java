@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.labelprovider;
 
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 /**
  * An <code>ILabelProvider</code> that assists in rendering labels.
  */
-public class ComboBoxLabelProvider<K, V> extends LabelProvider {
+public class NumberLabelProvider<K, V> extends LabelProvider {
 
     /**
      * The values.
@@ -18,7 +18,7 @@ public class ComboBoxLabelProvider<K, V> extends LabelProvider {
      * @param values the possible label values that this 
      * <code>ILabelProvider</code> may return.
      */
-    public ComboBoxLabelProvider(Map<K, V> values) {
+    public NumberLabelProvider(Map<K, V> values) {
         this.values = values;
     }
 

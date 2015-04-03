@@ -14,7 +14,10 @@
  
 package com.sebulli.fakturama.dto;
 
+import java.util.Date;
+
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.IEntity;
 
 /**
  * Container object for {@link DocumentItem}s. This container contains a {@link DocumentItem}
@@ -22,7 +25,7 @@ import com.sebulli.fakturama.model.DocumentItem;
  * holding the displayed values. 
  *
  */
-public class DocumentItemDTO {
+public class DocumentItemDTO implements IEntity {
     private DocumentItem documentItem;
     private Price price;
     
@@ -49,6 +52,64 @@ public class DocumentItemDTO {
     public Price getPrice() {
         return price;
     }
-    
 
+    @Override
+    public String getName() {
+        return documentItem.getName();
+    }
+
+    @Override
+    public void setName(String newName) {
+        throw new UnsupportedOperationException("object is only a wrapper object!");
+    }
+
+    @Override
+    public Date getDateAdded() {
+        return documentItem.getDateAdded();
+    }
+
+    @Override
+    public void setDateAdded(Date newDateAdded) {
+        throw new UnsupportedOperationException("object is only a wrapper object!");
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return documentItem.getModifiedBy();
+    }
+
+    @Override
+    public void setModifiedBy(String newModifiedBy) {
+        throw new UnsupportedOperationException("object is only a wrapper object!");
+    }
+
+    @Override
+    public Date getModified() {
+        return documentItem.getModified();
+    }
+
+    @Override
+    public void setModified(Date newModified) {
+        documentItem.setModified(newModified);
+    }
+
+    @Override
+    public long getId() {
+        return 0;
+    }
+
+    @Override
+    public void setId(long newId) {
+        throw new UnsupportedOperationException("object is only a wrapper object!");
+    }
+
+    @Override
+    public Boolean getDeleted() {
+        return documentItem.getDeleted();
+    }
+
+    @Override
+    public void setDeleted(Boolean newDeleted) {
+        throw new UnsupportedOperationException("object is only a wrapper object!");
+    }
 }

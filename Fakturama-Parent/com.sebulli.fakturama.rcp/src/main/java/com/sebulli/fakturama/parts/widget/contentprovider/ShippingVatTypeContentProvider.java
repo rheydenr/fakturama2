@@ -12,24 +12,25 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.contentprovider;
 
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.model.ShippingVatType;
 
 /**
  *
  */
-public class EntityComboProvider implements IStructuredContentProvider {
+public class ShippingVatTypeContentProvider implements IStructuredContentProvider {
+
     @SuppressWarnings("unchecked")
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof List) {
-            return ((List<IEntity>) inputElement).toArray();
+            return ((List<ShippingVatType>) inputElement).toArray();
         }
         return new Object[0];
     }
@@ -43,4 +44,5 @@ public class EntityComboProvider implements IStructuredContentProvider {
     public void dispose() {
         // do nothing.
     }
+
 }

@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -62,7 +63,7 @@ public class ItemListBuilder {
     private Document document;
     private DocumentType documentType;
     private boolean useGross;
-    private int netgross = DocumentSummary.NOTSPECIFIED;
+    private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
     protected NatTable natTable;
 
@@ -161,7 +162,7 @@ public class ItemListBuilder {
     //          itemEditingSupport.cancelAndSave();
     //      
           //T: Text of a new item
-          DocumentItem newItem = new DocumentItem();
+          DocumentItemDTO newItem = new DocumentItemDTO(new DocumentItem());
     //        msg.commonFieldName, 
     //                //T: Text of a new item
     //                msg.productFieldItemno, "", documentType.getSign() * 1.0, "", 0.0, 0, "", "");

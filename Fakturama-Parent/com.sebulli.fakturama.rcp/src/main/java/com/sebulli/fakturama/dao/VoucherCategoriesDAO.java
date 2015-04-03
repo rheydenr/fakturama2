@@ -87,7 +87,7 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
      * @param vatCategory the Category to search
      * @return {@link VoucherCategory}
      */
-    public VoucherCategory findVATCategoryByName(String vatCategory) {
+    public VoucherCategory findVoucherCategoryByName(String vatCategory) {
         VoucherCategory result = null;
         if(StringUtils.isNotEmpty(vatCategory)) {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -152,7 +152,7 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
-                VoucherCategory searchCat = findVATCategoryByName(category);
+                VoucherCategory searchCat = findVoucherCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
                     VoucherCategory newCategory = new VoucherCategory();

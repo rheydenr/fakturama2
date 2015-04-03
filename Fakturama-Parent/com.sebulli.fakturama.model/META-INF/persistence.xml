@@ -5,7 +5,7 @@
 	<persistence:persistence-unit name="unconfigured2" transaction-type="RESOURCE_LOCAL">
 		<persistence:provider>org.eclipse.persistence.jpa.PersistenceProvider</persistence:provider>
 			<persistence:class>com.sebulli.fakturama.model.AbstractCategory</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Account</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.VoucherCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Address</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.BankAccount</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Contact</persistence:class>

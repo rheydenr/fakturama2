@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.contentprovider;
 
 import java.util.Map;
 

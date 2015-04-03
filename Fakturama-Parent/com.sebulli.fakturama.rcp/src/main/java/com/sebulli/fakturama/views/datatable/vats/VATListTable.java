@@ -23,6 +23,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -32,7 +34,6 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -41,22 +42,14 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.persistence.command.DisplayPersistenceDialogCommandHandler;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -66,17 +59,15 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
-import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -89,6 +80,11 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  */
 public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
+    // ID of this view
+    public static final String ID = "fakturama.views.vatTable";
+    
+    protected static final String POPUP_ID = "com.sebulli.fakturama.vatlist.popup";
+
     @Inject
     @Translation
     protected Messages msg;
@@ -96,14 +92,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Inject
     private Logger log;
 
-//    this is for synchronizing the UI thread (unused at the moment)
+/**    this is for synchronizing the UI thread */
     @Inject    
     private UISynchronize synch;
-
-    // ID of this view
-    public static final String ID = "fakturama.views.vatTable";
-    
-    protected static final String POPUP_ID = "com.sebulli.fakturama.vatlist.popup";
     
     /**
      * Event Broker for receiving update events to the list table
@@ -115,31 +106,31 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Preference
     private IEclipsePreferences preferences;
     
-    private EventList<VAT> vatListData;
-    private EventList<VATCategory> categories;
-
-    private Control top;
-    
     @Inject
     private VatsDAO vatsDAO;
 
     @Inject
     private VatCategoriesDAO vatCategoriesDAO;
     
+    private EventList<VAT> vatListData;
+    private EventList<VATCategory> categories;
+
+    private Control top;
+    private MPart listTablePart;
+    
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
 
-    private ListViewGridLayer<VAT> gridLayer;
     private EntityGridListLayer<VAT> gridListLayer;
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<VAT> treeFilteredIssues;
-    private SelectionLayer selectionLayer;
 
     @PostConstruct
-    public Control createPartControl(Composite parent) {
+    public Control createPartControl(Composite parent, MPart listTablePart) {
     	log.info("create VAT list part");
+    	this.listTablePart = listTablePart;
         top = super.createPartControl(parent, VAT.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridListLayer);
@@ -164,92 +155,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
         natTable.configure();
-    }
-	
-    @Deprecated
-    protected NatTable createListTable2(Composite searchAndTableComposite) {       
-        // fill the underlying data source (GlazedList)
-        vatListData = GlazedLists.eventList(vatsDAO.findAll());
-
-        // get the visible properties to show in list view
-        String[] propertyNames = vatsDAO.getVisibleProperties();
-
-        final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
-
-        //build the column header layer
-        // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<VAT>(propertyNames, derivedColumnPropertyAccessor); 
-
-        // matcher input Search text field 
-        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
-        
-        // Filtered list for Search text field filter
-        final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(vatListData, textMatcherEditor);
-
-        // build the list for the tree-filtered values (i.e., the value list which is affected by
-        // tree selection)
-        treeFilteredIssues = new FilterList<VAT>(textFilteredIssues);
-
-        //create the body layer stack
-        //build the grid layer
-        gridLayer = new ListViewGridLayer<VAT>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, 
-                configRegistry, false, false);
-        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
-        tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-//        GlazedListsEventLayer<VAT> vatListEventLayer = new GlazedListsEventLayer<VAT>(tableDataLayer, vatListData);
-
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-//        vatListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        
-        // Custom selection configuration
-        selectionLayer = gridLayer.getSelectionLayer();
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-//        IRowIdAccessor<VAT> rowIdAccessor = new IRowIdAccessor<VAT>() {
-//            @Override
-//            public Serializable getRowId(VAT rowObject) {
-//                return rowObject.getId();
-//            }
-//        };
-//        
-//        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-//        RowSelectionModel<VAT> selectionModel = new RowSelectionModel<VAT>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-//        selectionLayer.setSelectionModel(selectionModel);
-////         Select complete rows
-//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<VAT>());
-
-        // now is the time where we can create the NatTable itself
-
-        // Label accumulator - adds labels to all cells with the given data value
-        //      CellOverrideLabelAccumulator<VAT> cellLabelAccumulator =
-        //          new CellOverrideLabelAccumulator<VAT>(gridLayer.getBodyDataProvider());
-        //      cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
-
-        // Create a label accumulator - adds custom labels to all cells which we
-        // wish to render differently. In this case render as an image.
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(VATListDescriptor.VALUE.getPosition(), TAXVALUE_CELL_LABEL);
-
-        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-        
-        // Register label accumulator
-        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
-
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
-        return natTable;
     }
 
     /**
@@ -302,9 +207,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         return derivedColumnPropertyAccessor;
     }
     
-    
-    
-    
     public NatTable createListTable(Composite searchAndTableComposite) {
 
         vatListData = GlazedLists.eventList(vatsDAO.findAll());
@@ -347,24 +249,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         postConfigureNatTable(natTable);
-        
-        natTable.registerCommandHandler(new DisplayPersistenceDialogCommandHandler(natTable));
         return natTable;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     /**
      * @return the gridLayer
@@ -429,19 +315,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     }
 
     /**
-     * Set the category filter
-     * 
-     * @param filter
-     *            The new filter string
-     * 
-     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
-     *             instead
-     */
-    public void setCategoryFilter(String filter) {
-        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
-    }
-
-    /**
      * Set the category filter with a given {@link TreeObjectType}.
      * 
      * @param filter
@@ -450,20 +323,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // Set the label with the filter string
-        if (filter.equals("$shownothing"))
-            filterLabel.setText("");
-        else
-        // Display the localized list names.
-        // or the document type
-        if (isHeaderLabelEnabled())
-            filterLabel.setText("DataSetListNames.NAMES.getLocalizedName: " + filter);
-
-        filterLabel.pack(true);
-
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
-        //   contentProvider.setTreeObject(treeObject);
+        treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
 
         // Set category to the addNew action. So a new data set is created
         // with the selected category
@@ -473,7 +334,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
         //Refresh is done automagically...
     }
-	
+
     protected boolean isHeaderLabelEnabled() {
         return false;
     }
@@ -537,8 +398,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 	}
 
     public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            VAT objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+        if(getGridLayer().getSelectionLayer().getFullySelectedRowPositions().length > 0) {
+            VAT objToDelete = getGridLayer().getBodyDataProvider().getRowObject(getGridLayer().getSelectionLayer().getFullySelectedRowPositions()[0]);
             try {
                 // don't delete the entry because it could be referenced
                 // from another entity
@@ -550,7 +411,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
     
             // Refresh the table view of all VATs
-            evtBroker.post("VatEditor", "update");
+            evtBroker.post(VatEditor.EDITOR_ID, "update");
         } else {
             log.debug("no rows selected!");
         }
@@ -559,5 +420,14 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected String getPopupId() {
         return POPUP_ID;
     }
-}
 
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_VAT;
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        return listTablePart.getToolbar();
+    }
+}

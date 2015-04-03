@@ -14,7 +14,14 @@
 
 package com.sebulli.fakturama.dto;
 
+import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryRounding;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * This Class represents one entry in the VatSummarySet. It contains a net and
@@ -29,9 +36,9 @@ public class VatSummaryItem implements Comparable<Object> {
 	private MonetaryAmount net;
 	private MonetaryAmount vat;
 
-//	// Rounding errors
-//	private Double netRoundingError;
-//	private Double vatRoundingError;
+	// Rounding errors
+	private Double netRoundingError;
+	private Double vatRoundingError;
 
 	// Vat Name and Percent Value. These values identify the VatSummaryItem
 	private String vatName;
@@ -81,18 +88,14 @@ public class VatSummaryItem implements Comparable<Object> {
 	}
 
 	/**
-	 * Constructor Creates a VatSummaryItem from an existing VatSummaryItem.
+	 * Creates a {@link VatSummaryItem} from an existing {@link VatSummaryItem}.
 	 * 
 	 * @param vatSummaryItem
 	 */
-	public VatSummaryItem(VatSummaryItem vatSummaryItem) {
-		this.vatName = new String(vatSummaryItem.vatName);
-		this.vatPercent = new Double(vatSummaryItem.vatPercent);
-		this.net = vatSummaryItem.net;
-		this.vat = vatSummaryItem.vat;
+	public static VatSummaryItem of(VatSummaryItem vatSummaryItem) {
+	    return new VatSummaryItem(vatSummaryItem.getVatName(), vatSummaryItem.getVatPercent(), vatSummaryItem.getNet(), vatSummaryItem.getVat(), vatSummaryItem.getDescription());
 //		this.netRoundingError = 0.0;
 //		this.vatRoundingError = 0.0;
-		this.description = new String(vatSummaryItem.description);
 	}
 
 	/**
@@ -106,20 +109,22 @@ public class VatSummaryItem implements Comparable<Object> {
 		this.vat.add(other.vat);
 	}
 
-//	/**
-//	 * Round the net and vat value and store the rounding error in the property
-//	 * "xxRoundingError"
-//	 */
-//	public void round() {
-//
-//		// Round the net value
-//		netRoundingError = this.net.asDouble() - this.net.asRoundedDouble();
-//		this.net.set(this.net.asRoundedDouble());
-//
-//		// Round the vat value
-//		vatRoundingError = this.vat.asDouble() - this.vat.asRoundedDouble();
-//		this.vat.set(this.vat.asRoundedDouble());
-//	}
+	/**
+	 * Round the net and vat value and store the rounding error in the property
+	 * "xxRoundingError"
+	 */
+	public void round() {
+        CurrencyUnit currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
+
+		// Round the net value
+		netRoundingError = this.net.getNumber().doubleValue() - this.net.with(rounding).getNumber().doubleValue();
+		this.net = this.net.with(rounding);
+
+		// Round the vat value
+		vatRoundingError = this.vat.getNumber().doubleValue() - this.vat.with(rounding).getNumber().doubleValue();
+		this.vat = this.vat.with(rounding);
+	}
 
 	/**
 	 * Sets the absolute net value
@@ -186,41 +191,41 @@ public class VatSummaryItem implements Comparable<Object> {
 		return vatPercent;
 	}
 
-//	/**
-//	 * Get the rounding error of the net value
-//	 * 
-//	 * @return rounding error as Double
-//	 */
-//	public Double getNetRoundingError() {
-//		return netRoundingError;
-//	}
-//
-//	/**
-//	 * Get the rounding error of the vat value
-//	 * 
-//	 * @return rounding error as Double
-//	 */
-//	public Double getVatRoundingError() {
-//		return vatRoundingError;
-//	}
+	/**
+	 * Get the rounding error of the net value
+	 * 
+	 * @return rounding error as Double
+	 */
+	public Double getNetRoundingError() {
+		return netRoundingError;
+	}
 
-//	/**
-//	 * Sets the rounding error of the net value
-//	 * 
-//	 * @param new rounding error value
-//	 */
-//	public void setNetRoundingError(Double value) {
-//		netRoundingError = value;
-//	}
-//
-//	/**
-//	 * Sets the rounding error of the vat value
-//	 * 
-//	 * @param new rounding error value
-//	 */
-//	public void setVatRoundingError(Double value) {
-//		vatRoundingError = value;
-//	}
+	/**
+	 * Get the rounding error of the vat value
+	 * 
+	 * @return rounding error as Double
+	 */
+	public Double getVatRoundingError() {
+		return vatRoundingError;
+	}
+
+	/**
+	 * Sets the rounding error of the net value
+	 * 
+	 * @param new rounding error value
+	 */
+	public void setNetRoundingError(Double value) {
+		netRoundingError = value;
+	}
+
+	/**
+	 * Sets the rounding error of the vat value
+	 * 
+	 * @param new rounding error value
+	 */
+	public void setVatRoundingError(Double value) {
+		vatRoundingError = value;
+	}
 
 	/**
 	 * Compares this VatSummaryItem with an other Compares vat percent value and
@@ -235,13 +240,15 @@ public class VatSummaryItem implements Comparable<Object> {
 		VatSummaryItem other = (VatSummaryItem) o;
 
 		// First compare the vat value in percent
-		if (this.vatPercent < other.vatPercent)
+		if (this.vatPercent < other.vatPercent) {
 			return -1;
-		if (this.vatPercent > other.vatPercent)
+		}
+		if (this.vatPercent > other.vatPercent) {
 			return 1;
+		}
 
 		// Then the vat name
-		int i = this.vatName.compareToIgnoreCase(other.vatName);
+		int i = StringUtils.defaultString(this.vatName, "").compareTo(StringUtils.defaultString(other.vatName, ""));
 		if (i != 0)
 			return i;
 

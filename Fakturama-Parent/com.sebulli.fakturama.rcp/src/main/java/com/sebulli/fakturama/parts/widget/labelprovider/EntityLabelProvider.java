@@ -12,10 +12,11 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.labelprovider;
 
 import org.eclipse.jface.viewers.LabelProvider;
 
+import com.sebulli.fakturama.model.IDescribableEntity;
 import com.sebulli.fakturama.model.IEntity;
 
 /**
@@ -25,17 +26,21 @@ public class EntityLabelProvider extends LabelProvider {
 
     /**
      * Returns the <code>String</code> that maps to the given 
-     * <code>Integer</code>.
+     * <code>Entity</code>.
      * 
-     * @param element an <code>Integer</code> object
+     * @param element an {@link IEntity} object
      * @return a <code>String</code> from the provided values array, or the 
      * empty <code>String</code> 
      * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
      */
     public String getText(Object element) {
         String retval = "";
-        if (element != null && element instanceof IEntity) {
-            retval = ((IEntity)element).getName();
+        if (element != null) {
+            if(element instanceof IDescribableEntity) {
+                retval = ((IDescribableEntity)element).getDescription();
+            } else if (element instanceof IEntity) {
+                retval = ((IEntity)element).getName();
+            }
         }
         return retval;
     }

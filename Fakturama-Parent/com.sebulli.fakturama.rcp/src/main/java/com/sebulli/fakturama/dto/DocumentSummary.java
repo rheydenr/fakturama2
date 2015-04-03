@@ -14,9 +14,13 @@
 
 package com.sebulli.fakturama.dto;
 
+import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
-import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
+
+import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * Calculates the tax, gross and sum of one document. This is the central
@@ -27,7 +31,7 @@ import org.javamoney.moneta.FastMoney;
 public class DocumentSummary {
 
 	// The prices are not rounded to net or gross
-	public static final int NOTSPECIFIED = 0;
+	public static final int ROUND_NOTSPECIFIED = 0;
 	// The prices are rounded, that the net values are full cent values.
 	public static final int ROUND_NET_VALUES = 1;
 	// The prices are rounded, that the gross values are full cent values.
@@ -53,12 +57,15 @@ public class DocumentSummary {
 
 	// deposit value
 	private MonetaryAmount deposit;
-	private MonetaryAmount finalPayment; 
-
+	private MonetaryAmount finalPayment;
+	
+	private CurrencyUnit currencyCode;
+	
 	/**
 	 * Default constructor. Resets all value to 0.
 	 */
 	public DocumentSummary() {
+	    currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
 		resetValues();
 	}
 
@@ -66,18 +73,18 @@ public class DocumentSummary {
 	 * Reset all values to 0
 	 */
 	private void resetValues() {
-		itemsNet = FastMoney.of(0.0, "XXX");
-		itemsGross = FastMoney.of(0.0, "XXX");
-		totalNet = FastMoney.of(0.0, "XXX");
-		totalVat = FastMoney.of(0.0, "XXX");
-		totalGross = FastMoney.of(0.0, "XXX");
-		discountNet = FastMoney.of(0.0, "XXX");
-		discountGross = FastMoney.of(0.0, "XXX");
-		shippingNet = FastMoney.of(0.0, "XXX");
-		shippingVat = FastMoney.of(0.0, "XXX");
-		shippingGross = FastMoney.of(0.0, "XXX");
-		deposit = FastMoney.of(0.0, "XXX");
-		finalPayment = FastMoney.of(0.0, "XXX");
+		itemsNet = Money.of(Double.valueOf(0.0), currencyCode);
+		itemsGross = Money.of(Double.valueOf(0.0), currencyCode);
+		totalNet = Money.of(Double.valueOf(0.0), currencyCode);
+		totalVat = Money.of(Double.valueOf(0.0), currencyCode);
+		totalGross = Money.of(Double.valueOf(0.0), currencyCode);
+		discountNet = Money.of(Double.valueOf(0.0), currencyCode);
+		discountGross = Money.of(Double.valueOf(0.0), currencyCode);
+		shippingNet = Money.of(Double.valueOf(0.0), currencyCode);
+		shippingVat = Money.of(Double.valueOf(0.0), currencyCode);
+		shippingGross = Money.of(Double.valueOf(0.0), currencyCode);
+		deposit = Money.of(Double.valueOf(0.0), currencyCode);
+		finalPayment = Money.of(Double.valueOf(0.0), currencyCode);
 	}
 
 	/**

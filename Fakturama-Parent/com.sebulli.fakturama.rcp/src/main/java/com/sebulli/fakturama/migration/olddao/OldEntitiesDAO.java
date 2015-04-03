@@ -315,7 +315,7 @@ public class OldEntitiesDAO {
 	 * @return List of distinct accounts for voucher items
 	 */
 	public List<OldList> findAllVoucherItemCategories() {
-		return em.createQuery("select distinct vi from OldLists vi where category = 'billing_accounts'", OldList.class).getResultList();
+		return em.createQuery("select distinct vi from OldList vi where vi.category = 'billing_accounts'", OldList.class).getResultList();
 	}
 
 	/**

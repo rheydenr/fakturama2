@@ -136,10 +136,11 @@ public class LifecycleManager {
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         
-        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp",
+        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
+                .getContext().getBundle().getSymbolicName()),
                 Constants.DEFAULT_PREFERENCES_NODE);
         context.set(IPreferenceStore.class, defaultValuesNode);
-        
+        context.getParent().set(IPreferenceStore.class, defaultValuesNode);
         // Set the default values to this entries
         VAT defaultVat = modelFactory.createVAT(); //defaultValuesNode.getString(Constants.DEFAULT_VAT);
         defaultVat.setName(msg.dataDefaultVat);

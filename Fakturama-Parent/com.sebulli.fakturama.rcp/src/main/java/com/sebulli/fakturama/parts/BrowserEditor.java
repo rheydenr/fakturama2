@@ -18,7 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -62,8 +64,12 @@ public class BrowserEditor {
     protected Messages msg;
     
     @Inject
-    @Preference(value=InstanceScope.SCOPE)
+    @Preference(value="/instance/com.sebulli.fakturama.rcp")
     private IPreferenceStore preferences;
+    
+    @Inject
+    @Preference
+    protected IEclipsePreferences pref;
 
     @Inject
     private Logger log;
@@ -103,6 +109,9 @@ public class BrowserEditor {
 	public void createPartControl(final Composite parent) {
 // Initialize the editor. Set the URL as part name
         this.part = (MPart) parent.getData("modelElement");
+        
+        //FIXME ugly hack
+        this.preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
 	    
 		url =  (String) part.getProperties().get(OpenBrowserEditorHandler.PARAM_URL);
 //		setPartName(input.getName());
@@ -413,7 +422,7 @@ public class BrowserEditor {
 
     
     private int getIntPreference(String preference) {
-        return preferences.getInt(preference);
+        return pref.getInt(preference, 0);
     }
 
     private boolean getBooleanPreference(String preference) {

@@ -89,6 +89,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -162,7 +163,7 @@ public class WebShopImportManager {
     private ContactsDAO contactsDAO;
     
     @Inject
-    private CategoryDAO shippingCategoriesDAO;
+    private ShippingCategoriesDAO shippingCategoriesDAO;
     
     @Inject
     private ShippingsDAO shippingsDAO;

@@ -34,6 +34,9 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -64,6 +67,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -83,10 +87,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * show now category label as header for the list view
      */
     protected static final String NO_CATEGORY_LABEL = "$shownothing";
-
     protected static final String NO_SORT_LABEL = "noSortLabel";
 
-    protected static final String CUSTOM_CELL_LABEL = "Cell_LABEL";
+    protected static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
+    protected static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
+    protected static final String DATE_CELL_LABEL = "DateValue_Cell_LABEL";
+    protected static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
 
     @Inject
     @Preference
@@ -281,6 +287,48 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
 	abstract protected String getPopupId();
+	
+    /**
+     * Change the toolbar buttons (add/delete) so that they match the current viewed document types
+     * or categories. I.e., if invoices are shown then the "add"-button creates a new invoice etc.
+     * 
+     * @param treeObject current {@link TreeObject}
+     */
+    public void changeToolbarItem(TreeObject treeObject) {
+        MToolBar toolbar = getMToolBar();
+        for (MToolBarElement tbElem : toolbar.getChildren()) {
+            if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
+                HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
+                ParameterizedCommand wbCommand = toolItem.getWbCommand();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
+                parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
+                if (wbCommand != null) {
+                    wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
+                } else {
+                    // during the initialization phase the command is null, therefore we have to create a 
+                    // new command
+                    parameterMap.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
+                    wbCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, parameterMap);
+                }
+                toolItem.setWbCommand(wbCommand);
+            }
+        }
+    }
+
+    /**
+     * The Command id for creating a new item (used in MToolBar).
+     * 
+     * @return
+     */
+    protected abstract String getToolbarAddItemCommandId();
+
+    /**
+     * The {@link MToolBar} model element of the specific DataTable.
+     * 
+     * @return
+     */
+    protected abstract MToolBar getMToolBar();
 
     /**
      * On double click: open the corresponding editor

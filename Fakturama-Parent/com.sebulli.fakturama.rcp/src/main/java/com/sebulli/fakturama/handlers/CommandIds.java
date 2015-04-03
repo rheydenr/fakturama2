@@ -78,6 +78,16 @@ public final class CommandIds {
     public static final String TOOLBAR_LISTENTRY = "main.menu.new.listentry";
     public static final String TOOLBAR_EXPENDITUREVOUCHER = "main.menu.new.expenditurevoucher";
     public static final String TOOLBAR_RECEIPTVOUCHER = "main.menu.new.receiptvoucher";
+    
+    /**
+     * "Add" command for the VATs list view.  
+     */
+    public static final String LISTTOOLBAR_ADD_VAT      = "com.sebulli.fakturama.listview.vat.add";
+    public static final String LISTTOOLBAR_ADD_CONTACT  = "com.sebulli.fakturama.listview.contact.add";
+    public static final String LISTTOOLBAR_ADD_SHIPPING = "com.sebulli.fakturama.listview.shipping.add";
+    public static final String LISTTOOLBAR_ADD_PAYMENT  = "com.sebulli.fakturama.listview.payment.add";
+    public static final String LISTTOOLBAR_ADD_DOCUMENT = "com.sebulli.fakturama.listview.document.add";
+    
     public static final String CMD_CREATE_OODOCUMENT = "com.sebulli.fakturama.command.createOODocument";
     
 	public static final String CMD_SAVE = "org.eclipse.ui.file.save";

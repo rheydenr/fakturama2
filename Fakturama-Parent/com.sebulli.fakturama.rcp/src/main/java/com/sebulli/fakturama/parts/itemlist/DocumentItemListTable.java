@@ -35,6 +35,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -78,6 +79,7 @@ import org.eclipse.swt.widgets.Control;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
+import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -94,13 +96,14 @@ import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  *
  */
-public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, DummyStringCategory> {
+public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO, DummyStringCategory> {
 
     @Inject
     @Translation
@@ -123,7 +126,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
     @Preference
     private IEclipsePreferences preferences;
     
-    private EventList<DocumentItem> documentItemsListData;
+    private EventList<DocumentItemDTO> documentItemsListData;
 
     private Document document;
     private DocumentType documentType;
@@ -146,8 +149,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.documentitemlist.popup";
 
-    private ListViewGridLayer<DocumentItem> gridLayer;
-    private EntityGridListLayer<DocumentItem> gridListLayer;
+    private ListViewGridLayer<DocumentItemDTO> gridLayer;
+    private EntityGridListLayer<DocumentItemDTO> gridListLayer;
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -172,7 +175,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         this.useGross = useGross;
         
         // Get some settings from the preference store
-        if (netgross == DocumentSummary.NOTSPECIFIED) {
+        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
             useGross = (preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, 1) == 1);
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
@@ -269,12 +272,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         @SuppressWarnings("unchecked")
         List<DocumentItemListDescriptor> tmpList2 = new ArrayList<DocumentItemListDescriptor>(propertyNamesList.values());
         String[] propertyNames = tmpList2.stream().map(DocumentItemListDescriptor::getPropertyName).collect(Collectors.toList()).toArray(new String[]{});
-        final IColumnPropertyAccessor<DocumentItem> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<DocumentItem>(propertyNames);
+        final IColumnPropertyAccessor<DocumentItem> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
         
         // Add derived column
-        final IColumnPropertyAccessor<DocumentItem> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<DocumentItem>() {
+        final IColumnPropertyAccessor<DocumentItemDTO> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<DocumentItemDTO>() {
 
-            public Object getDataValue(DocumentItem rowObject, int columnIndex) {
+            public Object getDataValue(DocumentItemDTO rowObject, int columnIndex) {
                 Object retval = "???";
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 switch (descriptor) {
@@ -288,16 +291,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
                 case NAME:
                 case DESCRIPTION:
                 case DISCOUNT:
-                    retval = columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case PICTURE:
                     // we have to build the picture path
-                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     String picturePath = preferences.get(Constants.GENERAL_WORKSPACE, "") + Constants.PRODUCT_PICTURE_FOLDER;
                     retval = getScaledImage(picturePath + imgPath);
                     break;
                 case VAT:
-                    VAT vat = (VAT) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    VAT vat = (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     if(vat != null) {
                         retval = vat.getTaxValue();
                     } else {
@@ -305,22 +308,15 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
                     }
                     break;
                 case UNITPRICE:
-                    retval = (Double) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case TOTALPRICE:
-                    if(useGross) {
-                        //
-//                // Fill the cell with the total gross value of the item
-//                else if (dataKey.equals("$ItemGrossTotal")) {
-//                    cell.setText(new Price(((DataSetItem) cell.getElement())).getTotalGrossRounded().asFormatedString());
-//                }
-                    retval = Double.valueOf(0.0);
-                    } else {
-//                // Fill the cell with the total net value of the item
-//                else if (dataKey.equals("$ItemNetTotal")) {
-//                    cell.setText(new Price(((DataSetItem) cell.getElement())).getTotalNetRounded().asFormatedString());
-//                }
-                        retval =  Double.valueOf(0.0);
+                    if (useGross) { // "$ItemGrossTotal"
+                        // Fill the cell with the total gross value of the item
+                        retval = rowObject.getPrice().getTotalGrossRounded();
+                    } else { // "$ItemNetTotal"
+                        // Fill the cell with the total net value of the item
+                        retval = rowObject.getPrice().getTotalNetRounded();
                     }
                     break;
                 default:
@@ -330,38 +326,38 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
                 return retval;
             }
 
-            public void setDataValue(DocumentItem rowObject, int columnIndex, Object newValue) {
+            public void setDataValue(DocumentItemDTO rowObject, int columnIndex, Object newValue) {
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 switch (descriptor) {
                 case OPTIONAL:
-                    rowObject.setOptional((Boolean) newValue);
+                    rowObject.getDocumentItem().setOptional((Boolean) newValue);
                     break;
                 case QUANTITY:
-                    rowObject.setQuantity((Double) newValue);
+                    rowObject.getDocumentItem().setQuantity((Double) newValue);
                     break;
                 case QUNIT:
-                    rowObject.setQuantityUnit((String) newValue);
+                    rowObject.getDocumentItem().setQuantityUnit((String) newValue);
                     break;
                 case ITEMNUMBER:
-                    rowObject.setItemNumber((String) newValue);
+                    rowObject.getDocumentItem().setItemNumber((String) newValue);
                     break;
                 case NAME:
-                    rowObject.setName((String) newValue);
+                    rowObject.getDocumentItem().setName((String) newValue);
                     break;
                 case DESCRIPTION:
-                    rowObject.setDescription((String) newValue);
+                    rowObject.getDocumentItem().setDescription((String) newValue);
                     break;
                 case DISCOUNT:
-                    rowObject.setItemRebate((Double) newValue);
+                    rowObject.getDocumentItem().setItemRebate((Double) newValue);
                     break;
                 case PICTURE:
                     // we have to build the picture path
-                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 //                    String picturePath = preferences.get(Constants.GENERAL_WORKSPACE, "") + Constants.PRODUCT_PICTURE_FOLDER;
 //                    retval = getScaledImage(picturePath + imgPath);
                     break;
                 case VAT:
-                    VAT vat = (VAT) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                    VAT vat = (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 //                    if(vat != null) {
 //                        retval = vat.getTaxValue();
 //                    } else {
@@ -369,7 +365,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
 //                    }
                     break;
                 case UNITPRICE:
-                    rowObject.setPrice((Double) newValue);
+                    rowObject.getDocumentItem().setPrice((Double) newValue);
                     break;
                 default:
                     break;
@@ -400,9 +396,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         
         //build the grid layer
         
-        gridListLayer = new EntityGridListLayer<>(documentItemsListData, propertyNames, derivedColumnPropertyAccessor, configRegistry);
+        gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
-        GlazedListsEventLayer<DocumentItem> vatListEventLayer = new GlazedListsEventLayer<DocumentItem>(tableDataLayer, documentItemsListData);
+        GlazedListsEventLayer<DocumentItemDTO> vatListEventLayer = new GlazedListsEventLayer<DocumentItemDTO>(tableDataLayer, getDocumentItemsListData());
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -416,15 +412,15 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
 
-        IRowIdAccessor<DocumentItem> rowIdAccessor = new IRowIdAccessor<DocumentItem>() {
+        IRowIdAccessor<DocumentItemDTO> rowIdAccessor = new IRowIdAccessor<DocumentItemDTO>() {
             @Override
-            public Serializable getRowId(DocumentItem rowObject) {
-                return rowObject.getId();
+            public Serializable getRowId(DocumentItemDTO rowObject) {
+                return rowObject.getDocumentItem().getId();
             }
         };
         
 //        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<DocumentItem> selectionModel = new RowSelectionModel<>(selectionLayer, gridListLayer.getBodyDataProvider(), rowIdAccessor, false);
+        RowSelectionModel<DocumentItemDTO> selectionModel = new RowSelectionModel<>(selectionLayer, gridListLayer.getBodyDataProvider(), rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
 
         // Label accumulator - adds labels to all cells with the given data value
@@ -495,7 +491,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         // If the editor is opened, the items from the document are
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
-        documentItemsListData = GlazedLists.eventList(document.getItems());
+        List<DocumentItemDTO> wrappedItems = new ArrayList<>();
+        for (DocumentItem item : document.getItems()) {
+            wrappedItems.add(new DocumentItemDTO(item));
+        }
+        setDocumentItemsListData(GlazedLists.eventList(wrappedItems));
 
         //            // Set the sign
         //            if (parentSign != documentType.sign())
@@ -508,19 +508,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
         DocumentType documentTypeParent = document.getSourceDocument() != null ? DocumentType.findByKey(document.getSourceDocument().getBillingType()
                 .getValue()) : DocumentType.NONE;
         if (documentTypeParent == DocumentType.OFFER) {
-            documentItemsListData.forEach(item -> item.setOptional(Boolean.FALSE));
+            getDocumentItemsListData().forEach(item -> item.getDocumentItem().setOptional(Boolean.FALSE));
         }
 
-        // Show the columns "optional" if at least one item
+        // Show the column "optional" if at least one item
         // with this property set was found
-        Optional<DocumentItem> optionalValue = documentItemsListData.stream().filter(item -> item.getOptional()).findFirst();
+        Optional<DocumentItemDTO> optionalValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getOptional()).findFirst();
         if (optionalValue.isPresent()) {
             containsOptionalItems = true;
         }
 
         // Show the columns discount if at least one item
         // with a discounted price was found
-        Optional<DocumentItem> discountedValue = documentItemsListData.stream().filter(item -> item.getItemRebate() != null).findFirst();
+        Optional<DocumentItemDTO> discountedValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getItemRebate() != null).findFirst();
         if (discountedValue.isPresent()) {
             containsDiscountedItems = true;
         }
@@ -562,10 +562,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
     @Override
     public void removeSelectedEntry() {
         if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            DocumentItem objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-                List<DocumentItem> tmpList = documentItemsListData.stream().filter(d -> d != objToDelete).collect(Collectors.toList());
-                documentItemsListData.clear();
-                documentItemsListData.addAll(tmpList);
+            DocumentItemDTO objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+                List<DocumentItemDTO> tmpList = getDocumentItemsListData().stream().filter(d -> d != objToDelete).collect(Collectors.toList());
+                getDocumentItemsListData().clear();
+                getDocumentItemsListData().addAll(tmpList);
         } else {
             log.debug("no rows selected!");
         }
@@ -577,7 +577,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
      * of all items is set to "0.0%"
      */
     public void setItemsNoVat(Boolean noVat) {
-        documentItemsListData.forEach(item -> item.setNoVat(noVat));
+        getDocumentItemsListData().forEach(item -> item.getDocumentItem().setNoVat(noVat));
     }
 
     /**
@@ -586,9 +586,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
      * @param newItem
      *            The new item
      */
-    public void addNewItem(DocumentItem newItem) {
+    public void addNewItem(DocumentItemDTO newItem) {
 //      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
-        documentItemsListData.add(newItem);
+        getDocumentItemsListData().add(newItem);
     }
 
     /**
@@ -795,6 +795,37 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItem, D
             return false;
         }
         return true;
+    }
+
+    /**
+     * @return the documentItemsListData
+     */
+    public EventList<DocumentItemDTO> getDocumentItemsListData() {
+        return documentItemsListData;
+    }
+
+    /**
+     * @param documentItemsListData the documentItemsListData to set
+     */
+    public void setDocumentItemsListData(EventList<DocumentItemDTO> documentItemsListData) {
+        this.documentItemsListData = documentItemsListData;
+    }
+
+    @Override
+    public void changeToolbarItem(TreeObject treeObject) {
+        // no action needed since there's no toolbar
+    }
+    
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        // This error should'nt occur since we've overridden the changeToolbarItem method.
+        throw new UnsupportedOperationException("Inside a list table you can't create a new document.");
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        // This error should'nt occur since we've overridden the changeToolbarItem method.
+        throw new UnsupportedOperationException("Inside a list table there's no toolbar.");
     }
 
 }

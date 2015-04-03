@@ -297,15 +297,9 @@ public class TreeObject {
     public String toString() {
         return getName();
     }
-
-    /**
-     * Returns the full path of the tree element. This is the name of the
-     * element plus the name of all parent elements, separated by a slash "/"
-     * 
-     * @return The full path of a tree element
-     */
-    public String getFullPathName() {
-        // Get the name of the element
+    
+    public String getFullPathName(boolean omitRootNodeName) {
+        // Get the name of the element (this is the rightmost element in path)
         String fullPathName = getName();
 
         // Root and all have an empty path
@@ -316,13 +310,27 @@ public class TreeObject {
         p = p.getParent();
 
         //Add the name of all parent elements
-        while ((p != null) && !(getNodeType() == TreeObjectType.ROOT_NODE || getNodeType() == TreeObjectType.ALL_NODE)) {
-            fullPathName = p.getName() + "/" + fullPathName;
+        while (p != null && !(getNodeType() == TreeObjectType.ROOT_NODE || getNodeType() == TreeObjectType.ALL_NODE)) {
+            if(omitRootNodeName && (p.getNodeType() == TreeObjectType.ROOT_NODE || p.getNodeType() == TreeObjectType.ALL_NODE)) {
+                // don't include the root name
+            } else {
+                fullPathName = p.getName() + "/" + fullPathName;
+            }
             p = p.getParent();
         }
 
         // The full path name
         return fullPathName;
+    }
+
+    /**
+     * Returns the full path of the tree element. This is the name of the
+     * element plus the name of all parent elements, separated by a slash "/"
+     * 
+     * @return The full path of a tree element
+     */
+    public String getFullPathName() {
+        return getFullPathName(false);
     }
 
     /**

@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -26,12 +25,10 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -150,17 +147,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     @Inject
     private ContactsDAO contactsDAO;
-
-    @Inject
-    private MApplication application;
-    
-    @Inject
-    private EModelService modelService;
-   
-    private static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
-    private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
-    private static final String DATE_CELL_LABEL = "DateValue_Cell_LABEL";
-    private static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
     
     private ListViewGridLayer<Document> gridLayer;
     
@@ -174,11 +160,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private MPart listTablePart;
 
     @PostConstruct
-    public Control createPartControl(Composite parent, IEclipseContext context) {
+    public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
         top = super.createPartControl(parent, Document.class, true, ID);
-        listTablePart = (MPart) modelService.find(ID, application);
-//        this.context = context;
+        this.listTablePart = listTablePart;
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -428,7 +413,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     @Inject
     @Optional
-    public void handleRefreshEvent(@EventTopic("DocumentEditor") String message) {
+    public void handleRefreshEvent(@EventTopic(DocumentEditor.EDITOR_ID) String message) {
         sync.syncExec(new Runnable() {
 
             @Override
@@ -471,9 +456,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Set the label with the filter string
-        if (filter.equals("$shownothing")) {
-            filterLabel.setText("");
-        } else {
+        if (!filter.equals(NO_CATEGORY_LABEL)) {
         // Display the localized list names.
         // or the document type
             if (isHeaderLabelEnabled()) {
@@ -494,19 +477,13 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         treeFilteredIssues.setMatcher(new DocumentMatcher(filter, 
                 treeObjectType,
                 msg));
-       }
+        }
 
        filterLabel.pack(true);
 
         //Refresh is done automagically...
     }
     
-    /**
-     * Change the toolbar buttons (add/delete) so that they match the current viewed document types. I.e.,
-     * if invoices are shown then the "add"-button creates a new invoice etc.
-     * 
-     * @param treeObject
-     */
     public void changeToolbarItem(TreeObject treeObject) {
         MToolBar toolbar = listTablePart.getToolbar();
         for (MToolBarElement tbElem : toolbar.getChildren()) {
@@ -520,6 +497,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getDocType().name());
                 }
                 else {
+                    // default "add" document type is "Order"
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(DocumentType.ORDER.getSingularKey()));
                     parameterMap.put(CallEditor.PARAM_CATEGORY, DocumentType.ORDER.name());
                 }
@@ -779,5 +757,15 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         public Object displayToCanonicalValue(Object displayValue) {
             throw new UnsupportedOperationException("can't change the state in a list view!");
         }
+    }
+
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_DOCUMENT;
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        return listTablePart.getToolbar();
     }
 }

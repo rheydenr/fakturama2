@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.regex.Matcher;
@@ -96,6 +97,7 @@ import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
@@ -247,7 +249,7 @@ public class MigrationManager {
 		eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
 		eclipsePrefs.flush();
 		
-		initMigLog();
+		initMigLog(oldWorkDir);
 
 		// initialize DAOs via EclipseContext
 		// new Entities have their own DAO ;-)
@@ -362,8 +364,14 @@ public class MigrationManager {
 		    eclipsePrefs.flush();
 			log.info(msg.startMigrationEnd);
 		}
-        String tmpStr = String.format("* %s %s", StringUtils.rightPad("Start:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        String tmpStr = String.format("* %s %s", StringUtils.rightPad("End:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
+        
+        // kindly close all handlers (otherwise some file fragments could remain).
+        for (Handler handler : migLogUser.getHandlers()) {
+            handler.close();
+        }
+        
 	}
 	
 
@@ -371,7 +379,7 @@ public class MigrationManager {
 	 * Initialize the information file for the user. This is done by simply using the
 	 * java.util.Logging class.  
 	 */
-    private void initMigLog() {
+    private void initMigLog(String oldWorkDir) {
         // We have to configure the log file output and location.
         // The creation of this (very special) Logger is done manually.
         try {
@@ -392,6 +400,8 @@ public class MigrationManager {
             migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
             tmpStr = String.format("* %s %s", StringUtils.rightPad("Workspace path:", 20), generalWorkspace);
             migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
+            tmpStr = String.format("* %s %s", StringUtils.rightPad("Old workspace path:", 20), oldWorkDir);
+            migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
             // TODO maybe we could write down some other useful information? version of old application?
             migLogUser.info("*" + StringUtils.repeat(' ',  MAX_LOGENTRY_WIDTH-2) + "*");
             migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
@@ -410,7 +420,7 @@ public class MigrationManager {
 	 * @throws InterruptedException
 	 */
 	private void runMigration(SubProgressMonitor subProgressMonitor, OldTableinfo tableinfo) throws InterruptedException {
-	    migLogUser.info(String.format("Start converting %s ", msg.getMessageFromKey(tableinfo.getMessageKey())));
+	    migLogUser.info(String.format("Start converting %s (%s)", msg.getMessageFromKey(tableinfo.getMessageKey()), tableinfo.name()));
 		try {
 			switch (tableinfo) {
 			case Properties:
@@ -545,8 +555,8 @@ public class MigrationManager {
 					Files.createDirectories(outputFile);
 				Files.copy(oldFile, outputFile);
 			} catch (IOException e) {
-				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason: "+e.getMessage());
-				migLogUser.info("!!! error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:\n"+e.getMessage());
+//				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason: "+e.getMessage());
+                migLogUser.info("!!! error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:\n" + e);
 			}
 		}
 	}
@@ -557,7 +567,7 @@ public class MigrationManager {
 		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
         subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
-		Map<Integer, Document> invoiceDocuments = new HashMap<>();
+		Map<Integer, Invoice> invoiceDocuments = new HashMap<>();
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
 				Document document;
@@ -614,17 +624,6 @@ public class MigrationManager {
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 
 				document.setDueDays(oldDocument.getDuedays());
-				// store the pair for later processing
-				// if the old Document has an InvoiceId and that ID is the same as the Document's ID
-				// then we have to store it for further processing.
-				// if the Invoice Id is the same as the document's id then it's the invoice itself
-				if(oldDocument.getInvoiceid() >= 0) {
-					if (oldDocument.getId() != oldDocument.getInvoiceid()) {
-						invoiceRelevantDocuments.put(oldDocument.getId(), document);
-					} else {
-						invoiceDocuments.put(oldDocument.getId(), document);
-					}
-				}
 				// each Document has its own items
 				if(StringUtils.isNotBlank(oldDocument.getItems())) {
 					String[] itemRefs = oldDocument.getItems().split(",");
@@ -689,7 +688,23 @@ public class MigrationManager {
                 document.setShippingAutoVat(ShippingVatType.get(oldDocument.getShippingautovat()));
                 document.setShippingValue(oldDocument.getShipping());
 
-				documentDAO.save(document);
+                document = documentDAO.save(document);
+                // store the pair for later processing
+                // if the old Document has an InvoiceId and that ID is the same as the Document's ID
+                // then we have to store it for further processing.
+                // if the Invoice Id is the same as the document's id then it's the invoice itself
+                if(oldDocument.getInvoiceid() >= 0) {
+                    if (oldDocument.getId() != oldDocument.getInvoiceid()) {
+                        invoiceRelevantDocuments.put(oldDocument.getId(), document);
+                    } else {
+                        if(!(document instanceof Invoice)) {
+                            migLogUser.info("!!! the document no. " + document.getName() + " is of type " + document.getBillingType() +
+                                    " and has itself as invoice reference. This doesn't fit!");
+                        } else {
+                            invoiceDocuments.put(oldDocument.getId(), (Invoice) document);
+                        }
+                    }
+                }
 				subProgressMonitor.worked(1);
 			}
 			catch (SQLException | NumberFormatException e) {
@@ -704,9 +719,9 @@ public class MigrationManager {
 				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
 				Document document = invoiceRelevantDocuments.get(oldDocument.getId());
 				// now find the corresponding NEW document
-				Document relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
+				Invoice relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
-					document.setSourceDocument((Document) relatedDocument);
+					document.setInvoiceReference(relatedDocument);
 					documentDAO.save(document);
 				}
 			}
@@ -729,8 +744,9 @@ public class MigrationManager {
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
 			DocumentItem item = modelFactory.createDocumentItem();
 			// the position was formerly determined through the order how they stay in documents entry
-			item.setPosNr(Integer.valueOf(i));
+			item.setPosNr(Integer.valueOf(i+1));
 			item.setDescription(oldItem.getDescription());
+			item.setDeleted(oldItem.isDeleted());
 			item.setItemRebate(oldItem.getDiscount());
 			item.setItemNumber(oldItem.getItemnr());
 			item.setName(oldItem.getName());
@@ -932,6 +948,7 @@ public class MigrationManager {
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
 						item.setReceiptVoucherItemVat(newVat);
 //						receiptVoucher.addToItems(item);
+						receiptVoucher.getItems().add(item);
 					}
 				}
 				receiptVoucher.setName(oldReceiptvoucher.getName());
@@ -955,7 +972,7 @@ public class MigrationManager {
 		// use a HashMap as a simple cache
 
         CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
-        Map<String, VoucherCategory> expenditureAccounts = catBuilder.buildCategoryMap(oldDao.findAllReceiptvoucherCategories(), VoucherCategory.class);
+        Map<String, VoucherCategory> expenditureAccounts = catBuilder.buildCategoryMap(oldDao.findAllExpenditureVoucherCategories(), VoucherCategory.class);
 
         Map<String, ItemAccountType> expenditureItemAccountTypes = buildItemAccountTypeMap();
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
@@ -981,6 +998,7 @@ public class MigrationManager {
 						OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
 						ExpenditureItem item = modelFactory.createExpenditureItem();
 						item.setAccount(expenditureItemAccountTypes.get(oldExpenditureItem.getCategory()));
+						item.setDeleted(oldExpenditureItem.isDeleted());
 						item.setName(oldExpenditureItem.getName());
 						item.setPrice(oldExpenditureItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
@@ -1009,6 +1027,7 @@ public class MigrationManager {
 		    ItemAccountType itemAccountType = modelFactory.createItemAccountType();
 		    itemAccountType.setName(oldVoucherItemCategory.getName());
 		    itemAccountType.setValue(oldVoucherItemCategory.getValue());
+		    itemAccountType.setDeleted(oldVoucherItemCategory.isDeleted());
 		    itemAccountTypes.put(oldVoucherItemCategory.getName(), itemAccountType);
         }
 		return itemAccountTypes;
@@ -1274,7 +1293,7 @@ public class MigrationManager {
 		Properties columnWidthProperties = new Properties();
 		
 		log.info("propertiesFile: "+propertiesFile);
-        log.info("properties file for column widths: "+propertiesFile);
+        migLogUser.info("properties file for column widths: "+propertiesFile);
 		if(log.isDebugEnabled()) {
 			log.debug("findAllColumnWidthProperties():"+oldDao.findAllColumnWidthProperties().size());
 		}
@@ -1305,27 +1324,28 @@ public class MigrationManager {
                     case "ITEMS":
                         tableId = DocumentItemListTable.ID;
                         break;
-                    case "LIST":
-                        break;
+//                    case "LIST":
+//                        break;
                     case "PAYMENTS":
                         tableId = PaymentListTable.ID;
                         break;
-                    case "PRODUCTS":
-                        break;
+//                    case "PRODUCTS":
+//                        break;
                     case "SHIPPINGS":
                         tableId = ShippingListTable.ID;
                         break;
-                    case "TEXTS":
-                        break;
-                    case "VOUCHERITEMS":
-                        break;
-                    case "VOUCHERS":
-                        break;
+//                    case "TEXTS":
+//                        break;
+//                    case "VOUCHERITEMS":
+//                        break;
+//                    case "VOUCHERS":
+//                        break;
                     case "DIALOG":
                         // these settings can be silently ignored since we use the list table parts instead
                         // e.g., COLUMNWIDTH_DIALOG_CONTACTS_CITY
                         continue;
                     default:
+                        tableId = table;
                         break;
                     }
                     List<Integer> valueList = columnWidthsMap.get(tableId);

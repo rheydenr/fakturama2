@@ -13,7 +13,10 @@
 
 package com.sebulli.fakturama.views.datatable;
 
+import javax.money.MonetaryAmount;
+
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
+
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
@@ -31,8 +34,13 @@ public class MoneyDisplayConverter extends DisplayConverter {
     public Object canonicalToDisplayValue(Object canonicalValue) {
         String retval = "";
         if (canonicalValue != null) {
-            Double value = (Double) canonicalValue;
-            retval = DataUtils.getInstance().doubleToFormattedPrice(value);
+            if(canonicalValue instanceof MonetaryAmount) {
+                MonetaryAmount value = (MonetaryAmount)canonicalValue;
+                retval = DataUtils.getInstance().formatCurrency(value);
+            } else {
+                Double value = (Double) canonicalValue;
+                retval = DataUtils.getInstance().doubleToFormattedPrice(value);
+            }
         }
         return retval;
     }

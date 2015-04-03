@@ -25,6 +25,8 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -66,6 +68,7 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
@@ -116,6 +119,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     private EventList<VoucherCategory> categories;
 
     private Control top;
+    private MPart listTablePart;
     
     @Inject
     private PaymentsDAO paymentsDAO;
@@ -135,8 +139,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     private SelectionLayer selectionLayer;
 
     @PostConstruct
-    public Control createPartControl(Composite parent) {
+    public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Payment list part");
+        this.listTablePart = listTablePart;
         top = super.createPartControl(parent, Payment.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand(natTable, gridLayer);
@@ -379,7 +384,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Set the label with the filter string
-        if (filter.equals("$shownothing"))
+        if (filter.equals(NO_CATEGORY_LABEL))
             filterLabel.setText("");
         else
         // Display the localized list names.
@@ -485,4 +490,13 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         return POPUP_ID;
     }
 
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_PAYMENT;
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        return listTablePart.getToolbar();
+    }
 }

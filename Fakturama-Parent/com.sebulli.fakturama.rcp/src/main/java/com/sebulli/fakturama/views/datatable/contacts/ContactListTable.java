@@ -21,6 +21,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -122,7 +123,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
     
-    private MPart activePart;
+    private MPart listTablePart;
     
     private ListViewGridLayer<Contact> gridLayer;
     //create a new ConfigRegistry which will be needed for GlazedLists handling
@@ -131,13 +132,13 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     private SelectionLayer selectionLayer;
 
     @PostConstruct
-    public Control createPartControl(Composite parent, MPart activePart) {
+    public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Contact list part");
         top = super.createPartControl(parent, Contact.class, true, ID);
-        this.activePart = activePart;
+        this.listTablePart = listTablePart;
         // if another click handler is set we use it
         // Listen to double clicks
-        Object commandId = this.activePart.getProperties().get("fakturama.datatable.contacts.clickhandler");
+        Object commandId = this.listTablePart.getProperties().get("fakturama.datatable.contacts.clickhandler");
         if(commandId != null) { // exactly it would be "com.sebulli.fakturama.command.selectitem"
             hookDoubleClickCommand(natTable, gridLayer, (String) commandId);
         } else {
@@ -174,10 +175,10 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
                     Map<String, Object> eventParams = new HashMap<>();
                     // the transientData HashMap contains the target document number
                     // (was set in MouseEvent handler)
-                    eventParams.putAll(activePart.getParent().getTransientData());
+                    eventParams.putAll(listTablePart.getParent().getTransientData());
                     eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
                     evtBroker.post("DialogSelection/Contact", eventParams);
-                    activePart.getParent().setVisible(false);
+                    listTablePart.getParent().setVisible(false);
                 } else {
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
@@ -432,5 +433,15 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
 
     protected String getPopupId() {
         return POPUP_ID;
+    }
+
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_CONTACT;
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        return listTablePart.getToolbar();
     }
 }

@@ -14,6 +14,8 @@
 
 package com.sebulli.fakturama.calculate;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -131,13 +133,15 @@ public class CustomerStatistics {
 			boolean customerFound = false;
 
 			// Compare the customer ID
-			if (contact != null && document.getContact().isSameAs(contact))
+			if (contact != null && document.getContact().isSameAs(contact)) {
 				customerFound = true;
-
+			}
+			
 			// Compare the the address
 			if (!byID && (address.length() > 10) && 
-				DataUtils.getInstance().similarity(ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()), address) > 0.7)
+				DataUtils.getInstance().similarity(ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()), address) > 0.7) {
 				customerFound = true;
+			}
 			
 			if (customerFound) {
 				// It's a regular customer
@@ -224,10 +228,13 @@ public class CustomerStatistics {
 	 * 		The date of the last order
 	 */
 	public String getLastOrderDate() {
-		if (lastOrderDate != null)
-			return  DataUtils.getInstance().getDateTimeAsLocalString((GregorianCalendar) lastOrderDate);
-		else
+		if (lastOrderDate != null) {
+		    LocalDate date = LocalDate.from(lastOrderDate.toInstant());
+		    return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			// DataUtils.getInstance().getDateTimeAsLocalString((GregorianCalendar) lastOrderDate);
+		} else {
 			return "-";
+		}
 	}
 	
 	/**

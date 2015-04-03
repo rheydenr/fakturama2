@@ -138,6 +138,7 @@ public class CallEditor {
 			myPart.setVisible(true);
 			myPart.setContext(EclipseContextFactory.create());
 			myPart.getProperties().put(PARAM_OBJ_ID, objId);
+			myPart.getProperties().put(PARAM_CATEGORY, category);
 			stack.getChildren().add(myPart);
 			// we have to distinguish the different editors here
 			switch (type) {
@@ -167,7 +168,7 @@ public class CallEditor {
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
-                myPart.getProperties().put(PARAM_CATEGORY, category);
+//                myPart.getProperties().put(PARAM_CATEGORY, category);
                 myPart.getProperties().put(PARAM_DUPLICATE, duplicate);
                 break;
 			default:

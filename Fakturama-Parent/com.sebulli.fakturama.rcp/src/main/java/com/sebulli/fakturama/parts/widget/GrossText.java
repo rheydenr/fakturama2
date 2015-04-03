@@ -20,6 +20,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
  * Controls a text widget that contains the gross value of a price. This control

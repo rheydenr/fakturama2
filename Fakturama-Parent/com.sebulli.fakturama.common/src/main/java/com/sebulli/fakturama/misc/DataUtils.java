@@ -53,7 +53,7 @@ import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
  */
 public class DataUtils {
 
-    private static final String ZERO_DATE = "2000-01-01";
+//    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
     static boolean useThousandsSeparator = false;
     private static DataUtils instance = null;
@@ -128,6 +128,9 @@ public class DataUtils {
     }
 
     public NumberFormat getCurrencyFormat() {
+        if (currencyFormat == null) {
+            initialize();
+        }
         return currencyFormat;
     }
     
@@ -373,14 +376,12 @@ public class DataUtils {
      * @return Converted value as string
      */
     public String doubleToFormattedPrice(Double value) {
-        if (currencyFormat == null)
-            initialize();
-        CurrencyUnit currUnit = MonetaryCurrencies.getCurrency(currencyLocale);
+        CurrencyUnit currUnit = getCurrencyUnit(currencyLocale);
         MonetaryAmount rounded = RoundedMoney.of(value, currUnit);
         if(mro != null) {
-            return currencyFormat.format(rounded.with(mro).getNumber());
+            return getCurrencyFormat().format(rounded.with(mro).getNumber());
         } else {
-            return currencyFormat.format(rounded.getNumber());
+            return getCurrencyFormat().format(rounded.getNumber());
         }
     }
 
@@ -440,17 +441,26 @@ public class DataUtils {
         }
         return retval;
     }
-
-    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol) {
-        CurrencyUnit usd = DataUtils.getInstance().getCurrencyUnit(locale);
-        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+    
+    public String formatCurrency(MonetaryAmount amount) {
+        return formatCurrency(amount, currencyLocale, true);
+    }
+    
+    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
+        CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryRounding mro = DataUtils.getInstance().getRounding(usd);
         MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(locale)
                 .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                 .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
                 .build());
-        return format.format(rounded.with(mro));
+        return format.format(amount.with(mro));
+    }
+
+    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol) {
+        CurrencyUnit usd = getCurrencyUnit(locale);
+        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+        return formatCurrency(rounded, locale, useCurrencySymbol);
     }
     
     public String formatCurrency(double myNumber, Locale locale) {

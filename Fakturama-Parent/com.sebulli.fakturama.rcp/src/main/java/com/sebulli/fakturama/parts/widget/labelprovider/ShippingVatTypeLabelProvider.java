@@ -11,7 +11,7 @@
  * Contributors: The Fakturama Team - initial API and implementation
  */
 
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.labelprovider;
 
 import org.eclipse.jface.viewers.LabelProvider;
 

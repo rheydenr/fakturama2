@@ -12,11 +12,13 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.parts.widget;
+package com.sebulli.fakturama.parts.widget.formatter;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+
+import javax.money.MonetaryAmount;
 
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
@@ -34,6 +36,15 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
         setPatterns(((DecimalFormat) NumberFormat.getNumberInstance()).toPattern(), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
     }
+    
+    @Override
+    public void setValue(Object value) {
+        if(value != null && value instanceof MonetaryAmount) {
+            super.setValue(((MonetaryAmount)value).getNumber());
+        } else {
+            super.setValue(value);
+        }
+    }
 
     @Override
     public Object getValue() {
@@ -42,6 +53,18 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
             val = new Double(val.doubleValue());
         }
         return val;
+    }
+    
+    @Override
+    public String getDisplayString() {
+        Double value = (Double) getValue();
+        String retval = "";
+        if(value != null) {
+            retval = DataUtils.getInstance().doubleToFormattedPrice(value);
+        } else {
+            retval = super.getDisplayString();
+        }
+        return retval;
     }
 
     /**

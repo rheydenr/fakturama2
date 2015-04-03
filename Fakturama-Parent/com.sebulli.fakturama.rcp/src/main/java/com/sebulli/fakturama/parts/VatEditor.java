@@ -25,6 +25,7 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -50,14 +51,13 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
+import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
-import com.sebulli.fakturama.parts.converter.CategoryConverter;
 
 /**
  * The VAT editor
@@ -81,7 +81,7 @@ public class VatEditor extends Editor<VAT> {
     protected VatCategoriesDAO vatCategoriesDAO;
     
     @Inject
-    protected ILogger log;
+    protected Logger log;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
@@ -198,9 +198,15 @@ public class VatEditor extends Editor<VAT> {
         if (newVat) {
             // Create a new data set
             editorVat = new VAT();
-
+            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                VATCategory newCat = vatCategoriesDAO.findVATCategoryByName(category);
+                editorVat.setCategory(newCat);
+            }
+            
             //T: VAT Editor: Part Name of a new VAT Entry
             part.setLabel(msg.editorVatHeader);
+            getMDirtyablePart().setDirty(true);
         }
         else {
             // Set the Editor's name to the VAT name.

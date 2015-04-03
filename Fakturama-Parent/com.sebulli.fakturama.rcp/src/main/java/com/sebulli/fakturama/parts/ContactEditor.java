@@ -80,12 +80,12 @@ import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
-import com.sebulli.fakturama.parts.widget.ComboBoxLabelProvider;
-import com.sebulli.fakturama.parts.widget.EntityComboProvider;
-import com.sebulli.fakturama.parts.widget.EntityLabelProvider;
-import com.sebulli.fakturama.parts.widget.HashMapContentProvider;
-import com.sebulli.fakturama.parts.widget.StringComboBoxLabelProvider;
-import com.sebulli.fakturama.parts.widget.StringHashMapContentProvider;
+import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
+import com.sebulli.fakturama.parts.widget.contentprovider.StringHashMapContentProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -548,7 +548,7 @@ public class ContactEditor extends Editor<Contact> {
 		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
 		comboGender.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboGender.setInput(genderList);
-		comboGender.setLabelProvider(new ComboBoxLabelProvider<Integer, String>(genderList));
+		comboGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
 
@@ -667,7 +667,7 @@ public class ContactEditor extends Editor<Contact> {
 		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER);
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
-        comboDeliveryGender.setLabelProvider(new ComboBoxLabelProvider<Integer, String>(genderList));
+        comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
 		bindModelValue(editorContact, comboDeliveryGender, Contact_.deliveryContacts.getName() +"." +Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
 		

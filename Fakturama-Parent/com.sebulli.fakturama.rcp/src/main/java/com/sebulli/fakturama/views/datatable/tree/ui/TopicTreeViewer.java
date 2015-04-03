@@ -40,15 +40,12 @@ import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
-import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * This is the topic tree viewer that displays a tree of the categories of all
  * the data sets.
  * 
- * @author Gerd Bartelt
  */
 public class TopicTreeViewer<T extends AbstractCategory> {
 
@@ -59,7 +56,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
     private Messages msg;
 
-	TreeViewer internalTreeViewer;
+    TreeViewer internalTreeViewer;
 	
 	protected TreeObject root;
 	TreeObject all;
@@ -76,7 +73,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	private TreeObject selectedItem;
 
 	// True, if there is a entry "show all"
-	final boolean useAll;
+	private final boolean useAll;
 
 	// The corresponding table
 	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
@@ -182,10 +179,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 					}
 				}
 				
-				if(viewDataSetTable.getTableId().contentEquals(DocumentsListTable.ID)) {
-				    ((DocumentsListTable)viewDataSetTable).changeToolbarItem(treeObject);
-				    // change popup menu
-				}
+				// change toolbar / popup menu
+			    viewDataSetTable.changeToolbarItem(treeObject);
 			}
 		});
 	}
@@ -193,6 +188,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	public Tree getTree() {
 		return internalTreeViewer.getTree();
 	}
+	
 	/**
 	 * Clear the tree
 	 */
@@ -239,10 +235,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		public String getText(Object obj) {
 
 			// Display the localizes list names.
-			if (viewDataSetTable instanceof VATListTable)
-//				return DataSetListNames.NAMES.getLocalizedName(obj.toString());
-				return "loc: " + obj.toString();
-			else
+//			if (viewDataSetTable instanceof VATListTable)
+////				return DataSetListNames.NAMES.getLocalizedName(obj.toString());
+//				return "loc: " + obj.toString();
+//			else
 				return obj.toString();
 		}
 

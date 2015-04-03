@@ -165,6 +165,11 @@ public class PaymentEditor extends Editor<Payment> {
 		// to the data base
 		if (newPayment) {
 			newPayment = false;
+            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                VoucherCategory newCat = accountDAO.findVoucherCategoryByName(category);
+                payment.setCategory(newCat);
+            }
 			stdComposite.stdButton.setEnabled(true);
 		}
 

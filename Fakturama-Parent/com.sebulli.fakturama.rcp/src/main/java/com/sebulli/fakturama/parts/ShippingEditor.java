@@ -68,12 +68,12 @@ import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
-import com.sebulli.fakturama.parts.widget.EntityComboProvider;
-import com.sebulli.fakturama.parts.widget.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.GrossText;
 import com.sebulli.fakturama.parts.widget.NetText;
-import com.sebulli.fakturama.parts.widget.ShippingVatTypeContentProvider;
-import com.sebulli.fakturama.parts.widget.ShippingVatTypeLabelProvider;
+import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.contentprovider.ShippingVatTypeContentProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.ShippingVatTypeLabelProvider;
 
 /**
  * The Shipping editor

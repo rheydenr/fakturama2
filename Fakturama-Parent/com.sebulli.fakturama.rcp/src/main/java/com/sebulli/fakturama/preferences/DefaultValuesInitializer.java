@@ -56,10 +56,11 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() { 
 		LogService log = EclipseContextFactory.getServiceContext(Activator.getContext()).get(LogService.class);
-		log.log(LogService.LOG_INFO, "Enter in default Preference Initializer");
+		log.log(LogService.LOG_INFO, "Entering default Preference Initializer");
 	    // TODO Later on we use registered preference pages which register itself on a registry:
 		
-		IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp", Constants.DEFAULT_PREFERENCES_NODE);   
+        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
+                .getContext().getBundle().getSymbolicName()), Constants.DEFAULT_PREFERENCES_NODE);
 //		for (IInitializablePreference iInitializablePreference : classesToInit) {
 //		    iInitializablePreference.setInitValues(defaultValuesNode);
 //		}
@@ -88,5 +89,6 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 		    IInitializablePreference p = ContextInjectionFactory.make(clazz, EclipseContextFactory.getServiceContext(Activator.getContext()));
     		p.setInitValues(defaultValuesNode);
         }
+		EclipseContextFactory.getServiceContext(Activator.getContext()).set(IPreferenceStore.class, defaultValuesNode);
 	}
 }
