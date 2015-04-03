@@ -83,7 +83,6 @@ import org.javamoney.moneta.FastMoney;
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.dao.CategoryDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;

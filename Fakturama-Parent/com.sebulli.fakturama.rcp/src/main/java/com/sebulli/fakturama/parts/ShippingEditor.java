@@ -51,7 +51,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.dao.CategoryDAO;
+import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -101,7 +101,7 @@ public class ShippingEditor extends Editor<Shipping> {
     protected IEventBroker evtBroker;
 
     @Inject
-    protected CategoryDAO shippingCategoriesDAO;
+    protected ShippingCategoriesDAO shippingCategoriesDAO;
     
     @Inject
     protected ILogger log;
