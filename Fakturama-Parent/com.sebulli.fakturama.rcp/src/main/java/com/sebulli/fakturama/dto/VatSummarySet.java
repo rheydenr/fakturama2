@@ -103,13 +103,13 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 	 * Round all items of the VatSummarySet
 	 */
 	public void roundAllEntries() {
-
-		MonetaryAmount netSum = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount vatSum = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount netSumOfRounded = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount vatSumOfRounded = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount netRoundedSum = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount vatRoundedSum = Money.of(Double.valueOf(0.0), currencyCode);
+	    MonetaryAmount zero = Money.of(Double.valueOf(0.0), currencyCode);
+		MonetaryAmount netSum = Money.from(zero);
+		MonetaryAmount vatSum = Money.from(zero);
+		MonetaryAmount netSumOfRounded = Money.from(zero);
+		MonetaryAmount vatSumOfRounded = Money.from(zero);
+		MonetaryAmount netRoundedSum = Money.from(zero);
+		MonetaryAmount vatRoundedSum = Money.from(zero);
 		int missingCents = 0;
 		Double oneCent;
 		Double roundingError;
@@ -190,59 +190,56 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 			}
 		}
 
-//		// Do the same with the vat entry
-//
-//		// Calculate the rounding error in cent
-//		roundingError = (vatRoundedSum - vatSumOfRounded) * 100.000001;
-//		missingCents = roundingError.intValue();
-//
-//		// Decrease or increase the entries
-//		if (missingCents >= 0) {
-//			searchForMaximum = true;
-//			oneCent = 0.01;
-//		}
-//		else {
-//			searchForMaximum = false;
-//			missingCents = -missingCents;
-//			oneCent = -0.01;
-//		}
-//
-//		// dispense the missing cents to those values with the maximum
-//		// rounding error.
-//		for (int i = 0; i < missingCents; i++) {
-//
-//			Double maxRoundingError = -oneCent;
-//			VatSummaryItem maxItem = null;
-//
-//			// Search for the item with the maximum error
-//			for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
-//				VatSummaryItem item = iterator.next();
-//
-//				// Search for maximum or minimum
-//				if (searchForMaximum) {
-//					// If found, mark it
-//					if (item.getVatRoundingError() > maxRoundingError) {
-//						maxRoundingError = item.getVatRoundingError();
-//						maxItem = item;
-//					}
-//				}
-//				else {
-//					// If found, mark it
-//					if (item.getVatRoundingError() < maxRoundingError) {
-//						maxRoundingError = item.getVatRoundingError();
-//						maxItem = item;
-//					}
-//				}
-//			}
-//
-//			// Correct the item by one cent
-//			if (maxItem != null) {
-//				maxItem.setVat(maxItem.getVat() + oneCent);
-//				maxItem.setVatRoundingError(maxItem.getVatRoundingError() - oneCent);
-//			}
-//
-//		}
+		// Do the same with the vat entry
 
+		// Calculate the rounding error in cent
+		roundingError = vatRoundedSum.subtract(vatSumOfRounded).getNumber().doubleValue() * 100.000001;
+		missingCents = roundingError.intValue();
+
+		// Decrease or increase the entries
+        if (missingCents >= 0) {
+            searchForMaximum = true;
+            oneCent = 0.01;
+        } else {
+            searchForMaximum = false;
+            missingCents = -missingCents;
+            oneCent = -0.01;
+        }
+        
+		// dispense the missing cents to those values with the maximum
+		// rounding error.
+		for (int i = 0; i < missingCents; i++) {
+
+			Double maxRoundingError = -oneCent;
+			VatSummaryItem maxItem = null;
+
+			// Search for the item with the maximum error
+			for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
+				VatSummaryItem item = iterator.next();
+
+				// Search for maximum or minimum
+				if (searchForMaximum) {
+					// If found, mark it
+					if (item.getVatRoundingError() > maxRoundingError) {
+						maxRoundingError = item.getVatRoundingError();
+						maxItem = item;
+					}
+				}
+				else {
+					// If found, mark it
+					if (item.getVatRoundingError() < maxRoundingError) {
+						maxRoundingError = item.getVatRoundingError();
+						maxItem = item;
+					}
+				}
+			}
+
+			// Correct the item by one cent
+			if (maxItem != null) {
+				maxItem.setVat(Money.of(maxItem.getVat().getNumber().doubleValue() + oneCent, maxItem.getVat().getCurrency()));
+				maxItem.setVatRoundingError(maxItem.getVatRoundingError() - oneCent);
+			}
+		}
 	}
 
 	/**

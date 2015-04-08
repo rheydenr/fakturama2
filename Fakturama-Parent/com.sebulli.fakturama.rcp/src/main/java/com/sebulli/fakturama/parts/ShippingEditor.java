@@ -107,8 +107,9 @@ public class ShippingEditor extends Editor<Shipping> {
     protected ILogger log;
 
     // Editor's ID
-    public static final String ID = "com.sebulli.fakturama.editors.shippingEditor";
     public static final String EDITOR_ID = "ShippingEditor";
+
+    public static final String ID = "com.sebulli.fakturama.editors.shippingEditor";
 
     // SWT widgets of the editor
     private Composite top;
@@ -394,17 +395,17 @@ public class ShippingEditor extends Editor<Shipping> {
                     VAT uds = (VAT) firstElement;
 
                     // Store the old value
-//                    Double oldVat = vat;
+                    Double oldVat = editorShipping.getShippingVat().getTaxValue();
 
                     // Get the new value
 //                    vatId = uds.getId();
                     vat = uds;
 
-//                    // Recalculate the price values if gross is selected,
-//                    // So the gross value will stay constant.
-//                    if (!useNet) {
-//                        net = new Double(editorShipping.getShippingValue() * ((1 + oldVat) / (1 + vat)));
-//                    }
+                    // Recalculate the price values if gross is selected,
+                    // So the gross value will stay constant.
+                    if (!useNet) {
+//                        net = new Double(editorShipping.getShippingValue() * ((1 + oldVat) / (1 + vat.getTaxValue())));
+                    }
 
                     // Update net and gross text widget
                     if (netText != null)

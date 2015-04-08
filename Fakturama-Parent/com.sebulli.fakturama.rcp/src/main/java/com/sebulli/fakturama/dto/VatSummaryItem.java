@@ -25,7 +25,7 @@ import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * This Class represents one entry in the VatSummarySet. It contains a net and
- * vat value and the vat name.
+ * VAT value and the VAT name.
  * 
  * @author Gerd Bartelt
  */
@@ -105,8 +105,8 @@ public class VatSummaryItem implements Comparable<Object> {
 	 *            The other VatSummaryItem
 	 */
 	public void add(VatSummaryItem other) {
-		this.net.add(other.net);
-		this.vat.add(other.vat);
+	    this.net = this.net.add(other.net);
+	    this.vat = this.vat.add(other.vat);
 	}
 
 	/**
@@ -249,10 +249,17 @@ public class VatSummaryItem implements Comparable<Object> {
 
 		// Then the vat name
 		int i = StringUtils.defaultString(this.vatName, "").compareTo(StringUtils.defaultString(other.vatName, ""));
-		if (i != 0)
+		if (i != 0) {
 			return i;
+		}
 
 		// Then the description
 		return this.description.compareToIgnoreCase(other.description);
 	}
+	
+    @Override
+    public String toString() {
+        return new StringBuilder("[Amount (net): ").append(net).append("; VAT: ")
+                .append(vat).append(" (").append(vatPercent*100).append("%) - ").append(StringUtils.defaultIfBlank(vatName, "(no name)")).append(']').toString();
+    }
 }

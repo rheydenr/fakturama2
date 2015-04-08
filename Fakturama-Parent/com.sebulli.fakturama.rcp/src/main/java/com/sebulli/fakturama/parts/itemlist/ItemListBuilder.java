@@ -37,6 +37,8 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -68,6 +70,8 @@ public class ItemListBuilder {
     protected NatTable natTable;
 
     public DocumentItemListTable build() {
+        
+        FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
         // Container for the label and the add and delete button.
         Composite addButtonComposite = new Composite(parent, SWT.NONE | SWT.RIGHT);
@@ -91,8 +95,8 @@ public class ItemListBuilder {
             // selected product as new item.
             public void mouseDown(MouseEvent e) {
 
-                //                T: Document Editor
-                //                T: Title of the dialog to select a product
+                // T: Document Editor
+                // T: Title of the dialog to select a product
                 // SelectProductDialog
                 MDialog dialog = (MDialog) modelService.find("fakturama.dialog.select.product", application);
                 dialog.setToBeRendered(true);
@@ -161,16 +165,14 @@ public class ItemListBuilder {
     //      if (itemEditingSupport != null)
     //          itemEditingSupport.cancelAndSave();
     //      
+            DocumentItem item = modelFactory.createDocumentItem();
           //T: Text of a new item
-          DocumentItemDTO newItem = new DocumentItemDTO(new DocumentItem());
-    //        msg.commonFieldName, 
-    //                //T: Text of a new item
-    //                msg.productFieldItemno, "", documentType.getSign() * 1.0, "", 0.0, 0, "", "");
-    ////
-    //      // Use the standard VAT value
+            item.setName(msg.commonFieldName);
+            item.setItemNumber(msg.productFieldItemno);
+
+          // Use the standard VAT value
     //      newItem.setVat(Integer.parseInt(Data.INSTANCE.getProperty("standardvat")));
-    //      addNewItem(newItem);
-    //
+          DocumentItemDTO newItem = new DocumentItemDTO(item);
             itemListTable.addNewItem(newItem);
     
     //      tableViewerItems.refresh();

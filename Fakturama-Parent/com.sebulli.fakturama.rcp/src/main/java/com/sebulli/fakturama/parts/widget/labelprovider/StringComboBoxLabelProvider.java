@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.parts.widget.labelprovider;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -21,7 +22,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 
 /**
- *
+ * This {@link LabelProvider} shows a String value which is mapped to a String
+ * key. If the element list contains {@link Locale} objects or the given element
+ * is <code>null</code> then the current country is displayed (according to
+ * defaultLocale).
  */
 public class StringComboBoxLabelProvider extends LabelProvider {
 

@@ -69,11 +69,15 @@ import com.sebulli.fakturama.model.IEntity;
 /**
  * Parent class for all editors
  * 
- * @author Gerd Bartelt
  */
 public abstract class Editor<T extends IEntity> {
 	
-	@Inject
+    /**
+     * Indicates if a widget is in "calculating" state, i.e. if modification occurs and dirty state has to be set.
+     */
+	protected static final String CALCULATING_STATE = "calculating";
+
+    @Inject
 	@Preference
 	protected IEclipsePreferences defaultValuePrefs;
 	
@@ -566,7 +570,15 @@ public abstract class Editor<T extends IEntity> {
         source.getControl().addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                getMDirtyablePart().setDirty(true);
+                /*
+                 * If the widget is in "calculating" state we don't have to 
+                 * update the dirty state, because this leads to a dirty editor
+                 * as soon as it opens. The "calculating" state is set immediately 
+                 * before and after the calculation which influences this widget.
+                 */
+                if(((Text)e.getSource()).getData(CALCULATING_STATE) == null) {
+                    getMDirtyablePart().setDirty(true);
+                }
             }
         });
          
@@ -588,6 +600,13 @@ public abstract class Editor<T extends IEntity> {
     }
 
 	/**
+     * @return the ctx
+     */
+    public DataBindingContext getCtx() {
+        return ctx;
+    }
+
+    /**
 	 * Jump to the next control, if in a multi-line text control the tab key is
 	 * pressed. Normally the tab won't jump to the next control, if the current
 	 * one is a text control. It will insert a tabulator.

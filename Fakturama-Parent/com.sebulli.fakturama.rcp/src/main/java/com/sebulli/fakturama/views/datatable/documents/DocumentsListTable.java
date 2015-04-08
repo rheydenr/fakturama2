@@ -127,6 +127,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     public static final String ID = "fakturama.views.documentTable";     
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.document.popup";
+    
     /**
      * Event Broker for receiving update events to the list table
      */
@@ -487,7 +488,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     public void changeToolbarItem(TreeObject treeObject) {
         MToolBar toolbar = listTablePart.getToolbar();
         for (MToolBarElement tbElem : toolbar.getChildren()) {
-            if (tbElem.getElementId().contentEquals("com.sebulli.fakturama.listview.document.add")) {
+            if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
                 HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
                 ParameterizedCommand wbCommand = toolItem.getWbCommand();
                 @SuppressWarnings("unchecked")
@@ -528,14 +529,14 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // appropriate commands.
         listTablePart.getMenus()
                 .stream()
-                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .filter(menu -> menu.getElementId().contentEquals(POPUP_ID))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("orderActive"))
                                 .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.ORDER
                                 || selectedObjectType == BillingType.ORDER)));
         listTablePart.getMenus()
                 .stream()
-                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .filter(menu -> menu.getElementId().contentEquals(POPUP_ID))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("deliveryActive"))
                                 .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.DELIVERY
@@ -545,7 +546,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 || DocumentType.findByKey(selectedObjectType.getValue()).canBePaid();
         listTablePart.getMenus()
                 .stream()
-                .filter(menu -> menu.getElementId().contentEquals("com.sebulli.fakturama.document.popup"))
+                .filter(menu -> menu.getElementId().contentEquals(POPUP_ID))
                 .forEach(
                         popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("canBePaidActive"))
                                 .forEach(foundEntry -> foundEntry.setVisible(canBePaid)));

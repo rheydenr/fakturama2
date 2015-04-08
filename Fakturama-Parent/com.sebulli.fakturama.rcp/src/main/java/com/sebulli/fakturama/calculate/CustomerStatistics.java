@@ -14,8 +14,12 @@
 
 package com.sebulli.fakturama.calculate;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -88,14 +92,10 @@ public class CustomerStatistics {
 	 * 		contactID of the customer
 	 */
 	public CustomerStatistics (Contact contact) {
-		
-		// Exit, if no customer is set
-		if (contact == null)
-			return;
-		
-		this.contact = contact;
-		makeStatistics(true);
-
+		if (contact != null) {
+    		this.contact = contact;
+    		makeStatistics(true);
+		}
 	}
 	
 	/**
@@ -107,11 +107,9 @@ public class CustomerStatistics {
 	 * 		firstAddressLine of the customer
 	 */
 	public CustomerStatistics (Contact contact, String address) {
-		
 		this.contact = contact;
 		this.address = address;
 		makeStatistics(false);
-
 	}
 	
 
@@ -119,27 +117,35 @@ public class CustomerStatistics {
 	 * Make the Statistics. Search for other documents from this customer
 	 * 
 	 * @param 
-	 * 		byID TRUE:  Compare contact ID
-	 * 		     FLASE: Compare also first line of address
+	 * 		byID <code>true</code>:  Compare contact ID <br />
+	 * 		     <code>false</code>: Compare also first line of address
 	 */
 	public void makeStatistics(boolean byID) {
 		// Get all undeleted documents
 		// Only paid invoiced from this customer will be used for the statistics
-		List<Invoice> documents = documentsDAO.findPaidInvoices();
+		List<Invoice> documents;
+		if(byID) {
+			// Compare the customer ID
+		    documents = documentsDAO.findPaidInvoicesForContact(contact);
+		} else {
+		    documents = documentsDAO.findPaidInvoices();
+		}
+		
+        ContactUtil contactUtil = ContactUtil.getInstance(preferences);
 
 		// Export the document data
 		for (Invoice document : documents) {
 
 			boolean customerFound = false;
 
-			// Compare the customer ID
-			if (contact != null && document.getContact().isSameAs(contact)) {
+			if (byID) {
+			    // in this case we found the document through documentsDAO, therefore it's always true
 				customerFound = true;
 			}
 			
 			// Compare the the address
-			if (!byID && (address.length() > 10) && 
-				DataUtils.getInstance().similarity(ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()), address) > 0.7) {
+            if (!byID && address.length() > 10 && 
+				DataUtils.getInstance().similarity(contactUtil.getAddressAsString(document.getContact()), address) > 0.7) {
 				customerFound = true;
 			}
 			
@@ -158,7 +164,6 @@ public class CustomerStatistics {
 					invoices += ", ...";
 				}
 				
-				
 				// Increment the count of orders
 				ordersCount ++;
 				
@@ -168,12 +173,8 @@ public class CustomerStatistics {
 				// Get the date of the document and convert it to a
 				// GregorianCalendar object.
 				GregorianCalendar documentDate = new GregorianCalendar();
-//					DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-                Date expenditureDateString = null;
-
                 // Use date 
-                expenditureDateString = document.getOrderDate();
+                Date expenditureDateString = document.getOrderDate();
 
                 // Do only parse non empty strings
                 if (expenditureDateString != null) {
@@ -192,12 +193,12 @@ public class CustomerStatistics {
 	}
 	
 	/**
-	 * Returns whether the customer has already ordered something
+	 * Returns whether the customer has already paid invoices
 	 * 
 	 * @return
-	 * 		True, if there are some paid invoices
+	 * 		<code>true</code> if there are some paid invoices
 	 */
-	public boolean isRegularCustomer() {
+	public boolean hasPaidInvoices() {
 		return isRegularCustomer;
 	}
 	
@@ -229,8 +230,10 @@ public class CustomerStatistics {
 	 */
 	public String getLastOrderDate() {
 		if (lastOrderDate != null) {
-		    LocalDate date = LocalDate.from(lastOrderDate.toInstant());
-		    return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+		    Instant instant = lastOrderDate.toInstant();
+		    LocalDate date = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
+//		    LocalDate date = LocalDate.from(lastOrderDate.toInstant());
+		    return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
 			// DataUtils.getInstance().getDateTimeAsLocalString((GregorianCalendar) lastOrderDate);
 		} else {
 			return "-";

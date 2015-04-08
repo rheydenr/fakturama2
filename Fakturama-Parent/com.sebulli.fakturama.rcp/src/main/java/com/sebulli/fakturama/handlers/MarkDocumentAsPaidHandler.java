@@ -91,6 +91,7 @@ public class MarkDocumentAsPaidHandler {
         AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
         Document[] selectedObjects = (Document[]) currentListtable.getSelectedObjects();
         if (selectedObjects != null) {
+            // TODO DO THIS IN DAO!!!
             for (int i = 0; i < selectedObjects.length; i++) {
                 // If we had a selection let change the state
                 Document document = selectedObjects[i];

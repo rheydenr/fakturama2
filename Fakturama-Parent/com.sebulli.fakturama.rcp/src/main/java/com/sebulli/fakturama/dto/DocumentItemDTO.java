@@ -60,7 +60,7 @@ public class DocumentItemDTO implements IEntity {
 
     @Override
     public void setName(String newName) {
-        throw new UnsupportedOperationException("object is only a wrapper object!");
+        documentItem.setName(newName);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DocumentItemDTO implements IEntity {
 
     @Override
     public void setDateAdded(Date newDateAdded) {
-        throw new UnsupportedOperationException("object is only a wrapper object!");
+        documentItem.setDateAdded(newDateAdded);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DocumentItemDTO implements IEntity {
 
     @Override
     public void setModifiedBy(String newModifiedBy) {
-        throw new UnsupportedOperationException("object is only a wrapper object!");
+        documentItem.setModifiedBy(newModifiedBy);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class DocumentItemDTO implements IEntity {
 
     @Override
     public long getId() {
-        return 0;
+        return documentItem.getId();
     }
 
     @Override
@@ -110,6 +110,6 @@ public class DocumentItemDTO implements IEntity {
 
     @Override
     public void setDeleted(Boolean newDeleted) {
-        throw new UnsupportedOperationException("object is only a wrapper object!");
+        documentItem.setDeleted(newDeleted);
     }
 }

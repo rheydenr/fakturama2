@@ -675,8 +675,7 @@ public class MigrationManager {
                     Payment newPayment = paymentsDAO.findById(paymentId);
     				document.setPayment(newPayment);
 				}
-				document.setPaidValue(oldDocument.getPayvalue());
-				document.setTotalValue(oldDocument.getTotal());
+				document.setTotalValue(roundValue(oldDocument.getTotal()));
 				document.setTransactionId(new Long(oldDocument.getTransaction()));
 				document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
 				document.setWebshopId(oldDocument.getWebshopid());

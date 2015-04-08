@@ -29,7 +29,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.ExpenditureItem;
 
 /**
- * Price class
+ * Price class.
  * 
  * Calculate gross values from net values. Rounding of all values.
  * 
@@ -181,11 +181,12 @@ public class Price {
 	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross) {
 
 		// if noVat is set, the vat value is set to 0.0
-		if (noVat)
-			this.vatPercent = Double.valueOf(0.0);
-		else
-			this.vatPercent = vatPercent;
-
+        if (noVat) {
+            this.vatPercent = Double.valueOf(0.0);
+        } else {
+            this.vatPercent = vatPercent;
+        }
+		
 		this.quantity = quantity;
 		this.unitPrice = unitPrice;
 		this.discount = discount;
@@ -198,7 +199,7 @@ public class Price {
 	 * Calculate the price and round all values
 	 * 
 	 * @param asGross
-	 *            true, if price is a gross value
+	 *            <code>true</code> if price is a gross value
 	 */
 	private void calculate(boolean asGross) {
          CurrencyUnit currencyUnit = getDataUtils().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
@@ -277,7 +278,7 @@ public class Price {
 	 * @return VAT as formated string
 	 */
 	public String getVatPercent() {
-		return DataUtils.getInstance().DoubleToFormatedPercent(vatPercent);
+		return getDataUtils().DoubleToFormatedPercent(vatPercent);
 	}
 
 	/**

@@ -296,22 +296,24 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      */
     public void changeToolbarItem(TreeObject treeObject) {
         MToolBar toolbar = getMToolBar();
-        for (MToolBarElement tbElem : toolbar.getChildren()) {
-            if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
-                HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
-                ParameterizedCommand wbCommand = toolItem.getWbCommand();
-                @SuppressWarnings("unchecked")
-                Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
-                parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
-                if (wbCommand != null) {
-                    wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
-                } else {
-                    // during the initialization phase the command is null, therefore we have to create a 
-                    // new command
-                    parameterMap.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
-                    wbCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, parameterMap);
+        if(toolbar != null) {
+            for (MToolBarElement tbElem : toolbar.getChildren()) {
+                if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
+                    HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
+                    ParameterizedCommand wbCommand = toolItem.getWbCommand();
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
+                    parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
+                    if (wbCommand != null) {
+                        wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
+                    } else {
+                        // during the initialization phase the command is null, therefore we have to create a 
+                        // new command
+                        parameterMap.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
+                        wbCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, parameterMap);
+                    }
+                    toolItem.setWbCommand(wbCommand);
                 }
-                toolItem.setWbCommand(wbCommand);
             }
         }
     }
@@ -547,6 +549,13 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //	}
 
 	/**
+     * @return the natTable
+     */
+    public NatTable getNatTable() {
+        return natTable;
+    }
+
+    /**
 	 * Set the category filter
 	 * 
 	 * @param filter

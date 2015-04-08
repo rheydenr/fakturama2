@@ -28,6 +28,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Confirmation;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
@@ -260,6 +261,11 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         return retList;
     }
 
+    /**
+     * Finds all paid {@link Invoice}s.
+     * 
+     * @return List of paid {@link Invoice}s
+     */
     public List<Invoice> findPaidInvoices() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
@@ -267,6 +273,24 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         CriteriaQuery<Invoice> cq = criteria.where(cb.equal(root.<Boolean>get(Invoice_.paid), true));
         return getEntityManager().createQuery(cq).getResultList();
     }
+
+    /**
+     * Finds all paid {@link Invoice}s by a given {@link Contact}.
+     * 
+     * @param contact the {@link Contact} to look up
+     * @return List of paid {@link Invoice}s
+     */
+    public List<Invoice> findPaidInvoicesForContact(Contact contact) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
+        Root<Invoice> root = criteria.from(Invoice.class);
+        CriteriaQuery<Invoice> cq = criteria.where(
+                cb.and(
+                        cb.equal(root.<Boolean>get(Invoice_.paid), true),
+                        cb.equal(root.<Contact>get(Invoice_.contact), contact))
+                      );
+        return getEntityManager().createQuery(cq).getResultList();
+    }    
 
     /**
      * Update Dunnings which are related to a certain invoice.
@@ -311,6 +335,93 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                        )
                 );
         return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    /**
+     * Update the invoice references in all documents within the same transaction.
+     * 
+     * @param document
+     */
+    public void updateInvoiceReferences(Invoice document) {
+/*
+            Transaction trans = new Transaction(document);
+            List<DataSetDocument> docs = trans.getDocuments();
+            for (DataSetDocument doc : docs) {
+                if(doc.getIntValueByKey("invoiceid") < 0) {
+                    doc.setIntValueByKey("invoiceid", documentId );
+                    Data.INSTANCE.updateDataSet(doc);
+                }
+            }
+ */
+        // update documents set fk_invoiceref = document where fk_invoiceref = null and transactionid = ?
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Document> criteria = cb.createCriteriaUpdate(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        criteria
+            .set(Document_.invoiceReference, document)
+            .where(
+                    cb.and(
+                            cb.isNull(root.get(Document_.invoiceReference)),
+                            cb.equal(root.get(Document_.transactionId), document.getTransactionId())
+                  ))
+            ;
+        getEntityManager().createQuery(criteria).executeUpdate();
+    }
+
+    /**
+     * Updates the {@link Delivery} entities that are contained in the given document (as part of
+     * a collecting invoice). Update contains setting the invoice reference and merging the transactions 
+     * (if needed). 
+     * 
+     * @param importedDeliveryNotes List of {@link Delivery} IDs 
+     * @param document {@link Invoice} document
+     */
+    public void updateDeliveries(List<Long> importedDeliveryNotes, Invoice document) {
+/*        for (Long importedDeliveryNote : importedDeliveryNotes) {
+            if (importedDeliveryNote >= 0) {
+                DataSetDocument deliveryNote = Data.INSTANCE.getDocuments().getDatasetById(importedDeliveryNote);
+                deliveryNote.setIntValueByKey("invoiceid", documentId );
+                Data.INSTANCE.updateDataSet(deliveryNote);
+                
+                // Change also the transaction id of the imported delivery note
+                Transaction.mergeTwoTransactions(document, deliveryNote);
+            }
+        }
+*/    
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Delivery> criteria = cb.createCriteriaUpdate(Delivery.class);
+        Root<Delivery> root = criteria.from(Delivery.class);
+        criteria.set(Delivery_.invoiceReference, document).where(root.get(Delivery_.id).in(importedDeliveryNotes));
+        getEntityManager().createQuery(criteria).executeUpdate();
+        mergeTwoTransactions(document, importedDeliveryNotes);
+    }
+ 
+    /**
+     * Merge 2 transactions into one single
+     * 
+     * @param mainDocument the main {@link Document}
+     * @param otherDocument the {@link Document} which gets the id of the main {@link Document}
+     */
+    public void mergeTwoTransactions(Document mainDocument, Document otherDocument) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Document> criteria = cb.createCriteriaUpdate(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(cb.equal(root.get(Document_.id), otherDocument.getId()));
+        getEntityManager().createQuery(criteria).executeUpdate();        
+    }    
+ 
+    /**
+     * Merge 2 transactions into one single for a given List of {@link Document}s.
+     * 
+     * @param mainDocument the main {@link Document}
+     * @param otherDocument the list of {@link Document}s which gets the id of the main {@link Document}
+     */
+    public void mergeTwoTransactions(Document mainDocument, List<Long> importedDeliveryNotes) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Document> criteria = cb.createCriteriaUpdate(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(root.get(Document_.id).in(importedDeliveryNotes));
+        getEntityManager().createQuery(criteria).executeUpdate();        
     }
     
 }

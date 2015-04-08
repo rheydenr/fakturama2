@@ -16,6 +16,9 @@ package com.sebulli.fakturama.util;
 
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 
 /**
  * Helper for {@link DocumentType}
@@ -64,5 +67,41 @@ public class DocumentTypeUtil {
             break;
         }
         return retval;
+    }
+
+    public static Document createDocumentByType(DocumentType documentType) {
+        FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
+        Document document = null;
+        // create a new data set with this document type
+        switch (documentType) {
+        case INVOICE:
+            document = modelFactory.createInvoice();
+            break;
+        case PROFORMA:
+            document = modelFactory.createProforma();
+            break;
+        case DUNNING:
+            document = modelFactory.createDunning();
+            break;
+        case DELIVERY:
+            document = modelFactory.createDelivery();
+            break;
+        case OFFER:
+            document = modelFactory.createOffer();
+            break;
+        case ORDER:
+            document = modelFactory.createOrder();
+            break;
+        case CONFIRMATION:
+            document = modelFactory.createConfirmation();
+            break;
+        case CREDIT:
+            document = modelFactory.createCredit();
+            break;
+        default:
+            document = modelFactory.createOrder();
+            break;
+        }
+        return document;
     }
 }

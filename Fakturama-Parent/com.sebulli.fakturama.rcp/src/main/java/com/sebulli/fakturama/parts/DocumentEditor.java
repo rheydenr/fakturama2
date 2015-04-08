@@ -33,6 +33,7 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -61,7 +62,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -72,6 +72,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -89,7 +91,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
 
@@ -171,6 +172,9 @@ public class DocumentEditor extends Editor<Document> {
     @Inject
     private EModelService modelService;
     
+//    @Inject
+//    private ESelectionService selectionService;
+    
     @Inject
     private MApplication application;
     
@@ -215,7 +219,7 @@ public class DocumentEditor extends Editor<Document> {
     /**
      * the model factory
      */
-    private FakturamaModelFactory modelFactory;
+    private final FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
 	// SWT components of the editor
 	private Composite top;
@@ -229,7 +233,7 @@ public class DocumentEditor extends Editor<Document> {
 	private ComboViewer comboViewerNoVat;
 	private ComboViewer comboNetGross;
 	private Text txtInvoiceRef;
-	private TableViewer tableViewerItems;
+//	private TableViewer tableViewerItems;
 	private Text txtMessage;
 	private Text txtMessage2;
 	private Text txtMessage3;
@@ -268,7 +272,7 @@ public class DocumentEditor extends Editor<Document> {
 //	private String noVatDescription;
 	private Payment payment;
 	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
-	private int shippingId;
+//	private int shippingId;
 	private Shipping shipping = null;
 //	private VAT shippingVat = null;
 //	private String shippingVatDescription = "";
@@ -282,9 +286,6 @@ public class DocumentEditor extends Editor<Document> {
 	private String deliveryAddress = "";
 //	private DocumentEditor thisDocumentEditor;
 	private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
-	
-	// Flag, if item editing is active
-//	private DocumentItemEditingSupport itemEditingSupport = null;
 
 	// Action to print this document's content.
 	// Print means: Export the document in an OpenOffice document
@@ -307,6 +308,7 @@ public class DocumentEditor extends Editor<Document> {
     private ProductUtil productUtil;
     private DocumentItemListTable itemListTable;
     private CurrencyUnit currencyUnit;
+    private DocumentSummary documentSummary;
 	
 //	/**
 //	 * Constructor
@@ -337,7 +339,6 @@ public class DocumentEditor extends Editor<Document> {
 		document.setPrinted(Boolean.TRUE);
 		// Refresh the table view
 		//refreshView();
-
 	}
 	
 	/**
@@ -366,8 +367,8 @@ public class DocumentEditor extends Editor<Document> {
 //		// Cancel the item editing
 //		if (itemEditingSupport != null)
 //			itemEditingSupport.cancelAndSave();
-//
-//		boolean wasDirty = getMDirtyablePart().isDirty();
+
+		boolean wasDirty = getMDirtyablePart().isDirty();
 
 		if (newDocument) {
 			// Check if the document number is the next one
@@ -377,19 +378,17 @@ public class DocumentEditor extends Editor<Document> {
 				// It's not the next free ID
 				if (result == ERROR_NOT_NEXT_ID) {
 					// Display an error message
-					MessageBox messageBox = new MessageBox(top.getShell(), SWT.ICON_ERROR | SWT.OK);
+					MessageDialog.openError(top.getShell(),
 
 					//T: Title of the dialog that appears if the document number is not valid.
-					messageBox.setText(msg.editorDocumentErrorDocnumberTitle);
+					msg.editorDocumentErrorDocnumberTitle,
 					
 					//T: Text of the dialog that appears if the customer number is not valid.
-					messageBox.setMessage(msg.editorDocumentErrorDocnumberNotnextfree + " " + getNextNr() + "\n" + 
-							//T: Text of the dialog that appears if the number is not valid.
-							msg.editorContactHintSeepreferences);
-					messageBox.open();
+					msg.editorDocumentErrorDocnumberNotnextfree + " " + getNextNr() + "\n" + 
+					//T: Text of the dialog that appears if the number is not valid.
+					msg.editorContactHintSeepreferences);
 				}
 			}
-
 		}
 
 		// Exit save if there is a document with the same number
@@ -403,116 +402,120 @@ public class DocumentEditor extends Editor<Document> {
 		document.setBillingType(BillingType.get(documentType.getKey()));
 
 		// If this is an order, use the date as order date
-		if (documentType == DocumentType.ORDER)
+		if (documentType == DocumentType.ORDER) {
 			document.setOrderDate(dtDate.getSelection());
-		else
+		} else {
 			document.setOrderDate(dtOrderDate.getSelection());
+		}
 
-//		document.setIntValueByKey("addressid", addressId);
-		String addressById = "";
+	      String addressById = "";
 
 		// Test, if the txtAddress field was modified
 		// and write the content of the txtAddress to the documents address or
 		// delivery address
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
-//		if (documentType == DocumentType.DELIVERY) {
-//			if (!DataUtils.MultiLineStringsAreEqual(document.getStringValueByKey("deliveryaddress"), txtAddress.getText()))
-//				addressModified = true;
-//			document.setStringValueByKey("deliveryaddress", DataUtils.removeCR(txtAddress.getText()));
-//
-//			// Use the delivery address, if the billing address is empty
-//			if (billingAddress.isEmpty())
-//				billingAddress = DataUtils.removeCR(txtAddress.getText());
-//			document.setStringValueByKey("address", billingAddress);
-//
-//			if (addressId >= 0)
-//				addressById = Data.INSTANCE.getContacts().getDatasetById(addressId).getAddress(true);
-//		}
-//		else {
-//			if (!document.getStringValueByKey("address").equals(txtAddress.getText()))
-//				addressModified = true;
-//			document.setStringValueByKey("address", DataUtils.removeCR(txtAddress.getText()));
-//
-//			// Use the billing address, if the delivery address is empty
-//			if (deliveryAddress.isEmpty())
-//				deliveryAddress = DataUtils.removeCR(txtAddress.getText());
-//			
-//			document.setStringValueByKey("deliveryaddress", deliveryAddress);
-//
-//			if (addressId >= 0)
-//				addressById = Data.INSTANCE.getContacts().getDatasetById(addressId).getAddress(false);
-//		}
-//
-//		// Show a warning, if the entered address is not similar to the address
-//		// of the document, set by the address ID.
-//		if ((addressId >= 0) && (addressModified)) {
-//			if (DataUtils.similarity(addressById, DataUtils.removeCR(txtAddress.getText())) < 0.75) {
-//				MessageBox messageBox = new MessageBox(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.ICON_WARNING | SWT.OK);
-//
-//				//T: Title of the dialog that appears if the document is assigned to  an other address.
-//				messageBox.setText(_("Please verify"));
-//				
-//				//T: Text of the dialog that appears if the document is assigned to  an other address.
-//				messageBox.setMessage(_("This document is assiged to the contact:") + "\n\n" + addressById + "\n\n" + 
-//						//T: Text of the dialog that appears if the document is assigned to  an other address.
-//						_("You have entered a different one."));
-//				messageBox.open();
-//			}
-//		}
-//
-//		// Set the payment values depending on if the document is paid or not
-//		// Set the shipping values
-//		if (comboPayment != null) {
+		ContactUtil contactUtil = ContactUtil.getInstance(preferences);
+		if (documentType == DocumentType.DELIVERY) {
+            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
+				addressModified = true;
+			}
+			document.getAdditionalInfo().setDeliveryAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+
+			// Use the delivery address if the billing address is empty
+			if (billingAddress.isEmpty()) {
+				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
+			}
+//			document.getAdditionalInfo().setManualAddress(billingAddress);
+			document.setManualAddress(billingAddress);
+
+			if (addressId != null) {
+				addressById = contactUtil.getAddressAsString(document.getContact());
+			}
+		}  // TODO check if this is correct (use of delivery / billing address compared to old code)
+		else {
+			if (!contactUtil.getAddressAsString(document.getContact()).equals(txtAddress.getText())) {
+				addressModified = true;
+			}
+//			document.getAdditionalInfo().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+			document.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+
+			// Use the billing address if the delivery address is empty
+			if (deliveryAddress.isEmpty()) {
+				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
+			}
+//			document.getAdditionalInfo().setDeliveryAddress(deliveryAddress);
+			document.setManualDeliveryAddress(deliveryAddress);
+
+			if (addressId != null) {
+				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
+			}
+		}
+
+		// Show a warning, if the entered address is not similar to the address
+		// of the document, set by the address ID.
+		if ((addressId != null) && (addressModified)) {
+			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
+				MessageDialog.openWarning(top.getShell(),
+
+				//T: Title of the dialog that appears if the document is assigned to  an other address.
+				msg.editorDocumentErrorWrongcontactTitle,
+				
+				//T: Text of the dialog that appears if the document is assigned to  an other address.
+				msg.editorDocumentErrorWrongcontactMsg1 + "\n\n" + addressById + "\n\n" + 
+				msg.editorDocumentErrorWrongcontactMsg2);
+			}
+		}
+
+		// Set the payment values depending on if the document is paid or not
+		if (comboPayment != null) {
+		    // this is done by databinding
 //			document.setStringValueByKey("paymentdescription", comboPayment.getText());
-//		}
-//		// If this document contains no payment widgets, but..
-//		else {
-//			// the customer changed and so there is a new payment. Set it.
-//			if (!newPaymentDescription.isEmpty()) {
-//				document.setStringValueByKey("paymentdescription", newPaymentDescription);
-//			}
-//
-//		}
+		}
+		// If this document contains no payment widgets, but..
+		else {
+			// the customer changed and so there is a new payment. Set it.
+			if (!newPaymentDescription.isEmpty()) {
+				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
+			}
+		}
 
 		if (bPaid != null) {
 			String paymentText = "";
 
-			if (bPaid.getSelection()) {
-				document.setPaid(Boolean.TRUE);
-				document.setPayDate(dtPaidDate.getSelection());
-				document.setPaidValue(paidValue.getNumber().doubleValue());
-				deposit = Money.of(Double.valueOf(0.0), currencyUnit);
-				if(paidValue.isLessThan(total)){
-					deposit = paidValue;
-					document.setDeposit(Boolean.TRUE);
-					document.setPaid(Boolean.FALSE);
-				}
-				if(documentType == DocumentType.INVOICE) {
-					// update dunnings
-					updateDunnings();
-				}
+            if (bPaid.getSelection()) {
+                document.setPaid(Boolean.TRUE);
+                //				document.setPayDate(dtPaidDate.getSelection());   // done by databinding
+                //				document.setPaidValue(paidValue.getNumber().doubleValue());   // done by databinding
+                deposit = Money.of(Double.valueOf(0.0), currencyUnit);
+                if (paidValue.isLessThan(total)) {
+                    deposit = paidValue;
+                    document.setDeposit(Boolean.TRUE);
+                    document.setPaid(Boolean.FALSE);
+                }
+                if (documentType == DocumentType.INVOICE) {
+                    // update dunnings
+                    updateDunnings();
+                }
 
                 // Use the text for "paid" from the current payment
                 if (document.getPayment() != null) {
                     if (document.getPaid()) {
                         paymentText = document.getPayment().getPaidText();
-                    }
-                    else if (document.getDeposit()) {
+                    } else if (document.getDeposit()) {
                         paymentText = document.getPayment().getDepositText();
                     }
                 }
-			}
-			else {
-			    document.setPaid(Boolean.FALSE);
-				document.setPaidValue(Double.valueOf(0.0));
-				document.setDeposit(Boolean.FALSE);
+            } else {
+                document.setPaid(Boolean.FALSE);
+                document.setPaidValue(Double.valueOf(0.0));
+                document.setDeposit(Boolean.FALSE);
 
-				// Use the text for "unpaid" from the current payment
-				if (document.getPayment() != null) {
-					paymentText = document.getPayment().getUnpaidText();
-				}
-			}
+                // Use the text for "unpaid" from the current payment
+                if (document.getPayment() != null) {
+                    paymentText = document.getPayment().getUnpaidText();
+                }
+            }
 			document.setDueDays(duedays);
 			document.getAdditionalInfo().setPaymentText(paymentText);
 		}
@@ -531,8 +534,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 
-//
-//		// Set the shipping values
+//		// Set the shipping values     // done by databinding
 //		if (comboShipping != null) {
 //			document.setStringValueByKey("shippingdescription", comboShipping.getText());
 //		}
@@ -556,47 +558,34 @@ public class DocumentEditor extends Editor<Document> {
 //		document.setBooleanValueByKey("novat", noVat);
 //		document.setStringValueByKey("novatname", noVatName);
 //		document.setStringValueByKey("novatdescription", noVatDescription);
-//		
-//		// Set the dunning level
-//		document.setIntValueByKey("dunninglevel", dunningLevel);
-//
-//		// Create a new document ID, if this is a new document
-//		int documentId = document.getIntValueByKey("id");
-//		if (newDocument) {
-//			documentId = Data.INSTANCE.getDocuments().getNextFreeId();
-//		}
-//		
-//		// Update the invoice references in all documents within the same transaction
-//		if(documentType.equals(DocumentType.INVOICE)) {
-//			Transaction trans = new Transaction(document);
-//			List<DataSetDocument> docs = trans.getDocuments();
-//			for (DataSetDocument doc : docs) {
-//				if(doc.getIntValueByKey("invoiceid") < 0) {
-//			        doc.setIntValueByKey("invoiceid", documentId );
-//			        Data.INSTANCE.updateDataSet(doc);
-//				}
-//	        }
-//		}
-//		
-//
-//		// Update the references in the delivery notes
-//		for (Integer importedDeliveryNote : importedDeliveryNotes) {
-//			if (importedDeliveryNote >= 0) {
-//				DataSetDocument deliveryNote = Data.INSTANCE.getDocuments().getDatasetById(importedDeliveryNote);
-//				deliveryNote.setIntValueByKey("invoiceid", documentId );
-//				Data.INSTANCE.updateDataSet(deliveryNote);
-//				
-//				// Change also the transaction id of the imported delivery note
-//				Transaction.mergeTwoTransactions(document, deliveryNote);
-//
-//			}
-//				
-//		}
-//		importedDeliveryNotes.clear();
+		
+		// Set the dunning level
+		if(documentType == DocumentType.DUNNING) {
+		    ((Dunning)document).setDunningLevel(dunningLevel);
+		}
+
+		// Create a new document ID, if this is a new document
+		if (newDocument) {
+		    try {
+                document = documentsDAO.save(document);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+		}
+//		long documentId = document.getId();
+		
+		// Update the invoice references in all documents within the same transaction
+		if(documentType.equals(DocumentType.INVOICE)) {
+		    documentsDAO.updateInvoiceReferences((Invoice) document);
+		
+		// Update the references in the delivery notes
+		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
+		}
+		importedDeliveryNotes.clear();
 //		
 //		// Set all the items
 //		ArrayList<DataSetItem> itemDatasets = items.getActiveDatasets();
-//		String itemsString = "";
 //
 //		for (DataSetItem itemDataset : itemDatasets) {
 //
@@ -630,7 +619,7 @@ public class DocumentEditor extends Editor<Document> {
 //
 //				// If the item was modified and was shared with other documents,
 //				// than we should make a copy and save it new.
-//				// We also save it, if it was a new item with no owner yet,
+//				// We also save it if it was a new item with no owner yet,
 //				saveNewItem = ((owner < 0) || (modified && ((owner != document.getIntValueByKey("id")) || item.getBooleanValueByKey("shared"))));
 //			}
 //			else {
@@ -640,10 +629,9 @@ public class DocumentEditor extends Editor<Document> {
 //
 //			// Create a new item
 //			// The owner of this new item is the document from this editor.
-//			// And because it's new, it is not shared with other documents.
+//			// And because it's new it is not shared with other documents.
 //			if (saveNewItem) {
 //				itemDataset.setIntValueByKey("owner", documentId);
-//				itemDataset.setBooleanValueByKey("shared", false);
 //				DataSetItem itemDatasetTemp = Data.INSTANCE.getItems().addNewDataSet(new DataSetItem(itemDataset));
 //				id = itemDatasetTemp.getIntValueByKey("id");
 //				itemDataset.setIntValueByKey("id", id);
@@ -669,35 +657,30 @@ public class DocumentEditor extends Editor<Document> {
 //				Data.INSTANCE.getItems().updateDataSet(item);
 //			}
 //
-//			// Collect all item IDs in a sting and separate them by a comma
-//			if (itemsString.length() > 0)
-//				itemsString += ",";
-//			itemsString += Integer.toString(id);
-//		}
-//		// Set the string value
 //		document.setStringValueByKey("items", itemsString);
 //
-//		// Set the "addressfirstline" value to the first line of the
-//		// contact address
-//		if (addressId >= 0) {
-//			document.setStringValueByKey("addressfirstline", Data.INSTANCE.getContacts().getDatasetById(addressId).getNameWithCompany(false));
-//		}
-//		else {
-//			String s = DataUtils.removeCR(txtAddress.getText());
-//			
-//			// Remove the "\n" if it was a "\n" as line break.
-//			s = s.split("\n")[0];
-//			
-//			document.setStringValueByKey("addressfirstline", s);
-//		}
-//
-//		// Mark the (modified) document as "not printed"
-//		if (wasDirty)
-//			document.setBooleanValueByKey("printed", false);
-//
-//		// If it is a new document,
-//		if (newDocument) {
-//
+		// Set the "addressfirstline" value to the first line of the
+		// contact address
+		if (addressId != null) {
+			document.setAddressFirstLine(contactUtil.getNameWithCompany(document.getContact()));
+		}
+		else {
+			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
+			
+			// Remove the "\n" if it was a "\n" as line break.
+			s = s.split("\n")[0];
+			
+			document.setAddressFirstLine(s);
+		}
+
+		// Mark the (modified) document as "not printed"
+		if (wasDirty) {
+			document.setPrinted(false);
+		}
+
+		// If it is a new document,
+		if (newDocument) {
+
 //			// Create this in the data base
 //			document = Data.INSTANCE.getDocuments().addNewDataSet(document);
 //
@@ -707,24 +690,31 @@ public class DocumentEditor extends Editor<Document> {
 //				document.setIntValueByKey("invoiceid", document.getIntValueByKey("id"));
 //				Data.INSTANCE.getDocuments().updateDataSet(document);
 //			}
-//
-//			// Now, it is no longer new.
-//			newDocument = false;
-//
-//			// Create a new editor input.
-//			// So it's no longer the parent data
+
+			// Now, it is no longer new.
+			newDocument = false;
+
+			// Create a new editor input.
+			// So it's no longer the parent data
 //			this.setInput(new UniDataSetEditorInput(document));
-//		}
-//		else {
-//
-//			// Do not create a new data set - just update the old one
+		}
+		else {
+
+			// Do not create a new data set - just update the old one
 //			Data.INSTANCE.getDocuments().updateDataSet(document);
-//		}
+		}
+		
+        try {
+            document = documentsDAO.save(document);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 		//Set the editor's name
 		this.part.setLabel(document.getName());
 
-        // Refresh the table view of all payments
+        // Refresh the table view of all documents
         evtBroker.post(ID, "update");
         
         // reset dirty flag
@@ -732,7 +722,7 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	/**
-	 * Updates all Dunnings which are related to the current invoice.
+	 * Updates all {@link Dunning}s which are related to the current invoice.
 	 */
 	private void updateDunnings() {
 	    documentsDAO.updateDunnings(document, bPaid.getSelection(), dtPaidDate.getSelection(), paidValue);
@@ -749,7 +739,6 @@ public class DocumentEditor extends Editor<Document> {
 	 */
     @PostConstruct
     public void init(Composite parent) {
-        this.modelFactory = FakturamaModelPackage.MODELFACTORY;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.part = (MPart) parent.getData("modelElement");
         currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
@@ -783,37 +772,7 @@ public class DocumentEditor extends Editor<Document> {
 			if (documentType == DocumentType.NONE) {
 				documentType = DocumentType.ORDER;
 			}
-
-			// create a new data set with this document type
-			switch (documentType) {
-            case INVOICE:
-                document = modelFactory.createInvoice();
-                break;
-            case PROFORMA:
-                document = modelFactory.createProforma();
-                break;
-            case DUNNING:
-                document = modelFactory.createDunning();
-                break;
-            case DELIVERY:
-                document = modelFactory.createDelivery();
-                break;
-            case OFFER:
-                document = modelFactory.createOffer();
-                break;
-            case ORDER:
-                document = modelFactory.createOrder();
-                break;
-            case CONFIRMATION:
-                document = modelFactory.createConfirmation();
-                break;
-            case CREDIT:
-                document = modelFactory.createCredit();
-                break;
-            default:
-                document = modelFactory.createOrder();
-                break;
-            }
+			document = DocumentTypeUtil.createDocumentByType(documentType);
 			if (duplicated) {
 				document.setSourceDocument(parentDoc);
 			}
@@ -851,8 +810,7 @@ public class DocumentEditor extends Editor<Document> {
 			// In a new document, set some standard values
 			if (!duplicated) {
 				// Default shipping
-				shippingId = preferences.getInt(Constants.DEFAULT_SHIPPING, 1);
-				shipping = shippingsDAO.findById(shippingId);
+				shipping = lookupDefaultShippingValue();
 //				shippingVat = shipping.getShippingVat();
 //				shippingAutoVat = shipping.getAutoVat();
 //				shippingVatDescription = shipping.getDescription();
@@ -908,7 +866,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		netgross = document.getNetGross() != null ? document.getNetGross() : 0;
 		
-		paidValue = Money.of(document.getPaidValue(), currencyUnit);
+		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
 		if (dunningLevel <= 0) {
             if (document.getBillingType() == BillingType.DUNNING) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -920,20 +878,28 @@ public class DocumentEditor extends Editor<Document> {
 		ContactUtil contactUtil = ContactUtil.getInstance(preferences);
         billingAddress = contactUtil.getAddressAsString(document.getContact());
 		deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+
+        showOrderStatisticDialog(parent);
         
+        // Get some settings from the preference store
+        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
+            useGross = (getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, DocumentSummary.ROUND_NET_VALUES) == DocumentSummary.ROUND_NET_VALUES);
+        } else { 
+            useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
+        }
+  
         createPartControl(parent);
 	}
-//
-//	
-////	/**
-////	 * Sets a flag, if item editing is active
-////	 * 
-////	 * @param active
-////	 *            , TRUE, if editing is active
-////	 */
-////	public void setItemEditing(DocumentItemEditingSupport itemEditingSupport) {
-////		this.itemEditingSupport = itemEditingSupport;
-////	}
+
+//	/**
+//	 * Sets a flag, if item editing is active
+//	 * 
+//	 * @param active
+//	 *            , TRUE, if editing is active
+//	 */
+//	public void setItemEditing(DocumentItemEditingSupport itemEditingSupport) {
+//		this.itemEditingSupport = itemEditingSupport;
+//	}
 
 	/**
 	 * Returns the document
@@ -958,7 +924,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 */
 	public void childDocumentGenerated() {
-		if (document.getProgress() == 0) {
+		if (document.getProgress() == OrderState.NONE.getState()) {
 			document.setProgress(OrderState.PROCESSING.getState());
 //			Data.INSTANCE.updateDataSet(document);
 		}
@@ -979,7 +945,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (!documentType.hasPrice() && !forceCalc) {
 			return;
 		}
-
+		
 		// Get the sign of this document ( + or -)
 		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
@@ -997,11 +963,10 @@ public class DocumentEditor extends Editor<Document> {
 		    docItems.add(item.getDocumentItem());
         }
 
-		DocumentSummary documentSummary = documentSummaryCalculator.calculate(
-		        docItems, (Double) shippingValue.getValue()/* * sign*/, 
-		        shipping.getShippingVat(), document.getShippingAutoVat(),
-				discount, (VAT) ((IStructuredSelection)comboViewerNoVat.getSelection()).getFirstElement(), Double.valueOf(1.0), 
-				netgross, deposit);
+        documentSummary = documentSummaryCalculator.calculate(docItems,
+                document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
+                shipping.getShippingVat(), document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), discount,
+                document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
 
 		// Get the total result
 		total = documentSummary.getTotalGross();
@@ -1016,25 +981,30 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Set the shipping
-		if (shippingValue != null) {
-			if (useGross)
-				shippingValue.setValue(documentSummary.getShippingGross());
-			else
-				shippingValue.setValue(documentSummary.getShippingNet());
-		}
+        if (shippingValue != null) {
+            // shippingValue is the only field which could be modified manually *and* per calculation
+            // therefore we have to disable the ModifyListener at first.
+            shippingValue.getControl().setData(CALCULATING_STATE, true);
+            if (useGross) {
+                shippingValue.setValue(documentSummary.getShippingGross());
+            } else {
+                shippingValue.setValue(documentSummary.getShippingNet());
+            }
+            // don't set it to "false" because the condition in ModifyListener checks for a null value!
+            shippingValue.getControl().setData(CALCULATING_STATE, null);
+        }
 
 		// Set the VAT
-		if (vatValue != null)
+		if (vatValue != null) {
 			vatValue.setValue(documentSummary.getTotalVat());
+		}
 
 		// Set the total value
 		if (totalValue != null) {
 			totalValue.setValue(documentSummary.getTotalGross());
-			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ":" + document.getPaidValue());
+			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ": " + document.getPaidValue());
 		}
-
 	}
-
 
 	/**
 	 * Get the total text, net or gross
@@ -1043,11 +1013,12 @@ public class DocumentEditor extends Editor<Document> {
 	 * 		The total text
 	 */
 	private String getTotalText () {
-		if (useGross)
+		if (useGross) {
 			return msg.editorDocumentTotalgross;
-		else
+		} else {
 			//T: Document Editor - Label Total net 
 			return msg.editorDocumentTotalnet;
+		}
 	}
 	
 	/**
@@ -1058,14 +1029,14 @@ public class DocumentEditor extends Editor<Document> {
 		boolean oldUseGross = useGross;
 		
 		// Get some settings from the preference store
-		if (netgross == DocumentSummary.ROUND_NOTSPECIFIED)
-			useGross = (getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, 1) == 1);
-		else 
-			useGross = ( netgross == DocumentSummary.ROUND_GROSS_VALUES );
-		
+        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
+            useGross = getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, 1) == 1;
+        } else {
+            useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
+        }
 		
 		// Use the customers settings instead, if they are set
-		if ((addressId != null) && address_changed) {
+		if (addressId != null && address_changed) {
 			
 			if (addressId.getUseNetGross() == 1) {
 				useGross = false;
@@ -1077,10 +1048,9 @@ public class DocumentEditor extends Editor<Document> {
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 				comboNetGross.getCombo().select(netgross);
 			}
-			
 		}
 
-		// Show a warning, if the customer uses a different setting for net or gross
+		// Show a warning if the customer uses a different setting for net or gross
 		if ((useGross != oldUseGross) && documentType.hasPrice()) {
 			
 			if (address_changed) {
@@ -1088,7 +1058,6 @@ public class DocumentEditor extends Editor<Document> {
 
 				//T: Title of the dialog that appears if customer uses a different setting for net or gross.
 				messageBox.setText(msg.dialogMessageboxTitleWarning);
-				
 				
 				if (useGross) {
 					//T: Text of the dialog that appears if customer uses a different setting for net or gross.
@@ -1127,15 +1096,13 @@ public class DocumentEditor extends Editor<Document> {
 			
 			// Update the shipping value;
 			calculate();
-			
 		}
-		
 	}
 	
 	/**
-	 * Returns, if this editor used net or gross values.
+	 * Returns if this editor used net or gross values.
 	 * 
-	 * @return True, if the document uses gross values.
+	 * @return <code>true</code> if the document uses gross values.
 	 */
 	public boolean getUseGross() {
 		return useGross;
@@ -1149,8 +1116,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Get the new value and take the absolute value
 		Double newShippingValue = (Double) shippingValue.getValue();
-		if (newShippingValue < 0)
+		if (newShippingValue < 0) {
 			newShippingValue = -newShippingValue;
+		}
 
 		// If the shipping value has changed:
 		// Set the shippingAutoVat to net or gross, depending on the
@@ -1161,6 +1129,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Recalculate the sum
 //		shipping = newShippingValue;
+		document.setShippingValue(newShippingValue);
+		document.setShipping(null);   // because we changed the Shipping value manually
 		calculate();
 	}
 
@@ -1170,7 +1140,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * created to set the due values or the paid values.
 	 * 
 	 * @param paid
-	 *            If true, the widgets for "paid" are generated
+	 *            If <code>true</code>, the widgets for "paid" are generated
 	 */
 	private void createPaidComposite(boolean paid, boolean isDeposit, boolean clickedByUser) {
 
@@ -1220,7 +1190,7 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays = new Spinner(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 			spDueDays.setMinimum(0);
 			spDueDays.setMaximum(365);
-			spDueDays.setSelection(duedays /* document.getIntValueByKey("duedays") */);
+			spDueDays.setSelection(duedays);
 			spDueDays.setIncrement(1);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
@@ -1308,15 +1278,15 @@ public class DocumentEditor extends Editor<Document> {
 
 		// If it's the first time that this document is marked as paid
 		// (if the value is 0.0), then also set the date to "today"
-		if (paidValue.isEqualTo(FastMoney.MIN_VALUE) && clickedByUser) {
+		if (paidValue.isZero() && clickedByUser) {
 			paidValue = total;
 			dtPaidDate.setSelection(Calendar.getInstance().getTime());
 		}
 		FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
-		txtPayValue.setValue(paidValue);
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
+		txtPayValue.setValue(paidValue);
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
 	}
 	
@@ -1325,39 +1295,40 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	void updateIssueDate() {
 		// Add date and due days and set the issue date to the sum.
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(dtDate.getSelection());
+//	    LocalDate localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+//	    localDate.plusDays(spDueDays.getSelection());
+//	    Date.from(localDate.???)
 //		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-//		calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
-//		dtIssueDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
+		calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
+		dtIssueDate.setSelection(calendar.getTime());
 	}
 	
 	/**
 	 * Show or hide the warning icon
 	 */
-	void showHideWarningIcon() {
-		
-		// Check, whether the delivery address is the same as the billing address
-		boolean differentDeliveryAddress;
-		
-		if (documentType == DocumentType.DELIVERY) {
-			differentDeliveryAddress = !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			//T: Tool Tip Text
-			differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
-		}
-		else {
-			differentDeliveryAddress = !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			//T: Tool Tip Text
-			differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
-		}
+    void showHideWarningIcon() {
 
-		if (differentDeliveryAddress)
-			// Show the icon
-			GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
-		else
-			// Hide the icon
-			GridDataFactory.swtDefaults().hint(0,0).align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
-		
-	}
+        // Check, whether the delivery address is the same as the billing address
+        boolean differentDeliveryAddress;
+
+        if (documentType == DocumentType.DELIVERY) {
+            differentDeliveryAddress = !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
+        } else {
+            differentDeliveryAddress = !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
+        }
+
+        if (differentDeliveryAddress) {
+            // Show the icon
+            GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
+        } else {
+            // Hide the icon
+            GridDataFactory.swtDefaults().hint(0, 0).align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
+        }
+    }
 	
 	/**
 	 * Fill the address label with a contact 
@@ -1443,15 +1414,6 @@ public class DocumentEditor extends Editor<Document> {
 //		printAction = new CreateOODocumentAction();
 //		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
 
-		showOrderStatisticDialog(parent);
-		
-		// Get some settings from the preference store
-		if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-			useGross = (getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, 1) == 1);
-		} else { 
-			useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
-		}
-
 		// Create the ScrolledComposite to scroll horizontally and vertically
 	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 
@@ -1478,7 +1440,6 @@ public class DocumentEditor extends Editor<Document> {
 
 		//T: Document Editor - Label Document Number
 		labelName.setText(msg.commonFieldNumber);
-		//T: Tool Tip Text
 		labelName.setToolTipText(msg.editorDocumentRefnumberTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
@@ -1500,7 +1461,6 @@ public class DocumentEditor extends Editor<Document> {
 		//T: Label Document Date
 		Label labelDate = new Label(nrDateNetGrossComposite, SWT.NONE);
 		labelDate.setText(msg.commonFieldDate);
-		//T: Tool Tip Text
 		labelDate.setToolTipText(msg.editorDocumentDateTooltip);
 		
 		GridDataFactory.swtDefaults().indent(20, 0).align(SWT.END, SWT.CENTER).applyTo(labelDate);
@@ -1508,11 +1468,12 @@ public class DocumentEditor extends Editor<Document> {
 		// Document date
 		dtDate = new CDateTime(nrDateNetGrossComposite, CDT.BORDER | CDT.DROP_DOWN);
 		dtDate.setToolTipText(labelDate.getToolTipText());
+		dtDate.setFormat(CDT.DATE_MEDIUM);
 		dtDate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// If the date is modified, also modify the issue date.
 				// (Let the due days constant).
-				if (dtIssueDate.getSelection() != null && dtDate.getSelection() != null) {
+				if (dtIssueDate != null && dtDate.getSelection() != null) {
 				    LocalDate calendar = LocalDate.from(dtDate.getSelection().toInstant());
 				    calendar.plusDays(spDueDays.getSelection());
 				    Instant instant = calendar.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
@@ -1531,11 +1492,10 @@ public class DocumentEditor extends Editor<Document> {
 		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
 		
 		Map<Integer, String> netGrossContent = new HashMap<>();
-		// empty, if nothing is selected
+		// empty if nothing is selected
 		netGrossContent.put(0, "---"); 
 		//T: Text in combo box
 		netGrossContent.put(1, msg.productDataNet);
-		//T: Text in combo box
 		netGrossContent.put(2, msg.productDataGross);
         
 		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
@@ -1587,7 +1547,6 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelCustomerRef = new Label(top, SWT.NONE);
 		//T: Document Editor - Label Customer Reference
 		labelCustomerRef.setText(msg.editorDocumentFieldCustref);
-		//T: Tool Tip Text
 		labelCustomerRef.setToolTipText(msg.editorDocumentFieldCustrefTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCustomerRef);
 
@@ -1607,7 +1566,6 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelConsultant = new Label(xtraSettingsComposite, SWT.NONE);
 		//T: Document Editor - Label Consultant
 		labelConsultant.setText(msg.editorDocumentFieldConsultant);
-		//T: Tool Tip Text
 		labelConsultant.setToolTipText(msg.editorDocumentFieldConsultantTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelConsultant);
 		
@@ -1623,9 +1581,7 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelServiceDate = new Label(useOrderDate ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label Service Date
 		labelServiceDate.setText(msg.editorDocumentFieldServicedate);
-		//T: Tool Tip Text
 		labelServiceDate.setToolTipText(msg.editorDocumentFieldServicedateTooltip);
-		
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelServiceDate);
 
 		// Service date
@@ -1640,12 +1596,10 @@ public class DocumentEditor extends Editor<Document> {
 		if (documentType == DocumentType.OFFER) {
 			//T: Label in the document editor
 			labelOrderDate.setText(msg.editorDocumentFieldRequestdate);
-			//T: Tool Tip Text
 			labelOrderDate.setToolTipText(msg.editorDocumentFieldRequestdateTooltip);
 		} else {
 			//T: Label in the document editor
 			labelOrderDate.setText(msg.editorDocumentFieldOrderdate);
-			//T: Tool Tip Text
 			labelOrderDate.setToolTipText(msg.editorDocumentFieldOrderdateTooltip);
 		}
 
@@ -1666,7 +1620,6 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelInvoiceRef = new Label(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label in the document editor
 		labelInvoiceRef.setText(msg.editorDocumentFieldInvoice);
-		//T: Tool Tip Text
 		labelInvoiceRef.setToolTipText(msg.editorDocumentFieldInvoiceTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(labelInvoiceRef);
@@ -1685,7 +1638,6 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelNoVat = new Label(documentType.hasPrice() ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label in the document editor
 		labelNoVat.setText(msg.commonFieldVat);
-		//T: Tool Tip Text
 		labelNoVat.setToolTipText(msg.editorDocumentZerovatTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNoVat);
 
@@ -1722,7 +1674,7 @@ public class DocumentEditor extends Editor<Document> {
 
 					// set all items to 0%
 					itemListTable.setItemsNoVat(noVat);
-					tableViewerItems.refresh();
+//					tableViewerItems.refresh();
 
 					// recalculate the total sum
 					calculate();
@@ -1912,18 +1864,21 @@ public class DocumentEditor extends Editor<Document> {
 		 * besten nach dem Verlassen des Widgets). Falls ein Kontakt ausgewählt wurde, muß dieses
 		 * Feld wieder auf null gesetzt werden und die Contact-Verknüpfung aktualisiert werden.
 		 * Von daher geht hier ein simples "superviceControl" nicht.
+		 * ==> Das wird aber schon alles im doSave() gemacht, daher brauchen wir hier nur checken,
+		 * ob überhaupt etwas geändert wurde.
 		 */
 //		superviceControl(txtAddress, 250);
 		
-		txtAddress.addFocusListener(new FocusAdapter() {
-		    @Override
-		    public void focusLost(FocusEvent e) {
-		        if(!ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()).contentEquals(txtAddress.getText())) {
-		            document.setManualAddress(txtAddress.getText());
-		            document.setContact(null);
+		txtAddress.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+//		        if(!ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()).contentEquals(txtAddress.getText())) {
+//		            document.setManualAddress(txtAddress.getText());
+//		            document.setContact(null);
 		            getMDirtyablePart().setDirty(true);
-		        }
-		    }
+//		        }
+            }
         });
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(txtAddress);
 
@@ -2012,7 +1967,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		GridDataFactory.defaultsFor(txtMessage).minSize(80, 50).applyTo(txtMessage);
 //		GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage);
-		bindModelValue(document, txtMessage, Document_.message.getName(), 10000);
+		bindModelValue(document, txtMessage, Document_.message.getName(), 10_000);
 
 		if (noOfMessageFields >= 2) {
 			// Add a multi line text field for the message.
@@ -2022,7 +1977,7 @@ public class DocumentEditor extends Editor<Document> {
 			GridDataFactory.defaultsFor(txtMessage2).minSize(80, 50).applyTo(txtMessage2);
 			txtMessage2.setToolTipText(messageLabel.getToolTipText());
 //			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage2);
-			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10000);
+			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10_000);
 		}
 		if (noOfMessageFields >= 3) {
 			// Add a multi line text field for the message.
@@ -2032,7 +1987,7 @@ public class DocumentEditor extends Editor<Document> {
 			
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
 //			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage3);
-			bindModelValue(document, txtMessage3, Document_.message3.getName(), 10000);
+			bindModelValue(document, txtMessage3, Document_.message3.getName(), 10_000);
 		}
 		
 		// Set the tab order
@@ -2041,7 +1996,7 @@ public class DocumentEditor extends Editor<Document> {
 		else if (documentType.hasPrice())
 			setTabOrder(txtAddress, comboViewerNoVat.getControl());
 		else if (documentType.hasItems())
-			setTabOrder(txtAddress, tableViewerItems.getTable());
+			setTabOrder(txtAddress, itemListTable.getNatTable());
 		else
 			setTabOrder(txtAddress, txtMessage);
 
@@ -2066,94 +2021,21 @@ public class DocumentEditor extends Editor<Document> {
 //			calculate(Data.INSTANCE.getDocuments().getDatasetById(invoiceId));
 			calculate(true);
 		
-		} else {
+		} else {  // document *has* a price
 
-			if (documentType.canBePaid())
+			if (documentType.canBePaid()) {
 				GridDataFactory.fillDefaults().span(2, 1).hint(100, noOfMessageFields*65).grab(true, false).applyTo(messageFieldsComposite);
-			else
+			} else {
 				GridDataFactory.fillDefaults().span(2, 1).hint(100, noOfMessageFields*65).grab(true, true).applyTo(messageFieldsComposite);
-
+			}
+			
 			// Create a column for the documents subtotal, shipping and total
 			createTotalComposite(documentType.hasPrice());
 
 			// Create the "paid"-controls, only if the document type allows
 			// this.
 			if (documentType.canBePaid()) {
-
-				// The paid label
-				bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
-				if (BooleanUtils.toBoolean(document.getPaid())) {
-					bPaid.setSelection(document.getPaid());
-				}
-				if (BooleanUtils.toBoolean(document.getDeposit())) {
-					bPaid.setSelection(document.getDeposit());
-					deposit = Money.of(document.getPaidValue(), currencyUnit);
-				}
-				
-				//T: Mark a paid document with this text.
-				bPaid.setText(msg.documentOrderStatePaid);
-				//T: Tool Tip Text
-				bPaid.setToolTipText(msg.editorDocumentCheckboxPaidTooltip);
-				
-				GridDataFactory.swtDefaults().applyTo(bPaid);
-
-				// Container for the payment and the paid state
-				paidContainer = new Composite(top, SWT.NONE);
-				GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(paidContainer);
-				GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(paidContainer);
-
-				// If the paid check box is selected ...
-				bPaid.addSelectionListener(new SelectionAdapter() {
-
-					// ... Recreate the paid composite
-					public void widgetSelected(SelectionEvent e) {
-						createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
-					}
-				});
-
-				// Combo to select the payment
-				comboPayment = new Combo(paidContainer, SWT.BORDER);
-				comboViewerPayment = new ComboViewer(comboPayment);
-				comboViewerPayment.setContentProvider(new EntityComboProvider());
-				comboViewerPayment.setLabelProvider(new EntityLabelProvider());
-				GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboPayment);
-
-				// If a new payment is selected ...
-				comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
-
-					// change the paymentId to the selected element
-					public void selectionChanged(SelectionChangedEvent event) {
-
-						// Get the selected element
-						ISelection selection = event.getSelection();
-						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-						if (!structuredSelection.isEmpty()) {
-							// Get first selected element.
-							Object firstElement = structuredSelection.getFirstElement();
-							Payment dataSetPayment = (Payment) firstElement;
-							usePayment(dataSetPayment);
-						}
-					}
-				});
-
-				// Fill the payment combo with the payments
-				List<Payment> allPayments = paymentsDao.findAll();
-                comboViewerPayment.setInput(allPayments);
-
-                UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-                paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-                
-                UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-                target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
-                bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
-
-				// Create a default paid composite with the document's
-				// state for "paid"
-				createPaidComposite(BooleanUtils.toBoolean(document.getPaid()), BooleanUtils.toBoolean(document.getDeposit()), false);
-
-				// Set the combo
-//				comboPayment.setText(document.getPayment().getDescription());
-
+				createPaidControls();
 			}
 		}
 
@@ -2164,6 +2046,83 @@ public class DocumentEditor extends Editor<Document> {
 			calculate();
 		}
 	}
+
+    /**
+     * Create the "paid"-controls
+     */
+    private void createPaidControls() {
+        // The paid label
+        bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
+        if (BooleanUtils.toBoolean(document.getPaid())) {
+        	bPaid.setSelection(document.getPaid());
+        }
+        if (BooleanUtils.toBoolean(document.getDeposit())) {
+        	bPaid.setSelection(document.getDeposit());
+        	deposit = Money.of(document.getPaidValue(), currencyUnit);
+        }
+        
+        //T: Mark a paid document with this text.
+        bPaid.setText(msg.documentOrderStatePaid);
+        //T: Tool Tip Text
+        bPaid.setToolTipText(msg.editorDocumentCheckboxPaidTooltip);
+        
+        GridDataFactory.swtDefaults().applyTo(bPaid);
+
+        // Container for the payment and the paid state
+        paidContainer = new Composite(top, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(paidContainer);
+        GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(paidContainer);
+
+        // If the paid check box is selected ...
+        bPaid.addSelectionListener(new SelectionAdapter() {
+
+        	// ... Recreate the paid composite
+        	public void widgetSelected(SelectionEvent e) {
+        		createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
+        	}
+        });
+
+        // Combo to select the payment
+        comboPayment = new Combo(paidContainer, SWT.BORDER);
+        comboViewerPayment = new ComboViewer(comboPayment);
+        comboViewerPayment.setContentProvider(new EntityComboProvider());
+        comboViewerPayment.setLabelProvider(new EntityLabelProvider());
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboPayment);
+
+        // If a new payment is selected ...
+        comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
+
+        	// change the paymentId to the selected element
+        	public void selectionChanged(SelectionChangedEvent event) {
+
+        		// Get the selected element
+        		ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		if (!structuredSelection.isEmpty()) {
+        			// Get first selected element.
+        			Object firstElement = structuredSelection.getFirstElement();
+        			Payment dataSetPayment = (Payment) firstElement;
+        			usePayment(dataSetPayment);
+        		}
+        	}
+        });
+
+        // Fill the payment combo with the payments
+        List<Payment> allPayments = paymentsDao.findAll();
+        comboViewerPayment.setInput(allPayments);
+
+        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
+        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
+        
+        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
+        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+        // Set the combo
+        bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
+
+        // Create a default paid composite with the document's
+        // state for "paid"
+        createPaidComposite(BooleanUtils.toBoolean(document.getPaid()), BooleanUtils.toBoolean(document.getDeposit()), false);
+    }
 
     /**
      * 
@@ -2194,7 +2153,6 @@ public class DocumentEditor extends Editor<Document> {
             	Label discountLabel = new Label(totalComposite, SWT.NONE);
             	//T: Document Editor - Label discount 
             	discountLabel.setText(msg.commonFieldDiscount);
-            	//T: Tool Tip Text, xgettext:no-c-format
             	discountLabel.setToolTipText(msg.editorDocumentDiscountTooltip);
             	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(discountLabel);
             	
@@ -2238,17 +2196,16 @@ public class DocumentEditor extends Editor<Document> {
             //T: Document Editor - Label shipping 
             shippingLabel.setText(msg.editorDocumentFieldShipping);
             GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
-            //T: Tool Tip Text
             shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
     
             // Shipping combo
             comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER);
-            comboViewerShipping.getCombo().setToolTipText(shippingLabel.getToolTipText());
+            comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
             comboViewerShipping.setContentProvider(new EntityComboProvider());
             comboViewerShipping.setLabelProvider(new EntityLabelProvider());
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
+            GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
             comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
-    
+               
             	// If a new shipping is selected, recalculate the total
             	// sum,
             	// and update the shipping VAT.
@@ -2258,8 +2215,7 @@ public class DocumentEditor extends Editor<Document> {
             		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
             		if (!structuredSelection.isEmpty()) {
             			// Get first selected element.
-            			Object firstElement = structuredSelection.getFirstElement();
-            			shipping = (Shipping) firstElement;
+            			shipping = (Shipping) structuredSelection.getFirstElement();
     
             			// Update the shipping VAT
     //						shippingVat = shipping.getShippingVat();
@@ -2284,13 +2240,13 @@ public class DocumentEditor extends Editor<Document> {
             shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
             
             UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
-            target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class));
+            target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
             // Set the combo
             bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
     
             // Shipping value field
             shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
-//            shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
+            shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
             shippingValue.setFormatter(new MoneyFormatter());
             shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
             bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
@@ -2326,6 +2282,7 @@ public class DocumentEditor extends Editor<Document> {
             vatValue.setFormatter(new MoneyFormatter());
             vatValue.getControl().setEditable(false);
     //			vatValue.setText("---");
+// TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
         }
 
@@ -2400,33 +2357,28 @@ public class DocumentEditor extends Editor<Document> {
         if (documentType == DocumentType.ORDER && getBooleanPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
+			customerStaticstics.setContact(document.getContact());
 			if (getIntPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, 1) == 1) {
-				customerStaticstics.setContact(document.getContact());
 				customerStaticstics.setAddress(document.getManualAddress());
 	            customerStaticstics.makeStatistics(true);
 			} else {	
-                customerStaticstics.setContact(document.getContact());
                 customerStaticstics.makeStatistics(false);
 			}
 			
-			if (customerStaticstics.isRegularCustomer()) {
+			if (customerStaticstics.hasPaidInvoices()) {
 
 				//T: Message Dialog
 				MessageDialog.openInformation(parent.getShell(), 
 						//T: Title of the customer statistics dialog
 						msg.dialogMessageboxTitleInfo,
-						document.getAddressFirstLine() + " " +
 						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart1 + " "+ customerStaticstics.getOrdersCount().toString() + " " + 
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart2 + "\n" + 
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart3 + " " + customerStaticstics.getLastOrderDate()  + "\n" +
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart4 + " " + customerStaticstics.getInvoices() + "\n" +
-						//T: Part of the customer statistics dialog
-						msg.dialogCustomerStatisticsPart5 +" " + DataUtils.getInstance().doubleToFormattedPrice(customerStaticstics.getTotal()));
-			
+						// the unescapeJava is because of the Newlines in the message format string
+						MessageFormat.format(StringEscapeUtils.unescapeJava(msg.dialogCustomerStatisticsPart1), 
+						        document.getAddressFirstLine(),
+						        customerStaticstics.getOrdersCount(),
+						        customerStaticstics.getLastOrderDate(),
+						        customerStaticstics.getInvoices(),
+						        DataUtils.getInstance().doubleToFormattedPrice(customerStaticstics.getTotal())));
 			}
 		}
     }
@@ -2463,12 +2415,11 @@ public class DocumentEditor extends Editor<Document> {
                 // in ContactListTable the selected id is put in as Long value
                 Contact contact = contactDAO.findById((Long)event.getProperty(ContactListTable.SELECTED_CONTACT_ID));
                 setAddress(contact);
-                // If a Contact is selected the manualAddress fild has to be set to null!
-                // 
-                getMDirtyablePart().setDirty(true);
+                // If a Contact is selected the manualAddress field has to be set to null!
                 document.setManualAddress(null);
                 document.setContact(contact);
                 txtAddress.setText(ContactUtil.getInstance(preferences).getAddressAsString(contact));
+                getMDirtyablePart().setDirty(true);
                 break;
             case "Product":
                 // select a product (for an item entry)
@@ -2540,8 +2491,7 @@ public class DocumentEditor extends Editor<Document> {
                                 }
                                 
                                 // Change also the transaction id of the imported delivery note
-                                // TODO
-//                                Transaction.mergeTwoTransactions(document, deliveryNote);
+                                documentsDAO.mergeTwoTransactions(document, deliveryNote);
                             }
                             else
                                 importedDeliveryNotes.add(deliveryNote.getId());
@@ -2556,28 +2506,23 @@ public class DocumentEditor extends Editor<Document> {
                   text = (TextModule) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
                   
                   // Get the message field with the focus
-                  Text selecteMessageField = txtMessage;
+                  Text selectedMessageField = txtMessage;
 
-                  // Get the message field with the focus
-                  if (txtMessage2 != null)
-                      if (txtMessage2.isFocusControl())
-                          selecteMessageField = txtMessage2;
-                  if (txtMessage3 != null)
-                      if (txtMessage3.isFocusControl())
-                          selecteMessageField = txtMessage3;
+                  if (txtMessage2 != null && txtMessage2.isFocusControl())
+                    selectedMessageField = txtMessage2;
+                  if (txtMessage3 != null && txtMessage3.isFocusControl())
+                    selectedMessageField = txtMessage3;
                   
                   // Insert the selected text in the message text
-                  if ((text != null) && (selecteMessageField != null)) {
-                      int begin = selecteMessageField.getSelection().x;
-                      int end = selecteMessageField.getSelection().y;
-                      String s = selecteMessageField.getText();
+                  if (text != null && selectedMessageField != null) {
+                      int begin = selectedMessageField.getSelection().x;
+                      int end = selectedMessageField.getSelection().y;
+                      String s = selectedMessageField.getText();
                       String s1 = s.substring(0, begin);
                       String s2 = text.getText();
-                      String s3 = s.substring(end, s.length());
 
-                      selecteMessageField.setText(s1 + s2 + s3);
-
-                      selecteMessageField.setSelection(s1.length() + s2.length());
+                      selectedMessageField.setText(String.format("%s%s%s", s1, s2, s.substring(end, s.length())));
+                      selectedMessageField.setSelection(s1.length() + s2.length());
                   }
                 break;
             default:
@@ -2598,7 +2543,7 @@ public class DocumentEditor extends Editor<Document> {
     /**
      * Searches for the standard {@link Shipping} entry. 
      */
-    public Shipping lookupDefaultShippingValue() {
+    private Shipping lookupDefaultShippingValue() {
         long stdID = 1L;
         Shipping retval = null;
 

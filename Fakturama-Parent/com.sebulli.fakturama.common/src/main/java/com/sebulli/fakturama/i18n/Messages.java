@@ -144,9 +144,9 @@ public class Messages {
 
     public String editorDocumentErrorDocnumberTitle;
     public String editorDocumentErrorDocnumberNotnextfree;
-    public String editorDocumentErrorVerify;
-	public String DocumentEditor570;
-	public String DocumentEditor571;
+    public String editorDocumentErrorWrongcontactTitle;
+    public String editorDocumentErrorWrongcontactMsg1;
+    public String editorDocumentErrorWrongcontactMsg2;
     public String editorDocumentTotalgross;
     public String editorDocumentTotalnet;
     public String editorDocumentDialogGrossvalues;
@@ -160,10 +160,6 @@ public class Messages {
     public String editorDocumentWarningDifferentaddress;
     public String editorDocumentWarningDifferentdeliveryaddress;
     public String dialogCustomerStatisticsPart1;
-    public String dialogCustomerStatisticsPart2;
-    public String dialogCustomerStatisticsPart3;
-    public String dialogCustomerStatisticsPart4;
-    public String dialogCustomerStatisticsPart5;
     public String editorDocumentRefnumberTooltip;
     public String editorDocumentDateTooltip;
     public String editorDocumentFieldCustref;

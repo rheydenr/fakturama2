@@ -30,11 +30,11 @@ import com.sebulli.fakturama.misc.DataUtils;
  */
 public class DocumentSummary {
 
-	// The prices are not rounded to net or gross
+	/** The prices are not rounded to net or gross */
 	public static final int ROUND_NOTSPECIFIED = 0;
-	// The prices are rounded, that the net values are full cent values.
+	/** The prices are rounded, that the net values are full cent values. */
 	public static final int ROUND_NET_VALUES = 1;
-	// The prices are rounded, that the gross values are full cent values.
+	/** The prices are rounded, that the gross values are full cent values. */
 	public static final int ROUND_GROSS_VALUES = 2;
 	
 	// sum off items

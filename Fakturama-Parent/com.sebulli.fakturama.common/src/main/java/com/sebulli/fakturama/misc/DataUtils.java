@@ -829,7 +829,7 @@ public class DataUtils {
     /**
      * Calculates the similarity of two string.
      * 
-     * The result is a value from 0.0 to 1.0 Returns 1.0, if both strings are
+     * The result is a value from 0.0 to 1.0. Returns 1.0, if both strings are
      * equal.
      * 
      * @param sA
@@ -839,62 +839,64 @@ public class DataUtils {
      * @return Similarity from 0.0 to 1.0
      */
     public double similarity(String sA, String sB) {
-        int i;
-        int ii;
-        int min;
-        int codesA = sA.length() - 1;
-        int codesB = sB.length() - 1;
-
-        //Empty Strings
-        if (codesA < 0)
-            return 0.0;
-        if (codesB < 0)
-            return 0.0;
-        
-        int codeA[] = new int[codesA];
-        int codeB[] = new int[codesB];
-
-        // Scans first String. 
-        // Generate a 16 Bit Code of two 8 Bit characters.
-        for (i = 0; i < codesA; i++)
-            codeA[i] = ((sA.charAt(i)) << 8) | (((sA.charAt(i) - sA.charAt(i + 1) & 0x00FF)));
-
-        // Scans second String. 
-        // Generate a 16 Bit Code of two 8 Bit characters.
-        for (i = 0; i < codesB; i++)
-            codeB[i] = ((sB.charAt(i)) << 8) | (((sB.charAt(i) - sB.charAt(i + 1) & 0x00FF)));
-
-        // Count how much of the codes from the first strings are found
-        // in the codes of the second string.
-        int founds = 0;
-        for (i = 0; i < codesA; i++)
-            for (ii = 0; ii < codesB; ii++)
-                if ((codeA[i] == codeB[ii]) && (codeA[i] != 0)) {
-                    founds++;
-                    ii = codesB;
-                }
-
-        // Normally only 2 following characters are scanned. 
-        // So don't forget to compare the first character of both strings
-        if (sA.charAt(0) == sB.charAt(0))
-            founds++;
-
-        // And both last characters
-        if (sA.charAt(codesA) == sB.charAt(codesB))
-            founds++;
-
-        // min. is the length of the shortest string
-        if (codesA < codesB)
-            min = codesA;
-        else
-            min = codesB;
-
-        // add an offset, so that two equal strings will result 1.0
-        // codeX is length-1
-        min += 2;
-
-        // Calculate the ratio of the founds and the number of characters.
-        return ((double) founds / (double) min);
+        return StringUtils.getJaroWinklerDistance(sA, sB);
+//        int i;
+//        int ii;
+//        int min;
+//        int codesA = sA.length() - 1;
+//        int codesB = sB.length() - 1;
+//        
+//
+//        //Empty Strings
+//        if (codesA < 0)
+//            return 0.0;
+//        if (codesB < 0)
+//            return 0.0;
+//        
+//        int codeA[] = new int[codesA];
+//        int codeB[] = new int[codesB];
+//
+//        // Scans first String. 
+//        // Generate a 16 Bit Code of two 8 Bit characters.
+//        for (i = 0; i < codesA; i++)
+//            codeA[i] = ((sA.charAt(i)) << 8) | (((sA.charAt(i) - sA.charAt(i + 1) & 0x00FF)));
+//
+//        // Scans second String. 
+//        // Generate a 16 Bit Code of two 8 Bit characters.
+//        for (i = 0; i < codesB; i++)
+//            codeB[i] = ((sB.charAt(i)) << 8) | (((sB.charAt(i) - sB.charAt(i + 1) & 0x00FF)));
+//
+//        // Count how much of the codes from the first strings are found
+//        // in the codes of the second string.
+//        int founds = 0;
+//        for (i = 0; i < codesA; i++)
+//            for (ii = 0; ii < codesB; ii++)
+//                if ((codeA[i] == codeB[ii]) && (codeA[i] != 0)) {
+//                    founds++;
+//                    ii = codesB;
+//                }
+//
+//        // Normally only 2 following characters are scanned. 
+//        // So don't forget to compare the first character of both strings
+//        if (sA.charAt(0) == sB.charAt(0))
+//            founds++;
+//
+//        // And both last characters
+//        if (sA.charAt(codesA) == sB.charAt(codesB))
+//            founds++;
+//
+//        // min. is the length of the shortest string
+//        if (codesA < codesB)
+//            min = codesA;
+//        else
+//            min = codesB;
+//
+//        // add an offset, so that two equal strings will result 1.0
+//        // codeX is length-1
+//        min += 2;
+//
+//        // Calculate the ratio of the founds and the number of characters.
+//        return ((double) founds / (double) min);
 
     }
 
@@ -936,8 +938,6 @@ public class DataUtils {
      *      The string with the carriage returns
      * @return
      *      The new string without them
-     * 
-     * @deprecated can be replaced by {@link StringUtils#chomp};
      */
     public String removeCR(String s) {
         return s.replaceAll("\r", "");
@@ -955,19 +955,19 @@ public class DataUtils {
         return s.replaceAll("\n", System.lineSeparator());
     }
     
-//    /**
-//     * Compare two strings but ignore carriage returns
-//     * 
-//     * @param s1
-//     *          First String to compare
-//     * @param s2
-//     *          Second String to compare
-//     * @return
-//     *          True, if bothe are equal
-//     */
-//    public static boolean MultiLineStringsAreEqual (String s1, String s2) {
-//        return removeCR(s1).equals(removeCR(s2));
-//    }
+    /**
+     * Compare two strings but ignore carriage returns
+     * 
+     * @param s1
+     *          First String to compare
+     * @param s2
+     *          Second String to compare
+     * @return
+     *          True, if bothe are equal
+     */
+    public boolean MultiLineStringsAreEqual (String s1, String s2) {
+        return removeCR(s1).equals(removeCR(s2));
+    }
     
     /**
      * Converts all \r\n to \n

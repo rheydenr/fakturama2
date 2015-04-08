@@ -5,6 +5,12 @@ import java.util.Map;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+/**
+ * {@link IStructuredContentProvider} that takes a {@link Map} of values to show them in a combobox.
+ *
+ * @param <K> the key type
+ * @param <V> the value type
+ */
 final public class HashMapContentProvider<K, V> implements IStructuredContentProvider {
     @SuppressWarnings("unchecked")
     @Override

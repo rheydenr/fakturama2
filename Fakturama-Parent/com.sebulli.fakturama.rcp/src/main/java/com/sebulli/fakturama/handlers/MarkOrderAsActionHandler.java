@@ -157,6 +157,7 @@ public class MarkOrderAsActionHandler {
                 }
                 else if (progress_old == OrderState.SHIPPED && progress != OrderState.SHIPPED) // mark as processing or lower - add to stock
                 {
+                    // TODO DO THIS IN DAO!!!
                     for (DocumentItem item : items) {
                         Product id = item.getProduct();
                         Double quantity_order = item.getQuantity();
