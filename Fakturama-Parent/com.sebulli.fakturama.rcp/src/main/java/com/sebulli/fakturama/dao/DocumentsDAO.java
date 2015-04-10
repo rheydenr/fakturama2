@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.money.MonetaryAmount;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -300,7 +299,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
      * @param paidDate paid date
      * @param paidValue paid value
      */
-    public void updateDunnings(Document document, boolean isPaid, Date paidDate, MonetaryAmount paidValue) {
+    public void updateDunnings(Document document, boolean isPaid, Date paidDate, Double paidValue) {
 //      UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
 //      // TODO What if "payvalue" is not the total sum? Is it paid?
 //          dunning.setPaid(bPaid.getSelection());
@@ -311,7 +310,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         criteria
             .set(Dunning_.paid, isPaid)
             .set(Dunning_.payDate, paidDate)
-            .set(Dunning_.paidValue, paidValue.getNumber().doubleValue())
+            .set(Dunning_.paidValue, paidValue)
             .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
             ;
         getEntityManager().createQuery(criteria).executeUpdate();
@@ -422,6 +421,22 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         Root<Document> root = criteria.from(Document.class);
         criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(root.get(Document_.id).in(importedDeliveryNotes));
         getEntityManager().createQuery(criteria).executeUpdate();        
+    }
+
+    /**
+     * Tests if an other entity with the same name exists.
+     * 
+     * @param document the {@link Document} to test
+     * @return 
+     */
+    public boolean existsOther(Document document) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        CriteriaQuery<Document> cq = criteria.where(
+                cb.and(cb.notEqual(root.<Long>get(Document_.id), document.getId()),
+                       cb.equal(root.<String>get(Document_.name), document.getName())));
+        return !getEntityManager().createQuery(cq).getResultList().isEmpty();
     }
     
 }

@@ -39,6 +39,8 @@ import com.sebulli.fakturama.model.IEntity;
  *    GlazedLists and sorting
  *    
  * @see {@linkplain http://www.glazedlists.com/}
+ * 
+ * @deprecated use {@link EntityGridListLayer}
  */
 public class ListViewGridLayer<T extends IEntity> extends GridLayer {
 

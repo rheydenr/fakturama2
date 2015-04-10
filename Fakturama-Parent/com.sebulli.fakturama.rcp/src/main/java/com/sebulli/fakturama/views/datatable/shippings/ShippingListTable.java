@@ -74,7 +74,7 @@ import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
-import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -223,7 +223,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<Shipping>(propertyNames, derivedColumnPropertyAccessor); 
+        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Shipping>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
         final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, new ShippingFilterator());

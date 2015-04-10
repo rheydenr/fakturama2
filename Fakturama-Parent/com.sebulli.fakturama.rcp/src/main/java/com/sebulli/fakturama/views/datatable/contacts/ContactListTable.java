@@ -71,7 +71,7 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
-import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -262,7 +262,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<Contact>(propertyNames, derivedColumnPropertyAccessor); 
+        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Contact>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
         final MatcherEditor<Contact> textMatcherEditor = new TextWidgetMatcherEditor<Contact>(searchText, new ContactFilterator());

@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
@@ -29,9 +28,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 
 import ca.odell.glazedlists.EventList;
 
@@ -45,24 +42,18 @@ public class EntityGridListLayer<T extends IEntity> {
     //    private ColumnOverrideLabelAccumulator columnLabelAccumulator;
     private BodyLayerStack<T> bodyLayerStack;
     private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer;
-    //    private ViewportLayer viewportLayer;
-    //    private SelectionLayer selectionLayer;
     private GridLayer gridLayer;
-
-    /**
-     * 
-     */
-    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry) {
+    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry) {
 
         // 1. create BodyLayerStack
-        bodyLayerStack = new BodyLayerStack<T>(eventList, columnPropertyAccessor);
+        bodyLayerStack = new BodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor);
 
         //2. build the column header layer
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
+        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
         columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
 
         // 3. build the row header layer
-        IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
         DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
@@ -74,20 +65,19 @@ public class EntityGridListLayer<T extends IEntity> {
         // 5. build the grid layer
         gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
         gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer));
+    }
 
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        IRowIdAccessor<T> rowIdAccessor = new IRowIdAccessor<T>() {
+    /**
+     * 
+     */
+    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry) {
+        this(eventList, propertyNames, columnPropertyAccessor, new IRowIdAccessor<T>() {
             @Override
             public Serializable getRowId(T rowObject) {
+                // default implementation uses entity id as row id
                 return rowObject.getId();
             }
-        };
-
-        RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(bodyLayerStack.getSelectionLayer(), bodyLayerStack.getBodyDataProvider(), rowIdAccessor,
-                false);
-        bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
-        // Select complete rows
-        bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<T>());
+        }, configRegistry);
     }
 
     /**

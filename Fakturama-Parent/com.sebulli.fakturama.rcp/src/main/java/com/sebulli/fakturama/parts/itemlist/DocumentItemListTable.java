@@ -21,6 +21,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -36,10 +37,15 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -51,27 +57,30 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
+import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
+import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -94,7 +103,7 @@ import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+//import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -121,6 +130,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     @Inject
     protected IEventBroker evtBroker;
+    
+    @Inject
+    private ESelectionService selectionService;
+    
+    @Inject
+    private EModelService modelService;
 
     @Inject
     @Preference
@@ -142,14 +157,17 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private Control top;
     
     private static final String OPTIONAL_CELL_LABEL = "Optional_Cell_LABEL";
-    private static final String DECIMALVALUE_CELL_LABEL = "Discount_Cell_LABEL";
+    private static final String PERCENT_CELL_LABEL = "Percent_Cell_LABEL";
     private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
     private static final String TOTAL_MONEYVALUE_CELL_LABEL = "TotalMoneyValue_Cell_LABEL";
     private static final String PICTURE_CELL_LABEL = "Picture_Cell_LABEL";
+    private static final String TEXT_CELL_LABEL = "Text_Cell_LABEL";
+    private static final String DECIMAL_CELL_LABEL = "Decimal_Cell_LABEL";
+    private static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
+
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.documentitemlist.popup";
 
-    private ListViewGridLayer<DocumentItemDTO> gridLayer;
     private EntityGridListLayer<DocumentItemDTO> gridListLayer;
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
@@ -181,7 +199,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
         
-        this.top = super.createPartControl(parent, DocumentItem.class, false, ID);
+        this.top = super.createPartControl(parent, DocumentItemDTO.class, false, ID);
 //
 //        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
 //        tableDataLayer.setColumnPercentageSizing(true);
@@ -282,7 +300,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 switch (descriptor) {
                 case POSITION:
-                    retval = 7; // TODO where do we get the position?
+                    retval = rowObject.getDocumentItem().getPosNr();
                     break;
                 case OPTIONAL:
                 case QUANTITY:
@@ -386,47 +404,44 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             }
         };
 
-        // build the column header layer
-        // Column header data provider includes derived properties
-//        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<DocumentItem>(propertyNames, derivedColumnPropertyAccessor); 
+        IRowIdAccessor<DocumentItemDTO> rowIdAccessor = new IRowIdAccessor<DocumentItemDTO>() {
+            @Override
+            public Serializable getRowId(DocumentItemDTO rowObject) {
+                return rowObject.getDocumentItem().getPosNr();
+            }
+        };
 
-        //create the body layer stack
-//        final IRowDataProvider<DocumentItem> bodyDataProvider = 
-//                new GlazedListsDataProvider<DocumentItem>(documentItemsListData, columnPropertyAccessor);
-        
         //build the grid layer
-        
-        gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames, derivedColumnPropertyAccessor, configRegistry);
+        gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames, derivedColumnPropertyAccessor, rowIdAccessor, configRegistry);
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
-        GlazedListsEventLayer<DocumentItemDTO> vatListEventLayer = new GlazedListsEventLayer<DocumentItemDTO>(tableDataLayer, getDocumentItemsListData());
-        
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-        vatListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        tableDataLayer.setColumnPercentageSizing(true);
         
         // Custom selection configuration
         selectionLayer = gridListLayer.getSelectionLayer();
         
+        //set ISelectionProvider
+        final RowSelectionProvider<DocumentItemDTO> selectionProvider = 
+                new RowSelectionProvider<DocumentItemDTO>(selectionLayer, gridListLayer.getBodyDataProvider());
+        
+        //add a listener to the selection provider, in an Eclipse application you would do this
+        //e.g. getSite().getPage().addSelectionListener()
+        selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+            
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+//                log.debug("Selection changed:");
+                
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                @SuppressWarnings("unchecked")
+                List<DocumentItemDTO> selectedElements = selection.toList();
+                selectionService.setSelection(selectedElements);
+            }
+            
+        });
         
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-        IRowIdAccessor<DocumentItemDTO> rowIdAccessor = new IRowIdAccessor<DocumentItemDTO>() {
-            @Override
-            public Serializable getRowId(DocumentItemDTO rowObject) {
-                return rowObject.getDocumentItem().getId();
-            }
-        };
-        
-//        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<DocumentItemDTO> selectionModel = new RowSelectionModel<>(selectionLayer, gridListLayer.getBodyDataProvider(), rowIdAccessor, false);
-        selectionLayer.setSelectionModel(selectionModel);
-
-        // Label accumulator - adds labels to all cells with the given data value
-//        CellOverrideLabelAccumulator<DocumentItem> cellLabelAccumulator =
-//              new CellOverrideLabelAccumulator<DocumentItem>(gridLayer.getBodyDataProvider());
-//        cellLabelAccumulator.registerOverride(defaultVat, STANDARD_COLUMN_POSITION, DEFAULT_CELL_LABEL);
 
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
@@ -434,10 +449,17 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.PICTURE, PICTURE_CELL_LABEL);
-        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VAT, DECIMALVALUE_CELL_LABEL);
-        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DISCOUNT, DECIMALVALUE_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VAT, VAT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DISCOUNT, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.UNITPRICE, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.TOTALPRICE, TOTAL_MONEYVALUE_CELL_LABEL);
+        
+        // "normal" columns are always editable
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DESCRIPTION, TEXT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.ITEMNUMBER, TEXT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.NAME, TEXT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUANTITY, DECIMAL_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUNIT, TEXT_CELL_LABEL);
 
         final NatTable natTable = new NatTable(tableComposite /*, 
                 SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridListLayer.getGridLayer(), false);
@@ -561,8 +583,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
     @Override
     public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            DocumentItemDTO objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+        if(selectionLayer.getFullySelectedRowPositions().length > 0) { 
+            DocumentItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
                 List<DocumentItemDTO> tmpList = getDocumentItemsListData().stream().filter(d -> d != objToDelete).collect(Collectors.toList());
                 getDocumentItemsListData().clear();
                 getDocumentItemsListData().addAll(tmpList);
@@ -625,6 +647,42 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                                                    styleLeftAligned,                // value of the attribute
                                                    DisplayMode.NORMAL,              // apply during normal rendering i.e not during selection or edit
                                                    GridRegion.BODY.toString());     // apply the above for all cells with this label
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE, 
+                    IEditableRule.ALWAYS_EDITABLE, 
+                    DisplayMode.EDIT, TEXT_CELL_LABEL);
+            
+            // for number values (e.g., quantity)
+            TextCellEditor textCellEditor = new TextCellEditor();
+            textCellEditor.setErrorDecorationEnabled(true);
+            textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, 
+                    textCellEditor, 
+                    DisplayMode.NORMAL, DECIMAL_CELL_LABEL);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE, 
+                    IEditableRule.ALWAYS_EDITABLE, 
+                    DisplayMode.EDIT, DECIMAL_CELL_LABEL);
+            configRegistry.registerConfigAttribute( 
+                    CellConfigAttributes.DISPLAY_CONVERTER, 
+                    new DefaultDoubleDisplayConverter(), 
+                    DisplayMode.EDIT, DECIMAL_CELL_LABEL);
+            
+          //register a combobox editor for VAT values 
+            configRegistry.registerConfigAttribute( 
+                    CellConfigAttributes.CELL_PAINTER, 
+                    new ComboBoxPainter(), 
+                    DisplayMode.NORMAL, VAT_CELL_LABEL); 
+            configRegistry.registerConfigAttribute( 
+                    EditConfigAttributes.CELL_EDITOR, 
+                    new ComboBoxCellEditor(Arrays.asList(new String[] {"Value1", "Value2"} )), 
+                    DisplayMode.EDIT, VAT_CELL_LABEL); 
+            configRegistry.registerConfigAttribute( 
+                    EditConfigAttributes.CELL_EDITOR, 
+                    new ComboBoxCellEditor(Arrays.asList(new String[] {"Value1", "Value2"} )), 
+                    DisplayMode.NORMAL, VAT_CELL_LABEL); 
+            
             // for optional values
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
@@ -649,21 +707,21 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             // for discount values
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                     styleRightAligned,      
-                    DisplayMode.NORMAL, DECIMALVALUE_CELL_LABEL ); 
+                    DisplayMode.NORMAL, PERCENT_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new PercentageDisplayConverter(),
-                    DisplayMode.NORMAL, DECIMALVALUE_CELL_LABEL);
+                    DisplayMode.NORMAL, PERCENT_CELL_LABEL);
             configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
-                    DisplayMode.EDIT, DECIMALVALUE_CELL_LABEL);
+                    DisplayMode.EDIT, PERCENT_CELL_LABEL);
             
             // have a little space between cell border and value
             CellPainterWrapper paddedTextPainter = new PaddingDecorator(new TextPainter(), 0, 5, 0, 0);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER,
                     paddedTextPainter,
-                    DisplayMode.NORMAL, DECIMALVALUE_CELL_LABEL);
+                    DisplayMode.NORMAL, PERCENT_CELL_LABEL);
 
             // for monetary values
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,

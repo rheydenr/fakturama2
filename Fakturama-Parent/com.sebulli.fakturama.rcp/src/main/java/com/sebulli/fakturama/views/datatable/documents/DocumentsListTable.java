@@ -99,7 +99,7 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
-import com.sebulli.fakturama.views.datatable.ListViewHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -313,7 +313,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewHeaderDataProvider<Document>(propertyNames, derivedColumnPropertyAccessor); 
+        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Document>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
         final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText, new DocumentFilterator());

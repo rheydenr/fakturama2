@@ -18,17 +18,16 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 
 /**
- * @author rheydenr
  *
  */
-public class ListViewHeaderDataProvider<T> extends DefaultColumnHeaderDataProvider {
+public class ListViewColumnHeaderDataProvider<T> extends DefaultColumnHeaderDataProvider {
     
     private IColumnPropertyAccessor<T> derivedColumnPropertyAccessor;
 
     /**
      * @param columnLabels
      */
-    public ListViewHeaderDataProvider(String[] columnLabels) {
+    public ListViewColumnHeaderDataProvider(String[] columnLabels) {
         super(columnLabels);
     }
     
@@ -36,7 +35,7 @@ public class ListViewHeaderDataProvider<T> extends DefaultColumnHeaderDataProvid
      * @param propertyNames
      * @param derivedColumnPropertyAccessor
      */
-    public ListViewHeaderDataProvider(String[] propertyNames, IColumnPropertyAccessor<T> derivedColumnPropertyAccessor) {
+    public ListViewColumnHeaderDataProvider(String[] propertyNames, IColumnPropertyAccessor<T> derivedColumnPropertyAccessor) {
         super(propertyNames);
         this.derivedColumnPropertyAccessor = derivedColumnPropertyAccessor;
     }

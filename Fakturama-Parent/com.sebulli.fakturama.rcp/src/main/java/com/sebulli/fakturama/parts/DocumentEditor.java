@@ -271,7 +271,7 @@ public class DocumentEditor extends Editor<Document> {
 	private String noVatName;
 //	private String noVatDescription;
 	private Payment payment;
-	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+//	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
 //	private int shippingId;
 	private Shipping shipping = null;
 //	private VAT shippingVat = null;
@@ -392,8 +392,9 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Exit save if there is a document with the same number
-		if (thereIsOneWithSameNumber())
+		if (thereIsOneWithSameNumber()) {
 			return;
+		}
 
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
@@ -484,12 +485,12 @@ public class DocumentEditor extends Editor<Document> {
 			String paymentText = "";
 
             if (bPaid.getSelection()) {
-                document.setPaid(Boolean.TRUE);
+//                document.setPaid(Boolean.TRUE);
                 //				document.setPayDate(dtPaidDate.getSelection());   // done by databinding
                 //				document.setPaidValue(paidValue.getNumber().doubleValue());   // done by databinding
                 deposit = Money.of(Double.valueOf(0.0), currencyUnit);
-                if (paidValue.isLessThan(total)) {
-                    deposit = paidValue;
+                if (document.getPaidValue() < total.getNumber().doubleValue()) {
+                    deposit = Money.of(document.getPaidValue(), currencyUnit);
                     document.setDeposit(Boolean.TRUE);
                     document.setPaid(Boolean.FALSE);
                 }
@@ -725,7 +726,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * Updates all {@link Dunning}s which are related to the current invoice.
 	 */
 	private void updateDunnings() {
-	    documentsDAO.updateDunnings(document, bPaid.getSelection(), dtPaidDate.getSelection(), paidValue);
+	    documentsDAO.updateDunnings(document, bPaid.getSelection(), dtPaidDate.getSelection(), document.getPaidValue());
 	}
 
 	/**
@@ -866,7 +867,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		netgross = document.getNetGross() != null ? document.getNetGross() : 0;
 		
-		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
+//		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
 		if (dunningLevel <= 0) {
             if (document.getBillingType() == BillingType.DUNNING) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1173,7 +1174,8 @@ public class DocumentEditor extends Editor<Document> {
 		else {
 
 			// Reset the paid value to 0
-			paidValue = Money.of(Double.valueOf(0.0), currencyUnit);
+//			paidValue = Money.of(Double.valueOf(0.0), currencyUnit);
+		    document.setPaidValue(Double.valueOf(0.0));
 
 			// Create the due days label
 			Label dueDaysLabel = new Label(paidDataContainer, SWT.NONE);
@@ -1222,6 +1224,7 @@ public class DocumentEditor extends Editor<Document> {
 			// Create the issue date widget
 			dtIssueDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
+			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
 			GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -1260,6 +1263,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		dtPaidDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 		dtPaidDate.setToolTipText(paidDateLabel.getToolTipText());
+		dtPaidDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(dtPaidDate);
 
 		// Set the paid date to the documents "paydate" parameter
@@ -1272,21 +1276,20 @@ public class DocumentEditor extends Editor<Document> {
 		
 		//T: Label in the document editor
 		paidValueLabel.setText(msg.commonFieldValue);
-		//T: Tool Tip Text
 		paidValueLabel.setToolTipText(msg.editorDocumentPaidvalue);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidValueLabel);
 
 		// If it's the first time that this document is marked as paid
 		// (if the value is 0.0), then also set the date to "today"
-		if (paidValue.isZero() && clickedByUser) {
-			paidValue = total;
+		if ((document.getPaidValue() == null || document.getPaidValue() == 0) && clickedByUser) {
+		    document.setPaidValue(total.getNumber().doubleValue());
 			dtPaidDate.setSelection(Calendar.getInstance().getTime());
 		}
 		FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
-		txtPayValue.setValue(paidValue);
+//		txtPayValue.setValue(paidValue);
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
 	}
 	
@@ -1587,6 +1590,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Service date
 		dtServiceDate = new CDateTime(useOrderDate ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
 		dtServiceDate.setToolTipText(labelServiceDate.getToolTipText());
+		dtServiceDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().minSize(80, SWT.DEFAULT).grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtServiceDate);
 		// Set the dtDate widget to the documents date
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
@@ -1608,6 +1612,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Order date
 		dtOrderDate = new CDateTime(useOrderDate ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
 		dtOrderDate.setToolTipText(labelOrderDate.getToolTipText());
+		dtOrderDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtOrderDate);
 		// Set the dtDate widget to the documents date
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
@@ -2063,7 +2068,6 @@ public class DocumentEditor extends Editor<Document> {
         
         //T: Mark a paid document with this text.
         bPaid.setText(msg.documentOrderStatePaid);
-        //T: Tool Tip Text
         bPaid.setToolTipText(msg.editorDocumentCheckboxPaidTooltip);
         
         GridDataFactory.swtDefaults().applyTo(bPaid);
@@ -2610,8 +2614,7 @@ public class DocumentEditor extends Editor<Document> {
 			return false;
 
 		// Cancel, if there is already a document with the same ID
-		Document testDoc = documentsDAO.findByName(txtName.getText());
-		if (testDoc != null) {
+		if (documentsDAO.existsOther(document)) {
 			// Display an error message
 		    MessageDialog.openError(top.getShell(), msg.editorDocumentErrorDocnumberTitle, msg.editorDocumentDialogWarningDocumentexists+ " " + txtName.getText());
 			return true;

@@ -20,6 +20,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -41,6 +42,7 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
  * Builder for the {@link DocumentItem}s list.
@@ -69,10 +71,20 @@ public class ItemListBuilder {
 
     protected NatTable natTable;
 
+    private MPart part;
+
+    /**
+     * Build the {@link DocumentsListTable}.
+     * @return
+     */
     public DocumentItemListTable build() {
-        
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
+        String ID = "com.sebulli.fakturama.documentitemslist.toolbar";
+//        this.part = (MPart) parent.getData("modelElement");
+//        MSnippetContainer snippetWindow = (MSnippetContainer)modelService.find("com.sebulli.fakturama.snippets", application);
+//        modelService.cloneSnippet(snippetWindow, ID, part);
+        
         // Container for the label and the add and delete button.
         Composite addButtonComposite = new Composite(parent, SWT.NONE | SWT.RIGHT);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(addButtonComposite);
@@ -86,7 +98,6 @@ public class ItemListBuilder {
 
         // Item add button
         Label addFromListButton = new Label(addButtonComposite, SWT.NONE);
-        //T: Tool Tip Text
         addFromListButton.setToolTipText(msg.dialogSelectproductTooltip);
         addFromListButton.setImage(Icon.DOCEDIT_PRODUCT_LIST.getImage(IconSize.BrowserIconSize));
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addFromListButton);
