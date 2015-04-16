@@ -357,15 +357,15 @@ private Menu createContextMenu(NatTable natTable) {
                     retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case PICTURE:
-/* old code:
-            // Open a preview dialog
-            ((PictureViewEditor)editor).openPreview(item.getStringValueByKey("picturename"));
- */
                     // we have to build the picture path
+                    // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
                     String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    String picturePath = preferences.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
-//                    retval = getScaledImage(picturePath + imgPath);
-                    retval = picturePath + imgPath;
+                    if (imgPath != null) {
+                        String picturePath = preferences.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
+                        retval = picturePath + imgPath;
+                    } else {
+                        retval = null;
+                    }
                     break;
                 case VAT:
                     retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
@@ -1008,17 +1008,17 @@ private Menu createContextMenu(NatTable natTable) {
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_TITLE, msg.dialogProductPicturePreview);
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_INFORMATION));
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
-            
-            Point size = new Point(400, 300);
-            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_SIZE, size);
-            
-            int screenWidth = display.getBounds().width;
-            int screenHeight = display.getBounds().height;
-            Point location = new Point((screenWidth / (2 * display.getMonitors().length)) - (size.x/2), (screenHeight / 2) - (size.y/2));
-            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_LOCATION, location);
-            
-            //add custom message 
-            editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
+//            
+//            Point size = new Point(400, 300);
+//            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_SIZE, size);
+//            
+//            int screenWidth = display.getBounds().width;
+//            int screenHeight = display.getBounds().height;
+//            Point location = new Point((screenWidth / (2 * display.getMonitors().length)) - (size.x/2), (screenHeight / 2) - (size.y/2));
+//            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_LOCATION, location);
+//            
+//            //add custom message 
+//            editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
             
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS, 

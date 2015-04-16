@@ -508,7 +508,8 @@ public abstract class Editor<T extends IEntity> {
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
         } else {
-            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
+//            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
+            uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
         }
 
         if (modelToTarget != null) {

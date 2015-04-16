@@ -867,7 +867,8 @@ public class MigrationManager {
 
 	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
 		Contact contact = null;
-		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
+		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
+		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
 			contact = modelFactory.createDebitor();
 			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
@@ -1200,11 +1201,12 @@ public class MigrationManager {
 		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
 
 	    createColumnWidthPreferences();
-	    
+	    String currentUser = System.getProperty("user.name", "(unknown)");
         for (OldProperties oldProperty : oldDao.findAllPropertiesWithoutColumnWidthProperties()) {
 			try {
 				UserProperty prop = modelFactory.createUserProperty();
 				prop.setName(oldProperty.getName());
+				prop.setUser(currentUser);
 				String propValue = oldProperty.getValue();
 
 				// there are only three different default entries
@@ -1233,6 +1235,7 @@ public class MigrationManager {
            			// the key has to be changed, too!
            			prop.setName(Constants.PREFERENCE_CURRENCY_LOCALE);
            			UserProperty propUseSymbol = modelFactory.createUserProperty();
+           			propUseSymbol.setUser(currentUser);
            			propUseSymbol.setName(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
        			    propUseSymbol.setValue(Boolean.FALSE.toString());  // default
        			    
@@ -1256,6 +1259,7 @@ public class MigrationManager {
                     retval = DataUtils.getInstance().formatCurrency(exampleNumber, currencyLocale, Boolean.parseBoolean(propUseSymbol.getValue()));
                     UserProperty propFormatExample = modelFactory.createUserProperty();
                     propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
+                    propFormatExample.setUser(currentUser);
                     propFormatExample.setValue(retval);
                     propertiesDAO.save(propUseSymbol);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());

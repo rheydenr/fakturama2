@@ -115,7 +115,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         try {
             print(builder, amount);
         } catch (IOException e) {
-            throw new IllegalStateException("Error foratting of " + amount, e);
+            throw new IllegalStateException("Error formatting of " + amount, e);
         }
         return builder.toString();
     }

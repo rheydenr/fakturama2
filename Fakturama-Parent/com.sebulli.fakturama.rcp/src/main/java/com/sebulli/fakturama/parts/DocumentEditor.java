@@ -961,10 +961,17 @@ public class DocumentEditor extends Editor<Document> {
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
 		// unwrap DocumentItemDTOs at first
 		List<DocumentItem> docItems = new ArrayList<>();
-		// don't use Lambdas because the List isn't initialized yet.
-		for (DocumentItemDTO item : itemListTable.getDocumentItemsListData()) {
-		    docItems.add(item.getDocumentItem());
-        }
+		if(itemListTable != null) {
+		    // itemListTable could be null if a document with hasPrice()=false is displayed
+		    // (although it *could* have prices, but for this dialog they don't have to be 
+		    // displayed). This is e.g. for Dunnings.
+    		// don't use Lambdas because the List isn't initialized yet.
+    		for (DocumentItemDTO item : itemListTable.getDocumentItemsListData()) {
+    		    docItems.add(item.getDocumentItem());
+            }
+		} else {
+		    docItems.addAll(document.getItems());
+		}
 
 		// Do the calculation
         documentSummary = documentSummaryCalculator.calculate(docItems,
@@ -2045,7 +2052,7 @@ public class DocumentEditor extends Editor<Document> {
                     , createCommandParams(DocumentType.INVOICE));
 			break;
 		case DUNNING:
-		    String action = String.format("%s%s.%s", tooltipPrefix, Integer.toString(dunningLevel + 1),msg.mainMenuNewDunning);
+		    String action = String.format("%d. %s", (dunningLevel + 1), msg.toolbarNewDocumentDunningName);
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, action, 
 	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.DUNNING));
@@ -2307,13 +2314,8 @@ public class DocumentEditor extends Editor<Document> {
 
         // Total value
         totalValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
-        if(hasPrice) {
-            totalValue.setFormatter(new MoneyFormatter());
-        } else {
-            totalValue.setValue("---");
-        }
+        totalValue.setFormatter(new MoneyFormatter());
         totalValue.getControl().setEditable(false);
-//			totalValue.setText("---");
         GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(totalValue.getControl());
     }
 

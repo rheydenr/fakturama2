@@ -13,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
+import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.UserProperty;
@@ -73,6 +74,7 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
      */
     protected void setEntityManager(EntityManager em) {
         this.em = em;
+        this.em.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
     }
 
     /**

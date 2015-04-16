@@ -37,7 +37,7 @@ public enum DocumentType {
 	private int key, sign;
 	
 	/**
-	 * the l18n key for a new document (e.g., "main.menu.new.letter" => "New Letter")
+	 * the l10n key for a new document (e.g., "main.menu.new.letter" => "New Letter")
 	 */
 	private String newTextKey;
 

@@ -358,9 +358,9 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         contactListData.clear();
-        contactListData.addAll(contactDAO.findAll());
+        contactListData.addAll(contactDAO.findAll(true));
         categories.clear();
-        categories.addAll(contactCategoriesDAO.findAll());
+        categories.addAll(contactCategoriesDAO.findAll(true));
         sync.syncExec(new Runnable() {
            
             @Override

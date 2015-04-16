@@ -121,7 +121,6 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtCity;
 	private ComboViewer comboCountry;
 	private CDateTime dtBirthday;
-//	private DateTime dtBirthday;
 	private ComboViewer comboDeliveryGender;
 	private Text txtDeliveryTitle;
 	private Text txtDeliveryFirstname;
@@ -637,7 +636,7 @@ public class ContactEditor extends Editor<Contact> {
         dtBirthday.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         dtBirthday.setFormat(CDT.DATE_MEDIUM);
 		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtBirthday);
+		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
 		// Set the dtBirthday widget to the contact's birthday date
 		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 

@@ -16,16 +16,15 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.nebula.widgets.nattable.edit.EditTypeEnum;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Label;
 
-import com.sebulli.fakturama.dialogs.ProductPictureDialog;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 
 /**
@@ -34,20 +33,17 @@ import com.sebulli.fakturama.views.datatable.CellImagePainter;
  * 
  * @author Gerd Bartelt
  */
-public class PictureViewEditor extends AbstractCellEditor implements ICellEditDialog {
+public class PictureViewEditor extends AbstractCellEditor {
 
     // The picture name
     private String pictureName ="";
-    
-    //The shell to display the dialog
-    private Shell shell = null;
     
     // The scaled image with width and height (used to resize the dialog)
     private Image scaledImage = null;
     private int width = 300;
     private int height = 200;
 	
-    private Composite parent;
+    private Control parent;
 
     protected Map<String, Object> editDialogSettings;
 
@@ -60,8 +56,7 @@ public class PictureViewEditor extends AbstractCellEditor implements ICellEditDi
 
     @Override
     public void setEditorValue(Object value) {
-        // TODO Auto-generated method stub
-        
+        // nothing to do
     }
 
     @Override
@@ -77,31 +72,26 @@ public class PictureViewEditor extends AbstractCellEditor implements ICellEditDi
      *      pictureName Name of the picture
      */
     @Override
-    public Control createEditorControl(Composite parent) {
-        this.parent = parent;
-        return parent;
-    }
-    
-    @Override
-    public int open() {
-      // Exit, if no picture is set
-      if (pictureName.isEmpty())
-          return 0;
-      
-      // Exit, if no picture is set
-      if (scaledImage == null) 
-          return 0;
-
-        // Create the picture
-      ProductPictureDialog preview = new ProductPictureDialog(shell, pictureName, layerCell, this, configRegistry);
-        
-        // Open the dialog
-      return preview.open();
+    public Control createEditorControl(Composite composite) {
+        // Add a label that contains the image
+        Label label = new Label(composite, SWT.NONE);
+        if(getEditorValue() != null) {
+            label.setImage((Image) getEditorValue());
+        }
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.TOP).applyTo(label);
+        this.parent = composite;
+       return this.parent;
     }
 
   @Override
   protected Control activateCell(Composite parent, Object originalCanonicalValue) {
-      this.parent = parent;
+//    // Exit, if no picture is set
+//    if (pictureName.isEmpty())
+//        return 0;
+//    
+//    // Exit, if no picture is set
+//    if (scaledImage == null) 
+//        return 0;
       // Display the picture, if it is set.
       if (originalCanonicalValue != null) {
           this.pictureName = (String) originalCanonicalValue;
@@ -124,29 +114,9 @@ public class PictureViewEditor extends AbstractCellEditor implements ICellEditDi
 
           // Rescale the picture to the maximum width
           scaledImage = new Image(parent.getDisplay(), image.getImageData().scaledTo(width, height));
-
       }
-      return parent;
+      this.parent = createEditorControl(parent);
+      return this.parent;
   }
-    
-    @Override
-    public Object getCommittedValue() {
-        return null;
-    }
-
-    @Override
-    public EditTypeEnum getEditType() {
-        return EditTypeEnum.SET;
-    }
-
-    @Override
-    public Object calculateValue(Object currentValue, Object processValue) {
-        return currentValue;
-    }
-
-    @Override
-    public void setDialogSettings(Map<String, Object> editDialogSettings) {
-        // nothing to do
-    }
 
 }
