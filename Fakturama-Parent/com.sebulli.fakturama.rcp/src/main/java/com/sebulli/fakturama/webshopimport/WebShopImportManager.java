@@ -64,13 +64,10 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -80,7 +77,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -146,8 +142,7 @@ public class WebShopImportManager {
     private Logger log;
     
     @Inject
-    @Preference
-    private IEclipsePreferences eclipsePrefs;
+    private IPreferenceStore preferences;
     
     @Inject
     private VatsDAO vatsDAO;
@@ -275,7 +270,7 @@ public class WebShopImportManager {
 	
 	@PostConstruct
 	public void initialize() {
-		generalWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
+		generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
 		productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
@@ -405,27 +400,8 @@ public class WebShopImportManager {
 
     class WebShopImportWorker implements IRunnableWithProgress {
 	    private IProgressMonitor localMonitor;
-		private final IPreferenceStore defaultValuesNode;
 		private CurrencyUnit currencyCode;
         private final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
-	    
-	    /**
-		 * 
-		 */
-		public WebShopImportWorker() {
-    	    defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");
-		}
-		
-		/**
-		 * Retrieves a preference from PreferenceStore. Uses a default value (from PreferenceStore) if
-		 * no value was found.
-		 * 
-		 * @param preference preference which is looked for
-		 * @return value for this preference
-		 */
-		private String getPreference(String preference) {
-			return eclipsePrefs.get(preference, defaultValuesNode.getDefaultString(preference));
-		}
 
 		@Override
 	    public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException  {
@@ -434,19 +410,17 @@ public class WebShopImportManager {
     		Webshopexport webshopexport = null;
 
             // Get URL, user name and password from the preference store
-            String address = getPreference(Constants.PREFERENCES_WEBSHOP_URL);
-            String user = getPreference(Constants.PREFERENCES_WEBSHOP_USER);
-            String password = getPreference(Constants.PREFERENCES_WEBSHOP_PASSWORD);
-            Integer maxProducts  = Integer.parseInt(getPreference(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS));
-            Boolean onlyModifiedProducts  = Boolean.parseBoolean(getPreference(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS));
-            useEANasItemNr  = Boolean.parseBoolean(getPreference(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR));
-            Boolean useAuthorization = Boolean.parseBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED);
-            String authorizationUser = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER);
-            String authorizationPassword = getPreference(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD);
+            String address = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
+            String user = preferences.getString(Constants.PREFERENCES_WEBSHOP_USER);
+            String password = preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD);
+            Integer maxProducts  = Integer.parseInt(preferences.getString(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS));
+            Boolean onlyModifiedProducts  = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
+            useEANasItemNr  = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
+            Boolean useAuthorization = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED);
+            String authorizationUser = preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER);
+            String authorizationPassword = preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD);
             
-//   			String currencyPreference = eclipsePrefs.get(Constants.PREFERENCE_GENERAL_CURRENCY, "EUR");
-   			currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-//   			currencyCode = MonetaryCurrencies.getCurrency(currencyPreference);
+   			currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
             
             // Check empty URL
             if (address.isEmpty()) {
@@ -455,12 +429,13 @@ public class WebShopImportManager {
                 return;
             }
             
-            // Add "http://"
-            if (!address.toLowerCase().startsWith("http://") 
-                    && !address.toLowerCase().startsWith("https://") 
-                    && !address.toLowerCase().startsWith("file://")) {
-                address = "http://" + address;
-            }
+            // Add "http://" if no protocol is given
+            address = StringUtils.prependIfMissingIgnoreCase(address, "http://", "https://", "file://");
+//            if (!address.toLowerCase().startsWith("http://") 
+//                    && !address.toLowerCase().startsWith("https://") 
+//                    && !address.toLowerCase().startsWith("file://")) {
+//                address = "http://" + address;
+//            }
     
             // Get the open order IDs that are out of sync with the webshop
 			// from the file system
@@ -511,7 +486,7 @@ public class WebShopImportManager {
                     }
     
                     if (onlyModifiedProducts) {
-                        String lasttime = eclipsePrefs.get("lastwebshopimport","");
+                        String lasttime = preferences.getString("lastwebshopimport");
                         if (! lasttime.isEmpty())
                             postString += "&lasttime=" + lasttime.toString();
                     }
@@ -634,7 +609,7 @@ public class WebShopImportManager {
     
                 // Store the time of now
                 String now = DataUtils.getInstance().DateAsISO8601String();
-                eclipsePrefs.put("lastwebshopimport", now);
+                preferences.putValue("lastwebshopimport", now);
                 
                 localMonitor.done();
             }
@@ -749,7 +724,7 @@ public class WebShopImportManager {
          * @throws SQLException 
          */
         private void createOrderFromXMLOrderNode(OrderType order, String lang) throws SQLException {
-        	ContactUtil contactUtil = ContactUtil.getInstance(eclipsePrefs);   			
+        	ContactUtil contactUtil = ContactUtil.getInstance(preferences);   			
         	
     		// Order data
     		String webshopId;
@@ -806,7 +781,7 @@ public class WebShopImportManager {
                 contactItem.setGender(Integer.valueOf(2));
 
 			// Get the category for new contacts from the preferences
-			String shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY, "");
+			String shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY);
 			if(StringUtils.isNotEmpty(shopCategory)) {
     			ContactCategory contactCat = contactCatBuilder.buildCategoryFromString(shopCategory, ContactCategory.class);
     			// later we have more than one category per contact
@@ -916,7 +891,7 @@ public class WebShopImportManager {
     			VAT vat = getOrCreateVAT(itemType.getVatname(), vatPercent);
     
     			// Get the category of the imported products from the preferences
-    			shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY, "");
+    			shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
     			shopCategory = StringUtils.appendIfMissing(shopCategory, "/", "/");
     
                 // Import the item as a new product
@@ -999,7 +974,7 @@ public class WebShopImportManager {
     			Double shippingGross = Double.valueOf(shippingType.getGross());
     
     			// Get the category of the imported shipping from the preferences
-    			shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY, "");   
+    			shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY);   
     			VAT shippingvat = getOrCreateVAT(shippingType.getVatname(), shippingVatPercent);//vatsDAO.findOrCreate(shippingvat);
     
     			// Add the shipping to the data base, if it's a new shipping
@@ -1140,7 +1115,7 @@ public class WebShopImportManager {
             Product productItem;
 
             // Get the category of the imported products from the preferences
-            String shopCategory = eclipsePrefs.get(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY, "");
+            String shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
             shopCategory = StringUtils.appendIfMissing(shopCategory, "/", "/");
 
             // Use the EAN number

@@ -29,8 +29,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
@@ -39,6 +37,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -193,10 +192,9 @@ public class ContactEditor extends Editor<Contact> {
     
     @Inject
     private PaymentsDAO paymentsDao;
-	
-	@Inject
-	@Preference  //(nodePath = "/configuration/contactPreferences")
-	protected IEclipsePreferences contactPreferences;
+    
+    @Inject
+    private IPreferenceStore preferences;
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
@@ -322,7 +320,7 @@ public class ContactEditor extends Editor<Contact> {
 	 */
 	@PostConstruct
 	public void init(Composite parent) {
-	    contactUtil = ContactUtil.getInstance(contactPreferences);
+	    contactUtil = ContactUtil.getInstance(preferences);
 
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
@@ -350,7 +348,7 @@ public class ContactEditor extends Editor<Contact> {
 			part.setLabel(msg.commandNewContactName);
 
 			// Set the payment to the standard value
-// TODO			contact.setPayment(contactPreferences.getInt("standardpayment", 1));
+// TODO			contact.setPayment(preferences.getInt("standardpayment", 1));
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -401,15 +399,15 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Some of this editos's control elements can be hidden.
 		// Get the these settings from the preference store
-		useDelivery = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY, false);
-		useBank = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK, false );
-		useMisc = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC, false);
-		useNote = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE, false);
-		useGender = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER, false);
-		useTitle = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE, false);
-		useLastNameFirst = (contactPreferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT, 1) == 1);
-		useCompany = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY, false);
-		useCountry = contactPreferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY, false);
+		useDelivery = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY);
+		useBank = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
+		useMisc = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC);
+		useNote = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE);
+		useGender = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER);
+		useTitle = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE);
+		useLastNameFirst = (preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT) == 1);
+		useCompany = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY);
+		useCountry = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
 		
 		// now do some helpful initializations (needed for combo boxes)
         Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();

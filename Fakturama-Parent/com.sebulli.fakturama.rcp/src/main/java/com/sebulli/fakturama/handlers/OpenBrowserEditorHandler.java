@@ -13,20 +13,16 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.util.Collection;
 import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -34,6 +30,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
@@ -62,14 +59,9 @@ public class OpenBrowserEditorHandler {
 
     @Inject
     private EPartService partService;
-
+    
     @Inject
-    @Preference
-    protected IEclipsePreferences preferences;
-
-    @Inject
-    @Preference(nodePath = Constants.DEFAULT_PREFERENCES_NODE)
-    private IEclipsePreferences eclipseDefaultPrefs;
+    private IPreferenceStore preferences;
 
     /**
      * Run the action
@@ -87,11 +79,11 @@ public class OpenBrowserEditorHandler {
         if (BooleanUtils.toBoolean(useFakturamaProjectURL))
             url = FAKTURAMA_PROJECT_URL;
         else {
-            url = preferences.get(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, "");
+            url = preferences.getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
             if (url.isEmpty() || url.equals("http://www.fakturama.org/"))
-                url = "file://" + preferences.get(Constants.GENERAL_WORKSPACE, "") + "/" + msg.configWorkspaceTemplatesName + "/Start/start.html";
+                url = "file://" + preferences.getString(Constants.GENERAL_WORKSPACE) + "/" + msg.configWorkspaceTemplatesName + "/Start/start.html";
 
         }
 
@@ -119,15 +111,8 @@ public class OpenBrowserEditorHandler {
     }
 
     private MPart createEditorPart(MPartStack stack, boolean isFakturamaProjectUrl, String url) {
-        MPart myPart = null;
-        Collection<MPart> parts = partService.getParts();
         // at first we look for an existing Part
-        for (MPart mPart : parts) {
-            if (StringUtils.equalsIgnoreCase(mPart.getElementId(), BrowserEditor.ID) && mPart.getContext() != null) {
-                myPart = mPart;
-                break;
-            }
-        }
+        MPart myPart = partService.findPart(BrowserEditor.ID);
 
         // if not found then we create a new one from a part descriptor
         if (myPart == null) {

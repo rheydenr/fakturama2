@@ -2,10 +2,12 @@ package com.sebulli.fakturama.views.datatable;
 
 import java.io.Serializable;
 
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.hover.HoverLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
@@ -61,15 +63,14 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         this.bodyDataProvider = new GlazedListsDataProvider<T>(sortedList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(bodyDataProvider);
 
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, sortedList);
+        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
+
+        glazedListsEventLayer = new GlazedListsEventLayer<T>(hoverLayer, sortedList);
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
         glazedListsEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         rowReorderLayer = new RowReorderLayer(glazedListsEventLayer);
-
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-
         this.selectionLayer = new SelectionLayer(rowReorderLayer);
 
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
@@ -77,9 +78,12 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         selectionLayer.setSelectionModel(selectionModel);
         // Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
+        
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 
         setUnderlyingLayer(viewportLayer);
+
+        registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
 
     /**

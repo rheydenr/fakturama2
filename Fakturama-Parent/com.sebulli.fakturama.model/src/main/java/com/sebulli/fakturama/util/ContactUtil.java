@@ -6,7 +6,7 @@ package com.sebulli.fakturama.util;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -18,21 +18,18 @@ import com.sebulli.fakturama.model.Contact;
  *
  */
 public class ContactUtil {
-	
-	private IEclipsePreferences eclipsePrefs;
+    
+	private IPreferenceStore eclipsePrefs;
 	private static ContactUtil instance;
 
     /**
      * hidden constructor
      */
-    private ContactUtil(IEclipsePreferences eclipsePrefs) {
+    private ContactUtil(IPreferenceStore eclipsePrefs) {
         this.eclipsePrefs = eclipsePrefs;
     }
 
-    /**
-	 * @param eclipsePrefs
-	 */
-	public static ContactUtil getInstance(IEclipsePreferences eclipsePrefs) {
+	public static ContactUtil getInstance(IPreferenceStore eclipsePrefs) {
 		if(instance == null) {
 		    instance = new ContactUtil(eclipsePrefs);
 		}
@@ -90,10 +87,10 @@ public class ContactUtil {
 		if(contact != null) {
     
     		// Get the format string
-    		addressFormat = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS, "");
+    		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
     
     		// Hide the following countries
-    		String hideCountriesString = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, "");
+    		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
     		String[] hideCountries = hideCountriesString.split(",");
     		for (String hideCountry : hideCountries) {
     			if (StringUtils.defaultString(contact.getAddress().getCountry()).equalsIgnoreCase(hideCountry)) {
@@ -174,16 +171,16 @@ public class ContactUtil {
 		gender = contact.getGender();
 		switch (gender) {
 		case 1:
-			greeting = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR, "");
+			greeting = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR);
 			break;
 		case 2:
-			greeting = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MS, "");
+			greeting = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MS);
 			break;
 		case 3:
-			greeting = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY, "");
+			greeting = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY);
 			break;
 		default:
-			greeting = eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, "");
+			greeting = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON);
 			break;
 		}
 
@@ -201,7 +198,7 @@ public class ContactUtil {
 	public String getCommonGreeting() {
 
 		// Get the common greeting string from the preference page.
-		return eclipsePrefs.get(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, "");
+		return eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON);
 	}
 
 	private String replaceAllWithSpace(String s, String exp, String replacement) {

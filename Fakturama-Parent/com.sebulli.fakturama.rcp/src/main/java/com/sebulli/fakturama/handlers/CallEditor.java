@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.handlers;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,13 +92,14 @@ public class CallEditor {
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
             // TODO close other parts if this is set in preferences!
             IEclipseContext stackContext = null;
-            for (MContext contexts : modelService.findElements(documentPartStack, null, MContext.class, null)) {
+            List<MContext> stackElements = modelService.findElements(documentPartStack, null, MContext.class, null);
+            for (MContext contexts : stackElements) {
                 if(((MPart)contexts).getElementId().contentEquals(DOCVIEW_PART_ID)) {
                     stackContext = contexts.getContext();
                     break;
                 }
             }
-
+            
 			// Define  the editor and try to open it
 			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category, duplicate), PartState.ACTIVATE);
 	}
@@ -136,7 +138,12 @@ public class CallEditor {
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
 			myPart.setVisible(true);
-			myPart.setContext(EclipseContextFactory.create());
+			if(stackContext != null) {
+			myPart.setContext(stackContext);
+			} else {
+//			    EclipseContextFactory.getServiceContext(Activator.getContext());
+			    myPart.setContext(EclipseContextFactory.create());
+			}
 			myPart.getProperties().put(PARAM_OBJ_ID, objId);
 			myPart.getProperties().put(PARAM_CATEGORY, category);
 			stack.getChildren().add(myPart);

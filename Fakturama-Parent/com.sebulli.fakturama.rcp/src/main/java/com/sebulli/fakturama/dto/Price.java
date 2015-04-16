@@ -80,8 +80,10 @@ public class Price {
 	 *            Item as DocumentItem
 	 */
 	public Price(DocumentItem item) {
-		this(item.getOptional() ? Double.valueOf(0.0) : item.getQuantity(), Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), item.getItemVat().getTaxValue(), item
-				.getItemRebate(), item.getNoVat(), false);
+		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
+		        Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), 
+		        item.getItemVat().getTaxValue(), item
+				.getItemRebate(), BooleanUtils.isFalse(item.getNoVat()), false);
 	}
 
 	/**

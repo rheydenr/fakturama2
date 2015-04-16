@@ -112,7 +112,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     protected ECommandService commandService;
     
     @Inject
-    private EMenuService menuService;
+    protected EMenuService menuService;
 
 	//The top composite
 	protected Composite top;

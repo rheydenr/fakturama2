@@ -39,21 +39,22 @@ import com.sebulli.fakturama.model.IEntity;
  */
 public class EntityGridListLayer<T extends IEntity> {
 
-    //    private ColumnOverrideLabelAccumulator columnLabelAccumulator;
     private BodyLayerStack<T> bodyLayerStack;
     private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer;
     private GridLayer gridLayer;
-    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry) {
+    
+    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
+            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, boolean withRowHeader) {
 
         // 1. create BodyLayerStack
-        bodyLayerStack = new BodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor);
+        bodyLayerStack = new BodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor);        
 
         //2. build the column header layer
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
         columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
 
         // 3. build the row header layer
-        IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+        IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider(), withRowHeader);
         DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
 
@@ -65,6 +66,11 @@ public class EntityGridListLayer<T extends IEntity> {
         // 5. build the grid layer
         gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
         gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer));
+    }
+    
+    public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
+            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry) {
+        this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, false);
     }
 
     /**

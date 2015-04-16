@@ -13,10 +13,15 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
+import java.util.Comparator;
+import java.util.Optional;
+
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
@@ -32,14 +37,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
@@ -62,16 +70,22 @@ public class ItemListBuilder {
     
     @Inject
     private IEclipseContext context;
+    
+    @Inject
+    @Preference 
+    protected IEclipsePreferences preferences;
+
+    @Inject
+    protected VatsDAO vatDao;
 
     private Composite parent;
     private Document document;
+
     private DocumentType documentType;
     private boolean useGross;
     private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
     protected NatTable natTable;
-
-    private MPart part;
 
     /**
      * Build the {@link DocumentsListTable}.
@@ -80,7 +94,7 @@ public class ItemListBuilder {
     public DocumentItemListTable build() {
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
-        String ID = "com.sebulli.fakturama.documentitemslist.toolbar";
+//        String ID = "com.sebulli.fakturama.documentitemslist.toolbar";
 //        this.part = (MPart) parent.getData("modelElement");
 //        MSnippetContainer snippetWindow = (MSnippetContainer)modelService.find("com.sebulli.fakturama.snippets", application);
 //        modelService.cloneSnippet(snippetWindow, ID, part);
@@ -148,62 +162,67 @@ public class ItemListBuilder {
             });
         }
 
-    // Item add button
-    Label addButton = new Label(addButtonComposite, SWT.NONE);
-    //T: Tool Tip Text
-    addButton.setToolTipText(msg.editorDocumentAdditemTooltip);
-    addButton.setImage(Icon.COMMAND_PLUS.getImage(IconSize.DefaultIconSize));
-    GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addButton);
-    
-    // Item delete button
-    Label deleteButton = new Label(addButtonComposite, SWT.NONE);
-    //T: Tool Tip Text
-    deleteButton.setToolTipText(msg.editorDocumentDeleteitemTooltip);
-    deleteButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
-    GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
-    
-    // Composite that contains the table
-    // The table viewer
-    final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
-    Control tableComposite = itemListTable.createPartControl(parent, document, useGross, netgross);
-    GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
+        // Item add button
+        Label addButton = new Label(addButtonComposite, SWT.NONE);
+        //T: Tool Tip Text
+        addButton.setToolTipText(msg.editorDocumentAdditemTooltip);
+        addButton.setImage(Icon.COMMAND_PLUS.getImage(IconSize.DefaultIconSize));
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addButton);
 
-    addButton.addMouseListener(new MouseAdapter() {
-        
-        // Add a new item with default properties
-        public void mouseDown(MouseEvent e) {
-    //      // Cancel the item editing
-    //      if (itemEditingSupport != null)
-    //          itemEditingSupport.cancelAndSave();
-    //      
-            DocumentItem item = modelFactory.createDocumentItem();
-          //T: Text of a new item
-            item.setName(msg.commonFieldName);
-            item.setItemNumber(msg.productFieldItemno);
+        // Item delete button
+        Label deleteButton = new Label(addButtonComposite, SWT.NONE);
+        //T: Tool Tip Text
+        deleteButton.setToolTipText(msg.editorDocumentDeleteitemTooltip);
+        deleteButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
 
-          // Use the standard VAT value
-    //      newItem.setVat(Integer.parseInt(Data.INSTANCE.getProperty("standardvat")));
-          DocumentItemDTO newItem = new DocumentItemDTO(item);
-            itemListTable.addNewItem(newItem);
-    
-    //      tableViewerItems.refresh();
-    //      tableViewerItems.reveal(newItem);
-//            calculate();
-//    //      checkDirty();
-//    //      
-//            // Renumber all Items
-//            renumberItems();
-    
-        }
-    });    
-    
-    deleteButton.addMouseListener(new MouseAdapter() {
-    
-        // Delete the selected item
-        public void mouseDown(MouseEvent e) {
-            itemListTable.removeSelectedEntry();
-        }
-    });
+        // Composite that contains the table
+        // The table viewer
+        final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
+        Control tableComposite = itemListTable.createPartControl(parent, document, useGross, netgross);
+        GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
+
+        addButton.addMouseListener(new MouseAdapter() {
+
+            // Add a new item with default properties
+            public void mouseDown(MouseEvent e) {
+                DocumentItem item = modelFactory.createDocumentItem();
+                //T: Text of a new item
+                item.setName(msg.commonFieldName);
+                item.setItemNumber(msg.productFieldItemno);
+                // other values are set by default values (look into model)
+                int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
+                VAT defaultVat = vatDao.findById(defaultVatId);
+                Optional<DocumentItemDTO> maxPosItem = itemListTable.getDocumentItemsListData().stream().max(new Comparator<DocumentItemDTO>() {
+                    @Override
+                    public int compare(DocumentItemDTO o1, DocumentItemDTO o2) {
+                        return o1.getDocumentItem().getPosNr().compareTo(o2.getDocumentItem().getPosNr());
+                    }
+                });
+                
+                Integer newPosNr = maxPosItem.isPresent() ? maxPosItem.get().getDocumentItem().getPosNr() + Integer.valueOf(1) : Integer.valueOf(1);
+                item.setPosNr(newPosNr);
+
+                // Use the standard VAT value
+                item.setItemVat(defaultVat);
+                DocumentItemDTO newItem = new DocumentItemDTO(item);
+                itemListTable.addNewItem(newItem);
+
+                // table refresh is done via sending an event to DocumentEditor and GlazedListsEventList 
+
+                // Renumber all Items
+                // renumberItems();
+
+            }
+        });
+
+        deleteButton.addMouseListener(new MouseAdapter() {
+
+            // Delete the selected item
+            public void mouseDown(MouseEvent e) {
+                itemListTable.removeSelectedEntry();
+            }
+        });
 
     ////Create the context menu
     //createContextMenu(tableViewerItems);
@@ -231,5 +250,10 @@ public class ItemListBuilder {
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         return this;
     }
+//
+//    public ItemListBuilder witDocumentSummary(DocumentSummary documentSummary) {
+//        this.documentSummary = documentSummary;
+//        return this;
+//    }
 
 }

@@ -25,4 +25,5 @@ Export-Package: com.sebulli.fakturama.dbconnector,
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.commons.lang3,
  org.eclipse.e4.core.contexts,
+ org.eclipse.jface.preference,
  org.osgi.framework;version="1.8.0"

@@ -18,9 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -44,7 +41,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -64,12 +60,8 @@ public class BrowserEditor {
     protected Messages msg;
     
     @Inject
-    @Preference(value="/instance/com.sebulli.fakturama.rcp")
+//    @Preference(value=Constants.DEFAULT_PREFERENCES_NODE) //==> doesn't work :-(
     private IPreferenceStore preferences;
-    
-    @Inject
-    @Preference
-    protected IEclipsePreferences pref;
 
     @Inject
     private Logger log;
@@ -109,28 +101,23 @@ public class BrowserEditor {
 	public void createPartControl(final Composite parent) {
 // Initialize the editor. Set the URL as part name
         this.part = (MPart) parent.getData("modelElement");
-        
-        //FIXME ugly hack
-        this.preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
-	    
+   
 		url =  (String) part.getProperties().get(OpenBrowserEditorHandler.PARAM_URL);
 //		setPartName(input.getName());
 		isFakturamaProjectUrl = BooleanUtils.toBoolean(part.getProperties().get(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL));
         // Sets the URL
-        if (this.isFakturamaProjectUrl)
+        if (this.isFakturamaProjectUrl) {
             url = OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL;
-        else {
-//            pref.getString("CONTACT_FORMAT_GREETING_COMPANY");
-//            preferences.get("CONTACT_FORMAT_GREETING_COMPANY", pref.getString("CONTACT_FORMAT_GREETING_COMPANY"));
+        } else {
             url = preferences.getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
-            if (url.isEmpty() || url.equals("http://www.fakturama.org/"))
+            if (url.isEmpty() || url.equals("http://www.fakturama.org/")) {
                 url = "file://" +
                     preferences.getString(Constants.GENERAL_WORKSPACE) + "/" +
                     msg.configWorkspaceTemplatesName +  
                     "/Start/start.html";
-            
+            }
         }
 
         // In case of an URL with only "-" do not show an editor
@@ -140,7 +127,7 @@ public class BrowserEditor {
             return;
         }
 		
-		showURLbar = getBooleanPreference(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR);
+		showURLbar = preferences.getBoolean(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR);
 
 		GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
@@ -288,7 +275,7 @@ public class BrowserEditor {
 			int browserStyle = SWT.NONE;
 			
 			// Use the browser style from the preferences
-			int browserType = getIntPreference(Constants.PREFERENCES_BROWSER_TYPE);
+			int browserType = preferences.getInt(Constants.PREFERENCES_BROWSER_TYPE);
 			
 			if (browserType == 1)
 				browserStyle = SWT.WEBKIT;
@@ -419,14 +406,4 @@ public class BrowserEditor {
 	public void testParcelServiceForm() {
 	//	ParcelServiceFormFiller.testParcelServiceForm(browser);  
 	}
-
-    
-    private int getIntPreference(String preference) {
-        return pref.getInt(preference, 0);
-    }
-
-    private boolean getBooleanPreference(String preference) {
-        return preferences.getBoolean(preference);
-    }
-
 }

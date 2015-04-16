@@ -27,8 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -47,8 +46,7 @@ public class CustomerStatistics {
     private DocumentsDAO documentsDAO;
     
     @Inject
-    @Preference
-    protected IEclipsePreferences preferences;
+    private IPreferenceStore preferences;
 
 	/**
      * @param contact the contact to set

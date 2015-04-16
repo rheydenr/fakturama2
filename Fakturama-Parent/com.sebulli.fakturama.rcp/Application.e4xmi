@@ -22,7 +22,7 @@
                 <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="%command.browser.open.startpage" closeable="true">
                   <tags>documentWindow</tags>
                 </children>
-                <children xsi:type="basic:Part" xmi:id="_VNkLUN45EeSSLqz2GM7Nnw" elementId="com.sebulli.fakturama.debugview" contributionURI="bundleclass://org.eclipse.e4.tools.context.spy/org.eclipse.e4.tools.context.spy.ContextSpyPart" label="Context Spy"/>
+                <children xsi:type="basic:Part" xmi:id="_VNkLUN45EeSSLqz2GM7Nnw" elementId="com.sebulli.fakturama.debugview" contributionURI="bundleclass://org.eclipse.e4.tools.context.spy/org.eclipse.e4.tools.context.spy.ContextSpyPart" label="Context Spy" closeable="true"/>
               </children>
               <children xsi:type="basic:PartStack" xmi:id="_XhoUAOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.calculatorpanel" visible="false" containerData="6500" selectedElement="_Y1hk0OtOEeKo5Ms1QUgPTw">
                 <children xsi:type="basic:Part" xmi:id="_Y1hk0OtOEeKo5Ms1QUgPTw" elementId="part:com.sebulli.fakturama.views.calculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.Calculator" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" tooltip="" closeable="true"/>
@@ -372,7 +372,6 @@
   </rootContext>
   <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
-    <menus xsi:type="menu:PopupMenu" xmi:id="_DptF8M51EeSoO9Ue6R_q3g" elementId="com.sebulli.fakturama.documentitemlist.popup" label="Document items list popup"/>
   </descriptors>
   <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">
     <children xsi:type="menu:ToolBar" xmi:id="_2aO0MN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.documentitemslist.toolbar">
@@ -446,6 +445,7 @@
     <parameters xmi:id="_kukB0MUQEeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.objId" name="the selected object id" typeId="" optional="false"/>
     <parameters xmi:id="_JbW54MUREeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.partid" name="the ID of the calling part (since we have to close it)" typeId="" optional="false"/>
   </commands>
+  <commands xmi:id="_58wvUOOYEeSCoO-pHSKlQQ" elementId="com.sebulli.fakturama.rcp.command.moverowup" commandName="MoveRowUp"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

@@ -24,6 +24,8 @@ import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -109,6 +111,10 @@ public class DataUtils {
                         .build());
     }
     
+    public CurrencyUnit getDefaultCurrencyUnit() {
+        return MonetaryCurrencies.getCurrency(currencyLocale);
+    }
+    
     public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
         return MonetaryCurrencies.getCurrency(currencyLocale);
     }
@@ -189,117 +195,113 @@ public class DataUtils {
 //    public static boolean DoublesAreEqual(String s1, String s2) {
 //        return DoublesAreEqual(StringToDouble(s1), StringToDouble(s2));
 //    }
-//
-//    /**
-//     * Convert a String to a double value If there is a "%" Sign, the values are
-//     * scales by 0.01 If there is a "," - it is converted to a "." Only numbers
-//     * are converted
-//     * 
-//     * @param s
-//     *            String to convert
-//     * @return converted value
-//     */
-//    public static Double StringToDouble(String s) {
-//        Double d = 0.0;
-//        
-//        // Remove leading and trailing spaces
-//        s = s.trim();
-//        
-//        // Test, if it is a percent value
-//        boolean isPercent = s.contains("%");
-//
-//        // replace the localizes decimal separators
-//        s = s.replaceAll(",", ".");
-//
-//        // Use this flag to search for the digits
-//        boolean digitFound = false;
-//
-//        // Remove trailing characters that are not part of the number
-//        // e.g. a "sFr." with the decimal point
-//        while (!digitFound && (s.length()>0) ) {
-//            
-//            // Get the first character
-//            char firstChar = s.charAt(0);
-//            
-//            if (Character.isDigit(firstChar) ||
-//                    (firstChar == '-')  || (firstChar == '+') )
-//                digitFound = true;
-//            else
-//                //remove the first character
-//                s = s.substring(1);
-//            
-//        }
-//        
-//
-//        
-//        digitFound = false;
-//        // Remove trailing characters that are not part of the number
-//        // e.g. a "sFr." with the decimal point
-//        while (!digitFound && (s.length()>0) ) {
-//            
-//            // Get the length
-//            int l = s.length();
-//            
-//            // Get the last character
-//            char lastChar = s.charAt(l-1);
-//            
-//            if (Character.isDigit(lastChar))
-//                digitFound = true;
-//            else
-//                //remove the last character
-//                s = s.substring(0, l-1);
-//            
-//        } ;
-//        
-//    
-//        // Test, if it is a negative value
-//        boolean isNegative = s.startsWith("-");
-//        
-//        // Use only one point
-//        int firstPoint;
-//        int lastPoint;
-//        boolean twoPointsFound;
-//
-//        do {
-//            firstPoint = s.indexOf('.');
-//            lastPoint = s.lastIndexOf('.');
-//            
-//            // If there is more than 1 point
-//            twoPointsFound = (firstPoint >= 0) && (lastPoint >= 0) && (firstPoint != lastPoint);
-//            if ( twoPointsFound ) {
-//                // Remove the first
-//                s = s.replaceFirst("\\.", "");
-//            }
-//            
-//        } while (twoPointsFound);
-//
-//        // use only numbers
-//        Pattern p = Pattern.compile("[^\\d]*(\\d*\\.?\\d*E?\\d*).*");
-//        Matcher m = p.matcher(s);
-//
-//        if (m.find()) {
-//            // extract the number
-//            s = m.group(1);
-//
-//            // add a "-", if d is negative
-//            if (isNegative)
-//                s = "-" + s;
-//
-//            //s = s.substring(m.start(), m.end());
-//            try {
-//                // try to convert it to a double value
-//                d = Double.parseDouble(s);
-//
-//                // scale it by 0.01, if it was a percent value
-//                if (isPercent)
-//                    d = d / 100;
-//
-//            }
-//            catch (NumberFormatException e) {
-//            }
-//        }
-//        return d;
-//    }
+
+    /**
+     * Convert a String to a double value If there is a "%" Sign, the values are
+     * scales by 0.01 If there is a "," - it is converted to a "." Only numbers
+     * are converted
+     * 
+     * @param s
+     *            String to convert
+     * @return converted value
+     */
+    // TODO Check if it can be replaced by NumberUtils.createDouble((String) newValue);
+    public Double StringToDouble(String s) {
+        Double d = 0.0;
+        
+        // Remove leading and trailing spaces
+        s = s.trim();
+        
+        // Test, if it is a percent value
+        boolean isPercent = s.contains("%");
+
+        // replace the localizes decimal separators
+        s = s.replaceAll(",", ".");
+
+        // Use this flag to search for the digits
+        boolean digitFound = false;
+
+        // Remove trailing characters that are not part of the number
+        // e.g. a "sFr." with the decimal point
+        while (!digitFound && (s.length()>0) ) {
+            
+            // Get the first character
+            char firstChar = s.charAt(0);
+            
+            if (Character.isDigit(firstChar) ||
+                    (firstChar == '-')  || (firstChar == '+') )
+                digitFound = true;
+            else
+                //remove the first character
+                s = s.substring(1);
+        }
+        
+        digitFound = false;
+        // Remove trailing characters that are not part of the number
+        // e.g. a "sFr." with the decimal point
+        while (!digitFound && (s.length()>0) ) {
+            
+            // Get the length
+            int l = s.length();
+            
+            // Get the last character
+            char lastChar = s.charAt(l-1);
+            
+            if (Character.isDigit(lastChar))
+                digitFound = true;
+            else
+                //remove the last character
+                s = s.substring(0, l-1);
+        }
+    
+        // Test, if it is a negative value
+        boolean isNegative = s.startsWith("-");
+        
+        // Use only one point
+        int firstPoint;
+        int lastPoint;
+        boolean twoPointsFound;
+
+        do {
+            firstPoint = s.indexOf('.');
+            lastPoint = s.lastIndexOf('.');
+            
+            // If there is more than 1 point
+            twoPointsFound = (firstPoint >= 0) && (lastPoint >= 0) && (firstPoint != lastPoint);
+            if ( twoPointsFound ) {
+                // Remove the first
+                s = s.replaceFirst("\\.", "");
+            }
+            
+        } while (twoPointsFound);
+
+        // use only numbers
+        Pattern p = Pattern.compile("[^\\d]*(\\d*\\.?\\d*E?\\d*).*");
+        Matcher m = p.matcher(s);
+
+        if (m.find()) {
+            // extract the number
+            s = m.group(1);
+
+            // add a "-", if d is negative
+            if (isNegative)
+                s = "-" + s;
+
+            //s = s.substring(m.start(), m.end());
+            try {
+                // try to convert it to a double value
+                d = Double.parseDouble(s);
+
+                // scale it by 0.01, if it was a percent value
+                if (isPercent)
+                    d = d / 100;
+
+            }
+            catch (NumberFormatException e) {
+            }
+        }
+        return d;
+    }
 
     /**
      * Round a value to full cent values. Add an offset of 0.01 cent. This is,

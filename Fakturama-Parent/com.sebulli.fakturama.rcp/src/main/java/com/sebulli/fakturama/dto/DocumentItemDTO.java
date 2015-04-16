@@ -27,7 +27,7 @@ import com.sebulli.fakturama.model.IEntity;
  */
 public class DocumentItemDTO implements IEntity {
     private DocumentItem documentItem;
-    private Price price;
+//    private Price price;
     
     /**
      * Creates a new DTO based on a given {@link DocumentItem}.
@@ -36,7 +36,7 @@ public class DocumentItemDTO implements IEntity {
      */
     public DocumentItemDTO(DocumentItem documentItem) {
         this.documentItem = documentItem;
-        this.price = new Price(documentItem);
+//        this.price = new Price(documentItem);
     }
 
     /**
@@ -50,7 +50,7 @@ public class DocumentItemDTO implements IEntity {
      * @return the price
      */
     public Price getPrice() {
-        return price;
+        return new Price(documentItem);
     }
 
     @Override

@@ -401,11 +401,11 @@ public class Messages {
     public String commandMarkorderCompleted;
     public String commandMarkorderWarnStockzero;
 
-	public String MoveEntryDownAction61;
-	public String MoveEntryDownAction62;
+    public String commandDocumentsMoveDownName;
+    public String commandDocumentsMoveDownTooltip;
 
-	public String MoveEntryUpAction65;
-	public String MoveEntryUpAction66;
+    public String commandDocumentsMoveUpName;
+    public String commandDocumentsMoveUpTooltip;
 
     public String widgetNovatproviderWithvatLabel;
 
@@ -515,7 +515,7 @@ public class Messages {
 	public String ProductEditor527;
 	public String ProductEditor528;
 
-	public String ProductPictureDialog507;
+    public String dialogProductPicturePreview;
 
 	public String preferencesProductUseitemno;
 	public String preferencesProductUsequantityunit;

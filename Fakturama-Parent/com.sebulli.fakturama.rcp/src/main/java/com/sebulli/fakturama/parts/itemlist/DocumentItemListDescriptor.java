@@ -22,7 +22,7 @@ package com.sebulli.fakturama.parts.itemlist;
 public enum DocumentItemListDescriptor {
     // enums with empty property name have no counterparts in database
     // (these are calculated values)
-    POSITION("", "editor.document.field.position", 0, 55), // $Row
+    POSITION("posNr", "editor.document.field.position", 0, 55), // $Row
     OPTIONAL("optional", "common.field.optional", 1, 55),          // $Optional
     QUANTITY("quantity", "common.field.quantity", 2, 55),
     QUNIT("quantityUnit", "editor.document.field.qunit", 3, 70),

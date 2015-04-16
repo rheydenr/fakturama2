@@ -40,14 +40,16 @@ public final class ProductUtil {
 
         // If the product name is different to the item number,
         // add also the product name to the pictures name
-        if (!name.equals(itemNr))
+        if (!name.equals(itemNr)) {
             pictureName += "_" + name;
+        }
 
         // Remove all illegal characters that are not allowed as file name.
         final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':', ' ', '.' };
-        for (char c : ILLEGAL_CHARACTERS)
+        for (char c : ILLEGAL_CHARACTERS) {
             pictureName = pictureName.replace(c, '_');
-
+        }
+        
         // Add the .*jpg extension
         pictureName += ".jpg";
 
@@ -67,7 +69,7 @@ public final class ProductUtil {
 
         // Start with first block
         Double price = product.getPrice1();
-        int blockQuantity = 0;
+        int blockQuantity = Integer.valueOf(0);
         int newQuantity;
         int scaledPrices;
         scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
@@ -79,13 +81,12 @@ public final class ProductUtil {
         Double[] prices = new Double[] {product.getPrice1(), product.getPrice2(), product.getPrice3(), product.getPrice4(), product.getPrice5()};
         for (int i = 0; i < scaledPrices; i++) {
             newQuantity = blocks[i];
-            if (newQuantity > blockQuantity && (quantity >= (newQuantity - 0.0001))) {
+            if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001) {
                 blockQuantity = newQuantity;
                 price = prices[i];
             }
         }
         return price;
     }
-    
 
 }

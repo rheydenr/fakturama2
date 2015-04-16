@@ -21,13 +21,20 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
  */
 public class ListViewRowHeaderDataProvider implements IDataProvider {
     protected final IDataProvider bodyDataProvider;
+    private final boolean withRowHeader;
 
-    public ListViewRowHeaderDataProvider(IDataProvider bodyDataProvider) {
+    public ListViewRowHeaderDataProvider(IDataProvider bodyDataProvider, boolean withRowHeader) {
         this.bodyDataProvider = bodyDataProvider;
+        this.withRowHeader = withRowHeader;
     }
     @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
-        return null;
+        String retval = null;
+        if(withRowHeader) {
+            // data Value is already the PosNo
+            retval = Integer.toString((Integer) bodyDataProvider.getDataValue(columnIndex, rowIndex));
+        }
+        return retval;
     }
 
     @Override
@@ -38,7 +45,7 @@ public class ListViewRowHeaderDataProvider implements IDataProvider {
     @Override
     public int getColumnCount() {
         // if this value is > 0 we get a row header (which is useful e.g. for reordering)
-        return 0;
+        return withRowHeader ? 1 : 0;
     }
 
     public int getRowCount() {

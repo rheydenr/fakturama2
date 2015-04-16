@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,12 +40,10 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
@@ -53,10 +52,12 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -171,6 +172,7 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private EModelService modelService;
+
     
 //    @Inject
 //    private ESelectionService selectionService;
@@ -181,8 +183,7 @@ public class DocumentEditor extends Editor<Document> {
     @Inject
     @Translation
     protected Messages msg;
-    
-    @Inject
+
     private IEclipseContext context;
 
     @Inject
@@ -209,12 +210,7 @@ public class DocumentEditor extends Editor<Document> {
     protected VatsDAO vatDao;
     
     @Inject
-    @Preference 
-    protected IEclipsePreferences preferences;
-    
-    @Inject
-    @Preference(nodePath=Constants.DEFAULT_PREFERENCES_NODE)
-    private IEclipsePreferences eclipseDefaultPrefs;
+    private IPreferenceStore preferences;
     
     /**
      * the model factory
@@ -266,19 +262,23 @@ public class DocumentEditor extends Editor<Document> {
 	private DocumentType documentType;
 
 	// These are (non visible) values of the document
+	
+	/*
+	 * Since the contact could be either a delivery or a billing contact we have to use an extra field for it.
+	 */
 	private Contact addressId = null;
 	private boolean noVat;
 	private String noVatName;
 //	private String noVatDescription;
 	private Payment payment;
-//	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+//	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private int shippingId;
 	private Shipping shipping = null;
 //	private VAT shippingVat = null;
 //	private String shippingVatDescription = "";
 //	private ShippingVatType shippingAutoVat = ShippingVatType.SHIPPINGVATGROSS;
-	private MonetaryAmount total = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
-	private MonetaryAmount deposit = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+	private MonetaryAmount total = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
+	private MonetaryAmount deposit = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private MonetaryAmount finalPayment = FastMoney.MIN_VALUE;
 	private int dunningLevel = Integer.valueOf(0);
 	private int duedays;
@@ -296,7 +296,7 @@ public class DocumentEditor extends Editor<Document> {
 
 	// If the customer is changed and this document displays no payment text,
 	// use this variable to store the payment and due days
-	private Payment newPayment = null;
+//	private Payment newPayment = null;
 	private String newPaymentDescription = "";
 	
 	// Imported delivery notes. This list is used to
@@ -740,8 +740,10 @@ public class DocumentEditor extends Editor<Document> {
 	 */
     @PostConstruct
     public void init(Composite parent) {
-        this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.part = (MPart) parent.getData("modelElement");
+        this.context = part.getContext();
+        //context.get(EMenuService.class);
+        this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
                 
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
@@ -780,7 +782,7 @@ public class DocumentEditor extends Editor<Document> {
             document.setBillingType(billingType);
 
 			// Copy the entry "message", or reset it to ""
-			if (!getBooleanPreference(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false)) {
+			if (!preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
 				document.setMessage("");
 				document.setMessage2("");
 				document.setMessage3("");
@@ -824,7 +826,7 @@ public class DocumentEditor extends Editor<Document> {
 //				document.setStringValueByKey("shippingvatdescription", shippingVatDescription);
 				
 				// Default payment
-				int paymentId = preferences.getInt(Constants.DEFAULT_PAYMENT, 1);
+				int paymentId = preferences.getInt(Constants.DEFAULT_PAYMENT);
                 payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
 //				document.setStringValueByKey("paymentdescription", Data.INSTANCE.getPayments().getDatasetById(paymentId).getStringValueByKey("description"));
@@ -884,7 +886,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, DocumentSummary.ROUND_NET_VALUES) == DocumentSummary.ROUND_NET_VALUES);
+            useGross = (preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS/*, DocumentSummary.ROUND_NET_VALUES*/) == DocumentSummary.ROUND_NET_VALUES);
         } else { 
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -948,7 +950,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		// Get the sign of this document ( + or -)
-		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+//		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
 		// Get the discount value from the control element
 		Double discount = Double.valueOf(0.0);
@@ -957,13 +959,14 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-		// Do the calculation
+		// unwrap DocumentItemDTOs at first
 		List<DocumentItem> docItems = new ArrayList<>();
 		// don't use Lambdas because the List isn't initialized yet.
 		for (DocumentItemDTO item : itemListTable.getDocumentItemsListData()) {
 		    docItems.add(item.getDocumentItem());
         }
 
+		// Do the calculation
         documentSummary = documentSummaryCalculator.calculate(docItems,
                 document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
                 shipping.getShippingVat(), document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), discount,
@@ -1031,7 +1034,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = getIntPreference(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, 1) == 1;
+            useGross = preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -1293,20 +1296,23 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
 	}
 	
-	/**
-	 * Update the Issue Date widget with the date that corresponds to the due date
-	 */
-	void updateIssueDate() {
-		// Add date and due days and set the issue date to the sum.
-	    Calendar calendar = Calendar.getInstance();
-	    calendar.setTime(dtDate.getSelection());
-//	    LocalDate localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-//	    localDate.plusDays(spDueDays.getSelection());
-//	    Date.from(localDate.???)
-//		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-		calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
-		dtIssueDate.setSelection(calendar.getTime());
-	}
+    /**
+     * Update the Issue Date widget with the date that corresponds to the due
+     * date
+     */
+    void updateIssueDate() {
+        // Add date and due days and set the issue date to the sum.
+        if (dtIssueDate != null && dtDate.getSelection() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(dtDate.getSelection());
+            //	    LocalDate localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            //	    localDate.plusDays(spDueDays.getSelection());
+            //	    Date.from(localDate.???)
+            //		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
+            calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
+            dtIssueDate.setSelection(calendar.getTime());
+        }
+    }
 	
 	/**
 	 * Show or hide the warning icon
@@ -1353,7 +1359,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		this.addressId = contact;
 
-		if (getBooleanPreference(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, false) && itemsDiscount != null) {
+		if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         }
 		// Check, if the payment is valid
@@ -1391,7 +1397,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Get the due days and description of this payment
 		duedays = payment.getNetDays();
-		newPayment = dataSetPayment;
+//		newPayment = dataSetPayment;
 		newPaymentDescription = payment.getDescription();
 
 		if (spDueDays !=null ) {
@@ -1476,13 +1482,7 @@ public class DocumentEditor extends Editor<Document> {
 			public void widgetSelected(SelectionEvent e) {
 				// If the date is modified, also modify the issue date.
 				// (Let the due days constant).
-				if (dtIssueDate != null && dtDate.getSelection() != null) {
-				    LocalDate calendar = LocalDate.from(dtDate.getSelection().toInstant());
-				    calendar.plusDays(spDueDays.getSelection());
-				    Instant instant = calendar.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-				    Date res = Date.from(instant);
-				    dtIssueDate.setSelection(res);
-				}
+			    updateIssueDate();
 			}
 		});
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(dtDate);
@@ -1706,80 +1706,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.BOTTOM).span(1, 2).grab(true, false).applyTo(copyGroup);
 
 		// Toolbar
-        ToolBar toolBarDuplicateDocument = new ToolBar(copyGroup, SWT.FLAT | SWT.WRAP);
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).applyTo(toolBarDuplicateDocument);
-
-        String tooltipPrefix = msg.commandNewTooltip + " ";
-        
-		// Add buttons, depending on the document type
-		switch (documentType) {
-		case OFFER:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
-	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.ORDER));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-	                tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.INVOICE));
-        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
-                tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-                , createCommandParams(DocumentType.PROFORMA));
-			break;
-		case ORDER:
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
-	                tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.CONFIRMATION));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-	                tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.DELIVERY));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.INVOICE));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
-                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.PROFORMA));
-			break;
-		case CONFIRMATION:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.DELIVERY));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.INVOICE));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
-                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.PROFORMA));
-			break;
-		case INVOICE:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.DELIVERY));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewCreditName, 
-                    tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.CREDIT));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentDunningName, 
-	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.DUNNING));
-			break;
-		case DELIVERY:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.INVOICE));
-			break;
-		case DUNNING:
-		    String action = String.format("%s%s.%s", tooltipPrefix, Integer.toString(dunningLevel + 1),msg.mainMenuNewDunning);
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, action, 
-	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.DUNNING));
-			break;
-		case PROFORMA:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.INVOICE));
-			break;
-		default:
-			copyGroup.setVisible(false);
-			break;
-		}
+        createCopyToolbar(copyGroup);
 		
 		// Composite that contains the address label and the address icon
 		Composite addressComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
@@ -1954,7 +1881,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		});
 
-		int noOfMessageFields = preferences.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES, 1);
+		int noOfMessageFields = preferences.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES);
 		
 		if (noOfMessageFields < 1)
 			noOfMessageFields = 1;
@@ -2051,6 +1978,88 @@ public class DocumentEditor extends Editor<Document> {
 			calculate();
 		}
 	}
+
+    /**
+     * Create the ToolBar for duplicate / copy a document into another.
+     * 
+     * @param copyGroup
+     */
+    private void createCopyToolbar(Group copyGroup) {
+        ToolBar toolBarDuplicateDocument = new ToolBar(copyGroup, SWT.FLAT | SWT.WRAP);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).applyTo(toolBarDuplicateDocument);
+
+        String tooltipPrefix = msg.commandNewTooltip + " ";
+        
+		// Add buttons, depending on the document type
+		switch (documentType) {
+		case OFFER:
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
+	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.ORDER));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+	                tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.INVOICE));
+        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                , createCommandParams(DocumentType.PROFORMA));
+			break;
+		case ORDER:
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
+	                tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.CONFIRMATION));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+	                tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.PROFORMA));
+			break;
+		case CONFIRMATION:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+                    tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.PROFORMA));
+			break;
+		case INVOICE:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.DELIVERY));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewCreditName, 
+                    tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.CREDIT));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentDunningName, 
+	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DUNNING));
+			break;
+		case DELIVERY:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+			break;
+		case DUNNING:
+		    String action = String.format("%s%s.%s", tooltipPrefix, Integer.toString(dunningLevel + 1),msg.mainMenuNewDunning);
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, action, 
+	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.DUNNING));
+			break;
+		case PROFORMA:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
+                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.INVOICE));
+			break;
+		default:
+			copyGroup.setVisible(false);
+			break;
+		}
+    }
 
     /**
      * Create the "paid"-controls
@@ -2150,7 +2159,7 @@ public class DocumentEditor extends Editor<Document> {
     //			itemsSum.setText("---");
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
     
-            if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, false) ||
+            if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
             	
             	// Label discount
@@ -2358,11 +2367,11 @@ public class DocumentEditor extends Editor<Document> {
      */
     protected void showOrderStatisticDialog(Composite parent) {
         // Show an info dialog, if this is a regular customer
-        if (documentType == DocumentType.ORDER && getBooleanPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true)) {
+        if (documentType == DocumentType.ORDER && preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
 			customerStaticstics.setContact(document.getContact());
-			if (getIntPreference(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, 1) == 1) {
+			if (preferences.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
 				customerStaticstics.setAddress(document.getManualAddress());
 	            customerStaticstics.makeStatistics(true);
 			} else {	
@@ -2445,7 +2454,7 @@ public class DocumentEditor extends Editor<Document> {
                     newItem.setWeight(product.getWeight());
 
                     // Use the products description, or clear it
-                    if (!getBooleanPreference(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, true)) {
+                    if (!preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {
                         newItem.setDescription("");
                     }
                     itemListTable.addNewItem(new DocumentItemDTO(newItem));
@@ -2469,7 +2478,7 @@ public class DocumentEditor extends Editor<Document> {
                             itemsString.forEach(item -> itemListTable.addNewItem(new DocumentItemDTO(newItem)));
                             
                             // Put the number of the delivery note in a new line of the message field
-                            if (getBooleanPreference(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, true)) {
+                            if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE)) {
                                 String dNName = deliveryNote.getName();
                                 
                                 if (!txtMessage.getText().isEmpty())
@@ -2533,16 +2542,7 @@ public class DocumentEditor extends Editor<Document> {
                 break;
             }
         }
-    }
-
-    private int getIntPreference(String preference, int defaultValue) {
-        return preferences.getInt(preference, eclipseDefaultPrefs.getInt(preference, defaultValue));
-    }
-
-    private boolean getBooleanPreference(String preference, boolean defaultValue) {
-        return preferences.getBoolean(preference, eclipseDefaultPrefs.getBoolean(preference, defaultValue));
-    }
-    
+    } 
 
     /**
      * Searches for the standard {@link Shipping} entry. 
@@ -2553,7 +2553,7 @@ public class DocumentEditor extends Editor<Document> {
 
         // Get the ID of the standard entity from preferences
         try {
-            stdID = preferences.getLong(getDefaultEntryKey(), 1L);
+            stdID = preferences.getLong(getDefaultEntryKey());
         } catch (NumberFormatException | NullPointerException e) {
             stdID = 1L;
         } finally {
@@ -2649,10 +2649,11 @@ public class DocumentEditor extends Editor<Document> {
     /**
      * This method is for setting the dirty state to <code>true</code>. This happens
      * if e.g. the items list has changed.
+     * (could be sent from DocumentListTable)
      */
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
-    protected void handleAddItemToList(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
+    protected void handleItemChanged(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
             String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
@@ -2661,6 +2662,15 @@ public class DocumentEditor extends Editor<Document> {
                 // if not, silently ignore this event
                 return; 
             }
+            // (re)calculate summary
+            // TODO check if this has to be done in a synchronous or asynchronous call
+            // within UISynchronize
+            calculate();
             getMDirtyablePart().setDirty(true);
     }}
+//    
+//    @Inject
+//    @org.eclipse.e4.core.di.annotations.Optional
+//    protected void handleRecalculationRequest(@UIEventTopic(EDITOR_ID + "/recalculation") Event event) {
+//    }    
 }

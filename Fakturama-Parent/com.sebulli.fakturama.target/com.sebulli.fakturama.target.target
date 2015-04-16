@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="253">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="254">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
@@ -43,26 +43,6 @@
 <repository location="http://download.eclipse.org/nattable/releases/1.3.0/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.apache.commons.collections" version="3.2.0.v2013030210310"/>
-<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<unit id="org.h2" version="1.3.168.v201212121212"/>
-<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.2.v20150204-1316"/>
 <unit id="org.eclipse.pde.source.feature.group" version="3.10.1.v20150204-1700"/>
 <unit id="org.eclipse.rcp.feature.group" version="4.4.2.v20150204-1700"/>
@@ -100,6 +80,27 @@
 <unit id="org.eclipse.e4.tools.model.spy.feature.feature.group" version="0.1.0.v20141219-1152"/>
 <unit id="org.eclipse.e4.tools.context.spy.feature.feature.group" version="0.1.0.v20141107-1620"/>
 <repository location="http://download.eclipse.org/e4/downloads/drops/S-0.17-201501051100/repository"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.collections.source" version="3.2.0.v2013030210310"/>
+<unit id="org.apache.commons.collections" version="3.2.0.v2013030210310"/>
+<unit id="ch.qos.logback.slf4j" version="1.0.7.v20121108-1250"/>
+<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="org.h2" version="1.3.168.v201212121212"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
+<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
+<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+<unit id="com.sun.xml.bind" version="2.2.0.v201105210647"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

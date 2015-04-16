@@ -3,6 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
 Bundle-Version: 2.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Activator: com.sebulli.fakturama.Activator
+Bundle-Vendor: %Bundle-Vendor
+Bundle-Localization: OSGI-INF/l10n/bundle
 Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.model;bundle-version="2.0.0",
@@ -31,12 +35,9 @@ Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.eclipse.nebula.jface.cdatetime;bundle-version="0.14.0",
  org.javamoney.osgi;bundle-version="1.0.0",
  org.apache.commons.collections;bundle-version="3.2.0",
- org.eclipse.e4.tools.spy;bundle-version="0.1.0";resolution:=optional
-Bundle-Vendor: %Bundle-Vendor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy 
-Bundle-Localization: OSGI-INF/l10n/bundle
-Bundle-Activator: com.sebulli.fakturama.Activator
+ org.eclipse.e4.tools.spy;bundle-version="0.1.0";resolution:=optional,
+ org.eclipse.e4.ui.di,
+ javax.inject
 Import-Package: javax.inject;version="1.0.0",
  org.apache.commons.io,
  org.eclipse.core.commands,
@@ -85,4 +86,5 @@ Import-Package: javax.inject;version="1.0.0",
  org.osgi.service.prefs;version="1.1.1",
  org.osgi.util.tracker;version="1.5.1"
 Service-Component: OSGI-INF/parcelservice.xml
-Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
