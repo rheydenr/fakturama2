@@ -319,10 +319,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        vatListData.clear();
-        vatListData.addAll(vatsDAO.findAll());
-        categories.clear();
-        categories.addAll(vatCategoriesDAO.findAll());
+        GlazedLists.replaceAll(vatListData, GlazedLists.eventList(vatsDAO.findAll()), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(vatCategoriesDAO.findAll()), false);
         synch.syncExec(new Runnable() {
            
             @Override

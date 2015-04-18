@@ -74,8 +74,8 @@ import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -352,10 +352,8 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        shippingListData.clear();
-        shippingListData.addAll(shippingsDAO.findAll());
-        categories.clear();
-        categories.addAll(shippingCategoriesDAO.findAll());
+        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll()), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll()), false);
         synch.syncExec(new Runnable() {
 
             @Override

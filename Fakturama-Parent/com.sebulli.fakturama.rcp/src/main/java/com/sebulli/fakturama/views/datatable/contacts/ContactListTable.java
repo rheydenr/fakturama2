@@ -59,7 +59,6 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -361,10 +360,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        contactListData.clear();
-        contactListData.addAll(getListData(true));
-        categories.clear();
-        categories.addAll(contactCategoriesDAO.findAll(true));
+        GlazedLists.replaceAll(contactListData, getListData(true), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
         sync.syncExec(new Runnable() {
            
             @Override

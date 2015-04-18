@@ -21,10 +21,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -97,9 +100,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Inject
     private Logger log;
 
-//    this is for synchronizing the UI thread
-//    @Inject    
-//    private UISynchronize synch;
+    //this is for synchronizing the UI thread
+    @Inject    
+    private UISynchronize synch;
 
     // ID of this view
     public static final String ID = "fakturama.views.paymentTable";
@@ -335,41 +338,39 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         return preferences.getLong(Constants.DEFAULT_PAYMENT, 1L);
     }
     
-//    /**
-//     * Handle an incoming refresh command. This could be initiated by an editor 
-//     * which has just saved a new element (document, Payment, payment etc). Here we ONLY
-//     * listen to "PaymentEditor" events.<br />
-//     * The tree of {@link VoucherCategory}s is updated because we use a GlazedList for
-//     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
-//     * react on every change of the underlying list (here in the field <code>categories</code>).
-//     * If the content of <code>categories</code> changes, the change event is fired and the 
-//     * {@link TopicTreeViewer} is updated.
-//     * 
-//     * @param message an incoming message
-//     */
-//    @Inject
-//    @Optional
-//    public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
-//        synch.syncExec(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                top.setRedraw(false);
-//            }
-//        });
-//        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-//        paymentListData.clear();
-//        paymentListData.addAll(paymentsDAO.findAll());
-//        categories.clear();
-//        categories.addAll(accountDAO.findAll());
-//        synch.syncExec(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                top.setRedraw(true);
-//            }
-//        });
-//    }
+    /**
+     * Handle an incoming refresh command. This could be initiated by an editor 
+     * which has just saved a new element (document, Payment, payment etc). Here we ONLY
+     * listen to "PaymentEditor" events.<br />
+     * The tree of {@link VoucherCategory}s is updated because we use a GlazedList for
+     * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
+     * react on every change of the underlying list (here in the field <code>categories</code>).
+     * If the content of <code>categories</code> changes, the change event is fired and the 
+     * {@link TopicTreeViewer} is updated.
+     * 
+     * @param message an incoming message
+     */
+    @Inject
+    @Optional
+    public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
+        synch.syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                top.setRedraw(false);
+            }
+        });
+        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll()), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll()), false);
+        synch.syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                top.setRedraw(true);
+            }
+        });
+    }
 
     /**
      * Set the category filter

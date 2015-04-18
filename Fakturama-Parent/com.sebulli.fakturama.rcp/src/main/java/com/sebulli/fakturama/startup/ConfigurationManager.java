@@ -199,6 +199,8 @@ public class ConfigurationManager {
 	 * 
 	 * @param oldWorkspace
 	 * @param requestedWorkspace
+	 * 
+	 * ==> at the moment this method does intentionally nothing!
 	 */
 	private void adaptLogfile(String oldWorkspace, String requestedWorkspace) {
 		System.out.println("");

@@ -430,8 +430,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        documentListData.clear();
-        documentListData.addAll(documentsDAO.findAll(true));
+        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
         sync.syncExec(new Runnable() {
 
             @Override
