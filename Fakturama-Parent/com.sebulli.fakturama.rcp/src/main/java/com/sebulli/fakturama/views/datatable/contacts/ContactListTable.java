@@ -70,8 +70,8 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -82,7 +82,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  * View with the table of all contacts
  * 
  */
-public class ContactListTable extends AbstractViewDataTable<Contact, ContactCategory> {
+public abstract class ContactListTable<T extends Contact> extends AbstractViewDataTable<T, ContactCategory> {
 
     @Inject
     @Translation
@@ -112,7 +112,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @Inject
     protected IEventBroker evtBroker;
 
-    private EventList<Contact> contactListData;
+    private EventList<T> contactListData;
     private EventList<ContactCategory> categories;
 
     private Control top;
@@ -125,10 +125,10 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     
     private MPart listTablePart;
     
-    private ListViewGridLayer<Contact> gridLayer;
+    private ListViewGridLayer<T> gridLayer;
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-    protected FilterList<Contact> treeFilteredIssues;
+    protected FilterList<T> treeFilteredIssues;
     private SelectionLayer selectionLayer;
 
     @PostConstruct
@@ -149,7 +149,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         return top;
     }
     
-    private void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<Contact> gridLayer, String commandId) {
+    private void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<T> gridLayer, String commandId) {
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -190,7 +190,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     }
     
     @Override
-    protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<Contact> gridLayer) {
+    protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<T> gridLayer) {
         hookDoubleClickCommand(nattable, gridLayer, null);
     }
     
@@ -218,15 +218,15 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     @Override
     protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-        contactListData = GlazedLists.eventList(contactDAO.findAll());
+        contactListData = getListData(true);
 
         // get the visible properties to show in list view
         String[] propertyNames = contactDAO.getVisibleProperties();
 
-        final IColumnPropertyAccessor<Contact> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Contact>(propertyNames);
-        final IColumnPropertyAccessor<Contact> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Contact>() {
+        final IColumnPropertyAccessor<T> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<T>(propertyNames);
+        final IColumnPropertyAccessor<T> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<T>() {
 
-            public Object getDataValue(Contact rowObject, int columnIndex) {
+            public Object getDataValue(T rowObject, int columnIndex) {
                 ContactListDescriptor descriptor = ContactListDescriptor.getDescriptorFromColumn(columnIndex);
                 switch (descriptor) {
                 case NO:
@@ -262,31 +262,31 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
 
         //build the column header layer
         // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Contact>(propertyNames, derivedColumnPropertyAccessor); 
+        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, derivedColumnPropertyAccessor); 
 
         // matcher input Search text field 
-        final MatcherEditor<Contact> textMatcherEditor = new TextWidgetMatcherEditor<Contact>(searchText, new ContactFilterator());
+        final MatcherEditor<T> textMatcherEditor = createTextWidgetMatcherEditor();
         
         // Filtered list for Search text field filter
-        final FilterList<Contact> textFilteredIssues = new FilterList<Contact>(contactListData, textMatcherEditor);
+        final FilterList<T> textFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
 
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<Contact>(textFilteredIssues);
+        treeFilteredIssues = new FilterList<T>(textFilteredIssues);
 
         //create the body layer stack
-        final IRowDataProvider<Contact> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Contact>(treeFilteredIssues, derivedColumnPropertyAccessor);
+        final IRowDataProvider<T> firstBodyDataProvider = 
+                new GlazedListsDataProvider<T>(treeFilteredIssues, derivedColumnPropertyAccessor);
         
         //build the grid layer
-        gridLayer = new ListViewGridLayer<Contact>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
+        gridLayer = new ListViewGridLayer<T>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
         tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
         tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
         tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
         tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-//        GlazedListsEventLayer<Contact> vatListEventLayer = new GlazedListsEventLayer<Contact>(tableDataLayer, contactListData);
+//        GlazedListsEventLayer<T> vatListEventLayer = new GlazedListsEventLayer<T>(tableDataLayer, contactListData);
 
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -295,7 +295,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         // Custom selection configuration
         selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
 
-        IRowIdAccessor<Contact> rowIdAccessor = new IRowIdAccessor<Contact>() {
+        IRowIdAccessor<T> rowIdAccessor = new IRowIdAccessor<T>() {
             @Override
             public Serializable getRowId(Contact rowObject) {
                 return rowObject.getId();
@@ -303,10 +303,10 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         };
         
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<Contact> selectionModel = new RowSelectionModel<Contact>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
+        RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
 //         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Contact>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
                 SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
@@ -318,6 +318,10 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
         return natTable;
     }
+
+    protected abstract MatcherEditor<T> createTextWidgetMatcherEditor();
+
+    protected abstract EventList<T> getListData(boolean forceRead);
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#getTableId()
@@ -358,7 +362,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         contactListData.clear();
-        contactListData.addAll(contactDAO.findAll(true));
+        contactListData.addAll(getListData(true));
         categories.clear();
         categories.addAll(contactCategoriesDAO.findAll(true));
         sync.syncExec(new Runnable() {
@@ -408,7 +412,7 @@ public class ContactListTable extends AbstractViewDataTable<Contact, ContactCate
     /**
      * @return the gridLayer
      */
-    public ListViewGridLayer<Contact> getGridLayer() {
+    public ListViewGridLayer<T> getGridLayer() {
         return gridLayer;
     }
     

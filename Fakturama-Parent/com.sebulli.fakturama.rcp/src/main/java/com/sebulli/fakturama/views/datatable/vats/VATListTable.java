@@ -64,6 +64,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -216,8 +217,24 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
         final IColumnPropertyAccessor<VAT> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
-        // matcher input Search text field 
-        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, new VATFilterator());
+        /*
+        // Mark the columns that are used by the search function.
+        searchColumns = new String[3];
+        searchColumns[0] = "name";
+        searchColumns[1] = "description";
+        searchColumns[2] = "value";
+ */
+    
+    /* Achtung: hier kommt später noch transactionFilter und contactFilter
+     * dazu. Hintergrund: Beim Filtern über Dokumente kann man eins in der Liste
+     * auswählen und dann auf den entsprechenden Kontakt gehen (im Baum). Dann werden alle Dokumente
+     * zu diesem Kontakt angezeigt.
+     * 
+     * Wichtig: Selektiert man einen Kontakt bzw. eine Transaktion in der Liste, muß der Baum auch
+     * angepaßt werden! 
+    */
+        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, 
+                GlazedLists.textFilterator(VAT.class, VAT_.name.getName(), VAT_.description.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<VAT> textFilteredIssues = new FilterList<VAT>(vatListData, textMatcherEditor);

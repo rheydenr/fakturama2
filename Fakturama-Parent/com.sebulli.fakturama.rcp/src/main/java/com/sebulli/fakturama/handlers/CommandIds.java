@@ -19,6 +19,8 @@ package com.sebulli.fakturama.handlers;
  */
 public final class CommandIds {
 
+//	public static final String CMD_OPEN_CREDITORS = "com.sebulli.fakturama.command.openCreditors";
+//	public static final String CMD_OPEN_DEBITORS = "com.sebulli.fakturama.command.openDebitors";
 	public static final String CMD_OPEN_CONTACTS = "com.sebulli.fakturama.command.openContacts";
 	public static final String CMD_OPEN_PRODUCTS = "com.sebulli.fakturama.command.openProducts";
 	public static final String CMD_OPEN_VATS = "com.sebulli.fakturama.command.openVats";

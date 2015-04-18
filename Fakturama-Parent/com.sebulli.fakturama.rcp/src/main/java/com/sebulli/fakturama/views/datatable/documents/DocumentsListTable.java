@@ -91,6 +91,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -313,8 +314,16 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // Column header data provider includes derived properties
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Document>(propertyNames, derivedColumnPropertyAccessor); 
 
-        // matcher input Search text field 
-        final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText, new DocumentFilterator());
+        /*
+        // Mark the columns that are used by the search function.
+        searchColumns = new String[4];
+        searchColumns[0] = "name";
+        searchColumns[1] = "date";
+        searchColumns[2] = "addressfirstline";
+        searchColumns[3] = "total";
+ */
+        final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText, GlazedLists.textFilterator(Document.class,
+                Document_.name.getName(), Document_.addressFirstLine.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<Document> textFilteredIssues = new FilterList<Document>(documentListData, textMatcherEditor);

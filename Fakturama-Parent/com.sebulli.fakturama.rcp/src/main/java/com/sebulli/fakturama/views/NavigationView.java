@@ -46,11 +46,14 @@ import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
+import com.sebulli.fakturama.handlers.OpenContactsHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
+import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
 
 /**
  * This class represents the navigation view of the workbench
@@ -84,6 +87,7 @@ public class NavigationView {
      */
     @PostConstruct
     public void createPartControl(final Composite parent) {
+        Map<String, Object> parameters;
 
         // Add context help reference 
         //		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextHelpConstants.NAVIGATION_VIEW);
@@ -100,7 +104,15 @@ public class NavigationView {
         PGroup group2 = createPGroup("command.data.name", Icon.ICON_LETTER);
         addAction(group2, Icon.COMMAND_LETTER, "command.documents", CommandIds.CMD_OPEN_DOCUMENTS);
         addAction(group2, Icon.COMMAND_PRODUCT, "command.products", CommandIds.CMD_OPEN_PRODUCTS);
-        addAction(group2, Icon.COMMAND_CONTACT, "command.contacts", CommandIds.CMD_OPEN_CONTACTS);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, CreditorListTable.ID);
+        addAction(group2, Icon.COMMAND_CONTACT, "command.creditors", CommandIds.CMD_OPEN_CONTACTS, parameters);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, DebitorListTable.ID);
+        addAction(group2, Icon.COMMAND_CONTACT, "command.debitors", CommandIds.CMD_OPEN_CONTACTS, parameters);
+        
         addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", CommandIds.CMD_OPEN_PAYMENTS);
         addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", CommandIds.CMD_OPEN_SHIPPINGS);
         addAction(group2, Icon.COMMAND_VAT, "command.vats", CommandIds.CMD_OPEN_VATS);
@@ -110,12 +122,11 @@ public class NavigationView {
         addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS);
 
         // Create the 3rd expand bar "Create new"
-        Map<String, Object> parameters = new HashMap<>();
         PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);
 //        parameters.put(CallEditor.PARAM_EDITOR_TYPE, ProEd.ID);
         addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_NEW_PRODUCT);
         
-        parameters.clear();
+        parameters = new HashMap<>();
         parameters.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
         addAction(group3, Icon.COMMAND_CONTACT, "command.new.contact", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_CONTACT*/, parameters);
 

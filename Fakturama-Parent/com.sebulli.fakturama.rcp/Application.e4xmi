@@ -105,7 +105,7 @@
                   <children xsi:type="menu:HandledToolItem" xmi:id="_UszVcKHREeSunu0FbOq_OA" elementId="com.sebulli.fakturama.listview.document.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>
               </children>
-              <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="fakturama.views.contactTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.ContactListTable" label="%command.contacts.name" iconURI="icon://COMMAND_CONTACT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
+              <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="fakturama.views.creditorTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.CreditorListTable" label="Creditors" iconURI="icon://COMMAND_CONTACT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>
                 <menus xsi:type="menu:PopupMenu" xmi:id="_Y1tWAHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.contactlist.popup" label="Contact list popup">
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_gxFRIHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.rcp.handledmenuitem.commandnewcontactname" label="%command.new.contact.name" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
@@ -121,6 +121,9 @@
                   </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_DvuawHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>
+              </children>
+              <children xsi:type="basic:Part" xmi:id="_tCv5gOYVEeSmXZiiofyvSg" elementId="fakturama.views.debitorTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.CreditorListTable" label="Debitors" iconURI="icon://COMMAND_CONTACT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
+                <toolbar xmi:id="_0B414OYVEeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.toolbar.5"/>
               </children>
               <children xsi:type="basic:Part" xmi:id="_M4ilIE8JEeOddfJz0XevPw" elementId="fakturama.views.productTable" toBeRendered="false" visible="false" label="%command.products.name" iconURI="icon://COMMAND_PRODUCT">
                 <tags>NoMove</tags>
@@ -372,13 +375,18 @@
   </rootContext>
   <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
+    <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.popupmenu.0">
+      <children xsi:type="menu:MenuSeparator" xmi:id="_lJ0yQOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.menuseparator.7"/>
+    </menus>
   </descriptors>
   <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">
     <children xsi:type="menu:ToolBar" xmi:id="_2aO0MN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.documentitemslist.toolbar">
       <children xsi:type="menu:HandledToolItem" xmi:id="_-6rLQN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.rcp.handledtoolitem.0" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_epsVUMUQEeShSO-6QzwVpg"/>
     </children>
   </snippets>
-  <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.command.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%command.contacts.name" description="%command.contacts.tooltip"/>
+  <commands xmi:id="_RmPT0-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.command.openContacts" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%command.contacts.name" description="%command.contacts.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
+    <parameters xmi:id="_u8PDUOYYEeSmXZiiofyvSg" elementId="com.sebulli.fakturama.lists.contacttype" name="Contact Type"/>
+  </commands>
   <commands xmi:id="_OkPpoCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openProducts" commandName="%command.products.name" description="%command.products.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_f9TOgJNwEeOHwsccdr5WIQ" elementId="com.sebulli.fakturama.command.openVats" commandName="%command.vats.name" description="%command.vats.tooltip"/>
   <commands xmi:id="_Gp8DIKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.command.openDocuments" commandName="%command.documents.name" description="%command.documents.tooltip"/>

@@ -72,12 +72,13 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -229,8 +230,17 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         // Column header data provider includes derived properties
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Payment>(propertyNames, derivedColumnPropertyAccessor); 
 
-        // matcher input Search text field 
-        final MatcherEditor<Payment> textMatcherEditor = new TextWidgetMatcherEditor<Payment>(searchText, new PaymentFilterator());
+        /*
+        // Mark the columns that are used by the search function.
+        searchColumns = new String[5];
+        searchColumns[0] = "name";
+        searchColumns[1] = "description";
+        searchColumns[2] = "discountvalue";
+        searchColumns[3] = "discountdays";
+        searchColumns[4] = "netdays";
+ */
+        final MatcherEditor<Payment> textMatcherEditor = new TextWidgetMatcherEditor<Payment>(searchText, GlazedLists.textFilterator(Payment.class,
+                Payment_.name.getName(), Payment_.description.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<Payment> textFilteredIssues = new FilterList<Payment>(paymentListData, textMatcherEditor);

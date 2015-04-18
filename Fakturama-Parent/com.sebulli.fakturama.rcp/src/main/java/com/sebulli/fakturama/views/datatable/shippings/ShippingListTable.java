@@ -70,6 +70,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
+import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -225,8 +226,14 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         // Column header data provider includes derived properties
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Shipping>(propertyNames, derivedColumnPropertyAccessor); 
 
-        // matcher input Search text field 
-        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, new ShippingFilterator());
+        /*
+        // Mark the columns that are used by the search function.
+        searchColumns[0] = "name";
+        searchColumns[1] = "description";
+        searchColumns[2] = "value";
+ */
+        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, GlazedLists.textFilterator(Shipping.class,
+                Shipping_.name.getName(), Shipping_.description.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<Shipping> textFilteredIssues = new FilterList<Shipping>(shippingListData, textMatcherEditor);

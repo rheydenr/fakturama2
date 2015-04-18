@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.handlers;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -23,13 +24,14 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
 /**
  * This action opens the contacts in a table view.
  * 
  */
 public class OpenContactsHandler {
+
+    public static final String PARAM_LIST_TYPE = "com.sebulli.fakturama.lists.contacttype";
 
     @Inject
     private ILogger log;
@@ -40,9 +42,11 @@ public class OpenContactsHandler {
 	 * Open the contacts in an table view.
 	 */
 	@Execute
-	public void execute(final EPartService partService) {
+	public void execute(
+	        @Named(PARAM_LIST_TYPE) String editorType,
+	        final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
-        MPart contactListPart = partService.findPart(ContactListTable.ID);
+	    MPart contactListPart = partService.findPart(editorType);
         if(contactListPart != null && contactListPart.isVisible()) {
             log.debug("part is already created!");
             partService.showPart(contactListPart,
