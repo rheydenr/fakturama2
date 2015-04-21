@@ -468,38 +468,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	protected void createMenuManager() {
 	    menuService.registerContextMenu(natTable, getPopupId());
 	}
-
-    
-//    protected PopupMenuBuilder createBodyMenu(final NatTable natTable, final ListViewGridLayer<T> gridLayer) {
-//        return new PopupMenuBuilder(natTable)
-//                .withMenuItemProvider(new IMenuItemProvider() {
-//                    @Override
-//                    public void addMenuItem(final NatTable natTable, Menu popupMenu) {
-//                        MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH);
-//                        menuItem.setText("Toggle auto spanning");
-//                        menuItem.setEnabled(true);
-//
-//                        menuItem.addSelectionListener(new SelectionAdapter() {
-//                            @Override
-//                            public void widgetSelected(SelectionEvent event) {
-//                                NatEventData natEventData = MenuItemProviders.getNatEventData(event);
-//                                //get the row position for the click in the NatTable
-//                                int rowPosition = natEventData.getRowPosition();
-//                               // natTable.getDataValueByPosition(columnPosition, rowPosition);
-//
-//                                //transform the NatTable row position to the row position of the body layer stack
-//                                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPosition, gridLayer.getBodyDataLayer());
-//                                // extract the selected Object
-//                                T selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-//                                log.debug("Selected Object: " + selectedObject.getName());
-//
-//                                natTable.doCommand(new VisualRefreshCommand());
-//                            }
-//                        });
-//                    }
-//                })
-//                .withStateManagerMenuItemProvider();
-//    }
     
 	/**
 	 * Create the default context menu with one addNew and one Delete action

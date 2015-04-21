@@ -14,17 +14,11 @@
  
 package com.sebulli.fakturama.parts.itemlist;
 
-import java.io.File;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,15 +36,11 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -72,7 +62,6 @@ import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
-import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
@@ -90,14 +79,13 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -108,7 +96,6 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dialogs.ProductPictureDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -610,16 +597,14 @@ private Menu createContextMenu(NatTable natTable) {
             
             @Override
             public void handleLayerEvent(ILayerEvent event) {
-                if(event instanceof RowReorderEvent) {
-//                    RowReorderEvent evt = (RowReorderEvent) event;
-//                    evt.g
-//                    gridListLayer.getBodyDataLayer().getDataValueByPosition(0, 0);
-                    event.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
-                    DocumentItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(1/*gridListLayer.getSelectionLayer().getFullySelectedRowPositions()[0]*/);
-                    gridListLayer.getSelectionLayer().getSelectedRowPositions();
-                    gridListLayer.getBodyLayerStack().getGlazedListsEventLayer().getDataValueByPosition(0, 1);
-                    LayerUtil.convertRowPosition(gridListLayer.getBodyLayerStack().getRowReorderLayer(), 1, gridListLayer.getBodyLayerStack().getGlazedListsEventLayer());
-                    System.out.println(event.toString());
+                if (event instanceof RowReorderEvent) {
+                    RowReorderEvent evt = (RowReorderEvent) event;
+                    evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
+                    int newIdx = 0;
+                    for (Integer rowIndex : gridListLayer.getBodyLayerStack().getRowReorderLayer().getRowIndexOrder()) {
+                        DocumentItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
+                        objToRenumber.getDocumentItem().setPosNr(++newIdx);
+                    }
                 }
             }
         });
@@ -633,22 +618,22 @@ private Menu createContextMenu(NatTable natTable) {
      // remove the menu reference from NatTable instance
         natTable.setMenu(null);
          
-        natTable.addConfiguration(
-                new AbstractUiBindingConfiguration() {
-         
-            @Override
-            public void configureUiBindings(
-                    UiBindingRegistry uiBindingRegistry) {
-//                e4Menu = createContextMenu(natTable);
-                // register the UI binding
-                uiBindingRegistry.registerMouseDownBinding(
-                        new MouseEventMatcher(
-                                SWT.NONE,
-                                GridRegion.BODY,
-                                MouseEventMatcher.RIGHT_BUTTON),
-                        new PopupMenuAction(e4Menu));
-            }
-        });
+//        natTable.addConfiguration(
+//                new AbstractUiBindingConfiguration() {
+//         
+//            @Override
+//            public void configureUiBindings(
+//                    UiBindingRegistry uiBindingRegistry) {
+////                e4Menu = createContextMenu(natTable);
+//                // register the UI binding
+//                uiBindingRegistry.registerMouseDownBinding(
+//                        new MouseEventMatcher(
+//                                SWT.NONE,
+//                                GridRegion.BODY,
+//                                MouseEventMatcher.RIGHT_BUTTON),
+//                        new PopupMenuAction(e4Menu));
+//            }
+//        });
         return natTable;
     }
 
@@ -683,6 +668,23 @@ private Menu createContextMenu(NatTable natTable) {
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
+        
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                            selectRowAction.run(natTable, event);
+                        }                   
+                    }
+                });
 
         natTable.configure();
     }
@@ -1008,17 +1010,6 @@ private Menu createContextMenu(NatTable natTable) {
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_TITLE, msg.dialogProductPicturePreview);
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_INFORMATION));
             editDialogSettings.put(CellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
-//            
-//            Point size = new Point(400, 300);
-//            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_SIZE, size);
-//            
-//            int screenWidth = display.getBounds().width;
-//            int screenHeight = display.getBounds().height;
-//            Point location = new Point((screenWidth / (2 * display.getMonitors().length)) - (size.x/2), (screenHeight / 2) - (size.y/2));
-//            editDialogSettings.put(CellEditDialog.DIALOG_SHELL_LOCATION, location);
-//            
-//            //add custom message 
-//            editDialogSettings.put(CellEditDialog.DIALOG_MESSAGE, "Enter some free text in here:");
             
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.EDIT_DIALOG_SETTINGS, 
@@ -1026,101 +1017,6 @@ private Menu createContextMenu(NatTable natTable) {
                     DisplayMode.EDIT,
                     PICTURE_CELL_LABEL);
         }
-    }
-
-    /**
-     * Returns an image. Clients do not need to dispose the image, it will be
-     * disposed automatically.
-     * 
-     * @return an {@link Image}
-     */
-    private Image getImage(String path) {
-        Image image = JFaceResources.getImageRegistry().get(path);
-        if (image == null) {
-            addIconImageDescriptor(path);
-            image = JFaceResources.getImageRegistry().get(path);
-        }
-        return image;
-    }
-
-    /**
-     * Scale the given image to {@link CellImagePainter#MAX_IMAGE_PREVIEW_WIDTH}
-     * px width. Copied from old ProductPictureDialog class.
-     * 
-     * @param pictureName
-     * @return Image
-     */
-    private Image getScaledImage(String pictureName) {
-        // The scaled image with width and height (used to resize the dialog)
-        Image scaledImage = null;
-        // Display the picture, if it is set.
-        if (!pictureName.isEmpty()) {
-
-            int width = 300;
-            int height = 200;
-
-            // Load the image, based on the picture name
-            // but at first check if it exists
-            if(Files.notExists(Paths.get(pictureName))) {
-                return null;
-            }
-            Image image = getImage(pictureName);
-
-            // Get the pictures size
-            width = image.getBounds().width;
-            height = image.getBounds().height;
-            
-            // Scale the image to 64x48 Pixel
-            if (width != 0 && height != 0) {
-                // Picture is wider than height.
-                if (width >= 64*height/48) {
-                    height = height * 64 / width;
-                    width = 64;
-                }
-                else { //if (height > ((48*width)/64)) {
-                    width = width * 48 / height;
-                    height = 48;
-                }
-            }
-            
-            scaledImage = new Image(image.getDevice(), image.getImageData().scaledTo(width, height));
-            
-//            // Scale it to maximum 250px
-//            int maxWidth = MAX_IMAGE_PREVIEW_WIDTH;
-//
-//            // Maximum picture width 
-//            if (width > maxWidth) {
-//                height = maxWidth * height / width;
-//                width = maxWidth;
-//
-//                // Rescale the picture to the maximum width
-//                scaledImage = new Image(image.getDevice(), image.getImageData().scaledTo(width, height));
-//            }
-//            else {
-//                scaledImage = image;
-//            }
-        }
-        return scaledImage;
-    }
-
-    /**
-     * Add an image descriptor for a specific key and {@link IconSize} to the
-     * global {@link ImageRegistry}
-     * 
-     * @param name
-     * @param is
-     * @return <code>true</code> if successfully added, else <code>false</code>
-     */
-    private boolean addIconImageDescriptor(String path) {
-        try {
-            URL fileLocation = new File(path).toURI().toURL();
-            ImageDescriptor id = ImageDescriptor.createFromURL(fileLocation);
-            JFaceResources.getImageRegistry().put(path, id);
-        }
-        catch (MissingResourceException | MalformedURLException | IllegalArgumentException e) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -1153,5 +1049,4 @@ private Menu createContextMenu(NatTable natTable) {
         // This error should'nt occur since we've overridden the changeToolbarItem method.
         throw new UnsupportedOperationException("Inside a list table there's no toolbar.");
     }
-
 }

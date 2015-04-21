@@ -134,7 +134,7 @@ public class ShippingEditor extends Editor<Shipping> {
 //    private Double net;
 //    private Double vat = NumberUtils.DOUBLE_ZERO;
     private VAT vat = null;
-    private ShippingVatType autoVat = ShippingVatType.SHIPPINGVATFIX;
+    private ShippingVatType autoVat = ShippingVatType.SHIPPINGVATGROSS;
 
     /**
      * This field can't be injected since the part is created from
@@ -239,9 +239,20 @@ public class ShippingEditor extends Editor<Shipping> {
         if (newShipping) {
             // Create a new data set
             editorShipping = new Shipping();
+            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                ShippingCategory newCat = shippingCategoriesDAO.findShippingCategoryByName(category);
+                editorShipping.setCategories(newCat);
+            }
+            editorShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
+            editorShipping.setShippingValue(Double.valueOf(0.0));
+            int vatId = defaultPreferences.getInt(Constants.DEFAULT_VAT, 1);
+            vat = vatsDao.findById(vatId);  // initially set default VAT
+            editorShipping.setShippingVat(vat);
 
             //T: Shipping Editor: Part Name of a new Shipping Entry
             part.setLabel(msg.mainMenuNewShipping);
+            getMDirtyablePart().setDirty(true);
         }
         else {
             // Set the Editor's name to the Shipping name.
@@ -613,18 +624,12 @@ public class ShippingEditor extends Editor<Shipping> {
 
     @PreDestroy
     public void beforeClose() {
-        shippingDao.findById(editorShipping.getId(), true);
+        // Refresh the table view of all Shippings. This is necessary because if you change an entity
+        // and don't save it, the list view gets updated (with the unsaved entity!). This call updates the
+        // list view from database.
+        evtBroker.post(EDITOR_ID, "update");
         editorShipping = null;
         top = null;
-//        textName = null;
-//        textDescription = null;
-//         comboVat = null;
-//         comboViewer = null;
-//         comboAutoVat = null;
-//         netText = null;
-//         grossText = null;
-//         comboCategory = null;
-        
     }
    
     @Override

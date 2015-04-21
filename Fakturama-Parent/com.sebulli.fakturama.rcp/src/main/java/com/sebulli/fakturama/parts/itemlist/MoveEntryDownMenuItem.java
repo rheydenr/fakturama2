@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
@@ -75,7 +76,7 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
         //            moveRowUp.setID(???);
         moveRowDown.setImage(Icon.COMMAND_DOWN.getImage(IconSize.DefaultIconSize));
         moveRowDown.setEnabled(true);
-        moveRowDown.setAccelerator(SWT.ALT + SWT.ARROW_DOWN); // doesn't work at the moment 
+        moveRowDown.setAccelerator(SWT.F3); // doesn't work at the moment 
 
         moveRowDown.addSelectionListener(new SelectionAdapter() {
 
@@ -90,7 +91,7 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
                 int pos = natEventData.getRowPosition() - 1;  // count without header row
                 // Do not move one single item
                 if (natTable.getRowCount() > 2 && pos < natTable.getRowCount()) {  // the header row has to be added for this calculation!
-                    RowReorderCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos + 1);
+                    ILayerCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos + 1);
                     natTable.doCommand(cmd);
                 }
 

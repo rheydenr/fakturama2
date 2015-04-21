@@ -373,7 +373,7 @@
     <children xmi:id="_RmPTzetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialog" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialogs"/>
     <children xmi:id="_c7LSgGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingcontext.viewlist" name="In List Views" description="Binding context for using in list views (VATs, documents etc.)"/>
   </rootContext>
-  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
+  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.popupmenu.0">
       <children xsi:type="menu:MenuSeparator" xmi:id="_lJ0yQOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.menuseparator.7"/>

@@ -746,15 +746,15 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/discountDays"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="discountDays" getter="getDiscountDays" defaultValue="null" setter="setDiscountDays" validJavaMemberName="discountDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="discountDays" getter="getDiscountDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setDiscountDays" validJavaMemberName="discountDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/discountValue"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="discountValue" getter="getDiscountValue" defaultValue="null" setter="setDiscountValue" validJavaMemberName="discountValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="discountValue" getter="getDiscountValue" defaultValue="java.lang.Double.valueOf(0.0)" setter="setDiscountValue" validJavaMemberName="discountValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/netDays"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="netDays" getter="getNetDays" defaultValue="null" setter="setNetDays" validJavaMemberName="netDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="netDays" getter="getNetDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setNetDays" validJavaMemberName="netDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Payment/category"/>

@@ -214,10 +214,15 @@ public class PaymentEditor extends Editor<Payment> {
 
 			// Create a new data set
 			payment = new Payment();
+            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                VoucherCategory newCat = accountDAO.findVoucherCategoryByName(category);
+                payment.setCategory(newCat);
+            }
 			
 			//T: Payment Editor: Part Name of a new payment
 			part.setLabel(msg.mainMenuNewPayment);
-
+            getMDirtyablePart().setDirty(true);
 		}
 		else {
 

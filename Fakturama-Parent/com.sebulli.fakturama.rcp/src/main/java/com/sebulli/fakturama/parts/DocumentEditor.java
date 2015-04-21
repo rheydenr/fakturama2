@@ -16,10 +16,6 @@ package com.sebulli.fakturama.parts;
 
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,7 +48,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -1324,16 +1319,16 @@ public class DocumentEditor extends Editor<Document> {
 	/**
 	 * Show or hide the warning icon
 	 */
-    void showHideWarningIcon() {
+    private void showHideWarningIcon() {
 
         // Check, whether the delivery address is the same as the billing address
         boolean differentDeliveryAddress;
 
         if (documentType == DocumentType.DELIVERY) {
-            differentDeliveryAddress = !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            differentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
             differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
         } else {
-            differentDeliveryAddress = !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            differentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
             differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
         }
 

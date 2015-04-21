@@ -59,7 +59,12 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -174,6 +179,23 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
          * it would be overwritten with default configurations.
          */
         natTable.setBackground(GUIHelper.COLOR_WHITE);
+        
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                            selectRowAction.run(natTable, event);
+                        }                   
+                    }
+                });
         natTable.configure();
     }
     
@@ -361,8 +383,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll()), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll()), false);
+        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll(true)), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll(true)), false);
         synch.syncExec(new Runnable() {
 
             @Override

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
@@ -82,8 +83,8 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
                 int pos = natEventData.getRowPosition() - 1;  // count without header row
                 // Do not move one single item
                 if (natTable.getRowCount() > 2 && pos > 0) {  // the header row has to be added for this calculation!
-                    RowReorderCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos - 1);
-                    natTable.doCommand(cmd);
+                    ILayerCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos - 1);
+                    natTable.doCommand(cmd);natTable.refresh();
                 }
 
                 // old code:

@@ -47,7 +47,12 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -155,6 +160,23 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
+        
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+                        if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
+                            selectRowAction.run(natTable, event);
+                        }                   
+                    }
+                });
         natTable.configure();
     }
 
@@ -210,7 +232,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 
-        vatListData = GlazedLists.eventList(vatsDAO.findAll());
+        vatListData = GlazedLists.eventList(vatsDAO.findAll(true));
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
@@ -224,15 +246,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         searchColumns[1] = "description";
         searchColumns[2] = "value";
  */
-    
-    /* Achtung: hier kommt später noch transactionFilter und contactFilter
-     * dazu. Hintergrund: Beim Filtern über Dokumente kann man eins in der Liste
-     * auswählen und dann auf den entsprechenden Kontakt gehen (im Baum). Dann werden alle Dokumente
-     * zu diesem Kontakt angezeigt.
-     * 
-     * Wichtig: Selektiert man einen Kontakt bzw. eine Transaktion in der Liste, muß der Baum auch
-     * angepaßt werden! 
-    */
         final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, 
                 GlazedLists.textFilterator(VAT.class, VAT_.name.getName(), VAT_.description.getName()));
         
@@ -319,8 +332,8 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(vatListData, GlazedLists.eventList(vatsDAO.findAll()), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(vatCategoriesDAO.findAll()), false);
+        GlazedLists.replaceAll(vatListData, GlazedLists.eventList(vatsDAO.findAll(true)), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(vatCategoriesDAO.findAll(true)), false);
         synch.syncExec(new Runnable() {
            
             @Override
@@ -340,12 +353,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
         treeFilteredIssues.setMatcher(new VATMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
-
-        // Set category to the addNew action. So a new data set is created
-        // with the selected category
-        //   if (addNewAction != null) {
-        //       addNewAction.setCategory(filter);
-        //   }
 
         //Refresh is done automagically...
     }

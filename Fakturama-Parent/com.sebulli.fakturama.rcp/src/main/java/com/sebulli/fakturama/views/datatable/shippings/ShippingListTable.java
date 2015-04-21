@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.shippings;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
@@ -35,25 +34,22 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -74,8 +70,7 @@ import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -130,7 +125,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
 
-    private ListViewGridLayer<Shipping> gridLayer;
+    private EntityGridListLayer<Shipping> gridLayer;
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -143,7 +138,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         this.listTablePart = listTablePart;
         top = super.createPartControl(parent, Shipping.class, true, ID);
         // Listen to double clicks
-        hookDoubleClickCommand(natTable, gridLayer);
+        hookDoubleClickCommand2(natTable, gridLayer);
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
@@ -169,6 +164,23 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
          * it would be overwritten with default configurations.
          */
         natTable.setBackground(GUIHelper.COLOR_WHITE);
+        
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+                        if(!gridLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
+                            selectRowAction.run(natTable, event);
+                        }                   
+                    }
+                });
         natTable.configure();
     }
 	
@@ -178,11 +190,57 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
         // get the visible properties to show in list view
         String[] propertyNames = shippingsDAO.getVisibleProperties();
-
-        final IColumnPropertyAccessor<Shipping> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Shipping>(propertyNames);
         
         // Add derived 'default' column
-        final IColumnPropertyAccessor<Shipping> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Shipping>() {
+        final IColumnPropertyAccessor<Shipping> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
+
+        /*
+        // Mark the columns that are used by the search function.
+        searchColumns[0] = "name";
+        searchColumns[1] = "description";
+        searchColumns[2] = "value";
+ */
+        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, GlazedLists.textFilterator(Shipping.class,
+                Shipping_.name.getName(), Shipping_.description.getName()));
+        
+        // Filtered list for Search text field filter
+        final FilterList<Shipping> textFilteredIssues = new FilterList<Shipping>(shippingListData, textMatcherEditor);
+
+        // build the list for the tree-filtered values (i.e., the value list which is affected by
+        // tree selection)
+        treeFilteredIssues = new FilterList<Shipping>(textFilteredIssues);
+        
+        //build the grid layer
+        gridLayer = new EntityGridListLayer<Shipping>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
+        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
+        tableDataLayer.setColumnPercentageSizing(true);
+        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
+        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
+
+        // Create a label accumulator - adds custom labels to all cells which we
+        // wish to render differently. In this case render as an image.
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
+        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.VALUE.getPosition(), MONEYVALUE_CELL_LABEL);
+        
+        // Register label accumulator
+        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
+
+        // now is the time where we can create the NatTable itself
+        final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer.getGridLayer(), false);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
+
+        // Register your custom cell painter, cell style, against the label applied to the cell.
+        postConfigureNatTable(natTable);
+        return natTable;
+    }
+    
+    private IColumnPropertyAccessor<Shipping> createColumnPropertyAccessor(String[] propertyNames) {
+        final IColumnPropertyAccessor<Shipping> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Shipping>(propertyNames);
+        IColumnPropertyAccessor<Shipping> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Shipping>() {
 
             public Object getDataValue(Shipping rowObject, int columnIndex) {
                 ShippingListDescriptor descriptor = ShippingListDescriptor.getDescriptorFromColumn(columnIndex);
@@ -220,91 +278,13 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
                     return columnPropertyAccessor.getColumnIndex(propertyName) + 1;
                 }
             }
-        };
-
-        //build the column header layer
-        // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Shipping>(propertyNames, derivedColumnPropertyAccessor); 
-
-        /*
-        // Mark the columns that are used by the search function.
-        searchColumns[0] = "name";
-        searchColumns[1] = "description";
-        searchColumns[2] = "value";
- */
-        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, GlazedLists.textFilterator(Shipping.class,
-                Shipping_.name.getName(), Shipping_.description.getName()));
-        
-        // Filtered list for Search text field filter
-        final FilterList<Shipping> textFilteredIssues = new FilterList<Shipping>(shippingListData, textMatcherEditor);
-
-        // build the list for the tree-filtered values (i.e., the value list which is affected by
-        // tree selection)
-        treeFilteredIssues = new FilterList<Shipping>(textFilteredIssues);
-
-        //create the body layer stack
-        final IRowDataProvider<Shipping> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Shipping>(treeFilteredIssues, derivedColumnPropertyAccessor);
-        
-        //build the grid layer
-        gridLayer = new ListViewGridLayer<Shipping>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
-        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
-        tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-        GlazedListsEventLayer<Shipping> shippingListEventLayer = new GlazedListsEventLayer<Shipping>(tableDataLayer, shippingListData);
-
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-        shippingListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        
-        // Custom selection configuration
-        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-        IRowIdAccessor<Shipping> rowIdAccessor = new IRowIdAccessor<Shipping>() {
-            @Override
-            public Serializable getRowId(Shipping rowObject) {
-                return rowObject.getId();
-            }
-        };
-        
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<Shipping> selectionModel = new RowSelectionModel<Shipping>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-        selectionLayer.setSelectionModel(selectionModel);
-//         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Shipping>());
-
-        // now is the time where we can create the NatTable itself
-
-        // Create a label accumulator - adds custom labels to all cells which we
-        // wish to render differently. In this case render as an image.
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.DEFAULT.getPosition(), DEFAULT_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(ShippingListDescriptor.VALUE.getPosition(), MONEYVALUE_CELL_LABEL);
-
-        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-        
-        // Register label accumulator
-        gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
-
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
-        return natTable;
+        };        return derivedColumnPropertyAccessor;
     }
-    
+
     /**
      * @return the gridLayer
      */
-    protected ListViewGridLayer<Shipping> getGridLayer() {
+    protected EntityGridListLayer<Shipping> getGridLayer() {
         return gridLayer;
     }
 
@@ -313,8 +293,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
-        // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
-        // Eins von beiden muß es doch geben, oder?
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
         return topicTreeViewer;
     }
@@ -352,8 +330,8 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
             }
         });
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll()), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll()), false);
+        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll(true)), false);
+        GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll(true)), false);
         synch.syncExec(new Runnable() {
 
             @Override
@@ -361,19 +339,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
                 top.setRedraw(true);
             }
         });
-    }
-
-    /**
-     * Set the category filter
-     * 
-     * @param filter
-     *            The new filter string
-     * 
-     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
-     *             instead
-     */
-    public void setCategoryFilter(String filter) {
-        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
     }
 
     /**
@@ -385,17 +350,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // Set the label with the filter string
-        if (filter.equals(NO_CATEGORY_LABEL))
-            filterLabel.setText("");
-        else
-        // Display the localized list names.
-        // or the document type
-        if (isHeaderLabelEnabled())
-            filterLabel.setText("DataSetListNames.NAMES.getLocalizedName: " + filter);
-
-        filterLabel.pack(true);
-
         // Reset transaction and contact filter, set category filter
         treeFilteredIssues.setMatcher(new ShippingMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
         //   contentProvider.setTreeObject(treeObject);
@@ -460,7 +414,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     public void removeSelectedEntry() {
         if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            Shipping objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+            Shipping objToDelete = getGridLayer().getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
             try {
                 // don't delete the entry because it could be referenced
                 // from another entity
@@ -472,7 +426,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
             }
     
             // Refresh the table view of all Shippings
-            evtBroker.post(ShippingEditor.EDITOR_ID, "update");
+            evtBroker.post(getEditorId(), "update");
         } else {
             log.debug("no rows selected!");
         }
@@ -484,7 +438,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     @Override
     protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_CONTACT;
+        return CommandIds.LISTTOOLBAR_ADD_SHIPPING;
     }
 
     @Override
