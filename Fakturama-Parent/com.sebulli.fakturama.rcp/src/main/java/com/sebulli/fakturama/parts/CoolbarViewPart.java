@@ -45,6 +45,7 @@ import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -165,8 +166,12 @@ public class CoolbarViewPart {
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
-		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT));
+		
+        Map<String, Object> params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, Debitor.class.getSimpleName());		
+		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.commandNewContactName, msg.commandNewContactTooltip, 
+		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),null,
+		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
@@ -178,10 +183,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
 		
-        Map<String, Object> params = new HashMap<>();
 		params = new HashMap<>();
 		params.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.toString(true));
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName , msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName, msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params);	
 		
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 

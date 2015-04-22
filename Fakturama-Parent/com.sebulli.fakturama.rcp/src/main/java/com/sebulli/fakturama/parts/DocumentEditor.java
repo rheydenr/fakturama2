@@ -2549,13 +2549,8 @@ public class DocumentEditor extends Editor<Document> {
         Shipping retval = null;
 
         // Get the ID of the standard entity from preferences
-        try {
-            stdID = preferences.getLong(getDefaultEntryKey());
-        } catch (NumberFormatException | NullPointerException e) {
-            stdID = 1L;
-        } finally {
+            stdID = preferences.getLong(Constants.DEFAULT_SHIPPING);
             retval = shippingsDAO.findById(stdID);
-        }
         return retval;
     }
 

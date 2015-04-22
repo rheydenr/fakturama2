@@ -81,6 +81,7 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
@@ -220,8 +221,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         }
         
         this.top = super.createPartControl(parent, DocumentItemDTO.class, false, ID);
-        
-//        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
         // Listen to double clicks (omitted at the moment, perhaps at a later time
 //        hookDoubleClickCommand(natTable, gridLayer);
         return top;
@@ -231,6 +231,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
  * Create the default context menu 
  */
 private Menu createContextMenu(NatTable natTable) {
+//    // Add up/down and delete actions
+//    menuManager.add(new MoveEntryUpAction());
+//    menuManager.add(new MoveEntryDownAction());
+//    menuManager.add(new DeleteDataSetAction());
     // add NatTable menu items
     // and register the DisposeListener
     MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
@@ -241,25 +245,7 @@ private Menu createContextMenu(NatTable natTable) {
         .withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
         .withMenuItemProvider(CommandIds.CMD_MOVE_DOWN, moveEntryDownHandler)
         .build();
-
     return retval;
-
-//    
-//    //Cancel, if there are no items
-//    if (tableViewerItems == null)
-//        return;
-//    
-//    menuManager = new MenuManager();
-//    menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-//    tableViewerItems.getTable().setMenu(menuManager.createContextMenu(tableViewerItems.getTable()));
-//
-//    getSite().registerContextMenu("com.sebulli.fakturama.editors.DocumentEditor.tableViewerItems.contextmenu", menuManager, tableViewerItems);
-//    getSite().setSelectionProvider(tableViewerItems);
-//    
-//    // Add up/down and delete actions
-//    menuManager.add(new MoveEntryUpAction());
-//    menuManager.add(new MoveEntryDownAction());
-//    menuManager.add(new DeleteDataSetAction());
 }
 
     
@@ -608,35 +594,21 @@ private Menu createContextMenu(NatTable natTable) {
                 }
             }
         });
-//
-//        menuService.registerContextMenu(
-//                natTable, POPUP_ID);
-        
-     // get the menu registered by EMenuService ==> is nich!!!
-        final Menu e4Menu = createContextMenu(natTable); //natTable.getMenu();
-        
-     // remove the menu reference from NatTable instance
-        natTable.setMenu(null);
-         
-//        natTable.addConfiguration(
-//                new AbstractUiBindingConfiguration() {
-//         
-//            @Override
-//            public void configureUiBindings(
-//                    UiBindingRegistry uiBindingRegistry) {
-////                e4Menu = createContextMenu(natTable);
-//                // register the UI binding
-//                uiBindingRegistry.registerMouseDownBinding(
-//                        new MouseEventMatcher(
-//                                SWT.NONE,
-//                                GridRegion.BODY,
-//                                MouseEventMatcher.RIGHT_BUTTON),
-//                        new PopupMenuAction(e4Menu));
-//            }
-//        });
         return natTable;
     }
 
+    @Override
+    protected void createDefaultContextMenu() {
+        super.createDefaultContextMenu();
+
+        final Menu e4Menu = createContextMenu(natTable);
+
+        // remove the menu reference from NatTable instance
+        natTable.setMenu(null);
+        natTable.getUiBindingRegistry().registerMouseDownBinding(new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+                new PopupMenuAction(e4Menu));
+
+    }
 
     /**
      * @param reverseMap
@@ -670,7 +642,7 @@ private Menu createContextMenu(NatTable natTable) {
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         
         // register right click as a selection event for the whole row
-        natTable.getUiBindingRegistry().registerMouseDownBinding(
+        natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
 
                 new IMouseAction() {

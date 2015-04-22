@@ -71,6 +71,7 @@ import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
@@ -330,7 +331,6 @@ public class ContactEditor extends Editor<Contact> {
             editorContact = contactDAO.findById(objId);
         }
 
-
 		// Get the document that requests a new address
 //		documentEditor = ((UniDataSetEditorInput) input).getDocumentEditor();
 		
@@ -340,14 +340,21 @@ public class ContactEditor extends Editor<Contact> {
 
 		// If new ..
 		if (newContact) {
+            String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
 
 			// Create a new data set
-			editorContact = modelFactory.createDebitor();  // TODO category?
+            if(category.contentEquals(Creditor.class.getName())) {
+                editorContact = modelFactory.createCreditor();
+            } else {
+                editorContact = modelFactory.createDebitor();
+            }
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			part.setLabel(msg.commandNewContactName);
 
 			// Set the payment to the standard value
-// TODO			contact.setPayment(preferences.getInt("standardpayment", 1));
+			long paymentId = preferences.getLong(Constants.DEFAULT_PAYMENT);
+			Payment defaultPayment = paymentsDao.findById(paymentId);
+			editorContact.setPayment(defaultPayment);
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());

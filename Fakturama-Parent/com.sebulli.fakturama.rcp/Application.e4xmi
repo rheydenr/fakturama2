@@ -355,6 +355,7 @@
   <handlers xmi:id="_h5-B0EOAEeSkjYQl_biqUA" elementId="com.sebulli.fakturama.handler.openCalculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenCalculatorHandler" command="_-UipAEy_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_TsyuYG3mEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ErrorViewHandler" command="_VpeoEG3nEeS8E6Dq10mFSA"/>
   <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
+  <handlers xmi:id="_cmZ3IOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.up" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryUpMenuItem" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
@@ -375,8 +376,9 @@
   </rootContext>
   <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
-    <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.popupmenu.0">
-      <children xsi:type="menu:MenuSeparator" xmi:id="_lJ0yQOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.menuseparator.7"/>
+    <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
+    <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="up" iconURI="icon://COMMAND_UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
     </menus>
   </descriptors>
   <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">
@@ -402,7 +404,9 @@
   <commands xmi:id="_kmeVQCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openLists" commandName="%command.lists.name"/>
   <commands xmi:id="_rAi1sCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openExpenditureVouchers" commandName="%command.expenditurevouchers.name"/>
   <commands xmi:id="_xbxzwCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openReceiptVouchers" commandName="%command.receiptvouchers.name"/>
-  <commands xmi:id="_c8eN4Ey7EeOA3qmx22wNtw" elementId="command.new.contact" commandName="%toolbar.new.contact.name" description="%command.new.contact.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
+  <commands xmi:id="_c8eN4Ey7EeOA3qmx22wNtw" elementId="command.new.contact" commandName="%toolbar.new.contact.name" description="%command.new.contact.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
+    <parameters xmi:id="_6EuHkOhxEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.editors.editortype" name="Contact Type"/>
+  </commands>
   <commands xmi:id="_MFWfwEy7EeOA3qmx22wNtw" elementId="command.new.product" commandName="%toolbar.new.product.name" description="%command.new.product.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
@@ -454,6 +458,7 @@
     <parameters xmi:id="_JbW54MUREeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.partid" name="the ID of the calling part (since we have to close it)" typeId="" optional="false"/>
   </commands>
   <commands xmi:id="_58wvUOOYEeSCoO-pHSKlQQ" elementId="com.sebulli.fakturama.rcp.command.moverowup" commandName="MoveRowUp"/>
+  <commands xmi:id="_y4hyMOhnEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.rcp.command.moverowdown" commandName="MoveRowDown"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

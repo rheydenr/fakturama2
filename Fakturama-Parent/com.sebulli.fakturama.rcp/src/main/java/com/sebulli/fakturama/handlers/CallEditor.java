@@ -99,8 +99,8 @@ public class CallEditor {
                     break;
                 }
             }
-            
-			// Define  the editor and try to open it
+
+            // Define  the editor and try to open it
 			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category, duplicate), PartState.ACTIVATE);
 	}
 //	
@@ -138,12 +138,20 @@ public class CallEditor {
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
 			myPart.setVisible(true);
-			if(stackContext != null) {
-			myPart.setContext(stackContext);
-			} else {
-//			    EclipseContextFactory.getServiceContext(Activator.getContext());
-			    myPart.setContext(EclipseContextFactory.create());
+			
+			if(stackContext == null) {
+			    stackContext = EclipseContextFactory.create();
+
+/*
+ * What's this? - The MPart has to be injected into current context. Some Services
+ * (e.g., EMenuService) need a MPart to work. But the MPart is injected from
+ * Context and therefore we have to put a MPart (or, more concrete, *this* MPart)
+ * into context. That's it :-) 
+ */
+			    stackContext.set(MPart.class, myPart);
 			}
+		    myPart.setContext(stackContext);
+
 			myPart.getProperties().put(PARAM_OBJ_ID, objId);
 			myPart.getProperties().put(PARAM_CATEGORY, category);
 			stack.getChildren().add(myPart);
@@ -166,8 +174,11 @@ public class CallEditor {
                 break;
             case ContactEditor.ID:
             case ContactListTable.ID:
+            case "Debitor":
+            case "Creditor":
                 myPart.setLabel(msg.commandContactsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
+                myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
                 break;
             case DocumentsListTable.ID:
             case DocumentEditor.ID:
@@ -175,7 +186,6 @@ public class CallEditor {
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
-//                myPart.getProperties().put(PARAM_CATEGORY, category);
                 myPart.getProperties().put(PARAM_DUPLICATE, duplicate);
                 break;
 			default:

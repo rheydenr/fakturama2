@@ -163,15 +163,9 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
         
-        // TODO Test only. MenuService can't be injected from DocumentItemsList table :-(
-        if(useFilter) {
+       // if(useFilter) {
             createDefaultContextMenu();
-        }
-//        Menu contextMenu = createBodyMenu(natTable, getGridLayer()).build();  // works!
-//        natTable.setMenu(contextMenu);
-//        natTable.getUiBindingRegistry().registerMouseDownBinding(
-//                new MouseEventMatcher(SWT.NONE, null, MouseEventMatcher.RIGHT_BUTTON),
-//                new PopupMenuAction(contextMenu));
+        //}
         
         onStart(natTable);
         natTable.addDisposeListener(new DisposeListener() {
@@ -206,6 +200,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 		return top;
 	}
+	
 
     /**
      * We have to style the table a little bit...

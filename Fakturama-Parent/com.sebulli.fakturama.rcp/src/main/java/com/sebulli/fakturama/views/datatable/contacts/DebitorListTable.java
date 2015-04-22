@@ -3,8 +3,12 @@
  */
 package com.sebulli.fakturama.views.datatable.contacts;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -14,6 +18,9 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.swt.widgets.Control;
@@ -26,6 +33,7 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
@@ -34,6 +42,8 @@ import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
+import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
  * View with the table of all contacts
@@ -353,6 +363,24 @@ public class DebitorListTable extends ContactListTable<Debitor> {
 //    public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
 //        treeFilteredIssues.setMatcher(new ContactMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
 //    }
+    
+    @Override
+    public void changeToolbarItem(TreeObject treeObject) {
+        MToolBar toolbar = listTablePart.getToolbar();
+        for (MToolBarElement tbElem : toolbar.getChildren()) {
+            if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
+                HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
+                ParameterizedCommand wbCommand = toolItem.getWbCommand();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
+                if (treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
+                    toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
+                    parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getDocType().name());
+                }
+            }
+        }
+    }
+
 //
 //    /* (non-Javadoc)
 //     * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#isHeaderLabelEnabled()
