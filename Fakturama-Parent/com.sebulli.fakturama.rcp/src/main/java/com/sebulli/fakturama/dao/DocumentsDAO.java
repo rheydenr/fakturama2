@@ -10,6 +10,8 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -292,7 +294,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
     }    
 
     /**
-     * Update Dunnings which are related to a certain invoice.
+     * Update {@link Dunning}s which are related to a certain invoice.
      * 
      * @param document the invoice which is related
      * @param isPaid is it paid?
@@ -313,7 +315,22 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             .set(Dunning_.paidValue, paidValue)
             .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
             ;
-        getEntityManager().createQuery(criteria).executeUpdate();
+        executeCriteria(criteria);
+    }
+
+    /**
+     * Executes a given {@link CriteriaUpdate} within a separate {@link EntityTransaction}.
+     * @param criteria the Criteria to execute
+     */
+    private void executeCriteria(CriteriaUpdate<?> criteria) {
+        EntityTransaction tx = getEntityManager().getTransaction();
+        tx.begin();
+        try {
+            getEntityManager().createQuery(criteria).executeUpdate();
+            tx.commit();
+        } catch (PersistenceException e) {
+            tx.rollback();
+        }
     }
 
     /**
@@ -364,7 +381,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                             cb.equal(root.get(Document_.transactionId), document.getTransactionId())
                   ))
             ;
-        getEntityManager().createQuery(criteria).executeUpdate();
+        executeCriteria(criteria);
     }
 
     /**
@@ -406,7 +423,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         CriteriaUpdate<Document> criteria = cb.createCriteriaUpdate(Document.class);
         Root<Document> root = criteria.from(Document.class);
         criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(cb.equal(root.get(Document_.id), otherDocument.getId()));
-        getEntityManager().createQuery(criteria).executeUpdate();        
+        executeCriteria(criteria);
     }    
  
     /**
@@ -420,7 +437,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         CriteriaUpdate<Document> criteria = cb.createCriteriaUpdate(Document.class);
         Root<Document> root = criteria.from(Document.class);
         criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(root.get(Document_.id).in(importedDeliveryNotes));
-        getEntityManager().createQuery(criteria).executeUpdate();        
+        executeCriteria(criteria);
     }
 
     /**

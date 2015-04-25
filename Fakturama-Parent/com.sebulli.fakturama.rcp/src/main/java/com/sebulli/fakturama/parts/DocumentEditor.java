@@ -46,9 +46,12 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.MSnippetContainer;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -167,10 +170,9 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private EModelService modelService;
-
     
-//    @Inject
-//    private ESelectionService selectionService;
+    @Inject
+    private ESelectionService selectionService;
     
     @Inject
     private MApplication application;
@@ -422,35 +424,42 @@ public class DocumentEditor extends Editor<Document> {
 			if (billingAddress.isEmpty()) {
 				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-//			document.getAdditionalInfo().setManualAddress(billingAddress);
-			document.setManualAddress(billingAddress);
-
 			if (addressId != null) {
-				addressById = contactUtil.getAddressAsString(document.getContact());
+				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
+//    			document.setDeliveryContact(addressId);   // done by Databinding
+			} else {
+			    /*
+			     * If no addressId was given (no contact selected) then we use
+			     * the text field content for the manual address.
+			     */
+    			document.getAdditionalInfo().setManualAddress(billingAddress);
+    			document.setManualAddress(billingAddress);
 			}
-		}  // TODO check if this is correct (use of delivery / billing address compared to old code)
+		}
 		else {
 			if (!contactUtil.getAddressAsString(document.getContact()).equals(txtAddress.getText())) {
 				addressModified = true;
 			}
-//			document.getAdditionalInfo().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			document.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 
 			// Use the billing address if the delivery address is empty
 			if (deliveryAddress.isEmpty()) {
 				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-//			document.getAdditionalInfo().setDeliveryAddress(deliveryAddress);
-			document.setManualDeliveryAddress(deliveryAddress);
 
 			if (addressId != null) {
-				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
+				addressById = contactUtil.getAddressAsString(document.getContact());
+//				document.setContact(addressId);  // done by Databinding
+			} else {
+	            document.getAdditionalInfo().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+	            document.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+			document.getAdditionalInfo().setDeliveryAddress(deliveryAddress);
+			document.setManualDeliveryAddress(deliveryAddress);
 			}
 		}
 
-		// Show a warning, if the entered address is not similar to the address
-		// of the document, set by the address ID.
-		if ((addressId != null) && (addressModified)) {
+		// Show a warning if the entered address is not similar to the address
+		// of the document which is set by the address ID.
+		if (addressId != null && addressModified) {
 			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
@@ -1742,11 +1751,15 @@ public class DocumentEditor extends Editor<Document> {
 			     * This method handles the selected address and stores the value in the (intermediate)
 			     * Text field.
 			     * The (old) SelectContactDialog therefore is obsolete.
+			     * 
+			     * You have to clone the dialog because else there's no valid parent if you open the dialog 
+			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
-			    MDialog dialog = (MDialog) modelService.find("fakturama.dialog.select.contact", application);
-			    dialog.setToBeRendered(true);
+			    MTrimmedWindow dialog = (MTrimmedWindow) modelService.find("fakturama.dialog.select.contact", application);
+			    dialog = (MTrimmedWindow) modelService.cloneElement(dialog, (MSnippetContainer) modelService.find("com.sebulli.fakturama.application", application));
+			    // setVisible has to be set *before* setToBeRendered!
 			    dialog.setVisible(true);
-//			    dialog.setOnTop(true);
+			    dialog.setToBeRendered(true);
 			    dialog.getTransientData().put(DOCUMENT_ID, document.getName());
 			    modelService.bringToTop(dialog);
 			}
@@ -2422,12 +2435,16 @@ public class DocumentEditor extends Editor<Document> {
 
             switch (subTopic) {
             case "Contact":
-                // in ContactListTable the selected id is put in as Long value
-                Contact contact = contactDAO.findById((Long)event.getProperty(ContactListTable.SELECTED_CONTACT_ID));
+                Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
+                Contact contact = contactDAO.findById(contactId);
+//
+//                // we can use the Selection Service
+//                Contact contact = (Contact) selectionService.getSelection();
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!
                 document.setManualAddress(null);
                 document.setContact(contact);
+                addressId = contact;
                 txtAddress.setText(ContactUtil.getInstance(preferences).getAddressAsString(contact));
                 getMDirtyablePart().setDirty(true);
                 break;

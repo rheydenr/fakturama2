@@ -72,8 +72,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	// The selected item
 	private TreeObject selectedItem;
 
-	// True, if there is a entry "show all"
-	private final boolean useAll;
+//	// True, if there is a entry "show all"
+//	private final boolean useAll;
 
 	// The corresponding table
 	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
@@ -93,7 +93,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		this.internalTreeViewer = new TreeViewer(parent, SWT.BORDER /*style*/);
 		// Messages can't be injected because this class is not called via application context
 		this.msg = msg;
-		this.useAll = useAll;
+//		this.useAll = useAll;
 		
 		// Create a new root element
 		root = new TreeObject("");

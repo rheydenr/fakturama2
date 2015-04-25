@@ -571,7 +571,8 @@ public class MigrationManager {
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
 				Document document;
-				switch (BillingType.get(oldDocument.getCategory())) {
+				BillingType billingType = BillingType.get(oldDocument.getCategory());
+                switch (billingType) {
                 case INVOICE:
                     document = modelFactory.createInvoice();
                     break;
@@ -610,11 +611,15 @@ public class MigrationManager {
 					 * is equal to the address stored in the database :-(
 					 */
 					document.setManualAddress(oldDocument.getAddress());
+					document.setManualDeliveryAddress(oldDocument.getDeliveryaddress());
+					document.getAdditionalInfo().setManualAddress(oldDocument.getAddress());
+                    document.getAdditionalInfo().setDeliveryAddress(oldDocument.getDeliveryaddress());
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
 					if(contact != null) {
 						document.setContact(contact);
+						document.setDeliveryContact(contact.getDeliveryContacts());
 					}
 				}
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());

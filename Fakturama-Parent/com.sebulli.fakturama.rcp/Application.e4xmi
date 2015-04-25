@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_RmPToetOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ide.application" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPToutOEeKo5Ms1QUgPTw" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_RmPToutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.application" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTo-tOEeKo5Ms1QUgPTw" label="%application.name" iconURI="icon://COMMAND_APP" x="200" y="24" width="1500" height="900">
     <tags>topLevel</tags>
-    <children xsi:type="advanced:PerspectiveStack" xmi:id="_RmPTo-tOEeKo5Ms1QUgPTw" elementId="" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTpOtOEeKo5Ms1QUgPTw">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_RmPTo-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspectivestack" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" selectedElement="_RmPTpOtOEeKo5Ms1QUgPTw">
       <children xsi:type="advanced:Perspective" xmi:id="_RmPTpOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspective" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Fakturama Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_OJDuMG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.rcp.partsashcontainer.0" containerData="2000">
@@ -185,16 +185,16 @@
             </children>
           </children>
         </children>
-        <windows xsi:type="basic:Dialog" xmi:id="_GMm-0L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%dialog.selectaddress.title" tooltip="%dialog.selectaddress.tooltip" width="800" height="550">
-          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.ContactListTable" label="Contacts selection dialog">
-            <properties key="fakturama.datatable.contacts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
-          </children>
-        </windows>
         <windows xsi:type="basic:Dialog" xmi:id="_FBhH4L-XEeSGvuNl8B-b9A" elementId="fakturama.dialog.selectdeliverynotes" toBeRendered="false" visible="false" label="%dialog.selectdeliverynotes.title" width="800" height="550"/>
         <windows xsi:type="basic:Dialog" xmi:id="_VUwosL-eEeSGvuNl8B-b9A" elementId="fakturama.dialog.selecttext" toBeRendered="false" visible="false" selectedElement="_aKpZkL-eEeSGvuNl8B-b9A" label="%dialog.selecttext.title" width="800" height="550">
           <children xsi:type="basic:Part" xmi:id="_aKpZkL-eEeSGvuNl8B-b9A" elementId="com.sebulli.fakturama.rcp.part.0" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.dialogs.SelectTextDialog"/>
         </windows>
         <windows xsi:type="basic:Dialog" xmi:id="_7hlEYMg2EeSV-dFmKAsTIA" elementId="fakturama.dialog.select.product" toBeRendered="false" visible="false" label="%dialog.selectproduct.title" tooltip="%dialog.selectproduct.tooltip" width="800" height="550"/>
+        <windows xsi:type="basic:TrimmedWindow" xmi:id="_uxpIYOlDEeSaxYhVwolNzQ" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%dialog.selectaddress.title" tooltip="%dialog.selectaddress.tooltip" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw" width="800" height="600">
+          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="Contacts selection dialog">
+            <properties key="fakturama.datatable.contacts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
+          </children>
+        </windows>
       </children>
     </children>
     <mainMenu xmi:id="_RmPTrutOEeKo5Ms1QUgPTw" elementId="menu:main.menu.file.id" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp">
@@ -374,7 +374,7 @@
     <children xmi:id="_RmPTzetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialog" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialogs"/>
     <children xmi:id="_c7LSgGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingcontext.viewlist" name="In List Views" description="Binding context for using in list views (VATs, documents etc.)"/>
   </rootContext>
-  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
+  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_RmPTzOtOEeKo5Ms1QUgPTw _RmPTy-tOEeKo5Ms1QUgPTw" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
     <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">

@@ -14,7 +14,6 @@
  
 package com.sebulli.fakturama.views.datatable.payments;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
@@ -39,21 +38,12 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultIntegerDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -85,8 +75,7 @@ import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -140,12 +129,11 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     private static final String PERCENTVALUE_CELL_LABEL = "PercentValue_Cell_LABEL";
     private static final String INTEGERVALUE_CELL_LABEL = "IntegerValue_Cell_LABEL";
 
-    private ListViewGridLayer<Payment> gridLayer;
+    private EntityGridListLayer<Payment> gridLayer;
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Payment> treeFilteredIssues;
-    private SelectionLayer selectionLayer;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -153,7 +141,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         this.listTablePart = listTablePart;
         top = super.createPartControl(parent, Payment.class, true, ID);
         // Listen to double clicks
-        hookDoubleClickCommand(natTable, gridLayer);
+        hookDoubleClickCommand2(natTable, gridLayer);
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
@@ -191,7 +179,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                        if(!gridLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                         }                   
                     }
@@ -199,12 +187,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         natTable.configure();
     }
     
-    protected NatTable createListTable(Composite searchAndTableComposite) {       
-        // fill the underlying data source (GlazedList)
-        paymentListData = GlazedLists.eventList(paymentsDAO.findAll(true));
-
-        // get the visible properties to show in list view
-        String[] propertyNames = paymentsDAO.getVisibleProperties();
+    private IColumnPropertyAccessor<Payment> createColumnPropertyAccessor(String[] propertyNames) {
 
         final IColumnPropertyAccessor<Payment> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Payment>(propertyNames);
         
@@ -250,11 +233,16 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
                 }
             }
         };
+       return derivedColumnPropertyAccessor;
+    }
+    
+    protected NatTable createListTable(Composite searchAndTableComposite) {       
+        // fill the underlying data source (GlazedList)
+        paymentListData = GlazedLists.eventList(paymentsDAO.findAll(true));
 
-        //build the column header layer
-        // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Payment>(propertyNames, derivedColumnPropertyAccessor); 
-
+        // get the visible properties to show in list view
+        String[] propertyNames = paymentsDAO.getVisibleProperties();
+        final IColumnPropertyAccessor<Payment> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames); 
         /*
         // Mark the columns that are used by the search function.
         searchColumns = new String[5];
@@ -274,42 +262,13 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         // tree selection)
         treeFilteredIssues = new FilterList<Payment>(textFilteredIssues);
 
-        //create the body layer stack
-        final IRowDataProvider<Payment> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Payment>(treeFilteredIssues, derivedColumnPropertyAccessor);
-        
         //build the grid layer
-        gridLayer = new ListViewGridLayer<Payment>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
+        gridLayer = new EntityGridListLayer<Payment>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
         for (PaymentListDescriptor descriptor : PaymentListDescriptor.values()) {
             tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
         }
-        GlazedListsEventLayer<Payment> paymentListEventLayer = new GlazedListsEventLayer<Payment>(tableDataLayer, paymentListData);
-
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-        paymentListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        
-        // Custom selection configuration
-        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-        IRowIdAccessor<Payment> rowIdAccessor = new IRowIdAccessor<Payment>() {
-            @Override
-            public Serializable getRowId(Payment rowObject) {
-                return rowObject.getId();
-            }
-        };
-        
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<Payment> selectionModel = new RowSelectionModel<Payment>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-        selectionLayer.setSelectionModel(selectionModel);
-//         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Payment>());
 
         // now is the time where we can create the NatTable itself
 
@@ -320,14 +279,14 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.DISCOUNT.getPosition(), PERCENTVALUE_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.DISCDAYS.getPosition(), INTEGERVALUE_CELL_LABEL);
         columnLabelAccumulator.registerColumnOverrides(PaymentListDescriptor.NETDAYS.getPosition(), INTEGERVALUE_CELL_LABEL);
-
-        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
+
+        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer.getGridLayer(), false);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
         // Register your custom cell painter, cell style, against the label applied to the cell.
         //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
@@ -337,7 +296,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     /**
      * @return the gridLayer
      */
-    protected ListViewGridLayer<Payment> getGridLayer() {
+    protected EntityGridListLayer<Payment> getGridLayer() {
         return gridLayer;
     }
 
@@ -393,19 +352,19 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
             }
         });
     }
-
-    /**
-     * Set the category filter
-     * 
-     * @param filter
-     *            The new filter string
-     * 
-     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
-     *             instead
-     */
-    public void setCategoryFilter(String filter) {
-        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
-    }
+//
+//    /**
+//     * Set the category filter
+//     * 
+//     * @param filter
+//     *            The new filter string
+//     * 
+//     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
+//     *             instead
+//     */
+//    public void setCategoryFilter(String filter) {
+//        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
+//    }
 
     /**
      * Set the category filter with a given {@link TreeObjectType}.
@@ -416,16 +375,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // Set the label with the filter string
-        if (filter.equals(NO_CATEGORY_LABEL))
-            filterLabel.setText("");
-        else
-        // Display the localized list names.
-        // or the document type
-        if (isHeaderLabelEnabled())
-            filterLabel.setText("DataSetListNames.NAMES.getLocalizedName: " + filter);
-
-        filterLabel.pack(true);
 
         // Reset transaction and contact filter, set category filter
         treeFilteredIssues.setMatcher(new PaymentMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
@@ -500,8 +449,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     }
 
     public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            Payment objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
+        if(gridLayer.getSelectionLayer().getFullySelectedRowPositions().length > 0) {
+            Payment objToDelete = gridLayer.getBodyDataProvider().getRowObject(gridLayer.getSelectionLayer().getFullySelectedRowPositions()[0]);
             try {
                 // don't delete the entry because it could be referenced
                 // from another entity

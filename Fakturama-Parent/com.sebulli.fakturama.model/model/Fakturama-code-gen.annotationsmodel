@@ -46,7 +46,7 @@
           </entityListeners>
         </entity>
       </eClassAnnotations>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation">
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" serializable="true">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
@@ -502,7 +502,7 @@
           </entityListeners>
         </entity>
       </eClassAnnotations>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Container for additional infos for a document.">
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Container for additional infos for a document." serializable="true">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>

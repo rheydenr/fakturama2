@@ -3,7 +3,6 @@
  */
 package com.sebulli.fakturama.views.datatable.documents;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,18 +36,12 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
@@ -56,9 +49,7 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.CellPainterDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.event.CellSelectionEvent;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -86,6 +77,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -98,8 +90,7 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
-import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
-import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
+import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -148,7 +139,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     private ContactsDAO contactsDAO;
     
-    private ListViewGridLayer<Document> gridLayer;
+    private EntityGridListLayer<Document> gridLayer;
+    
+//    @Inject
+//    private EHelpService helpService;
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -158,14 +152,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private ContactUtil contactUtil;
 
     private MPart listTablePart;
-
+    
+    @Inject
+    protected MessageRegistry registry;
+    
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
         top = super.createPartControl(parent, Document.class, true, ID);
+
         this.listTablePart = listTablePart;
         // Listen to double clicks
-        hookDoubleClickCommand(natTable, gridLayer);
+        hookDoubleClickCommand2(natTable, gridLayer);
         topicTreeViewer.setTable(this);
         
         // On creating, set the unpaid invoices
@@ -253,17 +251,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.configure();
     }
     
-    
-    protected NatTable createListTable(Composite searchAndTableComposite) {       
-        // fill the underlying data source (GlazedList)
-        documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
-
-        // get the visible properties to show in list view
-        String[] propertyNames = documentsDAO.getVisibleProperties();
-
+    private IColumnPropertyAccessor<Document> createColumnPropertyAccessor(String[] propertyNames) {
         final IColumnPropertyAccessor<Document> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Document>(propertyNames);
         final SpecialCellValueProvider specialCellValueProvider = new SpecialCellValueProvider(msg);
-        // Add derived 'default' column
         final IColumnPropertyAccessor<Document> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Document>() {
 
             public Object getDataValue(Document rowObject, int columnIndex) {
@@ -309,10 +299,21 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 }
             }
         };
+        return derivedColumnPropertyAccessor;
+    }
+    
+    protected NatTable createListTable(Composite searchAndTableComposite) {       
+        // fill the underlying data source (GlazedList)
+        documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
 
-        //build the column header layer
-        // Column header data provider includes derived properties
-        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Document>(propertyNames, derivedColumnPropertyAccessor); 
+        // get the visible properties to show in list view
+        String[] propertyNames = documentsDAO.getVisibleProperties();
+        // Add derived 'default' column
+        final IColumnPropertyAccessor<Document> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
+
+//        //build the column header layer
+//        // Column header data provider includes derived properties
+//        IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<Document>(propertyNames, derivedColumnPropertyAccessor); 
 
         /*
         // Mark the columns that are used by the search function.
@@ -331,44 +332,29 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
         treeFilteredIssues = new FilterList<Document>(textFilteredIssues);
-
-        //create the body layer stack
-        final IRowDataProvider<Document> firstBodyDataProvider = 
-                new GlazedListsDataProvider<Document>(treeFilteredIssues, columnPropertyAccessor);
         
         //build the grid layer
-        gridLayer = new ListViewGridLayer<Document>(treeFilteredIssues, derivedColumnPropertyAccessor, columnHeaderDataProvider, configRegistry, true);
+        gridLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
         for (DocumentListDescriptor descriptor : DocumentListDescriptor.values()) {
             tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
         }
-        GlazedListsEventLayer<Document> paymentListEventLayer = new GlazedListsEventLayer<Document>(tableDataLayer, documentListData);
-
-        // add a label accumulator to be able to register converter
-        // this is crucial for using custom values display
-        paymentListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        
-        // Custom selection configuration
-        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
-        IRowIdAccessor<Document> rowIdAccessor = new IRowIdAccessor<Document>() {
-            @Override
-            public Serializable getRowId(Document rowObject) {
-                return rowObject.getId();
-            }
-        };
-        
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<Document> selectionModel = new RowSelectionModel<Document>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-        selectionLayer.setSelectionModel(selectionModel);
-        selectionModel.setMultipleSelectionAllowed(true);
-//         Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Document>());
+//        GlazedListsEventLayer<Document> paymentListEventLayer = new GlazedListsEventLayer<Document>(tableDataLayer, documentListData);
+//
+//        // add a label accumulator to be able to register converter
+//        // this is crucial for using custom values display
+//        paymentListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+//        
+//        // Custom selection configuration
+//        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
+//        
+//        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
+//        RowSelectionModel<Document> selectionModel = new RowSelectionModel<Document>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
+//        selectionLayer.setSelectionModel(selectionModel);
+//        selectionModel.setMultipleSelectionAllowed(true);
+////         Select complete rows
+//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Document>());
 
         // now is the time where we can create the NatTable itself
 
@@ -382,22 +368,20 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         columnLabelAccumulator.registerColumnOverrides(DocumentListDescriptor.DATE.getPosition(), DATE_CELL_LABEL);
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer, false);
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer.getGridLayer(), false);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         // Register label accumulator
         gridLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
 
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
         return natTable;
     }
     
     /**
      * @return the gridLayer
      */
-    protected ListViewGridLayer<Document> getGridLayer() {
+    protected EntityGridListLayer<Document> getGridLayer() {
         return gridLayer;
     }
 
@@ -473,7 +457,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     filterLabel.setText(" ");
                 } else {
                     if (treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
-                        filterLabel.setText(msg.topictreeLabelThistransaction);
+//                        filterLabel.setText(msg.topictreeLabelThistransaction);
+                        // bind myFirstLabel via method reference
+                        registry.register(filterLabel::setText, (msg) -> msg.topictreeLabelThistransaction);
                     } else {
                         filterLabel.setText(StringUtils.removeStart(filter, "/"));
                     }
@@ -585,21 +571,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     public void setTransactionFilter(long filter,  TreeObject treeObject) {
         setCategoryFilter(Long.toString(filter), TreeObjectType.TRANSACTIONS_ROOTNODE);
-
-//      // Set the label with the filter string
-//      filterLabel.setText("Dieser Vorgang");
-//      filterLabel.pack(true);
-
-        // Reset category and contact filter, set transaction filter
-//      contentProvider.setTransactionFilter(filter);
-//      contentProvider.setContactFilter(-1);
-//      contentProvider.setCategoryFilter("");
-
-//      // Reset the addNew action. 
-//      if (addNewAction != null) {
-//          addNewAction.setCategory("");
-//      }
-//      this.refresh();
     }
     
     protected boolean isHeaderLabelEnabled() {
@@ -708,7 +679,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     public Document[] getSelectedObjects() {
         List<Document> selectedObjects = new ArrayList<>();
-        int[] fullySelectedRowPositions = selectionLayer.getFullySelectedRowPositions();
+        int[] fullySelectedRowPositions = gridLayer.getSelectionLayer().getFullySelectedRowPositions();
         if(fullySelectedRowPositions.length > 0 && fullySelectedRowPositions[0] > -1) {
             for (int i = 0; i < fullySelectedRowPositions.length; i++) {
                 selectedObjects.add(gridLayer.getBodyDataProvider().getRowObject(fullySelectedRowPositions[i]));

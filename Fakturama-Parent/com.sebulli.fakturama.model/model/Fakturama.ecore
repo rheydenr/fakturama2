@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://www.fakturama.org" nsPrefix="FKT">
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractCategory" eSuperTypes="#//IEntity">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractCategory" abstract="true" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="the abstract superclass for each Category"/>
     </eAnnotations>
@@ -295,7 +295,6 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TextCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="IndividualDocumentInfo" eSuperTypes="#//IEntity">
-    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="manualAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deliveryAddress" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="paymentName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

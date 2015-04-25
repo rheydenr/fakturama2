@@ -277,8 +277,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
        
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-        
-        postConfigureNatTable(natTable);
+
         return natTable;
     }
     
