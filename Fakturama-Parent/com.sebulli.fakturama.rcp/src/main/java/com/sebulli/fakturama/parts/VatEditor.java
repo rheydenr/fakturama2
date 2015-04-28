@@ -86,7 +86,6 @@ public class VatEditor extends Editor<VAT> {
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
 
-    // for UI sync
     public static final String EDITOR_ID = "VatEditor";
 
     // SWT widgets of the editor
@@ -160,7 +159,7 @@ public class VatEditor extends Editor<VAT> {
         part.setLabel(editorVat.getName());
         
 		// Refresh the table view of all VATs (this also refreshes the tree of categories)
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(VatEditor.class.getSimpleName(), "update");
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);

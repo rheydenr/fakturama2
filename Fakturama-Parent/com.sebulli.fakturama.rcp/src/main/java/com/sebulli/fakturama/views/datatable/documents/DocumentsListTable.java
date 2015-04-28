@@ -3,10 +3,11 @@
  */
 package com.sebulli.fakturama.views.datatable.documents;
 
-import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -37,12 +35,13 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
@@ -72,19 +71,20 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.MessageRegistry;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
+import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -103,13 +103,6 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  */
 public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStringCategory> {
 
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private Logger log;
-
     //  this is for synchronizing the UI thread
     @Inject
     private UISynchronize sync;
@@ -118,20 +111,12 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     public static final String ID = "fakturama.views.documentTable";     
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.document.popup";
-    
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     private IPreferenceStore preferences;
 
     private EventList<Document> documentListData;
     private EventList<DummyStringCategory> categories;
-
-    private Control top;
     
     @Inject
     private DocumentsDAO documentsDAO;
@@ -147,7 +132,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Document> treeFilteredIssues;
-    private SelectionLayer selectionLayer;
 
     private ContactUtil contactUtil;
 
@@ -159,7 +143,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
-        top = super.createPartControl(parent, Document.class, true, ID);
+        super.createPartControl(parent, Document.class, true, ID);
 
         this.listTablePart = listTablePart;
         // Listen to double clicks
@@ -241,7 +225,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                        if(!gridLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                             changePopupEntries(null);
                         }                   
@@ -337,9 +321,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         gridLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        for (DocumentListDescriptor descriptor : DocumentListDescriptor.values()) {
-            tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
-        }
+        Arrays.stream(DocumentListDescriptor.values()).forEach(
+                descriptor -> tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth()));
 //        GlazedListsEventLayer<Document> paymentListEventLayer = new GlazedListsEventLayer<Document>(tableDataLayer, documentListData);
 //
 //        // add a label accumulator to be able to register converter
@@ -406,22 +389,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(DocumentEditor.EDITOR_ID) String message) {
-        sync.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
-        sync.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(true);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(true));
     }
 
     /**
@@ -589,6 +560,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     protected String getEditorId() {
         return DocumentEditor.ID;
     }
+    
+    @Override
+    protected String getEditorTypeId() {
+        return DocumentEditor.class.getSimpleName();
+    }
 
     class DocumentTableConfiguration extends AbstractRegistryConfiguration {
 
@@ -655,26 +631,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     DATE_CELL_LABEL);
         }
     }
-
-    public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            Document objToDelete = gridLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-            try {
-                // don't delete the entry because it could be referenced
-                // from another entity
-                objToDelete.setDeleted(Boolean.TRUE);
-                documentsDAO.save(objToDelete);
-            }
-            catch (SQLException e) {
-                log.error(e, "can't save the current Document: " + objToDelete.toString());
-            }
-    
-            // Refresh the table view of all Document
-            evtBroker.post(DocumentEditor.EDITOR_ID, "update");
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
     
     @Override
     public Document[] getSelectedObjects() {
@@ -687,7 +643,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         } else {
             log.debug("no rows selected!");
         }
-        return selectedObjects.toArray(new Document[selectedObjects.size()]);
+        Document[] retArr = selectedObjects.toArray(new Document[selectedObjects.size()]);
+        selectionService.setSelection(selectedObjects);
+        return retArr;
     }
     
     
@@ -701,10 +659,20 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         return POPUP_ID;
     }
 
-    class StateDisplayConverter extends DisplayConverter {
+    class StateDisplayConverter implements IDisplayConverter {
 
         @Override
         public Object canonicalToDisplayValue(Object canonicalValue) {
+            return "!!!CHECK StateDisplayConverter " + canonicalValue;
+        }
+
+        public Object displayToCanonicalValue(Object displayValue) {
+            throw new UnsupportedOperationException("can't change the state in a list view!");
+        }
+
+        @Override
+        public Object canonicalToDisplayValue(ILayerCell cell,
+                IConfigRegistry configRegistry, Object canonicalValue) {
             String retval = "";
             if (canonicalValue != null) {
                 Icon value = (Icon) canonicalValue;
@@ -723,7 +691,19 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 //                    retval = msg.documentOrderStateClosed;
                     break;
                 case COMMAND_ERROR:
-                    retval = msg.documentOrderStateUnpaid;
+                    /* only for dunnings: We have to show the count of current dunning.
+                     * Therefore we have to extract the currently displayed value and 
+                     * look at the dunning level.
+                     */
+                    Document rowObject = gridLayer.getBodyDataProvider().getRowObject(cell.getRowIndex());
+                    if(rowObject.getBillingType() == BillingType.DUNNING) {
+                        int dunningLevel = ((Dunning)rowObject).getDunningLevel();
+                        //T: Marking of a dunning in the document table.
+                        //T: Format: "Dunning No. xx"
+                        retval = MessageFormat.format(msg.documentDunningStatemarkerName, dunningLevel);
+                    } else {
+                        retval = msg.documentOrderStateUnpaid;
+                    }
                     break;
                 default:
                     break;
@@ -732,8 +712,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
             return retval;
         }
 
-        public Object displayToCanonicalValue(Object displayValue) {
-            throw new UnsupportedOperationException("can't change the state in a list view!");
+        @Override
+        public Object displayToCanonicalValue(ILayerCell cell,
+                IConfigRegistry configRegistry, Object displayValue) {
+            return displayToCanonicalValue(displayValue);
         }
     }
 
@@ -745,5 +727,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
+    }
+
+    @Override
+    protected AbstractDAO<Document> getEntityDAO() {
+        return documentsDAO;
     }
 }

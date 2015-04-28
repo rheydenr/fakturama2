@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,6 +33,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -38,6 +41,8 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -60,6 +65,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
@@ -99,7 +105,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     private IEclipsePreferences eclipsePrefs;
 
     @Inject
-    private Logger log;
+    protected Logger log;
 
     @Inject
     @Translation
@@ -111,6 +117,15 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     @Inject
     protected ECommandService commandService;
     
+    @Inject
+    protected ESelectionService selectionService;
+    
+    /**
+     * Event Broker for receiving update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+
     @Inject
     protected EMenuService menuService;
 
@@ -274,7 +289,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @return
      */
     protected abstract String getEditorId();
-
+    protected abstract String getEditorTypeId();
 	
 	protected void postConfigureNatTable(NatTable natTable) {
 	    // per default this method is empty
@@ -574,11 +589,40 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @return the headerLabelEnabled
      */
 	abstract protected boolean isHeaderLabelEnabled();
+	abstract protected EntityGridListLayer<T> getGridLayer();
 	
 	/**
 	 * Deletes the selected entry (or entries, if multiple selection is enabled) from the items table).
 	 */
-	abstract public void removeSelectedEntry();
+	public void removeSelectedEntry() {
+        if(getGridLayer().getSelectionLayer().getFullySelectedRowPositions().length > 0) {
+            T objToDelete = getGridLayer().getBodyDataProvider().getRowObject(getGridLayer().getSelectionLayer().getFullySelectedRowPositions()[0]);
+            if(objToDelete != null) {
+                try {
+                    boolean confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
+                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
+                    if(confirmation) {
+        
+                        // Instead of deleting is completely from the database, the element is just marked
+                        // as deleted. So a document which still refers to this element would not cause an error.
+                        objToDelete.setDeleted(Boolean.TRUE);
+                        getEntityDAO().save(objToDelete);
+                    }
+                }
+                catch (SQLException e) {
+                    log.error(e, "can't save the current Entity: " + objToDelete.toString());
+                }
+    
+                // Refresh the table view of all VATs
+                evtBroker.post(getEditorTypeId(), "update");
+            }
+        } else {
+            log.debug("no rows selected!");
+        }
+	}
+
+    abstract protected AbstractDAO<T> getEntityDAO();
+
 
     /**
      * @return

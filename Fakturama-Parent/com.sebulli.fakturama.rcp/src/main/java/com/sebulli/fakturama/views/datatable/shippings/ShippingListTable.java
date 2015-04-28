@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.shippings;
 
-import java.sql.SQLException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -19,7 +17,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -38,7 +35,6 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -59,6 +55,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -93,18 +90,12 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
 //    this is for synchronizing the UI thread
     @Inject    
-    private UISynchronize synch;
+    private UISynchronize sync;
 
     // ID of this view
     public static final String ID = "fakturama.views.shippingTable";
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.shippinglist.popup";
-    
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     @Preference
@@ -113,7 +104,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     private EventList<Shipping> shippingListData;
     private EventList<ShippingCategory> categories;
 
-    private Control top;
     private MPart listTablePart;
     
     @Inject
@@ -130,13 +120,12 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Shipping> treeFilteredIssues;
-    private SelectionLayer selectionLayer;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
     	log.info("create Shipping list part");
         this.listTablePart = listTablePart;
-        top = super.createPartControl(parent, Shipping.class, true, ID);
+        super.createPartControl(parent, Shipping.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -322,23 +311,11 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(ShippingEditor.EDITOR_ID) String message) {
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll(true)), false);
         GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll(true)), false);
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(true);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(true));
     }
 
     /**
@@ -374,6 +351,11 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         return ShippingEditor.ID;
     }
 
+    @Override
+    protected String getEditorTypeId() {
+        return ShippingEditor.class.getSimpleName();
+    }
+    
     class ShippingTableConfiguration extends AbstractRegistryConfiguration {
 
 		@Override
@@ -412,26 +394,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 		}
 	}
 
-    public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) {
-            Shipping objToDelete = getGridLayer().getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-            try {
-                // don't delete the entry because it could be referenced
-                // from another entity
-                objToDelete.setDeleted(Boolean.TRUE);
-                shippingsDAO.save(objToDelete);
-            }
-            catch (SQLException e) {
-                log.error(e, "can't save the current Shipping: " + objToDelete.toString());
-            }
-    
-            // Refresh the table view of all Shippings
-            evtBroker.post(getEditorId(), "update");
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
-
     protected String getPopupId() {
         return POPUP_ID;
     }
@@ -444,6 +406,11 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
+    }
+
+    @Override
+    protected AbstractDAO<Shipping> getEntityDAO() {
+        return shippingsDAO;
     }
 }
 

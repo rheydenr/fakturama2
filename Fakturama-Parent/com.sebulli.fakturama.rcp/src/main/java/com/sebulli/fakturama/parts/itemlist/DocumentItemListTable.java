@@ -16,10 +16,12 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -63,6 +65,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
@@ -96,6 +99,7 @@ import org.javamoney.moneta.Money;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -572,9 +576,6 @@ private Menu createContextMenu(NatTable natTable) {
 
         final NatTable natTable = new NatTable(tableComposite /*, 
                 SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridListLayer.getGridLayer(), false);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-        
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
         
@@ -594,6 +595,9 @@ private Menu createContextMenu(NatTable natTable) {
                 }
             }
         });
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
+        
         return natTable;
     }
 
@@ -669,10 +673,14 @@ private Menu createContextMenu(NatTable natTable) {
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
         List<DocumentItemDTO> wrappedItems = new ArrayList<>();
+//        @SuppressWarnings("unused")
+//        DocumentItem dummyItem = document.getItems().get(0);
+//        List<DocumentItemDTO> wrappedItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
         for (DocumentItem item : document.getItems()) {
             wrappedItems.add(new DocumentItemDTO(item));
         }
-        setDocumentItemsListData(GlazedLists.eventList(wrappedItems));
+        wrappedItems.sort(Comparator.comparing((DocumentItemDTO d) -> d.getDocumentItem().getPosNr()));
+        documentItemsListData = GlazedLists.eventList(wrappedItems);
 
         //            // Set the sign
         //            if (parentSign != documentType.sign())
@@ -690,20 +698,16 @@ private Menu createContextMenu(NatTable natTable) {
 
         // Show the column "optional" if at least one item
         // with this property set was found
-        Optional<DocumentItemDTO> optionalValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getOptional()).findFirst();
-        if (optionalValue.isPresent()) {
-            containsOptionalItems = true;
-        }
+        Optional<DocumentItemDTO> optionalValue = getDocumentItemsListData().stream().filter(item -> Optional.ofNullable(item.getDocumentItem().getOptional()).orElse(Boolean.FALSE)).findFirst();
+        containsOptionalItems = optionalValue.isPresent();
 
         // Show the columns discount if at least one item
         // with a discounted price was found
         Optional<DocumentItemDTO> discountedValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getItemRebate() != null).findFirst();
-        if (discountedValue.isPresent()) {
-            containsDiscountedItems = true;
-        }
+        containsDiscountedItems = discountedValue.isPresent();
 
         // Renumber all Items
-        renumberItems();
+        //renumberItems();
     }
     
     @Override
@@ -714,6 +718,11 @@ private Menu createContextMenu(NatTable natTable) {
     @Override
     protected String getEditorId() {
         return DocumentEditor.ID;
+    }
+    
+    @Override
+    protected String getEditorTypeId() {
+        return DocumentEditor.class.getSimpleName();
     }
 
     @Override
@@ -740,7 +749,12 @@ private Menu createContextMenu(NatTable natTable) {
     public void removeSelectedEntry() {
         if(selectionLayer.getFullySelectedRowPositions().length > 0) { 
             DocumentItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-                List<DocumentItemDTO> tmpList = getDocumentItemsListData().stream().filter(d -> d != objToDelete).collect(Collectors.toList());
+                List<DocumentItemDTO> tmpList = getDocumentItemsListData().stream()
+                        .filter(d -> d != objToDelete)
+                        .collect(Collectors.toList());
+                // TODO RENUMBER!!!!
+//                IntSupplier i = ()-> Integer.MAX_VALUE;
+//                tmpList.stream().forEach(dto -> dto.getDocumentItem().setPosNr(3));
                 getDocumentItemsListData().clear();
                 getDocumentItemsListData().addAll(tmpList);
         } else {
@@ -792,13 +806,13 @@ private Menu createContextMenu(NatTable natTable) {
             Style styleCentered = new Style();
             styleCentered.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
             
-            //add the style configuration for hover
-            Style style = new Style();
-            style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE, 
-                    style, 
-                    DisplayMode.HOVER);
+//            //add the style configuration for hover
+//            Style style = new Style();
+//            style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_YELLOW);
+//            configRegistry.registerConfigAttribute(
+//                    CellConfigAttributes.CELL_STYLE, 
+//                    style, 
+//                    DisplayMode.HOVER);
 
             // default style for the most of the cells
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
@@ -952,7 +966,20 @@ private Menu createContextMenu(NatTable natTable) {
             // the cell has to be "editable" since you can't launch the dialog else
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE, 
-                    IEditableRule.ALWAYS_EDITABLE, 
+                    new IEditableRule() {
+                        
+                        @Override
+                        public boolean isEditable(int columnIndex, int rowIndex) {
+                            return false;
+                        }
+                        
+                        @Override
+                        public boolean isEditable(ILayerCell cell, IConfigRegistry configRegistry) {
+                            // the picture dialog in the document's item list table
+                            // is only visible if a picture is contained in the article
+                            return cell.getDataValue() != null;
+                        }
+                    }, 
                     DisplayMode.EDIT, PICTURE_CELL_LABEL);
             // open dialog in a new window
             configRegistry.registerConfigAttribute(
@@ -998,13 +1025,6 @@ private Menu createContextMenu(NatTable natTable) {
         return documentItemsListData;
     }
 
-    /**
-     * @param documentItemsListData the documentItemsListData to set
-     */
-    public void setDocumentItemsListData(EventList<DocumentItemDTO> documentItemsListData) {
-        this.documentItemsListData = documentItemsListData;
-    }
-
     @Override
     public void changeToolbarItem(TreeObject treeObject) {
         // no action needed since there's no toolbar
@@ -1020,5 +1040,15 @@ private Menu createContextMenu(NatTable natTable) {
     protected MToolBar getMToolBar() {
         // This error should'nt occur since we've overridden the changeToolbarItem method.
         throw new UnsupportedOperationException("Inside a list table there's no toolbar.");
+    }
+
+    @Override
+    protected EntityGridListLayer<DocumentItemDTO> getGridLayer() {
+        throw new UnsupportedOperationException("Wrong call for a GridLayer.");
+    }
+
+    @Override
+    protected AbstractDAO<DocumentItemDTO> getEntityDAO() {
+        throw new UnsupportedOperationException("Inside a list table there's no extra DAO.");
     }
 }

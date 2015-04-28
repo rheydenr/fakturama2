@@ -29,8 +29,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -64,7 +62,6 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -95,10 +92,6 @@ import com.sebulli.fakturama.util.ContactUtil;
  */
 
 public class ContactEditor extends Editor<Contact> {
-	
-    @Inject
-    @Translation
-    protected Messages msg;
 
 	// Editor's ID
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
@@ -177,12 +170,6 @@ public class ContactEditor extends Editor<Contact> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-    
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 	
 	@Inject
 	private ContactsDAO contactDAO;

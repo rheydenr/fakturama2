@@ -555,7 +555,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/noVat"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This attribute gives an information if a VAT is used or not. If not, this flag is &lt;code>true&lt;/code>, else &lt;code>false&lt;/code>." name="noVat" getter="getNoVat" defaultValue="null" setter="setNoVat" validJavaMemberName="noVat" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This attribute gives an information if a VAT is used or not. If not, this flag is &lt;code>true&lt;/code>, else &lt;code>false&lt;/code> (this is the default)." name="noVat" getter="getNoVat" defaultValue="java.lang.Boolean.FALSE" setter="setNoVat" validJavaMemberName="noVat" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/itemRebate"/>
@@ -588,7 +588,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/optional"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="optional" getter="getOptional" defaultValue="null" setter="setOptional" validJavaMemberName="optional" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="optional" getter="getOptional" defaultValue="java.lang.Boolean.FALSE" setter="setOptional" validJavaMemberName="optional" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/pictureName"/>
@@ -596,7 +596,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/quantityUnit"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="quantityUnit" getter="getQuantityUnit" defaultValue="null" setter="setQuantityUnit" validJavaMemberName="quantityUnit" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="quantityUnit" getter="getQuantityUnit" defaultValue="" setter="setQuantityUnit" validJavaMemberName="quantityUnit" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/gtin"/>

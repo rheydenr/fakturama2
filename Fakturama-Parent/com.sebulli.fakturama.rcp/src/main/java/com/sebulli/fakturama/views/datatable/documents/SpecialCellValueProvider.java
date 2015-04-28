@@ -201,7 +201,7 @@ public class SpecialCellValueProvider {
         case STATE:
 
             // Fill the cell with the icon for status
-            // eg. "paid/unpaid" for invoices
+            // e.g. "paid/unpaid" for invoices
             obj = DocumentType.findDocumentTypeByClass(rowObject.getClass());
             if (obj != null) {
                 switch (obj) {

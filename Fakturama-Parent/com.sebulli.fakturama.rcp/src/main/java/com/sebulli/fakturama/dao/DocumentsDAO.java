@@ -408,7 +408,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
         CriteriaUpdate<Delivery> criteria = cb.createCriteriaUpdate(Delivery.class);
         Root<Delivery> root = criteria.from(Delivery.class);
         criteria.set(Delivery_.invoiceReference, document).where(root.get(Delivery_.id).in(importedDeliveryNotes));
-        getEntityManager().createQuery(criteria).executeUpdate();
+        executeCriteria(criteria);
         mergeTwoTransactions(document, importedDeliveryNotes);
     }
  

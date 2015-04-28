@@ -63,9 +63,9 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         this.bodyDataProvider = new GlazedListsDataProvider<T>(sortedList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(bodyDataProvider);
 
-        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
+//        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
 
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(hoverLayer, sortedList);
+        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, sortedList);
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display

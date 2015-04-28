@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.vats;
 
-import java.sql.SQLException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -19,7 +17,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -62,6 +59,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -100,13 +98,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
 /**    this is for synchronizing the UI thread */
     @Inject    
-    private UISynchronize synch;
-    
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
+    private UISynchronize sync;
 
     @Inject
     @Preference
@@ -232,7 +224,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 
-        vatListData = GlazedLists.eventList(vatsDAO.findAll(true));
+        vatListData = GlazedLists.readOnlyList(GlazedLists.eventList(vatsDAO.findAll(true)));
 
         // get the visible properties to show in list view
         String[] propertyNames = vatsDAO.getVisibleProperties();
@@ -323,22 +315,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(VatEditor.EDITOR_ID) String message) {
-        synch.syncExec(new Runnable() {
-            
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(vatListData, GlazedLists.eventList(vatsDAO.findAll(true)), false);
         GlazedLists.replaceAll(categories, GlazedLists.eventList(vatCategoriesDAO.findAll(true)), false);
-        synch.syncExec(new Runnable() {
-           
-            @Override
-            public void run() {
-        top.setRedraw(true);
-            }});
+        sync.syncExec(() -> top.setRedraw(true));
     }
 
     /**
@@ -373,6 +354,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         return VatEditor.ID;
     }
 
+    @Override
+    protected String getEditorTypeId() {
+        return VatEditor.class.getSimpleName();
+    }
+    
     class VATTableConfiguration extends AbstractRegistryConfiguration {
 
 		@Override
@@ -418,26 +404,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 		}
 	}
 
-    public void removeSelectedEntry() {
-        if(getGridLayer().getSelectionLayer().getFullySelectedRowPositions().length > 0) {
-            VAT objToDelete = getGridLayer().getBodyDataProvider().getRowObject(getGridLayer().getSelectionLayer().getFullySelectedRowPositions()[0]);
-            try {
-                // don't delete the entry because it could be referenced
-                // from another entity
-                objToDelete.setDeleted(Boolean.TRUE);
-                vatsDAO.save(objToDelete);
-            }
-            catch (SQLException e) {
-                log.error(e, "can't save the current VAT: " + objToDelete.toString());
-            }
-    
-            // Refresh the table view of all VATs
-            evtBroker.post(VatEditor.EDITOR_ID, "update");
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
-
     protected String getPopupId() {
         return POPUP_ID;
     }
@@ -450,5 +416,10 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
+    }
+
+    @Override
+    protected AbstractDAO<VAT> getEntityDAO() {
+        return vatsDAO;
     }
 }

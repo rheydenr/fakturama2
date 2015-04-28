@@ -111,7 +111,7 @@ public class NavigationView {
         
         parameters = new HashMap<>();
         parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, DebitorListTable.ID);
-        addAction(group2, Icon.COMMAND_CONTACT, "command.debitors", CommandIds.CMD_OPEN_CONTACTS, parameters);
+        addAction(group2, Icon.COMMAND_CONTACT, "command.debtors", CommandIds.CMD_OPEN_CONTACTS, parameters);
         
         addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", CommandIds.CMD_OPEN_PAYMENTS);
         addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", CommandIds.CMD_OPEN_SHIPPINGS);

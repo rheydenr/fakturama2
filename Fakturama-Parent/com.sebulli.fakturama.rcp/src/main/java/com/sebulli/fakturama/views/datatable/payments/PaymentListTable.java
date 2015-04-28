@@ -14,8 +14,6 @@
  
 package com.sebulli.fakturama.views.datatable.payments;
 
-import java.sql.SQLException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -23,7 +21,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -64,6 +61,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -96,18 +94,12 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
 
     //this is for synchronizing the UI thread
     @Inject    
-    private UISynchronize synch;
+    private UISynchronize sync;
 
     // ID of this view
     public static final String ID = "fakturama.views.paymentTable";
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.paymentlist.popup";
-    
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     @Preference
@@ -116,7 +108,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     private EventList<Payment> paymentListData;
     private EventList<VoucherCategory> categories;
 
-    private Control top;
     private MPart listTablePart;
     
     @Inject
@@ -139,7 +130,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Payment list part");
         this.listTablePart = listTablePart;
-        top = super.createPartControl(parent, Payment.class, true, ID);
+        super.createPartControl(parent, Payment.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridLayer);
         topicTreeViewer.setTable(this);
@@ -334,23 +325,11 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll(true)), false);
         GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll(true)), false);
-        synch.syncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                top.setRedraw(true);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(true));
     }
 //
 //    /**
@@ -400,6 +379,11 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         return PaymentEditor.ID;
     }
 
+    @Override
+    protected String getEditorTypeId() {
+        return PaymentEditor.class.getSimpleName();
+    }
+    
     class PaymentTableConfiguration extends AbstractRegistryConfiguration {
 
         @Override
@@ -448,26 +432,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         }
     }
 
-    public void removeSelectedEntry() {
-        if(gridLayer.getSelectionLayer().getFullySelectedRowPositions().length > 0) {
-            Payment objToDelete = gridLayer.getBodyDataProvider().getRowObject(gridLayer.getSelectionLayer().getFullySelectedRowPositions()[0]);
-            try {
-                // don't delete the entry because it could be referenced
-                // from another entity
-                objToDelete.setDeleted(Boolean.TRUE);
-                paymentsDAO.save(objToDelete);
-            }
-            catch (SQLException e) {
-                log.error(e, "can't save the current Payment: " + objToDelete.toString());
-            }
-    
-            // Refresh the table view of all Payment
-            evtBroker.post(PaymentEditor.EDITOR_ID, "update");
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
-
     protected String getPopupId() {
         return POPUP_ID;
     }
@@ -480,5 +444,10 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
+    }
+
+    @Override
+    protected AbstractDAO<Payment> getEntityDAO() {
+        return paymentsDAO;
     }
 }

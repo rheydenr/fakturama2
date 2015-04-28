@@ -107,10 +107,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Inject
     protected IEventBroker evtBroker;
 
-    private EventList<T> contactListData;
+    protected EventList<T> contactListData;
     protected EventList<ContactCategory> categories;
-
-    private Control top;
     
     @Inject
     private ContactsDAO contactDAO;
@@ -128,7 +126,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Contact list part");
-        top = super.createPartControl(parent, Contact.class, true, ID);
+        super.createPartControl(parent, Contact.class, true, ID);
         this.listTablePart = listTablePart;
         // if another click handler is set we use it
         // Listen to double clicks
@@ -313,6 +311,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Override
     protected String getEditorId() {
         return ContactEditor.ID;
+    }
+    
+    @Override
+    protected String getEditorTypeId() {
+        return ContactEditor.class.getSimpleName();
     }
 
     /* (non-Javadoc)

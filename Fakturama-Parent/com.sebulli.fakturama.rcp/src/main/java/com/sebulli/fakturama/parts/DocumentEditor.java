@@ -18,11 +18,14 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -51,7 +54,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -170,9 +172,9 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private EModelService modelService;
-    
-    @Inject
-    private ESelectionService selectionService;
+//    
+//    @Inject
+//    private ESelectionService selectionService;
     
     @Inject
     private MApplication application;
@@ -437,7 +439,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 		else {
-			if (!contactUtil.getAddressAsString(document.getContact()).equals(txtAddress.getText())) {
+			if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
 
@@ -588,82 +590,17 @@ public class DocumentEditor extends Editor<Document> {
 		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
 		}
 		importedDeliveryNotes.clear();
-//		
-//		// Set all the items
-//		ArrayList<DataSetItem> itemDatasets = items.getActiveDatasets();
-//
-//		for (DataSetItem itemDataset : itemDatasets) {
-//
-//			// Get the ID of this item and
-//			int id = itemDataset.getIntValueByKey("id");
-//			// the ID of the owner document
-//			int owner = itemDataset.getIntValueByKey("owner");
-//
-//			boolean saveNewItem = true;
-//			DataSetItem item = null;
-//
-//			// If the ID of this item is -1, this was a new item
-//			if (id >= 0) {
-//				item = Data.INSTANCE.getItems().getDatasetById(id);
-//				// Compare all data of the item in this document editor
-//				// with the item in the document.
-//				boolean modified = ((!item.getStringValueByKey("name").equals(itemDataset.getStringValueByKey("name")))
-//						|| (!item.getStringValueByKey("itemnr").equals(itemDataset.getStringValueByKey("itemnr")))
-//						|| (!item.getStringValueByKey("description").equals(itemDataset.getStringValueByKey("description")))
-//						|| (!item.getStringValueByKey("category").equals(itemDataset.getStringValueByKey("category")))
-//						|| (!DataUtils.DoublesAreEqual(item.getDoubleValueByKey("quantity"), itemDataset.getDoubleValueByKey("quantity")))
-//						|| (!DataUtils.DoublesAreEqual(item.getDoubleValueByKey("price"), itemDataset.getDoubleValueByKey("price")))
-//						|| (!DataUtils.DoublesAreEqual(item.getDoubleValueByKey("discount"), itemDataset.getDoubleValueByKey("discount")))
-//						|| (item.getIntValueByKey("owner") != itemDataset.getIntValueByKey("owner"))
-//						|| (item.getIntValueByKey("vatid") != itemDataset.getIntValueByKey("vatid"))
-//						|| (!DataUtils.DoublesAreEqual(item.getDoubleValueByKey("vatvalue"), itemDataset.getDoubleValueByKey("vatvalue")))
-//						|| (item.getBooleanValueByKey("novat") != itemDataset.getBooleanValueByKey("novat"))
-//						|| (!item.getStringValueByKey("vatname").equals(itemDataset.getStringValueByKey("vatname")))
-//						|| (!item.getStringValueByKey("vatdescription").equals(itemDataset.getStringValueByKey("vatdescription")))
-//						|| (item.getBooleanValueByKey("optional") != itemDataset.getBooleanValueByKey("optional")));
-//
-//				// If the item was modified and was shared with other documents,
-//				// than we should make a copy and save it new.
-//				// We also save it if it was a new item with no owner yet,
-//				saveNewItem = ((owner < 0) || (modified && ((owner != document.getIntValueByKey("id")) || item.getBooleanValueByKey("shared"))));
-//			}
-//			else {
-//				// It was a new item with no ID set
-//				saveNewItem = true;
-//			}
-//
-//			// Create a new item
-//			// The owner of this new item is the document from this editor.
-//			// And because it's new it is not shared with other documents.
-//			if (saveNewItem) {
-//				itemDataset.setIntValueByKey("owner", documentId);
-//				DataSetItem itemDatasetTemp = Data.INSTANCE.getItems().addNewDataSet(new DataSetItem(itemDataset));
-//				id = itemDatasetTemp.getIntValueByKey("id");
-//				itemDataset.setIntValueByKey("id", id);
-//			}
-//			// If it's not new, copy the items's data from the editor to the
-//			// items in the data base
-//			else {
-//				item.setStringValueByKey("name", itemDataset.getStringValueByKey("name"));
-//				item.setStringValueByKey("itemnr", itemDataset.getStringValueByKey("itemnr"));
-//				item.setStringValueByKey("description", itemDataset.getStringValueByKey("description"));
-//				item.setStringValueByKey("category", itemDataset.getStringValueByKey("category"));
-//				item.setDoubleValueByKey("quantity", itemDataset.getDoubleValueByKey("quantity"));
-//				item.setDoubleValueByKey("price", itemDataset.getDoubleValueByKey("price"));
-//				item.setDoubleValueByKey("discount", itemDataset.getDoubleValueByKey("discount"));
-//				item.setIntValueByKey("owner", itemDataset.getIntValueByKey("owner"));
-//				item.setIntValueByKey("vatid", itemDataset.getIntValueByKey("vatid"));
-//				item.setBooleanValueByKey("novat", itemDataset.getBooleanValueByKey("novat"));
-//				item.setDoubleValueByKey("vatvalue", itemDataset.getDoubleValueByKey("vatvalue"));
-//				item.setStringValueByKey("vatname", itemDataset.getStringValueByKey("vatname"));
-//				item.setStringValueByKey("vatdescription", itemDataset.getStringValueByKey("vatdescription"));
-//				item.setBooleanValueByKey("optional", itemDataset.getBooleanValueByKey("optional"));
-//
-//				Data.INSTANCE.getItems().updateDataSet(item);
-//			}
-//
-//		document.setStringValueByKey("items", itemsString);
-//
+
+		SortedSet<DocumentItem> items = new TreeSet<>(new Comparator<DocumentItem>() {
+		    @Override
+		    public int compare(DocumentItem o1, DocumentItem o2) {
+		        return o1.getPosNr().compareTo(o2.getPosNr());
+		    }
+        });
+		
+		itemListTable.getDocumentItemsListData().forEach(item -> items.add(item.getDocumentItem()));
+		document.setItems(new ArrayList<>(items));
+
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
 		if (addressId != null) {
@@ -696,7 +633,7 @@ public class DocumentEditor extends Editor<Document> {
 //				Data.INSTANCE.getDocuments().updateDataSet(document);
 //			}
 
-			// Now, it is no longer new.
+			// Now it is no longer new.
 			newDocument = false;
 
 			// Create a new editor input.
@@ -720,7 +657,7 @@ public class DocumentEditor extends Editor<Document> {
 		this.part.setLabel(document.getName());
 
         // Refresh the table view of all documents
-        evtBroker.post(ID, "update");
+        evtBroker.post(EDITOR_ID, "update");
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);

@@ -126,7 +126,9 @@ public class Messages {
     public String contactFieldReliabilityPoorName;
     public String contactFieldReliabilityMediumName;
     public String contactFieldReliabilityGoodName;
-
+    public String contactCreditorFieldName;
+    public String contactDebitorFieldName;
+    
     public String documentOrderStateNotshipped;
 
 	public String DataSetListNames668;
@@ -138,9 +140,8 @@ public class Messages {
     public String dataVatPurchasetax;
     public String dataVatSalestax;
 
-	public String DeleteDataSetAction100;
-	public String DeleteDataSetAction101;
-	public String DeleteDataSetAction99;
+    public String dialogDeletedatasetMessage;
+    public String dialogDeletedatasetTitle;
 
     public String editorDocumentErrorDocnumberTitle;
     public String editorDocumentErrorDocnumberNotnextfree;
@@ -569,7 +570,7 @@ public class Messages {
 
     public String documentOrderStatePaid;
     public String documentOrderStateUnpaid;
-    public String UniDataSetTableColumn282;
+    public String documentDunningStatemarkerName;
     public String documentOrderStateOpen;
     public String documentOrderStateInprogress;
     public String documentOrderStateShipped;
@@ -696,6 +697,10 @@ public class Messages {
 	public String commandCalculatorTooltip;
 	public String commandContactsName;
 	public String commandContactsTooltip;
+	public String commandCreditorsName;
+	public String commandCreditorsTooltip;
+	public String commandDebtorsName;
+    public String commandDebtorsTooltip;
 	public String commandDataName;
 	public String commandDataNameTooltip;
 	public String commandDocumentsName;
@@ -711,7 +716,11 @@ public class Messages {
 	public String commandNewConfirmationName;
 	public String commandNewContactName;
 	public String commandNewContactTooltip;
-	public String commandNewCreditName;
+    public String commandNewDebtorTooltip;
+    public String commandNewCreditorName;
+    public String commandNewDebtorName;
+    public String commandNewCreditorTooltip;
+    public String commandNewCreditName;
 	public String commandNewDeliveryName;
 	public String commandNewDeliverynoteName;
 	public String commandNewDocumentCredit;
