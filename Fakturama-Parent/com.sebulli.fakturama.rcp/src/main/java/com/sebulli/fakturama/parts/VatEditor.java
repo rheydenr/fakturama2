@@ -196,7 +196,7 @@ public class VatEditor extends Editor<VAT> {
         // If new ..
         if (newVat) {
             // Create a new data set
-            editorVat = new VAT();
+            editorVat = modelFactory.createVAT();
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VATCategory newCat = vatCategoriesDAO.findVATCategoryByName(category);
@@ -351,5 +351,10 @@ public class VatEditor extends Editor<VAT> {
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;
+    }
+    
+    @Override
+    protected Class<VAT> getModelClass() {
+        return VAT.class;
     }
 }

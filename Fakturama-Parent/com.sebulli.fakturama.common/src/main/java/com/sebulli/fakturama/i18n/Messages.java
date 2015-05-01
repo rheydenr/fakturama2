@@ -553,11 +553,11 @@ public class Messages {
     public String editorShippingDefaultButton;
     public String editorShippingDefaultButtonTooltip;
 
-	public String TextEditor540;
-	public String TextEditor541;
-	public String TextEditor542;
-	public String TextEditor543;
-	public String TextEditor544;
+    public String editorTextNameNeu;
+    public String editorTextHeader;
+    public String textFieldNameTooltip;
+    public String textFieldCategoryTooltip;
+    public String textFieldTextTooltip;
 
 	public String preferencesToolbarShowicon;
 	public String preferencesToolbarIcons;

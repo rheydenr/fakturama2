@@ -42,12 +42,14 @@ import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
+import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
+import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
@@ -166,6 +168,11 @@ public class CallEditor {
 			case ShippingListTable.ID:
                 myPart.setLabel(msg.commandShippingsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ShippingEditor.class.getName());
+                break;
+			case TextEditor.ID:
+			case TextListTable.ID:
+                myPart.setLabel(msg.commandTextsName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + TextEditor.class.getName());
                 break;
 			case PaymentEditor.ID:
 			case PaymentListTable.ID:

@@ -11,6 +11,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.TextModule;
+import com.sebulli.fakturama.model.TextModule_;
 
 @Creatable
 public class TextsDAO extends AbstractDAO<TextModule> {
@@ -49,4 +50,14 @@ public class TextsDAO extends AbstractDAO<TextModule> {
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+
+    
+/**
+* Gets the all visible properties of this VAT object.
+* 
+* @return String[] of visible VAT properties
+*/
+public String[] getVisibleProperties() {
+   return new String[] { TextModule_.name.getName(), TextModule_.text.getName()};
+}
 }

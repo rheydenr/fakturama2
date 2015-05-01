@@ -25,7 +25,6 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -64,7 +63,6 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
-import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
@@ -107,8 +105,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     
     private EventList<Payment> paymentListData;
     private EventList<VoucherCategory> categories;
-
-    private MPart listTablePart;
     
     @Inject
     private PaymentsDAO paymentsDAO;
@@ -129,7 +125,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Payment list part");
-        this.listTablePart = listTablePart;
         super.createPartControl(parent, Payment.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridLayer);
@@ -434,16 +429,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
 
     protected String getPopupId() {
         return POPUP_ID;
-    }
-
-    @Override
-    protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_PAYMENT;
-    }
-
-    @Override
-    protected MToolBar getMToolBar() {
-        return listTablePart.getToolbar();
     }
 
     @Override

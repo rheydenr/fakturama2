@@ -102,7 +102,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
     @Inject
     @Preference
-    private IEclipsePreferences eclipsePrefs;
+    protected IEclipsePreferences eclipsePrefs;
 
     @Inject
     protected Logger log;
@@ -333,14 +333,18 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * 
      * @return
      */
-    protected abstract String getToolbarAddItemCommandId();
+    protected String getToolbarAddItemCommandId() {
+        return null;
+    }
 
     /**
      * The {@link MToolBar} model element of the specific DataTable.
      * 
      * @return
      */
-    protected abstract MToolBar getMToolBar();
+    protected MToolBar getMToolBar() {
+        return null;
+    }
 
     /**
      * On double click: open the corresponding editor

@@ -466,4 +466,8 @@ public class PaymentEditor extends Editor<Payment> {
         return part;
     }
 
+    @Override
+    protected Class<Payment> getModelClass() {
+        return Payment.class;
+    }
 }

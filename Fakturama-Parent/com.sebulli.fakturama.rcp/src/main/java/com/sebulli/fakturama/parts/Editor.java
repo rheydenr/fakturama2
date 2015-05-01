@@ -23,7 +23,8 @@ import javax.inject.Inject;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.IBeanValueProperty;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -64,6 +65,8 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
 
 /**
@@ -96,6 +99,8 @@ public abstract class Editor<T extends IEntity> {
 
     @Inject
 	protected ContactsDAO contactDAO;
+
+    protected FakturamaModelFactory modelFactory =  FakturamaModelPackage.MODELFACTORY;
 
 	protected StdComposite stdComposite = null;
 	protected String tableViewID = "";
@@ -497,7 +502,10 @@ public abstract class Editor<T extends IEntity> {
 	}
 	
     protected void bindModelValue(T target, final Scrollable source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
-        IObservableValue model = BeansObservables.observeValue(target, property);
+        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
+        IObservableValue model = nameProperty.observe(target);
+        
+//        IObservableValue model = BeansObservables.observeValue(target, property);
         IObservableValue uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
@@ -557,14 +565,14 @@ public abstract class Editor<T extends IEntity> {
      * "isDirty" validation, if the content of the text widget is modified.
      */
     protected void bindModelValue(T target, Text source, String property, int limit) {
-        source.setTextLimit(limit);
         bindModelValue(target, source, property, limit, null, null);
     }
 
 
     protected void bindModelValue(T target, FormattedText source, String property, int limit) {
         source.getControl().setTextLimit(limit);
-        IObservableValue model = BeansObservables.observeValue(target, property);
+        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
+        IObservableValue model = nameProperty.observe(target);
         IObservableValue uiWidget = new FormattedTextObservableValue(source, SWT.FocusOut);
         ctx.bindValue(uiWidget, model);
 
@@ -582,11 +590,11 @@ public abstract class Editor<T extends IEntity> {
                 }
             }
         });
-         
     }
 
     protected void bindModelValue(T target, ComboViewer source, String property) {
-        IObservableValue model = BeansObservables.observeValue(target, property);
+        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
+        IObservableValue model = nameProperty.observe(target);
         IObservableValue uiWidget = ViewersObservables
                 .observeSingleSelection(source);
         ctx.bindValue(uiWidget, model);
@@ -690,5 +698,7 @@ public abstract class Editor<T extends IEntity> {
     protected void setEditorID(String editorID) {
         this.editorID = editorID;
     }
+
+    protected abstract Class<T> getModelClass();
 
 }

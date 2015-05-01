@@ -1103,7 +1103,8 @@ public class MigrationManager {
 				text.setDeleted(Boolean.FALSE);
 				if(StringUtils.isNotBlank(oldTexts.getCategory()) && textCategoriesMap.containsKey(oldTexts.getCategory())) {
 					// add it to the new entity
-					text.addToCategories(textCategoriesMap.get(oldTexts.getCategory()));
+//					text.addToCategories(textCategoriesMap.get(oldTexts.getCategory()));
+					text.setCategories(textCategoriesMap.get(oldTexts.getCategory()));
 				}
 				textDAO.save(text);
 				subProgressMonitor.worked(1);

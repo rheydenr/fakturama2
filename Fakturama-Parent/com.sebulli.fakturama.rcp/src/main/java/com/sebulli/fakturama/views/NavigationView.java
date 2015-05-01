@@ -47,6 +47,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.OpenContactsHandler;
+import com.sebulli.fakturama.handlers.OpenListViewsHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -54,6 +55,8 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
 import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
+import com.sebulli.fakturama.views.datatable.texts.TextListTable;
+import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
 /**
  * This class represents the navigation view of the workbench
@@ -115,8 +118,14 @@ public class NavigationView {
         
         addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", CommandIds.CMD_OPEN_PAYMENTS);
         addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", CommandIds.CMD_OPEN_SHIPPINGS);
-        addAction(group2, Icon.COMMAND_VAT, "command.vats", CommandIds.CMD_OPEN_VATS);
-        addAction(group2, Icon.COMMAND_TEXT, "command.texts", CommandIds.CMD_OPEN_TEXTS);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, VATListTable.ID);
+        addAction(group2, Icon.COMMAND_VAT, "command.vats", CommandIds.CMD_OPEN_VATS, parameters);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, TextListTable.ID);
+        addAction(group2, Icon.COMMAND_TEXT, "command.texts", CommandIds.CMD_OPEN_TEXTS, parameters);
         addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS);
         addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
         addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS);

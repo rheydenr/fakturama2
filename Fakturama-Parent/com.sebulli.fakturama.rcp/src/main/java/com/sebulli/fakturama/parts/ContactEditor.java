@@ -41,6 +41,8 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
+import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -142,7 +144,7 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtEmail;
 	private Text txtWebsite;
 	private Text txtVatNr;
-	private Text txtDiscount;
+	private FormattedText txtDiscount;
 	private Combo comboCategory;
 	private Group deliveryGroup;
 	private Button bDelAddrEquAddr;
@@ -955,23 +957,11 @@ public class ContactEditor extends Editor<Contact> {
 		labelDiscount.setToolTipText(msg.editorContactFieldDiscountTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
-		txtDiscount = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount);
-		txtDiscount.setToolTipText(labelDiscount.getToolTipText());
-////		txtDiscount.addFocusListener(new FocusAdapter() {
-////			public void focusLost(FocusEvent e) {
-////				txtDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(txtDiscount.getText())));
-////				checkDirty();
-////			}
-////		});
-//		txtDiscount.addKeyListener(new KeyAdapter() {
-//			public void keyPressed(KeyEvent e) {
-//				if (e.keyCode == 13) {
-//					txtDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(txtDiscount.getText())));
-//					checkDirty();
-//				}
-//			}
-//		});
+		txtDiscount = new FormattedText(tabMisc, SWT.BORDER);
+		txtDiscount.setFormatter(new PercentFormatter());
+		txtDiscount.getControl().setToolTipText(labelDiscount.getToolTipText());
+		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDiscount.getControl());
 
 		// Use net or gross
 		Label labelNetGross = new Label(tabMisc, SWT.NONE);
@@ -1016,10 +1006,10 @@ public class ContactEditor extends Editor<Contact> {
 		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI);
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
 
-//		// If the note is not empty, display it,
-//		// when opening the editor.
-//		if (useNote && !note.isEmpty())
-//			tabFolder.setSelection(item5);
+		// If the note is not empty, display it,
+		// when opening the editor.
+		if (useNote && StringUtils.isNotEmpty(editorContact.getNote()))
+			tabFolder.setSelection(item5);
 
 		// Test, if the address and the delivery address
 		// are equal. If they are, set the checkbox and
@@ -1225,7 +1215,12 @@ protected MDirtyable getMDirtyablePart() {
 
 @Override
 protected String getEditorID() {
-    return "Contact";
+    return Contact.class.getSimpleName();
+}
+
+@Override
+protected Class<Contact> getModelClass() {
+    return Contact.class;
 }
 }
 

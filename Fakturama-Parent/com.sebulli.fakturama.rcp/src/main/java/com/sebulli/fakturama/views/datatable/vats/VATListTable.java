@@ -13,15 +13,10 @@ package com.sebulli.fakturama.views.datatable.vats;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -62,8 +57,6 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -89,20 +82,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.vatlist.popup";
 
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private Logger log;
-
 /**    this is for synchronizing the UI thread */
     @Inject    
     private UISynchronize sync;
-
-    @Inject
-    @Preference
-    private IEclipsePreferences preferences;
     
     @Inject
     private VatsDAO vatsDAO;
@@ -112,9 +94,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     private EventList<VAT> vatListData;
     private EventList<VATCategory> categories;
-
-    private Control top;
-    private MPart listTablePart;
     
     private static final String DEFAULT_CELL_LABEL = "Standard_Cell_LABEL";
     private static final String TAXVALUE_CELL_LABEL = "TaxValue_Cell_LABEL";
@@ -128,8 +107,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
     	log.info("create VAT list part");
-    	this.listTablePart = listTablePart;
-        top = super.createPartControl(parent, VAT.class, true, ID);
+        super.createPartControl(parent, VAT.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);
@@ -298,7 +276,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @return
      */
     private long getDefaultVATId() {
-        return preferences.getLong(Constants.DEFAULT_VAT, 1L);
+        return eclipsePrefs.getLong(Constants.DEFAULT_VAT, 1L);
     }
     
     /**
@@ -406,16 +384,6 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     protected String getPopupId() {
         return POPUP_ID;
-    }
-
-    @Override
-    protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_VAT;
-    }
-
-    @Override
-    protected MToolBar getMToolBar() {
-        return listTablePart.getToolbar();
     }
 
     @Override

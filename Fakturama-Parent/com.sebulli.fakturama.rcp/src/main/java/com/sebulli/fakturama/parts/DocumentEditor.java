@@ -50,7 +50,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.MSnippetContainer;
-import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -101,6 +100,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
+import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -143,6 +143,7 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 
 
 /**
@@ -172,9 +173,9 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private EModelService modelService;
-//    
+    
 //    @Inject
-//    private ESelectionService selectionService;
+//    private EHelpService helpService;
     
     @Inject
     private MApplication application;
@@ -208,6 +209,9 @@ public class DocumentEditor extends Editor<Document> {
     @Inject
     protected VatsDAO vatDao;
     
+    @Inject
+    private TextsDAO textsDAO;
+
     @Inject
     private IPreferenceStore preferences;
     
@@ -1819,14 +1823,12 @@ public class DocumentEditor extends Editor<Document> {
 
 			// Open the text dialog and select a text
 			public void mouseDown(MouseEvent e) {
-				
-				//T: Document Editor
-				//T: Title of the dialog to select a text
-//				SelectTextDialog dialog = new SelectTextDialog(msg.editorDocumentSelecttextTitle);
-                MDialog dialog = (MDialog) modelService.find("fakturama.dialog.selecttext", application);
+                MTrimmedWindow dialog = (MTrimmedWindow) modelService.find("fakturama.dialog.select.text", application);
+                dialog = (MTrimmedWindow) modelService.cloneElement(dialog, (MSnippetContainer) modelService.find("com.sebulli.fakturama.application", application));
                 dialog.setToBeRendered(true);
                 dialog.setVisible(true);
                 dialog.setOnTop(true);
+                dialog.getTransientData().put(DOCUMENT_ID, document.getName());
                 modelService.bringToTop(dialog);
 
                 // handling of adding a new list item is done via event handling in DocumentEditor
@@ -2465,9 +2467,9 @@ public class DocumentEditor extends Editor<Document> {
 //                        tableViewerItems.reveal(newItem);
                     calculate();
                 break;
-            case "Text":
-              TextModule text;
-                  text = (TextModule) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
+            case "TextModule":
+                Long textModuleId = (Long) event.getProperty(TextListTable.SELECTED_TEXT_ID);
+              TextModule text = textsDAO.findById(textModuleId);
                   
                   // Get the message field with the focus
                   Text selectedMessageField = txtMessage;
@@ -2619,4 +2621,9 @@ public class DocumentEditor extends Editor<Document> {
 //    @org.eclipse.e4.core.di.annotations.Optional
 //    protected void handleRecalculationRequest(@UIEventTopic(EDITOR_ID + "/recalculation") Event event) {
 //    }    
+    
+    @Override
+    protected Class<Document> getModelClass() {
+        return Document.class;
+    }
 }

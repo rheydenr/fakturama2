@@ -63,6 +63,7 @@ public class RemoveInvoiceReferenceHandler {
 
     @Execute
     public void run() {
+        @SuppressWarnings("unchecked")
         List<Document> uds = (List<Document>) selectionService.getSelection();
         for (Document document : uds) {
             try {

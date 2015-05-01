@@ -21,7 +21,6 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -58,7 +57,6 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
-import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Shipping;
@@ -104,8 +102,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     private EventList<Shipping> shippingListData;
     private EventList<ShippingCategory> categories;
 
-    private MPart listTablePart;
-    
     @Inject
     private ShippingsDAO shippingsDAO;
 
@@ -124,7 +120,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
     	log.info("create Shipping list part");
-        this.listTablePart = listTablePart;
         super.createPartControl(parent, Shipping.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridLayer);
@@ -396,16 +391,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     protected String getPopupId() {
         return POPUP_ID;
-    }
-
-    @Override
-    protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_SHIPPING;
-    }
-
-    @Override
-    protected MToolBar getMToolBar() {
-        return listTablePart.getToolbar();
     }
 
     @Override

@@ -641,4 +641,9 @@ public class ShippingEditor extends Editor<Shipping> {
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
+    
+    @Override
+    protected Class<Shipping> getModelClass() {
+        return Shipping.class;
+    }
 }
