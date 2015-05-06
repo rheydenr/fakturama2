@@ -82,6 +82,7 @@ public enum Icon {
 	COMMAND_UP,
 	COMMAND_VAT,
 	COMMAND_VCARD,
+	COMMAND_VENDOR,
 	COMMAND_WWW,
 
 	// browser buttons (20x20)
@@ -137,6 +138,7 @@ public enum Icon {
 	ICON_SAVE,
 	ICON_SAVE_DIS,
 	ICON_SHOP,
+	ICON_VENDOR,
 	ICON_WARNING,
 	ICON_WWW,
 
@@ -151,6 +153,7 @@ public enum Icon {
 	BIGICON_NONE,
 	BIGICON_OFFER,
 	BIGICON_ORDER,
+	BIGICON_VENDOR,
 	
 	/* 47x47 calc icons */
 	CALC_0,

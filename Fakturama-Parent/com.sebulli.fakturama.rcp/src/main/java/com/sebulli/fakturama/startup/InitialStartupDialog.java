@@ -199,10 +199,10 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		btnOldDirChooser.addSelectionListener(new DirectoryChooser(txtOldWorkdir, true));
 		
         btnUseDefaultDb = new Button(container, SWT.CHECK);
-        btnUseDefaultDb.setText("use default DB settings");
+        btnUseDefaultDb.setText(msg.startFirstSelectDbUsedefault);
         btnUseDefaultDb.setSelection(true);
         btnUseDefaultDb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
-        btnUseDefaultDb.setToolTipText("Create the DB in working directory with default settings.");
+        btnUseDefaultDb.setToolTipText(msg.startFirstSelectDbUsedefaultTooltip);
         btnUseDefaultDb.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

@@ -131,9 +131,7 @@ public class Messages {
     
     public String documentOrderStateNotshipped;
 
-	public String DataSetListNames668;
-	public String DataSetListNames669;
-	public String DataSetListNames670;
+    public String dataListAccountnumbers;
 
 	public String DataSetReceiptVoucher671;
 
@@ -395,9 +393,10 @@ public class Messages {
 
 	public String InstallAction94;
 
-	public String ListEditor473;
-	public String ListEditor474;
-	public String ListEditor475;
+    public String editorListHeader;
+    public String editorListListfield;
+    public String editorListListfieldTooltip;
+    public String editorListCategoryTooltip;
 
     public String commandMarkorderCompleted;
     public String commandMarkorderWarnStockzero;
@@ -874,6 +873,8 @@ public class Messages {
 	public String startFirstSelectDbCredentialsName;
 	public String startFirstSelectDbCredentialsPassword;
 	public String startFirstSelectDbCredentialsUser;
+    public String startFirstSelectDbUsedefault;
+    public String startFirstSelectDbUsedefaultTooltip;
 	public String startFirstSelectOldworkdirShort;
 	public String startFirstSelectOldworkdirVerbose;
 	public String startFirstSelectWorkdir;

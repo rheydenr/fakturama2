@@ -53,6 +53,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
 
     public static final String KEY_PATTERN = "pattern";
 
+    public static final String KEY_USE_GROUPING = "groupingUsed";
 
     /**
      * Creates a new instance.
@@ -213,7 +214,11 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         this.negativeTokens = new ArrayList<>();
         String pattern = amountFormatContext.getText(KEY_PATTERN);
         if (pattern == null) {
-            pattern = ((DecimalFormat) DecimalFormat.getCurrencyInstance(amountFormatContext.getLocale())).toPattern();
+            DecimalFormat currencyFormatInstance = (DecimalFormat) DecimalFormat.getCurrencyInstance(amountFormatContext.getLocale());
+            if(amountFormatContext.getBoolean(KEY_USE_GROUPING) != null) {
+                currencyFormatInstance.setGroupingUsed(amountFormatContext.getBoolean(KEY_USE_GROUPING));
+            }
+            pattern = currencyFormatInstance.toPattern();
         }
         if (pattern.indexOf(CURRENCY_SIGN) < 0) {
             this.positiveTokens.add(new AmountNumberToken(amountFormatContext, pattern));

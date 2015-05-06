@@ -172,7 +172,7 @@ public class CoolbarViewPart {
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.commandNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
-		
+
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
 		createToolItem(toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),

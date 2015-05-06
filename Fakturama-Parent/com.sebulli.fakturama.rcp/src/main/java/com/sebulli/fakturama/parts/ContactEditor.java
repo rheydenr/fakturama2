@@ -262,6 +262,10 @@ public class ContactEditor extends Editor<Contact> {
 		// Set the note
         // ... done through databinding...
 // TODO ?		contact.setNote(DataUtils.removeCR(textNote.getText()));
+		
+		if(editorContact.getDiscount() != null && editorContact.getDiscount().compareTo(Double.valueOf(0.0)) > 0) {
+		    editorContact.setDiscount(editorContact.getDiscount() * -1); // discount has to be negative
+		}
 
         try {
             // save the new or updated Contact
@@ -278,7 +282,6 @@ public class ContactEditor extends Editor<Contact> {
 //		}
 		
 		// Set the Editor's name to the first name and last name of the contact.
-		
 		String nameWithCompany = contactUtil.getNameWithCompany(editorContact);
 		if(nameWithCompany.contains("\r")) {
 			nameWithCompany = nameWithCompany.split("\\r")[0];
@@ -288,7 +291,7 @@ public class ContactEditor extends Editor<Contact> {
 		part.setLabel(nameWithCompany);
 
 //		// Refresh the table view of all contacts
-        evtBroker.post("ContactEditor", "update");
+        evtBroker.post(getEditorID(), "update");
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);

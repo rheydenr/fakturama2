@@ -20,12 +20,12 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
-import com.sebulli.fakturama.model.VATCategory;
-import com.sebulli.fakturama.model.VATCategory_;
+import com.sebulli.fakturama.model.ItemListTypeCategory;
+import com.sebulli.fakturama.model.ItemListTypeCategory_;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 
 @Creatable
-public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
+public class ItemListTypeCategoriesDAO extends AbstractDAO<ItemListTypeCategory> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -39,9 +39,11 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
 //    @GeminiPersistenceContext(unitName = "mysql-datasource")
 //    @GeminiPersistenceContext(unitName = "origin-datasource")
     private EntityManager em;
+
+    private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
     
-    protected Class<VATCategory> getEntityClass() {
-    	return VATCategory.class;
+    protected Class<ItemListTypeCategory> getEntityClass() {
+    	return ItemListTypeCategory.class;
     }
 
     @PreDestroy
@@ -52,46 +54,46 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
     }
     
     /**
-     * Get all {@link VATCategory}s from Database.
+     * Get all {@link ItemListTypeCategory}s from Database.
      *
-     * @return List<VATCategory> 
+     * @return List<ItemListTypeCategory> 
      */
-    public List<VATCategory> findAll() {
+    public List<ItemListTypeCategory> findAll() {
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-    	CriteriaQuery<VATCategory> cq = cb.createQuery(VATCategory.class);
-    	CriteriaQuery<VATCategory> selectQuery = cq.select(cq.from(VATCategory.class));
+    	CriteriaQuery<ItemListTypeCategory> cq = cb.createQuery(ItemListTypeCategory.class);
+    	CriteriaQuery<ItemListTypeCategory> selectQuery = cq.select(cq.from(ItemListTypeCategory.class));
     	return getEntityManager().createQuery(selectQuery).getResultList();
-//    	return getEntityManager().createQuery("select p from VATCategory p", VATCategory.class).getResultList();
+//    	return getEntityManager().createQuery("select p from ItemListTypeCategory p", ItemListTypeCategory.class).getResultList();
     }
     
     /**
-     * Finds a {@link VATCategory} by its name. Category in this case is a String separated by 
+     * Finds a {@link ItemListTypeCategory} by its name. Category in this case is a String separated by 
      * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
      * and then check the parent. 
      * 
      * @param vatCategory the Category to search
-     * @return {@link VATCategory}
+     * @return {@link ItemListTypeCategory}
      */
-    public VATCategory findVATCategoryByName(String vatCategory) {
-        VATCategory result = null;
+    public ItemListTypeCategory findItemListTypeCategoryByName(String vatCategory) {
+        ItemListTypeCategory result = null;
         if(StringUtils.isNotEmpty(vatCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        	CriteriaQuery<VATCategory> cq = cb.createQuery(getEntityClass());
-        	Root<VATCategory> rootEntity = cq.from(getEntityClass());
+        	CriteriaQuery<ItemListTypeCategory> cq = cb.createQuery(getEntityClass());
+        	Root<ItemListTypeCategory> rootEntity = cq.from(getEntityClass());
         	// extract the rightmost value
             String[] splittedCategories = vatCategory.split("/");
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
-    		CriteriaQuery<VATCategory> selectQuery = cq.select(rootEntity)
+    		CriteriaQuery<ItemListTypeCategory> selectQuery = cq.select(rootEntity)
     		        .where(cb.and(
-        		                cb.equal(rootEntity.get(VATCategory_.name), leafCategory) /*,
-        		                cb.equal(rootEntity.get(VATCategory_.parent), VATCategory.class)
+        		                cb.equal(rootEntity.get(ItemListTypeCategory_.name), leafCategory) /*,
+        		                cb.equal(rootEntity.get(ItemListTypeCategory_.parent), ItemListTypeCategory.class)
         		               ,
-        		                cb.equal(rootEntity.get(VATCategory_.deleted), false)*/));
+        		                cb.equal(rootEntity.get(ItemListTypeCategory_.deleted), false)*/));
             try {
-                List<VATCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
+                List<ItemListTypeCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
                 String testCat = StringUtils.removeStart(vatCategory, "/");
-                for (VATCategory vatCategory2 : tmpResultList) {
+                for (ItemListTypeCategory vatCategory2 : tmpResultList) {
                     if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
                         result = vatCategory2;
                         break;
@@ -121,26 +123,26 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
 	}
 
 	/**
-	 * Find a {@link VATCategory} by its name. If one of the part categories doesn't exist we create it 
+	 * Find a {@link ItemListTypeCategory} by its name. If one of the part categories doesn't exist we create it 
 	 * (if {@code withPersistOption} is set to <code>true</code>).
 	 * 
 	 * @param testCat the category to find
 	 * @param withPersistOption persist a (part) category if it doesn't exist
 	 * @return found category
 	 */
-    public VATCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
+    public ItemListTypeCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
         // to find the complete category we have to start with the topmost category
         // and then lookup each of the child categories in the given path
         String[] splittedCategories = testCat.split("/");
-        VATCategory parentCategory = null;
+        ItemListTypeCategory parentCategory = null;
         String category = "";
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
-                VATCategory searchCat = findVATCategoryByName(category);
+                ItemListTypeCategory searchCat = findItemListTypeCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
-                    VATCategory newCategory = modelFactory.createVATCategory();
+                    ItemListTypeCategory newCategory = modelFactory.createItemListTypeCategory();
                     newCategory.setName(splittedCategories[i]);
                     newCategory.setParent(parentCategory);
                     newCategory = save(newCategory);

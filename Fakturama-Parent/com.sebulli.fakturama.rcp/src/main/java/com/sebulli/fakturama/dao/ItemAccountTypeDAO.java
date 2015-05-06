@@ -15,7 +15,9 @@
 package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -23,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
@@ -103,15 +106,16 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
         return result;
     }
     
+
     /**
-     * Find a {@link ItemAccountType} by its name. If one of the part categories doesn't exist we create it 
-     * (if withPersistOption is set).
+     * Find a {@link VATCategory} by its name. If one of the part categories doesn't exist we create it 
+     * (if {@code withPersistOption} is set to <code>true</code>).
      * 
      * @param testCat the category to find
      * @param withPersistOption persist a (part) category if it doesn't exist
      * @return found category
      */
-    public ItemAccountType getCategory(String testCat, boolean withPersistOption) {
+    public ItemAccountType getOrCreateCategory(String testCat, boolean withPersistOption) {
         // to find the complete category we have to start with the topmost category
         // and then lookup each of the child categories in the given path
         String[] splittedCategories = testCat.split("/");
@@ -123,17 +127,15 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
                 ItemAccountType searchCat = findItemAccountTypeByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
-                    ItemAccountType newCategory = new ItemAccountType();
+                    ItemAccountType newCategory = modelFactory.createItemAccountType();
                     newCategory.setName(splittedCategories[i]);
+                    // we don't have parents...
 //                    newCategory.setParent(parentCategory);
-//                    save(newCategory);
+                    newCategory = save(newCategory);
                     searchCat = newCategory;
                 }
                 // save the parent and then dive deeper...
                 parentCategory = searchCat;
-            } 
-            if(!getEntityManager().contains(parentCategory)) {
-                parentCategory = save(parentCategory);
             }
         }
         catch (SQLException e) {
@@ -141,6 +143,17 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
             e.printStackTrace();
         }
         return parentCategory;
+    }
+
+    
+    @Override
+    protected Set<Predicate> getRestrictions(ItemAccountType object, CriteriaBuilder criteriaBuilder, Root<ItemAccountType> root) {
+        Set<Predicate> restrictions = new HashSet<>();
+        // Compare customer number, only if it is set.
+        if(StringUtils.isNotBlank(object.getName())) {
+            restrictions.add(criteriaBuilder.equal(root.get(ItemAccountType_.name), object.getName()));
+        }
+        return restrictions;
     }
 
     /**
@@ -155,5 +168,9 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
      */
     protected void setEntityManager(EntityManager em) {
         this.em = em;
+    }
+
+    public String[] getVisibleProperties() {
+        return new String[] { ItemAccountType_.name.getName(), ItemAccountType_.value.getName()};
     }
 }

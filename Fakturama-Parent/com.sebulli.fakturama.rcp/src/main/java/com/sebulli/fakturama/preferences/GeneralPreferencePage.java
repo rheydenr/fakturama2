@@ -122,6 +122,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 */
     @Override
     public void propertyChange(PropertyChangeEvent event) {
+        super.propertyChange(event);
         if (event.getSource() instanceof ComboFieldEditor) {
             String newValue = (String) event.getNewValue();
             String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue());
@@ -165,7 +166,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                 e.printStackTrace();
             }
         }
-        super.propertyChange(event);
     }
 
     /**
@@ -190,20 +190,26 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             NumberFormat form = NumberFormat.getCurrencyInstance(locale);
             form.setGroupingUsed(useThousandsSeparator);
             retval = form.format(myNumber);
+            
             if (locale.getCountry().equals("CH")) {
                 if(cashCheckbox != null) {
                     cashCheckbox.setEnabled(true, getFieldEditorParent());
                 }
-                if(currencyCheckboxEnabled) {
-                    /*
+             //   if(currencyCheckboxEnabled) {
+                    /* 
                      * Can't work directly with JavaMoney classes (ServiceProviders) since
                      * they already loaded by DataUtils and therefore the classloader gets
                      * confused.
                      */
-                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale, useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true);
-                }
+                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                            useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true,
+                                    cashCheckbox != null ?  cashCheckbox.getBooleanValue() : true,
+                                            useThousandsSeparator);
+              //  }
             } else {
-                retval = DataUtils.getInstance().formatCurrency(myNumber, locale, useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true);
+                retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                        useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true,
+                                cashCheckbox != null ?  cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
                 if(cashCheckbox != null) {
                     cashCheckbox.setEnabled(false, getFieldEditorParent());
                 }

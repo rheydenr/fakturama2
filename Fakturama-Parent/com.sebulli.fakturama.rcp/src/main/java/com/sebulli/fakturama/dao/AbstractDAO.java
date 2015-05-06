@@ -33,6 +33,10 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
+
+
 
 /**
  * Abstract superclass for all DAOs. Used for finding, saving or updating certain entities.
@@ -40,6 +44,8 @@ import org.eclipse.persistence.queries.ReadAllQuery;
  */
 public abstract class AbstractDAO<T> {
 	
+protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
+
     /**
      * Persists the given object.
      * 
@@ -198,7 +204,8 @@ em.joinTransaction();
      * for web shop import where a new contact is only created if it doesn't exist. 
      * </P><P>
      * This method is analogous to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
-     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)}.
+     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)} we has to
+     * be overridden by sub classes.
      * @param contact Entity to test
      * @return found or newly created Entity
      */
@@ -230,7 +237,7 @@ em.joinTransaction();
     }
   
     /**
-     * Restrictions for {@link AbstractDAO#findOrCreate} method.
+     * Restrictions for {@link AbstractDAO#findOrCreate} method. Has to be overridden by sub classes.
      * 
      * @param object
      * @param criteriaBuilder

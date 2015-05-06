@@ -175,7 +175,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ExpenditureItem" eSuperTypes="#//IEntity">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//ItemAccountType"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="accountType" eType="#//ItemAccountType"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vat" eType="#//VAT"/>
@@ -202,6 +202,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="ItemAccountType" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="category" eType="#//ItemListTypeCategory"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Payment" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
@@ -270,7 +271,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucherItem" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//ItemAccountType"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="accountType" eType="#//ItemAccountType"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vat" eType="#//VAT"/>
@@ -355,4 +356,5 @@
     <eLiterals name="MEDIUM" value="2"/>
     <eLiterals name="GOOD" value="3"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ItemListTypeCategory" eSuperTypes="#//AbstractCategory"/>
 </ecore:EPackage>

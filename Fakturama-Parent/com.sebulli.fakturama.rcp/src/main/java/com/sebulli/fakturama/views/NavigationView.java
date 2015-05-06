@@ -55,6 +55,7 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
 import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
+import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 
@@ -110,7 +111,7 @@ public class NavigationView {
         
         parameters = new HashMap<>();
         parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, CreditorListTable.ID);
-        addAction(group2, Icon.COMMAND_CONTACT, "command.creditors", CommandIds.CMD_OPEN_CONTACTS, parameters);
+        addAction(group2, Icon.COMMAND_VENDOR, "command.creditors", CommandIds.CMD_OPEN_CONTACTS, parameters);
         
         parameters = new HashMap<>();
         parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, DebitorListTable.ID);
@@ -126,7 +127,11 @@ public class NavigationView {
         parameters = new HashMap<>();
         parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, TextListTable.ID);
         addAction(group2, Icon.COMMAND_TEXT, "command.texts", CommandIds.CMD_OPEN_TEXTS, parameters);
-        addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ItemAccountTypeListTable.ID);
+        addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS, parameters);
+        
         addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
         addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS);
 

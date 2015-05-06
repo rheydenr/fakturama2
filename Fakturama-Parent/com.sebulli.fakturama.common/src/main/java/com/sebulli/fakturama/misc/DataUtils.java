@@ -46,6 +46,7 @@ import org.javamoney.moneta.format.CurrencyStyle;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
+import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
 /**
  * This class provides static functions to convert and format data like double
@@ -83,8 +84,8 @@ public class DataUtils {
      * Update the currency symbol and the thousands separator from the preferences
      */
     private void initialize() {
-        useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
-        boolean currencyCheckboxEnabled = Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
+        useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
+        boolean currencyCheckboxEnabled = Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, false);
         
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
@@ -96,17 +97,17 @@ public class DataUtils {
                 CurrencyUnit chf = MonetaryCurrencies.getCurrency(currencyLocale);
                 mro = MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
                         .setCurrency(chf)
-                        .set("cashRounding", true) // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
                         .build());
             }
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
-//                      .set(MyMonetaryAmountFormat.KEY_PATTERN, "#0.0000 \u00A4")   // scale schlägt Pattern!
 //                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 5)                    // scale wird nur verwendet, wenn kein Pattern angegeben ist
-//                        .set(MyMonetaryAmountFormat.KEY_GROUPING_SIZES, new int[]{2, 3, 4}) // kann unterschiedliche Gruppierungen beinhalten (wer macht denn sowas???)
-//                        .set(MyMonetaryAmountFormat.KEY_GROUPING_SEPARATORS, new char[]{'.', '#', '~'})
                         .set(CurrencyStyle.SYMBOL)
+                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
+                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
                         .build());
     }
@@ -118,12 +119,16 @@ public class DataUtils {
     public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
         return MonetaryCurrencies.getCurrency(currencyLocale);
     }
-    
-    public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
+    public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
-                .set("cashRounding", true)
+                .set("cashRounding",cashRounding)
                 .build());
+        
+    }
+    
+    public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
+        return getRounding(currencyUnit, Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false));
     }
     
     /**
@@ -447,26 +452,34 @@ public class DataUtils {
     public String formatCurrency(MonetaryAmount amount) {
         return formatCurrency(amount, currencyLocale, true);
     }
-    
-    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
+    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryRounding mro = DataUtils.getInstance().getRounding(usd);
+        MonetaryRounding mro = getRounding(usd, cashRounding);
         MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(locale)
-                .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
-                .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
+                        .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
+                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
+                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
                 .build());
         return format.format(amount.with(mro));
     }
+    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
+        return formatCurrency(amount, locale, useCurrencySymbol, 
+                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
+                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
+    }
 
-    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol) {
+    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
-        return formatCurrency(rounded, locale, useCurrencySymbol);
+        return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
     }
     
     public String formatCurrency(double myNumber, Locale locale) {
-        return formatCurrency(myNumber, locale, true);
+        return formatCurrency(myNumber, locale, 
+                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true), 
+                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
+                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
 
     //

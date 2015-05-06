@@ -673,8 +673,8 @@
         </entity>
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//ExpenditureItem/account"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="account" getter="getAccount" defaultValue="null" setter="setAccount" validJavaMemberName="account" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.12/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReference href="Fakturama.ecore#//ExpenditureItem/accountType"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="A category for an individual item on a voucher (expenditure or receipt). This is not the same as the VoucherCategory." name="account" getter="getAccountType" defaultValue="null" setter="setAccountType" validJavaMemberName="accountType" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.12/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_ACCOUNT"/>
         </eReferenceAnnotations>
@@ -722,10 +722,23 @@
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//ItemAccountType"/>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="The account for a single item (e.g., from receipt or expenditure voucher)." name="ItemAccountType" qualifiedClassName="com.sebulli.fakturama.model.ItemAccountType" simpleClassName="ItemAccountType" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="false" serializable="true" abstract="false">
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="Test" documentation="The account for a single item (e.g., from receipt or expenditure voucher). More specific it could also be a list entry for an arbitrary list (e.g., measure units)." name="ItemAccountType" qualifiedClassName="com.sebulli.fakturama.model.ItemAccountType" simpleClassName="ItemAccountType" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
+        <entity>
+          <entityListeners>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
+          </entityListeners>
+        </entity>
+      </eClassAnnotations>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//ItemAccountType/category"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_LISTCATEGORY"/>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Payment"/>
@@ -1040,8 +1053,8 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="name" getter="getName" defaultValue="null" setter="setName" validJavaMemberName="name" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.21/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//ReceiptVoucherItem/account"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="account" getter="getAccount" defaultValue="null" setter="setAccount" validJavaMemberName="account" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.21/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReference href="Fakturama.ecore#//ReceiptVoucherItem/accountType"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="A category for an individual item on a voucher (expenditure or receipt). This is not the same as the VoucherCategory." name="account" getter="getAccountType" defaultValue="null" setter="setAccountType" validJavaMemberName="accountType" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.21/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_ACCOUNT"/>
         </eReferenceAnnotations>

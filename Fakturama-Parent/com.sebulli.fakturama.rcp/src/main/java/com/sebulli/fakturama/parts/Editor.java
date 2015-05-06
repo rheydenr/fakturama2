@@ -469,26 +469,6 @@ public abstract class Editor<T extends IEntity> {
 		// The result of the validation
 		return result;
 	}
-	
-//	protected void bindModelValue(T target, CDateTime source, String property) {
-//        IObservableValue model = BeansObservables.observeValue(target, property);
-//        IObservableValue uiWidget = new CDateTimeObservableValue(source);
-////        IObservableValue uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
-//
-////        if (modelToTarget != null) {
-////            ctx.bindValue(uiWidget, model, targetToModel, modelToTarget);
-////        } else {
-//            ctx.bindValue(uiWidget, model);
-////        }    
-//        
-//        source.addSelectionListener(new SelectionAdapter() {
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                getMDirtyablePart().setDirty(true);
-//            }
-//        });
-//	}
-	
 
 	/**
 	 * Binds a Java bean property to the UI widget.
@@ -504,8 +484,7 @@ public abstract class Editor<T extends IEntity> {
     protected void bindModelValue(T target, final Scrollable source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue model = nameProperty.observe(target);
-        
-//        IObservableValue model = BeansObservables.observeValue(target, property);
+
         IObservableValue uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
@@ -642,7 +621,6 @@ public abstract class Editor<T extends IEntity> {
 			}
 
 		});
-
 	}
 
 	/**
