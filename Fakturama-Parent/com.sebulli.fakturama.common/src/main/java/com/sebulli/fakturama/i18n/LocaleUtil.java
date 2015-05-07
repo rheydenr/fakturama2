@@ -11,25 +11,27 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  *
  */
 public class LocaleUtil {
     public static final String PROP_NL = "osgi.nl"; 
-    private static final Map<String, Locale> localeLookUp = new HashMap<>();
-    private static final Map<String, Locale> countryLocaleMap = new HashMap<>();
-    private Locale defaultLocale = Locale.getDefault();
-
     private static LocaleUtil instance;
-    private SortedMap<String, String> localeCountryMap;
-
     private static Locale currencyLocale = null;
+ 
+     private static final Map<String, Locale> localeLookUp = new HashMap<>();
+    private static final Map<String, Locale> countryLocaleMap = new HashMap<>();
+
+   private Locale defaultLocale = Locale.getDefault();
+    private SortedMap<String, String> localeCountryMap;
     
     /** Returns a reference to the {@link LocaleUtil}. */
     public static LocaleUtil getInstance() {
@@ -72,6 +74,16 @@ public class LocaleUtil {
         }
     }
     
+    /**
+     * <p>Refreshes the settings of this class.</p><p>
+     * <i>Caution:</i> This method makes the {@link DataUtils} class not thread safe, anymore.
+     * If multiple threads are try to refresh this class the state becomes indeterminable.
+     */
+    public static void refresh() {
+        instance = null;
+        currencyLocale = null;
+    }
+    
     public String findCodeByDisplayCountry(String country) {
         Locale retval = countryLocaleMap.get(country);
         return retval != null ? retval.getCountry() : null;
@@ -106,10 +118,13 @@ public class LocaleUtil {
 
     public Map<String, String> getLocaleCountryMap() {
         if(localeCountryMap == null) {
-            Map<String, String> tmpMap = new HashMap<String, String>();
-            for (Entry<String, Locale> entry : countryLocaleMap.entrySet()) {
-                tmpMap.put(entry.getValue().getCountry(), entry.getKey());
-            }
+//            Map<String, String> tmpMap = new HashMap<String, String>();
+            Map<String, String> tmpMap =  countryLocaleMap.entrySet().stream().collect(
+                    Collectors.toMap((Entry<String, Locale> e) -> e.getValue().getCountry(), 
+                                     (Entry<String, Locale> e) -> e.getKey()));
+//            for (Entry<String, Locale> entry : countryLocaleMap.entrySet()) {
+//                tmpMap.put(entry.getValue().getCountry(), entry.getKey());
+//            }
             ValueComparator bvc = new ValueComparator(tmpMap);
             localeCountryMap = new TreeMap<>(bvc);
             localeCountryMap.putAll(tmpMap);
@@ -130,6 +145,5 @@ public class LocaleUtil {
             }
         }
         return currencyLocale;
-        
     }
 }

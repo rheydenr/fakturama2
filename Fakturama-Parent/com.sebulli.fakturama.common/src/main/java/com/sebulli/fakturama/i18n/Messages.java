@@ -360,6 +360,7 @@ public class Messages {
 	public String preferencesGeneralCurrencyExample;
 	public String preferencesGeneralCurrencyCashrounding;
 	public String preferencesGeneralCurrencyCashroundingTooltip;
+	public String preferencesGeneralCurrencyUsesymbol;
 
 	public String ImportOptionPage122;
 	public String ImportOptionPage123;

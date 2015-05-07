@@ -76,8 +76,15 @@ public class DataUtils {
         return instance;
     }
     
+    /**
+     * <p>Refreshes the settings of this class.</p><p>
+     * <i>Caution:</i> This method makes the {@link DataUtils} class not thread safe, anymore.
+     * If multiple threads are try to refresh this class the state becomes indeterminable.
+     */
     public void refresh() {
-        initialize();
+        instance = null;
+        useThousandsSeparator = false;
+        LocaleUtil.refresh();
     }
 
     /**
@@ -105,7 +112,7 @@ public class DataUtils {
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
 //                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 5)                    // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(CurrencyStyle.SYMBOL)
+                        .set(currencyCheckboxEnabled ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
                     Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
@@ -386,9 +393,9 @@ public class DataUtils {
         CurrencyUnit currUnit = getCurrencyUnit(currencyLocale);
         MonetaryAmount rounded = RoundedMoney.of(value, currUnit);
         if(mro != null) {
-            return getCurrencyFormat().format(rounded.with(mro).getNumber());
+            return getMonetaryAmountFormat().format(rounded.with(mro));
         } else {
-            return getCurrencyFormat().format(rounded.getNumber());
+            return getMonetaryAmountFormat().format(rounded);
         }
     }
 

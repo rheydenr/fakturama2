@@ -37,6 +37,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.ContextHelpConstants;
@@ -110,7 +111,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         }
         addField(cashCheckbox);
 
-        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, "use currency symbol", getFieldEditorParent());
+        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, getFieldEditorParent());
         addField(useCurrencySymbolCheckbox);
         
         thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
@@ -249,7 +250,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
 
 		//Set the default currency locale from current locale
-		Locale defaultLocale = Locale.getDefault();
+		Locale defaultLocale = LocaleUtil.getInstance().getCurrencyLocale();
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
         String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
                 true, false);

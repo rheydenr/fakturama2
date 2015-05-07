@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -20,11 +21,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.emf.texo.server.store.DaoRegistry;
+import org.eclipse.emf.texo.server.store.EntityManagerObjectStore;
+import org.eclipse.emf.texo.server.store.EntityManagerProvider;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
@@ -53,9 +58,18 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	protected Class<VAT> getEntityClass() {
 		return VAT.class;
 	}
-	
+	 @PostConstruct
 	public void init() {
-	    // do nothing
+	    // *** THIS IS A TEST ONLY!!! To show how the Texo JPA access works **********
+	        EntityManagerProvider.getInstance().setEntityManagerFactory(em.getEntityManagerFactory());
+	       // EntityManagerObjectStore objectStore = new EntityManagerObjectStore();
+//	        objectStore.setEntityManager(em);
+	        // the URI is used for de-resolving references when serializing to XML, see below
+	        //objectStore.setUri("http://www.fakturama.org/jpa");
+	        FakturamaModelPackage.initialize(); 	  //  objectStore.get(VAT.class, 1L);    
+	        VATDao vatDao = DaoRegistry.getInstance().getDao(VATDao.class);
+//	        vatDao.setEntityManager(em);
+	        VAT vat2 = vatDao.get(1L);
 	}
 
 	@PreDestroy
