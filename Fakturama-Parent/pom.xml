@@ -22,6 +22,7 @@
 	    <module>com.sebulli.fakturama.resources</module>
 	    <module>com.sebulli.fakturama.resources.icons</module>
 	    <module>com.sebulli.fakturama.resources.templates</module>
+	    <module>org.fakturama.print.openoffice</module>
 	</modules>
 	<build>
 		<plugins>
