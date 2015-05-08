@@ -21,8 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.emf.texo.server.store.DaoRegistry;
-import org.eclipse.emf.texo.server.store.EntityManagerObjectStore;
 import org.eclipse.emf.texo.server.store.EntityManagerProvider;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
@@ -62,14 +60,9 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	public void init() {
 	    // *** THIS IS A TEST ONLY!!! To show how the Texo JPA access works **********
 	        EntityManagerProvider.getInstance().setEntityManagerFactory(em.getEntityManagerFactory());
-	       // EntityManagerObjectStore objectStore = new EntityManagerObjectStore();
-//	        objectStore.setEntityManager(em);
-	        // the URI is used for de-resolving references when serializing to XML, see below
-	        //objectStore.setUri("http://www.fakturama.org/jpa");
 	        FakturamaModelPackage.initialize(); 	  //  objectStore.get(VAT.class, 1L);    
-	        VATDao vatDao = DaoRegistry.getInstance().getDao(VATDao.class);
-//	        vatDao.setEntityManager(em);
-	        VAT vat2 = vatDao.get(1L);
+//	        VATDao vatDao = DaoRegistry.getInstance().getDao(VATDao.class);
+//	        VAT vat2 = vatDao.get(1L);
 	}
 
 	@PreDestroy
