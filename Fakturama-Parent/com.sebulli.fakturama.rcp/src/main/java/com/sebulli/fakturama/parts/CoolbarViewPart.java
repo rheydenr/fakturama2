@@ -124,9 +124,16 @@ public class CoolbarViewPart {
 		 */
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP));
-		createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
+		/*ToolItem ooPrintButton = */createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
+//		ooPrintButton.addSelectionListener(new SelectionAdapter() {
+//		    @Override
+//		    public void widgetSelected(SelectionEvent e) {
+//		        
+//		        super.widgetSelected(e);
+//		    }
+//        });
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
@@ -248,14 +255,14 @@ public class CoolbarViewPart {
         coolBarsByKey.add(toolBar);
 	}
 	
-	private void createToolItem(final ToolBar toolBar, final String commandId, 
+	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, boolean show) {
-		createToolItem(toolBar, commandId, null, null, iconImage, null, show, null);
+		return createToolItem(toolBar, commandId, null, null, iconImage, null, show, null);
 	}
 	
-	private void createToolItem(final ToolBar toolBar, final String commandId, 
+	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, final Image disabledIcon, boolean show) {
-		createToolItem(toolBar, commandId, null, null, iconImage, disabledIcon, show, null);
+		return createToolItem(toolBar, commandId, null, null, iconImage, disabledIcon, show, null);
 	}
 	
 	/**
@@ -269,12 +276,12 @@ public class CoolbarViewPart {
 	 * @param disabledIcon if it is disabled, which icon should be displayed?
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
 	 */
-	private void createToolItem(final ToolBar toolBar, final String commandId, 
+	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
 			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
 			Map<String, Object> params) {
 	    
 	    if(!show) {
-	        return;
+	        return null;
 	    }
 	    
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
@@ -304,5 +311,6 @@ public class CoolbarViewPart {
 			}
 		});
         item.setImage(iconImage);
+        return item;
 	}
 }

@@ -247,6 +247,9 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
+      <feature id="org.apache.commons.feature" version="3.2"/>
+      <feature id="org.javamoney.feature" version="1.0.0.qualifier"/>
+      <feature id="org.slf4j.osgi.feature" version="1.0.0.qualifier"/>
    </features>
 
    <configurations>

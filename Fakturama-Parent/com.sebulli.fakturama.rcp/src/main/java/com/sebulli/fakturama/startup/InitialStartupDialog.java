@@ -219,7 +219,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblDatabase.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDatabase.setText(msg.startFirstSelectDbCredentialsName);
 		
-		comboDriver = new ComboViewer(dbSettings, SWT.NONE);
+		comboDriver = new ComboViewer(dbSettings, SWT.NONE | SWT.READ_ONLY);
 		comboDriver.setContentProvider(ArrayContentProvider.getInstance());
 		comboDriver.setInput(connectionProviders);
 		comboDriver.setLabelProvider(new LabelProvider() {

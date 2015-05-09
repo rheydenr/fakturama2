@@ -7,6 +7,6 @@
   </parent>
   <artifactId>org.fakturama.print.openoffice</artifactId>
   <packaging>eclipse-plugin</packaging>
-  <name>print.openoffice</name>
+  <name>org.fakturama.print.openoffice</name>
   <description>Print adapter for openoffice documents</description>
 </project>

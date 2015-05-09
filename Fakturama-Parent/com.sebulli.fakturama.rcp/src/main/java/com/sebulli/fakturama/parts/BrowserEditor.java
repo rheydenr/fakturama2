@@ -114,7 +114,7 @@ public class BrowserEditor {
             // In case of an empty URL: use the start page
             if (url.isEmpty() || url.equals("http://www.fakturama.org/")) {
                 url = "file://" +
-                    preferences.getString(Constants.GENERAL_WORKSPACE) + "/" +
+                    preferences.getString(Constants.GENERAL_WORKSPACE) +
                     msg.configWorkspaceTemplatesName +  
                     "/Start/start.html";
             }

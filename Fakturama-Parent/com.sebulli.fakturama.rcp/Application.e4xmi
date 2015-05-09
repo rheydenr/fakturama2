@@ -373,7 +373,7 @@
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar.control" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>
   </children>
-  <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenOOHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+  <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CreateOODocumentHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
   <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.handler.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_xRyIYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.handler.file.saveAll" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveAllHandler" command="_jH3nYCTLEeS9z6SQNducwg"/>
   <handlers xmi:id="_7foj0CTIEeS9z6SQNducwg" elementId="com.sebulli.fakturama.preferences.handler" contributionURI="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.handlers.E4PreferencesHandler" command="_EDLOIDtZEeOcltwCzP-ZbQ"/>

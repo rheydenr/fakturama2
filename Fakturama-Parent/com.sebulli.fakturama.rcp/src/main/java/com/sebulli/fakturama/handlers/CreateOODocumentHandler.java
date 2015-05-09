@@ -1,24 +1,56 @@
-/* 
+/*
  * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
  * 
  * Copyright (C) 2012 Gerd Bartelt
  * 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
+ * All rights reserved. This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- *     Gerd Bartelt - initial API and implementation
+ * Contributors: Gerd Bartelt - initial API and implementation
  */
 
 package com.sebulli.fakturama.handlers;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.office.OfficeDocument;
+import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
  * This action starts the OpenOffice exporter. If there is more than one
@@ -27,165 +59,181 @@ import com.sebulli.fakturama.i18n.Messages;
  * @author Gerd Bartelt
  */
 public class CreateOODocumentHandler {
-    
+
     @Inject
     @Translation
     protected Messages msg;
 
-//	private List<DocumentFilename> templates = new ArrayList<DocumentFilename>();
-//	private DocumentFilename template;
-//	private DocumentEditor documentEditor;
+    @Inject
+    private IPreferenceStore preferences;
 
-	//T: Text of the action
-	public final static String ACTIONTEXT = "Print as OO document"; 
-//
-//	
-//	/**
-//	 * default constructor
-//	 */
-//	public CreateOODocumentHandler() {
-//		this(ACTIONTEXT, 
-//				//T: Text of the action
-//			_("Print/Export this document as an OpenOffice Writer document"));
-//	}
-//
-//	/**
-//	 * constructor
-//	 * 
-//	 * @param text
-//	 *            Action text
-//	 * @param toolTipText
-//	 *            Tool tip text
-//	 */
-//	public CreateOODocumentHandler(String text, String toolTipText) {
-//		super(text);
-//		setToolTipText(toolTipText);
-//		setId(CommandIds.CMD_CREATE_OODOCUMENT);
-//		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
-//		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
-//	}
-//
-//	/**
-//	 * Scans the template path for all templates. If a template exists, add it
-//	 * to the list of available templates
-//	 * 
-//	 * @param templatePath
-//	 *            path which is scanned
-//	 */
-//	private void scanPathForTemplates(String templatePath) {
-//		File dir = new File(templatePath);
-//		String[] children = dir.list();
-//		if (children != null) {
-//			for (int i = 0; i < children.length; i++) {
-//				// Get filename of file or directory
-//				DocumentFilename oOTemplateFilename = new DocumentFilename(templatePath, children[i]);
-//				if (oOTemplateFilename.getExtension().equalsIgnoreCase(".ott"))
-//					templates.add(oOTemplateFilename);
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * Run the action Search for all available templates. If there is more than
-//	 * one, display a menu to select one template. The content of the editor is
-//	 * saved before exporting it.
-//	 */
-//	@Override
-//	public void run() {
-//
-//		// cancel, if the data base is not connected.
-//		if (!DataBaseConnectionState.INSTANCE.isConnected())
-//			return;
-//
-//		// Get the active workbench window
-//		final IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-//
-//		Editor editor = (Editor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-//		if (editor != null)
-//			if (editor instanceof DocumentEditor) {
-//
-//				// Search in the folder "Templates" and also in the folder with the localized  name
-//				documentEditor = (DocumentEditor) editor;
-//
-//				// Exit, if there is a document with the same number
-//				if (documentEditor.thereIsOneWithSameNumber())
-//					return;
-//
-//				String workspace = Activator.getDefault().getPreferenceStore().getString("GENERAL_WORKSPACE");
-//				String templatePath1 = workspace + DocumentFilename.getRelativeFolder(documentEditor.getDocumentType());
-//				String templatePath2 = workspace + DocumentFilename.getLocalizedRelativeFolder(documentEditor.getDocumentType());
-//
-//				// Clear the list before adding new entries
-//				templates.clear();
-//
-//				// If the name of the localized folder is equal to "Templates", don't search 2 times.
-//				scanPathForTemplates(templatePath1);
-//				if (!templatePath1.equals(templatePath2))
-//					scanPathForTemplates(templatePath2);
-//
-//				// If more than 1 template is found, show a pup up menu
-//				if (templates.size() > 1) {
-//					Menu menu = new Menu(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.POP_UP);
-//					for (int i = 0; i < templates.size(); i++) {
-//						template = templates.get(i);
-//						MenuItem item = new MenuItem(menu, SWT.PUSH);
-//						item.setText(template.getName());
-//						item.setData(template.getPathAndFilename());
-//						item.addListener(SWT.Selection, new Listener() {
-//							public void handleEvent(Event e) {
-//								// save the document and open the exporter
-//								documentEditor.doSave(null);
-//								openOODocument(documentEditor.getDocument(), (String) e.widget.getData(),workbenchWindow.getShell());
-////								documentEditor.markAsPrinted();
-//							}
-//						});
-//					}
-//
-//					// Set the location of the pup up menu near to the upper left corner,
-//					// but with an gap, so it should be under the tool bar icon of this action.
-//					int x = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getLocation().x;
-//					int y = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getLocation().y;
-//					menu.setLocation(x + 80, y + 80);
-//					menu.setVisible(true);
-//
-//				}
-//				else if (templates.size() == 1) {
-//					// Save the document and open the exporter
-//					documentEditor.doSave(null);
-//					openOODocument(documentEditor.getDocument(), templates.get(0).getPathAndFilename(), workbenchWindow.getShell());
-////					documentEditor.markAsPrinted();
-//				}
-//				else {
-//					// Show an information dialog, if no template was found
-//					Workspace.showMessageBox(SWT.ICON_WARNING | SWT.OK,
-//							//T: Title of the dialog 
-//							_("Information"),
-//							//T: Text of the dialog
-//							"No OpenOffice.org *.ott template found in:\n" + templatePath1);
-//				}
-//			}
-//	}
-//	
-//	
-//	private void openOODocument(final DataSetDocument document, final String template, Shell shell) {
-//
-//		
-//		if (OfficeDocument.testOpenAsExisting(document, template)) {
-//			// Show an information dialog, if no template was found
-//			int answer = Workspace.showMessageBox(SWT.ICON_QUESTION | SWT.CANCEL | SWT.YES | SWT.NO,
-//			//T: Title of the dialog 
-//			_("Information"),
-//			//T: Text of the dialog
-//			_("Document has been already printed. Should it be reopened ?\nYES: Reopen it.\nNO: Create a new one.")
-//			);
-//
-//			if (answer == SWT.YES)
-//				OfficeManager.INSTANCE.openOODocument(document, template, false);
-//			if (answer == SWT.NO)
-//				OfficeManager.INSTANCE.openOODocument(document, template, true);
-//		}
-//		else
-//			OfficeManager.INSTANCE.openOODocument(document, template, false);
-//	
-//	}
+    private List<Path> templates = new ArrayList<>();
+    private Path template;
+    private DocumentEditor documentEditor;
+
+    //T: Text of the action
+    public final static String ACTIONTEXT = "Print as OO document";
+
+    //	/**
+    //	 * default constructor
+    //	 */
+    //	public CreateOODocumentHandler() {
+    //		this(ACTIONTEXT, 
+    //				//T: Text of the action
+    //			_("Print/Export this document as an OpenOffice Writer document"));
+    //	}
+    //
+    //	/**
+    //	 * constructor
+    //	 * 
+    //	 * @param text
+    //	 *            Action text
+    //	 * @param toolTipText
+    //	 *            Tool tip text
+    //	 */
+    //	public CreateOODocumentHandler(String text, String toolTipText) {
+    //		super(text);
+    //		setToolTipText(toolTipText);
+    //		setId(CommandIds.CMD_CREATE_OODOCUMENT);
+    //		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
+    //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
+    //	}
+
+    /**
+     * Scans the template path for all templates. If a template exists, add it
+     * to the list of available templates
+     * 
+     * @param templatePath
+     *            path which is scanned
+     */
+    private void scanPathForTemplates(String templatePath) {
+        Path dir = Paths.get(templatePath);
+        try {
+            if(Files.exists(dir)) {
+                templates = Files.list(dir).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".ott"))
+                        .sorted(Comparator.comparing((Path p) -> p.getFileName().toString().toLowerCase())).collect(Collectors.toList());
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Run the action Search for all available templates. If there is more than
+     * one, display a menu to select one template. The content of the editor is
+     * saved before exporting it.
+     */
+    @Execute
+    public void run(Shell shell,
+        final MApplication application,
+        final EModelService modelService,
+        final EPartService partService)
+        throws InvocationTargetException, InterruptedException {
+    // at first find the PartStack "detailpanel"
+    MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+    MPart activePart = (MPart)documentPartStack.getSelectedElement();
+        if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
+            // Search in the folder "Templates" and also in the folder with the localized  name
+            documentEditor = (DocumentEditor) activePart.getObject();
+
+//            // Exit, if there is a document with the same number
+//            if (documentEditor.thereIsOneWithSameNumber())
+//                return;
+
+            String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+            String templatePath1 = workspace + getRelativeFolder(documentEditor.getDocumentType());
+            String templatePath2 = workspace + getLocalizedRelativeFolder(documentEditor.getDocumentType());
+
+            // Clear the list before adding new entries
+            templates.clear();
+
+            // If the name of the localized folder is equal to "Templates", don't search 2 times.
+            scanPathForTemplates(templatePath1);
+            if (!templatePath1.equals(templatePath2))
+                scanPathForTemplates(templatePath2);
+
+            // If more than 1 template is found, show a pup up menu
+            if (templates.size() > 1) {
+                Menu menu = new Menu(shell, SWT.POP_UP);
+                for (int i = 0; i < templates.size(); i++) {
+                    template = templates.get(i);
+                    MenuItem item = new MenuItem(menu, SWT.PUSH);
+                    item.setText(template.getFileName().toString());
+                    item.setData(template);
+                    item.addListener(SWT.Selection, new Listener() {
+                        public void handleEvent(Event e) {
+                            // save the document and open the exporter
+                            documentEditor.doSave(null);
+                            openOODocument(documentEditor.getDocument(), (Path) e.widget.getData(), shell);
+                            //								documentEditor.markAsPrinted();
+                        }
+                    });
+                }
+
+                // Set the location of the pop up menu near to the upper left corner,
+                // but with a gap, so it should be under the tool bar icon of this action.
+                int x = shell.getLocation().x;
+                int y = shell.getLocation().y;
+                menu.setLocation(x + 80, y + 80);
+                menu.setVisible(true);
+
+            } else if (templates.size() == 1) {
+                // Save the document and open the exporter
+                documentEditor.doSave(null);
+                openOODocument(documentEditor.getDocument(), templates.get(0).getFileName(), shell);
+                //					documentEditor.markAsPrinted();
+            } else {
+                // Show an information dialog if no template was found
+                MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo, MessageFormat.format(msg.dialogPrintooNotemplate, templatePath1));
+            }
+        }
+    }
+
+    /**
+     * Get the relative path of the template
+     * 
+     * @param doctype
+     *            The doctype defines the path
+     * @return The path as string
+     */
+    public String getRelativeFolder(DocumentType doctype) {
+        return "/Templates/" + doctype.getTypeAsString() + "/";
+    }
+
+    /**
+     * Get the localized relative path of the template
+     * 
+     * @param doctype
+     *            The doctype defines the path
+     * @return The path as string
+     */
+    public String getLocalizedRelativeFolder(DocumentType doctype) {
+        return "/" + msg.configWorkspaceTemplatesName + "/" + msg.getMessageFromKey(DocumentType.getString(doctype)) + "/";
+    }
+
+    private void openOODocument(final Document document, final Path template, Shell shell) {
+
+        		if (OfficeDocument.testOpenAsExisting(document, template)) {
+        			// Show an information dialog if the document was already printed
+        		    String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL,
+                        IDialogConstants.NO_LABEL,
+                        IDialogConstants.CANCEL_LABEL };
+        		    MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, 
+        		            null, msg.dialogPrintooDocumentalreadycreated, MessageDialog.INFORMATION, dialogButtonLabels, 0);
+        		    int answer = md.open();
+        		    if(md.getReturnCode() != MessageDialog.CANCEL) {
+            			if (answer == SWT.YES)
+            			    System.out.println("open doc");
+            				// OfficeManager.INSTANCE.openOODocument(document, template, false);
+            			if (answer == SWT.NO)
+            			    System.out.println("create doc");
+            				// OfficeManager.INSTANCE.openOODocument(document, template, true);
+        		    }
+        		}
+        		else
+        		    System.out.println("open NEW doc");
+        //			OfficeManager.INSTANCE.openOODocument(document, template, false);
+
+    }
 }

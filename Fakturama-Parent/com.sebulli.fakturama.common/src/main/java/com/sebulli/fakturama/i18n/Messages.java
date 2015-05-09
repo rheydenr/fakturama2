@@ -108,8 +108,8 @@ public class Messages {
 	public String preferencesContact;
 
 	public String CountryCodes697;
-
-	public String CreateOODocumentAction90;
+	
+    public String dialogPrintooDocumentalreadycreated;
 
 	public String Data653;
 	public String dataDefaultVat;
@@ -478,6 +478,7 @@ public class Messages {
 
     public String dialogOrderstatusTitle;
     public String dialogOrderstatusFieldNotify;
+    public String dialogPrintooNotemplate;
 
 	public String ParcelServiceFormFiller648;
 	public String ParcelServiceFormFiller649;

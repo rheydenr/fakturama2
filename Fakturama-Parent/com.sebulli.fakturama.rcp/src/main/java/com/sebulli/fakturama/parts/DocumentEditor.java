@@ -2556,7 +2556,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @return TRUE, if one with the same number is found
 	 */
-	private boolean thereIsOneWithSameNumber() {
+	public boolean thereIsOneWithSameNumber() {
 		// Letters do not have to be checked
 		if (documentType == DocumentType.LETTER)
 			return false;
