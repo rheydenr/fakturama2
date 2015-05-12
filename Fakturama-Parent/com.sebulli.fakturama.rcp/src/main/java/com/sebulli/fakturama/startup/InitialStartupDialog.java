@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 
@@ -50,6 +51,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -296,14 +298,14 @@ public class InitialStartupDialog extends TitleAreaDialog {
             Properties oldProps = new Properties();
             try {
                 oldProps.load(Files.newInputStream(userDir));
-                retval = oldProps.getProperty("GENERAL_WORKSPACE");
+                retval = oldProps.getProperty(Constants.GENERAL_WORKSPACE);
             }
             catch (IOException e) {
                 // ok, something went wrong, therefore we leave it blank
                 log.warn("couldn't get the old Fakturama properties from " + userDir.getFileName());
             }
         }
-        return retval;
+        return Optional.ofNullable(retval).orElse("");
     }
 
     @SuppressWarnings("unchecked")

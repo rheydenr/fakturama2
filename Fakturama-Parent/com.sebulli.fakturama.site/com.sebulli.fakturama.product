@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-DREFRESH_BUNDLES=false
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -28,7 +28,8 @@
       startupMessageRect="5,5,500,300"
       startupForegroundColor="FFFFFF" />
    <launcher name="Fakturama">
-      <macosx icon="app/app.icns"/>
+      <linux icon="/Fakturama-Parent/com.sebulli.fakturama.site/app/app_256.xpm"/>
+      <macosx icon="/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns"/>
       <solaris/>
       <win useIco="false">
          <bmp
@@ -42,6 +43,9 @@
    </launcher>
 
    <vm>
+      <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</macos>
+      <solaris include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</solaris>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
@@ -248,11 +252,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
       <feature id="org.apache.commons.feature" version="3.2"/>
-      <feature id="org.javamoney.feature" version="1.0.0.qualifier"/>
-      <feature id="org.slf4j.osgi.feature" version="1.0.0.qualifier"/>
+      <feature id="org.slf4j.osgi.feature"/>
    </features>
 
    <configurations>
+      <plugin id="ch.qos.logback.classic" autoStart="false" startLevel="2" />
+      <plugin id="ch.qos.logback.core" autoStart="false" startLevel="2" />
       <plugin id="com.sebulli.fakturama.model" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
