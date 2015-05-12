@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="270">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="271">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
@@ -42,10 +42,6 @@
 <unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.9.0.v20150123-0452"/>
 <unit id="org.eclipse.emf.databinding.feature.group" version="1.4.0.v20150123-0452"/>
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.persistence.sdk.feature.group" version="2.5.2.v20140319-9ad6abd"/>
-<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.core.tools.feature.feature.group" version="0.14.0.v20141225-1728"/>
@@ -106,6 +102,11 @@
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.0.v20150430-1836"/>
 <unit id="org.eclipse.rcp.feature.group" version="4.5.0.v20150430-1702"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.5milestones"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.0.v20150309-bf26070"/>
+<unit id="org.eclipse.persistence.jpa.source.feature.group" version="2.6.0.v20150309-bf26070"/>
+<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
