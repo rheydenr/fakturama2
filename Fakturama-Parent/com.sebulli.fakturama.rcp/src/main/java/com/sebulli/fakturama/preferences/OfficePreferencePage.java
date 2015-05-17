@@ -29,7 +29,6 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.office.OfficeStarter;
 
 /**
  * Preference page for the Office settings
@@ -147,11 +146,11 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		// Set the default value
 		// Search for the Office installation only if there is no path set.
 		String oOHome = node.getString(PREFERENCES_OPENOFFICE_PATH);
-		String defaultOOHome;
+		String defaultOOHome = "";
 
 		if (!write) {
 			if (oOHome.isEmpty()){
-				defaultOOHome = OfficeStarter.getHome();
+//				defaultOOHome = OfficeStarter.getHome();
 				if (defaultOOHome.isEmpty())
 					defaultOOHome = OSDependent.getOODefaultPath();
 			}

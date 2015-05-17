@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -184,10 +183,14 @@ public class DocumentEditor extends Editor<Document> {
     @Translation
     protected Messages msg;
 
+    @Inject
     private IEclipseContext context;
 
     @Inject
     private Logger log;
+
+    @Inject
+    private IPreferenceStore preferences;
 
 	// This UniDataSet represents the editor's input
 	private Document document;
@@ -211,9 +214,6 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private TextsDAO textsDAO;
-
-    @Inject
-    private IPreferenceStore preferences;
     
     /**
      * the model factory
@@ -312,6 +312,7 @@ public class DocumentEditor extends Editor<Document> {
     private DocumentItemListTable itemListTable;
     private CurrencyUnit currencyUnit;
     private DocumentSummary documentSummary;
+    private ContactUtil contactUtil;
 	
 //	/**
 //	 * Constructor
@@ -419,7 +420,6 @@ public class DocumentEditor extends Editor<Document> {
 		// delivery address
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
-		ContactUtil contactUtil = ContactUtil.getInstance(preferences);
 		if (documentType == DocumentType.DELIVERY) {
             if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
@@ -590,19 +590,16 @@ public class DocumentEditor extends Editor<Document> {
 		if(documentType.equals(DocumentType.INVOICE)) {
 		    documentsDAO.updateInvoiceReferences((Invoice) document);
 		
-		// Update the references in the delivery notes
-		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
+    		// Update the references in the delivery notes
+    		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
 		}
 		importedDeliveryNotes.clear();
-
-		SortedSet<DocumentItem> items = new TreeSet<>(new Comparator<DocumentItem>() {
-		    @Override
-		    public int compare(DocumentItem o1, DocumentItem o2) {
-		        return o1.getPosNr().compareTo(o2.getPosNr());
-		    }
-        });
 		
-		itemListTable.getDocumentItemsListData().forEach(item -> items.add(item.getDocumentItem()));
+		List<DocumentItem> items = itemListTable.getDocumentItemsListData()
+		    .stream()
+		    .map(dto -> dto.getDocumentItem())
+		    .sorted(Comparator.comparing(DocumentItem::getPosNr))
+		    .collect(Collectors.toList());
 		document.setItems(new ArrayList<>(items));
 
 		// Set the "addressfirstline" value to the first line of the
@@ -686,10 +683,10 @@ public class DocumentEditor extends Editor<Document> {
     @PostConstruct
     public void init(Composite parent) {
         this.part = (MPart) parent.getData("modelElement");
-        this.context = part.getContext();
-        //context.get(EMenuService.class);
+//        this.context = part.getContext();
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
-        currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+        this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
                 
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
@@ -823,7 +820,6 @@ public class DocumentEditor extends Editor<Document> {
             }
         }
 
-		ContactUtil contactUtil = ContactUtil.getInstance(preferences);
         billingAddress = contactUtil.getAddressAsString(document.getContact());
 		deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 
@@ -1299,7 +1295,6 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	private void setAddress(Contact contact) {
 		// Use delivery address, if it's a delivery note
-	    ContactUtil contactUtil = ContactUtil.getInstance(preferences);
 		if (documentType == DocumentType.DELIVERY) {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact.getDeliveryContacts()));
 		} else {
@@ -1742,9 +1737,9 @@ public class DocumentEditor extends Editor<Document> {
 		// The address field
 		txtAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		if (documentType == DocumentType.DELIVERY) {
-			txtAddress.setText(ContactUtil.getInstance(preferences).getAddressAsString(document.getDeliveryContact()));
+			txtAddress.setText(contactUtil.getAddressAsString(document.getDeliveryContact()));
 		} else {
-			txtAddress.setText(ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()));
+			txtAddress.setText(contactUtil.getAddressAsString(document.getContact()));
 		}
 		
 		/*
@@ -1761,7 +1756,7 @@ public class DocumentEditor extends Editor<Document> {
             
             @Override
             public void modifyText(ModifyEvent e) {
-//		        if(!ContactUtil.getInstance(preferences).getAddressAsString(document.getContact()).contentEquals(txtAddress.getText())) {
+//		        if(!contactUtil.getAddressAsString(document.getContact()).contentEquals(txtAddress.getText())) {
 //		            document.setManualAddress(txtAddress.getText());
 //		            document.setContact(null);
 		            getMDirtyablePart().setDirty(true);
@@ -2384,7 +2379,7 @@ public class DocumentEditor extends Editor<Document> {
                 document.setManualAddress(null);
                 document.setContact(contact);
                 addressId = contact;
-                txtAddress.setText(ContactUtil.getInstance(preferences).getAddressAsString(contact));
+                txtAddress.setText(contactUtil.getAddressAsString(contact));
                 getMDirtyablePart().setDirty(true);
                 break;
             case "Product":

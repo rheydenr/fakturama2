@@ -14,6 +14,9 @@
 
 package com.sebulli.fakturama.misc;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.eclipse.swt.SWT;
 
 /**
@@ -104,18 +107,19 @@ public class OSDependent {
 	 *            of the OpenOffice folder
 	 * @return Full Path of the the binary.
 	 */
-	public static String getOOBinary(String path) {
+	public static Path getOOBinary(String path) {
+	    Path retval = null;
 
 		if (isMacOSX())
-			return path + "/Contents/MacOS/soffice";
+			retval = Paths.get(path, "/Contents/MacOS/soffice");
 
 		if (isLinux())
-			return path + "/program/soffice";
+		    retval = Paths.get(path, "/program/soffice");
 
 		if (isWin())
-			return path + "\\program\\soffice.exe";
+		    retval = Paths.get(path, "\\program\\soffice.exe");
 
-		return "";
+		return retval;
 	}
 
 	/**

@@ -5,36 +5,33 @@ package com.sebulli.fakturama.util;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Document;
 
 /**
  * Utility class for some additional useful methods for the {@link Contact}s.
  *
  */
+@Singleton
 public class ContactUtil {
     
+    @Inject
+    @Translation
+    protected Messages msg;
+
+    @Inject
 	private IPreferenceStore eclipsePrefs;
-	private static ContactUtil instance;
-
-    /**
-     * hidden constructor
-     */
-    private ContactUtil(IPreferenceStore eclipsePrefs) {
-        this.eclipsePrefs = eclipsePrefs;
-    }
-
-	public static ContactUtil getInstance(IPreferenceStore eclipsePrefs) {
-		if(instance == null) {
-		    instance = new ContactUtil(eclipsePrefs);
-		}
-		return instance;
-	}
 
 	/**
      * the name of the company (if any) and the name of the contact
@@ -74,9 +71,86 @@ public class ContactUtil {
 
         return line;
     }
+
+
+    /**
+     * Get the gender String
+     * 
+     * @return Gender as String
+     */
+    public String getGenderString(Contact contact) {
+        return getGenderString(contact.getGender());
+    }
+
+    /**
+     * Get the name with gender String
+     * @return Gender and name as String
+     */
+    public String getNameWithGenderString(Contact contact) {
+        String genderString = "";
+
+        genderString = getGenderString(contact);
+        if (!genderString.isEmpty())
+            genderString+=" ";
+
+        return genderString + contact.getName();
+    }
     
     
-	/**
+    /**
+     * Get the gender String by the gender number
+     * 
+     * @param i
+     *            Gender number
+     * @return Gender as string
+     */
+    public String getGenderString(int i) {
+        return getGenderString(i, true);
+    }
+
+
+    /**
+     * Get the gender String by the gender number
+     * 
+     * @param i
+     *            Gender number
+     * @param translate
+     *            <code>true</code> if the string should be translated
+     * @return Gender as string
+     */
+    public String getGenderString(int i, boolean translate) {
+        switch (i) {
+        case 0:
+            return "---";
+        case 1:
+            return msg.contactFieldMrName;
+        case 2:
+            return msg.contactFieldMsName;
+        case 3:
+            return msg.commonFieldCompany;
+        }
+        return "";
+    }
+
+    /**
+     * Get the gender number by the string
+     * 
+     * @param s
+     *          Gender string
+     * @return
+     *          The number
+     */
+    public int getGenderID(String s) {
+        // Test all strings
+        for (int i = 0;i < 4 ; i++) {
+            if (getGenderString(i,false).equalsIgnoreCase(s)) return i;
+            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+        }
+        // Default = "---"
+        return 0;
+    }
+
+    /**
 	 * Get the address
 	 *
 	 * @return Complete address
@@ -93,7 +167,7 @@ public class ContactUtil {
     		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
     		String[] hideCountries = hideCountriesString.split(",");
     		for (String hideCountry : hideCountries) {
-    			if (StringUtils.defaultString(contact.getAddress().getCountry()).equalsIgnoreCase(hideCountry)) {
+    			if (StringUtils.defaultString(contact.getAddress().getCountryCode()).equalsIgnoreCase(hideCountry)) {
     				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
     			}
     		}
@@ -140,10 +214,10 @@ public class ContactUtil {
 			formatString = replaceAllWithSpace(formatString, "\\{city\\}", address.getCity());
 			
 			// determine the country from country code
-			Locale cLocale = new Locale.Builder().setRegion(address.getCountry()).build();
+			Locale cLocale = new Locale.Builder().setRegion(address.getCountryCode()).build();
 			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
 	
-			String countrycode = StringUtils.defaultString(address.getCountry());
+			String countrycode = StringUtils.defaultString(address.getCountryCode());
 	
 			if (!countrycode.isEmpty()) {
 				countrycode += "-";
@@ -189,6 +263,40 @@ public class ContactUtil {
 
 		return greeting;
 	}
+	
+    /**
+     * Returns <code>true</code> if billing and delivery address are equal
+     * 
+     * @return
+     *  <code>true</code>, if both are equal
+     */
+    public Boolean deliveryAddressEqualsBillingAddress(Document document) {
+        String billingAddress;
+        String deliveryAddress = document.getManualDeliveryAddress();
+        if(document.getContact() != null) {
+            billingAddress = getAddressAsString(document.getContact());
+        } else {
+            billingAddress = document.getManualAddress();
+        }
+        if(document.getDeliveryContact() != null) {
+            deliveryAddress = getAddressAsString(document.getDeliveryContact());
+        } else {
+            deliveryAddress = document.getManualDeliveryAddress();
+        }
+
+//        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
+//        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
+//        if (!oldContact.getDeliveryFirstname().equals(oldContact.getFirstname())) { return false; }
+//        if (!oldContact.getDeliveryName().equals(oldContact.getName())) { return false; }
+//        if (!oldContact.getDeliveryCompany().equals(oldContact.getCompany())) { return false; }
+//        if (!oldContact.getDeliveryStreet().equals(oldContact.getStreet())) { return false; }
+//        if (!oldContact.getDeliveryZip().equals(oldContact.getZip())) { return false; }
+//        if (!oldContact.getDeliveryCity().equals(oldContact.getCity())) { return false; }
+//        if (!oldContact.getDeliveryCountry().equals(oldContact.getCountry())) { return false; }
+//        
+        return deliveryAddress.equalsIgnoreCase(billingAddress);
+    }
+	
 
 	/**
 	 * Return a common greeting string.

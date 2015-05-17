@@ -10,12 +10,9 @@ import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -38,7 +35,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
@@ -67,7 +63,6 @@ public class CoolbarViewPart {
 	private EHandlerService handlerService;
 
     @Inject
-    @Preference(value=InstanceScope.SCOPE)
     private IPreferenceStore preferences;
 	
 	@Inject
@@ -96,10 +91,6 @@ public class CoolbarViewPart {
 	 */
 	@PostConstruct
 	public void createControls(Composite parent) {
-        
-        //FIXME ugly hack
-        this.preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
-
 	    this.top = parent;
 	    // now lets create our CoolBar
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);

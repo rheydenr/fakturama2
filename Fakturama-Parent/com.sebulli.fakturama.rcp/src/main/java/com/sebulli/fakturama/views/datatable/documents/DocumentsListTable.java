@@ -17,6 +17,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -25,7 +27,6 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -112,7 +113,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     protected static final String POPUP_ID = "com.sebulli.fakturama.document.popup";
 
     @Inject
-    private IPreferenceStore preferences;
+    private IEclipseContext context;
 
     private EventList<Document> documentListData;
     private EventList<DummyStringCategory> categories;
@@ -157,7 +158,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 );
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
-        contactUtil = ContactUtil.getInstance(preferences);            
+        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         
         return top;
     }

@@ -22,6 +22,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the company settings
@@ -30,70 +31,6 @@ import com.sebulli.fakturama.i18n.Messages;
  */
 public class YourCompanyPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_CREDITORID = "YOURCOMPANY_CREDITORID";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BIC = "YOURCOMPANY_COMPANY_BIC";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_IBAN = "YOURCOMPANY_COMPANY_IBAN";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BANK = "YOURCOMPANY_COMPANY_BANK";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE = "YOURCOMPANY_COMPANY_TAXOFFICE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_VATNR = "YOURCOMPANY_COMPANY_VATNR";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE = "YOURCOMPANY_COMPANY_WEBSITE";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_EMAIL = "YOURCOMPANY_COMPANY_EMAIL";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_FAX = "YOURCOMPANY_COMPANY_FAX";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_TEL = "YOURCOMPANY_COMPANY_TEL";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY = "YOURCOMPANY_COMPANY_COUNTRY";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_CITY = "YOURCOMPANY_COMPANY_CITY";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_ZIP = "YOURCOMPANY_COMPANY_ZIP";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_STREET = "YOURCOMPANY_COMPANY_STREET";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_OWNER = "YOURCOMPANY_COMPANY_OWNER";
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_NAME = "YOURCOMPANY_COMPANY_NAME";
     @Inject
     @Translation
     protected Messages msg;
@@ -117,52 +54,52 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.YOUR_COMPANY_PREFERENCE_PAGE);
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_NAME, msg.preferencesYourcompanyName, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, msg.preferencesYourcompanyName, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_OWNER, msg.preferencesYourcompanyOwner, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, msg.preferencesYourcompanyOwner, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_STREET, msg.preferencesYourcompanyStreet, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, msg.preferencesYourcompanyStreet, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_ZIP, msg.commonFieldZipcode, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, msg.commonFieldZipcode, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_CITY, msg.commonFieldCity, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, msg.commonFieldCity, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, msg.commonFieldCountry, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, msg.commonFieldCountry, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_TEL, msg.exporterDataTelephone, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TEL, msg.exporterDataTelephone, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_FAX, msg.exporterDataTelefax, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_FAX, msg.exporterDataTelefax, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, msg.exporterDataEmail, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, msg.exporterDataEmail, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, msg.exporterDataWebsite, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, msg.exporterDataWebsite, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_VATNR, msg.preferencesYourcompanyVatno, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, msg.preferencesYourcompanyVatno, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, msg.preferencesYourcompanyTaxoffice, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, msg.preferencesYourcompanyTaxoffice, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_BANK, msg.preferencesYourcompanyBankname, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, msg.preferencesYourcompanyBankname, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_IBAN, msg.exporterDataIban, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN, msg.exporterDataIban, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_COMPANY_BIC, msg.exporterDataBic, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, msg.exporterDataBic, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(PREFERENCES_YOURCOMPANY_CREDITORID, msg.preferencesYourcompanyCreditorid, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, msg.preferencesYourcompanyCreditorid, getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -180,24 +117,24 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_NAME, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_OWNER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_STREET, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_ZIP, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_CITY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_TEL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_FAX, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_VATNR, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TEL, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_FAX, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, write);
 //		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR, write);
 //		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANK, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_IBAN, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BIC, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_CREDITORID, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, write);
 	}
 
     /**

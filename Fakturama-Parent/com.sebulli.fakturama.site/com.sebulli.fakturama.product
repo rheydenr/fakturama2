@@ -28,8 +28,8 @@
       startupMessageRect="5,5,500,300"
       startupForegroundColor="FFFFFF" />
    <launcher name="Fakturama">
-      <linux icon="/Fakturama-Parent/com.sebulli.fakturama.site/app/app_256.xpm"/>
-      <macosx icon="/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns"/>
+      <linux icon="app/app_256.xpm"/>
+      <macosx icon="app/app.icns"/>
       <solaris/>
       <win useIco="false">
          <bmp
@@ -41,6 +41,7 @@
             winLargeLow="app/app_48_8.bmp"/>
       </win>
    </launcher>
+
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>

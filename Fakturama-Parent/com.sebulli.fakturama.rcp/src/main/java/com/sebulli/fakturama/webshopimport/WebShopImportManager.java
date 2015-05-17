@@ -66,6 +66,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
@@ -143,7 +144,10 @@ public class WebShopImportManager {
     
     @Inject
     private IPreferenceStore preferences;
-    
+
+    @Inject
+    private IEclipseContext context;
+
     @Inject
     private VatsDAO vatsDAO;
     
@@ -724,7 +728,7 @@ public class WebShopImportManager {
          * @throws SQLException 
          */
         private void createOrderFromXMLOrderNode(OrderType order, String lang) throws SQLException {
-        	ContactUtil contactUtil = ContactUtil.getInstance(preferences);   			
+        	ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);   			
         	
     		// Order data
     		String webshopId;
@@ -802,7 +806,7 @@ public class WebShopImportManager {
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
-            address.setCountry(countryCode);
+            address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
             contactItem = contactsDAO.findOrCreate(contactItem);
@@ -813,7 +817,7 @@ public class WebShopImportManager {
             deliveryAddress.setZip(contact.getDeliveryZip());
             deliveryAddress.setCity(contact.getDeliveryCity());
             countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getDeliveryCountry());
-            deliveryAddress.setCountry(countryCode);
+            deliveryAddress.setCountryCode(countryCode);
             
             // if delivery contact is equal to main contact we don't need to persist it
             if (!address.isSameAs(deliveryAddress) 

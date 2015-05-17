@@ -14,7 +14,8 @@
 
 package com.sebulli.fakturama.office;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.sebulli.fakturama.misc.OSDependent;
 
@@ -33,44 +34,8 @@ public class OfficeStarter {
 	 * @return TRUE, if it exists.
 	 */
 	static public boolean isValidPath(String preferencePath) {
-		File file = new File(OSDependent.getOOBinary(preferencePath));
-		return file.isFile();
-	}
-
-	/**
-	 * Get the path of the OpenOffice installation 
-	 * 
-	 * @return
-	 */
-	static public String getHome () {
-		
-		// Return an empty string, if no OpenOffice was found
-		String home = "";
-		
-		OfficeHomeApplication r = new OfficeHomeApplication();
-		
-		// Start the search in a new thread
-		Thread thread = new Thread(r);
-		thread.start();
-
-		synchronized( OfficeStarter.class )
-		{
-			try {
-				// Search maximum 10 seconds
-				for (int i = 0; i < 100 && (r.getHome() == null); i++ ) {
-					OfficeStarter.class.wait(100);
-				}
-			}
-			catch (InterruptedException e) {
-			}
-		}
-		
-		// Get the home folder, and at least an empty string
-		home = r.getHome();
-		if (home == null)
-			home ="";
-		
-		return home;
+		Path file = OSDependent.getOOBinary(preferencePath);
+		return file != null && Files.exists(file);
 	}
 
 	

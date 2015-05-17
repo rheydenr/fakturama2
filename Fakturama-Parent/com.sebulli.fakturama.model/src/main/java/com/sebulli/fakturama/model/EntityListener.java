@@ -12,7 +12,11 @@ public class EntityListener {
 
     @PrePersist
     public void aboutToInsert(IEntity document) {
-        document.setDateAdded(Date.from(Instant.now()));
+        // sometimes we have to overtake an old date (esp. while migrating old data),
+        // therefore we have to check if dateAdded is set before
+        if(document.getDateAdded() == null) {
+            document.setDateAdded(Date.from(Instant.now()));
+        }
 //        document.setModifiedBy((String) EntityListener.currentUser.get());
         document.setModifiedBy(currentUser);
     }

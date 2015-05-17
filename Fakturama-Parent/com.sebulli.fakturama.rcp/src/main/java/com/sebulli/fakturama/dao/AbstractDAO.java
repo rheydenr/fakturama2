@@ -29,6 +29,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -135,6 +137,7 @@ em.joinTransaction();
         TypedQuery<T> query = getEntityManager().createQuery(cq);
         if(forceRead) {
             query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//            query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
         }
         return query.getResultList();
     }

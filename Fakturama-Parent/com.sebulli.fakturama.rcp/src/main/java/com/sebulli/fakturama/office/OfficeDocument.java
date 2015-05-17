@@ -14,24 +14,39 @@
 
 package com.sebulli.fakturama.office;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
-//
-//import java.awt.image.BufferedImage;
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.FileOutputStream;
-//import java.io.IOException;
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//import java.util.Properties;
-//import java.util.regex.Matcher;
-//
-//import javax.imageio.ImageIO;
-//
-//import org.eclipse.swt.widgets.Display;
-//
+
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.regex.Matcher;
+
+import javax.imageio.ImageIO;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
+import org.eclipse.swt.widgets.Display;
+
 //import ag.ion.bion.officelayer.application.IOfficeApplication;
 //import ag.ion.bion.officelayer.application.OfficeApplicationException;
 //import ag.ion.bion.officelayer.desktop.GlobalCommands;
@@ -82,17 +97,30 @@ import com.sebulli.fakturama.model.Document;
  * @author Gerd Bartelt
  */
 public class OfficeDocument {
-//
-//	// The UniDataSet document, that is used to fill the OpenOffice document 
-//	private DataSetDocument document;
-//
+
+	// The UniDataSet document, that is used to fill the OpenOffice document 
+	private Document document;
+
 //	// The UniDataSet contact of the document
 //	//	private DataSetContact contact;
-//
-//	// A list of properties that represents the placeholders of the
-//	// OpenOffice Writer template
-//	private Properties properties;
-//
+
+	// A list of properties that represents the placeholders of the
+	// OpenOffice Writer template
+	private Properties properties;
+    
+    @Inject
+    private IPreferenceStore preferences;
+
+    @Inject
+    protected IEclipseContext context;
+
+    @Inject
+    private Logger log;
+
+    @Inject
+    @Translation
+    protected Messages msg;
+
 //	// OpenOffice objects
 //	private IOfficeApplication officeApplication;
 //	private IDocument oOdocument;
@@ -100,145 +128,75 @@ public class OfficeDocument {
 //	private IFrame officeFrame;
 //
 //	private ITextFieldService textFieldService;
-//
-//	// Template name
-//	private String template;	
-//	
-//	private ArrayList<String> allPlaceholders;
-//	
-//	// View with all documents
-//	private ViewDataSetTable documentView;
-//	
-//	/**
-//	 * Constructor Create a new OpenOffice document. Open it by using a template
-//	 * and replace the placeholders with the UniDataSet document
-//	 * 
-//	 * @param document
-//	 *            The UniDataSet document that will be converted to an
-//	 *            OpenOffice Writer document
-//	 * @param template
-//	 *            OpenOffice template file name
-//	 */
-//	public OfficeDocument(DataSetDocument document, String template, boolean forceRecreation, ViewDataSetTable documentView) {
-//
-//		// Set a reference to the documents view
-//		this.documentView = documentView;
-//		
-//		// URL of the template file
-//		String url = null;
-//		this.template = template;
-//		//Open an existing document instead of creating a new one
-//		boolean openExisting = false;
-//
-//		// Set a reference to the UniDatSet document
-//		this.document = document;
-//
-//		// Try to generate the OpenOffice document
-//		try {
-//
-//			// Get the OpenOffice application
-//			officeApplication = OfficeStarter.openOfficeApplication();
-//			if (officeApplication == null)
-//				return;
-//			
-//			// Check, whether there is already a document then do not 
-//			// generate one by the data, but open the existing one.
-//			if (testOpenAsExisting(document, template) && !forceRecreation) {
-//				openExisting = true;
-//				template = FileOrganizer.getDocumentPath(
-//						FileOrganizer.WITH_FILENAME,
-//						FileOrganizer.WITH_EXTENSION,
-//						FileOrganizer.ODT,
-//						document);
-//			}
-//			
-//			// Get the template file (*ott)
-//			try {
-//				url = URLAdapter.adaptURL(template);
-//			}
-//			catch (Exception e) {
-//				Logger.logError(e, "Error in template filename:" + template);
-//			}
-//
-//			//Workaround for a NOA problem
-//			Thread.sleep(200);
-//
-//			// Load the template
-//			oOdocument = officeApplication.getDocumentService().loadDocument(url);
-//			textDocument = (ITextDocument) oOdocument;
-//
-//			// Bring the open office window on top.
-//			officeFrame = textDocument.getFrame();
-//			XFrame xFrame = officeFrame.getXFrame();
-//			XTopWindow topWindow = (XTopWindow) UnoRuntime.queryInterface(XTopWindow.class, xFrame.getContainerWindow());
-//			topWindow.toFront();
-//			xFrame.activate();
-//
-//			// Override the "SAVE" command of the OpenOffice application
-//			officeFrame.addDispatchDelegate(GlobalCommands.SAVE, new IDispatchDelegate() {
-//
-//				@Override
-//				public void dispatch(Object[] objects) {
-//
-//					// Save the document as *.odt and *.pdf
-//					saveOODocument(textDocument);
-//
-//				}
-//
-//			});
-//			officeFrame.updateDispatches();
-//
-//			// Stop here and do not fill the document's placeholders, if it's an existing document
-//			if (openExisting)
-//				return;
-//
-//			// Recalculate the sum of the document before exporting
-//			this.document.calculate();
-//
-//			
-//			// Get the placeholders of the OpenOffice template
-//			textFieldService = textDocument.getTextFieldService();
-//			ITextField[] placeholders = textFieldService.getPlaceholderFields();
-//
-//			// Create a new ArrayList with all placeholders
-//			allPlaceholders = new ArrayList<String>();
-//
-//			// This is a workaroud for a NOA problem.
-//			// Scan max. 10 times, until all placeholders are with a name
-//			boolean emptyPlaceholders;
-//			int i_emptyPHsearch = 0;
-//			do{
-//				textFieldService = textDocument.getTextFieldService();
-//				placeholders = textFieldService.getPlaceholderFields();
-//
-//				emptyPlaceholders = false;
-//				
-//				// Scan all placeholders to find the item and the vat table
-//				for (ITextField placeholder : placeholders) {
-//					
-//					// Is there an empty placeholder ?
-//					if (placeholder.getDisplayText().isEmpty())
-//						emptyPlaceholders = true;
-//				}
-//
-//				//If there was an empty placeholder, wait and repeat
-//				if (emptyPlaceholders)
-//					Thread.sleep(500);
-//				
-//				i_emptyPHsearch++;
-//			} while (emptyPlaceholders && (i_emptyPHsearch<10));
-//
-//			//System.out.println("Search for empty Placeholders:" + i_emptyPHsearch);
-//			// JOptionPane.showMessageDialog(null,"Infozeichen","Titel", JOptionPane.INFORMATION_MESSAGE);
-//			
+
+	// Template name
+	private Path template;	
+	
+	private ArrayList<String> allPlaceholders;
+
+    private DocumentSummary documentSummary;
+
+    private Placeholders placeholders;
+    
+    public OfficeDocument() {}
+	
+	/**
+	 * Constructor Create a new OpenOffice document. Open it by using a template
+	 * and replace the placeholders with the UniDataSet document
+	 * 
+	 * @param document
+	 *            The UniDataSet document that will be converted to an
+	 *            OpenOffice Writer document
+	 * @param template
+	 *            OpenOffice template file name
+	 */
+    @Deprecated
+	public OfficeDocument(Document document, final Path template) {
+	    this.document = document;
+	    this.template = template;
+	}
+	
+	public void createDocument(boolean forceRecreation) {
+        FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, context);
+        placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+		//Open an existing document instead of creating a new one
+		boolean openExisting = false;
+
+		// Try to generate the OpenOffice document
+		try {
+			
+			// Check whether there is already a document then do not 
+			// generate one by the data, but open the existing one.
+			if (testOpenAsExisting(document, template) && !forceRecreation) {
+				openExisting = true;
+				template = fo.getDocumentPath(
+						FileOrganizer.WITH_FILENAME,
+						FileOrganizer.WITH_EXTENSION,
+						FileOrganizer.ODT,
+						document);
+			}
+
+			// Stop here and do not fill the document's placeholders, if it's an existing document
+			if (openExisting)
+				return;
+
+            // Recalculate the sum of the document before exporting
+			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+
+            // Get the placeholders of the OpenOffice template
+//            ITextField[] placeholders = textFieldService.getPlaceholderFields();
+
+            // Create a new ArrayList with all placeholders
+			allPlaceholders = new ArrayList<>();
+
 //			for (ITextField placeholder : placeholders) {
 //				// Collect all placeholders
 //				allPlaceholders.add(placeholder.getDisplayText());
 //			}
-//			
-//			// Fill the property list with the placeholder values
-//			properties = new Properties();
-//			setCommonProperties();
+			
+			// Fill the property list with the placeholder values
+			properties = new Properties();
+			setCommonProperties();
 //
 //			// A reference to the item and vat table
 //			ITextTable itemsTable = null;
@@ -425,47 +383,11 @@ public class OfficeDocument {
 //
 //			//officeAplication.deactivate();
 //
-//		}
-//		catch (Exception e) {
-//			Logger.logError(e, "Error starting OpenOffice from " + url);
-//		}
-//	}
-//
-//	/**
-//	 * Close the connection to the OpenOffice Document
-//	 */
-//	public void close() {
-//
-//		// Remove the SAVE dispatcher
-//		if (officeFrame != null)
-//			officeFrame.removeDispatchDelegate(GlobalCommands.SAVE);
-//
-//		// Close only open document
-//		if (oOdocument != null && oOdocument.isOpen())
-//			oOdocument.close();
-//		
-//		// Get the remaining documents
-//		int remainingDocuments = 0;
-//		
-//		try {
-//			remainingDocuments = officeApplication.getDocumentService().getCurrentDocuments().length;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		// Close the OpenOffice document
-//		try {
-//			if (officeApplication != null)
-//				if (remainingDocuments == 0 ) {
-//					officeApplication.deactivate();
-//				}
-//		}
-//		catch (OfficeApplicationException e) {
-//			Logger.logError(e, "Error closing OpenOffice");
-//		}
-//	}
-//
+		}
+		catch (Exception e) {
+		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
+		}
+	}
 //
 //	/**
 //	 * Save an OpenOffice document as *.odt and as *.pdf
@@ -641,43 +563,43 @@ public class OfficeDocument {
 //			}
 //		}
 //	}
-//
-//	/**
-//	 * Add a user text field to the OpenOffice document
-//	 * 
-//	 * @param key
-//	 *            The key of the user text field
-//	 * @param value
-//	 *            The value of the user text field
-//	 */
-//	private void addUserTextField(String key, String value) {
-//
-//		if (value == null)
-//			return;
+
+	/**
+	 * Add a user text field to the OpenOffice document
+	 * 
+	 * @param key
+	 *            The key of the user text field
+	 * @param value
+	 *            The value of the user text field
+	 */
+	private void addUserTextField(String key, String value) {
+
+		if (value == null)
+			return;
 //		
 //		try {
 //			textFieldService.addUserTextField(key, value);
 //		}
 //		catch (TextException e) {
 //		}
-//	}
-//
-//	/**
-//	 * Add a user text field to the OpenOffice document The key contains an
-//	 * additional index.
-//	 * 
-//	 * @param key
-//	 *            The key of the user text field
-//	 * @param value
-//	 *            The value of the user text field
-//	 * @param i
-//	 *            Additional index, added to the key
-//	 */
-//	private void addUserTextField(String key, String value, int i) {
-//		key = key + "." + Integer.toString(i);
-//		addUserTextField(key, value);
-//	}
-//
+	}
+
+	/**
+	 * Add a user text field to the OpenOffice document The key contains an
+	 * additional index.
+	 * 
+	 * @param key
+	 *            The key of the user text field
+	 * @param value
+	 *            The value of the user text field
+	 * @param i
+	 *            Additional index, added to the key
+	 */
+	private void addUserTextField(String key, String value, int i) {
+		key = key + "." + Integer.toString(i);
+		addUserTextField(key, value);
+	}
+
 //	/**
 //	 * Fill the cell of the VAT table with the VAT data
 //	 * 
@@ -766,20 +688,6 @@ public class OfficeDocument {
 //			}
 //		}
 //
-//	}
-//
-//	/**
-//	 * Converts all \r\n to \n
-//	 * \r\n are Generated by SWT text controls on a windows system.
-//	 * 
-//	 * @param s
-//	 * 		The string to convert
-//	 * @return
-//	 * 		The converted string
-//	 */
-//	private String convertCRLF2LF(String s){
-//		s = s.replaceAll("\\r\\n", "\n");
-//		return s;
 //	}
 //	
 //	/**
@@ -1040,70 +948,64 @@ public class OfficeDocument {
 //		// Writer document.
 //		addUserTextField(key, value, index);
 //	}
-//
-//	/**
-//	 * Set a property and add it to the user defined text fields in the
-//	 * OpenOffice Writer document.
-//	 * 
-//	 * @param key
-//	 *            The property key
-//	 * @param value
-//	 *            The property value
-//	 */
-//	private void setProperty(String key, String value) {
-//
-//		if (key == null)
-//			return;
-//
-//		if (value == null)
-//			return;
-//		
-//		// Convert CRLF to LF 
-//		value = convertCRLF2LF(value);
-//		
-//		// Set the user defined text field
-//		addUserTextField(key, value);
-//		
-//		// Extract parameters
-//		for (String placeholder : allPlaceholders) {
-//			if ( (placeholder.equals("<" + key+">")) || 
-//					( (placeholder.startsWith("<" + key+"$")) && (placeholder.endsWith(">")) ) ) {
-//
-//				// Set the placeholder
-//				properties.setProperty(placeholder.toUpperCase(), Placeholders.interpretParameters(placeholder, value));
-//			}
-//		}
-//		
-//	}
-//	
-//	/**
-//	 * Set a common property
-//	 * 
-//	 * @param key
-//	 * 	Name of the placeholder
-//	 */
-//	private void setCommonProperty(String key) {
-//		setProperty(key,Placeholders.getDocumentInfo( document, key) );
-//		
-//	}
-//	
-//	
-//	/**
-//	 * Fill the property list with the placeholder values
-//	 */
-//	private void setCommonProperties() {
-//
-//		if (document == null)
-//			return;
-//		
-//		document.calculate();
-//
-//		// Get all placeholders and set them
-//		for (String placeholder: Placeholders.getPlaceholders()) {
-//			setCommonProperty(placeholder);
-//		}
-//
-//	}
+
+	/**
+	 * Set a property and add it to the user defined text fields in the
+	 * OpenOffice Writer document.
+	 * 
+	 * @param key
+	 *            The property key
+	 * @param value
+	 *            The property value
+	 */
+	private void setProperty(String key, String value) {
+
+		if (key == null || value == null)
+			return;
+		
+		// Convert CRLF to LF 
+		value = DataUtils.getInstance().convertCRLF2LF(value);
+		
+		// Set the user defined text field
+		addUserTextField(key, value);
+		
+		// Extract parameters
+		for (String placeholder : allPlaceholders) {
+			if ( (placeholder.equals("<" + key+">")) || 
+					( (placeholder.startsWith("<" + key+"$")) && (placeholder.endsWith(">")) ) ) {
+
+				// Set the placeholder
+				properties.setProperty(placeholder.toUpperCase(), placeholders.interpretParameters(placeholder, value));
+			}
+		}
+	}
+	
+	/**
+	 * Set a common property
+	 * 
+	 * @param key
+	 * 	Name of the placeholder
+	 */
+	private void setCommonProperty(String key) {
+		setProperty(key,placeholders.getDocumentInfo( document, documentSummary, key) );
+	}
+	
+	
+	/**
+	 * Fill the property list with the placeholder values
+	 */
+	private void setCommonProperties() {
+
+		if (document == null)
+			return;
+        
+        documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+
+		// Get all placeholders and set them
+		for (String placeholder: placeholders.getPlaceholders()) {
+			setCommonProperty(placeholder);
+		}
+	}
 //
 //	/**
 //	 * Replace a placeholder with the content of the property in the property
@@ -1127,21 +1029,133 @@ public class OfficeDocument {
 //		placeholder.getTextRange().setText(text);
 //	}
 	
-	public static boolean testOpenAsExisting(Document document, Path template) {
-		// Check whether there is already a document then do not 
-		// generate one by the data, but open the existing one.
-//		File oODocumentFile = new File(FileOrganizer.getDocumentPath(
-//				FileOrganizer.WITH_FILENAME,
-//				FileOrganizer.WITH_EXTENSION, 
-//				FileOrganizer.ODT, document));
-//		
-//		if (oODocumentFile.exists() && document.getBooleanValueByKey("printed") &&
-//				DocumentFilename.filesAreEqual(document.getStringValueByKey("printedtemplate"),template)) {
-//			return true;
-//		}
+	/** 
+	 * Check whether there is already a document then do not 
+	*	generate one by the data, but open the existing one.
+	*/
+	public boolean testOpenAsExisting(Document document, Path template) {
+	    FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, context);
+		Path oODocumentFile = fo.getDocumentPath(
+				FileOrganizer.WITH_FILENAME,
+				FileOrganizer.WITH_EXTENSION, 
+				FileOrganizer.ODT, document);
 		
+		if (Files.exists(oODocumentFile) && document.getPrinted() &&
+				filesAreEqual(document.getPrintTemplate(),template)) {
+			return true;
+		}
 		return false;
-	
 	}
+	
+
+    /**
+     * Get the relative path of the template
+     * 
+     * @param doctype
+     *      The doctype defines the path
+     * @return
+     *      The path as string
+     */
+    public String getRelativeFolder(DocumentType doctype) {
+        return "/Templates/" + doctype.getTypeAsString() + "/";
+    }
+    
+    /**
+     * Get the localized relative path of the template
+     * 
+     * @param doctype
+     *      The doctype defines the path
+     * @return
+     *      The path as string
+     */
+    public String getLocalizedRelativeFolder(DocumentType doctype) {
+        return "/" + preferences.getString(Constants.GENERAL_WORKSPACE) +
+                msg.configWorkspaceTemplatesName + "/" + doctype.getTypeAsString() + "/";
+        
+    }
+    
+    /**
+     * Check if 2 filenames are equal.
+     * Test only the relative path and use the parameter "folder" to
+     * separate the relative path from the absolute one.
+     *  
+     * @param fileName1
+     * @param fileName2
+     * @param folder
+     *      The folder name to separate the relative path
+     * @return
+     *      True, if both are equal
+     */
+    public boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
+        
+        int pos;
+        String otherFileName = fileName2.toString();
+        pos = fileName1.indexOf(folder);
+        if (pos >= 0)
+            fileName1 = fileName1.substring(pos);
+
+        pos = fileName2.toString().indexOf(folder);
+        if (pos >= 0)
+            otherFileName = fileName2.toString().substring(pos);
+
+        
+        return fileName1.equals(otherFileName);
+    }
+    
+    /**
+     * Test, if 2 template filenames are equal.
+     * The absolute path is ignored
+     * 
+     * @param fileName1
+     * @param template
+     * 
+     * @return
+     *      True, if both filenames are equal
+     */
+    public boolean filesAreEqual(String fileName1, Path template) {
+        
+        // Test, if also the absolute path is equal
+        if (fileName1.equals(template))
+            return true;
+        
+        // If not, use the unlocalized folder names
+        if (filesAreEqual(fileName1,template, "/Templates/"))
+            return true;
+
+        // Use the localized folder names
+        if (filesAreEqual(fileName1,template, "/" + msg.configWorkspaceTemplatesName + "/"))
+            return true;
+        
+        return false;
+    }
+
+    /**
+     * @return the document
+     */
+    public Document getDocument() {
+        return document;
+    }
+
+    /**
+     * @param document the document to set
+     */
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    /**
+     * @return the template
+     */
+    public Path getTemplate() {
+        return template;
+    }
+
+    /**
+     * @param template the template to set
+     */
+    public void setTemplate(Path template) {
+        this.template = template;
+    }
+	
 
 }

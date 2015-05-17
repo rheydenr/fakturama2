@@ -27,7 +27,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -46,7 +47,7 @@ public class CustomerStatistics {
     private DocumentsDAO documentsDAO;
     
     @Inject
-    private IPreferenceStore preferences;
+    private IEclipseContext context;
 
 	/**
      * @param contact the contact to set
@@ -121,15 +122,9 @@ public class CustomerStatistics {
 	public void makeStatistics(boolean byID) {
 		// Get all undeleted documents
 		// Only paid invoiced from this customer will be used for the statistics
-		List<Invoice> documents;
-		if(byID) {
-			// Compare the customer ID
-		    documents = documentsDAO.findPaidInvoicesForContact(contact);
-		} else {
-		    documents = documentsDAO.findPaidInvoices();
-		}
-		
-        ContactUtil contactUtil = ContactUtil.getInstance(preferences);
+	    // Compare the customer ID
+		List<Invoice> documents = byID ? documentsDAO.findPaidInvoicesForContact(contact) : documentsDAO.findPaidInvoices();
+		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
 		// Export the document data
 		for (Invoice document : documents) {

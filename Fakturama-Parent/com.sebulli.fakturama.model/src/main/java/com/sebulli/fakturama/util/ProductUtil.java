@@ -4,6 +4,7 @@
 package com.sebulli.fakturama.util;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -15,6 +16,7 @@ import com.sebulli.fakturama.model.Product;
  * Some helpful methods for product handling
  *
  */
+@Singleton
 public final class ProductUtil {
        
     @Inject

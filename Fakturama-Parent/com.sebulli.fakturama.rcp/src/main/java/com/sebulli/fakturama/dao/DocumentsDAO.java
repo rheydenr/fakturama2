@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -13,17 +14,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -96,6 +101,22 @@ public class DocumentsDAO extends AbstractDAO<Document> {
 		CriteriaQuery<Document> cq = criteria.where(cb.equal(root.<String>get(Document_.name), name));
     	return getEntityManager().createQuery(cq).getSingleResult();
 	}
+	
+@Override
+public List<Document> findAll(boolean forceRead) {
+    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+    CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
+    Root<Document> root = criteria.from(getEntityClass());
+    CriteriaQuery<Document> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
+    TypedQuery<Document> query = getEntityManager().createQuery(cq);
+    if(forceRead) {
+        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+    }
+    return query.getResultList();
+}
+	
+
 
     /**
      * @param order
@@ -404,12 +425,14 @@ public class DocumentsDAO extends AbstractDAO<Document> {
             }
         }
 */    
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaUpdate<Delivery> criteria = cb.createCriteriaUpdate(Delivery.class);
-        Root<Delivery> root = criteria.from(Delivery.class);
-        criteria.set(Delivery_.invoiceReference, document).where(root.get(Delivery_.id).in(importedDeliveryNotes));
-        executeCriteria(criteria);
-        mergeTwoTransactions(document, importedDeliveryNotes);
+        if(!importedDeliveryNotes.isEmpty()) {
+            CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+            CriteriaUpdate<Delivery> criteria = cb.createCriteriaUpdate(Delivery.class);
+            Root<Delivery> root = criteria.from(Delivery.class);
+            criteria.set(Delivery_.invoiceReference, document).where(root.get(Delivery_.id).in(importedDeliveryNotes));
+            executeCriteria(criteria);
+            mergeTwoTransactions(document, importedDeliveryNotes);
+        }
     }
  
     /**
@@ -455,5 +478,41 @@ public class DocumentsDAO extends AbstractDAO<Document> {
                        cb.equal(root.<String>get(Document_.name), document.getName())));
         return !getEntityManager().createQuery(cq).getResultList().isEmpty();
     }
+
+    /**
+     * Search for all documents with the same number
+     * 
+     * @param transaction
+     * @return
+     */
+    public List<Document> findByTransactionId(Long transaction) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        CriteriaQuery<Document> cq = criteria.where(
+                cb.equal(root.<Long>get(Document_.transactionId), transaction));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
     
+    /**
+     * Returns a string with all documents with the same transaction
+     *  
+     * @param docType
+     *      Only those documents will be returned
+     * @return
+     *      String with the document names
+     */
+    public String getReference(Long transaction, DocumentType docType) {
+        BillingType billingType = BillingType.get(docType.getKey());
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+        Root<Document> root = criteria.from(Document.class);
+        CriteriaQuery<Document> cq = criteria.where(
+                cb.and(
+                        cb.equal(root.<BillingType>get(Document_.billingType), billingType),
+                        cb.equal(root.<Long>get(Document_.transactionId), transaction)));
+        List<Document> resultList = getEntityManager().createQuery(cq).getResultList();
+        List<String> stringList = resultList.stream().map(d -> d.getName()).collect(Collectors.toList());
+        return StringUtils.join(stringList, ",");
+    }
 }

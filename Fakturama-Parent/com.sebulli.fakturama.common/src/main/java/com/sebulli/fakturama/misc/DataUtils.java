@@ -15,13 +15,16 @@
 package com.sebulli.fakturama.misc;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -364,22 +367,22 @@ public class DataUtils {
 //        }
 //        return s;
 //    }
-//
-//    /**
-//     * Convert a double to a formated string value. 
-//     * 
-//     * @param d
-//     *            Double value to convert
-//     * @param format
-//     *            the format of the string
-//     * @return Converted value as String
-//     */
-//    public static String DoubleToDecimalFormatedValue(Double d, String format) {
-//
-//        // Format as ...
-//        DecimalFormat decimalFormat = new DecimalFormat(format);
-//        return decimalFormat.format(d);
-//    }
+
+    /**
+     * Convert a double to a formated string value. 
+     * 
+     * @param d
+     *            Double value to convert
+     * @param format
+     *            the format of the string
+     * @return Converted value as String
+     */
+    public String DoubleToDecimalFormatedValue(Double d, String format) {
+
+        // Format as ...
+        DecimalFormat decimalFormat = new DecimalFormat(format);
+        return decimalFormat.format(d);
+    }
 
     /**
      * Convert a double to a formatted price value. Same as conversion to a
@@ -779,6 +782,10 @@ public class DataUtils {
         return dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
     
+    public String getFormattedLocalizedDate(Date date) {
+        LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+    }
     
     /**
      * Convert date strings from the following format to a calendar
@@ -847,7 +854,12 @@ public class DataUtils {
 //        // And convert it back to a String value
 //        return getDateTimeAsString(calendar);
 //    }
-//
+    
+    public LocalDateTime addToDate(Date date, int days) {
+        LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return localDate.plusDays(days);
+    }
+
     /**
      * Calculates the similarity of two string.
      * 
@@ -862,64 +874,6 @@ public class DataUtils {
      */
     public double similarity(String sA, String sB) {
         return StringUtils.getJaroWinklerDistance(sA, sB);
-//        int i;
-//        int ii;
-//        int min;
-//        int codesA = sA.length() - 1;
-//        int codesB = sB.length() - 1;
-//        
-//
-//        //Empty Strings
-//        if (codesA < 0)
-//            return 0.0;
-//        if (codesB < 0)
-//            return 0.0;
-//        
-//        int codeA[] = new int[codesA];
-//        int codeB[] = new int[codesB];
-//
-//        // Scans first String. 
-//        // Generate a 16 Bit Code of two 8 Bit characters.
-//        for (i = 0; i < codesA; i++)
-//            codeA[i] = ((sA.charAt(i)) << 8) | (((sA.charAt(i) - sA.charAt(i + 1) & 0x00FF)));
-//
-//        // Scans second String. 
-//        // Generate a 16 Bit Code of two 8 Bit characters.
-//        for (i = 0; i < codesB; i++)
-//            codeB[i] = ((sB.charAt(i)) << 8) | (((sB.charAt(i) - sB.charAt(i + 1) & 0x00FF)));
-//
-//        // Count how much of the codes from the first strings are found
-//        // in the codes of the second string.
-//        int founds = 0;
-//        for (i = 0; i < codesA; i++)
-//            for (ii = 0; ii < codesB; ii++)
-//                if ((codeA[i] == codeB[ii]) && (codeA[i] != 0)) {
-//                    founds++;
-//                    ii = codesB;
-//                }
-//
-//        // Normally only 2 following characters are scanned. 
-//        // So don't forget to compare the first character of both strings
-//        if (sA.charAt(0) == sB.charAt(0))
-//            founds++;
-//
-//        // And both last characters
-//        if (sA.charAt(codesA) == sB.charAt(codesB))
-//            founds++;
-//
-//        // min. is the length of the shortest string
-//        if (codesA < codesB)
-//            min = codesA;
-//        else
-//            min = codesB;
-//
-//        // add an offset, so that two equal strings will result 1.0
-//        // codeX is length-1
-//        min += 2;
-//
-//        // Calculate the ratio of the founds and the number of characters.
-//        return ((double) founds / (double) min);
-
     }
 
 //    /**
@@ -1028,73 +982,73 @@ public class DataUtils {
         System.out.println("Date and Time: " + String.format("%1$tF %1$tT", calendar.getTime()));
     }
 
-//    
-//    /**
-//     * Replace all accented characters
-//     * 
-//     * @param s
-//     *      The string to convert
-//     * @return
-//     *      The converted string
-//     */
-//    public static String replaceAllAccentedChars(String s) {
-//        
-//        s = s.replace("À", "A");
-//        s = s.replace("Á", "A");
-//        s = s.replace("Â", "A");
-//        s = s.replace("Ã", "A");
-//        s = s.replace("Ä", "Ae");
-//        s = s.replace("â", "a");
-//        s = s.replace("ã", "a");
-//        s = s.replace("ä", "ae");
-//        s = s.replace("à", "a");
-//        s = s.replace("á", "a");
-//
-//        s = s.replace("È", "E");
-//        s = s.replace("É", "E");
-//        s = s.replace("Ê", "E");
-//        s = s.replace("Ë", "E");
-//        s = s.replace("ê", "e");
-//        s = s.replace("ë", "e");
-//        s = s.replace("è", "e");
-//        s = s.replace("é", "e");
-//
-//        s = s.replace("Ì", "I");
-//        s = s.replace("Í", "I");
-//        s = s.replace("Î", "I");
-//        s = s.replace("Ï", "I");
-//        s = s.replace("î", "i");
-//        s = s.replace("ï", "i");
-//        s = s.replace("ì", "i");
-//        s = s.replace("í", "i");
-//
-//        s = s.replace("Ò", "O");
-//        s = s.replace("Ó", "O");
-//        s = s.replace("Ô", "O");
-//        s = s.replace("Õ", "O");
-//        s = s.replace("Ö", "Oe");
-//        s = s.replace("ô", "o");
-//        s = s.replace("õ", "o");
-//        s = s.replace("ö", "oe");
-//        s = s.replace("ò", "o");
-//        s = s.replace("ó", "o");
-//
-//        s = s.replace("Ù", "U");
-//        s = s.replace("Ú", "U");
-//        s = s.replace("Û", "U");
-//        s = s.replace("Ü", "Ue");
-//        s = s.replace("û", "u");
-//        s = s.replace("ü", "ue");
-//        s = s.replace("ù", "u");
-//        s = s.replace("ú", "u");
-//
-//        s = s.replace("Ý", "Y");
-//        s = s.replace("ý", "y");
-//        s = s.replace("ñ", "n");
-//        s = s.replace("ß", "ss");
-//
-//        return s;
-//    }
+    
+    /**
+     * Replace all accented characters
+     * 
+     * @param s
+     *      The string to convert
+     * @return
+     *      The converted string
+     */
+    public String replaceAllAccentedChars(String s) {
+        
+        s = s.replace("À", "A");
+        s = s.replace("Á", "A");
+        s = s.replace("Â", "A");
+        s = s.replace("Ã", "A");
+        s = s.replace("Ä", "Ae");
+        s = s.replace("â", "a");
+        s = s.replace("ã", "a");
+        s = s.replace("ä", "ae");
+        s = s.replace("à", "a");
+        s = s.replace("á", "a");
+
+        s = s.replace("È", "E");
+        s = s.replace("É", "E");
+        s = s.replace("Ê", "E");
+        s = s.replace("Ë", "E");
+        s = s.replace("ê", "e");
+        s = s.replace("ë", "e");
+        s = s.replace("è", "e");
+        s = s.replace("é", "e");
+
+        s = s.replace("Ì", "I");
+        s = s.replace("Í", "I");
+        s = s.replace("Î", "I");
+        s = s.replace("Ï", "I");
+        s = s.replace("î", "i");
+        s = s.replace("ï", "i");
+        s = s.replace("ì", "i");
+        s = s.replace("í", "i");
+
+        s = s.replace("Ò", "O");
+        s = s.replace("Ó", "O");
+        s = s.replace("Ô", "O");
+        s = s.replace("Õ", "O");
+        s = s.replace("Ö", "Oe");
+        s = s.replace("ô", "o");
+        s = s.replace("õ", "o");
+        s = s.replace("ö", "oe");
+        s = s.replace("ò", "o");
+        s = s.replace("ó", "o");
+
+        s = s.replace("Ù", "U");
+        s = s.replace("Ú", "U");
+        s = s.replace("Û", "U");
+        s = s.replace("Ü", "Ue");
+        s = s.replace("û", "u");
+        s = s.replace("ü", "ue");
+        s = s.replace("ù", "u");
+        s = s.replace("ú", "u");
+
+        s = s.replace("Ý", "Y");
+        s = s.replace("ý", "y");
+        s = s.replace("ñ", "n");
+        s = s.replace("ß", "ss");
+
+        return s;
+    }
 
 
 }

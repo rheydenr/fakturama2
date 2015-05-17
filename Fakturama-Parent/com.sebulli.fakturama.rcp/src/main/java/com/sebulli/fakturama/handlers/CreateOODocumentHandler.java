@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -63,6 +64,9 @@ public class CreateOODocumentHandler {
     @Inject
     @Translation
     protected Messages msg;
+
+    @Inject
+    protected IEclipseContext context;
 
     @Inject
     private IPreferenceStore preferences;
@@ -106,11 +110,10 @@ public class CreateOODocumentHandler {
      * @param templatePath
      *            path which is scanned
      */
-    private void scanPathForTemplates(String templatePath) {
-        Path dir = Paths.get(templatePath);
+    private void scanPathForTemplates(Path templatePath) {
         try {
-            if(Files.exists(dir)) {
-                templates = Files.list(dir).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".ott"))
+            if(Files.exists(templatePath)) {
+                templates = Files.list(templatePath).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".ott"))
                         .sorted(Comparator.comparing((Path p) -> p.getFileName().toString().toLowerCase())).collect(Collectors.toList());
             }
         } catch (IOException e) {
@@ -142,8 +145,8 @@ public class CreateOODocumentHandler {
 //                return;
 
             String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-            String templatePath1 = workspace + getRelativeFolder(documentEditor.getDocumentType());
-            String templatePath2 = workspace + getLocalizedRelativeFolder(documentEditor.getDocumentType());
+            Path templatePath1 = Paths.get(workspace, getRelativeFolder(documentEditor.getDocumentType()));
+            Path templatePath2 = Paths.get(workspace, getLocalizedRelativeFolder(documentEditor.getDocumentType()));
 
             // Clear the list before adding new entries
             templates.clear();
@@ -166,7 +169,7 @@ public class CreateOODocumentHandler {
                             // save the document and open the exporter
                             documentEditor.doSave(null);
                             openOODocument(documentEditor.getDocument(), (Path) e.widget.getData(), shell);
-                            //								documentEditor.markAsPrinted();
+                            //	documentEditor.markAsPrinted();
                         }
                     });
                 }
@@ -197,8 +200,8 @@ public class CreateOODocumentHandler {
      *            The doctype defines the path
      * @return The path as string
      */
-    public String getRelativeFolder(DocumentType doctype) {
-        return "/Templates/" + doctype.getTypeAsString() + "/";
+    public String[] getRelativeFolder(DocumentType doctype) {
+        return new String[]{"/Templates", StringUtils.capitalize(doctype.getTypeAsString())};
     }
 
     /**
@@ -208,32 +211,35 @@ public class CreateOODocumentHandler {
      *            The doctype defines the path
      * @return The path as string
      */
-    public String getLocalizedRelativeFolder(DocumentType doctype) {
-        return "/" + msg.configWorkspaceTemplatesName + "/" + msg.getMessageFromKey(DocumentType.getString(doctype)) + "/";
+    public String[] getLocalizedRelativeFolder(DocumentType doctype) {
+        return new String[]{msg.configWorkspaceTemplatesName, msg.getMessageFromKey(DocumentType.getString(doctype))};
     }
 
     private void openOODocument(final Document document, final Path template, Shell shell) {
-
-        		if (OfficeDocument.testOpenAsExisting(document, template)) {
-        			// Show an information dialog if the document was already printed
-        		    String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL,
-                        IDialogConstants.NO_LABEL,
-                        IDialogConstants.CANCEL_LABEL };
-        		    MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, 
-        		            null, msg.dialogPrintooDocumentalreadycreated, MessageDialog.INFORMATION, dialogButtonLabels, 0);
-        		    int answer = md.open();
-        		    if(md.getReturnCode() != MessageDialog.CANCEL) {
-            			if (answer == SWT.YES)
-            			    System.out.println("open doc");
-            				// OfficeManager.INSTANCE.openOODocument(document, template, false);
-            			if (answer == SWT.NO)
-            			    System.out.println("create doc");
-            				// OfficeManager.INSTANCE.openOODocument(document, template, true);
-        		    }
-        		}
-        		else
-        		    System.out.println("open NEW doc");
-        //			OfficeManager.INSTANCE.openOODocument(document, template, false);
-
+        OfficeDocument od = ContextInjectionFactory.make(OfficeDocument.class, context);
+        if (od.testOpenAsExisting(document, template)) {
+            // Show an information dialog if the document was already printed
+            String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
+            MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, null, msg.dialogPrintooDocumentalreadycreated,
+                    MessageDialog.INFORMATION, dialogButtonLabels, 0);
+            int answer = md.open();
+            if (md.getReturnCode() != MessageDialog.CANCEL) {
+                od.setDocument(document);
+                od.setTemplate(template);
+                if (answer == SWT.YES) {
+                    System.out.println("open doc");
+                    od.createDocument(false);
+                }
+                if (answer == SWT.NO) {
+                    System.out.println("create doc");
+                    od.createDocument(true);
+                }
+            }
+        } else {
+            od.setDocument(document);
+            od.setTemplate(template);
+            System.out.println("******************* open NEW doc");
+            od.createDocument(false);
+        }
     }
 }

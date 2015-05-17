@@ -29,6 +29,8 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -184,6 +186,9 @@ public class ContactEditor extends Editor<Contact> {
     
     @Inject
     private IPreferenceStore preferences;
+    
+    @Inject
+    private IEclipseContext context;
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
@@ -312,7 +317,7 @@ public class ContactEditor extends Editor<Contact> {
 	 */
 	@PostConstruct
 	public void init(Composite parent) {
-	    contactUtil = ContactUtil.getInstance(preferences);
+	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
@@ -395,7 +400,7 @@ public class ContactEditor extends Editor<Contact> {
 	 */
 	public void createPartControl(Composite parent) {
 
-		// Some of this editos's control elements can be hidden.
+		// Some of this editors' control elements can be hidden.
 		// Get the these settings from the preference store
 		useDelivery = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY);
 		useBank = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
@@ -412,7 +417,7 @@ public class ContactEditor extends Editor<Contact> {
 		
 		Map<Integer, String> genderList = new HashMap<>();
 		for (int i = 0; i < 4; i++) {
-		    genderList.put(i, getGenderString(i));
+		    genderList.put(i, contactUtil.getGenderString(i));
 		} 
 
 		// Create the parent Composite
@@ -620,7 +625,7 @@ public class ContactEditor extends Editor<Contact> {
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
 		comboCountry.setInput(countryNames);
 		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
-		bindModelValue(editorContact, comboCountry, Contact_.address.getName() + "." + Address_.country.getName());
+		bindModelValue(editorContact, comboCountry, Contact_.address.getName() + "." + Address_.countryCode.getName());
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
 		
 		// Birthday
@@ -737,7 +742,7 @@ public class ContactEditor extends Editor<Contact> {
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
         comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
-		bindModelValue(editorContact, comboDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.country.getName());
+		bindModelValue(editorContact, comboDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday
@@ -1101,60 +1106,6 @@ public class ContactEditor extends Editor<Contact> {
 //		return !thereIsOneWithSameNumber();
 //	}
 //	
-
-    /**
-     * Get the gender String by the gender number
-     * 
-     * @param i
-     *            Gender number
-     * @return Gender as string
-     */
-    public String getGenderString(int i) {
-        return getGenderString(i, true);
-    }
-
-    /**
-     * Get the gender String by the gender number
-     * 
-     * @param i
-     *            Gender number
-     * @param translate
-     *            TRUE, if the string should be translated
-     * @return Gender as string
-     */
-    public String getGenderString(int i, boolean translate) {
-        switch (i) {
-        case 0:
-            return "---";
-        case 1:
-            //T: Gender
-            return msg.contactFieldMrName;
-        case 2:
-            //T: Gender
-            return msg.contactFieldMsName;
-        case 3:
-            return msg.commonFieldCompany;
-        }
-        return "";
-    }
-
-	/**
-	 * Get the gender number by the string
-	 * 
-	 * @param s
-	 *          Gender string
-	 * @return
-	 * 			The number
-	 */
-	public int getGenderID(String s) {
-		// Test all strings
-		for (int i = 0;i < 4 ; i++) {
-			if (getGenderString(i,false).equalsIgnoreCase(s)) return i;
-			if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
-		}
-		// Default = "---"
-		return 0;
-	}
 
 /**
  * Get the reliability String by the number

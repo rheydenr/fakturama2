@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -112,11 +113,11 @@ public class BrowserEditor {
             url = preferences.getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
-            if (url.isEmpty() || url.equals("http://www.fakturama.org/")) {
+            if (url.isEmpty() || url.equals(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)) {
                 url = "file://" +
-                    preferences.getString(Constants.GENERAL_WORKSPACE) +
-                    msg.configWorkspaceTemplatesName +  
-                    "/Start/start.html";
+                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE), "/") +
+                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
+                    "Start/start.html";
             }
         }
 
@@ -297,9 +298,9 @@ public class BrowserEditor {
 						if (urlText != null) {
 						    
 							String startUrl = "file://" +
-									preferences.getString(Constants.GENERAL_WORKSPACE) + "/" +
-									msg.configWorkspaceTemplatesName +  
-									"/Start/start.html";
+				                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE), "/") +
+				                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
+				                    "Start/start.html";
 
 							if (! browserURL.equals(startUrl)  ){
 								if (isValidURL)
@@ -322,7 +323,7 @@ public class BrowserEditor {
 						return;
 					
 					// We are back at home - remove the button (if it exists)
-					if ((browserURL.startsWith("http://www.fakturama.org") && !browserURL.startsWith("http://www.fakturama.org/mantis")) || !isValidURL || !isFakturamaProjectUrl) {
+					if ((browserURL.startsWith(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL) && !browserURL.startsWith("http://www.fakturama.org/mantis")) || !isValidURL || !isFakturamaProjectUrl) {
 
 						// Store this URL as last URL
 						lastFakturamaURL = browserURL;
@@ -369,7 +370,7 @@ public class BrowserEditor {
 	}
 	
 	/**
-	 * Go to the start page (fakturama.sebulli.com)
+	 * Go to the start page (OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)
 	 * @param url 
 	 */
 	public void resetUrl(String url) {

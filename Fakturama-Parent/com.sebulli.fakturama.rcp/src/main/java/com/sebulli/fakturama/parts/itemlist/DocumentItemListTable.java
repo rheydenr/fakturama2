@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
-import org.apache.commons.collections.BidiMap;
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -264,7 +264,7 @@ private Menu createContextMenu(NatTable natTable) {
 
         // Create the table columns 
         // get the visible properties to show in list view along with their position index
-        final BidiMap propertyNamesList = new DualHashBidiMap();
+        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
         
         if(preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
@@ -305,7 +305,6 @@ private Menu createContextMenu(NatTable natTable) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.TOTALPRICE);
         }
         
-        @SuppressWarnings("unchecked")
         List<DocumentItemListDescriptor> tmpList2 = new ArrayList<DocumentItemListDescriptor>(propertyNamesList.values());
         String[] propertyNames = tmpList2.stream().map(DocumentItemListDescriptor::getPropertyName).collect(Collectors.toList()).toArray(new String[]{});
         final IColumnPropertyAccessor<DocumentItem> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
@@ -556,7 +555,7 @@ private Menu createContextMenu(NatTable natTable) {
 
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
-        BidiMap reverseMap = propertyNamesList.inverseBidiMap();
+        BidiMap<DocumentItemListDescriptor, Integer> reverseMap = propertyNamesList.inverseBidiMap();
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.POSITION, POSITIONNUMBER_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
@@ -619,11 +618,11 @@ private Menu createContextMenu(NatTable natTable) {
      * @param cellLabel 
      * @param descriptor 
      */
-    private void registerColumnOverrides(BidiMap reverseMap, ColumnOverrideLabelAccumulator columnLabelAccumulator, 
+    private void registerColumnOverrides(BidiMap<DocumentItemListDescriptor, Integer> reverseMap, ColumnOverrideLabelAccumulator columnLabelAccumulator, 
             DocumentItemListDescriptor descriptor, String... cellLabel) {
         // it's null if the column doesn't exist (because of e.g. preferences)
         if(reverseMap.get(descriptor) != null) {
-            columnLabelAccumulator.registerColumnOverrides((Integer)reverseMap.get(descriptor), cellLabel);
+            columnLabelAccumulator.registerColumnOverrides(reverseMap.get(descriptor), cellLabel);
         }
     }
     

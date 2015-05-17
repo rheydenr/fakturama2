@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -85,6 +86,7 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
@@ -899,9 +901,30 @@ public class MigrationManager {
 			address.setStreet(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryStreet(), oldContact.getStreet()));
 			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
-			// at this stage there're no entries in CountryCode table :-(
-	//		CountryCode country = countryCodesDAO.findByLongName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry()));
-	//		address.setCountry(country);
+			// we don't have a CountryCode table :-(, therefore we have to look up in Locale classes
+			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
+			/*
+			 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
+			 * we have to look up the whole Locales  
+			 */
+			Optional<Locale> locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+			// if not found we try to find it in localized form
+	        if (!locale.isPresent()) {
+	            Locale[] availableLocales = Locale.getAvailableLocales();
+	            for (Locale locale2 : availableLocales) {
+	                // don't try to make it parallel() because then it takes longer than a single stream!
+	                locale = Arrays.stream(availableLocales)
+	                        .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(country))
+	                        .findFirst();
+	                if (locale.isPresent())
+	                    break;
+	            }
+	        }
+			if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
+			    address.setCountryCode(locale.get().getCountry());
+			} else {
+			    migLogUser.info(String.format("!!! unable to determine the country for contact number [%s]", oldContact.getNr()));
+			}
 			contact.setAddress(address);
 		}
 // else there's no delivery contact!

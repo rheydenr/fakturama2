@@ -348,9 +348,9 @@ public class Messages {
 	public String Exporter252;
 	public String Exporter255;
 
-	public String FileOrganizer151;
-	public String FileOrganizer152;
-	public String FileOrganizer153;
+    public String pathsDocumentsName;
+    public String commandReorganizeDocumentsUpdateMessage;
+    public String commandReorganizeDocumentsMessage;
 
 	public String preferencesGeneralCollapsenavbar;
 	public String preferencesGeneralCloseeditors;
