@@ -1,10 +1,13 @@
 package org.odftoolkit.simple.common.navigation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.OdfDocumentNamespace;
@@ -17,7 +20,9 @@ import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderNodeType;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderTableType;
 import org.odftoolkit.simple.table.Row;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -31,12 +36,12 @@ public class PlaceholderNavigation extends Navigation {
 	/**
 	 * This is the opening tag for a placeholder.
 	 */
-	private static final String PLACEHOLDER_PREFIX = "<";
+	public static final String PLACEHOLDER_PREFIX = "<";
 
 	/**
 	 * This is the closing tag for a placeholder.
 	 */
-	private static final String PLACEHOLDER_SUFFIX = ">";
+	public static final String PLACEHOLDER_SUFFIX = ">";
 
 	private Document mDocument;
 	private PlaceholderNode mNextSelectedItem;
@@ -46,6 +51,12 @@ public class PlaceholderNavigation extends Navigation {
 	private int maxIndex = 0;
 	private List<PlaceholderNode> placeHolders = new ArrayList<>();
 	private boolean useDelimiters;
+    private PlaceholderTableType[] tableIdentifiers;
+
+    /**
+     * Strings for the table identifiers, perhaps with additional delimiters
+     */
+    private String[] tableIdentifierStrings;
 
 	private static final Logger logger = Logger.getLogger(PlaceholderNavigation.class.getName());
 
@@ -87,6 +98,54 @@ public class PlaceholderNavigation extends Navigation {
 		placeHolders.sort(PlaceholderNode::compareByText);
 		maxIndex = placeHolders.size();
 	}
+	
+	/**
+	 * Default constructor.
+	 */
+	public PlaceholderNavigation() {}
+	
+	public PlaceholderNavigation of(Document doc) {
+		mDocument = doc;
+		return this;
+	}
+    
+    public PlaceholderNavigation withTableIdentifiers(PlaceholderTableType... tableIdentifiers ) {
+        this.tableIdentifiers = tableIdentifiers;
+        return this;
+    }
+	
+	public PlaceholderNavigation withPattern(String pattern) {
+        this.mPattern = pattern;
+	    return this;
+	}
+    
+    public PlaceholderNavigation withDelimiters(boolean useDelimiters) {
+        this.useDelimiters = useDelimiters;
+        return this;
+    }
+    
+    public PlaceholderNavigation build() {
+        if (useDelimiters) {
+            if (this.mPattern != null) {
+                this.mPattern = StringUtils.appendIfMissing(StringUtils.prependIfMissing(this.mPattern, PLACEHOLDER_PREFIX), PLACEHOLDER_SUFFIX);
+            }
+            
+            if (tableIdentifiers != null) {
+                this.tableIdentifierStrings = Arrays.stream(tableIdentifiers).map(ti -> StringUtils.prependIfMissing(ti.getKey(), PLACEHOLDER_PREFIX))
+                        .collect(Collectors.toList()).toArray(new String[] {});
+            }
+        }        
+        
+        mNextSelectedItem = null;
+        mTempSelectedItem = null;
+        mNextIndex = 0;
+
+        // now initialize the placeholder list
+        collectPlaceHolders(this.mPattern);
+        placeHolders.sort(PlaceholderNode::compareByText);
+        maxIndex = placeHolders.size();
+        return this;
+    }
 
 	/**
 	 * Checks if the given Node (which has to be a placeholder) has the name
@@ -164,7 +223,7 @@ public class PlaceholderNavigation extends Navigation {
 	 *            collected.
 	 * @return list of placeholders (for convenience, could be also get via getter)
 	 */
-	private List<PlaceholderNode> collectPlaceHolders(String pattern) {
+    private List<PlaceholderNode> collectPlaceHolders(String pattern) {
 		// at first we look into header and footer
 		collectPlaceholdersInHeaderFooter(pattern);
 
@@ -176,15 +235,18 @@ public class PlaceholderNavigation extends Navigation {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
-		NodeList placeholders = rootElement.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+		NodeList placeholders = ((Element)rootElement).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 		for (int i = 0; i < placeholders.getLength(); i++) {
 			Node item = placeholders.item(i);
 			PlaceholderNode placeholderNode;
 			// Search for entries within VATLIST or ITEM table
-			if (getTableForNode(item) != null
-			        && StringUtils.startsWithAny(item.getTextContent(), (useDelimiters ? PLACEHOLDER_PREFIX : "")
-			                + "ITEM.", (useDelimiters ? PLACEHOLDER_PREFIX : "") + "VATLIST.")) {
-				placeholderNode = new PlaceholderNode(item, PlaceholderNodeType.TABLE_NODE);
+			
+			Optional<PlaceholderTableType> tableIdentifier = Arrays.stream(tableIdentifiers)
+			                .filter(id -> item.getTextContent().startsWith(useDelimiters ? StringUtils.prependIfMissing(id.getKey(), PLACEHOLDER_PREFIX) : id.getKey()))
+			                .findFirst();
+			
+            if (getTableForNode(item) != null && tableIdentifier.isPresent()) {
+				placeholderNode = new PlaceholderNode(item, PlaceholderNodeType.TABLE_NODE, tableIdentifier.orElse(PlaceholderTableType.NO_TABLE), false);
 			} else {
 				placeholderNode = new PlaceholderNode(item);
 			}
@@ -212,7 +274,14 @@ public class PlaceholderNavigation extends Navigation {
 		return getContainerNode(item, OdfDocumentNamespace.TABLE.getUri());
 	}
 
-	private Node getContainerNode(Node item, String urn) {
+	/**
+     * @return the tableIdentifierStrings
+     */
+    public final String[] getTableIdentifierStrings() {
+        return tableIdentifierStrings;
+    }
+
+    private Node getContainerNode(Node item, String urn) {
 		if (item == null || item.getParentNode() == null) {
 			return null;
 		} else {
@@ -224,19 +293,19 @@ public class PlaceholderNavigation extends Navigation {
 		}
 	}
 
-	private List<PlaceholderNode> collectPlaceholdersInHeaderFooter(String pattern) {
+    private List<PlaceholderNode> collectPlaceholdersInHeaderFooter(String pattern) {
 		OdfFileDom styledom = null;
 		OdfOfficeMasterStyles masterpage = null;
 
 		try {
 			styledom = mDocument.getStylesDom();
-			NodeList list = styledom.getElementsByTagName("office:master-styles");
+			NodeList list = ((Element)styledom).getElementsByTagName("office:master-styles");
 			if (list.getLength() > 0) {
 				masterpage = (OdfOfficeMasterStyles) list.item(0);
 			} else {
 				return placeHolders;
 			}
-			NodeList placeholders = masterpage.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+			NodeList placeholders = ((Element)masterpage).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 			for (int i = 0; i < placeholders.getLength(); i++) {
 				Node item = placeholders.item(i);
 				PlaceholderNode placeholderNode = new PlaceholderNode(item, true);

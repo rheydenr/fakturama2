@@ -14,87 +14,60 @@
 
 package com.sebulli.fakturama.office;
 
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.dto.DocumentSummary;
-import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.model.Document;
-
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryDisplayConverter;
-import org.eclipse.swt.widgets.Display;
+import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
+import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
+import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.common.navigation.PlaceholderNavigation;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderTableType;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-//import ag.ion.bion.officelayer.application.IOfficeApplication;
-//import ag.ion.bion.officelayer.application.OfficeApplicationException;
-//import ag.ion.bion.officelayer.desktop.GlobalCommands;
-//import ag.ion.bion.officelayer.desktop.IFrame;
-//import ag.ion.bion.officelayer.document.IDocument;
-//import ag.ion.bion.officelayer.filter.PDFFilter;
-//import ag.ion.bion.officelayer.text.ICharacterProperties;
-//import ag.ion.bion.officelayer.text.IText;
-//import ag.ion.bion.officelayer.text.ITextContentService;
-//import ag.ion.bion.officelayer.text.ITextDocument;
-//import ag.ion.bion.officelayer.text.ITextDocumentImage;
-//import ag.ion.bion.officelayer.text.ITextField;
-//import ag.ion.bion.officelayer.text.ITextFieldService;
-//import ag.ion.bion.officelayer.text.ITextTable;
-//import ag.ion.bion.officelayer.text.ITextTableCell;
-//import ag.ion.bion.officelayer.text.TextException;
-//import ag.ion.noa.NOAException;
-//import ag.ion.noa.document.URLAdapter;
-//import ag.ion.noa.frame.IDispatchDelegate;
-//import ag.ion.noa.graphic.GraphicInfo;
-//
-//import com.sebulli.fakturama.Activator;
-//import com.sebulli.fakturama.OSDependent;
-//import com.sebulli.fakturama.Workspace;
-//import com.sebulli.fakturama.calculate.Price;
-//import com.sebulli.fakturama.calculate.VatSummaryItem;
-//import com.sebulli.fakturama.calculate.VatSummarySet;
-//import com.sebulli.fakturama.calculate.VatSummarySetManager;
-//import com.sebulli.fakturama.data.Data;
-//import com.sebulli.fakturama.data.DataSetDocument;
-//import com.sebulli.fakturama.data.DataSetItem;
-//import com.sebulli.fakturama.logger.Logger;
-//import com.sebulli.fakturama.misc.DataUtils;
-//import com.sebulli.fakturama.misc.Placeholders;
-//import com.sebulli.fakturama.views.datasettable.ViewDataSetTable;
-//import com.sun.star.awt.XTopWindow;
-//import com.sun.star.beans.Property;
-//import com.sun.star.frame.XFrame;
-//import com.sun.star.text.HoriOrientation;
-//import com.sun.star.text.TextContentAnchorType;
-//import com.sun.star.text.VertOrientation;
-//import com.sun.star.uno.UnoRuntime;
+import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.Price;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
  * This class opens an OpenOffice Writer template  and replaces all the
  * placeholders with the document data.
- * 
- * @author Gerd Bartelt
  */
 public class OfficeDocument {
 
@@ -120,23 +93,26 @@ public class OfficeDocument {
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    private DocumentsDAO documentsDAO;
+    
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
-//	// OpenOffice objects
-//	private IOfficeApplication officeApplication;
-//	private IDocument oOdocument;
-//	private ITextDocument textDocument;
-//	private IFrame officeFrame;
-//
-//	private ITextFieldService textFieldService;
-
-	// Template name
+	/** Template name */
 	private Path template;	
 	
-	private ArrayList<String> allPlaceholders;
+	private List<String> allPlaceholders;
 
     private DocumentSummary documentSummary;
 
     private Placeholders placeholders;
+
+    private FileOrganizer fo;
     
     public OfficeDocument() {}
 	
@@ -155,10 +131,14 @@ public class OfficeDocument {
 	    this.document = document;
 	    this.template = template;
 	}
+    
+    @PostConstruct
+    public void init() {
+        fo = ContextInjectionFactory.make(FileOrganizer.class, context);
+        placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+    }
 	
 	public void createDocument(boolean forceRecreation) {
-        FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, context);
-        placeholders = ContextInjectionFactory.make(Placeholders.class, context);
 		//Open an existing document instead of creating a new one
 		boolean openExisting = false;
 
@@ -183,351 +163,228 @@ public class OfficeDocument {
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
 
-            // Get the placeholders of the OpenOffice template
-//            ITextField[] placeholders = textFieldService.getPlaceholderFields();
+            /* Get the placeholders of the OpenOffice template.
+             * The scanning of all placeholders to find the item and the vat table
+             * is also done here.
+             */
+            TextDocument textdoc = (TextDocument) org.odftoolkit.simple.Document.loadDocument(template.toFile());
+            textdoc.changeMode(TextDocument.OdfMediaType.TEXT);
+            PlaceholderNavigation navi = new PlaceholderNavigation()
+                            .of(textdoc)
+                            .withDelimiters(true)
+                            .withTableIdentifiers(PlaceholderTableType.ITEMS_TABLE, 
+                                    PlaceholderTableType.VATLIST_TABLE,
+                                    PlaceholderTableType.DISCOUNT_TABLE, 
+                                    PlaceholderTableType.DEPOSIT_TABLE)
+                            .build();
+            List<PlaceholderNode> placeholderNodes = navi.getPlaceHolders();
 
             // Create a new ArrayList with all placeholders
-			allPlaceholders = new ArrayList<>();
-
-//			for (ITextField placeholder : placeholders) {
-//				// Collect all placeholders
-//				allPlaceholders.add(placeholder.getDisplayText());
-//			}
+			// Collect all placeholders
+			allPlaceholders = placeholderNodes.stream().map(pn -> pn.getNodeText()).collect(Collectors.toList());
 			
 			// Fill the property list with the placeholder values
 			properties = new Properties();
 			setCommonProperties();
-//
-//			// A reference to the item and vat table
-//			ITextTable itemsTable = null;
-//			ITextTable vatListTable = null;
-//			ITextTableCell itemCell = null;
-//			ITextTableCell vatListCell = null;
-//			ArrayList<ITextTableCell> discountCellList = new ArrayList<ITextTableCell>();
-//			ArrayList<ITextTableCell> depositCellList = new ArrayList<ITextTableCell>();
-//			
-//			// Scan all placeholders to find the item and the vat table
-//			for (int i = 0; i < placeholders.length; i++) {
-//
-//				// Get the placeholder's text
-//				ITextField placeholder = placeholders[i];
-//				String placeholderDisplayText = placeholder.getDisplayText().toUpperCase();
-//				
-//				// Find the item table
-//				if (placeholderDisplayText.startsWith("<ITEM.")) {
-//					itemCell = placeholder.getTextRange().getCell();
-//					itemsTable = itemCell.getTextTable();
-//				}
-//
-//				// Find the vat table
-//				if (placeholderDisplayText.startsWith("<VATLIST.")) {
-//					vatListCell = placeholder.getTextRange().getCell();
-//					vatListTable = vatListCell.getTextTable();
-//				}
-//
-//				// Find the discount placeholders
-//				if (placeholderDisplayText.startsWith("<ITEMS.DISCOUNT.")) {
-//					discountCellList.add(placeholder.getTextRange().getCell());
-//				}
-//				// Find the deposit placeholders
-//				if (placeholderDisplayText.startsWith("<DOCUMENT.DEPOSIT.")) {
-//					depositCellList.add(placeholder.getTextRange().getCell());
-//				}
-//			}
-//
-//			// Get the items of the UniDataSet document
-//			ArrayList<DataSetItem> itemDataSets = document.getItems().getActiveDatasets();
-//			int lastItemTemplateRow = 0;
-//			int lastVatTemplateRow = 0;
-//
-//			// Fill the item table with the items
-//			if (itemsTable != null) {
-//
-//				// Add the necessary rows for the items
-//				int itemCellRow = itemCell.getName().getRowIndex();
-//				lastItemTemplateRow = itemCellRow + itemDataSets.size();
-//				itemsTable.addRow(itemCellRow, itemDataSets.size());
-//
-//				for (int i = 0; i < placeholders.length; i++) {
-//
-//					// Get each placeholder
-//					ITextField placeholder = placeholders[i];
-//					String placeholderDisplayText = placeholder.getDisplayText();
-//
-//					if (placeholder.getTextRange().getCell() != null) {
-//
-//						// Do it only, if the placeholder is in the items table
-//						ITextTable textTable = placeholder.getTextRange().getCell().getTextTable();
-//						if (textTable.getName().equals(itemsTable.getName())) {
-//
-//							// Fill the corresponding table column with the
-//							// item's data.
-//							int column = placeholder.getTextRange().getCell().getName().getColumnIndex();
-//							ITextTableCell itemC = placeholder.getTextRange().getCell();
-//							
-////							ICharacterProperties characterProperties = itemC.getCharacterProperties();
-////							
-////							Property[] properties2 = characterProperties.getXPropertySet().getPropertySetInfo().getProperties();
-////							for (Property property : properties2) {
-////	                            System.out.println(property.Name + "=" + characterProperties.getXPropertySet().getPropertyValue(property.Name));
-////                            }
-//							
-//							
-//							String itemCellText = itemC.getTextService().getText().getText();
-//							
-//							fillItemTableWithData(placeholderDisplayText, column, itemDataSets, itemsTable, itemCellRow, itemCellText);
-//						}
-//					}
-//				}
-//			}
-//
-//			// Get the VAT summary of the UniDataSet document
-//			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
-//			vatSummarySetManager.add(this.document, 1.0);
-//
-//			int vatListTemplateRow = 0;
-//			if (vatListTable != null) {
-//
-//				// Add the necessary rows for the VAT entries
-//				vatListTemplateRow = vatListCell.getName().getRowIndex();
-//				lastVatTemplateRow = vatListTemplateRow + vatSummarySetManager.size();
-//				vatListTable.addRow(vatListTemplateRow, vatSummarySetManager.size());
-//
-//				// Scan all placeholders for the VAT placeholders
-//				for (int i = 0; i < placeholders.length; i++) {
-//
-//					// Get the placeholder text
-//					ITextField placeholder = placeholders[i];
-//					String placeholderDisplayText = placeholder.getDisplayText().toUpperCase();
-//
-//					if (placeholder.getTextRange().getCell() != null) {
-//
-//						// Test, if the placeholder is in the VAT table
-//						ITextTable textTable = placeholder.getTextRange().getCell().getTextTable();
-//						if (textTable.getName().equals(vatListTable.getName())) {
-//
-//							// Fill the corresponding table column with the
-//							// VAT data.
-//							int column = placeholder.getTextRange().getCell().getName().getColumnIndex();
-//							ITextTableCell c = placeholder.getTextRange().getCell();
-//							String cellText = c.getTextService().getText().getText();
-//							replaceVatListPlaceholder(placeholderDisplayText, column, vatSummarySetManager.getVatSummaryItems(), vatListTable,
-//									vatListTemplateRow, cellText);
-//						}
-//					}
-//				}
-//			}
-//
-//			// Replace all other placeholders
-//			for (int i = 0; i < placeholders.length; i++) {
-//				replaceText(placeholders[i]);
-//			}
-//
-//			// remove the temporary row of the item table
-//			if (itemsTable != null) {
-//				itemsTable.removeRow(lastItemTemplateRow);
-//			}
-//
-//			// remove the temporary row of the VAT table
-//			if (vatListTable != null) {
-//				vatListTable.removeRow(lastVatTemplateRow);
-//			}
-//
-//			// Remove the discount cells, if there is no discount set
-//			if (DataUtils.DoublesAreEqual(document.getSummary().getDiscountNet().asDouble(), 0.0)) {
-//				for (int i = 0; i < discountCellList.size(); i++) {
-//					ITextTableCell cell = discountCellList.get(i);
-//					try {
-//						if (cell != null) {
-//							ITextTable table = cell.getTextTable();
-//							if (table != null)
-//								table.removeRow(cell.getName().getRowIndex());
-//						}
-//					}
-//					catch (TextException te) {
-//					}
-//				}
-//			}
-//
-//			// Remove the Deposit & the Finalpayment Row if there is no Deposit
-//			if (DataUtils.DoublesAreEqual(document.getSummary().getDeposit().asDouble(), 0.0)) {
-//				for (int i = 0; i < depositCellList.size(); i++) {
-//					ITextTableCell cell = depositCellList.get(i);
-//					try {
-//						if (cell != null) {
-//							ITextTable table = cell.getTextTable();
-//							if (table != null)
-//								table.removeRow(cell.getName().getRowIndex()-1);
-//								table.removeRow(cell.getName().getRowIndex());
-//						}
-//					}
-//					catch (TextException te) {
-//					}
-//				}
-//			}
-//			
+
+			// A reference to the item and vat table
+	        Set<PlaceholderTableType> processedTables = new HashSet<>();
+
+			// Get the items of the UniDataSet document
+			List<DocumentItem> itemDataSets = document.getItems();
+			
+	        for (PlaceholderNode placeholderNode : placeholderNodes) {
+	            switch (placeholderNode.getNodeType()) {
+	            case NORMAL_NODE:
+//	              // Replace all other placeholders
+	                  replaceText(placeholderNode);
+	                break;
+	            case TABLE_NODE:
+	                // process only if that table wasn't processed
+	                // but wait: a table (e.g., "ITEM" table) could occur more than once!
+	                if(!processedTables.contains(placeholderNode.getTableType())) {
+	                    // get the complete row with placeholders and store it as a template
+	                    Row pRowTemplate = navi.getTableRow(placeholderNode);
+	                    // for each item from items list create a row and replace the placeholders
+	                    Table pTable = pRowTemplate.getTable();
+	                    pTable.setCellStyleInheritance(true);
+	                    
+	                    // which table?
+	                    switch (placeholderNode.getTableType()) {
+                        case ITEMS_TABLE:
+                			// Fill the item table with the items
+    	                    fillItemTableWithData(placeholderNode.getNodeText(), itemDataSets, pTable, pRowTemplate);
+                            break;
+                        case VATLIST_TABLE:
+                            
+                          // Get the VAT summary of the UniDataSet document
+//                          VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+//                          vatSummarySetManager.add(this.document, 1.0);
+                
+                          int vatListTemplateRow = 0;
+                
+                              // Add the necessary rows for the VAT entries
+//                              vatListTemplateRow = vatListCell.getName().getRowIndex();
+//                              lastVatTemplateRow = vatListTemplateRow + vatSummarySetManager.size();
+//                              vatListTable.addRow(vatListTemplateRow, vatSummarySetManager.size());
+                //
+//                              // Scan all placeholders for the VAT placeholders
+//                              for (int i = 0; i < placeholders.length; i++) {
+                //
+//                                  // Get the placeholder text
+//                                  ITextField placeholder = placeholders[i];
+//                                  String placeholderDisplayText = placeholder.getDisplayText().toUpperCase();
+                //
+//                                  if (placeholder.getTextRange().getCell() != null) {
+                //
+//                                      // Test, if the placeholder is in the VAT table
+//                                      ITextTable textTable = placeholder.getTextRange().getCell().getTextTable();
+//                                      if (textTable.getName().equals(vatListTable.getName())) {
+                //
+//                                          // Fill the corresponding table column with the
+//                                          // VAT data.
+//                                          int column = placeholder.getTextRange().getCell().getName().getColumnIndex();
+//                                          ITextTableCell c = placeholder.getTextRange().getCell();
+//                                          String cellText = c.getTextService().getText().getText();
+//                                          replaceVatListPlaceholder(placeholderDisplayText, column, vatSummarySetManager.getVatSummaryItems(), vatListTable,
+//                                                  vatListTemplateRow, cellText);
+//                                      }
+//                                  }
+//                              }
+                          
+                            break;
+                        default:
+                            break;
+                        }
+
+	                    // delete the template row from table
+	                    pTable.removeRowsByIndex(pRowTemplate.getRowIndex(), 1);
+
+	                    // determine type of this table and store it
+	                    // irgendwie muß hier noch ein Name oder 'ne ID oder sowas mit ran...
+	                    processedTables.add(placeholderNode.getTableType());
+	                }
+	                break;
+
+	            default:
+	                break;
+	            }}
 //			// Save the document
-//			saveOODocument(textDocument);
+			saveOODocument(textdoc);
 //
 //			// Print and close the OpenOffice document
 //			/*
 //			textDocument.getFrame().getDispatch(GlobalCommands.PRINT_DOCUMENT_DIRECT).dispatch();
-//			try {
-//			    Thread.sleep(2000);
-//			}
-//			catch (Exception e1) {
-//			    e1.printStackTrace();
-//			}
-//			textDocument.close();
-//			*/
-//
-//			//officeAplication.deactivate();
-//
 		}
 		catch (Exception e) {
 		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
 		}
 	}
-//
-//	/**
-//	 * Save an OpenOffice document as *.odt and as *.pdf
-//	 * 
-//	 * @param textDocument
-//	 *            The document
-//	 */
-//	public void saveOODocument(ITextDocument textDocument) {
-//
-//		boolean wasSaved = false;
-//
-//		if (Activator.getDefault().getPreferenceStore().getString("OPENOFFICE_ODT_PDF").contains("PDF")) {
-//
-//			// Create the directories, if they don't exist.
-//			File directory = new File(FileOrganizer.getDocumentPath(
-//					FileOrganizer.NO_FILENAME,
-//					FileOrganizer.NO_EXTENSION,
-//					FileOrganizer.PDF,
-//					document));
-//			
-//			if (!directory.exists())
-//				directory.mkdirs();
-//
-//			// Add the time String, if this file is still existing
-//			/*
-//			File file = new File(savePath + ".odt");
-//			if (file.exists()) {
-//				DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-//				savePath += "_" + dfmt.format(new Date());
-//			}
-//			*/
-//
-//			// Save the document
-//			try {
-//				FileOutputStream fs = new FileOutputStream(new File(FileOrganizer.getDocumentPath(
-//						FileOrganizer.WITH_FILENAME,
-//						FileOrganizer.WITH_EXTENSION,
-//						FileOrganizer.PDF,
-//						document)));
-//				
-//				PDFFilter pdfFilter = new PDFFilter();
-//				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-//				textDocument.getPersistenceService().export(fs, pdfFilter);
-//
-//				wasSaved = true;
-//
-//			}
-//			catch (FileNotFoundException e) {
-//				Logger.logError(e, "Error saving the OpenOffice Document");
-//			}
-//			catch (NOAException e) {
-//				Logger.logError(e, "Error saving the OpenOffice Document");
-//			}
-//
-//		}
-//
-//		if (Activator.getDefault().getPreferenceStore().getString("OPENOFFICE_ODT_PDF").contains("ODT")) {
-//
-//			// Create the directories, if they don't exist.
-//			File directory = new File(FileOrganizer.getDocumentPath(
-//					FileOrganizer.NO_FILENAME,
-//					FileOrganizer.NO_EXTENSION,
-//					FileOrganizer.ODT,
-//					document));
-//			
-//			if (!directory.exists())
-//				directory.mkdirs();
-//
-//			// Add the time String, if this file is still existing
-//			/*
-//			File file = new File(savePath + ".odt");
-//			if (file.exists()) {
-//				DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-//				savePath += "_" + dfmt.format(new Date());
-//			}
-//			*/
-//
-//			// Save the document
-//			try {
-//				FileOutputStream fs = new FileOutputStream(new File(FileOrganizer.getDocumentPath(
-//						FileOrganizer.WITH_FILENAME,
-//						FileOrganizer.WITH_EXTENSION,
-//						FileOrganizer.ODT,
-//						document)));
-//				textDocument.getPersistenceService().storeAs(fs);
-//				
-//
-//				wasSaved = true;
-//
-//			}
-//			catch (FileNotFoundException e) {
-//				Logger.logError(e, "Error saving the OpenOffice Document");
-//			}
-//			catch (NOAException e) {
-//				Logger.logError(e, "Error saving the OpenOffice Document");
-//			}
-//
-//		}
-//
-//
-//		// Mark the document as printed, if it was saved as ODT or PDF
-//		if (wasSaved) {
-//			// Mark the document as "printed"
-//			document.setBooleanValueByKey("printed", true);
-//			document.setStringValueByKey("printedtemplate", template);
-//			
-//			String filename = FileOrganizer.getDocumentPath(
-//					FileOrganizer.WITH_FILENAME,
-//					FileOrganizer.WITH_EXTENSION,
-//					FileOrganizer.ODT,
-//					document);
-//			if ((new File(filename)).exists()) {
-//				document.setStringValueByKey("odtpath",
-//						filename);
-//			}
-//
-//			// Update the document entry "pdfpath"
-//			filename = FileOrganizer.getDocumentPath(FileOrganizer.WITH_FILENAME,
-//					FileOrganizer.WITH_EXTENSION,
-//					FileOrganizer.PDF, document);
-//			if ((new File(filename)).exists()) {
-//				document.setStringValueByKey("pdfpath",
-//						filename);
-//			}
-//
-//			Data.INSTANCE.getDocuments().updateDataSet(document);
-//			
-//			// Refresh the document view
-//			if (documentView != null) {
-//				Display.getDefault().syncExec(new Runnable() {
-//				    public void run() {
-//				    	documentView.refresh();
-//				    }
-//				});
-//			}
-//
-//		}
-//
-//	}
-//
+
+    /**
+     * Save an OpenOffice document as *.odt and as *.pdf
+     * 
+     * @param textdoc
+     *            The document
+     */
+	private void saveOODocument(TextDocument textdoc) {
+
+        boolean wasSaved = false;
+
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
+
+            // Create the directories, if they don't exist.
+            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.PDF, document);
+
+            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF,
+                    document));) {
+                if (Files.notExists(directory)) {
+                    Files.createDirectories(directory);
+                }
+
+                // Add the time String, if this file is still existing
+                /*
+                File file = new File(savePath + ".odt");
+                if (file.exists()) {
+                	DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+                	savePath += "_" + dfmt.format(new Date());
+                }
+                */
+
+                // Save the document
+                // FIXME How to create a PDF/A1 document?
+                // swriter.exe -convert-to pdf --outdir d:\eclipse44SR1\workspace\RheTest\mpf d:\eclipse44SR1\workspace\RheTest\Document_Test2.ott-Generated.odt
+                //				PDFFilter pdfFilter = new PDFFilter();
+                //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+                textdoc.save(fs);
+                wasSaved = true;
+            } catch (Exception e) {
+                log.error(e, "Error saving the OpenOffice Document");
+            }
+        }
+
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
+
+            // Create the directories, if they don't exist.
+            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.ODT, document);
+
+            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
+                    document));) {
+                if (Files.notExists(directory)) {
+                    Files.createDirectories(directory);
+                }
+
+                // Add the time String, if this file is still existing
+                /*
+                File file = new File(savePath + ".odt");
+                if (file.exists()) {
+                	DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+                	savePath += "_" + dfmt.format(new Date());
+                }
+                */
+
+                // Save the document
+                textdoc.save(fs);
+                wasSaved = true;
+            } catch (Exception e) {
+                log.error(e, "Error saving the OpenOffice Document");
+            }
+        }
+
+        // Mark the document as printed, if it was saved as ODT or PDF
+        if (wasSaved) {
+            // Mark the document as "printed"
+            document.setPrinted(Boolean.TRUE);
+            document.setPrintTemplate(template.toString());
+
+            Path filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT, document);
+            if (Files.exists(filename)) {
+                document.setOdtPath(filename.toString());
+            }
+
+            // Update the document entry "pdfpath"
+            filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
+            if (Files.exists(filename)) {
+                document.setPdfPath(filename.toString());
+            }
+
+            try {
+                documentsDAO.update(document);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            // Refresh the document view
+
+            // Refresh the table view of all documents
+            evtBroker.post(DocumentEditor.EDITOR_ID, "update");
+
+        }
+
+    }
+
+    //
 //	/**
 //	 * Replace one column of the VAT table with the VAT entries
 //	 * 
@@ -563,42 +420,6 @@ public class OfficeDocument {
 //			}
 //		}
 //	}
-
-	/**
-	 * Add a user text field to the OpenOffice document
-	 * 
-	 * @param key
-	 *            The key of the user text field
-	 * @param value
-	 *            The value of the user text field
-	 */
-	private void addUserTextField(String key, String value) {
-
-		if (value == null)
-			return;
-//		
-//		try {
-//			textFieldService.addUserTextField(key, value);
-//		}
-//		catch (TextException e) {
-//		}
-	}
-
-	/**
-	 * Add a user text field to the OpenOffice document The key contains an
-	 * additional index.
-	 * 
-	 * @param key
-	 *            The key of the user text field
-	 * @param value
-	 *            The value of the user text field
-	 * @param i
-	 *            Additional index, added to the key
-	 */
-	private void addUserTextField(String key, String value, int i) {
-		key = key + "." + Integer.toString(i);
-		addUserTextField(key, value);
-	}
 
 //	/**
 //	 * Fill the cell of the VAT table with the VAT data
@@ -649,30 +470,26 @@ public class OfficeDocument {
 //		addUserTextField(textKey, textValue, index);
 //
 //	}
-//
-//	/**
-//	 * Fill all cells of the item table with the item data
-//	 * 
-//	 * @param placeholderDisplayText
-//	 *            Column header
-//	 * @param column
-//	 *            The index of the column
-//	 * @param itemDataSets
-//	 *            Item data
-//	 * @param itemsTable
-//	 *            The item table
-//	 * @param lastTemplateRow
-//	 *            Counts the last row of the table
-//	 * @param cellText
-//	 *            The cell's text.
-//	 */
-//	private void fillItemTableWithData(String placeholderDisplayText, int column, ArrayList<DataSetItem> itemDataSets, ITextTable itemsTable,
-//			int lastTemplateRow, String cellText) {
-//
-//		// Get all items
-//		for (int row = 0; row < itemDataSets.size(); row++) {
-//			try {
-//
+
+	/**
+	 * Fill all cells of the item table with the item data
+	 * 
+	 * @param placeholderDisplayText
+	 *            Column header
+	 * @param column
+	 *            The index of the column
+	 * @param itemDataSets
+	 *            Item data
+	 * @param itemsTable
+	 *            The item table
+	 * @param lastTemplateRow
+	 *            Counts the last row of the table
+	 * @param cellText
+	 *            The cell's text.
+	 */
+	private void fillItemTableWithData(String placeholderDisplayText, List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate
+			) {
+
 //				// Get a reference to the cell content
 //				IText iText = itemsTable.getCell(column, lastTemplateRow + row).getTextService().getText();
 //
@@ -682,219 +499,250 @@ public class OfficeDocument {
 //				// Set the cell content
 //				fillItemTableWithData(row, placeholderDisplayText, item, iText, row, cellText);
 //
-//			}
-//			catch (TextException e) {
-//				Logger.logError(e, "Error replacing Placeholders");
-//			}
-//		}
-//
-//	}
-//	
-//	/**
-//	 * Fill the cell of the item table with the item data
-//	 * 
-//	 * @param placeholderDisplayText
-//	 *            Column header
-//	 * @param item
-//	 * @param iText
-//	 *            The Text that is set
-//	 * @param index
-//	 *            Index of the VAT entry
-//	 * @param cellText
-//	 *            The cell's text.
-//	 */
-//	private void fillItemTableWithData(int row, String placeholderDisplayText, DataSetItem item, IText iText, int index, String cellText) {
-//
-//		String value = "";
-//		
-//		// Get the column's header
-//		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
-//		String key = placeholder.split("\\$")[0];
-//
-//		Price price = new Price(item);
-//
-//		// Get the item quantity
-//		if (key.equals("ITEM.QUANTITY")) {
-//			value = DataUtils.DoubleToFormatedQuantity(item.getDoubleValueByKey("quantity"));
-//		}
-//
-//
-//		// The position
-//		else if (key.equals("ITEM.POS")) {
-//			value = Integer.toString(row + 1);
-//		}
-//
-//		// The text for optional items
-//		else if (key.equals("ITEM.OPTIONAL.TEXT")) {
-//			if (item.getBooleanValueByKey("optional")) {
-//				value = Activator.getDefault().getPreferenceStore().getString("OPTIONALITEMS_OPTIONALITEM_TEXT");
-//				value = value.replaceAll("<br>", "\n");
-//			}
-//		}
-//		
-//		// Get the item name
-//		else if (key.equals("ITEM.NAME")) {
-//			value = item.getStringValueByKey("name");
-//		}
-//
-//		// Get the item number
-//		else if (key.equals("ITEM.NR")) {
-//			value = item.getStringValueByKey("itemnr");
-//		}
-//
-//		// Get the quanity unit
-//		else if (key.equals("ITEM.QUANTITYUNIT")) {
-//			value = item.getStringValueByKey("qunit");
-//		}
-//
-//		// Get the item description
-//		else if (key.equals("ITEM.DESCRIPTION")) {
-//			value = item.getStringValueByKey("description");
-//			// Remove pre linebreak if description is empty to avoid empty lines
-//			if( value.isEmpty() ) {
-//				placeholderDisplayText = placeholderDisplayText.replaceFirst("\n<ITEM.DESCRIPTION>", "<ITEM.DESCRIPTION>");
-//			}
-//		}
-//
-//		// Get the item discount
-//		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
-//			value = DataUtils.DoubleToFormatedPercent(item.getDoubleValueByKey("discount"));
-//		}
-//
-//		// Get the item's VAT
-//		else if (key.equals("ITEM.VAT.PERCENT")) {
-//			value = DataUtils.DoubleToFormatedPercent(item.getDoubleValueByKey("vatvalue"));
-//		}
-//
-//		// Get the item's VAT name
-//		else if (key.equals("ITEM.VAT.NAME")) {
-//			value = item.getStringValueByKey("vatname");
-//		}
-//
-//		// Get the item's VAT description
-//		else if (key.equals("ITEM.VAT.DESCRIPTION")) {
-//			value = item.getStringValueByKey("vatdescription");
-//		}
-//
-//		// Get the item net value
-//		else if (key.equals("ITEM.UNIT.NET")) {
-//			value = price.getUnitNetRounded().asFormatedString();
-//		}
-//
-//		// Get the item VAT
-//		else if (key.equals("ITEM.UNIT.VAT")) {
-//			value = price.getUnitVatRounded().asFormatedString();
-//		}
-//
-//		// Get the item gross value
-//		else if (key.equals("ITEM.UNIT.GROSS")) {
-//			value = price.getUnitGrossRounded().asFormatedString();
-//		}
-//
-//		// Get the discounted item net value
-//		else if (key.equals("ITEM.UNIT.NET.DISCOUNTED")) {
-//			value = price.getUnitNetDiscountedRounded().asFormatedString();
-//		}
-//
-//		// Get the discounted item VAT
-//		else if (key.equals("ITEM.UNIT.VAT.DISCOUNTED")) {
-//			value = price.getUnitVatDiscountedRounded().asFormatedString();
-//		}
-//
-//		// Get the discounted item gross value
-//		else if (key.equals("ITEM.UNIT.GROSS.DISCOUNTED")) {
-//			value = price.getUnitGrossDiscountedRounded().asFormatedString();
-//		}
-//
-//		// Get the total net value
-//		else if (key.equals("ITEM.TOTAL.NET")) {
-//			value = price.getTotalNetRounded().asFormatedString();
-//			if (item.getBooleanValueByKey("optional")) {
-//				if (Activator.getDefault().getPreferenceStore().getBoolean("OPTIONALITEMS_REPLACE_PRICE"))
-//					value = Activator.getDefault().getPreferenceStore().getString("OPTIONALITEMS_PRICE_REPLACEMENT");
-//			}
-//
-//		}
-//
-//		// Get the total VAT
-//		else if (key.equals("ITEM.TOTAL.VAT")) {
-//			value = price.getTotalVatRounded().asFormatedString();
-//			if (item.getBooleanValueByKey("optional")) {
-//				if (Activator.getDefault().getPreferenceStore().getBoolean("OPTIONALITEMS_REPLACE_PRICE"))
-//					value = Activator.getDefault().getPreferenceStore().getString("OPTIONALITEMS_PRICE_REPLACEMENT");
-//			}
-//		}
-//
-//		// Get the total gross value
-//		else if (key.equals("ITEM.TOTAL.GROSS")) {
-//			value = price.getTotalGrossRounded().asFormatedString();
-//			if (item.getBooleanValueByKey("optional")) {
-//				if (Activator.getDefault().getPreferenceStore().getBoolean("OPTIONALITEMS_REPLACE_PRICE"))
-//					value = Activator.getDefault().getPreferenceStore().getString("OPTIONALITEMS_PRICE_REPLACEMENT");
-//			}
-//		}
-//		
-//		// Get product picture
-//		else if (key.startsWith("ITEM.PICTURE")){
-//			
-//			String width_s = Placeholders.extractParam(placeholder,"WIDTH");
-//			String height_s = Placeholders.extractParam(placeholder,"HEIGHT");
-//
-//			if (!item.getStringValueByKey("picturename").isEmpty()) {
-//				// Default height and with
-//				int pixelWidth = 0;
-//				int pixelHeight = 0;
-//
-//				// Use the parameter values
-//				try {
-//					pixelWidth = Integer.parseInt(width_s);
-//					pixelHeight = Integer.parseInt(height_s);
-//				}
-//				catch (NumberFormatException e) {
-//				}
-//				
-//				// Use default values
-//				if (pixelWidth < 1)
-//					pixelWidth = 150;
-//				if (pixelHeight < 1)
-//					pixelHeight = 100;
-//
-//
-//				String imagePath = Workspace.INSTANCE.getWorkspace() + 
-//				 					Workspace.productPictureFolderName + 
-//				 					item.getStringValueByKey("picturename");
-//				int pictureHeight = 100;
-//				int pictureWidth = 100;
-//				double pictureRatio = 1.0;
-//				double pixelRatio = 1.0;
-//			      
-//				// Read the image a first time to get width and height
-//				try {
-//					File f = new File(imagePath);
-//					BufferedImage image = ImageIO.read(f);
-//					pictureHeight = image.getHeight();
-//					pictureWidth = image.getWidth();
-//
-//					// Calculate the ratio of the original image
-//					if (pictureHeight > 0) {
-//						pictureRatio = (double)pictureWidth/(double)pictureHeight;
-//					}
-//					
-//					// Calculate the ratio of the placeholder
-//					if (pixelHeight > 0) {
-//						pixelRatio = (double)pixelWidth/(double)pixelHeight;
-//					}
-//					
-//					// Correct the height and width of the placeholder 
-//					// to match the original image
-//					if ((pictureRatio > pixelRatio) &&  (pictureRatio != 0.0)) {
-//						pixelHeight = (int) Math.round(((double)pixelWidth / pictureRatio));
-//					}
-//					if ((pictureRatio < pixelRatio) &&  (pictureRatio != 0.0)) {
-//						pixelWidth = (int) Math.round(((double)pixelHeight * pictureRatio));
-//					}
-//					
-//					// Generate the image
+
+        // Get all items
+        int cellCount = pRowTemplate.getCellCount();
+        for (int row = 0; row < itemDataSets.size(); row++) {
+//                System.out.print("Durchlauf: "+m);
+                TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+                // Row tmpRow = pTable.appendRow();
+                // we always insert only ONE row to the table
+                Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+                pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+                Row newRow = Row.getInstance(newRowElement);
+                // find all placeholders within row
+                for (int j = 0; j < cellCount; j++) {
+                    System.out.print(".");
+                    // a template cell
+                    Cell currentCell = newRow.getCellByIndex(j);
+                    // make a copy of the template cell
+                    TableTableCellElementBase cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+
+                    // find all placeholders in a cell
+                    NodeList cellPlaceholders = ((Element)cellNode).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+                    List<PlaceholderNode> cellPlaceholderList = new ArrayList<>();
+                    for (int k = 0; k < cellPlaceholders.getLength(); k++) {
+                        Node item = cellPlaceholders.item(k);
+                        cellPlaceholderList.add(new PlaceholderNode(item));
+                    }
+
+                    /*
+                     * The appended row only has default cells (without styles etc.). Therefore we have to take
+                     * the template cell and replace the current cell with it.
+                     */
+                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                    // replace placeholders with content
+                    for (PlaceholderNode cellPlaceholder : cellPlaceholderList) {
+                        fillItemTableWithData(placeholderDisplayText, itemDataSets.get(row), cellPlaceholder, row, placeholderDisplayText);
+//                        cellPlaceholder.replaceWith(cellPlaceholder.getNode().getTextContent().replaceAll("[<>]", "|"));
+                    }
+                }
+                System.out.println();
+            }
+	}
+	
+	/**
+	 * Fill the cell of the item table with the item data
+	 * 
+	 * @param placeholderDisplayText
+	 *            Column header
+	 * @param item
+	 * @param iText
+	 *            The Text that is set
+	 * @param index
+	 *            Index of the VAT entry
+	 * @param cellText
+	 *            The cell's text.
+	 */
+	private void fillItemTableWithData(String placeholderDisplayText, DocumentItem item, PlaceholderNode cellPlaceholder, int index, String cellText) {
+
+		String value = "";
+		
+		// Get the column's header
+		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+		String key = placeholder.split("\\$")[0];
+
+		Price price = new Price(item);
+
+		// Get the item quantity
+		if (key.equals("ITEM.QUANTITY")) {
+			value = DataUtils.getInstance().DoubleToFormatedQuantity(item.getQuantity());
+		}
+
+		// The position
+		else if (key.equals("ITEM.POS")) {
+			value = item.getPosNr().toString();
+		}
+
+		// The text for optional items
+		else if (key.equals("ITEM.OPTIONAL.TEXT")) {
+			if (item.getOptional()) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT);
+				value = value.replaceAll("<br>", "\n");
+			}
+		}
+		
+		// Get the item name
+		else if (key.equals("ITEM.NAME")) {
+			value = item.getName();
+		}
+
+		// Get the item number
+		else if (key.equals("ITEM.NR")) {
+			value = item.getItemNumber();
+		}
+
+		// Get the quanity unit
+		else if (key.equals("ITEM.QUANTITYUNIT")) {
+			value = item.getQuantityUnit();
+		}
+
+		// Get the item description
+		else if (key.equals("ITEM.DESCRIPTION")) {
+			value = item.getDescription();
+			// Remove pre linebreak if description is empty to avoid empty lines
+			if( value.isEmpty() ) {
+				placeholderDisplayText = placeholderDisplayText.replaceFirst("\n<ITEM.DESCRIPTION>", "<ITEM.DESCRIPTION>");
+			}
+		}
+
+		// Get the item discount
+		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
+			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemRebate());
+		}
+
+		// Get the item's VAT
+		else if (key.equals("ITEM.VAT.PERCENT")) {
+			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+		}
+
+		// Get the item's VAT name
+		else if (key.equals("ITEM.VAT.NAME")) {
+			value = item.getItemVat().getName();
+		}
+
+		// Get the item's VAT description
+		else if (key.equals("ITEM.VAT.DESCRIPTION")) {
+			value = item.getItemVat().getDescription();
+		}
+
+		// Get the item net value
+		else if (key.equals("ITEM.UNIT.NET")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitNetRounded());
+		}
+
+		// Get the item VAT
+		else if (key.equals("ITEM.UNIT.VAT")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
+		}
+
+		// Get the item gross value
+		else if (key.equals("ITEM.UNIT.GROSS")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossRounded());
+		}
+
+		// Get the discounted item net value
+		else if (key.equals("ITEM.UNIT.NET.DISCOUNTED")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitNetDiscountedRounded());
+		}
+
+		// Get the discounted item VAT
+		else if (key.equals("ITEM.UNIT.VAT.DISCOUNTED")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
+		}
+
+		// Get the discounted item gross value
+		else if (key.equals("ITEM.UNIT.GROSS.DISCOUNTED")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
+		}
+
+		// Get the total net value
+		else if (key.equals("ITEM.TOTAL.NET")) {
+			value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
+			if (item.getOptional()) {
+				if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
+					value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			}
+		}
+
+		// Get the total VAT
+		else if (key.equals("ITEM.TOTAL.VAT")) {
+			value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
+			if (item.getOptional()) {
+                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
+                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			}
+		}
+
+		// Get the total gross value
+		else if (key.equals("ITEM.TOTAL.GROSS")) {
+			value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
+            if (item.getOptional()) {
+                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
+                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			}
+		}
+		
+		// Get product picture
+		else if (key.startsWith("ITEM.PICTURE")){
+			
+			String width_s = placeholders.extractParam(placeholder,"WIDTH");
+			String height_s = placeholders.extractParam(placeholder,"HEIGHT");
+
+			if (!item.getPictureName().isEmpty()) {
+				// Default height and with
+				int pixelWidth = 0;
+				int pixelHeight = 0;
+
+				// Use the parameter values
+				try {
+					pixelWidth = Integer.parseInt(width_s);
+					pixelHeight = Integer.parseInt(height_s);
+				}
+				catch (NumberFormatException e) {
+				}
+				
+				// Use default values
+				if (pixelWidth < 1)
+					pixelWidth = 150;
+				if (pixelHeight < 1)
+					pixelHeight = 100;
+
+
+				Path imagePath = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), 
+				        "/Pics/Products/", 
+				 					item.getPictureName());
+				int pictureHeight = 100;
+				int pictureWidth = 100;
+				double pictureRatio = 1.0;
+				double pixelRatio = 1.0;
+			      
+				// Read the image a first time to get width and height
+				try {
+					BufferedImage image = ImageIO.read(imagePath.toFile());
+					pictureHeight = image.getHeight();
+					pictureWidth = image.getWidth();
+
+					// Calculate the ratio of the original image
+					if (pictureHeight > 0) {
+						pictureRatio = (double)pictureWidth/(double)pictureHeight;
+					}
+					
+					// Calculate the ratio of the placeholder
+					if (pixelHeight > 0) {
+						pixelRatio = (double)pixelWidth/(double)pixelHeight;
+					}
+					
+					// Correct the height and width of the placeholder 
+					// to match the original image
+					if ((pictureRatio > pixelRatio) &&  (pictureRatio != 0.0)) {
+						pixelHeight = (int) Math.round(((double)pixelWidth / pictureRatio));
+					}
+					if ((pictureRatio < pixelRatio) &&  (pictureRatio != 0.0)) {
+						pixelWidth = (int) Math.round(((double)pixelHeight * pictureRatio));
+					}
+					
+					// Generate the image
 //					GraphicInfo graphicInfo = null;
 //					graphicInfo = new GraphicInfo(new FileInputStream(imagePath),
 //						    pixelWidth,
@@ -908,46 +756,41 @@ public class OfficeDocument {
 //					ITextContentService textContentService = textDocument.getTextService().getTextContentService();
 //					ITextDocumentImage textDocumentImage = textContentService.constructNewImage(graphicInfo);
 //					textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
-//
-//					// replace the placeholder
-//					iText.setText(cellText.replaceAll(Matcher.quoteReplacement(placeholderDisplayText), Matcher.quoteReplacement(value)));
-//					return;
-//				}
-//				catch (IOException e) {
-//				}
-//				catch (NOAException e) {
-//				}
-//				catch (TextException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			
-//			value = "";
-//		}
-//		
-//		else
-//			return;
-//
-//		// Interpret all parameters
-//		value = Placeholders.interpretParameters(placeholder,value);
-//		
-//		// Convert CRLF to LF 
-//		value = convertCRLF2LF(value);
-//
-//		// If iText's string is not empty, use that string instead of the template
+
+					// replace the placeholder
+					cellPlaceholder.replaceWith(cellText.replaceAll(Matcher.quoteReplacement(placeholderDisplayText), Matcher.quoteReplacement(value)));
+					return;
+				}
+				catch (IOException e) {
+				}
+			}
+			
+			value = "";
+		}
+		
+		else
+			return;
+
+		// Interpret all parameters
+		value = placeholders.interpretParameters(placeholder,value);
+		
+		// Convert CRLF to LF 
+		value = DataUtils.getInstance().convertCRLF2LF(value);
+
+		// If iText's string is not empty, use that string instead of the template
 //		String iTextString = iText.getText();
 //		if (!iTextString.isEmpty()) {
 //			cellText = iTextString;
 //		}
-//		
-//		// Set the text of the cell
-//		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
-//		iText.setText(cellText.replaceAll(placeholderDisplayText, Matcher.quoteReplacement(value)));
-//
-//		// And also add it to the user defined text fields in the OpenOffice
-//		// Writer document.
+		
+		// Set the text of the cell
+		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
+		cellPlaceholder.replaceWith(cellText.replaceAll(placeholderDisplayText, Matcher.quoteReplacement(value)));
+
+		// And also add it to the user defined text fields in the OpenOffice
+		// Writer document.
 //		addUserTextField(key, value, index);
-//	}
+	}
 
 	/**
 	 * Set a property and add it to the user defined text fields in the
@@ -967,12 +810,12 @@ public class OfficeDocument {
 		value = DataUtils.getInstance().convertCRLF2LF(value);
 		
 		// Set the user defined text field
-		addUserTextField(key, value);
+//		addUserTextField(key, value);
 		
 		// Extract parameters
 		for (String placeholder : allPlaceholders) {
-			if ( (placeholder.equals("<" + key+">")) || 
-					( (placeholder.startsWith("<" + key+"$")) && (placeholder.endsWith(">")) ) ) {
+			if ( (placeholder.equals(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+ PlaceholderNavigation.PLACEHOLDER_SUFFIX)) || 
+					( (placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$")) && (placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX)) ) ) {
 
 				// Set the placeholder
 				properties.setProperty(placeholder.toUpperCase(), placeholders.interpretParameters(placeholder, value));
@@ -995,51 +838,47 @@ public class OfficeDocument {
 	 * Fill the property list with the placeholder values
 	 */
 	private void setCommonProperties() {
-
 		if (document == null)
 			return;
         
-        documentSummary = new DocumentSummaryCalculator().calculate(this.document);
-
-		// Get all placeholders and set them
+		// Get all available placeholders and set them
 		for (String placeholder: placeholders.getPlaceholders()) {
 			setCommonProperty(placeholder);
 		}
 	}
-//
-//	/**
-//	 * Replace a placeholder with the content of the property in the property
-//	 * list.
-//	 * 
-//	 * @param placeholder
-//	 *            The placeholder and the name of the key in the property list
-//	 */
-//	private void replaceText(ITextField placeholder) {
-//		// Get the placeholder's text
-//		String placeholderDisplayText = placeholder.getDisplayText().toUpperCase();
-//		
-//		// Get the value of the Property list.
-//		String text = properties.getProperty(placeholderDisplayText);
-//		
-//		// If the String is non empty, replace the OS new line with the OpenOffice new line
-//		if(text != null){
-//			text = text.replaceAll(OSDependent.getNewLine(), "\r");
-//		}
-//		// Replace the placeholder with the value of the property list.
-//		placeholder.getTextRange().setText(text);
-//	}
+
+	/**
+	 * Replace a placeholder with the content of the property in the property
+	 * list.
+	 * 
+	 * @param placeholder
+	 *            The placeholder and the name of the key in the property list
+	 */
+	private void replaceText(PlaceholderNode placeholder) {
+		// Get the placeholder's text
+		String placeholderDisplayText = placeholder.getNodeText().toUpperCase();
+		
+		// Get the value of the Property list.
+		String text = properties.getProperty(placeholderDisplayText);
+		
+		// If the String is non empty, replace the OS new line with the OpenOffice new line
+		if(text != null){
+			text = text.replaceAll(System.lineSeparator(), "\r");
+		}
+		// Replace the placeholder with the value of the property list.
+		placeholder.replaceWith(text);
+	}
 	
 	/** 
 	 * Check whether there is already a document then do not 
 	*	generate one by the data, but open the existing one.
 	*/
 	public boolean testOpenAsExisting(Document document, Path template) {
-	    FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, context);
 		Path oODocumentFile = fo.getDocumentPath(
 				FileOrganizer.WITH_FILENAME,
 				FileOrganizer.WITH_EXTENSION, 
 				FileOrganizer.ODT, document);
-		
+
 		if (Files.exists(oODocumentFile) && document.getPrinted() &&
 				filesAreEqual(document.getPrintTemplate(),template)) {
 			return true;
@@ -1056,7 +895,7 @@ public class OfficeDocument {
      * @return
      *      The path as string
      */
-    public String getRelativeFolder(DocumentType doctype) {
+	private String getRelativeFolder(DocumentType doctype) {
         return "/Templates/" + doctype.getTypeAsString() + "/";
     }
     
@@ -1068,15 +907,15 @@ public class OfficeDocument {
      * @return
      *      The path as string
      */
-    public String getLocalizedRelativeFolder(DocumentType doctype) {
+    private String getLocalizedRelativeFolder(DocumentType doctype) {
         return "/" + preferences.getString(Constants.GENERAL_WORKSPACE) +
                 msg.configWorkspaceTemplatesName + "/" + doctype.getTypeAsString() + "/";
         
     }
     
     /**
-     * Check if 2 filenames are equal.
-     * Test only the relative path and use the parameter "folder" to
+     * Tests if 2 filenames are equal.
+     * Tests only the relative path and use the parameter "folder" to
      * separate the relative path from the absolute one.
      *  
      * @param fileName1
@@ -1086,7 +925,7 @@ public class OfficeDocument {
      * @return
      *      True, if both are equal
      */
-    public boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
+    private boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
         
         int pos;
         String otherFileName = fileName2.toString();
@@ -1103,8 +942,8 @@ public class OfficeDocument {
     }
     
     /**
-     * Test, if 2 template filenames are equal.
-     * The absolute path is ignored
+     * Tests if 2 template filenames are equal.
+     * The absolute path is ignored.
      * 
      * @param fileName1
      * @param template
@@ -1112,7 +951,7 @@ public class OfficeDocument {
      * @return
      *      True, if both filenames are equal
      */
-    public boolean filesAreEqual(String fileName1, Path template) {
+    private boolean filesAreEqual(String fileName1, Path template) {
         
         // Test, if also the absolute path is equal
         if (fileName1.equals(template))

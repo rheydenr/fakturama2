@@ -14,6 +14,7 @@ import org.odftoolkit.odfdom.pkg.OdfElement;
 import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -28,7 +29,20 @@ public class PlaceholderNode extends Selection {
 	}
 
 	public enum PlaceholderTableType {
-		ITEMS_TABLE, VATLIST_TABLE, NO_TABLE
+		ITEMS_TABLE("ITEM."), VATLIST_TABLE("VATLIST."), DISCOUNT_TABLE("ITEMS.DISCOUNT."), DEPOSIT_TABLE("DOCUMENT.DEPOSIT."), NO_TABLE("");
+		
+		private String key;
+		private PlaceholderTableType(String key) {
+		    this.key = key;
+		}
+		
+        /**
+         * @return the key
+         */
+        public final String getKey() {
+            return key;
+        }
+		
 	}
 
 	private Node node;
@@ -110,9 +124,9 @@ public class PlaceholderNode extends Selection {
 	 *            the replace text String
 	 * @return the replaced Node
 	 */
-	public Node replaceWith(String newText) {
+    public Node replaceWith(String newText) {
 		TextSpanElement span = new TextSpanElement((OdfFileDom) getNode().getOwnerDocument());
-		span.setTextContent(newText);
+		((Element)span).setTextContent(newText);
 		Node parentNode = getNode().getParentNode();
 		parentNode.replaceChild(span, getNode());
 		return span;
@@ -288,7 +302,7 @@ public class PlaceholderNode extends Selection {
 		this.tableType = tableType;
 	}
 
-	/**
+    /**
 	 * Compares the (text) content of this node to another
 	 * {@link PlaceholderNode}.
 	 *

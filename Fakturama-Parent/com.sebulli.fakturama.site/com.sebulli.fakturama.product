@@ -42,7 +42,6 @@
       </win>
    </launcher>
 
-
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
       <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</macos>
@@ -252,8 +251,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
-      <feature id="org.apache.commons.feature" version="3.2"/>
       <feature id="org.slf4j.osgi.feature"/>
+      <feature id="org.apache.commons.feature" version="3.3"/>
    </features>
 
    <configurations>

@@ -5,10 +5,11 @@ Bundle-SymbolicName: org.fakturama.print.openoffice
 Bundle-Version: 2.0.0.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: bin/.,lib/simple-odf-0.8.1-incubating-SNAPSHOT-jar-with-dependencies.jar
-Require-Bundle: org.apache.commons.lang3;bundle-version="3.3.2"
-Export-Package: org.apache.xerces.dom,
- org.odftoolkit.odfdom,
+Bundle-ClassPath: lib/simple-odf-0.8.2-incubating-SNAPSHOT-jar-with-dependencies.jar,
+ .
+Require-Bundle: org.apache.commons.lang3;bundle-version="3.4.0"
+Bundle-Vendor: Fakturama.org
+Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.odfdom.doc,
  org.odftoolkit.odfdom.doc.presentation,
  org.odftoolkit.odfdom.doc.table,
@@ -59,6 +60,13 @@ Export-Package: org.apache.xerces.dom,
  org.odftoolkit.odfdom.dom.rdfa,
  org.odftoolkit.odfdom.dom.style,
  org.odftoolkit.odfdom.dom.style.props,
+ org.odftoolkit.odfdom.incubator.doc.draw,
+ org.odftoolkit.odfdom.incubator.doc.number,
+ org.odftoolkit.odfdom.incubator.doc.office,
+ org.odftoolkit.odfdom.incubator.doc.style,
+ org.odftoolkit.odfdom.incubator.doc.text,
+ org.odftoolkit.odfdom.incubator.meta,
+ org.odftoolkit.odfdom.incubator.search,
  org.odftoolkit.odfdom.pkg,
  org.odftoolkit.odfdom.pkg.dsig,
  org.odftoolkit.odfdom.pkg.manifest,
@@ -78,4 +86,3 @@ Export-Package: org.apache.xerces.dom,
  org.odftoolkit.simple.table,
  org.odftoolkit.simple.text,
  org.odftoolkit.simple.text.list
-Bundle-Vendor: ww.Fakturama.org

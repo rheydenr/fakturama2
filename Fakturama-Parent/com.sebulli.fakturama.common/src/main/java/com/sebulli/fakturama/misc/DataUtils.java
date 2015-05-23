@@ -330,43 +330,43 @@ public class DataUtils {
     public Double round(Double d) {
         return (Math.round((d + EPSILON) * 100.0)) / 100.0;
     }
-//
-//    /**
-//     * Convert a double to a formatted string value. If the value has parts of a
-//     * cent, add ".."
-//     * 
-//     * @param d
-//     *            Double value to convert
-//     * @param twoDecimals
-//     *            <code>true</code>, if the value is displayed in the format 0.00
-//     * @return Converted value as String
-//     */
-//    private static String doubleToFormattedValue(Double d, boolean twoDecimals) {
-//
-//        // Calculate the floor cent value.
-//        // for negative values, use the ceil
-//        Double floorValue;
-//        if (d >= 0)
-//            floorValue = Math.floor(d * 100.0 + EPSILON) / 100.0;
-//        else
-//            floorValue = Math.ceil(d * 100.0 - EPSILON) / 100.0;
-//
-//        // Format as "0.00"
-//        NumberFormat numberFormat = NumberFormat.getNumberInstance();
-//        numberFormat.setGroupingUsed(useThousandsSeparator);
-//        if(twoDecimals) {
-//            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.00");
-//        } else {
-//            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.##");
-//        }
-//        String s = numberFormat.format(floorValue);
-//
-//        // Are there parts of a cent ? Add ".."
-//        if (Math.abs(d - floorValue) > 0.0002) {
-//            s += "..";
-//        }
-//        return s;
-//    }
+
+    /**
+     * Convert a double to a formatted string value. If the value has parts of a
+     * cent, add ".."
+     * 
+     * @param d
+     *            Double value to convert
+     * @param twoDecimals
+     *            <code>true</code>, if the value is displayed in the format 0.00
+     * @return Converted value as String
+     */
+    private String doubleToFormattedValue(Double d, boolean twoDecimals) {
+
+        // Calculate the floor cent value.
+        // for negative values, use the ceil
+        Double floorValue;
+        if (d >= 0)
+            floorValue = Math.floor(d * 100.0 + EPSILON) / 100.0;
+        else
+            floorValue = Math.ceil(d * 100.0 - EPSILON) / 100.0;
+
+        // Format as "0.00"
+        NumberFormat numberFormat = NumberFormat.getNumberInstance();
+        numberFormat.setGroupingUsed(useThousandsSeparator);
+        if(twoDecimals) {
+            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.00");
+        } else {
+            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.##");
+        }
+        String s = numberFormat.format(floorValue);
+
+        // Are there parts of a cent ? Add ".."
+        if (Math.abs(d - floorValue) > 0.0002) {
+            s += "..";
+        }
+        return s;
+    }
 
     /**
      * Convert a double to a formated string value. 
@@ -416,17 +416,17 @@ public class DataUtils {
         return percentageFormat.format(d);
     }
 
-//    /**
-//     * Convert a double to a formated quantity value. Same as conversion to a
-//     * formated value. But do not use 2 decimals.
-//     * 
-//     * @param d
-//     *            Value to convert to a quantity string.
-//     * @return Converted value as string
-//     */
-//    public static String DoubleToFormatedQuantity(Double d) {
-//        return doubleToFormattedValue(d, false);
-//    }
+    /**
+     * Convert a double to a formated quantity value. Same as conversion to a
+     * formated value. But do not use 2 decimals.
+     * 
+     * @param d
+     *            Value to convert to a quantity string.
+     * @return Converted value as string
+     */
+    public String DoubleToFormatedQuantity(Double d) {
+        return doubleToFormattedValue(d, false);
+    }
 
     /**
      * Convert a double to a formated price value. Same as conversion to a

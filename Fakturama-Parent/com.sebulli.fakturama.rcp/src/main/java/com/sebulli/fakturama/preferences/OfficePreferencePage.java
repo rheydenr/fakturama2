@@ -28,6 +28,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OSDependent;
 
 /**
@@ -37,32 +38,7 @@ import com.sebulli.fakturama.misc.OSDependent;
  */
 public class OfficePreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
-	/**
-     * 
-     */
-    public static final String PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD = "OPENOFFICE_START_IN_NEW_THREAD";
-
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT = "OPENOFFICE_PDF_PATH_FORMAT";
-
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT = "OPENOFFICE_ODT_PATH_FORMAT";
-
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPENOFFICE_ODT_PDF = "OPENOFFICE_ODT_PDF";
-
-    /**
-     * 
-     */
-    public static final String PREFERENCES_OPENOFFICE_PATH = "OPENOFFICE_PATH";
-    
-    @Inject
+	@Inject
     @Translation
     protected Messages msg;
 
@@ -88,7 +64,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.OPENOFFICE_PREFERENCE_PAGE);
 
-		String defaultValue = preferences.getString(PREFERENCES_OPENOFFICE_PATH);
+		String defaultValue = preferences.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
 		if (!defaultValue.isEmpty())
 			//T: Preference page "Office" - Label: Example of the default path. Format: (e.g. PATH).
 			//T: Only the "e.g." is translated
@@ -96,13 +72,13 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 
 		if (OSDependent.isOOApp())
 			//T: Preference page "Office" - Label: Office App
-			addField(new AppFieldEditor(PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent(), msg));
+			addField(new AppFieldEditor(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent(), msg));
 		else
 			//T: Preference page "Office" - Label: Office folder
-			addField(new DirectoryFieldEditor(PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeFolder + defaultValue, getFieldEditorParent()));
+			addField(new DirectoryFieldEditor(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeFolder + defaultValue, getFieldEditorParent()));
 
 		//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
-		addField(new RadioGroupFieldEditor(PREFERENCES_OPENOFFICE_ODT_PDF, msg.preferencesOfficeExportasLabel, 3, new String[][] { 
+		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, msg.preferencesOfficeExportasLabel, 3, new String[][] { 
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
 				{ msg.preferencesOfficeOnlyodtLabel, "ODT" },
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
@@ -112,13 +88,13 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 				getFieldEditorParent()));
 
 		//T: Preference page "Office" 
-		addField(new StringFieldEditor(PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, msg.preferencesOfficeFormatandpathodt, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, msg.preferencesOfficeFormatandpathodt, getFieldEditorParent()));
 		//T: Preference page "Office" 
-		addField(new StringFieldEditor(PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathpdf, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathpdf, getFieldEditorParent()));
 
 		
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"
-		addField(new BooleanFieldEditor(PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, msg.preferencesOfficeStartnewthread, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, msg.preferencesOfficeStartnewthread, getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -138,14 +114,14 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	public static void syncWithPreferencesFromDatabase(boolean write) {
         IPreferenceStore node = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
 		//PreferencesInDatabase.syncWithPreferencesFromDatabase("OPENOFFICE_PATH", write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPENOFFICE_ODT_PDF, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
 		
 		// Set the default value
 		// Search for the Office installation only if there is no path set.
-		String oOHome = node.getString(PREFERENCES_OPENOFFICE_PATH);
+		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
 		String defaultOOHome = "";
 
 		if (!write) {
@@ -157,7 +133,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 			else {
 				defaultOOHome = OSDependent.getOODefaultPath();
 			}
-			node.setValue(PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
+			node.setValue(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
 		}
 		
 	}
@@ -169,10 +145,10 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_OPENOFFICE_ODT_PDF, "ODT+PDF");
-		node.setDefault(PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
-		node.setDefault(PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");
-		node.setDefault(PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, true);
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, "ODT+PDF");
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, true);
 	}
 
 }

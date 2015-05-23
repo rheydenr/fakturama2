@@ -458,5 +458,30 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_YOURCOMPANY_COMPANY_NAME = "YOURCOMPANY_COMPANY_NAME";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD = "OPENOFFICE_START_IN_NEW_THREAD";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT = "OPENOFFICE_PDF_PATH_FORMAT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT = "OPENOFFICE_ODT_PATH_FORMAT";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPENOFFICE_ODT_PDF = "OPENOFFICE_ODT_PDF";
+
+    /**
+     * 
+     */
+    public static final String PREFERENCES_OPENOFFICE_PATH = "OPENOFFICE_PATH";
     
 }

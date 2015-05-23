@@ -610,7 +610,7 @@ public class Placeholders {
 	 * @return
 	 *  The extracted value
 	 */
-	private String extractParam(String placeholder, String param) {
+	String extractParam(String placeholder, String param) {
 		String s;
 		
 		// A parameter starts with "$" and ends with ":"
