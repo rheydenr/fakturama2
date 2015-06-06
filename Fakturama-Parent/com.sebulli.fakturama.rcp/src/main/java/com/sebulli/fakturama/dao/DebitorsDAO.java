@@ -8,7 +8,9 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -65,6 +67,35 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
             restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), "-1"));
         }
         return restrictions;
+    }
+    
+    @Override
+    public List<Debitor> findAll() {
+        return findAll(false);
+    }
+    
+    @Override
+    public List<Debitor> findAll(boolean forceRead) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Debitor> criteria = cb.createQuery(getEntityClass());
+        Root<Debitor> root = criteria.from(getEntityClass());
+        /*
+         * Since referenced contacts are stored as own data set we have to
+         * test for NULL customer number. If customer number is NULL we have
+         * an alternate contact which belongs to a "legal" contact and thus we 
+         * don't have to show them up.
+         */
+        CriteriaQuery<Debitor> cq = criteria.where(
+                cb.and(
+                        cb.not(root.get(Debitor_.deleted)),
+                        cb.isNotNull(root.get(Debitor_.customerNumber))
+                        )
+                );
+        TypedQuery<Debitor> query = getEntityManager().createQuery(cq);
+        if(forceRead) {
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        }
+        return query.getResultList();
     }
 
     /**

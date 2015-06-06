@@ -123,7 +123,7 @@ public class FileOrganizer {
 		address = replaceIllegalCharacters(address);
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{address\\}", address);
 		
-		String name = document.getContact().getName();
+		String name = document.getBillingContact().getName();
 		name = replaceIllegalCharacters(name);
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{name\\}", name);
 		

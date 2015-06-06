@@ -138,7 +138,7 @@ public class CustomerStatistics {
 			
 			// Compare the the address
             if (!byID && address.length() > 10 && 
-				DataUtils.getInstance().similarity(contactUtil.getAddressAsString(document.getContact()), address) > 0.7) {
+				DataUtils.getInstance().similarity(contactUtil.getAddressAsString(document.getBillingContact()), address) > 0.7) {
 				customerFound = true;
 			}
 			

@@ -783,8 +783,10 @@ public class DataUtils {
     }
     
     public String getFormattedLocalizedDate(Date date) {
-        LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+        if(date != null) {
+            LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+        } else { return ""; }
     }
     
     /**

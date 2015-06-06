@@ -424,7 +424,7 @@ public class DocumentEditor extends Editor<Document> {
             if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
-			document.getAdditionalInfo().setDeliveryAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 
 			// Use the delivery address if the billing address is empty
 			if (billingAddress.isEmpty()) {
@@ -438,12 +438,11 @@ public class DocumentEditor extends Editor<Document> {
 			     * If no addressId was given (no contact selected) then we use
 			     * the text field content for the manual address.
 			     */
-    			document.getAdditionalInfo().setManualAddress(billingAddress);
-    			document.setManualAddress(billingAddress);
+    			document.getBillingContact().getAddress().setManualAddress(billingAddress);
 			}
 		}
 		else {
-			if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getContact()), txtAddress.getText())) {
+			if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
 
@@ -453,13 +452,11 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			if (addressId != null) {
-				addressById = contactUtil.getAddressAsString(document.getContact());
+				addressById = contactUtil.getAddressAsString(document.getBillingContact());
 //				document.setContact(addressId);  // done by Databinding
 			} else {
-	            document.getAdditionalInfo().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-	            document.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			document.getAdditionalInfo().setDeliveryAddress(deliveryAddress);
-			document.setManualDeliveryAddress(deliveryAddress);
+	            document.getBillingContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+	            document.getDeliveryContact().getAddress().setManualAddress(deliveryAddress);
 			}
 		}
 
@@ -605,7 +602,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
 		if (addressId != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(document.getContact()));
+			document.setAddressFirstLine(contactUtil.getNameWithCompany(document.getBillingContact()));
 		}
 		else {
 			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
@@ -802,7 +799,7 @@ public class DocumentEditor extends Editor<Document> {
 		// These variables contain settings that are not in
 		// visible SWT widgets.
 		duedays = document.getDueDays();
-		addressId = document.getContact();
+		addressId = document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
@@ -820,7 +817,7 @@ public class DocumentEditor extends Editor<Document> {
             }
         }
 
-        billingAddress = contactUtil.getAddressAsString(document.getContact());
+        billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
 		deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 
         showOrderStatisticDialog(parent);
@@ -915,7 +912,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Do the calculation
-        documentSummary = documentSummaryCalculator.calculate(docItems,
+        documentSummary = documentSummaryCalculator.calculate(null, docItems,
                 document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
                 shipping.getShippingVat(), document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), discount,
                 document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
@@ -1296,13 +1293,13 @@ public class DocumentEditor extends Editor<Document> {
 	private void setAddress(Contact contact) {
 		// Use delivery address, if it's a delivery note
 		if (documentType == DocumentType.DELIVERY) {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact.getDeliveryContacts()));
+		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts()));
 		} else {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact));
 		}
 		
 		billingAddress = contactUtil.getAddressAsString(contact);
-		deliveryAddress = contactUtil.getAddressAsString(contact.getDeliveryContacts());
+		deliveryAddress = contactUtil.getAddressAsString(contact.getAlternateContacts());
 
 		this.addressId = contact;
 
@@ -1723,7 +1720,7 @@ public class DocumentEditor extends Editor<Document> {
 //				    log.error(e1, "Error opening Editor: " + ContactEditor.ID);
 //				}
 			    
-			    document.setManualAddress(null);
+			    document.getBillingContact().getAddress().setManualAddress(null);
                 getMDirtyablePart().setDirty(true);
 //                document.setContact(...);
 			}
@@ -1739,7 +1736,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (documentType == DocumentType.DELIVERY) {
 			txtAddress.setText(contactUtil.getAddressAsString(document.getDeliveryContact()));
 		} else {
-			txtAddress.setText(contactUtil.getAddressAsString(document.getContact()));
+			txtAddress.setText(contactUtil.getAddressAsString(document.getBillingContact()));
 		}
 		
 		/*
@@ -1756,7 +1753,7 @@ public class DocumentEditor extends Editor<Document> {
             
             @Override
             public void modifyText(ModifyEvent e) {
-//		        if(!contactUtil.getAddressAsString(document.getContact()).contentEquals(txtAddress.getText())) {
+//		        if(!contactUtil.getAddressAsString(document.getBillingContact()).contentEquals(txtAddress.getText())) {
 //		            document.setManualAddress(txtAddress.getText());
 //		            document.setContact(null);
 		            getMDirtyablePart().setDirty(true);
@@ -2314,9 +2311,9 @@ public class DocumentEditor extends Editor<Document> {
         if (documentType == DocumentType.ORDER && preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
-			customerStaticstics.setContact(document.getContact());
+			customerStaticstics.setContact(document.getBillingContact());
 			if (preferences.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
-				customerStaticstics.setAddress(document.getManualAddress());
+				customerStaticstics.setAddress(document.getBillingContact().getAddress().getManualAddress());
 	            customerStaticstics.makeStatistics(true);
 			} else {	
                 customerStaticstics.makeStatistics(false);
@@ -2376,8 +2373,8 @@ public class DocumentEditor extends Editor<Document> {
 //                Contact contact = (Contact) selectionService.getSelection();
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!
-                document.setManualAddress(null);
-                document.setContact(contact);
+                document.getBillingContact().getAddress().setManualAddress(null);
+                document.setBillingContact(contact);
                 addressId = contact;
                 txtAddress.setText(contactUtil.getAddressAsString(contact));
                 getMDirtyablePart().setDirty(true);

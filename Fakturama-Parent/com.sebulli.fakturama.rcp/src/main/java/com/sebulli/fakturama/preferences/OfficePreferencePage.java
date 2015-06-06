@@ -16,8 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -26,7 +25,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OSDependent;
@@ -42,8 +40,8 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
     @Translation
     protected Messages msg;
 
-    @Inject
-    @Preference(value=InstanceScope.SCOPE)
+    @Inject @Optional
+//    @Preference(value=InstanceScope.SCOPE)
     private IPreferenceStore preferences;
 
     /**
@@ -112,30 +110,11 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	 *            TRUE: Write to the data base
 	 */
 	public static void syncWithPreferencesFromDatabase(boolean write) {
-        IPreferenceStore node = new ScopedPreferenceStore(InstanceScope.INSTANCE, "com.sebulli.fakturama.preferences");   
-		//PreferencesInDatabase.syncWithPreferencesFromDatabase("OPENOFFICE_PATH", write);
+		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PATH, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
 		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
-		
-		// Set the default value
-		// Search for the Office installation only if there is no path set.
-		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
-		String defaultOOHome = "";
-
-		if (!write) {
-			if (oOHome.isEmpty()){
-//				defaultOOHome = OfficeStarter.getHome();
-				if (defaultOOHome.isEmpty())
-					defaultOOHome = OSDependent.getOODefaultPath();
-			}
-			else {
-				defaultOOHome = OSDependent.getOODefaultPath();
-			}
-			node.setValue(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
-		}
-		
 	}
 
 	/**
@@ -149,6 +128,21 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, true);
+		
+		// Set the default value
+		// Search for the Office installation only if there is no path set.
+		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
+		String defaultOOHome = "";
+
+			if (oOHome.isEmpty()){
+//				defaultOOHome = OfficeStarter.getHome();
+				if (defaultOOHome.isEmpty())
+					defaultOOHome = OSDependent.getOODefaultPath();
+			}
+			else {
+				defaultOOHome = OSDependent.getOODefaultPath();
+			}
+			node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
 	}
 
 }

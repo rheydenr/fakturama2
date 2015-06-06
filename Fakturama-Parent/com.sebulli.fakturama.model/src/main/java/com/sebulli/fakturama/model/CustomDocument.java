@@ -3,9 +3,6 @@
  */
 package com.sebulli.fakturama.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.sebulli.fakturama.oldmodel.OldDocuments;
 
 
@@ -31,13 +28,7 @@ public class CustomDocument extends Document {
 	private String shippingdescription;
 	private ShippingVatType shippingAutoVat;
 	private Double shippingValue;
-	
-	/**
-	 * A manually edited address (which doesn't point to an existing Address entry).
-	 */
-	private String manualAddress = null;
-		
-	private String deliveryAddress = null;
+
 //	private String paymentName = null;
 //	private String paymentText = null;
 //	private String paymentDescription = null;
@@ -162,32 +153,6 @@ public class CustomDocument extends Document {
 		setShipping(null);
 		this.shippingValue = shippingValue;
 	}
-
-	/**
-	 * @return the manualAddress
-	 */
-	public String getAddressAsString() {
-		if(getContact() != null && getContact().getAddress() != null) {
-			return createAddressString(getContact());
-		} else {
-			return manualAddress;
-		}
-	}
-
-	private String createAddressString(Contact contact) {
-		Address address = contact.getAddress();
-		return String.format("", contact.getFirstName(), contact.getName());
-	}
-
-	/**
-	 * @param manualAddress the manualAddress to set
-	 */
-	public void setAddress(String manualAddress) {
-		setContact(null);
-		this.manualAddress = manualAddress;
-	}
-	
-	
 	
 /*
 //

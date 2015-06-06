@@ -28,6 +28,7 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -335,7 +336,7 @@ private Menu createContextMenu(NatTable natTable) {
                     // we have to build the picture path
                     // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
                     String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    if (imgPath != null) {
+                    if (StringUtils.isNotBlank(imgPath)) {
                         String picturePath = preferences.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
                         retval = picturePath + imgPath;
                     } else {

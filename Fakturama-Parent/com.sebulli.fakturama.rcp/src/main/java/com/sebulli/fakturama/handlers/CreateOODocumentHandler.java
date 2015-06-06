@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -61,6 +62,8 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class CreateOODocumentHandler {
 
+    private static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
+
     @Inject
     @Translation
     protected Messages msg;
@@ -71,8 +74,10 @@ public class CreateOODocumentHandler {
     @Inject
     private IPreferenceStore preferences;
 
+    @Inject
+    private Logger log;
+
     private List<Path> templates = new ArrayList<>();
-    private Path template;
     private DocumentEditor documentEditor;
 
     //T: Text of the action
@@ -113,8 +118,9 @@ public class CreateOODocumentHandler {
     private void scanPathForTemplates(Path templatePath) {
         try {
             if(Files.exists(templatePath)) {
-                templates = Files.list(templatePath).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".ott"))
-                        .sorted(Comparator.comparing((Path p) -> p.getFileName().toString().toLowerCase())).collect(Collectors.toList());
+                templates = Files.list(templatePath).filter(f -> f.getFileName().toString().toLowerCase().endsWith(OO_TEMPLATE_FILEEXTENSION))
+                        .sorted(Comparator.comparing((Path p) -> p.getFileName().toString().toLowerCase()))
+                        .collect(Collectors.toList());
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -133,6 +139,7 @@ public class CreateOODocumentHandler {
         final EModelService modelService,
         final EPartService partService)
         throws InvocationTargetException, InterruptedException {
+    Path template;
     // at first find the PartStack "detailpanel"
     MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
     MPart activePart = (MPart)documentPartStack.getSelectedElement();
@@ -162,7 +169,7 @@ public class CreateOODocumentHandler {
                 for (int i = 0; i < templates.size(); i++) {
                     template = templates.get(i);
                     MenuItem item = new MenuItem(menu, SWT.PUSH);
-                    item.setText(template.getFileName().toString());
+                    item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(), OO_TEMPLATE_FILEEXTENSION));
                     item.setData(template);
                     item.addListener(SWT.Selection, new Listener() {
                         public void handleEvent(Event e) {
@@ -223,22 +230,23 @@ public class CreateOODocumentHandler {
             MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, null, msg.dialogPrintooDocumentalreadycreated,
                     MessageDialog.INFORMATION, dialogButtonLabels, 0);
             int answer = md.open();
-            if (md.getReturnCode() != MessageDialog.CANCEL) {
+            // Attention: The return code is the *position* of a button, not the button value itself!
+            if (md.getReturnCode() != 2) {
                 od.setDocument(document);
                 od.setTemplate(template);
-                if (answer == SWT.YES) {
-                    System.out.println("open doc");
+                if (answer == 0) {
+                    log.debug("open doc");
                     od.createDocument(false);
                 }
-                if (answer == SWT.NO) {
-                    System.out.println("create doc");
+                if (answer == 1) {
+                    log.debug("create doc");
                     od.createDocument(true);
                 }
             }
         } else {
             od.setDocument(document);
             od.setTemplate(template);
-            System.out.println("******************* open NEW doc");
+            log.debug("******************* open NEW doc");
             od.createDocument(false);
         }
     }

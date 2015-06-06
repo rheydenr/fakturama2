@@ -4,6 +4,7 @@
 package com.sebulli.fakturama.util;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -159,32 +160,39 @@ public class ContactUtil {
 		String addressFormat = "";
 		String address = "";
 		if(contact != null) {
-    
-    		// Get the format string
-    		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
-    
-    		// Hide the following countries
-    		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
-    		String[] hideCountries = hideCountriesString.split(",");
-    		for (String hideCountry : hideCountries) {
-    			if (StringUtils.defaultString(contact.getAddress().getCountryCode()).equalsIgnoreCase(hideCountry)) {
-    				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
-    			}
-    		}
-    
-    		// Get each line
-    		String[] addressFormatLines = addressFormat.split("<br>");
-    		for (String addressFormatLine : addressFormatLines) {
-    			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
-    			String trimmedAddressLine = formatedAddressLine.trim();
-    
-    			if (formatedAddressLine.equals(addressFormatLine) || (!trimmedAddressLine.isEmpty())) {
-    				if (!address.isEmpty())
-    					address += "\n";
-    			}
-    
-    			address += trimmedAddressLine;
-    		}
+		    
+		    if(contact.getAddress().getManualAddress() != null) {
+		        // if a manual address is set we use this one
+		        address = contact.getAddress().getManualAddress();
+		    } else {
+		        // else we build an address string from address fields
+		        
+        		// Get the format string
+        		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
+        
+        		// Hide the following countries
+        		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
+        		String[] hideCountries = hideCountriesString.split(",");
+        		for (String hideCountry : hideCountries) {
+        			if (StringUtils.defaultString(contact.getAddress().getCountryCode()).equalsIgnoreCase(hideCountry)) {
+        				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
+        			}
+        		}
+        
+        		// Get each line
+        		String[] addressFormatLines = addressFormat.split("<br>");
+        		for (String addressFormatLine : addressFormatLines) {
+        			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
+        			String trimmedAddressLine = formatedAddressLine.trim();
+        
+        			if (formatedAddressLine.equals(addressFormatLine) || (!trimmedAddressLine.isEmpty())) {
+        				if (!address.isEmpty())
+        					address += "\n";
+        			}
+        
+        			address += trimmedAddressLine;
+        		}
+		    }
 		}
 		
 		// return the complete address
@@ -214,9 +222,11 @@ public class ContactUtil {
 			formatString = replaceAllWithSpace(formatString, "\\{city\\}", address.getCity());
 			
 			// determine the country from country code
-			Locale cLocale = new Locale.Builder().setRegion(address.getCountryCode()).build();
-			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
-	
+			if(address.getCountryCode() != null) {
+    			Locale cLocale = new Locale.Builder().setRegion(address.getCountryCode()).build();
+    			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
+			}
+			
 			String countrycode = StringUtils.defaultString(address.getCountryCode());
 	
 			if (!countrycode.isEmpty()) {
@@ -271,18 +281,8 @@ public class ContactUtil {
      *  <code>true</code>, if both are equal
      */
     public Boolean deliveryAddressEqualsBillingAddress(Document document) {
-        String billingAddress;
-        String deliveryAddress = document.getManualDeliveryAddress();
-        if(document.getContact() != null) {
-            billingAddress = getAddressAsString(document.getContact());
-        } else {
-            billingAddress = document.getManualAddress();
-        }
-        if(document.getDeliveryContact() != null) {
-            deliveryAddress = getAddressAsString(document.getDeliveryContact());
-        } else {
-            deliveryAddress = document.getManualDeliveryAddress();
-        }
+        String billingAddress = getAddressAsString(document.getBillingContact());
+        String deliveryAddress = getAddressAsString(document.getDeliveryContact());
 
 //        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
 //        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
@@ -309,14 +309,23 @@ public class ContactUtil {
 		return eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON);
 	}
 
-	private String replaceAllWithSpace(String s, String exp, String replacement) {
-		String replacedString;
-		if (replacement.isEmpty())
-			replacedString = s.replaceAll(exp + " ", "");
-		else
-			replacedString = s;
-		replacedString = replacedString.replaceAll(exp, replacement);
-		return replacedString;
+	private String replaceAllWithSpace(final String s, final String exp, final String replacement) {
+		String replacedString = StringUtils.isBlank(replacement) ? s.replaceAll(exp + " ", "") : s;
+		return replacedString.replaceAll(exp, Optional.ofNullable(replacement).orElse(""));
 	}
+
+    /**
+     * @param msg the msg to set
+     */
+    public final void setMsg(Messages msg) {
+        this.msg = msg;
+    }
+
+    /**
+     * @param eclipsePrefs the eclipsePrefs to set
+     */
+    public final void setEclipsePrefs(IPreferenceStore eclipsePrefs) {
+        this.eclipsePrefs = eclipsePrefs;
+    }
     
 }

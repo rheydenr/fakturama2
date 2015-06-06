@@ -4,7 +4,6 @@
 package com.sebulli.fakturama.calculate;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -44,14 +43,14 @@ public class DocumentSummaryCalculator {
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
         MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
-        return calculate(dataSetDocument.getItems(), dataSetDocument.getShippingValue(), dataSetDocument.getShipping().getShippingVat(), 
+        return calculate(null, dataSetDocument.getItems(), dataSetDocument.getShippingValue(), dataSetDocument.getShipping().getShippingVat(), 
                 dataSetDocument.getShipping().getAutoVat(), dataSetDocument.getItemsRebate(), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
     
     public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
             int netGross, MonetaryAmount deposit) {
-        return calculate(items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, Double.valueOf(1.0), netGross, deposit);
+        return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, Double.valueOf(1.0), netGross, deposit);
     }
 	/**
 	 * Calculates the tax, gross and sum of a document
@@ -79,7 +78,7 @@ public class DocumentSummaryCalculator {
 	 * @param deposit
 	 * @param shippingValue 
 	 */
-    public DocumentSummary calculate(List<DocumentItem> items, Double shippingValue, VAT shippingVat,
+    public DocumentSummary calculate(VatSummarySet globalVatSummarySet, List<DocumentItem> items, Double shippingValue, VAT shippingVat,
             ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, Double scaleFactor, 
             int netGross, MonetaryAmount deposit) {
 		DocumentSummary retval = new DocumentSummary();
@@ -400,10 +399,9 @@ public class DocumentSummaryCalculator {
 		documentVatSummaryItems.roundAllEntries();
 
 		// Add the entries of the document summary set also to the global one
-		// FIXME is not used at the moment
-//		if (document.globalVatSummarySet() != null) {
-//			globalVatSummarySet.addVatSummarySet(documentVatSummaryItems);
-//    }
+		if (globalVatSummarySet != null) {
+			globalVatSummarySet.addVatSummarySet(documentVatSummaryItems);
+    }
 
 		return retval;
 	}

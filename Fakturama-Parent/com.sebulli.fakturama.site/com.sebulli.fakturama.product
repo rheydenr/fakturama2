@@ -38,7 +38,8 @@
             winMediumHigh="app/app_32_32.bmp"
             winMediumLow="app/app_32_8.bmp"
             winLargeHigh="app/app_48_32.bmp"
-            winLargeLow="app/app_48_8.bmp"/>
+            winLargeLow="app/app_48_8.bmp"
+            winExtraLargeHigh="app/app_256.bmp"/>
       </win>
    </launcher>
 

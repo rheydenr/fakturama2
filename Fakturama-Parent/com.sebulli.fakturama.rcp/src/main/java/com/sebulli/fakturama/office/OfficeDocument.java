@@ -15,13 +15,14 @@
 package com.sebulli.fakturama.office;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -32,16 +33,22 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
+import org.odftoolkit.simple.Component;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.common.navigation.PlaceholderNavigation;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode;
@@ -57,6 +64,8 @@ import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
+import com.sebulli.fakturama.dto.VatSummaryItem;
+import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -114,6 +123,8 @@ public class OfficeDocument {
 
     private FileOrganizer fo;
     
+    private Shell shell;
+    
     public OfficeDocument() {}
 	
 	/**
@@ -133,9 +144,10 @@ public class OfficeDocument {
 	}
     
     @PostConstruct
-    public void init() {
+    public void init(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         fo = ContextInjectionFactory.make(FileOrganizer.class, context);
         placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+        this.shell = shell;
     }
 	
 	public void createDocument(boolean forceRecreation) {
@@ -177,12 +189,19 @@ public class OfficeDocument {
                                     PlaceholderTableType.DISCOUNT_TABLE, 
                                     PlaceholderTableType.DEPOSIT_TABLE)
                             .build();
-            List<PlaceholderNode> placeholderNodes = navi.getPlaceHolders();
+            List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
 
             // Create a new ArrayList with all placeholders
 			// Collect all placeholders
 			allPlaceholders = placeholderNodes.stream().map(pn -> pn.getNodeText()).collect(Collectors.toList());
 			
+			
+//			// TEST ONLY *********************************************
+//			for (PlaceholderNode placeholderNode : placeholderNodes) {
+//                System.out.println(placeholderNode.getNodeText() + " is child of " + placeholderNode.getNode().getParentNode());
+//            }
+//			
+//			
 			// Fill the property list with the placeholder values
 			properties = new Properties();
 			setCommonProperties();
@@ -194,6 +213,7 @@ public class OfficeDocument {
 			List<DocumentItem> itemDataSets = document.getItems();
 			
 	        for (PlaceholderNode placeholderNode : placeholderNodes) {
+	            if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
 	            switch (placeholderNode.getNodeType()) {
 	            case NORMAL_NODE:
 //	              // Replace all other placeholders
@@ -213,46 +233,15 @@ public class OfficeDocument {
 	                    switch (placeholderNode.getTableType()) {
                         case ITEMS_TABLE:
                 			// Fill the item table with the items
-    	                    fillItemTableWithData(placeholderNode.getNodeText(), itemDataSets, pTable, pRowTemplate);
+    	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
                         case VATLIST_TABLE:
                             
                           // Get the VAT summary of the UniDataSet document
-//                          VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
-//                          vatSummarySetManager.add(this.document, 1.0);
-                
-                          int vatListTemplateRow = 0;
-                
-                              // Add the necessary rows for the VAT entries
-//                              vatListTemplateRow = vatListCell.getName().getRowIndex();
-//                              lastVatTemplateRow = vatListTemplateRow + vatSummarySetManager.size();
-//                              vatListTable.addRow(vatListTemplateRow, vatSummarySetManager.size());
-                //
-//                              // Scan all placeholders for the VAT placeholders
-//                              for (int i = 0; i < placeholders.length; i++) {
-                //
-//                                  // Get the placeholder text
-//                                  ITextField placeholder = placeholders[i];
-//                                  String placeholderDisplayText = placeholder.getDisplayText().toUpperCase();
-                //
-//                                  if (placeholder.getTextRange().getCell() != null) {
-                //
-//                                      // Test, if the placeholder is in the VAT table
-//                                      ITextTable textTable = placeholder.getTextRange().getCell().getTextTable();
-//                                      if (textTable.getName().equals(vatListTable.getName())) {
-                //
-//                                          // Fill the corresponding table column with the
-//                                          // VAT data.
-//                                          int column = placeholder.getTextRange().getCell().getName().getColumnIndex();
-//                                          ITextTableCell c = placeholder.getTextRange().getCell();
-//                                          String cellText = c.getTextService().getText().getText();
-//                                          replaceVatListPlaceholder(placeholderDisplayText, column, vatSummarySetManager.getVatSummaryItems(), vatListTable,
-//                                                  vatListTemplateRow, cellText);
-//                                      }
-//                                  }
-//                              }
-                          
-                            break;
+                          VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+                          vatSummarySetManager.add(this.document, 1.0);
+                          fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate);
+                          break;
                         default:
                             break;
                         }
@@ -271,6 +260,7 @@ public class OfficeDocument {
 	            }}
 //			// Save the document
 			saveOODocument(textdoc);
+			MessageDialog.openInformation(shell, "Info", "Fäddich!");
 //
 //			// Print and close the OpenOffice document
 //			/*
@@ -290,32 +280,26 @@ public class OfficeDocument {
 	private void saveOODocument(TextDocument textdoc) {
 
         boolean wasSaved = false;
+        textdoc.getOfficeMetadata().setCreator("Fakturama application");
+        textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
 
-        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
 
             // Create the directories, if they don't exist.
-            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.PDF, document);
-
-            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF,
-                    document));) {
-                if (Files.notExists(directory)) {
+            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.ODT, document);
+            if (Files.notExists(directory)) {
+                try {
                     Files.createDirectories(directory);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
+            }
 
-                // Add the time String, if this file is still existing
-                /*
-                File file = new File(savePath + ".odt");
-                if (file.exists()) {
-                	DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-                	savePath += "_" + dfmt.format(new Date());
-                }
-                */
+            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
+                    document));) {
 
                 // Save the document
-                // FIXME How to create a PDF/A1 document?
-                // swriter.exe -convert-to pdf --outdir d:\eclipse44SR1\workspace\RheTest\mpf d:\eclipse44SR1\workspace\RheTest\Document_Test2.ott-Generated.odt
-                //				PDFFilter pdfFilter = new PDFFilter();
-                //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
                 textdoc.save(fs);
                 wasSaved = true;
             } catch (Exception e) {
@@ -323,28 +307,34 @@ public class OfficeDocument {
             }
         }
 
-        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
 
             // Create the directories, if they don't exist.
-            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.ODT, document);
-
-            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
-                    document));) {
+            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.PDF, document);
                 if (Files.notExists(directory)) {
-                    Files.createDirectories(directory);
+                    try {
+                        Files.createDirectories(directory);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
 
-                // Add the time String, if this file is still existing
-                /*
-                File file = new File(savePath + ".odt");
-                if (file.exists()) {
-                	DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-                	savePath += "_" + dfmt.format(new Date());
-                }
-                */
+            try {
 
                 // Save the document
-                textdoc.save(fs);
+                String ooPath = preferences.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
+                // FIXME How to create a PDF/A1 document?
+                String sysCall = String.format("%sprogram%sswriter -convert-to pdf --outdir %s %s", 
+                        ooPath, File.separator, 
+                        directory.toAbsolutePath(), 
+                        fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
+                                document).toAbsolutePath());
+                //				PDFFilter pdfFilter = new PDFFilter();
+                //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+                
+                // TODO error handling!!!
+                Runtime.getRuntime().exec(sysCall);
                 wasSaved = true;
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice Document");
@@ -379,12 +369,10 @@ public class OfficeDocument {
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
-
         }
-
     }
 
-    //
+    
 //	/**
 //	 * Replace one column of the VAT table with the VAT entries
 //	 * 
@@ -401,81 +389,109 @@ public class OfficeDocument {
 //	 * @param cellText
 //	 *            The cell's text.
 //	 */
-//	private void replaceVatListPlaceholder(String placeholderDisplayText, int column, VatSummarySet vatSummarySet, ITextTable vatListTable, int templateRow,
-//			String cellText) {
-//		int i = 0;
-//
+//	private void replaceVatListPlaceholder(VatSummarySet vatSummarySet, PlaceholderNode cellPlaceholder) {
 //		// Get all VATs
-//		for (Iterator<VatSummaryItem> iterator = vatSummarySet.iterator(); iterator.hasNext(); i++) {
-//			VatSummaryItem vatSummaryItem = iterator.next();
-//			try {
-//
+//        for (VatSummaryItem vatSummaryItem : vatSummarySet) {
 //				// Get the cell and fill the cell content
-//				IText iText = vatListTable.getCell(column, templateRow + i).getTextService().getText();
-//				fillVatTableWithData(placeholderDisplayText, vatSummaryItem, iText, i, cellText);
-//
-//			}
-//			catch (TextException e) {
-//				Logger.logError(e, "Error replacing Vat List Placeholders");
-//			}
+//				fillVatTableWithData(vatSummaryItem, cellPlaceholder);
 //		}
 //	}
+	
+	private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager,Table pTable, Row pRowTemplate) {
+        // Get all items
+        int cellCount = pRowTemplate.getCellCount();
+        for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
+//               clone one row from template
+                TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+                // we always insert only ONE row to the table
+                Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+                pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+                Row newRow = Row.getInstance(newRowElement);
+                // find all placeholders within row
+                for (int j = 0; j < cellCount; j++) {
+//                    System.out.print(".");
+                    // a template cell
+                    Cell currentCell = newRow.getCellByIndex(j);
+                    // make a copy of the template cell
+                    Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
-//	/**
-//	 * Fill the cell of the VAT table with the VAT data
-//	 * 
-//	 * @param placeholderDisplayText
-//	 *            Column header
-//	 * @param key
-//	 *            VAT key (VAT description)
-//	 * @param value
-//	 *            VAT value
-//	 * @param iText
-//	 *            The Text that is set
-//	 * @param index
-//	 *            Index of the VAT entry
-//	 * @param cellText
-//	 *            The cell's text.
-//	 */
-//	private void fillVatTableWithData(String placeholderDisplayText, VatSummaryItem vatSummaryItem, IText iText, int index, String cellText) {
-//		String key = vatSummaryItem.getVatName();
-//		String value = Double.toString(vatSummaryItem.getVat());
-//		// Get the text of the column. This is to determine, if it is the column
-//		// with the VAT description or with the VAT value
-//		String textValue;
-//		String textKey = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
-//
-//		// It's the VAT description
-//		if (placeholderDisplayText.equals("<VATLIST.DESCRIPTIONS>")) {
-//			textValue = key;
-//		}
-//		// It's the VAT value
-//		else if (placeholderDisplayText.equals("<VATLIST.VALUES>")) {
-//			textValue = DataUtils.DoubleToFormatedPriceRound(Double.parseDouble(value));
-//		}
-//		else if (placeholderDisplayText.equals("<VATLIST.PERCENT>")) {
-//			textValue = DataUtils.DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
-//		}
-//		else if (placeholderDisplayText.equals("<VATLIST.VATSUBTOTAL>")) {
-//			textValue = DataUtils.DoubleToFormatedPrice(vatSummaryItem.getNet());
-//		}
-//		else
-//			return;
-//
-//		// Set the text
-//		iText.setText(cellText.replaceAll(placeholderDisplayText, Matcher.quoteReplacement(textValue)));
-//
-//		// And also add it to the user defined text fields in the OpenOffice
-//		// Writer document.
+                    // find all placeholders in a cell
+                    NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+
+                    /*
+                     * The appended row only has default cells (without styles etc.). Therefore we have to take
+                     * the template cell and replace the current cell with it.
+                     */
+                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                    // replace placeholders in this cell with current content
+                    int countOfPlaceholders = cellPlaceholders.getLength();
+                    for (int k = 0; k < countOfPlaceholders; k++) {
+                      Node item = cellPlaceholders.item(0);
+                      PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                      fillVatTableWithData(vatSummaryItem, cellPlaceholder);
+                    }
+                }
+//                System.out.println();
+            }
+	}
+
+	/**
+	 * Fill the cell of the VAT table with the VAT data
+	 * 
+	 * @param placeholderDisplayText
+	 *            Column header
+	 * @param key
+	 *            VAT key (VAT description)
+	 * @param value
+	 *            VAT value
+	 * @param iText
+	 *            The Text that is set
+	 * @param index
+	 *            Index of the VAT entry
+	 * @param cellText
+	 *            The cell's text.
+	 * @return 
+	 */
+	private Component fillVatTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
+        
+        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+        String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+        
+		String key = vatSummaryItem.getVatName();
+		String value = DataUtils.getInstance().formatCurrency(vatSummaryItem.getVat());
+		// Get the text of the column. This is to determine, if it is the column
+		// with the VAT description or with the VAT value
+		String textValue;
+
+		// It's the VAT description
+		if (placeholder.equals("VATLIST.DESCRIPTIONS")) {
+			textValue = key;
+		}
+		// It's the VAT value
+		else if (placeholder.equals("VATLIST.VALUES")) {
+			textValue = value;
+		}
+		else if (placeholder.equals("VATLIST.PERCENT")) {
+			textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
+		}
+		else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
+			textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+		}
+		else
+			return null;
+
+		// Set the text
+		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
+
+		// And also add it to the user defined text fields in the OpenOffice
+		// Writer document.
 //		addUserTextField(textKey, textValue, index);
-//
-//	}
+
+	}
 
 	/**
 	 * Fill all cells of the item table with the item data
 	 * 
-	 * @param placeholderDisplayText
-	 *            Column header
 	 * @param column
 	 *            The index of the column
 	 * @param itemDataSets
@@ -487,78 +503,59 @@ public class OfficeDocument {
 	 * @param cellText
 	 *            The cell's text.
 	 */
-	private void fillItemTableWithData(String placeholderDisplayText, List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate
-			) {
-
-//				// Get a reference to the cell content
-//				IText iText = itemsTable.getCell(column, lastTemplateRow + row).getTextService().getText();
-//
-//				// Get the item
-//				DataSetItem item = itemDataSets.get(row);
-//
-//				// Set the cell content
-//				fillItemTableWithData(row, placeholderDisplayText, item, iText, row, cellText);
-//
-
+	private void fillItemTableWithData(List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate) {
         // Get all items
         int cellCount = pRowTemplate.getCellCount();
         for (int row = 0; row < itemDataSets.size(); row++) {
-//                System.out.print("Durchlauf: "+m);
+//               clone one row from template
                 TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
-                // Row tmpRow = pTable.appendRow();
                 // we always insert only ONE row to the table
                 Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
                 pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
                 Row newRow = Row.getInstance(newRowElement);
                 // find all placeholders within row
                 for (int j = 0; j < cellCount; j++) {
-                    System.out.print(".");
+//                    System.out.print(".");
                     // a template cell
                     Cell currentCell = newRow.getCellByIndex(j);
                     // make a copy of the template cell
-                    TableTableCellElementBase cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+                    Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
                     // find all placeholders in a cell
-                    NodeList cellPlaceholders = ((Element)cellNode).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
-                    List<PlaceholderNode> cellPlaceholderList = new ArrayList<>();
-                    for (int k = 0; k < cellPlaceholders.getLength(); k++) {
-                        Node item = cellPlaceholders.item(k);
-                        cellPlaceholderList.add(new PlaceholderNode(item));
-                    }
+                    NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 
                     /*
                      * The appended row only has default cells (without styles etc.). Therefore we have to take
                      * the template cell and replace the current cell with it.
                      */
                     newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
-                    // replace placeholders with content
-                    for (PlaceholderNode cellPlaceholder : cellPlaceholderList) {
-                        fillItemTableWithData(placeholderDisplayText, itemDataSets.get(row), cellPlaceholder, row, placeholderDisplayText);
-//                        cellPlaceholder.replaceWith(cellPlaceholder.getNode().getTextContent().replaceAll("[<>]", "|"));
+                    // replace placeholders in this cell with current content
+                    int countOfPlaceholders = cellPlaceholders.getLength();
+                    for (int k = 0; k < countOfPlaceholders; k++) {
+                      Node item = cellPlaceholders.item(0);
+                        PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                        fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                     }
                 }
-                System.out.println();
+//                System.out.println();
             }
 	}
 	
 	/**
 	 * Fill the cell of the item table with the item data
 	 * 
-	 * @param placeholderDisplayText
-	 *            Column header
 	 * @param item
-	 * @param iText
-	 *            The Text that is set
 	 * @param index
-	 *            Index of the VAT entry
-	 * @param cellText
-	 *            The cell's text.
+	 *            Index of the item entry
+	 * @param cellPlaceholder
+	 *            The cell's placeholder.
+	 * @return 
 	 */
-	private void fillItemTableWithData(String placeholderDisplayText, DocumentItem item, PlaceholderNode cellPlaceholder, int index, String cellText) {
+	private org.odftoolkit.simple.Component fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
 
 		String value = "";
 		
-		// Get the column's header
+        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
 		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
 		String key = placeholder.split("\\$")[0];
 
@@ -633,7 +630,7 @@ public class OfficeDocument {
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVat());
 		}
 
 		// Get the item gross value
@@ -689,7 +686,7 @@ public class OfficeDocument {
 			String width_s = placeholders.extractParam(placeholder,"WIDTH");
 			String height_s = placeholders.extractParam(placeholder,"HEIGHT");
 
-			if (!item.getPictureName().isEmpty()) {
+			if (StringUtils.isNotBlank(item.getPictureName())) {
 				// Default height and with
 				int pixelWidth = 0;
 				int pixelHeight = 0;
@@ -758,8 +755,7 @@ public class OfficeDocument {
 //					textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
 
 					// replace the placeholder
-					cellPlaceholder.replaceWith(cellText.replaceAll(Matcher.quoteReplacement(placeholderDisplayText), Matcher.quoteReplacement(value)));
-					return;
+					return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
 				}
 				catch (IOException e) {
 				}
@@ -769,7 +765,7 @@ public class OfficeDocument {
 		}
 		
 		else
-			return;
+			return null;
 
 		// Interpret all parameters
 		value = placeholders.interpretParameters(placeholder,value);
@@ -785,7 +781,7 @@ public class OfficeDocument {
 		
 		// Set the text of the cell
 		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
-		cellPlaceholder.replaceWith(cellText.replaceAll(placeholderDisplayText, Matcher.quoteReplacement(value)));
+		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
 
 		// And also add it to the user defined text fields in the OpenOffice
 		// Writer document.
@@ -854,7 +850,7 @@ public class OfficeDocument {
 	 * @param placeholder
 	 *            The placeholder and the name of the key in the property list
 	 */
-	private void replaceText(PlaceholderNode placeholder) {
+	private void replaceText(final PlaceholderNode placeholder) {
 		// Get the placeholder's text
 		String placeholderDisplayText = placeholder.getNodeText().toUpperCase();
 		
@@ -862,10 +858,11 @@ public class OfficeDocument {
 		String text = properties.getProperty(placeholderDisplayText);
 		
 		// If the String is non empty, replace the OS new line with the OpenOffice new line
-		if(text != null){
+		if(StringUtils.isNotBlank(text)){
 			text = text.replaceAll(System.lineSeparator(), "\r");
 		}
 		// Replace the placeholder with the value of the property list.
+		log.debug("try to replace " + placeholderDisplayText + " with " + text);
 		placeholder.replaceWith(text);
 	}
 	

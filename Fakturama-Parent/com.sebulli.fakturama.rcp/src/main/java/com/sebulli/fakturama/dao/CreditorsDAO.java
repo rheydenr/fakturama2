@@ -1,12 +1,15 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -63,6 +66,35 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
             restrictions.add(cb.equal(root.get(Creditor_.address).get(Address_.zip), "-1"));
         }
         return restrictions;
+    }
+    
+    @Override
+    public List<Creditor> findAll() {
+        return findAll(false);
+    }
+    
+    @Override
+    public List<Creditor> findAll(boolean forceRead) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Creditor> criteria = cb.createQuery(getEntityClass());
+        Root<Creditor> root = criteria.from(getEntityClass());
+        /*
+         * Since referenced contacts are stored as own data set we have to
+         * test for NULL customer number. If customer number is NULL we have
+         * an alternate contact which belongs to a "legal" contact and thus we 
+         * don't have to show them up.
+         */
+        CriteriaQuery<Creditor> cq = criteria.where(
+                cb.and(
+                        cb.not(root.get(Creditor_.deleted)),
+                        cb.isNotNull(root.get(Creditor_.customerNumber))
+                        )
+                );
+        TypedQuery<Creditor> query = getEntityManager().createQuery(cq);
+        if(forceRead) {
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        }
+        return query.getResultList();
     }
 
 	@Override

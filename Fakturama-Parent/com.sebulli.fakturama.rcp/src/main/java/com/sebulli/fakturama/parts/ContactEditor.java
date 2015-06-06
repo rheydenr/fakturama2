@@ -669,12 +669,12 @@ public class ContactEditor extends Editor<Contact> {
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
         comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
-		bindModelValue(editorContact, comboDeliveryGender, Contact_.deliveryContacts.getName() +"." +Contact_.gender.getName());
+		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() +"." +Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
 		
 		// Delivery Title
 		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryTitle, Contact_.deliveryContacts.getName() +"." +Contact_.title.getName(), 32);
+		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
 
 		// Delivery first and last name
@@ -697,8 +697,8 @@ public class ContactEditor extends Editor<Contact> {
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
 
 		}
-		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.deliveryContacts.getName() +"." +Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryName, Contact_.deliveryContacts.getName() +"." +Contact_.name.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
 
 		// Delivery company
 		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
@@ -706,7 +706,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCompany.setText(msg.commonFieldCompany);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
 		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-		bindModelValue(editorContact, txtDeliveryCompany, Contact_.deliveryContacts.getName() +"." +Contact_.company.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
 		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
 
 		// Delivery street
@@ -715,7 +715,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
 		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryStreet, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
 		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
 
@@ -725,10 +725,10 @@ public class ContactEditor extends Editor<Contact> {
 		labelDeliveryCity.setText(msg.editorContactFieldZipcityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
 		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryZip, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
+		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
 		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryCity, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
+		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
 
 		// Delivery country
@@ -742,7 +742,7 @@ public class ContactEditor extends Editor<Contact> {
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
         comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
-		bindModelValue(editorContact, comboDeliveryCountry, Contact_.deliveryContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
+		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday
@@ -758,7 +758,7 @@ public class ContactEditor extends Editor<Contact> {
 		dtDeliveryBirthday.setFormat(CDT.DATE_MEDIUM);
 		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
 		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
-		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.deliveryContacts.getName() +"." +Contact_.birthday.getName());
+		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
 
 		// Controls in the tab "Bank"
 
@@ -1022,7 +1022,7 @@ public class ContactEditor extends Editor<Contact> {
 		// Test, if the address and the delivery address
 		// are equal. If they are, set the checkbox and
 		// hide the delivery address
-		Boolean isEqual = editorContact.getDeliveryContacts() == null;
+		Boolean isEqual = editorContact.getAlternateContacts() == null;
 		bDelAddrEquAddr.setSelection(isEqual);
 		deliveryGroup.setVisible(!isEqual);
 	}

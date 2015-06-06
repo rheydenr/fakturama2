@@ -839,10 +839,10 @@ public class WebShopImportManager {
                 deliveryContact.setAddress(deliveryAddress);
                 deliveryContact = contactsDAO.findOrCreate(deliveryContact);
                 //   contactItem.getDeliveryContacts().add(deliveryContact);
-                contactItem.setDeliveryContacts(deliveryContact);
+                contactItem.setAlternateContacts(deliveryContact);
             }
         
-            dataSetDocument.setContact(contactItem);
+            dataSetDocument.setBillingContact(contactItem);
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact
 //            dataSetDocument.setDeliveryaddress(deliveryContact); // included in contact
             dataSetDocument.setAddressFirstLine(contactUtil.getNameWithCompany(contactItem));			

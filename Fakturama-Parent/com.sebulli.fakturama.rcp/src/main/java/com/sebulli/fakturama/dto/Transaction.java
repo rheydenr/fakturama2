@@ -50,20 +50,21 @@ public class Transaction {
 	 * @param document
 	 * 	The document with the parent transaction number
 	 */
-	public Transaction (Document document) {
+	public Transaction of(Document document) {
 		
 		// Get the transaction number
 		transaction = document.getTransactionId();
 
 		// Exit, if there is no number
 		if (transaction == -1)
-			return;
+			return null;
 
 		// Create a new list
 		documents = new ArrayList<Document>();
 		
 		// Get all documents
 		documents = documentsDAO.findByTransactionId(transaction);
+		return this;
 	}
 	
 	/**
@@ -117,5 +118,12 @@ public class Transaction {
      */
     public List<Document> getDocuments() {
     	return documents;
+    }
+
+    /**
+     * @param documents the documents to set
+     */
+    public final void setDocuments(List<Document> documents) {
+        this.documents = documents;
     }
 }

@@ -216,6 +216,8 @@ public class Placeholders {
 	};
 	
 	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+
+    private ContactUtil contactUtil;
 	
 	/**
 	 * Returns the first name of a complete name
@@ -593,6 +595,7 @@ public class Placeholders {
 	 * 		The extracted value
 	 */
 	public String getDocumentInfo(Document document, DocumentSummary documentSummary, String placeholder) {
+        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 		String value = getDocumentInfoByPlaceholder(document, documentSummary, extractPlaceholderName(placeholder));
 		return interpretParameters(placeholder, value);
 	}
@@ -766,8 +769,7 @@ public class Placeholders {
 			return null;
 		
 		// Get the contact of the UniDataSet document
-		Contact contact = document.getContact();
-		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+		Contact contact = document.getBillingContact();
 
 		if (key.equals("DOCUMENT.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate());
 		if (key.equals("DOCUMENT.ADDRESSES.EQUAL")) {
@@ -785,7 +787,7 @@ public class Placeholders {
 			if(i == 1) {
                 s = contactUtil.getAddressAsString(document.getDeliveryContact());
 			} else {
-			    s = contactUtil.getAddressAsString(document.getContact());
+			    s = contactUtil.getAddressAsString(document.getBillingContact());
 			}
 			
 			//  with option "DIFFERENT" and without
@@ -860,7 +862,7 @@ public class Placeholders {
 
 		// Get the reference string to other documents
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
-			Transaction transaction = new Transaction(document);
+			Transaction transaction = ContextInjectionFactory.make(Transaction.class, context).of(document);
 			if (key.equals("DOCUMENT.REFERENCE.OFFER")) return transaction.getReference(DocumentType.OFFER);
 			if (key.equals("DOCUMENT.REFERENCE.ORDER")) return transaction.getReference(DocumentType.ORDER);
 			if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION")) return transaction.getReference(DocumentType.CONFIRMATION);
@@ -895,11 +897,12 @@ public class Placeholders {
 		
 		if (key.startsWith("DELIVERY.")) {
 			key2 = key.substring(9);
-			addressField = Optional.ofNullable(document.getManualDeliveryAddress()).orElse(contactUtil.getAddressAsString(document.getDeliveryContact()));
+            addressField = document.getDeliveryContact() != null ? document.getDeliveryContact().getAddress().getManualAddress() : contactUtil
+                    .getAddressAsString(document.getDeliveryContact());
 		}
 		else {
 			key2 = key;
-			addressField = Optional.ofNullable(document.getManualAddress()).orElse(contactUtil.getAddressAsString(document.getContact()));
+			addressField = Optional.ofNullable(document.getBillingContact().getAddress().getManualAddress()).orElse(contactUtil.getAddressAsString(document.getBillingContact()));
 		}
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return getDataFromAddressField(addressField,"addressfirstline");
@@ -1079,7 +1082,7 @@ public class Placeholders {
 	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN));
 	    paymenttext = paymenttext.replace("<BANK.IBAN.CENSORED>", censoredAccount);
 	    
-	    Contact contact = document.getContact();
+	    Contact contact = document.getBillingContact();
         if(contact != null && contact.getBankAccount() != null) {
     	    // debitor's bank account
     	    paymenttext = paymenttext.replace("<DEBITOR.BANK.ACCOUNT.HOLDER>", 

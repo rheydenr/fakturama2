@@ -625,20 +625,24 @@ public class MigrationManager {
 					 * perhaps we have to check additionally if the address stored in document
 					 * is equal to the address stored in the database :-(
 					 */
-					document.setManualAddress(oldDocument.getAddress());
-					document.setManualDeliveryAddress(oldDocument.getDeliveryaddress());
-					document.getAdditionalInfo().setManualAddress(oldDocument.getAddress());
-                    document.getAdditionalInfo().setDeliveryAddress(oldDocument.getDeliveryaddress());
+					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
+					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
 					if(contact != null) {
-						document.setContact(contact);
-						document.setDeliveryContact(contact.getDeliveryContacts());
+					    // delivery documents are slightly different...
+					    if(document.getBillingType() == BillingType.DELIVERY) {
+	                        document.setBillingContact(contact.getAlternateContacts());
+	                        document.setDeliveryContact(contact);
+					    } else {
+	                        document.setBillingContact(contact);
+	                        document.setDeliveryContact(contact.getAlternateContacts());
+					    }
 					}
 				}
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
-				document.setBillingType(BillingType.get(oldDocument.getCategory()));
+				document.setBillingType(billingType);
 				document.setCustomerRef(oldDocument.getCustomerref());
 				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
@@ -762,7 +766,7 @@ public class MigrationManager {
             String itemRef = itemRefs[i];
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
 			DocumentItem item = modelFactory.createDocumentItem();
-			// the position was formerly determined through the order how they stay in documents entry
+			// the position was formerly determined through the order how they stayed in documents entry
 			item.setPosNr(Integer.valueOf(i+1));
 			item.setDescription(oldItem.getDescription());
 			item.setDeleted(oldItem.isDeleted());
@@ -833,8 +837,8 @@ public class MigrationManager {
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 				if(!isAddressEqualToDeliveryAdress(oldContact)) {
     				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-    //				contact.getDeliveryContacts().add(deliveryContact);
-                    contact.setDeliveryContacts(deliveryContact);
+    //				contact.getAlternateContacts().add(deliveryContact);
+                    contact.setAlternateContacts(deliveryContact);
 				}
 				contact.setDeleted(oldContact.isDeleted());
 				contact.setDiscount(oldContact.getDiscount());
@@ -887,8 +891,8 @@ public class MigrationManager {
 
 	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
 		Contact contact = null;
-		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
-		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
+//		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
+//		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
 			contact = modelFactory.createDebitor();
 			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
@@ -926,7 +930,7 @@ public class MigrationManager {
 			    migLogUser.info(String.format("!!! unable to determine the country for contact number [%s]", oldContact.getNr()));
 			}
 			contact.setAddress(address);
-		}
+//		}
 // else there's no delivery contact!
 		return contact;
 	}

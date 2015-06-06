@@ -12,11 +12,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.OdfDocumentNamespace;
 import org.odftoolkit.odfdom.dom.element.office.OfficeAnnotationElement;
+import org.odftoolkit.odfdom.dom.element.office.OfficeMasterStylesElement;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
-import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeMasterStyles;
 import org.odftoolkit.odfdom.pkg.OdfElement;
-import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderNodeType;
@@ -51,7 +50,7 @@ public class PlaceholderNavigation extends Navigation {
 	private int maxIndex = 0;
 	private List<PlaceholderNode> placeHolders = new ArrayList<>();
 	private boolean useDelimiters;
-    private PlaceholderTableType[] tableIdentifiers;
+    private PlaceholderTableType[] tableIdentifiers = new PlaceholderTableType[]{};
 
     /**
      * Strings for the table identifiers, perhaps with additional delimiters
@@ -226,16 +225,17 @@ public class PlaceholderNavigation extends Navigation {
     private List<PlaceholderNode> collectPlaceHolders(String pattern) {
 		// at first we look into header and footer
 		collectPlaceholdersInHeaderFooter(pattern);
+//		placeHolders.addAll(headerFooterPlaceholder);
 
 		// now collect all the others
-		OdfElement rootElement = null;
+		Element rootElement = null;
 		try {
 			rootElement = mDocument.getContentRoot();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
-		NodeList placeholders = ((Element)rootElement).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+		NodeList placeholders = rootElement.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 		for (int i = 0; i < placeholders.getLength(); i++) {
 			Node item = placeholders.item(i);
 			PlaceholderNode placeholderNode;
@@ -294,18 +294,18 @@ public class PlaceholderNavigation extends Navigation {
 	}
 
     private List<PlaceholderNode> collectPlaceholdersInHeaderFooter(String pattern) {
-		OdfFileDom styledom = null;
-		OdfOfficeMasterStyles masterpage = null;
+        org.w3c.dom.Document styledom = null;
+        Element masterpage = null;
 
 		try {
 			styledom = mDocument.getStylesDom();
-			NodeList list = ((Element)styledom).getElementsByTagName("office:master-styles");
+			NodeList list = styledom.getElementsByTagName(OfficeMasterStylesElement.ELEMENT_NAME.getQName());
 			if (list.getLength() > 0) {
-				masterpage = (OdfOfficeMasterStyles) list.item(0);
+				masterpage = (Element) list.item(0);
 			} else {
 				return placeHolders;
 			}
-			NodeList placeholders = ((Element)masterpage).getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+			NodeList placeholders = masterpage.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 			for (int i = 0; i < placeholders.getLength(); i++) {
 				Node item = placeholders.item(i);
 				PlaceholderNode placeholderNode = new PlaceholderNode(item, true);

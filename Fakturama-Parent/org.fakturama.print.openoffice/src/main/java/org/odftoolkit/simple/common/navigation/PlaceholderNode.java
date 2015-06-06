@@ -6,6 +6,7 @@ package org.odftoolkit.simple.common.navigation;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextLineBreakElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -14,7 +15,7 @@ import org.odftoolkit.odfdom.pkg.OdfElement;
 import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
-import org.w3c.dom.Element;
+import org.odftoolkit.simple.text.Span;
 import org.w3c.dom.Node;
 
 /**
@@ -124,12 +125,27 @@ public class PlaceholderNode extends Selection {
 	 *            the replace text String
 	 * @return the replaced Node
 	 */
-    public Node replaceWith(String newText) {
-		TextSpanElement span = new TextSpanElement((OdfFileDom) getNode().getOwnerDocument());
-		((Element)span).setTextContent(newText);
+    public org.odftoolkit.simple.Component replaceWith(String newText) {
+		OdfFileDom ownerDocument = (OdfFileDom) getNode().getOwnerDocument();
+		Span span2 = Span.getInstanceof(new TextSpanElement(ownerDocument));
+		/*
+		 * Sometimes the newText contains some line breaks. These we have to convert into 
+		 * TextLineBreakElements. Therefore we break the newText at all line breaks and
+		 * replace them.
+		 */
+		String[] splittedText = newText.split("\n");
+		boolean isFirst = true;
+		for (String string : splittedText) {
+		    if(!isFirst) {
+		        ((Node)span2.getOdfElement()).appendChild(new TextLineBreakElement(ownerDocument));
+		    } else { isFirst = false; }
+	        span2.appendTextContent(string);
+        }
 		Node parentNode = getNode().getParentNode();
-		parentNode.replaceChild(span, getNode());
-		return span;
+//		parentNode.insertBefore(span2.getOdfElement(), getNode());
+//		parentNode.removeChild(getNode());
+		parentNode.replaceChild(span2.getOdfElement(), getNode());
+		return span2;
 	}
 
 	/**

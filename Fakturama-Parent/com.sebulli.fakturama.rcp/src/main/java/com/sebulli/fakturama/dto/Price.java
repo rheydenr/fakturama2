@@ -82,8 +82,7 @@ public class Price {
 	public Price(DocumentItem item) {
 		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
 		        Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), 
-		        item.getItemVat().getTaxValue(), item
-				.getItemRebate(), BooleanUtils.isFalse(item.getNoVat()), false);
+		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false);
 	}
 
 	/**

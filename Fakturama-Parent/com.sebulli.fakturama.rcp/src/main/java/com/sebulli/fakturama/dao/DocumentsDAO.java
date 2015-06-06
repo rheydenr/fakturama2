@@ -309,7 +309,7 @@ public List<Document> findAll(boolean forceRead) {
         CriteriaQuery<Invoice> cq = criteria.where(
                 cb.and(
                         cb.equal(root.<Boolean>get(Invoice_.paid), true),
-                        cb.equal(root.<Contact>get(Invoice_.contact), contact))
+                        cb.equal(root.<Contact>get(Invoice_.billingContact), contact))
                       );
         return getEntityManager().createQuery(cq).getResultList();
     }    

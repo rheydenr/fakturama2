@@ -200,7 +200,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                             if(selectedObject.getTransactionId() != null) {
                                 topicTreeViewer.setTransaction(selectedObject.getTransactionId());
                             }
-                            topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getContact());
+                            topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getBillingContact());
                             changePopupEntries(null);
                         }
                     }

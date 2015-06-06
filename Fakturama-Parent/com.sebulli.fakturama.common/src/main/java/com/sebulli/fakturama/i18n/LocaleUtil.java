@@ -6,6 +6,7 @@ package com.sebulli.fakturama.i18n;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Locale.Builder;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -72,7 +73,12 @@ public class LocaleUtil {
         if(!StringUtils.isEmpty(lang)) {
             // the language code are the letters before "_"
             String splittedString[] = lang.split("_");
-            Locale b = new Locale.Builder().setRegion(splittedString[1]).build();
+            Builder builder = new Locale.Builder()
+                .setLanguage(splittedString[0]);
+            if(splittedString.length > 1) {
+                builder.setRegion(splittedString[1]);
+            }
+            Locale b = builder.build();
             if(b != null) {
                 defaultLocale = b;
             }
@@ -83,7 +89,7 @@ public class LocaleUtil {
 //            localeLookUp.put(countryCode, obj);
 //            countryLocaleMap.put(obj.getDisplayCountry(defaultLocale), obj);
 //        }
-        
+        // fill some helper maps
         for (Locale locale : availableLocales) {
             if(locale != null && StringUtils.length(locale.getCountry()) > 0) {
                 localeLookUp.put(locale.getCountry(), locale);
