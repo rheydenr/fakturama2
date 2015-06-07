@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -41,8 +43,10 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
     protected Messages msg;
 
     @Inject @Optional
-//    @Preference(value=InstanceScope.SCOPE)
     private IPreferenceStore preferences;
+    
+    @Inject
+    private IEclipseContext context;
 
     /**
 	 * Constructor
@@ -61,20 +65,24 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.OPENOFFICE_PREFERENCE_PAGE);
+	    
+	    AppFieldEditor appFieldEditor = ContextInjectionFactory.make(AppFieldEditor.class, context);
 
-		String defaultValue = preferences.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
+		String defaultValue = preferences.getDefaultString(Constants.PREFERENCES_OPENOFFICE_PATH);
 		if (!defaultValue.isEmpty())
 			//T: Preference page "Office" - Label: Example of the default path. Format: (e.g. PATH).
 			//T: Only the "e.g." is translated
 			defaultValue = String.format(" (%s %s)",  msg.preferencesOfficeExampleshort, defaultValue);
 
-		if (OSDependent.isOOApp())
+		if (OSDependent.isOOApp()) {
+		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent());
 			//T: Preference page "Office" - Label: Office App
-			addField(new AppFieldEditor(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent(), msg));
-		else
+			addField(appFieldEditor);
+		} else {
 			//T: Preference page "Office" - Label: Office folder
 			addField(new DirectoryFieldEditor(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeFolder + defaultValue, getFieldEditorParent()));
-
+		}
+		
 		//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, msg.preferencesOfficeExportasLabel, 3, new String[][] { 
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both

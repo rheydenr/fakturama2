@@ -15,7 +15,6 @@
 package com.sebulli.fakturama.office;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -69,7 +68,6 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -258,9 +256,15 @@ public class OfficeDocument {
 	            default:
 	                break;
 	            }}
+	        
 //			// Save the document
-			saveOODocument(textdoc);
-			MessageDialog.openInformation(shell, "Info", "Fäddich!");
+			if(saveOODocument(textdoc)) {
+			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "Fäddich!");
+			    
+			    // TODO open Doc in OO if necessary
+			} else {
+                MessageDialog.openError(shell, msg.viewErrorlogName, "is nich!");
+			}
 //
 //			// Print and close the OpenOffice document
 //			/*
@@ -277,7 +281,7 @@ public class OfficeDocument {
      * @param textdoc
      *            The document
      */
-	private void saveOODocument(TextDocument textdoc) {
+	private boolean saveOODocument(TextDocument textdoc) {
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator("Fakturama application");
@@ -323,19 +327,23 @@ public class OfficeDocument {
             try {
 
                 // Save the document
-                String ooPath = preferences.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
-                // FIXME How to create a PDF/A1 document?
-                String sysCall = String.format("%sprogram%sswriter -convert-to pdf --outdir %s %s", 
-                        ooPath, File.separator, 
-                        directory.toAbsolutePath(), 
-                        fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
-                                document).toAbsolutePath());
-                //				PDFFilter pdfFilter = new PDFFilter();
-                //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-                
-                // TODO error handling!!!
+                OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
+                Path ooPath = ooStarter.getCheckedOOPath();
+                if(ooPath != null) {
+                    // FIXME How to create a PDF/A1 document?
+                    String sysCall = String.format("%s -convert-to pdf --outdir %s %s", 
+                            //program%sswriter File.separator, 
+                            ooPath.toString(), 
+                            directory.toAbsolutePath(), 
+                            fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
+                                    document).toAbsolutePath());
+                    //				PDFFilter pdfFilter = new PDFFilter();
+                    //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+                    
+                    // TODO error handling!!!
                 Runtime.getRuntime().exec(sysCall);
                 wasSaved = true;
+                }
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice Document");
             }
@@ -370,32 +378,10 @@ public class OfficeDocument {
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
         }
+        
+        return wasSaved;
     }
 
-    
-//	/**
-//	 * Replace one column of the VAT table with the VAT entries
-//	 * 
-//	 * @param placeholderDisplayText
-//	 *            Name of the column, and of the VAT property
-//	 * @param column
-//	 *            Number of the column in the table
-//	 * @param vatSummarySet
-//	 *            VAT data
-//	 * @param vatListTable
-//	 *            The VAT table to fill
-//	 * @param templateRow
-//	 *            The first row of the table
-//	 * @param cellText
-//	 *            The cell's text.
-//	 */
-//	private void replaceVatListPlaceholder(VatSummarySet vatSummarySet, PlaceholderNode cellPlaceholder) {
-//		// Get all VATs
-//        for (VatSummaryItem vatSummaryItem : vatSummarySet) {
-//				// Get the cell and fill the cell content
-//				fillVatTableWithData(vatSummaryItem, cellPlaceholder);
-//		}
-//	}
 	
 	private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager,Table pTable, Row pRowTemplate) {
         // Get all items
@@ -882,34 +868,7 @@ public class OfficeDocument {
 		}
 		return false;
 	}
-	
 
-    /**
-     * Get the relative path of the template
-     * 
-     * @param doctype
-     *      The doctype defines the path
-     * @return
-     *      The path as string
-     */
-	private String getRelativeFolder(DocumentType doctype) {
-        return "/Templates/" + doctype.getTypeAsString() + "/";
-    }
-    
-    /**
-     * Get the localized relative path of the template
-     * 
-     * @param doctype
-     *      The doctype defines the path
-     * @return
-     *      The path as string
-     */
-    private String getLocalizedRelativeFolder(DocumentType doctype) {
-        return "/" + preferences.getString(Constants.GENERAL_WORKSPACE) +
-                msg.configWorkspaceTemplatesName + "/" + doctype.getTypeAsString() + "/";
-        
-    }
-    
     /**
      * Tests if 2 filenames are equal.
      * Tests only the relative path and use the parameter "folder" to
@@ -992,6 +951,5 @@ public class OfficeDocument {
     public void setTemplate(Path template) {
         this.template = template;
     }
-	
 
 }

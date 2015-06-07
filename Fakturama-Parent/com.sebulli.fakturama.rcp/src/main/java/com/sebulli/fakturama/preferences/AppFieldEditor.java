@@ -16,11 +16,20 @@ package com.sebulli.fakturama.preferences;
 
 import java.io.File;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.OSDependent;
@@ -34,14 +43,17 @@ import com.sebulli.fakturama.office.OfficeStarter;
  */
 public class AppFieldEditor extends StringButtonFieldEditor {
 
-    private Messages translations;
+    @Inject
+    @Translation
+    protected Messages msg;
     
-	/**
-	 * Creates a new file field editor
-	 */
-	protected AppFieldEditor() {
-	}
+    @Inject
+    private IEclipseContext context;
 
+    private OfficeStarter ooStarter;
+  
+    private Shell shell;
+	
 	/**
 	 * Creates a file field editor.
 	 * 
@@ -52,13 +64,18 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 	 * @param parent
 	 *            the parent of the field editor's control
 	 */
-	public AppFieldEditor(String name, String labelText, Composite parent, Messages translations) {
-	    this.translations = translations;
+	public void prepare(String name, String labelText, Composite parents) {
 		init(name, labelText);
 		setErrorMessage(JFaceResources.getString("FileFieldEditor.errorMessage"));
 		setChangeButtonText(JFaceResources.getString("openBrowse"));
 		setValidateStrategy(VALIDATE_ON_FOCUS_LOST);
-		createControl(parent);
+		createControl(shell.getParent());
+	}
+	
+	@PostConstruct
+	public void preInit(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+        ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
+        this.shell = shell;
 	}
 
 	/**
@@ -102,7 +119,7 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 	@Override
 	protected boolean checkState() {
 
-		String msg = null;
+		String message = null;
 
 		String path = getTextControl().getText();
 
@@ -113,19 +130,19 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 
 		// Check whether it is a valid application
 		if (path.length() != 0) {
-			if (!OfficeStarter.isValidPath(path)) {
+			if (!ooStarter.isValidPath(path)) {
 				if (OSDependent.isOOApp())
 					//T: Error message if the selected file is not a valid OpenOffice app
-					msg = translations.preferencesOfficeAppfieldNovalidapp;
+				    message = msg.preferencesOfficeAppfieldNovalidapp;
 				else
 					//T: Error message if the selected folder is not a valid OpenOffice folder
-					msg = translations.preferencesOfficeAppfieldNovalidfolder;
+				    message = msg.preferencesOfficeAppfieldNovalidfolder;
 			}
 		}
 
 		// Display an error message
-		if (msg != null) {
-			showErrorMessage(msg);
+		if (message != null) {
+			showErrorMessage(message);
 			return false;
 		}
 

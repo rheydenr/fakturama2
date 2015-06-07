@@ -461,8 +461,7 @@ public class Messages {
     public String preferencesOffice;
 
 	public String viewErrorlogName;
-	public String OfficeStarter149;
-	public String OfficeStarter150;
+	public String officePathInvalid;
 
     public String commandBrowserOpenUrllabel;
     public String commandBrowserOpenStartpage;
