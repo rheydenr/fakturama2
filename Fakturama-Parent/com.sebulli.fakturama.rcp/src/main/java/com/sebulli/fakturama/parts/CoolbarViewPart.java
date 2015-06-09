@@ -41,7 +41,6 @@ import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -162,13 +161,12 @@ public class CoolbarViewPart {
 		finishToolbar(coolbar1, toolBar2);
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
-		createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT));	
-		
+        createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
+                preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT));    
+        
         Map<String, Object> params = new HashMap<>();
-        params.put(CallEditor.PARAM_EDITOR_TYPE, Debitor.class.getSimpleName());		
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.commandNewContactName, msg.commandNewContactTooltip, 
-		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize),null,
+		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 
 		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),

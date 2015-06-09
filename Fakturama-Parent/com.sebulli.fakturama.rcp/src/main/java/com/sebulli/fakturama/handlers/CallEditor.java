@@ -15,7 +15,9 @@
 package com.sebulli.fakturama.handlers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -65,10 +67,27 @@ public class CallEditor {
 
     public static final String BASE_CONTRIBUTION_URI = "bundleclass://com.sebulli.fakturama.rcp/";
 
+    /**
+     * The id of a selected object which has to be shown in an editor.
+     */
     public static final String PARAM_OBJ_ID = "com.sebulli.fakturama.rcp.cmdparam.objId";
+    
+    /**
+     * A category (as initial assignment) for the called editor.
+     */
     public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
     public static final String PARAM_DUPLICATE = "com.sebulli.fakturama.document.duplicate";
+    
+    /**
+     * The type of the editor which has to be called.
+     */
     public static final String PARAM_EDITOR_TYPE = "com.sebulli.fakturama.editors.editortype";
+    
+    /**
+     * The name of the document which is calling an other editor. This is necessary for returning
+     * to the calling document (e.g., if you create a new contact while creating a new invoice).
+     */
+    public static final String PARAM_CALLING_DOC = "com.sebulli.fakturama.document.caller";
 
     public static final String DOCVIEW_PARTDESCRIPTOR_ID = "com.sebulli.fakturama.rcp.docview";
     public static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docdetail";
@@ -90,6 +109,7 @@ public class CallEditor {
 			@Optional @Named(PARAM_OBJ_ID) String objId,
 			@Optional @Named(PARAM_CATEGORY) String category,
             @Optional @Named(PARAM_DUPLICATE) String duplicate,
+            @Optional @Named(PARAM_CALLING_DOC) String callingDoc,
             final MApplication application,
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
@@ -104,8 +124,13 @@ public class CallEditor {
                 }
             }
 
+            Map<String, String> params = new HashMap<>();
+            params.put(PARAM_OBJ_ID, objId);
+            params.put(PARAM_CATEGORY, category);
+            params.put(PARAM_CALLING_DOC, callingDoc);
+            
             // Define  the editor and try to open it
-			partService.showPart(createEditorPart(editorType, objId, stackContext, documentPartStack, category, duplicate), PartState.ACTIVATE);
+			partService.showPart(createEditorPart(editorType, stackContext, documentPartStack, duplicate, params), PartState.ACTIVATE);
 	}
 //	
 //	@CanExecute
@@ -121,15 +146,15 @@ public class CallEditor {
 	 * @param category 
 	 * @return
 	 */
-	private MPart createEditorPart(String type, String objId, IEclipseContext stackContext, MPartStack stack, String category, String duplicate) {
+	private MPart createEditorPart(String type, IEclipseContext stackContext, MPartStack stack, String duplicate, Map<String, String> params) {
 		MPart myPart = null;
 		Collection<MPart> parts = partService.getParts();
-        if (objId != null) {
+        if (params.get(PARAM_OBJ_ID) != null) {
     		// at first we look for an existing Part
             for (MPart mPart : parts) {
     			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type) && mPart.getContext() != null) {
     				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
-    				if (StringUtils.equalsIgnoreCase(object, objId)) {
+    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
     					myPart = mPart;
     					break;
     				}
@@ -148,16 +173,15 @@ public class CallEditor {
 
 /*
  * What's this? - The MPart has to be injected into current context. Some Services
- * (e.g., EMenuService) need a MPart to work. But the MPart is injected from
- * Context and therefore we have to put a MPart (or, more concrete, *this* MPart)
+ * (e.g., EMenuService) need an MPart to work. But the MPart is injected from
+ * Context and therefore we have to put an MPart (or, more concrete, *this* MPart)
  * into context. That's it :-) 
  */
 			    stackContext.set(MPart.class, myPart);
 			}
 		    myPart.setContext(stackContext);
 
-			myPart.getProperties().put(PARAM_OBJ_ID, objId);
-			myPart.getProperties().put(PARAM_CATEGORY, category);
+			myPart.getProperties().putAll(params);
 			stack.getChildren().add(myPart);
 			// we have to distinguish the different editors here
 			switch (type) {
@@ -187,7 +211,7 @@ public class CallEditor {
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + PaymentEditor.class.getName());
                 break;
 //			case ProductEditor.ID:
-//			case Prod.ID:
+//			case ProductListTable.ID:
 //                myPart.setLabel(msg.commandPaymentsName);
 //                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ProductEditor.class.getName());
 //                break;
@@ -201,7 +225,7 @@ public class CallEditor {
                 break;
             case DocumentsListTable.ID:
             case DocumentEditor.ID:
-                BillingType billingType = BillingType.getByName(category);
+                BillingType billingType = BillingType.getByName(params.get(PARAM_CATEGORY));
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));

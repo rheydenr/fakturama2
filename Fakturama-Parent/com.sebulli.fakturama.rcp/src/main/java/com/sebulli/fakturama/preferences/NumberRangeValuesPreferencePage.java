@@ -14,6 +14,10 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.nls.Translation;
@@ -22,6 +26,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.parts.ContactEditor;
 
 /**
  * Preference page for the number settings
@@ -152,17 +158,27 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
+//		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
 		
+	    List<String> documentTypes = Arrays.stream(DocumentType.values()).map(d -> d.getTypeAsString()).collect(Collectors.toList());
+	    documentTypes.add(ContactEditor.ID);
+//        documentTypes.add(ProductEditor.ID);
+	    
+//		for (DocumentType editorId : DocumentType.values()) {
+		for (String editorId : documentTypes) {
+            node.setDefault("last_setnextnr_date_" + editorId, "2000-01-01");
+            node.setDefault("PREFERENCES_NUMBERRANGE_" + editorId.toUpperCase() + "_FORMAT", "NO_DEFAULT_VALUE");
+            node.setDefault("PREFERENCES_NUMBERRANGE_" + editorId.toUpperCase() + "_NR", 1);
+        }
 	}
 
 }

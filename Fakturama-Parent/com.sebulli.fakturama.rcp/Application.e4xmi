@@ -438,6 +438,7 @@
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>
     <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
     <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="com.sebulli.fakturama.document.duplicate" name="document is a duplicate of an other document"/>
+    <parameters xmi:id="_LK9-cA7gEeWUIKlpoQDe6Q" elementId="com.sebulli.fakturama.document.caller" name="calling document editor"/>
   </commands>
   <commands xmi:id="__1BmsCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openPayments" commandName="%command.payments.name" description="%command.payments.tooltip"/>
   <commands xmi:id="_Y1nWUCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openShippings" commandName="%command.shippings.name"/>

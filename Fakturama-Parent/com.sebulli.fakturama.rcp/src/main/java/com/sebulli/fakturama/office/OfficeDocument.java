@@ -78,14 +78,14 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class OfficeDocument {
 
-	// The UniDataSet document, that is used to fill the OpenOffice document 
+	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
 
-//	// The UniDataSet contact of the document
+//	/** The UniDataSet contact of the document */
 //	//	private DataSetContact contact;
 
-	// A list of properties that represents the placeholders of the
-	// OpenOffice Writer template
+	/** A list of properties that represents the placeholders of the
+	 OpenOffice Writer template */
 	private Properties properties;
     
     @Inject
@@ -125,22 +125,6 @@ public class OfficeDocument {
     
     public OfficeDocument() {}
 	
-	/**
-	 * Constructor Create a new OpenOffice document. Open it by using a template
-	 * and replace the placeholders with the UniDataSet document
-	 * 
-	 * @param document
-	 *            The UniDataSet document that will be converted to an
-	 *            OpenOffice Writer document
-	 * @param template
-	 *            OpenOffice template file name
-	 */
-    @Deprecated
-	public OfficeDocument(Document document, final Path template) {
-	    this.document = document;
-	    this.template = template;
-	}
-    
     @PostConstruct
     public void init(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         fo = ContextInjectionFactory.make(FileOrganizer.class, context);
@@ -331,7 +315,7 @@ public class OfficeDocument {
                 Path ooPath = ooStarter.getCheckedOOPath();
                 if(ooPath != null) {
                     // FIXME How to create a PDF/A1 document?
-                    String sysCall = String.format("%s -convert-to pdf --outdir %s %s", 
+                    String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
                             //program%sswriter File.separator, 
                             ooPath.toString(), 
                             directory.toAbsolutePath(), 

@@ -225,7 +225,6 @@ public class PlaceholderNavigation extends Navigation {
     private List<PlaceholderNode> collectPlaceHolders(String pattern) {
 		// at first we look into header and footer
 		collectPlaceholdersInHeaderFooter(pattern);
-//		placeHolders.addAll(headerFooterPlaceholder);
 
 		// now collect all the others
 		Element rootElement = null;

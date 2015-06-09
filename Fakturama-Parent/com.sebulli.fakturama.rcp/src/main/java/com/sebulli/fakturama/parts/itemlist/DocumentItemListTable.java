@@ -489,13 +489,12 @@ private Menu createContextMenu(NatTable natTable) {
                     break;
                 }
 
-                if(calculate) {
-                    // Recalculate the total sum of the document if necessary
-                    // do it via the messaging system and send a message to DocumentEditor
-                    Map<String, Object> event = new HashMap<>();
-                    event.put(DocumentEditor.DOCUMENT_ID, document.getName());
-                    evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
-                }
+                // Recalculate the total sum of the document if necessary
+                // do it via the messaging system and send a message to DocumentEditor
+                Map<String, Object> event = new HashMap<>();
+                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
+                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
             }
 
             public int getColumnCount() {
@@ -1032,7 +1031,7 @@ private Menu createContextMenu(NatTable natTable) {
     @Override
     protected String getToolbarAddItemCommandId() {
         // This error should'nt occur since we've overridden the changeToolbarItem method.
-        throw new UnsupportedOperationException("Inside a list table you can't create a new document.");
+        throw new UnsupportedOperationException("no action needed since there's no toolbar");
     }
 
     @Override

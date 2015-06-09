@@ -26,9 +26,7 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -40,6 +38,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -61,7 +60,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.service.prefs.BackingStoreException;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.Messages;
@@ -81,8 +79,7 @@ public abstract class Editor<T extends IEntity> {
 	protected static final String CALCULATING_STATE = "calculating";
 
     @Inject
-	@Preference
-	protected IEclipsePreferences defaultValuePrefs;
+    protected IPreferenceStore defaultValuePrefs;
 	
 	@Inject
 	@Translation
@@ -223,16 +220,17 @@ public abstract class Editor<T extends IEntity> {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (uds.getId() >= 0) {
-						defaultValuePrefs.putLong(getDefaultEntryKey(), uds.getId());
+						defaultValuePrefs.setValue(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
-						try {
-                            defaultValuePrefs.flush();
+//						try {
+//                            defaultValuePrefs.flush();
                             
                             // Refresh the table view of all VATs
+						// FIXME all VATs??? There're also default shippings!!!
                             evtBroker.post("VatEditor", "update");
-                        } catch (BackingStoreException e1) {
-                            log.error(e1, "Error while flushing default value preferences.");
-                        }
+//                        } catch (BackingStoreException e1) {
+//                            log.error(e1, "Error while flushing default value preferences.");
+//                        }
 					}
 				}
 
@@ -295,8 +293,8 @@ public abstract class Editor<T extends IEntity> {
 	 */
 	protected String getNextNr() {
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
-		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
+		String prefStrFormat = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String nrExp = "";
 		String nextNr;
@@ -307,7 +305,7 @@ public abstract class Editor<T extends IEntity> {
 		int yyyy = now.getYear();
 		int mm = now.getMonthValue();
 		int dd = now.getDayOfMonth();
-		String lastSetNextNrDate = defaultValuePrefs.get("last_setnextnr_date_" + getEditorID().toLowerCase(), "2000-01-01");
+		String lastSetNextNrDate = defaultValuePrefs.getString("last_setnextnr_date_" + getEditorID().toLowerCase());
 
 		int last_yyyy = 0; 
 		int last_mm = 0; 
@@ -322,8 +320,8 @@ public abstract class Editor<T extends IEntity> {
         }
 		
 		// Get the last (it's the next free) document number from the preferences
-		format = defaultValuePrefs.get(prefStrFormat, "NO_DEFAULT_VALUE");
-		nr = defaultValuePrefs.getInt(prefStrNr, 1);
+		format = defaultValuePrefs.getString(prefStrFormat);
+		nr = defaultValuePrefs.getInt(prefStrNr);
 
 		// Check, whether the date string is a new one
 		boolean startNewCounting = false;
@@ -382,11 +380,11 @@ public abstract class Editor<T extends IEntity> {
 	}
 
 	protected void setNextNumber(String prefStrNr, int nr) {
-		defaultValuePrefs.putInt(prefStrNr, nr);
+		defaultValuePrefs.setValue(prefStrNr, nr);
 
 		// Store the date of now to a property
 		LocalDate now = LocalDate.now();
-		defaultValuePrefs.put("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
+		defaultValuePrefs.setValue("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
 	}
 	
 	
@@ -402,8 +400,8 @@ public abstract class Editor<T extends IEntity> {
 	protected int setNextNr(String value, String key) {
 
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
-		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
+		String prefStrFormat = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String s = "";
 		int nr;
@@ -411,8 +409,8 @@ public abstract class Editor<T extends IEntity> {
 		Integer nextnr;
 
 		// Get the next document number from the preferences, increased be one.
-		format = defaultValuePrefs.get(prefStrFormat, "NO_DEFAULT_VALUE");
-		nextnr = defaultValuePrefs.getInt(prefStrNr, 1) + 1;
+		format = defaultValuePrefs.getString(prefStrFormat);
+		nextnr = defaultValuePrefs.getInt(prefStrNr) + 1;
 
 		// Exit, if format is empty
 		if (format.trim().isEmpty())

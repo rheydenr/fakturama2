@@ -397,7 +397,7 @@ public class PaymentEditor extends Editor<Payment> {
 
         // Get the ID of the standard entity from preferences
         try {
-            stdID = defaultValuePrefs.getLong(getDefaultEntryKey(), 1L);
+            stdID = defaultValuePrefs.getLong(getDefaultEntryKey());
             stdPayment = paymentsDAO.findById(stdID);
         } catch (NumberFormatException | NullPointerException e) {
             stdID = 1L;

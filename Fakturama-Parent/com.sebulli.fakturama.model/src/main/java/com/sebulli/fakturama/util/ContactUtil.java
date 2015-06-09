@@ -159,7 +159,7 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null) {
+		if(contact != null && contact.getCustomerNumber() != null) {
 		    
 		    if(contact.getAddress().getManualAddress() != null) {
 		        // if a manual address is set we use this one

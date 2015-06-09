@@ -277,7 +277,7 @@ public class VatEditor extends Editor<VAT> {
 
         // Get the ID of the standard entity from preferences
         try {
-            stdID = defaultValuePrefs.getLong(getDefaultEntryKey(), 1L);
+            stdID = defaultValuePrefs.getLong(getDefaultEntryKey());
         } catch (NumberFormatException | NullPointerException e) {
             stdID = 1L;
         } finally {

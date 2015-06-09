@@ -152,7 +152,8 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  */
 public class DocumentEditor extends Editor<Document> {
 
-	/** Editor's ID */
+	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
+    /** Editor's ID */
     public static final String EDITOR_ID = "DocumentEditor";
 	public static final String ID = "com.sebulli.fakturama.editors.documentEditor";
 	
@@ -166,9 +167,12 @@ public class DocumentEditor extends Editor<Document> {
 
     @Inject
     private ECommandService cmdService;
-    
+
     @Inject
-    private EHandlerService handlerService;
+    protected EHandlerService handlerService;
+
+    @Inject
+    protected ECommandService commandService;
     
     @Inject
     private EModelService modelService;
@@ -368,10 +372,6 @@ public class DocumentEditor extends Editor<Document> {
 		 *  	- shared (not modified by editor)
 		 */
 
-//		// Cancel the item editing
-//		if (itemEditingSupport != null)
-//			itemEditingSupport.cancelAndSave();
-
 		boolean wasDirty = getMDirtyablePart().isDirty();
 
 		if (newDocument) {
@@ -430,7 +430,7 @@ public class DocumentEditor extends Editor<Document> {
 			if (billingAddress.isEmpty()) {
 				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-			if (addressId != null) {
+			if (addressId.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
 //    			document.setDeliveryContact(addressId);   // done by Databinding
 			} else {
@@ -451,7 +451,7 @@ public class DocumentEditor extends Editor<Document> {
 				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
 
-			if (addressId != null) {
+			if (addressId.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getBillingContact());
 //				document.setContact(addressId);  // done by Databinding
 			} else {
@@ -462,7 +462,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
-		if (addressId != null && addressModified) {
+		if (addressId.getCustomerNumber() != null && addressModified) {
 			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
@@ -776,6 +776,16 @@ public class DocumentEditor extends Editor<Document> {
 				shipping = document.getShipping();
 				total = Money.of(document.getTotalValue(), currencyUnit);
 			}
+			
+			// set some dates
+			Date today = Calendar.getInstance().getTime();
+			document.setOrderDate(today);
+			document.setDocumentDate(today);
+//			document.setPayDate(today);
+			document.setServiceDate(today);
+//			document.setPaid(Boolean.FALSE);
+			
+			document.setNetGross(DocumentSummary.ROUND_NET_VALUES);
 
 			// Get the next document number
 			document.setName(getNextNr());
@@ -806,7 +816,7 @@ public class DocumentEditor extends Editor<Document> {
 		    noVatName = document.getNoVatReference().getName();
 //		    noVatDescription = document.getNoVatReference().getDescription();
 		}
-		netgross = document.getNetGross() != null ? document.getNetGross() : 0;
+		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
 		
 //		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
 		if (dunningLevel <= 0) {
@@ -831,16 +841,6 @@ public class DocumentEditor extends Editor<Document> {
   
         createPartControl(parent);
 	}
-
-//	/**
-//	 * Sets a flag, if item editing is active
-//	 * 
-//	 * @param active
-//	 *            , TRUE, if editing is active
-//	 */
-//	public void setItemEditing(DocumentItemEditingSupport itemEditingSupport) {
-//		this.itemEditingSupport = itemEditingSupport;
-//	}
 
 	/**
 	 * Returns the document
@@ -1708,21 +1708,15 @@ public class DocumentEditor extends Editor<Document> {
 
 			// Open the address dialog, if the icon is clicked.
 			public void mouseDown(MouseEvent e) {
-
-//				// Sets the editors input
-//				UniDataSetEditorInput input = new UniDataSetEditorInput(thisDocumentEditor);
-//
-//				// Open a new Contact Editor 
-//				try {
-//					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, ContactEditor.ID);
-//				}
-//				catch (PartInitException e1) {
-//				    log.error(e1, "Error opening Editor: " + ContactEditor.ID);
-//				}
+				// Open a new Contact Editor 
+                Map<String, Object> params = new HashMap<>();
+                params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
+                params.put(CallEditor.PARAM_CALLING_DOC, document.getName());
+                ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                handlerService.executeHandler(parameterizedCommand);
 			    
 			    document.getBillingContact().getAddress().setManualAddress(null);
                 getMDirtyablePart().setDirty(true);
-//                document.setContact(...);
 			}
 		});
 
@@ -2490,18 +2484,17 @@ public class DocumentEditor extends Editor<Document> {
     } 
 
     /**
-     * Searches for the standard {@link Shipping} entry. 
+     * Searches for the standard {@link Shipping} entry.
      */
     private Shipping lookupDefaultShippingValue() {
         long stdID = 1L;
         Shipping retval = null;
 
         // Get the ID of the standard entity from preferences
-            stdID = preferences.getLong(Constants.DEFAULT_SHIPPING);
-            retval = shippingsDAO.findById(stdID);
+        stdID = preferences.getLong(Constants.DEFAULT_SHIPPING);
+        retval = shippingsDAO.findById(stdID);
         return retval;
     }
-
 
     private void createToolItem(final ToolBar toolBar, final String commandId, 
             final String commandName, final String tooltip, final Image iconImage,
@@ -2605,7 +2598,9 @@ public class DocumentEditor extends Editor<Document> {
             // (re)calculate summary
             // TODO check if this has to be done in a synchronous or asynchronous call
             // within UISynchronize
-            calculate();
+            if((Boolean)event.getProperty(DOCUMENT_RECALCULATE)) {
+                calculate();
+            }
             getMDirtyablePart().setDirty(true);
     }}
 //    

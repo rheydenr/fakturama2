@@ -128,6 +128,7 @@ public class Messages {
     public String contactFieldReliabilityGoodName;
     public String contactCreditorFieldName;
     public String contactDebitorFieldName;
+    public String contactFieldGln;
     
     public String documentOrderStateNotshipped;
 

@@ -35,6 +35,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -88,19 +89,19 @@ import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
 import com.sebulli.fakturama.util.ContactUtil;
+import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
 /**
  * The contact editor
  * 
- * @author Gerd Bartelt
  */
 
 public class ContactEditor extends Editor<Contact> {
 
-	// Editor's ID
+	/** Editor's ID */
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
 
-	// This UniDataSet represents the editor's input 
+	/** This UniDataSet represents the editor's input */ 
 	private Contact editorContact;
 
 	// SWT widgets of the editor
@@ -108,7 +109,6 @@ public class ContactEditor extends Editor<Contact> {
 
     private TabFolder tabFolder;
 	private Text textNote;
-//	private Combo comboGender;
 	private ComboViewer comboGender;
 	private Text txtTitle;
 	private Text txtFirstname;
@@ -146,6 +146,7 @@ public class ContactEditor extends Editor<Contact> {
 	private Text txtEmail;
 	private Text txtWebsite;
 	private Text txtVatNr;
+	private Text txtGln;
 	private FormattedText txtDiscount;
 	private Combo comboCategory;
 	private Group deliveryGroup;
@@ -164,13 +165,10 @@ public class ContactEditor extends Editor<Contact> {
 	private boolean useCompany;
 	private boolean useCountry;
 
-	// defines, if the contact is new created
+	// defines, if the contact is newly created
 	private boolean newContact;
 	
-	// a reference to a document editor that requests a new address
-//	private DocumentEditor documentEditor = null;
-	
-	/*
+	/**
 	 * Window and Part informations
 	 */
 	private MPart part;
@@ -189,6 +187,9 @@ public class ContactEditor extends Editor<Contact> {
     
     @Inject
     private IEclipseContext context;
+    
+    @Inject
+    private ESelectionService selectionService;
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
@@ -249,21 +250,9 @@ public class ContactEditor extends Editor<Contact> {
 // TODO?		contact.setDeliveryCompany(DataUtils.removeCR(txtDeliveryCompany.getText()));
 
 		// Set the bank data
-        // ... done through databinding...
-
 		// Set the customer number
-        // ... done through databinding...
-
 		// Set the payment ID
-//		IStructuredSelection structuredSelection = (IStructuredSelection) comboPaymentViewer.getSelection();
-//		if (!structuredSelection.isEmpty()) {
-//			contact.setPayment(((Payment) structuredSelection.getFirstElement()));
-//		}
-
 		// Set the miscellaneous data
-        // ... done through databinding...
-//		contact.setReliability(comboReliability.getSelectionIndex());
-
 		// Set the note
         // ... done through databinding...
 // TODO ?		contact.setNote(DataUtils.removeCR(textNote.getText()));
@@ -280,11 +269,6 @@ public class ContactEditor extends Editor<Contact> {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
         }
 		newContact = false;
-
-//		// Sets the address
-//		if (documentEditor != null) {
-//			documentEditor.setAddress(contact);
-//		}
 		
 		// Set the Editor's name to the first name and last name of the contact.
 		String nameWithCompany = contactUtil.getNameWithCompany(editorContact);
@@ -297,6 +281,19 @@ public class ContactEditor extends Editor<Contact> {
 
 //		// Refresh the table view of all contacts
         evtBroker.post(getEditorID(), "update");
+
+//      if the editor was called from DialogEditor we have to 
+//      return the new contact
+        Map<String, Object> eventParams = new HashMap<>();
+        // the transientData HashMap contains the target document number
+        // (was set in MouseEvent handler)
+        String callerDocument = (String) part.getProperties().get(CallEditor.PARAM_CALLING_DOC);
+        if(callerDocument != null) {
+            eventParams.put(DocumentEditor.DOCUMENT_ID, callerDocument);
+            eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
+            selectionService.setSelection(editorContact);
+            evtBroker.post("DialogSelection/Contact", eventParams);
+        }
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
@@ -328,9 +325,6 @@ public class ContactEditor extends Editor<Contact> {
             editorContact = contactDAO.findById(objId);
         }
 
-		// Get the document that requests a new address
-//		documentEditor = ((UniDataSetEditorInput) input).getDocumentEditor();
-		
 		// Test, if the editor is opened to create a new data set. This is,
 		// if there is no input set.
 		newContact = (editorContact == null);
@@ -956,12 +950,19 @@ public class ContactEditor extends Editor<Contact> {
 		txtVatNr = new Text(tabMisc, SWT.BORDER);
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtVatNr);
+		
+		// GLN
+		Label labelGln = new Label(tabMisc, SWT.NONE);
+		labelGln.setText(msg.contactFieldGln);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGln);
+		txtGln = new Text(tabMisc, SWT.BORDER);
+		bindModelValue(editorContact, txtGln, Contact_.gln.getName(), 32);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtGln);
 
 		// Customer's discount
 		Label labelDiscount = new Label(tabMisc, SWT.NONE);
 		//T: Customer's discount
 		labelDiscount.setText(msg.exporterDataRebate);
-		//T: Tool Tip Text
 		labelDiscount.setToolTipText(msg.editorContactFieldDiscountTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscount);
@@ -988,10 +989,8 @@ public class ContactEditor extends Editor<Contact> {
                 case 0:
                     return "---";
                 case 1:
-		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
                     return msg.productDataNet;
                 case 2:
-		//T: Entry in a combo box of the the contact editor. Use Net or Gross 
                     return msg.productDataGross;
                 default:
                     return null;

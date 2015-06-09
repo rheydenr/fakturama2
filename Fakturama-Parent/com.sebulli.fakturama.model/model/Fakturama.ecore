@@ -159,17 +159,19 @@
   <eClassifiers xsi:type="ecore:EClass" name="Delivery" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Confirmation" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Proforma" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//IEntity">
+  <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//AbstractVoucher">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
+        eType="#//ExpenditureItem" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractVoucher" abstract="true" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//VoucherCategory"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expenditureDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="voucherDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="discounted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="doNotBook" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
-        eType="#//ExpenditureItem" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expenditureNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="voucherNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="paidValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
@@ -253,18 +255,9 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sequenceNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ProductCategory" eSuperTypes="#//AbstractCategory"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucher" eSuperTypes="#//IEntity">
-    <eAnnotations source="http://www.fakturama.org/JavaBean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//VoucherCategory"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="receiptVoucherDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="discounted" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="doNotBook" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucher" eSuperTypes="#//AbstractVoucher">
     <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1"
         eType="#//ReceiptVoucherItem" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="receiptVoucherNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="paidValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucherItem" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>

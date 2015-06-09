@@ -977,9 +977,9 @@ public class MigrationManager {
 				receiptVoucher.setDocumentNumber(oldReceiptvoucher.getDocumentnr());
 				receiptVoucher.setDoNotBook(oldReceiptvoucher.isDonotbook());
 				if(StringUtils.isNotEmpty(oldReceiptvoucher.getDate())) {
-				    receiptVoucher.setReceiptVoucherDate(dateFormat.parse(oldReceiptvoucher.getDate()));
+				    receiptVoucher.setVoucherDate(dateFormat.parse(oldReceiptvoucher.getDate()));
 				}
-				receiptVoucher.setReceiptVoucherNumber(oldReceiptvoucher.getNr());
+				receiptVoucher.setVoucherNumber(oldReceiptvoucher.getNr());
 				// each Receiptvoucher has its own items
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getItems())) {
 					String[] itemRefs = oldReceiptvoucher.getItems().split(",");
@@ -1030,9 +1030,9 @@ public class MigrationManager {
 				expenditure.setDoNotBook(oldExpenditure.isDonotbook());
 				if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
 				    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
-					expenditure.setExpenditureDate(expenditureDate);
+					expenditure.setVoucherDate(expenditureDate);
 				}
-				expenditure.setExpenditureNumber(oldExpenditure.getNr());
+				expenditure.setVoucherNumber(oldExpenditure.getNr());
 				// each Expenditure has its own items
 				if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
 					String[] itemRefs = oldExpenditure.getItems().split(",");
