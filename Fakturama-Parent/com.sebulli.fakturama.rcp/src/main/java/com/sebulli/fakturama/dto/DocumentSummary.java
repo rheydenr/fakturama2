@@ -29,6 +29,19 @@ import com.sebulli.fakturama.misc.DataUtils;
  * @author Gerd Bartelt
  */
 public class DocumentSummary {
+    
+    /* TODO
+auch mal ansehen (für Summenbildung): 
+
+/functional-example/src/main/java/org/javamoney/examples/console/functional/MonetaryGroupOperations.java
+
+hier klingt vor allem das interessant:
+
+             MonetarySummaryStatistics summary = getCurrencies().stream()
+                           .filter(MonetaryFunctions.isCurrency(DOLLAR))
+                           .collect(MonetaryFunctions.summarizingMonetary(DOLLAR));
+
+     */
 
 	/** The prices are not rounded to net or gross */
 	public static final int ROUND_NOTSPECIFIED = 0;

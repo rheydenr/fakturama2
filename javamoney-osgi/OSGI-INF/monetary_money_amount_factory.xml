@@ -4,5 +4,5 @@
    <service>
       <provide interface="javax.money.spi.MonetaryAmountFactoryProviderSpi"/>
    </service>
-   <property name="priority" type="Integer" value="10"/>
+   <property name="service.ranking" type="Integer" value="10"/>
 </scr:component>

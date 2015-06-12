@@ -11,9 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.money.CurrencyUnit;
+import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
-import javax.money.MonetaryAmounts;
 import javax.money.format.AmountFormatContext;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryParseException;
@@ -187,7 +187,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         }
         MonetaryAmountFactory<?> factory = this.amountFormatContext.getParseFactory();
         if (factory == null) {
-            factory = MonetaryAmounts.getDefaultAmountFactory();
+            factory = Monetary.getDefaultAmountFactory();
         }
         return factory.setCurrency(unit).setNumber(num).create();
     }

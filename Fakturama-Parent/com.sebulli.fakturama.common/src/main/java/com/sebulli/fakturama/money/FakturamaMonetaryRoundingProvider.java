@@ -11,7 +11,7 @@ import java.util.Set;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryRounding;
-import javax.money.MonetaryRoundings;
+import javax.money.Monetary;
 import javax.money.RoundingQuery;
 import javax.money.spi.RoundingProviderSpi;
 
@@ -70,7 +70,7 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
             return new FakturamaRounding(scale, roundingMode);
         }
         if (roundingQuery.getRoundingName() != null && DEFAULT_ROUNDING_ID.equals(roundingQuery.getRoundingName())) {
-            return MonetaryRoundings.getDefaultRounding();
+            return Monetary.getDefaultRounding();
         }
         return null;
     }

@@ -32,9 +32,8 @@ import java.util.regex.Pattern;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
 import javax.money.MonetaryRounding;
-import javax.money.MonetaryRoundings;
+import javax.money.Monetary;
 import javax.money.RoundingQueryBuilder;
 import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
@@ -104,8 +103,8 @@ public class DataUtils {
         form.setGroupingUsed(useThousandsSeparator);
         if (currencyLocale.getCountry().equals("CH")) {
             if(currencyCheckboxEnabled) {
-                CurrencyUnit chf = MonetaryCurrencies.getCurrency(currencyLocale);
-                mro = MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
+                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
+                mro = Monetary.getRounding(RoundingQueryBuilder.of()
                         .setCurrency(chf)
                         // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
                         .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
@@ -123,14 +122,14 @@ public class DataUtils {
     }
     
     public CurrencyUnit getDefaultCurrencyUnit() {
-        return MonetaryCurrencies.getCurrency(currencyLocale);
+        return Monetary.getCurrency(currencyLocale);
     }
     
     public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
-        return MonetaryCurrencies.getCurrency(currencyLocale);
+        return Monetary.getCurrency(currencyLocale);
     }
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
-        return MonetaryRoundings.getRounding(RoundingQueryBuilder.of()
+        return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
                 .set("cashRounding",cashRounding)
                 .build());

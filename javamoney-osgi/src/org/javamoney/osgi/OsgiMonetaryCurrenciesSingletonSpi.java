@@ -14,27 +14,25 @@ import javax.money.spi.Bootstrap;
 import javax.money.spi.CurrencyProviderSpi;
 import javax.money.spi.MonetaryCurrenciesSingletonSpi;
 
-import org.osgi.framework.ServiceReference;
-
 public final class OsgiMonetaryCurrenciesSingletonSpi implements MonetaryCurrenciesSingletonSpi {
 	
-	private CurrencyProviderSpi currencyProvider;
-	
-	public void setCurrencyProvider(CurrencyProviderSpi currencyProvider) {
-		this.currencyProvider = currencyProvider;
-	}
-	
-	public void unsetCurrencyProvider(CurrencyProviderSpi currencyProvider) {
-		this.currencyProvider = null;
-	}
-
-	public void activate() {
-		
-	}
-	
-	public void deactivate() {
-		
-	}
+//	private CurrencyProviderSpi currencyProvider;
+//	
+//	public void setCurrencyProvider(CurrencyProviderSpi currencyProvider) {
+//		this.currencyProvider = currencyProvider;
+//	}
+//	
+//	public void unsetCurrencyProvider(CurrencyProviderSpi currencyProvider) {
+//		this.currencyProvider = null;
+//	}
+//
+//	public void activate() {
+//		
+//	}
+//	
+//	public void deactivate() {
+//		
+//	}
 
     @Override
     public Set<CurrencyUnit> getCurrencies(CurrencyQuery query) {

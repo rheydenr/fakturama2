@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="MonetaryAmountFormatProviderSpi">
-   <implementation class="org.javamoney.moneta.format.internal.OsgiAmountFormatProviderSpi"/>
+   <implementation class="org.javamoney.moneta.internal.format.DefaultAmountFormatProviderSpi"/>
    <service>
       <provide interface="javax.money.spi.MonetaryAmountFormatProviderSpi"/>
    </service>

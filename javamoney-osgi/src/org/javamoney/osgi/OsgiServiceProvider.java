@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.money.spi.ServiceProvider;
 
@@ -21,7 +22,8 @@ import org.osgi.framework.ServiceReference;
  */
 public class OsgiServiceProvider implements ServiceProvider {
     /** List of services loaded, per class. */
-    private final ConcurrentHashMap<Class, List<Object>> servicesLoaded = new ConcurrentHashMap<>();
+    @SuppressWarnings("rawtypes")
+	private  final ConcurrentHashMap<Class, List<Object>> servicesLoaded = new ConcurrentHashMap<>();
 
     @Override
     public int getPriority() {
@@ -66,16 +68,7 @@ public class OsgiServiceProvider implements ServiceProvider {
             // read service from OSGi registry
             Collection<ServiceReference<T>> serviceReferences = Activator.getBundleContext().getServiceReferences(serviceType, null);
             
-            for (ServiceReference<T> serviceReference : serviceReferences) {
-                services.add(Activator.getBundleContext().getService(serviceReference));
-            }
-            
-//            for (T t : ServiceLoader.load(serviceType)) {
-//                services.add(t);
-//            }
-//            if(services.isEmpty()){
-//                services.addAll(defaultList);
-//            }
+            services = serviceReferences.stream().map(sr -> Activator.getBundleContext().getService(sr)).collect(Collectors.toList());
             @SuppressWarnings("unchecked")
             final List<T> previousServices = (List<T>) servicesLoaded.putIfAbsent(serviceType, (List<Object>) services);
             return Collections.unmodifiableList(previousServices != null ? previousServices : services);

@@ -28,7 +28,7 @@ public class OsgiCurrencyProviderSpi implements CurrencyProviderSpi {
 
     @Override
     public String getProviderName(){
-        return "default";
+        return "osgi-default";
     }
 
     /**

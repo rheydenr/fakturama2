@@ -9,16 +9,17 @@ Import-Package: org.osgi.framework;version="1.3.0",
  org.osgi.service.prefs;version="1.1.1",
  org.osgi.util.tracker;version="1.3.1"
 Bundle-ActivationPolicy: lazy
-Export-Package: javax.money,
- javax.money.convert,
- javax.money.format,
- javax.money.spi,
- org.javamoney.moneta,
- org.javamoney.moneta.format,
- org.javamoney.moneta.function,
- org.javamoney.moneta.spi,
- org.javamoney.osgi
+Export-Package: javax.money;uses:="javax.money.spi",
+ javax.money.convert;uses:="javax.money",
+ javax.money.format;uses:="javax.money,javax.money.spi",
+ javax.money.spi;uses:="javax.money.format,javax.money.convert,javax.money",
+ org.javamoney.moneta;uses:="javax.money.convert,javax.money.format,javax.money",
+ org.javamoney.moneta.format;uses:="org.javamoney.moneta.spi,javax.money.format,javax.money",
+ org.javamoney.moneta.function;uses:="javax.money.convert,javax.money",
+ org.javamoney.moneta.spi;uses:="javax.money.convert,javax.money",
+ org.javamoney.osgi;uses:="org.osgi.framework,javax.money,javax.money.spi"
 Bundle-ClassPath: .,
- lib/money-api-1.0-SNAPSHOT.jar,
- lib/moneta-1.0-SNAPSHOT.jar
+ lib/money-api-1.0.jar,
+ lib/moneta-1.0.1-SNAPSHOT.jar
 Bundle-Activator: org.javamoney.osgi.Activator
+Require-Bundle: javax.inject
