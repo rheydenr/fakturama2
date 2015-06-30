@@ -29,10 +29,8 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -46,6 +44,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
@@ -101,9 +100,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     protected static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
 
     @Inject
-    @Preference
-    protected IEclipsePreferences eclipsePrefs;
-
+    protected IPreferenceStore eclipsePrefs;
+    
     @Inject
     protected Logger log;
 
@@ -238,7 +236,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 */
     public void onStart(NatTable natTable) {
         Properties properties = new Properties();
-        String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+        String requestedWorkspace = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE);
         Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
 
         try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
@@ -259,7 +257,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      */
     public void onStop(NatTable natTable) {
         Properties properties = new Properties();
-        String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+        String requestedWorkspace = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE);
         Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
 
         try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {

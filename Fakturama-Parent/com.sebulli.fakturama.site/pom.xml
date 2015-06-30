@@ -52,6 +52,22 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-director-plugin</artifactId>
 				<version>${tycho.version}</version>
+							<configuration>
+					<formats>
+						<win32>zip</win32>
+						<linux>tar.gz</linux>
+						<macosx>tar.gz</macosx>
+					</formats>
+           <products>
+              <product>
+                <id>Fakturama</id>
+                <rootFolders>
+                  <!-- for MacOSX, make sure you use a folder ending with .app , see bug 463670 -->
+                  <macosx>Fakturama.app</macosx>
+                </rootFolders>
+              </product>
+            </products>
+				</configuration>
 				<executions>
 					<execution>
 						<id>materialize-products</id>

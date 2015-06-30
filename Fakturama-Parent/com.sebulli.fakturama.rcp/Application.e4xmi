@@ -217,9 +217,12 @@
         <windows xsi:type="basic:Dialog" xmi:id="_FBhH4L-XEeSGvuNl8B-b9A" elementId="fakturama.dialog.selectdeliverynotes" toBeRendered="false" visible="false" label="%dialog.selectdeliverynotes.title" width="800" height="550"/>
         <windows xsi:type="basic:Dialog" xmi:id="_7hlEYMg2EeSV-dFmKAsTIA" elementId="fakturama.dialog.select.product" toBeRendered="false" visible="false" label="%dialog.selectproduct.title" tooltip="%dialog.selectproduct.tooltip" width="800" height="550"/>
         <windows xsi:type="basic:TrimmedWindow" xmi:id="_uxpIYOlDEeSaxYhVwolNzQ" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%dialog.selectaddress.title" tooltip="%dialog.selectaddress.tooltip" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw" width="800" height="600">
-          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="Contacts selection dialog">
+          <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="Contacts selection dialog" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw">
+            <variables>varpart</variables>
             <properties key="fakturama.datatable.contacts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
           </children>
+          <variables>varmod</variables>
+          <properties key="mode" value="selectaddress"/>
         </windows>
         <windows xsi:type="basic:TrimmedWindow" xmi:id="_UTrVEPBEEeSE6viOnMbMyQ" elementId="fakturama.dialog.select.text" toBeRendered="false" visible="false" label="%dialog.selecttext.title" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw" width="800" height="600">
           <children xsi:type="basic:Part" xmi:id="_gz-z8PBEEeSE6viOnMbMyQ" elementId="fakturama.dialog.select.text.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.texts.TextListTable" label="Texts selection dialog">

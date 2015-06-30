@@ -23,14 +23,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.translation.TranslationService;
 
-import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 
@@ -42,8 +40,8 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
 public class TemplateResourceManager implements ITemplateResourceManager {
     private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
     
-    @Inject
-    private ILogger log;   
+//    @Inject
+    private Logger log;   
     
     // Messages class can't be used at this point, since it isn't in context at this stage
     private TranslationService translationService;
@@ -54,6 +52,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
     @Override
     public boolean createWorkspaceTemplates(String workspace, IEclipseContext context) {
         this.translationService = context.get(TranslationService.class);
+        this.log = context.get(Logger.class);
         String templateFolderName = translate("config.workspace.templates.name"); 
         
         // Exit if the workspace path is not set
@@ -66,7 +65,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         if (!Files.isDirectory(workspacePath)) {
             // Create and fill the template folder, if it does not exist.
             try {
-                Files.createDirectory(workspacePath);
+                Files.createDirectories(workspacePath);
                 // Copy the document templates from the resources to the file system
                 for (DocumentType doctype : DocumentType.values()) {
                     switch (doctype) {

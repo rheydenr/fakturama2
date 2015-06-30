@@ -11,18 +11,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -58,7 +53,6 @@ import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -75,37 +69,17 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  * 
  */
 public abstract class ContactListTable<T extends Contact> extends AbstractViewDataTable<T, ContactCategory> {
-
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private Logger log;
-    
     @Inject
     protected UISynchronize sync;
-
-    @Inject
-    private EHandlerService handlerService;
-
-    @Inject
-    private ECommandService commandService;
     
     @Inject
-    protected ESelectionService selectionService;
+    protected IEclipseContext context;
 
     // ID of this view
     public static final String ID = "fakturama.views.contactTable";
 
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
     public static final String SELECTED_CONTACT_ID = "fakturama.contactlist.selectedcontactid";
-     
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     protected EventList<T> contactListData;
     protected EventList<ContactCategory> categories;
@@ -117,6 +91,9 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     protected ContactCategoriesDAO contactCategoriesDAO;
     
     protected MPart listTablePart;
+
+    private T selectedObject;
+
     
     private EntityGridListLayer<T> gridLayer;
     //create a new ConfigRegistry which will be needed for GlazedLists handling
@@ -138,10 +115,28 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         }
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
         return top;
     }
-    
+
     private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<T> gridLayer, String commandId) {
+        
+//        if(commandId != null) {
+//            // if we are in "selectaddress" mode we have to register a single click mouse event
+//            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+//                public void run(NatTable natTable, MouseEvent event) {
+//                int rowPos = natTable.getRowPositionByY(event.y);
+//                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+//                Contact selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+////                (SelectContactDialog)top.getParent()
+////                (listTablePart.getParent()).getResult().clear();
+//                ((SelectContactDialog)listTablePart.getParent()).getResult().add(selectedObject);
+////                Map<String, Object> eventParams = new HashMap<>();
+////                eventParams.putAll(listTablePart.getParent().getTransientData());
+////                eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
+////                evtBroker.post("DialogSelection/Contact", eventParams);
+//              }});
+//            }
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -151,8 +146,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
                 int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
-                // extract the selected Object
-                Contact selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
                 // when calling the editor command.
@@ -185,6 +179,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 }
             }
         });
+    }
+    
+    @Override
+    public T getSelectedObject() {
+        return selectedObject;
     }
     
     @Override
@@ -369,6 +368,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
             log.debug("no rows selected!");
         }
     }
+    
+    
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#setCategoryFilter(java.lang.String, com.sebulli.fakturama.views.datatable.vats.TreeObjectType)

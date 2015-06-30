@@ -47,6 +47,7 @@ import java.util.logging.LogManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -160,6 +161,7 @@ public class MigrationManager {
 	
 	private java.util.logging.Logger migLogUser;
 
+	@Inject
 	private IEclipsePreferences eclipsePrefs;
 
 // this doesn't work because the IPreferenceStore isn't set at this stage
@@ -174,21 +176,52 @@ public class MigrationManager {
 	/*
 	 * all available DAO classes
 	 */
+    @Inject
 	private ContactsDAO contactDAO;
+    
+    @Inject
 	private ContactCategoriesDAO contactCategoriesDAO;
+    
+    @Inject
 	private DocumentsDAO documentDAO;
+    
+    @Inject
 	private PaymentsDAO paymentsDAO;
+    
+    @Inject
 	private ProductsDAO productsDAO;
+    
+    @Inject
 	private ProductCategoriesDAO productCategoriesDAO;
+    
+    @Inject
 	private PropertiesDAO propertiesDAO;
+    
+    @Inject
 	private ItemAccountTypeDAO itemAccountTypeDAO;
+    
+    @Inject
 	private ExpendituresDAO expendituresDAO;
+    
+    @Inject
 	private ReceiptVouchersDAO receiptVouchersDAO;
+    
+    @Inject
 	private VoucherCategoriesDAO voucherCategoriesDAO;
+    
+    @Inject
 	private ShippingsDAO shippingsDAO;
+    
+    @Inject
 	private ShippingCategoriesDAO shippingCategoriesDAO;
+    
+    @Inject
 	private TextsDAO textDAO;
+    
+    @Inject
 	private VatsDAO vatsDAO;
+    
+    @Inject
 	private VatCategoriesDAO vatCategoriesDAO;
 	
 	/**
@@ -206,34 +239,24 @@ public class MigrationManager {
 	/*
 	 * there's only one DAO for old data
 	 */
+ //   @Inject
 	private OldEntitiesDAO oldDao;
 
-	private String generalWorkspace = null;
+	
+	@Inject
 	private IApplicationContext appContext;
-    private final GregorianCalendar zeroDate;
+
+	private GregorianCalendar zeroDate;
+    private String generalWorkspace = null;
 
     private Map<String, ItemAccountType> itemAccountTypes;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	/**
-     * @param context
-     * @param log
-     * @param preferences
-     * @param msg
-     */
-    public MigrationManager(IEclipseContext context, Messages msg, IEclipsePreferences eclipsePrefs) {
-        this.context = context;
-        appContext = context.get(IApplicationContext.class);
-        this.log = context.get(org.eclipse.e4.core.services.log.Logger.class);
-        this.eclipsePrefs = eclipsePrefs;
-        this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
-        this.msg = msg;
+    @PostConstruct
+    public void init() {
+        this.zeroDate = new GregorianCalendar(2000, 0, 1);
         this.modelFactory = FakturamaModelPackage.MODELFACTORY;
-        zeroDate = new GregorianCalendar(2000, 0, 1);
-    }
-
-    public MigrationManager() {
-        zeroDate = new GregorianCalendar(2000, 0, 1);
+        this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
 	}
 
 	/**
@@ -266,22 +289,22 @@ public class MigrationManager {
 
 		// initialize DAOs via EclipseContext
 		// new Entities have their own DAO ;-)
-		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
-		contactCategoriesDAO = ContextInjectionFactory.make(ContactCategoriesDAO.class, context);
-		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
-		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
-		paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
-		productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
-		productCategoriesDAO = ContextInjectionFactory.make(ProductCategoriesDAO.class, context);
-		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
-		receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
-		itemAccountTypeDAO = ContextInjectionFactory.make(ItemAccountTypeDAO.class, context);
-		voucherCategoriesDAO = ContextInjectionFactory.make(VoucherCategoriesDAO.class, context);
-		shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
-		shippingCategoriesDAO = ContextInjectionFactory.make(ShippingCategoriesDAO.class, context);
-		vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
-        vatCategoriesDAO = ContextInjectionFactory.make(VatCategoriesDAO.class, context);
-		textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
+//		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
+//		contactCategoriesDAO = ContextInjectionFactory.make(ContactCategoriesDAO.class, context);
+//		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
+//		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
+//		paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
+//		productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
+//		productCategoriesDAO = ContextInjectionFactory.make(ProductCategoriesDAO.class, context);
+//		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
+//		receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
+//		itemAccountTypeDAO = ContextInjectionFactory.make(ItemAccountTypeDAO.class, context);
+//		voucherCategoriesDAO = ContextInjectionFactory.make(VoucherCategoriesDAO.class, context);
+//		shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
+//		shippingCategoriesDAO = ContextInjectionFactory.make(ShippingCategoriesDAO.class, context);
+//		vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
+//        vatCategoriesDAO = ContextInjectionFactory.make(VatCategoriesDAO.class, context);
+//		textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
 
 		// old entities only have one DAO for all entities
 		oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);

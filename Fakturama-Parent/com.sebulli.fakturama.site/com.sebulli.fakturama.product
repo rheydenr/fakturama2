@@ -33,13 +33,13 @@
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="app/app_16_32.bmp"
-            winSmallLow="app/app_16_8.bmp"
-            winMediumHigh="app/app_32_32.bmp"
-            winMediumLow="app/app_32_8.bmp"
-            winLargeHigh="app/app_48_32.bmp"
-            winLargeLow="app/app_48_8.bmp"
-            winExtraLargeHigh="app/app_256.bmp"/>
+            winSmallHigh="/com.sebulli.fakturama.site/app/app_16_32.bmp"
+            winSmallLow="/com.sebulli.fakturama.site/app/app_16_8.bmp"
+            winMediumHigh="/com.sebulli.fakturama.site/app/app_32_32.bmp"
+            winMediumLow="/com.sebulli.fakturama.site/app/app_32_8.bmp"
+            winLargeHigh="/com.sebulli.fakturama.site/app/app_48_32.bmp"
+            winLargeLow="/com.sebulli.fakturama.site/app/app_48_8.bmp"
+            winExtraLargeHigh="/com.sebulli.fakturama.site/app/app_256.bmp"/>
       </win>
    </launcher>
 
@@ -274,7 +274,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </configurations>
 
    <repositories>
-      <repository location="http://www.fakturama.org/" enabled="true" />
+      <repository location="http://www.fakturama.org/release/" enabled="true" />
    </repositories>
 
 </product>

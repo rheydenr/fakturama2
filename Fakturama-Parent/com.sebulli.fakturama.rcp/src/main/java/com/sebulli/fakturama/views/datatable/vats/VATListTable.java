@@ -276,7 +276,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @return
      */
     private long getDefaultVATId() {
-        return eclipsePrefs.getLong(Constants.DEFAULT_VAT, 1L);
+        return eclipsePrefs.getLong(Constants.DEFAULT_VAT);
     }
     
     /**

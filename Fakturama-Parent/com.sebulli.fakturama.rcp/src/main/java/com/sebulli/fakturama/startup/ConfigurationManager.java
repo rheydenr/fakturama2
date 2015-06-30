@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -160,9 +161,9 @@ public class ConfigurationManager {
 					eclipsePrefs.remove(GENERAL_WORKSPACE_REQUEST);
 					eclipsePrefs.put(Constants.GENERAL_WORKSPACE, requestedWorkspace);
 					// now check if an old database has to be converted
+					context.set(IEclipsePreferences.class, eclipsePrefs);
 					if (eclipsePrefs.get(MIGRATE_OLD_DATA, null) != null) {
-						MigrationManager migMan = new MigrationManager(context, msg, eclipsePrefs);
-//						appContext.applicationRunning();
+					    MigrationManager migMan = ContextInjectionFactory.make(MigrationManager.class, context);
 						migMan.migrateOldData(shell);
 	                    eclipsePrefs.remove(MIGRATE_OLD_DATA);
 					}
@@ -190,7 +191,7 @@ public class ConfigurationManager {
 		}
 		if(restart != STATUS_OK) {
     		// now initialize the new workspace
-    		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
+    		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null)));
 		}
 	}
 

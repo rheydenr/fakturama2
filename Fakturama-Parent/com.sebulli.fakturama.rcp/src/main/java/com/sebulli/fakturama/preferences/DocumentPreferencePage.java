@@ -155,6 +155,6 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, "1");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_MESSAGES, "1");
 		node.setDefault(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow);
-		node.setDefault(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);
+		node.setDefault(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);node.setDefault("rhe_huhu", "tst!");
 	}
 }

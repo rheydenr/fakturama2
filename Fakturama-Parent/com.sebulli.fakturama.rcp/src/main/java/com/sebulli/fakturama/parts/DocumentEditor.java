@@ -101,6 +101,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dialogs.SelectContactDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -113,6 +114,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -1688,13 +1690,9 @@ public class DocumentEditor extends Editor<Document> {
 			     * You have to clone the dialog because else there's no valid parent if you open the dialog 
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
-			    MTrimmedWindow dialog = (MTrimmedWindow) modelService.find("fakturama.dialog.select.contact", application);
-			    dialog = (MTrimmedWindow) modelService.cloneElement(dialog, (MSnippetContainer) modelService.find("com.sebulli.fakturama.application", application));
-			    // setVisible has to be set *before* setToBeRendered!
-			    dialog.setVisible(true);
-			    dialog.setToBeRendered(true);
-			    dialog.getTransientData().put(DOCUMENT_ID, document.getName());
-			    modelService.bringToTop(dialog);
+			    context.set(DOCUMENT_ID, document.getName());
+			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+			    dlg.open();
 			}
 		});
 
@@ -2367,7 +2365,7 @@ public class DocumentEditor extends Editor<Document> {
 //                Contact contact = (Contact) selectionService.getSelection();
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!
-                document.getBillingContact().getAddress().setManualAddress(null);
+//                document.getBillingContact().getAddress().setManualAddress(null);
                 document.setBillingContact(contact);
                 addressId = contact;
                 txtAddress.setText(contactUtil.getAddressAsString(contact));
