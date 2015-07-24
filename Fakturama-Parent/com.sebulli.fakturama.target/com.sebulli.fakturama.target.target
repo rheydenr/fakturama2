@@ -95,14 +95,14 @@
 <repository location="http://download.eclipse.org/releases/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201506151822"/>
-<unit id="org.eclipse.nebula.widgets.radiogroup.feature.feature.group" version="0.1.0.201506151822"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201507082312"/>
+<unit id="org.eclipse.nebula.widgets.radiogroup.feature.feature.group" version="0.1.0.201507082312"/>
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201506151822"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201506151822"/>
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201506151822"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201507082315"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201507082315"/>
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201507082315"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>
