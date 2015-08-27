@@ -293,8 +293,8 @@ public abstract class Editor<T extends IEntity> {
 	 */
 	protected String getNextNr() {
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
-		String prefStrNr = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
+		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String nrExp = "";
 		String nextNr;
@@ -400,8 +400,8 @@ public abstract class Editor<T extends IEntity> {
 	protected int setNextNr(String value, String key) {
 
 		// Create the string of the preference store for format and number
-		String prefStrFormat = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
-		String prefStrNr = "PREFERENCES_NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
+		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";
+		String prefStrNr = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_NR";
 		String format;
 		String s = "";
 		int nr;

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -34,6 +35,9 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
 	/**
 	 * Constructor
@@ -116,26 +120,30 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TEL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_FAX, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, write);
-//		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR, write);
-//		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TEL, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_FAX, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_EMAIL, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, write);
+//		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR, write);
+//		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, write);
 	}
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
     /**
      * @param node

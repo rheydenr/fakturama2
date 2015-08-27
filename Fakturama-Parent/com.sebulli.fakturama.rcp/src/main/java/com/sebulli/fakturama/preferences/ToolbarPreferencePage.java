@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -36,6 +37,9 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 //    
 //    @Inject
 //    protected IEventBroker eventBroker;
@@ -115,21 +119,26 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_WEBSHOP, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_PRINT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_SAVE, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_WEBSHOP, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_PRINT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_SAVE, write);
 		// Get all documents
 		for (int i=1; i<= DocumentType.MAXID; i++) {
-			PreferencesInDatabase.syncWithPreferencesFromDatabase("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), write);
+			preferencesInDatabase.syncWithPreferencesFromDatabase("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), write);
 		}
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_PRODUCT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_CONTACT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_BROWSER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_PRODUCT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_CONTACT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_BROWSER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, write);
+	}
+	
+	@Synchronize
+	public void loadUserValuesFromDB() {
+	    syncWithPreferencesFromDatabase(false);
 	}
 
 	/**

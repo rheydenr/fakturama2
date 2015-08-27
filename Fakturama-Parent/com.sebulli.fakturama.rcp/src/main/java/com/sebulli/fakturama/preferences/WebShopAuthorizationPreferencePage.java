@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -35,6 +36,9 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
 	/**
 	 * Constructor
@@ -82,11 +86,15 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, write);
 	}
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/**
 	 * Set the default values for this preference page

@@ -31,6 +31,7 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -315,7 +316,6 @@ public class ContactEditor extends Editor<Contact> {
 	@PostConstruct
 	public void init(Composite parent) {
 	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
-
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
@@ -559,7 +559,7 @@ public class ContactEditor extends Editor<Contact> {
 			//T: Format of the name in an address
 			labelName.setText(msg.editorContactFieldLastnamefirstnameName);
 			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
 			txtFirstname = new Text(addressGroup, SWT.BORDER);
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFirstname);
 		}
@@ -567,9 +567,9 @@ public class ContactEditor extends Editor<Contact> {
 			//T: Format of the name in an address
 			labelName.setText(msg.editorContactFieldFirstnamelastnameName);
 			txtFirstname = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtFirstname);
+			GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).grab(true, false).applyTo(txtFirstname);
 			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtName);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(txtName);
 		}
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
@@ -601,10 +601,10 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
 		txtZip = new Text(addressGroup, SWT.BORDER);
 		bindModelValue(editorContact, txtZip, Contact_.address.getName() + "." + Address_.zip.getName(), 16);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtZip);
+		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
 		txtCity = new Text(addressGroup, SWT.BORDER);
 		bindModelValue(editorContact, txtCity, Contact_.address.getName() + "." + Address_.city.getName(), 32);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCity);
+		GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(txtCity);
 
 		// Country
 		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
@@ -631,10 +631,10 @@ public class ContactEditor extends Editor<Contact> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBirthday);		
 
         dtBirthday = new CDateTime(addressGroup, CDT.BORDER | CDT.DROP_DOWN);
-        dtBirthday.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        dtBirthday.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
         dtBirthday.setFormat(CDT.DATE_MEDIUM);
 		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
-		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
+		GridDataFactory.fillDefaults().hint(250, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
 		// Set the dtBirthday widget to the contact's birthday date
 		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 

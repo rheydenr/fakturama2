@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -34,6 +35,9 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
 	/**
 	 * Constructor
@@ -89,14 +93,19 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MS, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MS, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, write);
 	}
+    
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/**
 	 * Set the default values for this preference page
@@ -105,7 +114,7 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
 	 *            The preference node
 	 */
 	@Override
-	public void setInitValues(IPreferenceStore node/*, Messages msg*/) {
+	public void setInitValues(IPreferenceStore node) {
 		
 		//T: Preference page "Contact Format" - Example format Strings (Common Salutation)
 		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, msg.dataDefaultContactFormatSalutation);

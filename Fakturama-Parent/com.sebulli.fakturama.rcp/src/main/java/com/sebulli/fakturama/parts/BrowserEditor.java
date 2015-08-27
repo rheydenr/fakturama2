@@ -115,7 +115,7 @@ public class BrowserEditor {
             // In case of an empty URL: use the start page
             if (url.isEmpty() || url.equals(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)) {
                 url = "file://" +
-                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE), "/") +
+                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
                     StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
                     "Start/start.html";
             }
@@ -298,7 +298,7 @@ public class BrowserEditor {
 						if (urlText != null) {
 						    
 							String startUrl = "file://" +
-				                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE), "/") +
+				                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
 				                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
 				                    "Start/start.html";
 

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -74,6 +75,9 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
 	/**
 	 * Constructor
@@ -130,20 +134,25 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
+	public void syncWithPreferencesFromDatabase(boolean write) {
 
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_INVOICE_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DELIVERY_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_OFFER_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_ORDER_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CREDIT_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONFIRMATION_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_INVOICE_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DELIVERY_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_OFFER_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_ORDER_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CREDIT_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONFIRMATION_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, write);
 		
 		}
+    
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/**
 	 * Set the default values for this preference page

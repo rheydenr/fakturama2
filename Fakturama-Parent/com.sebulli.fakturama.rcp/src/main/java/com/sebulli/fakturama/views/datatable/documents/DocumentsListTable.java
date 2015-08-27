@@ -428,7 +428,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     filterLabel.setText(" ");
                 } else {
                     if (treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
-//                        filterLabel.setText(msg.topictreeLabelThistransaction);
+                        filterLabel.setText(msg.topictreeLabelThistransaction);
                         // bind myFirstLabel via method reference
                         registry.register(filterLabel::setText, (msg) -> msg.topictreeLabelThistransaction);
                     } else {

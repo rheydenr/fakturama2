@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,6 +35,7 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 
@@ -43,8 +46,11 @@ import com.sebulli.fakturama.model.FakturamaModelPackage;
  *
  */
 public abstract class AbstractDAO<T> {
-	
-protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
+    
+    @Inject
+    private ILogger log;
+    
+    protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
     /**
      * Persists the given object.
@@ -151,7 +157,13 @@ em.joinTransaction();
         CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
         CriteriaQuery<T> cq = criteria.where(cb.equal(root.<String> get("name"), entityName));
-        return getEntityManager().createQuery(cq).getSingleResult();
+        T result = null;
+        try {
+            result = getEntityManager().createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            log.debug("no entities found for ["+entityName+"], returning {null} value.");
+        }
+        return result;
     }
     
     /**

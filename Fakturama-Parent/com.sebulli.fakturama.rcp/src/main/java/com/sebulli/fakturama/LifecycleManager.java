@@ -9,8 +9,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
+import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -40,6 +40,7 @@ import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
@@ -65,6 +66,8 @@ public class LifecycleManager {
     
     @Inject
     protected ITemplateResourceManager resourceManager;
+    
+    protected IPreferenceStoreProvider preferenceStoreProvider;
  
     private static final boolean RESTART_APPLICATION = true;
 
@@ -138,10 +141,8 @@ public class LifecycleManager {
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         
-        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
-                .getContext().getBundle().getSymbolicName()),
-                Constants.DEFAULT_PREFERENCES_NODE);
-        context.set(IPreferenceStore.class, defaultValuesNode);
+        IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+//        context.set(IPreferenceStore.class, defaultValuesNode);
         context.getParent().set(IPreferenceStore.class, defaultValuesNode);
         // Set the default values to this entries
         VAT defaultVat = modelFactory.createVAT(); //defaultValuesNode.getString(Constants.DEFAULT_VAT);
@@ -152,8 +153,6 @@ public class LifecycleManager {
             defaultVat = vatsDAO.save(defaultVat);
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
-        }
-        if(defaultVat != null && defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         }
         
@@ -167,26 +166,29 @@ public class LifecycleManager {
             defaultShipping = shippingsDAO.save(defaultShipping);
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
-        }
-        if(defaultShipping != null && defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
 
-        Payment defaultPayment;
+        Payment defaultPayment = modelFactory.createPayment();
+        defaultPayment.setName(msg.dataDefaultPayment);
+        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
+        defaultPayment.setDiscountValue(Double.valueOf(0.0));
+        defaultPayment.setDiscountDays(Integer.valueOf(0));
+        defaultPayment.setDiscountDays(Integer.valueOf(0));
+        defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
+        defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
+        defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
         if(paymentsDAO.getCount() == Long.valueOf(0L)) {
-            defaultPayment = new Payment();
-            defaultPayment.setName(msg.dataDefaultPayment);
-            defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
-            defaultPayment.setDiscountValue(Double.valueOf(0.0));
-            defaultPayment.setDiscountDays(Integer.valueOf(0));
-            defaultPayment.setDiscountDays(Integer.valueOf(0));
-            defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
-            defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
-            defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
             defaultPayment = paymentsDAO.save(defaultPayment);
+        } else if(defaultValuesNode.getLong(Constants.DEFAULT_PAYMENT) == Long.valueOf(0L)) {
+            defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
             defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
+        // here we have to restore the preference values from database
+        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
+        context.set(PreferencesInDatabase.class, preferencesInDatabase);
+        preferencesInDatabase.loadPreferencesFromDatabase();
     }
 
     @ProcessAdditions

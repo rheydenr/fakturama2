@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -35,6 +36,9 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 	@Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
     /**
 	 * Constructor
@@ -100,23 +104,29 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_DELIVERY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_BANK, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_MISC, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_NOTE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_GENDER, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_TITLE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_NAME_FORMAT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COMPANY, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_DELIVERY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_BANK, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_MISC, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_NOTE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_GENDER, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_TITLE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_NAME_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COMPANY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
 	}
+    
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.preferences.DefaultPreferencesInitializerListener#setInitValues(org.eclipse.jface.preference.IPreferenceStore)
 	 */
 	@Override
 	public void setInitValues(IPreferenceStore node) {
+//	    getPreferenceStore(); geht nich :-(
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_DELIVERY, true);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_BANK, false);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_MISC, true);

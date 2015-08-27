@@ -14,6 +14,9 @@
 
 package com.sebulli.fakturama.views.datatable.tree.ui;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,7 +30,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -297,7 +299,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 		// Set the name
 		//T: Topic Tree Viewer transaction title
-		transactionItem.setName(msg.topictreeTransaction);
+		transactionItem.setName(msg.topictreeLabelThistransaction);
 		
         internalTreeViewer.refresh();
 	}
@@ -329,9 +331,9 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		String[] nameParts = name.split("/");
 
 		boolean childfound = false;
-		TreeItem newParent = null;
-		TreeItem[] children;
-		children = getTree().getItems();
+		TreeObject newParent = null;
+		TreeObject[] children;
+		children = root.getChildren();
 
 		// Scan all parts of the input string
 		for (String namePart : nameParts) {
@@ -342,11 +344,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				allScanned = false;
 
 			// Search all tree items for one with the same name
-			for (TreeItem item : children) {
-				if (item.getText().equalsIgnoreCase(namePart)) {
-					childfound = true;
-					newParent = item;
-				}
+			Optional<TreeObject> foundResult = Arrays.stream(children).filter(i -> i.getName().equalsIgnoreCase(namePart)).findAny();
+			if(foundResult.isPresent()) {
+			    childfound = true;
+			    newParent = foundResult.get();
 			}
 
 			// No child was found
@@ -355,13 +356,13 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 			// Get the next children
 			if (newParent != null)
-				children = newParent.getItems();
+				children = newParent.getChildren();
 		}
 
         // Select the item, if it was found
         if (found && allScanned) {
-            getTree().setSelection(newParent);
-            internalTreeViewer.setSelection(internalTreeViewer.getSelection(), true);
+            internalTreeViewer.setSelection(new StructuredSelection(newParent), true);
+            internalTreeViewer.reveal(newParent);
         } else {
             TreeObject firstNode = findFirstNamedNode();
             if(firstNode == null) {

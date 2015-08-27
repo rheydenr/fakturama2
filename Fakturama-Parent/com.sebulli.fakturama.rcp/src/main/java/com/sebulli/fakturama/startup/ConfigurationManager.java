@@ -28,6 +28,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -108,10 +109,16 @@ public class ConfigurationManager {
 		OptionBuilder.withLongOpt("workspace");
 		OptionBuilder.withDescription(msg.commandSelectworkspaceTooltip);
         Option selectWorkspaceOpt = OptionBuilder.create("w");
+        
+		OptionBuilder.withArgName(IWorkbench.PERSIST_STATE);
+		OptionBuilder.hasArg();
+		OptionBuilder.withLongOpt(IWorkbench.PERSIST_STATE);
+        Option persistState = OptionBuilder.create("r");
 
         // create Options object
         Options options = new Options();
         options.addOption(selectWorkspaceOpt);
+        options.addOption(persistState);
         
         CommandLineParser parser = new BasicParser();
         try {

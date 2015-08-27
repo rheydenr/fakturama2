@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -42,6 +43,9 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage imple
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 	
 	
 	/**
@@ -88,12 +92,17 @@ public class OptionalItemsPreferencePage extends FieldEditorPreferencePage imple
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_USE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_USE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT, write);
 		}
+    
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/**
 	 * Set the default values for this preference page

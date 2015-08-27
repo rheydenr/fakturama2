@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -36,6 +37,9 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage implements 
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
 
 	/**
 	 * Constructor
@@ -81,12 +85,16 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage implements 
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public static void syncWithPreferencesFromDatabase(boolean write) {
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_TYPE, write);
-		PreferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, write);
+	public void syncWithPreferencesFromDatabase(boolean write) {
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_TYPE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, write);
 		
 	}
+    @Synchronize
+    public void loadUserValuesFromDB() {
+        syncWithPreferencesFromDatabase(false);
+    }
 
 	/**
 	 * Set the default values for this preference page

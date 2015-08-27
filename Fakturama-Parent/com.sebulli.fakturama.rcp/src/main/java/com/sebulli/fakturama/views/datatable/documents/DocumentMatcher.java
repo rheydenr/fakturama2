@@ -63,7 +63,7 @@ public class DocumentMatcher implements Matcher<Document> {
         if(!isRootNode) {
             if(treeObjectType == TreeObjectType.TRANSACTIONS_ROOTNODE) {
                 // treat the filter as a transaction ID
-                found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || item.getTransactionId() == parsedTransactionId;
+                found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || item.getTransactionId() != null && item.getTransactionId() == parsedTransactionId;
             } else if(treeObjectType == TreeObjectType.CONTACTS_ROOTNODE) {
                 found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || StringUtils.equals(item.getAddressFirstLine(), documentCategoryName);
             } else {

@@ -51,7 +51,7 @@ public class OpenBrowserEditorHandler {
     public static final String PARAM_USE_PROJECT_URL = "com.sebulli.fakturama.command.browser.useprojecturl";
 
     // URL of the Fakturama project site
-    public final static String FAKTURAMA_PROJECT_URL = "http://www.fakturama.org/";
+    public final static String FAKTURAMA_PROJECT_URL = "http://www.fakturama.info/";
 
     @Inject
     @Translation

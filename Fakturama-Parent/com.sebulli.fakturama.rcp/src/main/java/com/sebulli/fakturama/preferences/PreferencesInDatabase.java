@@ -14,28 +14,33 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.PropertiesDAO;
+import com.sebulli.fakturama.model.UserProperty;
 
 
 /**
  * Write or read preference settings to or from the data base
  * 
- * @author Gerd Bartelt
  */
 public class PreferencesInDatabase {
 
     @Inject
-    @Preference(value=InstanceScope.SCOPE)
     private IPreferenceStore preferences;
     
     @Inject
     private PropertiesDAO propertiesDAO;
+    
+    @Inject
+    private IEclipseContext context;
 
 	/**
 	 * Load one preference from the data base
@@ -43,9 +48,11 @@ public class PreferencesInDatabase {
 	 * @param key
 	 *            The key of the preference value
 	 */
-	private static void loadPreferenceValue(String key) {
-//		if (Data.INSTANCE.isExistingProperty(key))
-//			Activator.getDefault().getPreferenceStore().setValue(key, Data.INSTANCE.getProperty(key));
+	private void loadPreferenceValue(String key) {
+	    UserProperty property = propertiesDAO.findByName(key);
+	    if(property != null) {
+	        preferences.setValue(property.getName(), property.getValue());
+	    }
 	}
 
 	/**
@@ -68,11 +75,11 @@ public class PreferencesInDatabase {
 	 * @param write
 	 *            True, if the value should be written
 	 */
-	public static void syncWithPreferencesFromDatabase(String key, boolean write) {
-//		if (write)
-//			savePreferenceValue(key);
-//		else
-//			loadPreferenceValue(key);
+	public void syncWithPreferencesFromDatabase(String key, boolean write) {
+		if (write)
+			savePreferenceValue(key);
+		else
+			loadPreferenceValue(key);
 	}
 
 	/**
@@ -80,21 +87,29 @@ public class PreferencesInDatabase {
 	 * preference pages.
 	 */
 	public void loadOrSavePreferencesFromOrInDatabase(boolean save) {
-		ToolbarPreferencePage.syncWithPreferencesFromDatabase(save);
-		ContactFormatPreferencePage.syncWithPreferencesFromDatabase(save);
-		ContactPreferencePage.syncWithPreferencesFromDatabase(save);
-		DocumentPreferencePage.syncWithPreferencesFromDatabase(save);
-		GeneralPreferencePage.syncWithPreferencesFromDatabase(save);
-		NumberRangeFormatPreferencePage.syncWithPreferencesFromDatabase(save);
-		NumberRangeValuesPreferencePage.syncWithPreferencesFromDatabase(save);
-		OfficePreferencePage.syncWithPreferencesFromDatabase(save);
-		ProductPreferencePage.syncWithPreferencesFromDatabase(save);
-		WebShopImportPreferencePage.syncWithPreferencesFromDatabase(save);
-		YourCompanyPreferencePage.syncWithPreferencesFromDatabase(save);
-		ExportPreferencePage.syncWithPreferencesFromDatabase(save);
-		OptionalItemsPreferencePage.syncWithPreferencesFromDatabase(save);
-		WebShopAuthorizationPreferencePage.syncWithPreferencesFromDatabase(save);
-		BrowserPreferencePage.syncWithPreferencesFromDatabase(save);
+        List<Class<? extends IInitializablePreference>> classesToInit = new ArrayList<>();
+        classesToInit.add(ContactFormatPreferencePage.class);
+        classesToInit.add(DocumentPreferencePage.class);
+        classesToInit.add(NumberRangeFormatPreferencePage.class);
+        classesToInit.add(WebShopImportPreferencePage.class);
+        classesToInit.add(OptionalItemsPreferencePage.class);
+        classesToInit.add(ContactFormatPreferencePage.class);
+        classesToInit.add(ToolbarPreferencePage.class);
+        classesToInit.add(ContactPreferencePage.class);
+        classesToInit.add(GeneralPreferencePage.class);
+        classesToInit.add(NumberRangeValuesPreferencePage.class);
+        classesToInit.add(OfficePreferencePage.class);
+        classesToInit.add(ProductPreferencePage.class);
+        classesToInit.add(YourCompanyPreferencePage.class);
+        classesToInit.add(ExportPreferencePage.class);
+        classesToInit.add(WebShopAuthorizationPreferencePage.class);
+        classesToInit.add(BrowserPreferencePage.class);
+        
+        // Initialize every single preference page
+        for (Class<? extends IInitializablePreference> clazz : classesToInit) {
+            IInitializablePreference p = ContextInjectionFactory.make(clazz, context);
+            ContextInjectionFactory.invoke(p, Synchronize.class, context);
+        }
 	}
 
 	/**

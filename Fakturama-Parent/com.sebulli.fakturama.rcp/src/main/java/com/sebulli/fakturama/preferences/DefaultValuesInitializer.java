@@ -89,6 +89,7 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 		    IInitializablePreference p = ContextInjectionFactory.make(clazz, EclipseContextFactory.getServiceContext(Activator.getContext()));
     		p.setInitValues(defaultValuesNode);
         }
+
 		EclipseContextFactory.getServiceContext(Activator.getContext()).set(IPreferenceStore.class, defaultValuesNode);
 	}
 }
