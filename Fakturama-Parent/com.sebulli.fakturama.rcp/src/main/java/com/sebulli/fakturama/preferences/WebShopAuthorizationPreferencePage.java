@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -91,9 +93,14 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, write);
 	}
+
+    @Override
     @Synchronize
-    public void loadUserValuesFromDB() {
-        syncWithPreferencesFromDatabase(false);
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+        if(preferencesInDatabase != null) {
+            Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+            syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+        }
     }
 
 	/**
@@ -107,5 +114,4 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 		node.setDefault(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, "user");
 		node.setDefault(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, "password");
 	}
-	
 }

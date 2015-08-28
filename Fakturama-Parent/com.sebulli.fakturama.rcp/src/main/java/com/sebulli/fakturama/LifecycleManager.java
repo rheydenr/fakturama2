@@ -2,6 +2,7 @@ package com.sebulli.fakturama;
 
 import java.sql.SQLException;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -125,7 +126,7 @@ public class LifecycleManager {
      * If a new data base was created, fill some data with initial values
      * @throws SQLException 
      */
-    public void fillWithInitialData() throws SQLException {
+    private void fillWithInitialData() throws SQLException {
         // wait some seconds until dbInitJob is finished.
         // else you get a NPE!!!
         try {
@@ -189,6 +190,21 @@ public class LifecycleManager {
         PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
         context.set(PreferencesInDatabase.class, preferencesInDatabase);
         preferencesInDatabase.loadPreferencesFromDatabase();
+    }
+    
+    @PreDestroy
+    public void postWindowClose() {
+
+        //Closes all OpenOffice documents 
+ //       OfficeManager.INSTANCE.closeAll();
+
+        if (context.get(PreferencesInDatabase.class) != null) {
+            context.get(PreferencesInDatabase.class).savePreferencesInDatabase();
+//            Data.INSTANCE.close();
+
+            // TODO: Create a database backup
+//            BackupManager.createBackup();
+        }
     }
 
     @ProcessAdditions

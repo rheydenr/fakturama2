@@ -33,6 +33,8 @@ import com.sebulli.fakturama.model.UserProperty;
  */
 public class PreferencesInDatabase {
 
+    public static final String LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE = "loadOrSavePreferencesFromOrInDatabase";
+
     @Inject
     private IPreferenceStore preferences;
     
@@ -93,7 +95,6 @@ public class PreferencesInDatabase {
         classesToInit.add(NumberRangeFormatPreferencePage.class);
         classesToInit.add(WebShopImportPreferencePage.class);
         classesToInit.add(OptionalItemsPreferencePage.class);
-        classesToInit.add(ContactFormatPreferencePage.class);
         classesToInit.add(ToolbarPreferencePage.class);
         classesToInit.add(ContactPreferencePage.class);
         classesToInit.add(GeneralPreferencePage.class);
@@ -105,6 +106,7 @@ public class PreferencesInDatabase {
         classesToInit.add(WebShopAuthorizationPreferencePage.class);
         classesToInit.add(BrowserPreferencePage.class);
         
+        context.set(LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE, save);
         // Initialize every single preference page
         for (Class<? extends IInitializablePreference> clazz : classesToInit) {
             IInitializablePreference p = ContextInjectionFactory.make(clazz, context);

@@ -165,7 +165,7 @@ public class CoolbarViewPart {
                 preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT));    
         
         Map<String, Object> params = new HashMap<>();
-		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.commandNewContactName, msg.commandNewContactTooltip, 
+		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 

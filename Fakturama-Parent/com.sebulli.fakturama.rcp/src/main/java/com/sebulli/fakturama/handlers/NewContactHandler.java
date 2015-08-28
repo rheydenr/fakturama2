@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -28,6 +27,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.nls.Translation;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.parts.ContactEditor;
 
 /**
  * This action creates a new contact in an editor.
@@ -51,10 +51,9 @@ public class NewContactHandler {
 	 * Open a new contact editor.
 	 */
 	@Execute
-    public void execute( 
-            @Named(CallEditor.PARAM_EDITOR_TYPE) String editorType) throws ExecutionException {
+    public void execute() throws ExecutionException {
         Map<String, Object> params = new HashMap<>();
-        params.put(CallEditor.PARAM_EDITOR_TYPE, editorType);
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
         ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
         handlerService.executeHandler(parameterizedCommand);	    
 	}

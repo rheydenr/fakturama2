@@ -114,7 +114,6 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -2361,7 +2360,7 @@ public class DocumentEditor extends Editor<Document> {
                 Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
                 Contact contact = contactDAO.findById(contactId);
 //
-//                // we can use the Selection Service
+//                // we can't use the Selection Service!!!
 //                Contact contact = (Contact) selectionService.getSelection();
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!

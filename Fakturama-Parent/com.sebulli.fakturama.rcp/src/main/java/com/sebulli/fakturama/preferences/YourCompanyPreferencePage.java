@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -140,9 +142,14 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, write);
 	}
+
+    @Override
     @Synchronize
-    public void loadUserValuesFromDB() {
-        syncWithPreferencesFromDatabase(false);
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+        if(preferencesInDatabase != null) {
+            Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+            syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+        }
     }
 
     /**

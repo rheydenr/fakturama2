@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -56,6 +57,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
@@ -90,6 +92,9 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Inject
     protected ContactCategoriesDAO contactCategoriesDAO;
     
+    @Inject
+    private EPartService partService;
+    
     protected MPart listTablePart;
 
     private T selectedObject;
@@ -108,7 +113,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         // if another click handler is set we use it
         // Listen to double clicks
         Object commandId = this.listTablePart.getProperties().get("fakturama.datatable.contacts.clickhandler");
-        if(commandId != null) { // exactly it would be "com.sebulli.fakturama.command.selectitem"
+        if(commandId != null) { // exactly would it be "com.sebulli.fakturama.command.selectitem"
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         } else {
             hookDoubleClickCommand2(natTable, getGridLayer());
@@ -121,22 +126,17 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
     private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<T> gridLayer, String commandId) {
         
-//        if(commandId != null) {
-//            // if we are in "selectaddress" mode we have to register a single click mouse event
-//            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
-//                public void run(NatTable natTable, MouseEvent event) {
-//                int rowPos = natTable.getRowPositionByY(event.y);
-//                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
-//                Contact selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-////                (SelectContactDialog)top.getParent()
-////                (listTablePart.getParent()).getResult().clear();
-//                ((SelectContactDialog)listTablePart.getParent()).getResult().add(selectedObject);
-////                Map<String, Object> eventParams = new HashMap<>();
-////                eventParams.putAll(listTablePart.getParent().getTransientData());
-////                eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
-////                evtBroker.post("DialogSelection/Contact", eventParams);
-//              }});
-//            }
+        if (commandId != null) {
+            // if we are in "selectaddress" mode we have to register a single click mouse event
+            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+                public void run(NatTable natTable, MouseEvent event) {
+                    int rowPos = natTable.getRowPositionByY(event.y);
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                    selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+//                    selectionService.setSelection(selectionService);
+                }
+            });
+        }
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -161,15 +161,18 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                     Map<String, Object> eventParams = new HashMap<>();
                     // the transientData HashMap contains the target document number
                     // (was set in MouseEvent handler)
-                    eventParams.putAll(listTablePart.getParent().getTransientData());
+                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
                     eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getId()));
 //                    // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
                     // the receiver of this topic. Therefore the receiver's SelectionService
                     // is empty :-(
 //                    selectionService.setSelection(selectedObject);
+                    
+                    // selecting an entry and closing the dialog are two different actions.
+                    // the "CloseContact" event is caught by SelectContactDialog#handleDialogDoubleClickClose. 
                     evtBroker.post("DialogSelection/Contact", eventParams);
-                    listTablePart.getParent().setVisible(false);
+                    evtBroker.post("DialogAction/CloseContact", eventParams);
                 } else {
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));

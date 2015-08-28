@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -93,7 +95,7 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
 	 * @param write
 	 *            TRUE: Write to the data base
 	 */
-	public void syncWithPreferencesFromDatabase(boolean write) {
+	private void syncWithPreferencesFromDatabase(boolean write) {
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MS, write);
@@ -102,9 +104,21 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, write);
 	}
     
+    @Override
     @Synchronize
-    public void loadUserValuesFromDB() {
-        syncWithPreferencesFromDatabase(false);
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+	    /*
+	     * If the preferencesInDatabase is <null> then this method is launched from DefaultValuesInitializer.
+	     * But at this point the preferencesInDatabase field isn't initialized (from LifeCycleManager),
+	     * so that it could produce an ugly NPE. Therefore we test the value and only if it's present we initialize
+	     * some properties from DB.
+	     * The "loadOrSavePreferencesFromOrInDatabase" property is set in class PreferencesInDatabase (which
+	     * in turn is called from LifeCycleManager). 
+	     */
+	    if(preferencesInDatabase != null) {
+	        Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+	        syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+	    }
     }
 
 	/**

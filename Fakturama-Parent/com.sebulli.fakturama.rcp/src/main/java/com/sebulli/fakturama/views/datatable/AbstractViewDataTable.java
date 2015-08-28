@@ -259,14 +259,20 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         Properties properties = new Properties();
         String requestedWorkspace = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE);
         Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
-
+        if(Files.notExists(propertiesFile)) {
+            try {
+                Files.createFile(propertiesFile);
+            } catch (IOException ioex) {
+                log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be created.");
+            }
+        }
         try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
             properties.load(propertiesInputStream);
             natTable.saveState(getTableId(), properties);
             log.info("Saving NatTable state to " + Constants.VIEWTABLE_PREFERENCES_FILE);
             properties.store(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE), "NatTable state");
         } catch (IOException ioex) {
-            log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be created. ");
+            log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be written.");
         }
     }
 	

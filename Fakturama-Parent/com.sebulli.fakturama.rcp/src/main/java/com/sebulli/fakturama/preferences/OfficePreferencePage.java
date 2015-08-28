@@ -160,4 +160,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 			node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
 	}
 
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+    }
+
 }

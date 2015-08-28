@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -136,10 +138,14 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, write);
 	}
 	
-	@Synchronize
-	public void loadUserValuesFromDB() {
-	    syncWithPreferencesFromDatabase(false);
-	}
+    @Override
+    @Synchronize
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+        if(preferencesInDatabase != null) {
+            Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+            syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+        }
+    }
 
 	/**
 	 * Set the default values for this preference page
@@ -165,5 +171,4 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_BROWSER, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, true);
 	}
-
 }

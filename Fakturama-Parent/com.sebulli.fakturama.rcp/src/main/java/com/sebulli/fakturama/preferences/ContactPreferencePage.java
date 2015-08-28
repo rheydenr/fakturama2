@@ -16,6 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -116,9 +118,13 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
 	}
     
+    @Override
     @Synchronize
-    public void loadUserValuesFromDB() {
-        syncWithPreferencesFromDatabase(false);
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+        if(preferencesInDatabase != null) {
+            Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+            syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+        }
     }
 
 	/* (non-Javadoc)
@@ -137,5 +143,4 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COMPANY, true);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COUNTRY, true);
 	}
-
 }
