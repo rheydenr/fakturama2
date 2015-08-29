@@ -408,7 +408,7 @@ public abstract class Editor<T extends IEntity> {
 		int result = ERROR_NOT_NEXT_ID;
 		Integer nextnr;
 
-		// Get the next document number from the preferences, increased be one.
+		// Get the next document number from the preferences, increased by one.
 		format = defaultValuePrefs.getString(prefStrFormat);
 		nextnr = defaultValuePrefs.getInt(prefStrNr) + 1;
 

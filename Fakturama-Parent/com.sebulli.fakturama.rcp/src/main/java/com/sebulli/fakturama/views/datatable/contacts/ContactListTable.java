@@ -334,22 +334,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic("ContactEditor") String message) {
-        sync.syncExec(new Runnable() {
-            
-            @Override
-            public void run() {
-                top.setRedraw(false);
-            }
-        });
+        sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(contactListData, getListData(true), false);
         GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-        sync.syncExec(new Runnable() {
-           
-            @Override
-            public void run() {
-                top.setRedraw(true);
-            }});
+        sync.syncExec(() -> top.setRedraw(true));
     }
 
     public void removeSelectedEntry() {

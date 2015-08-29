@@ -5,6 +5,7 @@ package com.sebulli.fakturama.util;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.SplittableRandom;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,8 +49,18 @@ public class ContactUtil {
                 StringUtils.isNotBlank(contact.getName()) )
                 line +=", ";
         }
-
-        line += getFirstAndLastName(contact);
+        /*
+         * If we have a manual entered address then that first line is relevant.
+         * Therefore we've to skip the following in case we using a manual address
+         * (which is determined by a missing customer number)
+         */
+        if(contact.getCustomerNumber() == null) {
+            String manualAddress = contact.getAddress().getManualAddress();
+            String[] splitted = manualAddress.split("\\n");
+            line += splitted[0];
+        } else {
+            line += getFirstAndLastName(contact);
+        }
         return line;
     }
         
@@ -159,7 +170,7 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null && contact.getCustomerNumber() != null) {
+		if(contact != null && (contact.getCustomerNumber() != null || contact.getAddress().getManualAddress() != null)) {
 		    
 		    if(contact.getAddress().getManualAddress() != null) {
 		        // if a manual address is set we use this one

@@ -112,8 +112,10 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -433,7 +435,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			if (addressId.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-//    			document.setDeliveryContact(addressId);   // done by Databinding
+    			document.setDeliveryContact(addressId);
 			} else {
 			    /*
 			     * If no addressId was given (no contact selected) then we use
@@ -451,14 +453,38 @@ public class DocumentEditor extends Editor<Document> {
 			if (deliveryAddress.isEmpty()) {
 				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
+			
+			/* if the address was modified but addressId has a customer number then we have
+			* a manually changed contact which has to created as new contact (else we would
+			* update the existing contact which isn't wanted in most cases).
+			* But wait... the Id of the old entry and the new entry have to be the same.
+			* Else it could be a newly selected contact from the contact list.
+			*/
+			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()) {
+			    addressId = modelFactory.createDebitor();
+			    Address address = modelFactory.createAddress();
+			    address.setManualAddress(txtAddress.getText());
+			    addressId.setAddress(address);
+			    try {
+                    addressId = contactDAO.save(addressId);
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+			}
 
 			if (addressId.getCustomerNumber() != null) {
-				addressById = contactUtil.getAddressAsString(document.getBillingContact());
-//				document.setContact(addressId);  // done by Databinding
-			} else {
-	            document.getBillingContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-	            document.getDeliveryContact().getAddress().setManualAddress(deliveryAddress);
+				addressById = contactUtil.getAddressAsString(addressId);
+				/* If the previous address was a manual entry it has to be deleted, because
+				 * else a lot of orphans could be created (manual addresses without a 
+				 * reference to a document).
+				 */
+				if(document.getBillingContact().getCustomerNumber() == null) {
+				    document.getBillingContact().setDeleted(Boolean.TRUE);
+				}
 			}
+            // set the new contact
+            document.setBillingContact(addressId);
 		}
 
 		// Show a warning if the entered address is not similar to the address
@@ -473,6 +499,7 @@ public class DocumentEditor extends Editor<Document> {
 				//T: Text of the dialog that appears if the document is assigned to  an other address.
 				msg.editorDocumentErrorWrongcontactMsg1 + "\n\n" + addressById + "\n\n" + 
 				msg.editorDocumentErrorWrongcontactMsg2);
+				return;
 			}
 		}
 
@@ -542,31 +569,6 @@ public class DocumentEditor extends Editor<Document> {
                 }
 			}
 		}
-
-//		// Set the shipping values     // done by databinding
-//		if (comboShipping != null) {
-//			document.setStringValueByKey("shippingdescription", comboShipping.getText());
-//		}
-//		document.setIntValueByKey("shippingid", shippingId);
-//		document.setDoubleValueByKey("shipping", shipping);
-//		document.setDoubleValueByKey("shippingvat", shippingVat);
-//		document.setStringValueByKey("shippingvatdescription", shippingVatDescription);
-//		document.setIntValueByKey("shippingautovat", shippingAutoVat);
-//
-//		// Set the discount value
-//		if (itemsDiscount != null)
-//			document.setDoubleValueByKey("itemsdiscount", DataUtils.StringToDoubleDiscount(itemsDiscount.getText()));
-//
-//		// Set the total value.
-//		document.setDoubleValueByKey("total", total);
-//
-//		//Set the deposit value
-//		document.setDoubleValueByKey("deposit", deposit);
-//
-//		// Set the whole vat of the document to zero
-//		document.setBooleanValueByKey("novat", noVat);
-//		document.setStringValueByKey("novatname", noVatName);
-//		document.setStringValueByKey("novatdescription", noVatDescription);
 		
 		// Set the dunning level
 		if(documentType == DocumentType.DUNNING) {
@@ -602,8 +604,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
-		if (addressId != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(document.getBillingContact()));
+		if (addressId != null && addressId.getCustomerNumber() != null) {
+			document.setAddressFirstLine(contactUtil.getNameWithCompany(addressId));
 		}
 		else {
 			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
@@ -619,14 +621,10 @@ public class DocumentEditor extends Editor<Document> {
 			document.setPrinted(false);
 		}
 
-		// If it is a new document,
+		// If it is a new document
 		if (newDocument) {
-
-//			// Create this in the data base
-//			document = Data.INSTANCE.getDocuments().addNewDataSet(document);
-//
-//			// If it's an invoice, set the "invoiceid" to the ID.
-//			// So all documents will inherit this ID
+			// If it's an invoice, set the "invoiceid" to the ID.
+			// So all documents will inherit this ID
 //			if ((documentType == DocumentType.INVOICE) && (document.getIntValueByKey("id") != document.getIntValueByKey("invoiceid"))) {
 //				document.setIntValueByKey("invoiceid", document.getIntValueByKey("id"));
 //				Data.INSTANCE.getDocuments().updateDataSet(document);
@@ -1295,12 +1293,14 @@ public class DocumentEditor extends Editor<Document> {
 		// Use delivery address, if it's a delivery note
 		if (documentType == DocumentType.DELIVERY) {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts()));
+//		    document.setDeliveryContact(contact);
+		    billingAddress = contactUtil.getAddressAsString(contact.getAlternateContacts());
 		} else {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact));
+//		    document.setBillingContact(contact);
+		    billingAddress = contactUtil.getAddressAsString(contact);
 		}
 		
-		billingAddress = contactUtil.getAddressAsString(contact);
-		deliveryAddress = contactUtil.getAddressAsString(contact.getAlternateContacts());
 
 		this.addressId = contact;
 
@@ -1746,7 +1746,7 @@ public class DocumentEditor extends Editor<Document> {
             public void modifyText(ModifyEvent e) {
 //		        if(!contactUtil.getAddressAsString(document.getBillingContact()).contentEquals(txtAddress.getText())) {
 //		            document.setManualAddress(txtAddress.getText());
-//		            document.setContact(null);
+//		            document.setBillingContact(null);
 		            getMDirtyablePart().setDirty(true);
 //		        }
             }
@@ -2365,9 +2365,7 @@ public class DocumentEditor extends Editor<Document> {
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!
 //                document.getBillingContact().getAddress().setManualAddress(null);
-                document.setBillingContact(contact);
-                addressId = contact;
-                txtAddress.setText(contactUtil.getAddressAsString(contact));
+//                document.setBillingContact(contact);
                 getMDirtyablePart().setDirty(true);
                 break;
             case "Product":
