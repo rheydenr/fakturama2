@@ -44,6 +44,7 @@ import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
+import com.sebulli.fakturama.parts.converter.MessageKeyToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 
 /**
@@ -234,14 +235,15 @@ public class ListEditor extends Editor<ItemAccountType> {
             public String getText(Object element) {
                 // the name in this case is the key for the localized name
                 return element instanceof ItemListTypeCategory ? msg.getMessageFromKey(((ItemListTypeCategory) element).getName()) : null;
+//                return element instanceof ItemListTypeCategory ? ((ItemListTypeCategory) element).getName() : null;
             }
         });
 
         UpdateValueStrategy itemListTypeCatModel2Target = new UpdateValueStrategy();
-        itemListTypeCatModel2Target.setConverter(new CategoryConverter<ItemListTypeCategory>(ItemListTypeCategory.class));
+        itemListTypeCatModel2Target.setConverter(new CategoryConverter<ItemListTypeCategory>(ItemListTypeCategory.class, msg));
 
         UpdateValueStrategy target2ItemListTypecatModel = new UpdateValueStrategy();
-        target2ItemListTypecatModel.setConverter(new StringToCategoryConverter<ItemListTypeCategory>(categories, ItemListTypeCategory.class));
+        target2ItemListTypecatModel.setConverter(new MessageKeyToCategoryConverter<ItemListTypeCategory>(categories, ItemListTypeCategory.class, msg));
         bindModelValue(editorListEntry, comboCategory, ItemAccountType_.category.getName(), target2ItemListTypecatModel, itemListTypeCatModel2Target);
     }
 

@@ -11,6 +11,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Expenditure;
+import com.sebulli.fakturama.model.Expenditure_;
 
 @Creatable
 public class ExpendituresDAO extends AbstractDAO<Expenditure> {
@@ -28,6 +29,21 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 
     protected Class<Expenditure> getEntityClass() {
     	return Expenditure.class;
+    }
+        
+    /**
+    * Gets the all visible properties of this Expenditure object.
+    * 
+    * @return String[] of visible Expenditure properties
+    */
+    public String[] getVisibleProperties() {
+       return new String[] { Expenditure_.doNotBook.getName(), 
+               Expenditure_.voucherDate.getName(), 
+               Expenditure_.voucherNumber.getName(), 
+               Expenditure_.documentNumber.getName(),
+               Expenditure_.name.getName(), 
+               Expenditure_.paidValue.getName() 
+               };
     }
 
     @PreDestroy

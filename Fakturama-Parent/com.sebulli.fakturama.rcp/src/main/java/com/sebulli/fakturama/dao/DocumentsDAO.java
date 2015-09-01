@@ -42,7 +42,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.Dunning_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Invoice_;
@@ -328,15 +327,15 @@ public List<Document> findAll(boolean forceRead) {
 //          dunning.setPaid(bPaid.getSelection());
 //          dunning.setStringValueByKey("paydate", DataUtils.getDateTimeAsString(dtPaidDate));
 //          dunning.setDoubleValueByKey("payvalue", paidValue.getValueAsDouble());
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
-        criteria
-            .set(Dunning_.paid, isPaid)
-            .set(Dunning_.payDate, paidDate)
-            .set(Dunning_.paidValue, paidValue)
-            .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
-            ;
-        executeCriteria(criteria);
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
+//        criteria
+//            .set(Dunning_.paid, isPaid)
+//            .set(Dunning_.payDate, paidDate)
+//            .set(Dunning_.paidValue, paidValue)
+//            .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
+//            ;
+//        executeCriteria(criteria);
     }
 
     /**

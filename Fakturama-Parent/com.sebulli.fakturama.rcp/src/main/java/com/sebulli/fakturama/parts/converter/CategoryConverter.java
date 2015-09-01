@@ -3,29 +3,29 @@
  */
 package com.sebulli.fakturama.parts.converter;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.databinding.conversion.Converter;
-import org.eclipse.e4.core.services.nls.Translation;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.ItemListTypeCategory;
 
 /**
  *
  */
 public class CategoryConverter<T extends AbstractCategory> extends Converter {
 
-    @Inject
-    @Translation
     protected Messages msg;
     
     private Class<T> type;
     
     public CategoryConverter(Class<T> type) {
+        this(type, null);
+    }
+    
+    public CategoryConverter(Class<T> type, Messages msg) {
         super(type, String.class);
         this.type = type;
+        this.msg = msg;
     }
 
     /* (non-Javadoc)
@@ -36,9 +36,9 @@ public class CategoryConverter<T extends AbstractCategory> extends Converter {
         String result = null;
         if(type.equals(getFromType())) {
             result = CommonConverter.getCategoryName((AbstractCategory) fromObject, "");
-            if(type.isInstance(ItemAccountType.class)) {
+            if(type.getSimpleName().equals(ItemListTypeCategory.class.getSimpleName())) {
                 // special case, it's a key here.
-                msg.getMessageFromKey(result);
+                result = msg.getMessageFromKey(result);
             }
         }
         return result;

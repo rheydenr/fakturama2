@@ -21,8 +21,12 @@ import java.util.List;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -30,6 +34,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -46,18 +51,35 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.AbstractVoucher;
+
 /**
  * The Voucher editor (parent class)
  * 
  * @author Gerd Bartelt
  */
-public abstract class VoucherEditor extends Editor {
+public abstract class VoucherEditor<T extends AbstractVoucher> extends Editor<T> {
+
+    public static final String EDITOR_ID = "VoucherEditor";
+
+    @Inject
+    protected IPreferenceStore defaultValuePrefs;
+    
+    @Inject
+    @Translation
+    protected Messages msg;
+    
+    @Inject
+    protected Logger log;
 
 	protected String titleText = "Voucher";
 	protected String customerSupplier = "-";
 	
-	// This UniDataSet represents the editor's input
-//	protected Voucher voucher;
+    // This UniDataSet represents the editor's input
+    protected AbstractVoucher voucher;
     private MPart part;
 
 	// SWT widgets of the editor
@@ -265,8 +287,19 @@ public abstract class VoucherEditor extends Editor {
      */
     @PostConstruct
     public void init(Composite parent) {
-//		// Set the editor's data set to the editor's input
-//		voucher = (DataSetVoucher) ((UniDataSetEditorInput) input).getUniDataSet();
+		// Set the editor's data set to the editor's input
+
+        Long objId = null;
+        this.part = (MPart) parent.getData("modelElement");
+        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        if (StringUtils.isNumeric(tmpObjId)) {
+            objId = Long.valueOf(tmpObjId);
+            // Set the editor's data set to the editor's input
+            voucher = (AbstractVoucher) getModelRepository().findById(objId);
+        }
+        
+        
+        //		voucher = (DataSetVoucher) ((UniDataSetEditorInput) input).getUniDataSet();
 //
 //		// test, if the editor is opened to create a new data set. This is,
 //		// if there is no input set.
@@ -333,6 +366,8 @@ public abstract class VoucherEditor extends Editor {
 //		paidValue = new UniData(UniDataType.DOUBLE, 0.0);
 //		
 	}
+        
+        protected abstract AbstractDAO getModelRepository();
         
         @Override
         protected MDirtyable getMDirtyablePart() {

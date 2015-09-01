@@ -5,7 +5,6 @@ package com.sebulli.fakturama.util;
 
 import java.util.Locale;
 import java.util.Optional;
-import java.util.SplittableRandom;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

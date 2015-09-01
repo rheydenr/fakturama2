@@ -18,7 +18,6 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -91,9 +90,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     
     @Inject
     protected ContactCategoriesDAO contactCategoriesDAO;
-    
-    @Inject
-    private EPartService partService;
     
     protected MPart listTablePart;
 

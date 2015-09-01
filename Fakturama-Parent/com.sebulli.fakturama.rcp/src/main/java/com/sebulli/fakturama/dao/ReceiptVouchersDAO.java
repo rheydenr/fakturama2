@@ -11,6 +11,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.ReceiptVoucher;
+import com.sebulli.fakturama.model.ReceiptVoucher_;
 
 @Creatable
 public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
@@ -29,6 +30,21 @@ public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
     protected Class<ReceiptVoucher> getEntityClass() {
     	return ReceiptVoucher.class;
     }
+    
+/**
+* Gets the all visible properties of this ReceiptVoucher object.
+* 
+* @return String[] of visible ReceiptVoucher properties
+*/
+public String[] getVisibleProperties() {
+   return new String[] { ReceiptVoucher_.doNotBook.getName(), 
+           ReceiptVoucher_.voucherDate.getName(), 
+           ReceiptVoucher_.voucherNumber.getName(), 
+           ReceiptVoucher_.documentNumber.getName(),
+           ReceiptVoucher_.name.getName(), 
+           ReceiptVoucher_.paidValue.getName() 
+           };
+}
 
     @PreDestroy
     public void destroy() {

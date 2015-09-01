@@ -47,7 +47,9 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.OpenContactsHandler;
+import com.sebulli.fakturama.handlers.OpenExpendituresHandler;
 import com.sebulli.fakturama.handlers.OpenListViewsHandler;
+import com.sebulli.fakturama.handlers.OpenReceiptvouchersHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -58,6 +60,8 @@ import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
 import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
+import com.sebulli.fakturama.views.datatable.vouchers.ExpenditureVoucherListTable;
+import com.sebulli.fakturama.views.datatable.vouchers.ReceiptVoucherListTable;
 
 /**
  * This class represents the navigation view of the workbench
@@ -132,8 +136,13 @@ public class NavigationView {
         parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ItemAccountTypeListTable.ID);
         addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS, parameters);
         
-        addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS);
-        addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS);
+        parameters = new HashMap<>();
+        parameters.put(OpenExpendituresHandler.PARAM_LIST_TYPE, ExpenditureVoucherListTable.ID);
+        addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS, parameters);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenReceiptvouchersHandler.PARAM_LIST_TYPE, ReceiptVoucherListTable.ID);
+        addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS, parameters);
 
         // Create the 3rd expand bar "Create new"
         PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);

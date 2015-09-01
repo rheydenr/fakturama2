@@ -238,6 +238,10 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 			«modelController.getJavaAnnotations(featureAnnotation.EStructuralFeature, "setter")-»
 			public void «featureAnnotation.setter»(«featureAnnotation.type» new«toFirstUpper(featureAnnotation.validJavaMemberName)») {
 			«IF isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile-»
+				«REM»added by rheydenr for Javabinding«ENDREM-»
+				«IF this.EClass.getEAnnotation("http://www.fakturama.org/JavaBean") != null-»
+				firePropertyChange("«featureAnnotation.validJavaMemberName»", this.«featureAnnotation.validJavaMemberName», new«toFirstUpper(featureAnnotation.validJavaMemberName)»);			
+				«ENDIF-»
 				«IF featureAnnotation.reference && ((EReferenceModelGenAnnotation)featureAnnotation).generateSafeManyAccess-»
 					«IF featureAnnotation.many-»
 						clear«toFirstUpper(featureAnnotation.validJavaMemberName)»();
@@ -282,10 +286,6 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 				«ELSE-»
 					«featureAnnotation.validJavaMemberName» = new«toFirstUpper(featureAnnotation.validJavaMemberName)»;
 				«ENDIF-»				
-				«REM»added by rheydenr for Javabinding«ENDREM-»
-				«IF this.EClass.getEAnnotation("http://www.fakturama.org/JavaBean") != null-»
-				firePropertyChange("«featureAnnotation.validJavaMemberName»", this.«featureAnnotation.validJavaMemberName», new«toFirstUpper(featureAnnotation.validJavaMemberName)»);			
-				«ENDIF-»
 			«ELSEIF featureAnnotation.featureMapFeature != null-»
 				«IF featureAnnotation.many-»
 				«featureAnnotation.featureMapFeature.setter»(«featureAnnotation.featureMapFeature.featureMapQualifiedClassName».createFeatureGroupList(«featureAnnotation.featureMapFeature.featureMapQualifiedClassName».Feature.«toUpperCase(featureAnnotation.name)», new«toFirstUpper(featureAnnotation.validJavaMemberName)»));

@@ -25,6 +25,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -289,7 +290,17 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     protected String getPopupId() {
         return POPUP_ID;
     }
-    
+
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_DOCUMENT;
+    }
+
+    @Override
+    protected MToolBar getMToolBar() {
+        return listTablePart.getToolbar();
+    }
+
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(TextEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));

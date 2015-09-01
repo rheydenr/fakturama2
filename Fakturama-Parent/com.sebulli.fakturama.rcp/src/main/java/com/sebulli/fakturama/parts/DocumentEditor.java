@@ -115,7 +115,6 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;

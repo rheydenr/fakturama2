@@ -75,6 +75,8 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
+import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
+import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
@@ -87,6 +89,7 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -552,7 +555,12 @@ private Menu createContextMenu(NatTable natTable) {
         // for further use, if we need it...
         //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
         //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-
+        
+        // TODO geht nich!
+//        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+//        viewportLayer.registerCommandHandler(
+//                new MoveCellSelectionCommandHandler(selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+        
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
         BidiMap<DocumentItemListDescriptor, Integer> reverseMap = propertyNamesList.inverseBidiMap();

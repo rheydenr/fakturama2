@@ -448,12 +448,12 @@ public class PaymentEditor extends Editor<Payment> {
             }
         });
 
-        UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
-        vatCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
+        UpdateValueStrategy paymentCatModel2Target = new UpdateValueStrategy();
+        paymentCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
         
-        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
-        bindModelValue(payment, comboCategory, Payment_.category.getName(), target2VatcatModel, vatCatModel2Target);
+        UpdateValueStrategy target2PaymentCatModel = new UpdateValueStrategy();
+        target2PaymentCatModel.setConverter(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
+        bindModelValue(payment, comboCategory, Payment_.category.getName(), target2PaymentCatModel, paymentCatModel2Target);
     }
 
     @Override

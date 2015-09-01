@@ -27,8 +27,9 @@ public enum VoucherListDescriptor {
     DATE(AbstractVoucher_.voucherDate.getName(), "common.field.date", 1, 80),
     VOUCHER(AbstractVoucher_.voucherNumber.getName(), "receiptvoucher.field.voucher", 2, 100),
     DOCUMENT(AbstractVoucher_.documentNumber.getName(), "common.field.document", 3, 150),
-    SUPPLIER(AbstractVoucher_.name.getName(), "receiptvoucher.field.supplier", 3, 200),
-    TOTAL(AbstractVoucher_.totalValue.getName(), "common.field.total", 3, 80)
+    // TODO a supplier for an Expenditure is named "Supplier", else it's a "Customer"
+    SUPPLIER(AbstractVoucher_.name.getName(), "receiptvoucher.field.supplier", 4, 200),
+    TOTAL(AbstractVoucher_.totalValue.getName(), "common.field.total", 5, 80)
     ;
 
     private String propertyName, messageKey;
@@ -83,7 +84,7 @@ public enum VoucherListDescriptor {
         return null;
     }
 
-    public static final String[] getVATPropertyNames() {
+    public static final String[] getVoucherPropertyNames() {
         return new String[]{
         VoucherListDescriptor.DONOTBOOK.getPropertyName(), 
         VoucherListDescriptor.DATE.getPropertyName(), 
