@@ -42,6 +42,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.ListEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
@@ -55,6 +56,8 @@ import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
+import com.sebulli.fakturama.views.datatable.vouchers.ExpenditureVoucherListTable;
+import com.sebulli.fakturama.views.datatable.vouchers.ReceiptVoucherListTable;
 
 /**
  * Universal Handler to open an UniDataSet editor
@@ -199,6 +202,15 @@ public class CallEditor {
 			case TextListTable.ID:
                 myPart.setLabel(msg.commandTextsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + TextEditor.class.getName());
+                break;
+			case ExpenditureVoucherEditor.ID:
+			case ExpenditureVoucherListTable.ID:
+                myPart.setLabel(msg.commandExpenditurevouchersName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ExpenditureVoucherEditor.class.getName());
+                break;
+			case ReceiptVoucherListTable.ID:
+                myPart.setLabel(msg.commandReceiptvouchersName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ReceiptVoucherListTable.class.getName());
                 break;
 			case ListEditor.ID:
 			case ItemAccountTypeListTable.ID:

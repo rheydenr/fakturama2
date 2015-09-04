@@ -19,12 +19,14 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
@@ -33,6 +35,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
@@ -61,7 +64,7 @@ public class MarkDocumentAsPaidHandler {
     public static final String PARAM_INVOICEID = "com.sebulli.fakturama.command.document.markas.invoiceid";
 
     // progress of the order. Value from 0 to 100 (percent)
-    boolean paid;
+//    private boolean paid;
 
     @CanExecute
     public boolean canExecute(@Active MPart activePart) {
@@ -85,7 +88,9 @@ public class MarkDocumentAsPaidHandler {
      * @param progress
      */
     @Execute
-    public void handleMarkDocument(@Optional @Named(PARAM_INVOICEID) String objId, @Named(PARAM_STATUS) String status, @Active MPart activePart) {
+    public void handleMarkDocument(@Optional @Named(PARAM_INVOICEID) String objId, 
+            @Named(PARAM_STATUS) String status, @Active MPart activePart, 
+            IEventBroker evtBroker) {
 
         @SuppressWarnings("rawtypes")
         AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
@@ -100,10 +105,14 @@ public class MarkDocumentAsPaidHandler {
                 if (docType.canBePaid()) {
                     // change the state
                     try {
-                        document.setPaid(paid);
+                        document = documentsDAO.findById(document.getId(), true);
+                        document.setPaid(StringUtils.equals(status, "PAID"));
 
                         // also in the database
                         documentsDAO.update(document);
+                        
+                        // Refresh the corresponding table view
+                        evtBroker.post(DocumentEditor.EDITOR_ID, "update");
                     }
                     catch (SQLException e) {
                         // TODO Change it to an application exception!

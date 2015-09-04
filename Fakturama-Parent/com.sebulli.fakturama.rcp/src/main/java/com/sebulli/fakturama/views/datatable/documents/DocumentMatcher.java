@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.views.datatable.documents;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.odell.glazedlists.matchers.Matcher;
@@ -91,7 +92,7 @@ public class DocumentMatcher implements Matcher<Document> {
                 case CREDIT:
                 case DUNNING:
                     // .. the state of the payment ..
-                    if (item.getPayDate() != null)
+                    if (item.getPayDate() != null && BooleanUtils.toBoolean(item.getPaid()))
                         category += "/" + msg.documentOrderStatePaid;
                     else
                         category += "/" + msg.documentOrderStateUnpaid;

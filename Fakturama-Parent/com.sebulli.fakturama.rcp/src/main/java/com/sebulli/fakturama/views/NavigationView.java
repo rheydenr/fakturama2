@@ -146,8 +146,9 @@ public class NavigationView {
 
         // Create the 3rd expand bar "Create new"
         PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);
+        parameters = new HashMap<>();
 //        parameters.put(CallEditor.PARAM_EDITOR_TYPE, ProEd.ID);
-        addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_NEW_PRODUCT);
+        addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_PRODUCT*/, parameters);
         
         parameters = new HashMap<>();
         parameters.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);

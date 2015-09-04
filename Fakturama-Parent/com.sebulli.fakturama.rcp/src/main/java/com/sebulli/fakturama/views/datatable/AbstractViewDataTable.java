@@ -610,19 +610,24 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                     boolean confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
                           MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
                     if(confirmation) {
-        
+                        objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
                         // Instead of deleting is completely from the database, the element is just marked
                         // as deleted. So a document which still refers to this element would not cause an error.
                         objToDelete.setDeleted(Boolean.TRUE);
-                        getEntityDAO().save(objToDelete);
+                        getEntityDAO().update(objToDelete);
+            
+                        // Refresh the corresponding table view
+                        evtBroker.post(getEditorTypeId(), "update");
+                        
+                        // if an editor with this object is open we have to close it forcibly
+                        Map<String, Object> params = new HashMap<>();
+                        params.put(DocumentEditor.DOCUMENT_ID, objToDelete.getName());
+                        evtBroker.post(getEditorTypeId() + "/forceClose", params);
                     }
                 }
                 catch (SQLException e) {
                     log.error(e, "can't save the current Entity: " + objToDelete.toString());
                 }
-    
-                // Refresh the table view of all VATs
-                evtBroker.post(getEditorTypeId(), "update");
             }
         } else {
             log.debug("no rows selected!");

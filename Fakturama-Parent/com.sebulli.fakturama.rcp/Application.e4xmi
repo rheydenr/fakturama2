@@ -196,18 +196,32 @@
               <children xsi:type="basic:Part" xmi:id="_JcrFwE8KEeOddfJz0XevPw" elementId="fakturama.views.expenditureVoucherTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.vouchers.ExpenditureVoucherListTable" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>
                 <menus xsi:type="menu:PopupMenu" xmi:id="_yM00IFDxEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.expenditurelist.popup" label="Expenditure list popup">
-                  <children xsi:type="menu:HandledMenuItem" xmi:id="_9MdKcFDxEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.expenditurelist.popup.addentry" label="%main.menu.new.text" iconURI="icon://COMMAND_PLUS" tooltip="%main.menu.new.text.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_9MdKcFDxEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.expenditurelist.popup.addentry" label="%main.menu.new.expenditurevoucher" iconURI="icon://COMMAND_PLUS" tooltip="%main.menu.new.text.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
                     <parameters xmi:id="_HNLBcFDyEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.rcp.parameter.70" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.expenditureVoucherEditor"/>
                   </children>
                   <children xsi:type="menu:HandledMenuItem" xmi:id="_SCXpYFDyEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.expenditurelist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </menus>
                 <toolbar xmi:id="_TKKNUFDxEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.rcp.toolbar.8">
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_3zCaEFMzEeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.listview.expenditure.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.expenditurevoucher.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_RWhbYFM0EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.71" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.expenditureVoucherEditor"/>
+                  </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_jF6fYFDxEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.listview.expenditure.delete" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>
               </children>
               <children xsi:type="basic:Part" xmi:id="_p6swcFDyEeWYUbHCtLGOiQ" elementId="fakturama.views.receiptVoucherTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.vouchers.ReceiptVoucherListTable" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>
-                <toolbar xmi:id="_8PeIUFDyEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.rcp.toolbar.9"/>
+                <menus xsi:type="menu:PopupMenu" xmi:id="_aPET8FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.popupmenu.0">
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_cSEtgFM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.receiptvoucherlist.popup.addentry" label="%main.menu.new.receiptvoucher" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.receiptvoucher.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_ZfI2YFM2EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.73" name="com.sebulli.fakturama.editors.editortype"/>
+                  </children>
+                  <children xsi:type="menu:HandledMenuItem" xmi:id="_Q2iB0FM2EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.expenditurelist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+                </menus>
+                <toolbar xmi:id="_8PeIUFDyEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.rcp.toolbar.9">
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_R2Q18FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.handledtoolitem.1" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.receiptvoucher.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                    <parameters xmi:id="_q7LE4FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.72" name="com.sebulli.fakturama.editors.editortype"/>
+                  </children>
+                  <children xsi:type="menu:HandledToolItem" xmi:id="_0f4VUFM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.handledtoolitem.2" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+                </toolbar>
               </children>
               <children xsi:type="basic:Part" xmi:id="_tSf5kE8KEeOddfJz0XevPw" elementId="fakturama.views.listTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable" label="%command.lists.name" iconURI="icon://COMMAND_LIST" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <tags>NoMove</tags>

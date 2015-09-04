@@ -167,7 +167,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         final IColumnPropertyAccessor<ReceiptVoucher> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<ReceiptVoucher>() {
 
             public Object getDataValue(ReceiptVoucher rowObject, int columnIndex) {
-                VoucherListDescriptor descriptor = VoucherListDescriptor.getDescriptorFromColumn(columnIndex);
+                ReceiptvoucherListDescriptor descriptor = ReceiptvoucherListDescriptor.getDescriptorFromColumn(columnIndex);
                 switch (descriptor) {
                     // alternative: return rowObject.getFirstName();
                 default:
@@ -180,11 +180,11 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
             }
 
             public int getColumnCount() {
-                return VoucherListDescriptor.getVoucherPropertyNames().length;
+                return ReceiptvoucherListDescriptor.getVoucherPropertyNames().length;
             }
 
             public String getColumnProperty(int columnIndex) {
-                VoucherListDescriptor descriptor = VoucherListDescriptor.getDescriptorFromColumn(columnIndex);
+                ReceiptvoucherListDescriptor descriptor = ReceiptvoucherListDescriptor.getDescriptorFromColumn(columnIndex);
                 return msg.getMessageFromKey(descriptor.getMessageKey());
             }
 

@@ -207,7 +207,7 @@ public class SpecialCellValueProvider {
                 switch (obj) {
                 case INVOICE:
                 case CREDIT:
-                    if (rowObject.getPayDate() != null) {
+                    if (rowObject.getPayDate() != null && BooleanUtils.toBoolean(rowObject.getPaid())) {
                         return Icon.COMMAND_CHECKED;
                     }
                     else {

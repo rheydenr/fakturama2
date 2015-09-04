@@ -114,11 +114,11 @@ em.joinTransaction();
     }
     
     public T update(T object) throws SQLException {
-        checkConnection();
+        checkConnection();//getEntityManager().find(object.getClass(), 8L)
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
         object = getEntityManager().merge(object);
-//        getEntityManager().persist(object);
+        getEntityManager().persist(object);
         trx.commit();
         return object;
     }

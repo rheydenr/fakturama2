@@ -134,7 +134,7 @@ public class Messages {
 
     public String dataListAccountnumbers;
 
-	public String DataSetReceiptVoucher671;
+	public String receiptvoucherFieldCustomer;
 
     public String dataVatPurchasetax;
     public String dataVatSalestax;
@@ -605,7 +605,7 @@ public class Messages {
 
 	public String receiptvoucherFieldVoucher;
 	public String commonFieldDocument;
-	public String receiptvoucherFieldSupplier;
+	public String expenditurevoucherFieldSupplier;
 	public String receiptvoucherFieldState;
 
 	public String VoucherEditor545;

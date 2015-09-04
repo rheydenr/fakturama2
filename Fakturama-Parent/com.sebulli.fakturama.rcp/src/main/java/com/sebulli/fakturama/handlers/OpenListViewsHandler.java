@@ -26,7 +26,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import com.sebulli.fakturama.log.ILogger;
 
 /**
- * This action opens the VATs in a table view.
+ * This action opens the (account) Lists in a table view.
  * 
  */
 public class OpenListViewsHandler {

@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -42,6 +41,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
@@ -52,6 +52,7 @@ import org.eclipse.e4.ui.model.application.ui.MSnippetContainer;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -178,6 +179,9 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private EModelService modelService;
+    
+    @Inject
+    private EPartService partService;
     
 //    @Inject
 //    private EHelpService helpService;
@@ -1178,7 +1182,7 @@ public class DocumentEditor extends Editor<Document> {
 					// issue date widget and the documents date,
 					// calculate is in "days" and set the due day spinner
 					Date calendarIssue = dtIssueDate.getSelection();
-					Date calendarDocument = Optional.ofNullable(dtDate.getSelection()).orElse(Calendar.getInstance().getTime());
+					Date calendarDocument = java.util.Optional.ofNullable(dtDate.getSelection()).orElse(Calendar.getInstance().getTime());
 					long difference = calendarIssue.getTime() - calendarDocument.getTime();
 					// Calculate from milliseconds to days
 					int days = (int) (difference / (1000 * 60 * 60 * 24));
@@ -2574,29 +2578,51 @@ public class DocumentEditor extends Editor<Document> {
     }
 
     /**
-     * This method is for setting the dirty state to <code>true</code>. This happens
-     * if e.g. the items list has changed.
-     * (could be sent from DocumentListTable)
+     * This method is for setting the dirty state to <code>true</code>. This
+     * happens if e.g. the items list has changed. (could be sent from
+     * DocumentListTable)
      */
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleItemChanged(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
-            String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
+            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
-            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+            if (!StringUtils.equals(targetDocumentName, document.getName())) {
                 // if not, silently ignore this event
-                return; 
+                return;
             }
             // (re)calculate summary
             // TODO check if this has to be done in a synchronous or asynchronous call
             // within UISynchronize
-            if((Boolean)event.getProperty(DOCUMENT_RECALCULATE)) {
+            if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
                 calculate();
             }
             getMDirtyablePart().setDirty(true);
-    }}
+        }
+    }    
+    
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(DocumentEditor.EDITOR_ID + "/forceClose") Event event) {
+        //      sync.syncExec(() -> top.setRedraw(false));
+        // the event has already all given params in it since we created them as Map
+        String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+        // at first we have to check if the message is for us
+        if (!StringUtils.equals(targetDocumentName, document.getName())) {
+            // if not, silently ignore this event
+            return;
+        }
+        partService.hidePart(part, true);
+        //  sync.syncExec(() -> top.setRedraw(true));
+    }
+
 //    
 //    @Inject
 //    @org.eclipse.e4.core.di.annotations.Optional

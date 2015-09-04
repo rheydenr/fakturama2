@@ -192,7 +192,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
         final IColumnPropertyAccessor<Expenditure> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Expenditure>() {
 
             public Object getDataValue(Expenditure rowObject, int columnIndex) {
-                VoucherListDescriptor descriptor = VoucherListDescriptor.getDescriptorFromColumn(columnIndex);
+                ReceiptvoucherListDescriptor descriptor = ReceiptvoucherListDescriptor.getDescriptorFromColumn(columnIndex);
                 switch (descriptor) {
                     // alternative: return rowObject.getFirstName();
                 default:
@@ -205,11 +205,11 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
             }
 
             public int getColumnCount() {
-                return VoucherListDescriptor.getVoucherPropertyNames().length;
+                return ExpenditureListDescriptor.getVoucherPropertyNames().length;
             }
 
             public String getColumnProperty(int columnIndex) {
-                VoucherListDescriptor descriptor = VoucherListDescriptor.getDescriptorFromColumn(columnIndex);
+                ExpenditureListDescriptor descriptor = ExpenditureListDescriptor.getDescriptorFromColumn(columnIndex);
                 return msg.getMessageFromKey(descriptor.getMessageKey());
             }
 
@@ -258,7 +258,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
         tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(VoucherListDescriptor.DONOTBOOK.getPosition(), DONOTBOOK_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ReceiptvoucherListDescriptor.DONOTBOOK.getPosition(), DONOTBOOK_LABEL);
 
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
