@@ -80,7 +80,7 @@ public final class CommandIds {
     public static final String TOOLBAR_RECEIPTVOUCHER = "main.menu.new.receiptvoucher";
     
     /**
-     * "Add" command for the VATs list view.  
+     * "Add" command for the list view.  
      */
     public static final String LISTTOOLBAR_ADD_VAT      = "com.sebulli.fakturama.listview.vat.add";
     public static final String LISTTOOLBAR_ADD_TEXT     = "com.sebulli.fakturama.listview.text.add";
@@ -90,6 +90,7 @@ public final class CommandIds {
     public static final String LISTTOOLBAR_ADD_DOCUMENT = "com.sebulli.fakturama.listview.document.add";
     public static final String LISTTOOLBAR_ADD_EXPENDITURE = "com.sebulli.fakturama.listview.expenditure.add";
     public static final String LISTTOOLBAR_ADD_RECEIPTVOUCHER = "com.sebulli.fakturama.listview.receiptvoucher.add";
+    public static final String LISTTOOLBAR_ADD_PRODUCT = "com.sebulli.fakturama.listview.product.add";
     
     public static final String CMD_CREATE_OODOCUMENT = "com.sebulli.fakturama.command.createOODocument";
     

@@ -47,9 +47,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.OpenContactsHandler;
-import com.sebulli.fakturama.handlers.OpenExpendituresHandler;
 import com.sebulli.fakturama.handlers.OpenListViewsHandler;
-import com.sebulli.fakturama.handlers.OpenReceiptvouchersHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -58,6 +56,9 @@ import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
 import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
 import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
+import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
+import com.sebulli.fakturama.views.datatable.products.ProductListTable;
+import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
 import com.sebulli.fakturama.views.datatable.vouchers.ExpenditureVoucherListTable;
@@ -111,7 +112,10 @@ public class NavigationView {
         // Create the 2nd expand bar "Data"
         PGroup group2 = createPGroup("command.data.name", Icon.ICON_LETTER);
         addAction(group2, Icon.COMMAND_LETTER, "command.documents", CommandIds.CMD_OPEN_DOCUMENTS);
-        addAction(group2, Icon.COMMAND_PRODUCT, "command.products", CommandIds.CMD_OPEN_PRODUCTS);
+ 
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ProductListTable.ID);
+        addAction(group2, Icon.COMMAND_PRODUCT, "command.products", CommandIds.CMD_OPEN_PRODUCTS, parameters);
         
         parameters = new HashMap<>();
         parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, CreditorListTable.ID);
@@ -121,8 +125,13 @@ public class NavigationView {
         parameters.put(OpenContactsHandler.PARAM_LIST_TYPE, DebitorListTable.ID);
         addAction(group2, Icon.COMMAND_CONTACT, "command.debtors", CommandIds.CMD_OPEN_CONTACTS, parameters);
         
-        addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", CommandIds.CMD_OPEN_PAYMENTS);
-        addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", CommandIds.CMD_OPEN_SHIPPINGS);
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, PaymentListTable.ID);
+        addAction(group2, Icon.COMMAND_PAYMENT, "command.payments", CommandIds.CMD_OPEN_PAYMENTS, parameters);
+        
+        parameters = new HashMap<>();
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ShippingListTable.ID);
+        addAction(group2, Icon.COMMAND_SHIPPING, "command.shippings", CommandIds.CMD_OPEN_SHIPPINGS, parameters);
         
         parameters = new HashMap<>();
         parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, VATListTable.ID);
@@ -137,11 +146,11 @@ public class NavigationView {
         addAction(group2, Icon.COMMAND_LIST, "command.lists", CommandIds.CMD_OPEN_LISTS, parameters);
         
         parameters = new HashMap<>();
-        parameters.put(OpenExpendituresHandler.PARAM_LIST_TYPE, ExpenditureVoucherListTable.ID);
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ExpenditureVoucherListTable.ID);
         addAction(group2, Icon.COMMAND_EXPENDITURE_VOUCHER, "command.expenditurevouchers", CommandIds.CMD_OPEN_EXPENDITUREVOUCHERS, parameters);
         
         parameters = new HashMap<>();
-        parameters.put(OpenReceiptvouchersHandler.PARAM_LIST_TYPE, ReceiptVoucherListTable.ID);
+        parameters.put(OpenListViewsHandler.PARAM_LIST_TYPE, ReceiptVoucherListTable.ID);
         addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS, parameters);
 
         // Create the 3rd expand bar "Create new"

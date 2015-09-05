@@ -24,8 +24,8 @@ public enum ProductListDescriptor {
     ITEMNO("itemNumber", "product.field.itemno", 0, 55),
     NAME("name", "common.field.name", 1, 120),
     DESCRIPTION("description", "common.field.description", 2, 200),
-    QUANTITY("quantity", "common.fields.quantity", 3, 70),
-    PRICE("price1", "common.field.price", 4, 70),
+    QUANTITY("quantity", "common.field.quantity", 3, 70),
+    PRICE("price1", "common.field.price", 4, 70),  // but sometimes it's the gross price!!!
     VAT("vat", "common.field.vat", 5, 70)
     ;
 
@@ -81,7 +81,7 @@ public enum ProductListDescriptor {
         return null;
     }
 
-    public static final String[] getVATPropertyNames() {
+    public static final String[] getProductPropertyNames() {
         return new String[]{
         ProductListDescriptor.ITEMNO.getPropertyName(), 
         ProductListDescriptor.NAME.getPropertyName(), 

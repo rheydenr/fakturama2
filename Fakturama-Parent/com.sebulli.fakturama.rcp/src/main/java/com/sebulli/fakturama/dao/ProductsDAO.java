@@ -106,4 +106,20 @@ public class ProductsDAO extends AbstractDAO<Product> {
         CriteriaQuery<Product> cq = criteria.where(root.get(Product_.id).in(selectedIds));
         return getEntityManager().createQuery(cq).getResultList();
     }
+
+    /**
+     * Gets the all visible properties of this VAT object.
+     * 
+     * @return String[] of visible VAT properties
+     */
+    public String[] getVisibleProperties() {
+        return new String[] { 
+                Product_.itemNumber.getName(), 
+                Product_.name.getName(), 
+                Product_.description.getName(),
+                Product_.quantity.getName(), 
+                Product_.price1.getName(), 
+                Product_.vat.getName() };
+    }
+
 }

@@ -46,16 +46,16 @@ public class OpenListViewsHandler {
 	        @Named(PARAM_LIST_TYPE) String editorType,
 	        final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
-	    MPart vatPart = partService.findPart(editorType);
-	    if(vatPart != null && vatPart.isVisible()) {
+	    MPart listViewPart = partService.findPart(editorType);
+	    if(listViewPart != null && listViewPart.isVisible()) {
 	        log.debug("part is already created!");
-    		partService.showPart(vatPart,
+    		partService.showPart(listViewPart,
     				PartState.VISIBLE);
 	    } else {
-	        vatPart.setVisible(true);
+	        listViewPart.setVisible(true);
 	        // otherwise no content is rendered :-(
-	        vatPart.setToBeRendered(true);
-    		partService.showPart(vatPart,
+	        listViewPart.setToBeRendered(true);
+    		partService.showPart(listViewPart,
     				PartState.ACTIVATE);
 	    }
 	}
