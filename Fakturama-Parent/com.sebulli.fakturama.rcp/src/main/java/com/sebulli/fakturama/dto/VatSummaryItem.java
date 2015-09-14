@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.ItemAccountType;
 
 /**
  * This Class represents one entry in the VatSummarySet. It contains a net and
@@ -87,7 +88,15 @@ public class VatSummaryItem implements Comparable<Object> {
 		this.description = description;
 	}
 
-	/**
+	public VatSummaryItem(String vatDescription, Double vatPercent, MonetaryAmount totalNet, MonetaryAmount itemVat, ItemAccountType accountType) {
+		this.description = vatDescription;
+		this.vatPercent = vatPercent;
+ 		this.net = totalNet;
+		this.vat = itemVat;
+		// this.accountType = accountType;
+   }
+
+    /**
 	 * Creates a {@link VatSummaryItem} from an existing {@link VatSummaryItem}.
 	 * 
 	 * @param vatSummaryItem

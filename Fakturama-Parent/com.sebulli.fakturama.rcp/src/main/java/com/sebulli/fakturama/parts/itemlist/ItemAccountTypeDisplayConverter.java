@@ -13,18 +13,14 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
-import java.text.NumberFormat;
-
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
-import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.ItemAccountType;
 
 /**
- * Converter for displaying {@link VAT} values in a combo box inside a NatTable.
+ * Converter for displaying {@link ItemAccountType} values in a combo box inside a NatTable.
  */
-public class VatDisplayConverter extends DisplayConverter {
-    
-    private NumberFormat nf = NumberFormat.getPercentInstance();
+public class ItemAccountTypeDisplayConverter extends DisplayConverter {
 
     /* (non-Javadoc)
      * @see org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter#canonicalToDisplayValue(java.lang.Object)
@@ -32,15 +28,9 @@ public class VatDisplayConverter extends DisplayConverter {
     @Override
     public Object canonicalToDisplayValue(Object canonicalValue) {
         String retval = "";
-        VAT vatValue = (VAT) canonicalValue;
-        if (vatValue != null /*&& vatValue instanceof VAT*/) {
-            Double percentageValue = vatValue.getTaxValue();
-            if (percentageValue != null) {
-                retval = nf.format(percentageValue);
-                if (vatValue.getName() != null) {
-                    retval = String.format("%s (%s)", vatValue.getName(), retval);
-                }
-            }
+        ItemAccountType itemAccountType = (ItemAccountType) canonicalValue;
+        if (itemAccountType != null) {
+            retval = itemAccountType.getName();
         }
         return retval;
     }

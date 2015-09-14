@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,8 +181,10 @@ public class DataUtils {
      *            Second value
      * @return True, if the values are equal.
      */
-    public boolean DoublesAreEqual(Double d1, Double d2) {
-        return (Math.abs(d1 - d2) < EPSILON);
+    public boolean DoublesAreEqual(final Double par1, final Double par2) {
+        Double d1 = Optional.ofNullable(par1).orElse(Double.valueOf(0.0));
+        Double d2 = Optional.ofNullable(par2).orElse(Double.valueOf(0.0));
+        return Math.abs(d1 - d2) < EPSILON;
     }
 
 //    /**

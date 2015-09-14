@@ -14,15 +14,9 @@
  
 package com.sebulli.fakturama.views.datatable.products;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import ca.odell.glazedlists.matchers.Matcher;
 
-import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Product;
-import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 

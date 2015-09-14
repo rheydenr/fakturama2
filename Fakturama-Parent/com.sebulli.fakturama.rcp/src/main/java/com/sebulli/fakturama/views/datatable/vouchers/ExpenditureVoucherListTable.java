@@ -15,6 +15,9 @@
 
 package com.sebulli.fakturama.views.datatable.vouchers;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -32,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -60,13 +64,14 @@ import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
-import com.sebulli.fakturama.parts.VoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
+import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -126,28 +131,12 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         return top;
-//		
-//		// Add the action to create a new entry
-//		addNewAction = new NewExpenditureVoucherAction();
-//
-//		// Name of the editor
-//		editor = "ExpenditureVoucher";
-//		
+
 //		// Text of the column "name"
 //		customerSupplier = 	DataSetExpenditureVoucher.CUSTOMERSUPPLIER;
 //		
-//		// Create the super part control
-//		super.createPartControl(parent, ContextHelpConstants.VOUCHER_TABLE_VIEW);
-//
-//		// Name of this view
-//		this.setPartName(_("Expenditure vouchers"));
-//
-//		
 //		// Set the input of the table viewer and the tree viewer
 //		tableViewer.setInput(Data.INSTANCE.getExpenditureVouchers());
-//		topicTreeViewer.setInput(Data.INSTANCE.getExpenditureVouchers());
-//		
-//		
 	}
 
     @Override
@@ -252,13 +241,16 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
         
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
+        int col = 0;
+        tableDataLayer.setColumnWidthPercentageByPosition(col++, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(col++, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(col++, 75);
+        tableDataLayer.setColumnWidthPercentageByPosition(col++, 5);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(ReceiptvoucherListDescriptor.DONOTBOOK.getPosition(), DONOTBOOK_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ExpenditureListDescriptor.DONOTBOOK.getPosition(), DONOTBOOK_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ExpenditureListDescriptor.TOTAL.getPosition(), MONEYVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ExpenditureListDescriptor.DATE.getPosition(), DATE_CELL_LABEL);
 
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
@@ -303,7 +295,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
      * @param message an incoming message
      */
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(VoucherEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@EventTopic(ExpenditureVoucherEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(expenditureListData, GlazedLists.eventList(expendituresDAO.findAll(true)), false);
@@ -355,7 +347,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
 
     @Override
     protected String getEditorTypeId() {
-        return ExpenditureVoucherEditor.class.getSimpleName();
+        return ExpenditureVoucherEditor.EDITOR_ID;
     }
     
     class ExpenditureTableConfiguration extends AbstractRegistryConfiguration {
@@ -382,7 +374,28 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
                     styleCentered,      
                     DisplayMode.NORMAL,             
                     DONOTBOOK_LABEL); 
-        }
+
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleRightAligned,      
+                    DisplayMode.NORMAL,             
+                    DATE_CELL_LABEL ); 
+            SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, LocaleUtil.getInstance().getDefaultLocale());
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDateDisplayConverter(dateFormat.toPattern()),
+                    DisplayMode.NORMAL,
+                    DATE_CELL_LABEL);
+
+            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+                    styleRightAligned,      
+                    DisplayMode.NORMAL,             
+                    MONEYVALUE_CELL_LABEL ); 
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new MoneyDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    MONEYVALUE_CELL_LABEL);
+            }
     }
 
     protected String getPopupId() {

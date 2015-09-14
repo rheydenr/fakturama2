@@ -32,6 +32,8 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.model.Expenditure;
+import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.VATCategory_;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
@@ -72,9 +74,14 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
      * @return List<VoucherCategory> 
      */
     public List<VoucherCategory> findAll() {
+/*
+        categories.addAll(Data.INSTANCE.getPayments().getCategoryStrings());
+        categories.addAll(Data.INSTANCE.getReceiptVouchers().getCategoryStrings());
+        categories.addAll(Data.INSTANCE.getExpenditureVouchers().getCategoryStrings());
+ */
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<VoucherCategory> cq = cb.createQuery(VoucherCategory.class);
-        CriteriaQuery<VoucherCategory> selectQuery = cq.select(cq.from(VoucherCategory.class));
+        CriteriaQuery<VoucherCategory> cq = cb.createQuery(getEntityClass());
+        CriteriaQuery<VoucherCategory> selectQuery = cq.select(cq.from(getEntityClass()));
         return getEntityManager().createQuery(selectQuery).getResultList();
 //      return getEntityManager().createQuery("select p from VoucherCategory p", VoucherCategory.class).getResultList();
     }
@@ -170,6 +177,19 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
             e.printStackTrace();
         }
         return parentCategory;
+    }
+
+    public VoucherCategory getLastUsedCategoryForExpenditure() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Expenditure> cq = cb.createQuery(Expenditure.class);
+        Root<Expenditure> rootEntity = cq.from(Expenditure.class);
+        cq.select(rootEntity).orderBy(cb.desc(rootEntity.get(Expenditure_.dateAdded.getName())));
+        List<Expenditure> singleResult = getEntityManager().createQuery(cq).getResultList();
+        return singleResult != null && !singleResult.isEmpty() ? singleResult.get(0).getAccount() : null;
+    }
+    
+    public VoucherCategory getLastUsedCategoryForReceiptvoucher() {
+        return null;
     }
 
 }

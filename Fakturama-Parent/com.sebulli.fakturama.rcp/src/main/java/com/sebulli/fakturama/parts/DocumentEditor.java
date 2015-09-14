@@ -587,7 +587,6 @@ public class DocumentEditor extends Editor<Document> {
                 e.printStackTrace();
             }
 		}
-//		long documentId = document.getId();
 		
 		// Update the invoice references in all documents within the same transaction
 		if(documentType.equals(DocumentType.INVOICE)) {
@@ -1669,7 +1668,6 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Address icon
 		Label selectAddressButton = new Label(addressComposite, SWT.NONE | SWT.RIGHT);
-		//T: Tool Tip Text
 		selectAddressButton.setToolTipText(msg.dialogSelectaddressTooltip);
 		selectAddressButton.setImage(Icon.DOCEDIT_CONTACT_LIST.getImage(IconSize.DocumentIconSize));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(selectAddressButton);
@@ -1700,7 +1698,6 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Address icon
 		Label newAddressButton = new Label(addressComposite, SWT.NONE | SWT.RIGHT);
-		//T: Tool Tip Text
 		newAddressButton.setToolTipText(msg.commandOpenContactTooltip);
 		newAddressButton.setImage(Icon.DOCEDIT_CONTACT_PLUS.getImage(IconSize.DocumentIconSize));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(newAddressButton);
@@ -1786,14 +1783,12 @@ public class DocumentEditor extends Editor<Document> {
 		if (documentType.hasItems()) {
 			//T: Document Editor Label for the text field under the item table.
 			messageLabel.setText(msg.editorDocumentFieldRemarks);
-			//T: Tool Tip Text
 			messageLabel.setToolTipText(msg.editorDocumentFieldRemarksTooltip);
 
 		}	
 		else {
 			//T: Document Editor Label for the text field, if there is no item table
 			messageLabel.setText(msg.commonFieldText);
-			//T: Tool Tip Text
 			messageLabel.setToolTipText(msg.editorDocumentFieldCommentTooltip);
 		}
 
@@ -1801,7 +1796,6 @@ public class DocumentEditor extends Editor<Document> {
 
 		// The add message button
 		Label addMessageButton = new Label(addMessageButtonComposite, SWT.NONE);
-		//T: Tool Tip Text
 		addMessageButton.setToolTipText(msg.editorDocumentSelecttemplateTooltip);
 		addMessageButton.setImage(Icon.DOCEDIT_LIST.getImage(IconSize.DocumentIconSize));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addMessageButton);
@@ -2007,6 +2001,7 @@ public class DocumentEditor extends Editor<Document> {
     private void createPaidControls() {
         // The paid label
         bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
+        // FIXME Binding???
         if (BooleanUtils.toBoolean(document.getPaid())) {
         	bPaid.setSelection(document.getPaid());
         }

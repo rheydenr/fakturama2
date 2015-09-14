@@ -28,7 +28,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -84,7 +83,7 @@ public class ItemListBuilder {
     private boolean useGross;
     private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
-    protected NatTable natTable;
+//    protected NatTable natTable;
 
     /**
      * Build the {@link DocumentsListTable}.
@@ -250,7 +249,7 @@ public class ItemListBuilder {
         return this;
     }
 //
-//    public ItemListBuilder witDocumentSummary(DocumentSummary documentSummary) {
+//    public ItemListBuilder withDocumentSummary(DocumentSummary documentSummary) {
 //        this.documentSummary = documentSummary;
 //        return this;
 //    }

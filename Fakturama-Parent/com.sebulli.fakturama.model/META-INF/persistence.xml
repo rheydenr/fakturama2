@@ -44,6 +44,7 @@
 			<persistence:class>com.sebulli.fakturama.model.UserProperty</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VAT</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.AbstractVoucher</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.AbstractVoucherItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
 			
 			<!--  later on we could use LocalDate; here we have to convert the values -->

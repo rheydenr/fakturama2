@@ -127,9 +127,12 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
 	}
+	
     @Synchronize
     public void loadUserValuesFromDB() {
-        syncWithPreferencesFromDatabase(false);
+        // TRUE ==> Save preferences
+        // FALSE ==> Load preferences
+        syncWithPreferencesFromDatabase(((Boolean)(context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE))));
     }
 
 	/**

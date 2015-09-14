@@ -234,7 +234,7 @@ public class Messages {
 
 	public String viewErrorlogLabel;
 
-	public String ExpenditureVoucherEditor641;
+    public String expenditurevoucherEditorTitle;
 
 	public String ExportExpenditureWizard245;
 	public String ExportExpenditureWizard246;
@@ -343,7 +343,7 @@ public class Messages {
 	public String Exporter240;
 	public String Exporter247;
 	public String Exporter248;
-	public String Exporter249;
+	public String exporterDataAccounttype;
 	public String productDataNet;
 	public String productDataGross;
 	public String Exporter252;
@@ -608,28 +608,28 @@ public class Messages {
 	public String expenditurevoucherFieldSupplier;
 	public String receiptvoucherFieldState;
 
-	public String VoucherEditor545;
-	public String VoucherEditor546;
-	public String VoucherEditor547;
-	public String VoucherEditor548;
-	public String VoucherEditor549;
+	public String editorVoucherHeader;
+    public String voucherFieldBookName;
+    public String voucherFieldBookTooltip;
+    public String voucherDialogBookConfirmHeader;
+    public String voucherDialogBookConfirmWarning;
     public String commonFieldAccount;
-    public String VoucherEditor551;
-	public String VoucherEditor552;
-	public String VoucherEditor553;
-	public String VoucherEditor554;
-	public String VoucherEditor555;
-	public String VoucherEditor556;
-	public String VoucherEditor557;
-	public String VoucherEditor558;
-	public String VoucherEditor559;
-	public String VoucherEditor560;
-	public String VoucherEditor561;
-	public String VoucherEditor562;
-	public String VoucherEditor563;
-	public String VoucherEditor564;
-	public String VoucherEditor565;
-	public String VoucherEditor566;
+    public String commonFieldAccountTooltip;
+    public String voucherFieldDateTooltip;
+    public String voucherFieldNumberName;
+    public String voucherFieldNumberTooltip;
+    public String voucherFieldDocumentnumberName;
+    public String voucherFieldDocumentnumberTooltip;
+    public String voucherFieldCustomersupplierName;
+    public String voucherFieldItemsName;
+    public String voucherFieldItemsNewposTooltip;
+    public String voucherFieldItemsDeleteposTooltip;
+    public String voucherFieldWithdiscountName;
+    public String voucherFieldWithdiscountTooltip;
+    public String voucherFieldPaidvalueName;
+    public String voucherFieldPaidvalueTooltip;
+    public String voucherFieldTotalvalueName;
+    public String voucherFieldTotalvalueTooltip;
 
     public String preferencesWebshopAuthorizationPasswordproteced;
     public String preferencesWebshopAuthorization;

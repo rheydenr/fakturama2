@@ -355,19 +355,19 @@
           <parameters xmi:id="_GZHgUM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.47" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
           <parameters xmi:id="_PVQU4M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.52" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_XuO0UEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.delivery.id" label="%main.menu.new.deliverynote" iconURI="icon://COMMAND_DELIVERY" command="_octxQEvnEeOlALHF9EqnUg">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_XuO0UEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.delivery.id" label="%main.menu.new.deliverynote" iconURI="icon://COMMAND_DELIVERY" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_JOd80M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.48" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
           <parameters xmi:id="_RWGyUM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.53" name="com.sebulli.fakturama.editors.category" value="DELIVERY"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YATbwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.credit.id" label="%main.menu.new.credit" iconURI="icon://COMMAND_CREDIT" command="_o10NwEvnEeOlALHF9EqnUg">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YATbwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.credit.id" label="%main.menu.new.credit" iconURI="icon://COMMAND_CREDIT" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_J-r40M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.49" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
           <parameters xmi:id="_R__c0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.54" name="com.sebulli.fakturama.editors.category" value="CREDIT"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YYQowEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.dunning.id" label="%main.menu.new.dunning" iconURI="icon://COMMAND_DUNNING" command="_pO1xwEvnEeOlALHF9EqnUg">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YYQowEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.dunning.id" label="%main.menu.new.dunning" iconURI="icon://COMMAND_DUNNING" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_Kn0VYM22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.50" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
           <parameters xmi:id="_StA64M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.55" name="com.sebulli.fakturama.editors.category" value="DUNNING"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YrjYMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.proforma.id" label="%main.menu.new.proforma" iconURI="icon://COMMAND_PROFORMA" command="_plRUwEvnEeOlALHF9EqnUg">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YrjYMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.proforma.id" label="%main.menu.new.proforma" iconURI="icon://COMMAND_PROFORMA" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_LSJr0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.51" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
           <parameters xmi:id="_TxXT0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.56" name="com.sebulli.fakturama.editors.category" value="PROFORMA"/>
         </children>
@@ -389,10 +389,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_bAP-sEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.listentry.id" label="%main.menu.new.listentry" iconURI="icon://COMMAND_LIST" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_3igQ8PBdEeSE6viOnMbMyQ" elementId="com.sebulli.fakturama.rcp.parameter.64" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.accountTypeEditor"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_bX0xMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.expenditurevoucher.id" label="%main.menu.new.expenditurevoucher" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bX0xMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.expenditurevoucher.id" label="%main.menu.new.expenditurevoucher" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_NKFdYPBeEeSE6viOnMbMyQ" elementId="com.sebulli.fakturama.rcp.parameter.65" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.expenditureVoucherEditor"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_bxnKMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.receiptvoucher.id" label="%main.menu.new.receiptvoucher" iconURI="icon://COMMAND_RECEIPT_VOUCHER">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bxnKMEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.receiptvoucher.id" label="%main.menu.new.receiptvoucher" iconURI="icon://COMMAND_RECEIPT_VOUCHER" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_R7U-0PBeEeSE6viOnMbMyQ" elementId="com.sebulli.fakturama.rcp.parameter.66" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptVoucherEditor"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_cirawEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.sep01.id"/>
@@ -465,7 +465,7 @@
     <children xmi:id="_RmPTzetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialog" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialogs"/>
     <children xmi:id="_c7LSgGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingcontext.viewlist" name="In List Views" description="Binding context for using in list views (VATs, documents etc.)"/>
   </rootContext>
-  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="com.sebulli.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_RmPTzOtOEeKo5Ms1QUgPTw _RmPTy-tOEeKo5Ms1QUgPTw" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
+  <descriptors xmi:id="_hCzlMDjzEeOZfaLgQi1oPw" elementId="org.fakturama.rcp.docview" label="%partdesc.docview" bindingContexts="_RmPTzOtOEeKo5Ms1QUgPTw _RmPTy-tOEeKo5Ms1QUgPTw" allowMultiple="true" category="documentWindow" closeable="true" dirtyable="true">
     <tags>removeOnHide</tags>
     <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
@@ -482,8 +482,8 @@
     <parameters xmi:id="_P3fboDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.cmdparam.objId" name="object Id" typeId=""/>
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>
     <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
-    <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="com.sebulli.fakturama.document.duplicate" name="document is a duplicate of an other document"/>
-    <parameters xmi:id="_LK9-cA7gEeWUIKlpoQDe6Q" elementId="com.sebulli.fakturama.document.caller" name="calling document editor"/>
+    <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="org.fakturama.document.duplicate" name="document is a duplicate of an other document"/>
+    <parameters xmi:id="_LK9-cA7gEeWUIKlpoQDe6Q" elementId="org.fakturama.document.caller" name="calling document editor"/>
   </commands>
   <commands xmi:id="__1BmsCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openPayments" commandName="%command.payments.name" description="%command.payments.tooltip">
     <parameters xmi:id="_Ju-ggFQLEeW3ufIjNR4o7Q" elementId="com.sebulli.fakturama.lists.viewtype" name="View Type" optional="false"/>

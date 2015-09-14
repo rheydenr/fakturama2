@@ -75,8 +75,6 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
-import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
-import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
@@ -89,7 +87,6 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
-import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -683,7 +680,9 @@ private Menu createContextMenu(NatTable natTable) {
 //        DocumentItem dummyItem = document.getItems().get(0);
 //        List<DocumentItemDTO> wrappedItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
         for (DocumentItem item : document.getItems()) {
-            wrappedItems.add(new DocumentItemDTO(item));
+            if(!item.getDeleted()) {
+                wrappedItems.add(new DocumentItemDTO(item));
+            }
         }
         wrappedItems.sort(Comparator.comparing((DocumentItemDTO d) -> d.getDocumentItem().getPosNr()));
         documentItemsListData = GlazedLists.eventList(wrappedItems);
@@ -713,7 +712,7 @@ private Menu createContextMenu(NatTable natTable) {
         containsDiscountedItems = discountedValue.isPresent();
 
         // Renumber all Items
-        //renumberItems();
+        renumberItems();
     }
     
     @Override
@@ -791,14 +790,12 @@ private Menu createContextMenu(NatTable natTable) {
     /**
      * Renumber all items
      */
-    private void renumberItems () {
+    private void renumberItems() {
         
         int no = 1;
-        // renumber all items
-//      for (DocumentItem item : items) {
-//          item.row = no;
-//          no++;
-//      }
+        for (DocumentItemDTO documentItemDTO : documentItemsListData) {
+            documentItemDTO.getDocumentItem().setPosNr(no++);
+        }
     }
 
     class DocumentItemTableConfiguration extends AbstractRegistryConfiguration {

@@ -169,10 +169,16 @@ public class CoolbarViewPart {
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
 
-		createToolItem(toolBar3, CommandIds.CMD_NEW_EXPENDITUREVOUCHER, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER));	
-		createToolItem(toolBar3, CommandIds.CMD_NEW_RECEIPTVOUCHER, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER));	
+        params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ExpenditureVoucherEditor.ID);
+		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewExpenditurevoucherName,
+		        tooltipPrefix + msg.mainMenuNewExpenditurevoucher, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
+		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER), params);	
+        params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ReceiptVoucherEditor.ID);
+		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewReceiptvoucherName,
+		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
+		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params);	
 		finishToolbar(coolbar1, toolBar3);
 		
 		ToolBar toolBar4 = new ToolBar(coolbar1, SWT.FLAT);

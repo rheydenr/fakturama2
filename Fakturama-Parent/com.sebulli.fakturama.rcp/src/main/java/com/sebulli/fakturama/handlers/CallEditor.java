@@ -45,6 +45,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.ListEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
+import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.parts.VatEditor;
@@ -79,7 +80,7 @@ public class CallEditor {
      * A category (as initial assignment) for the called editor.
      */
     public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
-    public static final String PARAM_DUPLICATE = "com.sebulli.fakturama.document.duplicate";
+    public static final String PARAM_DUPLICATE = "org.fakturama.document.duplicate";
     
     /**
      * The type of the editor which has to be called.
@@ -90,10 +91,10 @@ public class CallEditor {
      * The name of the document which is calling an other editor. This is necessary for returning
      * to the calling document (e.g., if you create a new contact while creating a new invoice).
      */
-    public static final String PARAM_CALLING_DOC = "com.sebulli.fakturama.document.caller";
+    public static final String PARAM_CALLING_DOC = "org.fakturama.document.caller";
 
-    public static final String DOCVIEW_PARTDESCRIPTOR_ID = "com.sebulli.fakturama.rcp.docview";
-    public static final String DOCVIEW_PART_ID = "com.sebulli.fakturama.rcp.docdetail";
+    public static final String DOCVIEW_PARTDESCRIPTOR_ID = "org.fakturama.rcp.docview";
+    public static final String DOCVIEW_PART_ID = "org.fakturama.rcp.docdetail";
 
     @Inject
     @Translation
@@ -208,9 +209,10 @@ public class CallEditor {
                 myPart.setLabel(msg.commandExpenditurevouchersName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ExpenditureVoucherEditor.class.getName());
                 break;
+			case ReceiptVoucherEditor.ID:
 			case ReceiptVoucherListTable.ID:
                 myPart.setLabel(msg.commandReceiptvouchersName);
-                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ReceiptVoucherListTable.class.getName());
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ReceiptVoucherEditor.class.getName());
                 break;
 			case ListEditor.ID:
 			case ItemAccountTypeListTable.ID:

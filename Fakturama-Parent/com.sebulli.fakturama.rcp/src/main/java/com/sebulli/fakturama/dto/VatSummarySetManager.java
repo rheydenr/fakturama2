@@ -15,10 +15,7 @@
 package com.sebulli.fakturama.dto;
 
 
-import java.math.RoundingMode;
-
 import javax.money.CurrencyUnit;
-import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 
 import org.javamoney.moneta.Money;

@@ -1013,7 +1013,7 @@ public class MigrationManager {
 						item.setName(oldReceiptvoucherItem.getName());
 						item.setPrice(oldReceiptvoucherItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
-						item.setReceiptVoucherItemVat(newVat);
+						item.setVat(newVat);
 //						receiptVoucher.addToItems(item);
 						receiptVoucher.getItems().add(item);
 					}

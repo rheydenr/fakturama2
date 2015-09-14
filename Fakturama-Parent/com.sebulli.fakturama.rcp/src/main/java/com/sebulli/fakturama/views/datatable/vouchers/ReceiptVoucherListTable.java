@@ -63,8 +63,8 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.parts.VatEditor;
-import com.sebulli.fakturama.parts.VoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
@@ -277,7 +277,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
      * @param message an incoming message
      */
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(VoucherEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@EventTopic(ReceiptVoucherEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(receiptVoucherListData, GlazedLists.eventList(receiptVouchersDAO.findAll(true)), false);

@@ -141,9 +141,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	// The topic tree viewer displays the categories of the UniDataSets
 	protected TopicTreeViewer<C> topicTreeViewer;
 
-	// Name of the editor to edit the UniDataSets
-	protected String editor = "";
-
 	// The standard UniDataSet
 	protected String stdPropertyKey = null;
 	
@@ -612,6 +609,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                     boolean confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
                           MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
                     if(confirmation) {
+                        // refresh object from database
                         objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
                         // Instead of deleting is completely from the database, the element is just marked
                         // as deleted. So a document which still refers to this element would not cause an error.

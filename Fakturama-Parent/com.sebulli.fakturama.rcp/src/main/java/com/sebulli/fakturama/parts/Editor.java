@@ -475,11 +475,11 @@ public abstract class Editor<T extends IEntity> {
 	 * @param source the SWT widget
 	 * @param property the property to observe
 	 */
-	protected void bindModelValue(T target, Scrollable source, String property) {
+	protected void bindModelValue(T target, Control source, String property) {
 	    bindModelValue(target, source, property, null, null);
 	}
 	
-    protected void bindModelValue(T target, final Scrollable source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    protected void bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue model = nameProperty.observe(target);
 
@@ -488,7 +488,7 @@ public abstract class Editor<T extends IEntity> {
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
          */
-        if(source instanceof Combo) {
+        if(source instanceof Combo || source instanceof Button) {
             uiWidget = WidgetProperties.selection().observe(source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
