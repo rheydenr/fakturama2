@@ -411,6 +411,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" elementId="about" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.help.about" iconURI="icon://COMMAND_APP" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
       </children>
     </mainMenu>
+    <windows xsi:type="basic:TrimmedWindow" xmi:id="_GgpEEGI0EeWyp6jKCQB6vw" elementId="fakturama.dialog.about" toBeRendered="false" visible="false" selectedElement="_wjurYGI0EeWyp6jKCQB6vw" iconURI="icon://COMMAND_APP">
+      <children xsi:type="basic:Part" xmi:id="_wjurYGI0EeWyp6jKCQB6vw" elementId="fakturama.dialog.about.part" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.dialogs.about.E4AboutDialog"/>
+    </windows>
     <trimBars xmi:id="_6zLE0EvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar">
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar.control" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>

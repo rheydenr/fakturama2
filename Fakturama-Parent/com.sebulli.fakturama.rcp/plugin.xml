@@ -17,7 +17,7 @@
          </property>
          <property
                name="appName"
-               value="com.sebulli.fakturama.rcp">
+               value="Fakturama">
          </property>
          <property
                name="startupForegroundColor"
@@ -41,11 +41,11 @@
          </property>
          <property
                name="windowImages"
-               value="app/app_16.png,app/app_32.png,app/app_48.png,app/app_64.png,app/app_128.png">
+               value="platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_16.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_32.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_48.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_64.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_128.png">
          </property>
          <property
                name="aboutImage"
-               value="app/about.png">
+               value="platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/about.png">
          </property>
          <property
                name="aboutText"

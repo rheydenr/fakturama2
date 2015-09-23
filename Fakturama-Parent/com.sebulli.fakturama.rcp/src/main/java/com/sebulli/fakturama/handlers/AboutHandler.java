@@ -10,16 +10,27 @@
  *******************************************************************************/
 package com.sebulli.fakturama.handlers;
 
-import javax.inject.Named;
+import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.dialogs.about.E4AboutDialog;
+
 public class AboutHandler {
+	
+	@Inject
+	private EPartService partService;
+
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-		MessageDialog.openInformation(shell, "About", "Eclipse 4 Application example.");
+	public void execute(Shell shell, IEclipseContext context) {
+		// doesn't work :-(
+//		partService.showPart("com.sebulli.fakturama.rcp.part.0", PartState.ACTIVATE);
+		E4AboutDialog dlg = ContextInjectionFactory.make(E4AboutDialog.class, context);
+		dlg.open();
 	}
 }

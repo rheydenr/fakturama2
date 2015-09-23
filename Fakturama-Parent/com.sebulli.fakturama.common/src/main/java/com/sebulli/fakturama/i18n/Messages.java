@@ -939,6 +939,7 @@ public class Messages {
 	public String wizardImportCsvExpendituresName;
 	public String wizardImportCsvProductsDescription;
 	public String wizardImportCsvProductsName;
+	public String dialogAboutTitle;
     
     public String getPurchaseTaxString() {
           //T: Name of the tax that is raised when goods are purchased
