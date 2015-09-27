@@ -29,10 +29,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -55,8 +51,6 @@ import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
@@ -74,6 +68,7 @@ import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.ShippingVatTypeContentProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.ShippingVatTypeLabelProvider;
+import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  * The Shipping editor
@@ -81,30 +76,13 @@ import com.sebulli.fakturama.parts.widget.labelprovider.ShippingVatTypeLabelProv
 public class ShippingEditor extends Editor<Shipping> {
 
     @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
     protected ShippingsDAO shippingDao;
     
     @Inject
     protected VatsDAO vatsDao;
-    
-    @Inject
-    @Preference  //(nodePath = "/configuration/contactPreferences")
-    protected IEclipsePreferences defaultPreferences;
-    
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     protected ShippingCategoriesDAO shippingCategoriesDAO;
-    
-    @Inject
-    protected ILogger log;
 
     // Editor's ID
     public static final String EDITOR_ID = "ShippingEditor";
@@ -224,6 +202,7 @@ public class ShippingEditor extends Editor<Shipping> {
         Shipping stdShipping = null;
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_SHIPPING.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
@@ -246,7 +225,7 @@ public class ShippingEditor extends Editor<Shipping> {
             }
             editorShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
             editorShipping.setShippingValue(Double.valueOf(0.0));
-            int vatId = defaultPreferences.getInt(Constants.DEFAULT_VAT, 1);
+            int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
             vat = vatsDao.findById(vatId);  // initially set default VAT
             editorShipping.setShippingVat(vat);
 
@@ -261,8 +240,8 @@ public class ShippingEditor extends Editor<Shipping> {
         
         // Some of this editos's control elements can be hidden.
         // Get the these settings from the preference store
-        useNet = defaultPreferences.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, 0) != 2;
-        useGross = defaultPreferences.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, 0) != 1;
+        useNet = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 2;
+        useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 1;
 
         // Get the auto VAT setting
         autoVat = editorShipping.getAutoVat();
@@ -362,7 +341,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // If net and gross were created, link both together
         // so, if one is modified, the other will be recalculated.
         if (useNet && useGross) {
-            netText.setGrossText(grossText.getGrossText());
+            netText.setGrossText(grossText);
             grossText.setNetText(netText);
         }
 

@@ -161,10 +161,14 @@ public class CoolbarViewPart {
 		finishToolbar(coolbar1, toolBar2);
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
-        createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize),
-                preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT));    
-        
         Map<String, Object> params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
+        createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
+        		Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize), null,
+                preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params);    
+
+        params = new HashMap<>();
+        params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);

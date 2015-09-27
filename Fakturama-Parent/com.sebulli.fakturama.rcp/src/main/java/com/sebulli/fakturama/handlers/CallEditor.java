@@ -45,6 +45,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.ListEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.TextEditor;
@@ -54,6 +55,7 @@ import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
 import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
+import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 import com.sebulli.fakturama.views.datatable.shippings.ShippingListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 import com.sebulli.fakturama.views.datatable.vats.VATListTable;
@@ -224,11 +226,11 @@ public class CallEditor {
                 myPart.setLabel(msg.commandPaymentsName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + PaymentEditor.class.getName());
                 break;
-//			case ProductEditor.ID:
-//			case ProductListTable.ID:
-//                myPart.setLabel(msg.commandPaymentsName);
-//                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ProductEditor.class.getName());
-//                break;
+			case ProductEditor.ID:
+			case ProductListTable.ID:
+                myPart.setLabel(msg.commandPaymentsName);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ProductEditor.class.getName());
+                break;
             case ContactEditor.ID:
             case ContactListTable.ID:
             case "Debitor":

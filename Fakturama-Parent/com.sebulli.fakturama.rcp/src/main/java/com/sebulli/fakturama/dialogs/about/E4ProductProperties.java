@@ -6,12 +6,14 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
@@ -46,11 +48,11 @@ public class E4ProductProperties extends E4BrandingProperties implements
 
     private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
 
-    private static HashMap mappingsMap = new HashMap(4);
+    private static Map<Bundle, String[]> mappingsMap = new HashMap<>(4);
 
     private static String[] loadMappings(Bundle definingBundle) {
-        URL location = Platform.find(definingBundle, new Path(
-                ABOUT_MAPPINGS));
+        URL location = FileLocator.find(definingBundle, new Path(
+                ABOUT_MAPPINGS), null);
         PropertyResourceBundle bundle = null;
         InputStream is;
         if (location != null) {
@@ -71,7 +73,7 @@ public class E4ProductProperties extends E4BrandingProperties implements
             }
         }
 
-        ArrayList mappingsList = new ArrayList();
+        List<String> mappingsList = new ArrayList<>();
         if (bundle != null) {
             boolean found = true;
             int i = 0;
@@ -298,11 +300,6 @@ public class E4ProductProperties extends E4BrandingProperties implements
      */
     public static ImageDescriptor[] getWindowImages(IProduct product) {
         String property = product.getProperty(WINDOW_IMAGES);
-
-        // for compatibility with pre-3.0 plugins that may still use WINDOW_IMAGE
-        if (property == null) {
-			property = product.getProperty(WINDOW_IMAGE);
-		}
 
         return getImages(property, product.getDefiningBundle());
     }

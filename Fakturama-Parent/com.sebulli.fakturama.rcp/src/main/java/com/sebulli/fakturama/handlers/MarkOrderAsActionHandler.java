@@ -149,7 +149,7 @@ public class MarkOrderAsActionHandler {
                         product.setQuantity(quantity_stock - quantity_order);
                         if (quantity_stock - quantity_order <= 0) {
                             String name = product.getName();
-                            String cat = product.getCategories().get(0).getName();
+                            String cat = product.getCategories()/*.get(0)*/.getName();
                             MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
                         }
                         productsDAO.update(product);

@@ -60,6 +60,7 @@ import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
+import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  * The payment editor
@@ -198,6 +199,7 @@ public class PaymentEditor extends Editor<Payment> {
         Payment stdPayment = null;
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_PAYMENT.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);

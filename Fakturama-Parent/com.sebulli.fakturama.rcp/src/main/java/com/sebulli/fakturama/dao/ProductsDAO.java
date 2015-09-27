@@ -21,6 +21,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Product_;
+import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.oldmodel.OldProducts;
 
 @Creatable
@@ -120,6 +122,23 @@ public class ProductsDAO extends AbstractDAO<Product> {
                 Product_.quantity.getName(), 
                 Product_.price1.getName(), 
                 Product_.vat.getName() };
+    }
+
+
+    /**
+     * Tests if an other entity with the same name exists.
+     * 
+     * @param product the {@link Product} to test
+     * @return 
+     */
+    public boolean existsOther(Product product) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Product> criteria = cb.createQuery(Product.class);
+        Root<Product> root = criteria.from(Product.class);
+        CriteriaQuery<Product> cq = criteria.where(
+                cb.and(cb.notEqual(root.<Long>get(Product_.id), product.getId()),
+                       cb.equal(root.<String>get(Product_.name), product.getName())));
+        return !getEntityManager().createQuery(cq).getResultList().isEmpty();
     }
 
 }

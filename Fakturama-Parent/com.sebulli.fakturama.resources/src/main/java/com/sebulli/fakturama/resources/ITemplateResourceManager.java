@@ -14,6 +14,10 @@
 package com.sebulli.fakturama.resources;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+
+import com.sebulli.fakturama.resources.core.ProgramImages;
 
 /**
  * Resource manager for handling the different Fakturama templates. This is
@@ -35,4 +39,5 @@ public interface ITemplateResourceManager {
      */
     public boolean createWorkspaceTemplates(String workspace, IEclipseContext ctx);
 
+    public Image getProgramImage(Display display, ProgramImages imageName);
 }

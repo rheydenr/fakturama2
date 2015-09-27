@@ -25,8 +25,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -50,7 +48,6 @@ import org.eclipse.swt.widgets.Text;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -58,15 +55,12 @@ import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
+import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  * The VAT editor
  */
 public class VatEditor extends Editor<VAT> {
-
-    @Inject
-    @Translation
-    protected Messages msg;
 
     @Inject
     protected VatsDAO vatDao;
@@ -79,9 +73,6 @@ public class VatEditor extends Editor<VAT> {
 
     @Inject
     protected VatCategoriesDAO vatCategoriesDAO;
-    
-    @Inject
-    protected Logger log;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
@@ -182,6 +173,7 @@ public class VatEditor extends Editor<VAT> {
         VAT stdVat = null;
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_VAT.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);

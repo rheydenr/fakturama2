@@ -14,12 +14,11 @@
 
 package com.sebulli.fakturama.office;
 
-import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -43,6 +41,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
@@ -81,8 +80,8 @@ public class OfficeDocument {
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
 
-//	/** The UniDataSet contact of the document */
-//	//	private DataSetContact contact;
+	/** The UniDataSet contact of the document */
+	//	private DataSetContact contact;
 
 	/** A list of properties that represents the placeholders of the
 	 OpenOffice Writer template */
@@ -656,7 +655,7 @@ public class OfficeDocument {
 			String width_s = placeholders.extractParam(placeholder,"WIDTH");
 			String height_s = placeholders.extractParam(placeholder,"HEIGHT");
 
-			if (StringUtils.isNotBlank(item.getPictureName())) {
+			if (item.getPicture() != null) {
 				// Default height and with
 				int pixelWidth = 0;
 				int pixelHeight = 0;
@@ -675,10 +674,6 @@ public class OfficeDocument {
 				if (pixelHeight < 1)
 					pixelHeight = 100;
 
-
-				Path imagePath = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), 
-				        "/Pics/Products/", 
-				 					item.getPictureName());
 				int pictureHeight = 100;
 				int pictureWidth = 100;
 				double pictureRatio = 1.0;
@@ -686,9 +681,11 @@ public class OfficeDocument {
 			      
 				// Read the image a first time to get width and height
 				try {
-					BufferedImage image = ImageIO.read(imagePath.toFile());
-					pictureHeight = image.getHeight();
-					pictureWidth = image.getWidth();
+					ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());
+					Image image = new Image(shell.getDisplay(), imgStream);
+//					BufferedImage image = ImageIO.read(imagePath.toFile());
+//					pictureHeight = image.getHeight();
+//					pictureWidth = image.getWidth();
 
 					// Calculate the ratio of the original image
 					if (pictureHeight > 0) {
@@ -727,7 +724,7 @@ public class OfficeDocument {
 					// replace the placeholder
 					return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
 				}
-				catch (IOException e) {
+				catch (Exception e) {
 				}
 			}
 			

@@ -188,19 +188,9 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private MApplication application;
-    
-    @Inject
-    @Translation
-    protected Messages msg;
 
     @Inject
     private IEclipseContext context;
-
-    @Inject
-    private Logger log;
-
-    @Inject
-    private IPreferenceStore preferences;
 
 	// This UniDataSet represents the editor's input
 	private Document document;
@@ -722,7 +712,7 @@ public class DocumentEditor extends Editor<Document> {
             document.setBillingType(billingType);
 
 			// Copy the entry "message", or reset it to ""
-			if (!preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
+			if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
 				document.setMessage("");
 				document.setMessage2("");
 				document.setMessage3("");
@@ -766,7 +756,7 @@ public class DocumentEditor extends Editor<Document> {
 //				document.setStringValueByKey("shippingvatdescription", shippingVatDescription);
 				
 				// Default payment
-				int paymentId = preferences.getInt(Constants.DEFAULT_PAYMENT);
+				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
                 payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
 //				document.setStringValueByKey("paymentdescription", Data.INSTANCE.getPayments().getDatasetById(paymentId).getStringValueByKey("description"));
@@ -835,7 +825,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS/*, DocumentSummary.ROUND_NET_VALUES*/) == DocumentSummary.ROUND_NET_VALUES);
+            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS/*, DocumentSummary.ROUND_NET_VALUES*/) == DocumentSummary.ROUND_NET_VALUES);
         } else { 
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -980,7 +970,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
+            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -1306,7 +1296,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		this.addressId = contact;
 
-		if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         }
 		// Check, if the payment is valid
@@ -1815,7 +1805,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		});
 
-		int noOfMessageFields = preferences.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES);
+		int noOfMessageFields = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES);
 		
 		if (noOfMessageFields < 1)
 			noOfMessageFields = 1;
@@ -2094,7 +2084,7 @@ public class DocumentEditor extends Editor<Document> {
     //			itemsSum.setText("---");
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
     
-            if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
+            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
             	
             	// Label discount
@@ -2256,15 +2246,19 @@ public class DocumentEditor extends Editor<Document> {
 		    switch (documentType) {
             case INVOICE:
                 icon = Icon.ICON_INVOICE;
+                this.part.setIconURI(Icon.COMMAND_INVOICE.getIconURI());
                 break;
             case OFFER:
                 icon = Icon.ICON_OFFER;
+                this.part.setIconURI(Icon.COMMAND_OFFER.getIconURI());
                 break;
             case ORDER:
                 icon = Icon.ICON_ORDER;
+                this.part.setIconURI(Icon.COMMAND_ORDER.getIconURI());
                 break;
             case CREDIT:
                 icon = Icon.ICON_CREDIT;
+                this.part.setIconURI(Icon.COMMAND_CREDIT.getIconURI());
                 break;
             case DUNNING:
                 icon = Icon.ICON_DUNNING;
@@ -2297,11 +2291,11 @@ public class DocumentEditor extends Editor<Document> {
      */
     protected void showOrderStatisticDialog(Composite parent) {
         // Show an info dialog, if this is a regular customer
-        if (documentType == DocumentType.ORDER && preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
+        if (documentType == DocumentType.ORDER && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
 			customerStaticstics.setContact(document.getBillingContact());
-			if (preferences.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
+			if (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
 				customerStaticstics.setAddress(document.getBillingContact().getAddress().getManualAddress());
 	            customerStaticstics.makeStatistics(true);
 			} else {	
@@ -2382,11 +2376,11 @@ public class DocumentEditor extends Editor<Document> {
                     newItem.setDescription(product.getDescription());
                     newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
                     newItem.setItemVat(product.getVat());
-                    newItem.setPictureName(product.getPictureName());
+                    newItem.setPicture(product.getPicture());
                     newItem.setWeight(product.getWeight());
 
                     // Use the products description, or clear it
-                    if (!preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {
+                    if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {
                         newItem.setDescription("");
                     }
                     itemListTable.addNewItem(new DocumentItemDTO(newItem));
@@ -2410,7 +2404,7 @@ public class DocumentEditor extends Editor<Document> {
                             itemsString.forEach(item -> itemListTable.addNewItem(new DocumentItemDTO(newItem)));
                             
                             // Put the number of the delivery note in a new line of the message field
-                            if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE)) {
+                            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE)) {
                                 String dNName = deliveryNote.getName();
                                 
                                 if (!txtMessage.getText().isEmpty())
@@ -2484,7 +2478,7 @@ public class DocumentEditor extends Editor<Document> {
         Shipping retval = null;
 
         // Get the ID of the standard entity from preferences
-        stdID = preferences.getLong(Constants.DEFAULT_SHIPPING);
+        stdID = defaultValuePrefs.getLong(Constants.DEFAULT_SHIPPING);
         retval = shippingsDAO.findById(stdID);
         return retval;
     }

@@ -82,8 +82,10 @@ public class GrossText {
 		grossText.getControl().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				if (grossText.getControl().isFocusControl()) {
-					Double netVal = DataUtils.getInstance().calculateNetFromGrossAsDouble((Double)grossText.getValue(), vatValue);
-                    netText.getNetText().setValue(netVal);
+					netValue = DataUtils.getInstance().calculateNetFromGrossAsDouble((Double)grossText.getValue(), vatValue);
+					if(netText != null) {
+						netText.getNetText().setValue(netValue);
+					}
 				}
 			}
 		});
@@ -117,6 +119,7 @@ public class GrossText {
 	 */
 	public void setNetText(NetText netT) {
 		this.netText = netT;
+		this.netValue = ((Double) netText.getNetText().getValue());
 	}
 
 	/**
@@ -128,7 +131,7 @@ public class GrossText {
 	 */
 	public void setVatValue(Double vatValue) {
 		this.vatValue = vatValue;
-		grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble(netValue, vatValue));
+		grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getNetText().getValue(), vatValue));
 	}
 
 	/**
@@ -140,4 +143,8 @@ public class GrossText {
 		return netText;
 	}
 
+	public void recalculate(FormattedText netText2, Double vatValue2) {
+		this.netValue = (Double)netText2.getValue();
+		setVatValue(vatValue2);
+	}
 }

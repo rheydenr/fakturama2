@@ -20,7 +20,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
@@ -43,7 +42,7 @@ public class NetText {
 	private FormattedText netText;
 
 	// The corresponding text control that contains the gross value
-	private FormattedText grossText;
+	private GrossText grossText;
 
 	/**
 	 * Constructor that creates the text widget and connects it with the
@@ -82,8 +81,9 @@ public class NetText {
 		// Set the text of the GrossText, based on the NetText's value
 		netText.getControl().addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
-                if (netText.getControl().isFocusControl()) {
-                    grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getValue(), vatValue));
+                if (netText.getControl().isFocusControl() && grossText != null) {
+                	grossText.recalculate(netText, vatValue);
+//                    grossText.getGrossText().setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getValue(), vatValue));
                 } else {
                     netText.getControl().notifyListeners(SWT.FocusOut, null);
                 }
@@ -107,7 +107,7 @@ public class NetText {
 	 * 
 	 * @return The text widget.
 	 */
-	public FormattedText getGrossText() {
+	public GrossText getGrossText() {
 		return this.grossText;
 	}
 
@@ -117,7 +117,7 @@ public class NetText {
 	 * @param grossT
 	 *            The gtoss text widget
 	 */
-	public void setGrossText(FormattedText grossT) {
+	public void setGrossText(GrossText grossT) {
 		this.grossText = grossT;
 	}
 

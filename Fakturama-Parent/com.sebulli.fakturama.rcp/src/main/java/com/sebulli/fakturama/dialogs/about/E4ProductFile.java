@@ -1,16 +1,41 @@
 package com.sebulli.fakturama.dialogs.about;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.osgi.storage.BundleInfo;
+import org.eclipse.osgi.util.NLS;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import com.sebulli.fakturama.Activator;
 
 /**
  *  Used to parse a .product file.
  */
-public class E4ProductFile /*extends DefaultHandler implements IProductDescriptor*/ {
+public class E4ProductFile extends DefaultHandler /*implements IProductDescriptor*/ {
 	public final static String GENERIC_VERSION_NUMBER = "0.0.0"; //$NON-NLS-1$
 
 	private static final String ATTRIBUTE_PATH = "path"; //$NON-NLS-1$
@@ -147,170 +172,170 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 	private final Map<String, Collection<String>> icons = new HashMap<String, Collection<String>>(6);
 	private String configPath = null;
 	private final Map<String, String> platformSpecificConfigPaths = new HashMap<String, String>();
-//	private String configPlatform = null;
-//	private String platformConfigPath = null;
-//	private String id = null;
-//	private String uid = null;
+	private String configPlatform = null;
+	private String platformConfigPath = null;
+	private String id = null;
+	private String uid = null;
 //	private ProductContentType productContentType = null;
 //	protected List<FeatureEntry> plugins = new ArrayList<FeatureEntry>();
 //	protected List<FeatureEntry> fragments = new ArrayList<FeatureEntry>();
 //	private final List<FeatureEntry> features = new ArrayList<FeatureEntry>();
 //	private final List<FeatureEntry> rootFeatures = new ArrayList<FeatureEntry>();
-//	private String splashLocation = null;
-//	private String productName = null;
-//	private String application = null;
-//	private String version = null;
-//	private Properties launcherArgs = new Properties();
-//	private final URL location;
-//	private List<BundleInfo> bundleInfos;
-//	private Map<String, String> properties;
-//	private HashMap<String, HashMap<String, String>> filteredProperties;
-//	private boolean includeLaunchers = true;
-//	private String licenseURL;
-//	private String licenseText = null;
-//	private String currentOS;
+	private String splashLocation = null;
+	private String productName = null;
+	private String application = null;
+	private String version = null;
+	private Properties launcherArgs = new Properties();
+	private final URL location;
+	private List<BundleInfo> bundleInfos;
+	private Map<String, String> properties;
+	private HashMap<String, HashMap<String, String>> filteredProperties;
+	private boolean includeLaunchers = true;
+	private String licenseURL;
+	private String licenseText = null;
+	private String currentOS;
 //	private final List<IRepositoryReference> repositories = new ArrayList<IRepositoryReference>();
-//	private AboutData aboutData;
-//
-//	private static String normalize(String text) {
-//		if (text == null || text.trim().length() == 0)
-//			return ""; //$NON-NLS-1$
-//
-//		StringBuffer result = new StringBuffer(text.length());
-//		boolean haveSpace = false;
-//		for (int i = 0; i < text.length(); i++) {
-//			char c = text.charAt(i);
-//			if (Character.isWhitespace(c)) {
-//				if (haveSpace)
-//					continue;
-//				haveSpace = true;
-//				result.append(" "); //$NON-NLS-1$
-//			} else {
-//				haveSpace = false;
-//				result.append(c);
-//			}
-//		}
-//		return result.toString();
-//	}
-//
-//	public E4ProductFile(String location, String os) throws CoreException {
+	private AboutData aboutData;
+
+	private static String normalize(String text) {
+		if (text == null || text.trim().length() == 0)
+			return ""; //$NON-NLS-1$
+
+		StringBuffer result = new StringBuffer(text.length());
+		boolean haveSpace = false;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (Character.isWhitespace(c)) {
+				if (haveSpace)
+					continue;
+				haveSpace = true;
+				result.append(" "); //$NON-NLS-1$
+			} else {
+				haveSpace = false;
+				result.append(c);
+			}
+		}
+		return result.toString();
+	}
+
+	public E4ProductFile(String location, String os) throws CoreException {
+		super();
+//		this.currentOS = os;
+		try {
+			this.location = new File(location).toURI().toURL();
+			parserFactory.setNamespaceAware(true);
+			parser = parserFactory.newSAXParser();
+			InputStream in = new BufferedInputStream(new FileInputStream(location));
+			try {
+				parser.parse(new InputSource(in), this);
+			} finally {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// ignore exception on close (as it was done by Utils.close() before)
+				}
+			}
+		} catch (ParserConfigurationException e) {
+			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind("Messages.exception_productParse", location), e));
+		} catch (SAXException e) {
+			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind("Messages.exception_productParse", location), e));
+		} catch (FileNotFoundException e) {
+			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FILE, NLS.bind("Messages.exception_missingElement", location), null));
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind("Messages.exception_productParse", location), e));
+		}
+	}
+
+	/**
+	 * Constructs a product file parser.
+	 */
+	public E4ProductFile(URL location) throws Exception {
 //		super();
-////		this.currentOS = os;
-//		try {
-//			this.location = new File(location).toURI().toURL();
-//			parserFactory.setNamespaceAware(true);
-//			parser = parserFactory.newSAXParser();
-//			InputStream in = new BufferedInputStream(new FileInputStream(location));
-//			try {
-//				parser.parse(new InputSource(in), this);
-//			} finally {
-//				try {
-//					in.close();
-//				} catch (IOException e) {
-//					// ignore exception on close (as it was done by Utils.close() before)
-//				}
-//			}
-//		} catch (ParserConfigurationException e) {
-//			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind(Messages.exception_productParse, location), e));
-//		} catch (SAXException e) {
-//			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind(Messages.exception_productParse, location), e));
-//		} catch (FileNotFoundException e) {
-//			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FILE, NLS.bind(Messages.exception_missingElement, location), null));
-//		} catch (IOException e) {
-//			throw new CoreException(new Status(IStatus.ERROR, PI_PDEBUILD, EXCEPTION_PRODUCT_FORMAT, NLS.bind(Messages.exception_productParse, location), e));
-//		}
-//	}
-//
-//	/**
-//	 * Constructs a product file parser.
-//	 */
-//	public E4ProductFile(URL location) throws Exception {
-////		super();
-//		this.location = location;
-//
-//		parserFactory.setNamespaceAware(true);
-//		parser = parserFactory.newSAXParser();
-//		InputStream in = location.openStream(); //new BufferedInputStream(new FileInputStream(this.location));
-//		try {
-//			parser.parse(new InputSource(in), this);
-//		} finally {
-//			in.close();
-//		}
-//		parser = null;
-//	}
-//
-//	/**
-//	 * Gets the name of the launcher specified in the .product file.
-//	 */
-//	public String getLauncherName() {
-//		return launcherName;
-//	}
-//
-//	/**
-//	 * Gets the location of the .product file.
-//	 */
-//	public File getLocation() {
-//		return new File(location.getFile());
-//	}
-//
-//	/**
-//	 * Returns the properties found in .product file.  Properties
-//	 * are located in the <configurations> block of the file
-//	 */
-//	public Map<String, String> getConfigurationProperties() {
-//		return getConfigurationProperties(null, null);
-//	}
-//
-//	/**
-//	 * Returns the properties found in .product file that are valid
-//	 * for the specified platform os and architecture.  If there is no
-//	 * platform os and/or architecture specified, return only the properties
-//	 * that are not filtered by the unspecified os and/or arch. 
-//	 * Properties are located in the <configurations> block of the file
-//	 */
-//	public Map<String, String> getConfigurationProperties(String os, String arch) {
-//		// add all generic properties
-//		Map<String, String> result = properties != null ? properties : new HashMap<String, String>();
-//		// add any properties filtered on os and/or arch
-//		if (filteredProperties != null) {
-//			String[] filteredKeys = new String[3]; // ".arch", "os.", "os.arch"
-//			if (os == null) {
-//				// only arch is specified. Provide properties defined for
-//				// all os and a specific architecture
-//				if (arch != null && arch.length() > 0) {
-//					filteredKeys[0] = "." + arch; //$NON-NLS-1$
-//				}
-//			} else {
-//				if (arch == null) {
-//					// only os is specified. Provide properties defined for 
-//					// specific os and all architectures.
-//					filteredKeys[1] = os + "."; //$NON-NLS-1$
-//				} else {
-//					// os and arch specified. Provide properties defined for
-//					// the os, for the arch, and for both
-//					filteredKeys[0] = "." + arch; //$NON-NLS-1$
-//					filteredKeys[1] = os + "."; //$NON-NLS-1$
-//					filteredKeys[2] = os + "." + arch; //$NON-NLS-1$
-//				}
-//			}
-//			for (int i = 0; i < filteredKeys.length; i++) {
-//				if (filteredKeys[i] != null) {
-//					// copy all mappings that are filtered for this os and/or arch
-//					HashMap<String, String> innerMap = filteredProperties.get(filteredKeys[i]);
-//					if (innerMap != null) {
-//						result.putAll(innerMap);
-//					}
-//				}
-//
-//			}
-//		}
-//		if (application != null && !result.containsKey(PROPERTY_ECLIPSE_APPLICATION))
-//			result.put(PROPERTY_ECLIPSE_APPLICATION, application);
-//		if (id != null && !result.containsKey(PROPERTY_ECLIPSE_PRODUCT))
-//			result.put(PROPERTY_ECLIPSE_PRODUCT, id);
-//
-//		return result;
-//	}
+		this.location = location;
+
+		parserFactory.setNamespaceAware(true);
+		parser = parserFactory.newSAXParser();
+		InputStream in = location.openStream(); //new BufferedInputStream(new FileInputStream(this.location));
+		try {
+			parser.parse(new InputSource(in), this);
+		} finally {
+			in.close();
+		}
+		parser = null;
+	}
+
+	/**
+	 * Gets the name of the launcher specified in the .product file.
+	 */
+	public String getLauncherName() {
+		return launcherName;
+	}
+
+	/**
+	 * Gets the location of the .product file.
+	 */
+	public File getLocation() {
+		return new File(location.getFile());
+	}
+
+	/**
+	 * Returns the properties found in .product file.  Properties
+	 * are located in the <configurations> block of the file
+	 */
+	public Map<String, String> getConfigurationProperties() {
+		return getConfigurationProperties(null, null);
+	}
+
+	/**
+	 * Returns the properties found in .product file that are valid
+	 * for the specified platform os and architecture.  If there is no
+	 * platform os and/or architecture specified, return only the properties
+	 * that are not filtered by the unspecified os and/or arch. 
+	 * Properties are located in the <configurations> block of the file
+	 */
+	public Map<String, String> getConfigurationProperties(String os, String arch) {
+		// add all generic properties
+		Map<String, String> result = properties != null ? properties : new HashMap<String, String>();
+		// add any properties filtered on os and/or arch
+		if (filteredProperties != null) {
+			String[] filteredKeys = new String[3]; // ".arch", "os.", "os.arch"
+			if (os == null) {
+				// only arch is specified. Provide properties defined for
+				// all os and a specific architecture
+				if (arch != null && arch.length() > 0) {
+					filteredKeys[0] = "." + arch; //$NON-NLS-1$
+				}
+			} else {
+				if (arch == null) {
+					// only os is specified. Provide properties defined for 
+					// specific os and all architectures.
+					filteredKeys[1] = os + "."; //$NON-NLS-1$
+				} else {
+					// os and arch specified. Provide properties defined for
+					// the os, for the arch, and for both
+					filteredKeys[0] = "." + arch; //$NON-NLS-1$
+					filteredKeys[1] = os + "."; //$NON-NLS-1$
+					filteredKeys[2] = os + "." + arch; //$NON-NLS-1$
+				}
+			}
+			for (int i = 0; i < filteredKeys.length; i++) {
+				if (filteredKeys[i] != null) {
+					// copy all mappings that are filtered for this os and/or arch
+					HashMap<String, String> innerMap = filteredProperties.get(filteredKeys[i]);
+					if (innerMap != null) {
+						result.putAll(innerMap);
+					}
+				}
+
+			}
+		}
+		if (application != null && !result.containsKey(PROPERTY_ECLIPSE_APPLICATION))
+			result.put(PROPERTY_ECLIPSE_APPLICATION, application);
+		if (id != null && !result.containsKey(PROPERTY_ECLIPSE_PRODUCT))
+			result.put(PROPERTY_ECLIPSE_PRODUCT, id);
+
+		return result;
+	}
 //
 //	/**
 //	 * Returns a List<VersionedName> for each bundle that makes up this product.
@@ -345,16 +370,16 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //			result.addAll(fragments);
 //		return result;
 //	}
-//
-//	/**
-//	 * Returns a List<BundleInfo> for each bundle that has custom configuration data
-//	 * in the product file.
-//	 * @return A List<BundleInfo>
-//	 */
-//	public List<BundleInfo> getBundleInfos() {
-//		return bundleInfos != null ? bundleInfos : Collections.<BundleInfo> emptyList();
-//	}
-//
+
+	/**
+	 * Returns a List<BundleInfo> for each bundle that has custom configuration data
+	 * in the product file.
+	 * @return A List<BundleInfo>
+	 */
+	public List<BundleInfo> getBundleInfos() {
+		return bundleInfos != null ? bundleInfos : Collections.<BundleInfo> emptyList();
+	}
+
 //	/**
 //	 * Returns a list<VersionedName> of fragments that constitute this product.
 //	 */
@@ -408,68 +433,68 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //		return getBundles(true).contains(plugin);
 //	}
 //
-//	public String[] getIcons() {
-//		return getIcons(currentOS);
-//	}
-//
-//	public String[] getIcons(String os) {
-//		Collection<String> result = icons.get(os);
-//		if (result == null)
-//			return new String[0];
-//		return result.toArray(new String[result.size()]);
-//	}
-//
-//	public AboutData getAboutData() {
-//		return aboutData;
-//	}
-//
-//	public String getConfigIniPath(String os) {
-//		String specific = platformSpecificConfigPaths.get(os);
-//		return specific == null ? configPath : specific;
-//	}
-//
-//	public String getConfigIniPath() {
-//		return configPath;
-//	}
-//
-//	public boolean haveCustomConfig() {
-//		return configPath != null || platformSpecificConfigPaths.size() > 0;
-//	}
-//
-//	/**
-//	 * Returns the ID for this product.
-//	 */
-//	public String getId() {
-//		if (uid != null)
-//			return uid;
-//		return id;
-//	}
-//
-//	public String getProductId() {
-//		return id;
-//	}
-//
-//	/**
-//	 * Returns the location (the bundle) that defines the splash screen
-//	 */
-//	public String getSplashLocation() {
-//		return splashLocation;
-//	}
-//
-//	/**
-//	 * Returns the product name.
-//	 */
-//	public String getProductName() {
-//		return productName;
-//	}
-//
-//	/**
-//	 * Returns the application identifier for this product.
-//	 */
-//	public String getApplication() {
-//		return application;
-//	}
-//
+	public String[] getIcons() {
+		return getIcons(currentOS);
+	}
+
+	public String[] getIcons(String os) {
+		Collection<String> result = icons.get(os);
+		if (result == null)
+			return new String[0];
+		return result.toArray(new String[result.size()]);
+	}
+
+	public AboutData getAboutData() {
+		return aboutData;
+	}
+
+	public String getConfigIniPath(String os) {
+		String specific = platformSpecificConfigPaths.get(os);
+		return specific == null ? configPath : specific;
+	}
+
+	public String getConfigIniPath() {
+		return configPath;
+	}
+
+	public boolean haveCustomConfig() {
+		return configPath != null || platformSpecificConfigPaths.size() > 0;
+	}
+
+	/**
+	 * Returns the ID for this product.
+	 */
+	public String getId() {
+		if (uid != null)
+			return uid;
+		return id;
+	}
+
+	public String getProductId() {
+		return id;
+	}
+
+	/**
+	 * Returns the location (the bundle) that defines the splash screen
+	 */
+	public String getSplashLocation() {
+		return splashLocation;
+	}
+
+	/**
+	 * Returns the product name.
+	 */
+	public String getProductName() {
+		return productName;
+	}
+
+	/**
+	 * Returns the application identifier for this product.
+	 */
+	public String getApplication() {
+		return application;
+	}
+
 //	/**
 //	 * Returns true if this product is built using feature, 
 //	 * false otherwise.
@@ -478,16 +503,16 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //		return productContentType == ProductContentType.FEATURES;
 //	}
 //
-//	/**
-//	 * Returns the version of the product
-//	 */
-//	public String getVersion() {
-//		return (version == null || version.length() == 0) ? "0.0.0" : version; //$NON-NLS-1$
-//	}
-//
-//	public boolean includeLaunchers() {
-//		return includeLaunchers;
-//	}
+	/**
+	 * Returns the version of the product
+	 */
+	public String getVersion() {
+		return (version == null || version.length() == 0) ? "0.0.0" : version; //$NON-NLS-1$
+	}
+
+	public boolean includeLaunchers() {
+		return includeLaunchers;
+	}
 //
 //	public Map<String, BundleInfo> getConfigurationInfo() {
 //		Map<String, BundleInfo> result = new HashMap<String, BundleInfo>();
@@ -504,314 +529,314 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //		}
 //		return props;
 //	}
-//
-//	/**
-//	 * Returns the VM arguments for a specific platform.
-//	 * If the empty string is used for the OS, this returns
-//	 * the default VM arguments
-//	 */
-//	public String getVMArguments(String os) {
-//		return getVMArguments(os, null);
-//	}
-//
-//	/**
-//	 * Returns the VM arguments for a specific platform and architecture
-//	 * combination. If the empty string is used for the architecture, this
-//	 * returns the default arguments for the platform.  If the empty string is
-//	 * used for the OS, this returns the default VM arguments.
-//	 */
-//	public String getVMArguments(String os, String arch) {
-//		os = os == null ? "" : os; //$NON-NLS-1$
-//		String key = null;
-//		if (os.equals(OS_WIN32)) {
-//			key = VM_ARGS_WIN;
-//		} else if (os.equals(OS_LINUX)) {
-//			key = VM_ARGS_LINUX;
-//		} else if (os.equals(OS_MACOSX)) {
-//			key = VM_ARGS_MAC;
-//		} else if (os.equals(OS_SOLARIS)) {
-//			key = VM_ARGS_SOLARIS;
-//		}
-//
-//		arch = arch == null ? "" : arch; //$NON-NLS-1$
-//		String archKey = null;
-//		if (arch.equals(ARCH_X86)) {
-//			archKey = EL_ARCH_X86;
-//		} else if (arch.equals(ARCH_X86_64)) {
-//			archKey = EL_ARCH_X86_64;
-//		} else if (arch.equals(ARCH_PPC)) {
-//			archKey = EL_ARCH_PPC;
-//		} else if (arch.equals(ARCH_IA_64)) {
-//			archKey = EL_ARCH_IA_64;
-//		} else if (arch.equals(ARCH_IA_64_32)) {
-//			archKey = EL_ARCH_IA_64_32;
-//		} else if (arch.equals(ARCH_PA_RISC)) {
-//			archKey = EL_ARCH_PA_RISC;
-//		} else if (arch.equals(ARCH_SPARC)) {
-//			archKey = EL_ARCH_SPARC;
-//		}
-//
-//		String platformArchKey = null;
-//		String defaults = launcherArgs.getProperty(VM_ARGS);
-//		// architecture arguments independent of platform should be part
-//		// of the defaults.
-//		if (archKey != null) {
-//			String archOnAllPlatforms = launcherArgs.getProperty(VM_ARGS + "." + archKey); //$NON-NLS-1$
-//			if (archOnAllPlatforms != null && archOnAllPlatforms.length() > 0) {
-//				defaults = defaults + " " + archOnAllPlatforms; //$NON-NLS-1$
-//			}
-//		}
-//		String platform = null, platformAndArch = null, args = null;
-//		if (key != null) {
-//			// a platform with no arch specified
-//			platform = launcherArgs.getProperty(key);
-//			// platform + arch
-//			if (archKey != null) {
-//				platformArchKey = key + "." + archKey; //$NON-NLS-1$
-//				platformAndArch = launcherArgs.getProperty(platformArchKey);
-//			}
-//		}
-//		if (defaults != null) {
-//			if (platform != null)
-//				args = platformAndArch != null ? defaults + " " + platform + " " + platformAndArch : defaults + " " + platform; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-//			else
-//				args = defaults;
-//		} else {
-//			if (platform != null)
-//				args = platformAndArch != null ? platform + " " + platformAndArch : platform; //$NON-NLS-1$
-//			else
-//				args = platformAndArch != null ? platformAndArch : ""; //$NON-NLS-1$
-//		}
-//		return normalize(args);
-//	}
-//
-//	/**
-//	 * Returns the program arguments for a specific platform.
-//	 * If the empty string is used for the OS, this returns
-//	 * the default program arguments
-//	 */
-//	public String getProgramArguments(String os) {
-//		return getProgramArguments(os, null);
-//	}
-//
-//	/**
-//	 * Returns the program arguments for a specific platform.
-//	 * If the empty string is used for the OS, this returns
-//	 * the default program arguments
-//	 */
-//	public String getProgramArguments(String os, String arch) {
-//		os = os == null ? "" : os; //$NON-NLS-1$
-//		String key = null;
-//		if (os.equals(OS_WIN32)) {
-//			key = PROGRAM_ARGS_WIN;
-//		} else if (os.equals(OS_LINUX)) {
-//			key = PROGRAM_ARGS_LINUX;
-//		} else if (os.equals(OS_MACOSX)) {
-//			key = PROGRAM_ARGS_MAC;
-//		} else if (os.equals(OS_SOLARIS)) {
-//			key = PROGRAM_ARGS_SOLARIS;
-//		}
-//
-//		arch = arch == null ? "" : arch; //$NON-NLS-1$
-//		String archKey = null;
-//		if (arch.equals(ARCH_X86)) {
-//			archKey = EL_ARCH_X86;
-//		} else if (arch.equals(ARCH_X86_64)) {
-//			archKey = EL_ARCH_X86_64;
-//		} else if (arch.equals(ARCH_PPC)) {
-//			archKey = EL_ARCH_PPC;
-//		} else if (arch.equals(ARCH_IA_64)) {
-//			archKey = EL_ARCH_IA_64;
-//		} else if (arch.equals(ARCH_IA_64_32)) {
-//			archKey = EL_ARCH_IA_64_32;
-//		} else if (arch.equals(ARCH_PA_RISC)) {
-//			archKey = EL_ARCH_PA_RISC;
-//		} else if (arch.equals(ARCH_SPARC)) {
-//			archKey = EL_ARCH_SPARC;
-//		}
-//
-//		String platformArchKey = null;
-//		String defaults = launcherArgs.getProperty(PROGRAM_ARGS);
-//		// architecture arguments independent of platform should be part
-//		// of the defaults.
-//		if (archKey != null) {
-//			String archOnAllPlatforms = launcherArgs.getProperty(PROGRAM_ARGS + "." + archKey); //$NON-NLS-1$
-//			if (archOnAllPlatforms != null && archOnAllPlatforms.length() > 0) {
-//				defaults = defaults + " " + archOnAllPlatforms; //$NON-NLS-1$
-//			}
-//		}
-//		String platform = null, platformAndArch = null, args = null;
-//		if (key != null) {
-//			// a platform with no arch specified
-//			platform = launcherArgs.getProperty(key);
-//			// platform + arch
-//			if (archKey != null) {
-//				platformArchKey = key + "." + archKey; //$NON-NLS-1$
-//				platformAndArch = launcherArgs.getProperty(platformArchKey);
-//			}
-//		}
-//		if (defaults != null) {
-//			if (platform != null)
-//				args = platformAndArch != null ? defaults + " " + platform + " " + platformAndArch : defaults + " " + platform; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-//			else
-//				args = defaults;
-//		} else {
-//			if (platform != null)
-//				args = platformAndArch != null ? platform + " " + platformAndArch : platform; //$NON-NLS-1$
-//			else
-//				args = platformAndArch != null ? platformAndArch : ""; //$NON-NLS-1$
-//		}
-//		return normalize(args);
-//	}
-//
-//	public String getLicenseText() {
-//		return licenseText;
-//	}
-//
-//	public String getLicenseURL() {
-//		return licenseURL;
-//	}
+
+	/**
+	 * Returns the VM arguments for a specific platform.
+	 * If the empty string is used for the OS, this returns
+	 * the default VM arguments
+	 */
+	public String getVMArguments(String os) {
+		return getVMArguments(os, null);
+	}
+
+	/**
+	 * Returns the VM arguments for a specific platform and architecture
+	 * combination. If the empty string is used for the architecture, this
+	 * returns the default arguments for the platform.  If the empty string is
+	 * used for the OS, this returns the default VM arguments.
+	 */
+	public String getVMArguments(String os, String arch) {
+		os = os == null ? "" : os; //$NON-NLS-1$
+		String key = null;
+		if (os.equals(OS_WIN32)) {
+			key = VM_ARGS_WIN;
+		} else if (os.equals(OS_LINUX)) {
+			key = VM_ARGS_LINUX;
+		} else if (os.equals(OS_MACOSX)) {
+			key = VM_ARGS_MAC;
+		} else if (os.equals(OS_SOLARIS)) {
+			key = VM_ARGS_SOLARIS;
+		}
+
+		arch = arch == null ? "" : arch; //$NON-NLS-1$
+		String archKey = null;
+		if (arch.equals(ARCH_X86)) {
+			archKey = EL_ARCH_X86;
+		} else if (arch.equals(ARCH_X86_64)) {
+			archKey = EL_ARCH_X86_64;
+		} else if (arch.equals(ARCH_PPC)) {
+			archKey = EL_ARCH_PPC;
+		} else if (arch.equals(ARCH_IA_64)) {
+			archKey = EL_ARCH_IA_64;
+		} else if (arch.equals(ARCH_IA_64_32)) {
+			archKey = EL_ARCH_IA_64_32;
+		} else if (arch.equals(ARCH_PA_RISC)) {
+			archKey = EL_ARCH_PA_RISC;
+		} else if (arch.equals(ARCH_SPARC)) {
+			archKey = EL_ARCH_SPARC;
+		}
+
+		String platformArchKey = null;
+		String defaults = launcherArgs.getProperty(VM_ARGS);
+		// architecture arguments independent of platform should be part
+		// of the defaults.
+		if (archKey != null) {
+			String archOnAllPlatforms = launcherArgs.getProperty(VM_ARGS + "." + archKey); //$NON-NLS-1$
+			if (archOnAllPlatforms != null && archOnAllPlatforms.length() > 0) {
+				defaults = defaults + " " + archOnAllPlatforms; //$NON-NLS-1$
+			}
+		}
+		String platform = null, platformAndArch = null, args = null;
+		if (key != null) {
+			// a platform with no arch specified
+			platform = launcherArgs.getProperty(key);
+			// platform + arch
+			if (archKey != null) {
+				platformArchKey = key + "." + archKey; //$NON-NLS-1$
+				platformAndArch = launcherArgs.getProperty(platformArchKey);
+			}
+		}
+		if (defaults != null) {
+			if (platform != null)
+				args = platformAndArch != null ? defaults + " " + platform + " " + platformAndArch : defaults + " " + platform; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			else
+				args = defaults;
+		} else {
+			if (platform != null)
+				args = platformAndArch != null ? platform + " " + platformAndArch : platform; //$NON-NLS-1$
+			else
+				args = platformAndArch != null ? platformAndArch : ""; //$NON-NLS-1$
+		}
+		return normalize(args);
+	}
+
+	/**
+	 * Returns the program arguments for a specific platform.
+	 * If the empty string is used for the OS, this returns
+	 * the default program arguments
+	 */
+	public String getProgramArguments(String os) {
+		return getProgramArguments(os, null);
+	}
+
+	/**
+	 * Returns the program arguments for a specific platform.
+	 * If the empty string is used for the OS, this returns
+	 * the default program arguments
+	 */
+	public String getProgramArguments(String os, String arch) {
+		os = os == null ? "" : os; //$NON-NLS-1$
+		String key = null;
+		if (os.equals(OS_WIN32)) {
+			key = PROGRAM_ARGS_WIN;
+		} else if (os.equals(OS_LINUX)) {
+			key = PROGRAM_ARGS_LINUX;
+		} else if (os.equals(OS_MACOSX)) {
+			key = PROGRAM_ARGS_MAC;
+		} else if (os.equals(OS_SOLARIS)) {
+			key = PROGRAM_ARGS_SOLARIS;
+		}
+
+		arch = arch == null ? "" : arch; //$NON-NLS-1$
+		String archKey = null;
+		if (arch.equals(ARCH_X86)) {
+			archKey = EL_ARCH_X86;
+		} else if (arch.equals(ARCH_X86_64)) {
+			archKey = EL_ARCH_X86_64;
+		} else if (arch.equals(ARCH_PPC)) {
+			archKey = EL_ARCH_PPC;
+		} else if (arch.equals(ARCH_IA_64)) {
+			archKey = EL_ARCH_IA_64;
+		} else if (arch.equals(ARCH_IA_64_32)) {
+			archKey = EL_ARCH_IA_64_32;
+		} else if (arch.equals(ARCH_PA_RISC)) {
+			archKey = EL_ARCH_PA_RISC;
+		} else if (arch.equals(ARCH_SPARC)) {
+			archKey = EL_ARCH_SPARC;
+		}
+
+		String platformArchKey = null;
+		String defaults = launcherArgs.getProperty(PROGRAM_ARGS);
+		// architecture arguments independent of platform should be part
+		// of the defaults.
+		if (archKey != null) {
+			String archOnAllPlatforms = launcherArgs.getProperty(PROGRAM_ARGS + "." + archKey); //$NON-NLS-1$
+			if (archOnAllPlatforms != null && archOnAllPlatforms.length() > 0) {
+				defaults = defaults + " " + archOnAllPlatforms; //$NON-NLS-1$
+			}
+		}
+		String platform = null, platformAndArch = null, args = null;
+		if (key != null) {
+			// a platform with no arch specified
+			platform = launcherArgs.getProperty(key);
+			// platform + arch
+			if (archKey != null) {
+				platformArchKey = key + "." + archKey; //$NON-NLS-1$
+				platformAndArch = launcherArgs.getProperty(platformArchKey);
+			}
+		}
+		if (defaults != null) {
+			if (platform != null)
+				args = platformAndArch != null ? defaults + " " + platform + " " + platformAndArch : defaults + " " + platform; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			else
+				args = defaults;
+		} else {
+			if (platform != null)
+				args = platformAndArch != null ? platform + " " + platformAndArch : platform; //$NON-NLS-1$
+			else
+				args = platformAndArch != null ? platformAndArch : ""; //$NON-NLS-1$
+		}
+		return normalize(args);
+	}
+
+	public String getLicenseText() {
+		return licenseText;
+	}
+
+	public String getLicenseURL() {
+		return licenseURL;
+	}
 //
 //	public List<IRepositoryReference> getRepositoryEntries() {
 //		return repositories;
 //	}
-//
-//	@Override
-//	public void startElement(String uri, String localName, String qName, Attributes attributes) {
-//		switch (state) {
+
+	@Override
+	public void startElement(String uri, String localName, String qName, Attributes attributes) {
+		switch (state) {
 //			case STATE_START :
 //				if (EL_PRODUCT.equals(localName)) {
 //					processProduct(attributes);
 //					state = STATE_PRODUCT;
 //				}
 //				break;
-//			case STATE_ABOUT :
-//				processAboutInfo(attributes);
-//				break;
-//			case STATE_PRODUCT :
-//				if (EL_CONFIG_INI.equals(localName)) {
-//					processConfigIni(attributes);
-//					state = STATE_CONFIG_INI;
-//				} else if (EL_LAUNCHER.equals(localName)) {
-//					processLauncher(attributes);
-//					state = STATE_LAUNCHER;
-//				} else if (EL_PLUGINS.equals(localName)) {
-//					state = STATE_PLUGINS;
-//				} else if (EL_FEATURES.equals(localName)) {
-//					state = STATE_FEATURES;
-//				} else if (EL_LAUNCHER_ARGS.equals(localName)) {
-//					state = STATE_LAUNCHER_ARGS;
-//				} else if (EL_SPLASH.equals(localName)) {
-//					splashLocation = attributes.getValue(ATTRIBUTE_LOCATION);
-//				} else if (EL_CONFIGURATIONS.equals(localName)) {
-//					state = STATE_CONFIGURATIONS;
-//				} else if (EL_LICENSE.equals(localName)) {
-//					state = STATE_LICENSE;
-//				} else if (EL_REPOSITORIES.equals(localName)) {
-//					state = STATE_REPOSITORIES;
-//				} else if (EL_ABOUTINFO.equals(localName)) {
-//					state = STATE_ABOUT;
-//				}
-//				break;
-//
-//			case STATE_CONFIG_INI :
-//				processConfigIniPlatform(localName, true);
-//				break;
-//
-//			case STATE_LAUNCHER :
-//				if (OS_SOLARIS.equals(localName)) {
-//					processSolaris(attributes);
-//				} else if ("win".equals(localName)) { //$NON-NLS-1$
-//					processWin(attributes);
-//				} else if (OS_LINUX.equals(localName)) {
-//					processLinux(attributes);
-//				} else if (OS_MACOSX.equals(localName)) {
-//					processMac(attributes);
-//				}
-//				if ("ico".equals(localName)) { //$NON-NLS-1$
-//					processIco(attributes);
-//				} else if ("bmp".equals(localName)) { //$NON-NLS-1$
-//					processBmp(attributes);
-//				}
-//				break;
-//
-//			case STATE_LAUNCHER_ARGS :
-//				if (PROGRAM_ARGS.equals(localName)) {
-//					state = STATE_PROGRAM_ARGS;
-//				} else if (PROGRAM_ARGS_LINUX.equals(localName)) {
-//					state = STATE_PROGRAM_ARGS_LINUX;
-//				} else if (PROGRAM_ARGS_MAC.equals(localName)) {
-//					state = STATE_PROGRAM_ARGS_MAC;
-//				} else if (PROGRAM_ARGS_SOLARIS.equals(localName)) {
-//					state = STATE_PROGRAM_ARGS_SOLARIS;
-//				} else if (PROGRAM_ARGS_WIN.equals(localName)) {
-//					state = STATE_PROGRAM_ARGS_WIN;
-//				} else if (VM_ARGS.equals(localName)) {
-//					state = STATE_VM_ARGS;
-//				} else if (VM_ARGS_LINUX.equals(localName)) {
-//					state = STATE_VM_ARGS_LINUX;
-//				} else if (VM_ARGS_MAC.equals(localName)) {
-//					state = STATE_VM_ARGS_MAC;
-//				} else if (VM_ARGS_SOLARIS.equals(localName)) {
-//					state = STATE_VM_ARGS_SOLARIS;
-//				} else if (VM_ARGS_WIN.equals(localName)) {
-//					state = STATE_VM_ARGS_WIN;
-//				}
-//				break;
-//
-//			// For all argument states.  Set a platform key prefix representing 
-//			// the outer state (platform) of the launcher arguments and then 
-//			// set the state of the inner state (architecture).
-//			case STATE_PROGRAM_ARGS :
-//				platformKeyPrefix = PROGRAM_ARGS;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_PROGRAM_ARGS_LINUX :
-//				platformKeyPrefix = PROGRAM_ARGS_LINUX;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_PROGRAM_ARGS_MAC :
-//				platformKeyPrefix = PROGRAM_ARGS_MAC;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_PROGRAM_ARGS_SOLARIS :
-//				platformKeyPrefix = PROGRAM_ARGS_SOLARIS;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_PROGRAM_ARGS_WIN :
-//				platformKeyPrefix = PROGRAM_ARGS_WIN;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_VM_ARGS :
-//				platformKeyPrefix = VM_ARGS;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_VM_ARGS_LINUX :
-//				platformKeyPrefix = VM_ARGS_LINUX;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_VM_ARGS_MAC :
-//				platformKeyPrefix = VM_ARGS_MAC;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_VM_ARGS_SOLARIS :
-//				platformKeyPrefix = VM_ARGS_SOLARIS;
-//				setArchState(localName);
-//				break;
-//
-//			case STATE_VM_ARGS_WIN :
-//				platformKeyPrefix = VM_ARGS_WIN;
-//				setArchState(localName);
-//				break;
-//
+			case STATE_ABOUT :
+				processAboutInfo(attributes);
+				break;
+			case STATE_PRODUCT :
+				if (EL_CONFIG_INI.equals(localName)) {
+					processConfigIni(attributes);
+					state = STATE_CONFIG_INI;
+				} else if (EL_LAUNCHER.equals(localName)) {
+					processLauncher(attributes);
+					state = STATE_LAUNCHER;
+				} else if (EL_PLUGINS.equals(localName)) {
+					state = STATE_PLUGINS;
+				} else if (EL_FEATURES.equals(localName)) {
+					state = STATE_FEATURES;
+				} else if (EL_LAUNCHER_ARGS.equals(localName)) {
+					state = STATE_LAUNCHER_ARGS;
+				} else if (EL_SPLASH.equals(localName)) {
+					splashLocation = attributes.getValue(ATTRIBUTE_LOCATION);
+				} else if (EL_CONFIGURATIONS.equals(localName)) {
+					state = STATE_CONFIGURATIONS;
+				} else if (EL_LICENSE.equals(localName)) {
+					state = STATE_LICENSE;
+				} else if (EL_REPOSITORIES.equals(localName)) {
+					state = STATE_REPOSITORIES;
+				} else if (EL_ABOUTINFO.equals(localName)) {
+					state = STATE_ABOUT;
+				}
+				break;
+
+			case STATE_CONFIG_INI :
+				processConfigIniPlatform(localName, true);
+				break;
+
+			case STATE_LAUNCHER :
+				if (OS_SOLARIS.equals(localName)) {
+					processSolaris(attributes);
+				} else if ("win".equals(localName)) { //$NON-NLS-1$
+					processWin(attributes);
+				} else if (OS_LINUX.equals(localName)) {
+					processLinux(attributes);
+				} else if (OS_MACOSX.equals(localName)) {
+					processMac(attributes);
+				}
+				if ("ico".equals(localName)) { //$NON-NLS-1$
+					processIco(attributes);
+				} else if ("bmp".equals(localName)) { //$NON-NLS-1$
+					processBmp(attributes);
+				}
+				break;
+
+			case STATE_LAUNCHER_ARGS :
+				if (PROGRAM_ARGS.equals(localName)) {
+					state = STATE_PROGRAM_ARGS;
+				} else if (PROGRAM_ARGS_LINUX.equals(localName)) {
+					state = STATE_PROGRAM_ARGS_LINUX;
+				} else if (PROGRAM_ARGS_MAC.equals(localName)) {
+					state = STATE_PROGRAM_ARGS_MAC;
+				} else if (PROGRAM_ARGS_SOLARIS.equals(localName)) {
+					state = STATE_PROGRAM_ARGS_SOLARIS;
+				} else if (PROGRAM_ARGS_WIN.equals(localName)) {
+					state = STATE_PROGRAM_ARGS_WIN;
+				} else if (VM_ARGS.equals(localName)) {
+					state = STATE_VM_ARGS;
+				} else if (VM_ARGS_LINUX.equals(localName)) {
+					state = STATE_VM_ARGS_LINUX;
+				} else if (VM_ARGS_MAC.equals(localName)) {
+					state = STATE_VM_ARGS_MAC;
+				} else if (VM_ARGS_SOLARIS.equals(localName)) {
+					state = STATE_VM_ARGS_SOLARIS;
+				} else if (VM_ARGS_WIN.equals(localName)) {
+					state = STATE_VM_ARGS_WIN;
+				}
+				break;
+
+			// For all argument states.  Set a platform key prefix representing 
+			// the outer state (platform) of the launcher arguments and then 
+			// set the state of the inner state (architecture).
+			case STATE_PROGRAM_ARGS :
+				platformKeyPrefix = PROGRAM_ARGS;
+				setArchState(localName);
+				break;
+
+			case STATE_PROGRAM_ARGS_LINUX :
+				platformKeyPrefix = PROGRAM_ARGS_LINUX;
+				setArchState(localName);
+				break;
+
+			case STATE_PROGRAM_ARGS_MAC :
+				platformKeyPrefix = PROGRAM_ARGS_MAC;
+				setArchState(localName);
+				break;
+
+			case STATE_PROGRAM_ARGS_SOLARIS :
+				platformKeyPrefix = PROGRAM_ARGS_SOLARIS;
+				setArchState(localName);
+				break;
+
+			case STATE_PROGRAM_ARGS_WIN :
+				platformKeyPrefix = PROGRAM_ARGS_WIN;
+				setArchState(localName);
+				break;
+
+			case STATE_VM_ARGS :
+				platformKeyPrefix = VM_ARGS;
+				setArchState(localName);
+				break;
+
+			case STATE_VM_ARGS_LINUX :
+				platformKeyPrefix = VM_ARGS_LINUX;
+				setArchState(localName);
+				break;
+
+			case STATE_VM_ARGS_MAC :
+				platformKeyPrefix = VM_ARGS_MAC;
+				setArchState(localName);
+				break;
+
+			case STATE_VM_ARGS_SOLARIS :
+				platformKeyPrefix = VM_ARGS_SOLARIS;
+				setArchState(localName);
+				break;
+
+			case STATE_VM_ARGS_WIN :
+				platformKeyPrefix = VM_ARGS_WIN;
+				setArchState(localName);
+				break;
+
 //			case STATE_PLUGINS :
 //				if (EL_PLUGIN.equals(localName)) {
 //					processPlugin(attributes);
@@ -823,21 +848,21 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //					processRepositoryInformation(attributes);
 //				}
 //				break;
-//
-//			case STATE_LICENSE :
-//				if (EL_URL.equals(localName)) {
-//					state = STATE_LICENSE_URL;
-//				} else if (EL_TEXT.equals(localName)) {
-//					licenseText = ""; //$NON-NLS-1$
-//					state = STATE_LICENSE_TEXT;
-//				}
-//				break;
-//
-//			case STATE_FEATURES :
-//				if (EL_FEATURE.equals(localName)) {
-//					processFeature(attributes);
-//				}
-//				break;
+
+			case STATE_LICENSE :
+				if (EL_URL.equals(localName)) {
+					state = STATE_LICENSE_URL;
+				} else if (EL_TEXT.equals(localName)) {
+					licenseText = ""; //$NON-NLS-1$
+					state = STATE_LICENSE_TEXT;
+				}
+				break;
+
+			case STATE_FEATURES :
+				if (EL_FEATURE.equals(localName)) {
+					processFeature(attributes);
+				}
+				break;
 //			case STATE_CONFIGURATIONS :
 //				if (EL_PLUGIN.equals(localName)) {
 //					processPluginConfiguration(attributes);
@@ -845,69 +870,69 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //					processPropertyConfiguration(attributes);
 //				}
 //				break;
-//		}
-//	}
-//
-//	private void processAboutInfo(Attributes attributes) {
-//		aboutData = new E4AboutEntry("provName", productName, version, id);
-//		attributes.getValue("path");
-//	}
-//
-//	private void setArchState(String archName) {
-//		outerState = state;
-//		if (EL_ARCH_X86.equals(archName)) {
-//			state = STATE_ARCH_X86;
-//		} else if (EL_ARCH_X86_64.equals(archName)) {
-//			state = STATE_ARCH_X86_64;
-//		} else if (EL_ARCH_PPC.equals(archName)) {
-//			state = STATE_ARCH_PPC;
-//		} else if (EL_ARCH_IA_64.equals(archName)) {
-//			state = STATE_ARCH_IA_64;
-//		} else if (EL_ARCH_IA_64_32.equals(archName)) {
-//			state = STATE_ARCH_IA_64_32;
-//		} else if (EL_ARCH_PA_RISC.equals(archName)) {
-//			state = STATE_ARCH_PA_RISC;
-//		} else if (EL_ARCH_SPARC.equals(archName)) {
-//			state = STATE_ARCH_SPARC;
-//		}
-//	}
-//
-//	/**
-//	 * Processes the property tag in the .product file.  These tags contain
-//	 * a Name and Value pair.  For each tag (with a non-null name), a property 
-//	 * is created.
-//	 */
-//	private void processPropertyConfiguration(Attributes attributes) {
-//		String name = attributes.getValue(ATTRIBUTE_NAME);
-//		String value = attributes.getValue(ATTRIBUTE_VALUE);
-//		String os = attributes.getValue(ATTRIBUTE_OS);
-//		if (os == null)
-//			os = ""; //$NON-NLS-1$
-//		String arch = attributes.getValue(ATTRIBUTE_ARCH);
-//		if (arch == null)
-//			arch = ""; //$NON-NLS-1$
-//		String propOSArchKey = os + "." + arch; //$NON-NLS-1$
-//		if (name == null)
-//			return;
-//		if (value == null)
-//			value = ""; //$NON-NLS-1$
-//		if (propOSArchKey.length() <= 1) {
-//			// this is a generic property for all platforms and arch
-//			if (properties == null)
-//				properties = new HashMap<String, String>();
-//			properties.put(name, value);
-//		} else {
-//			// store the property in the filtered map, keyed by "os.arch"
-//			if (filteredProperties == null)
-//				filteredProperties = new HashMap<String, HashMap<String, String>>();
-//			HashMap<String, String> filteredMap = filteredProperties.get(propOSArchKey);
-//			if (filteredMap == null) {
-//				filteredMap = new HashMap<String, String>();
-//				filteredProperties.put(propOSArchKey, filteredMap);
-//			}
-//			filteredMap.put(name, value);
-//		}
-//	}
+		}
+	}
+
+	private void processAboutInfo(Attributes attributes) {
+		aboutData = new E4AboutEntry("provName", productName, version, id);
+		attributes.getValue("path");
+	}
+
+	private void setArchState(String archName) {
+		outerState = state;
+		if (EL_ARCH_X86.equals(archName)) {
+			state = STATE_ARCH_X86;
+		} else if (EL_ARCH_X86_64.equals(archName)) {
+			state = STATE_ARCH_X86_64;
+		} else if (EL_ARCH_PPC.equals(archName)) {
+			state = STATE_ARCH_PPC;
+		} else if (EL_ARCH_IA_64.equals(archName)) {
+			state = STATE_ARCH_IA_64;
+		} else if (EL_ARCH_IA_64_32.equals(archName)) {
+			state = STATE_ARCH_IA_64_32;
+		} else if (EL_ARCH_PA_RISC.equals(archName)) {
+			state = STATE_ARCH_PA_RISC;
+		} else if (EL_ARCH_SPARC.equals(archName)) {
+			state = STATE_ARCH_SPARC;
+		}
+	}
+
+	/**
+	 * Processes the property tag in the .product file.  These tags contain
+	 * a Name and Value pair.  For each tag (with a non-null name), a property 
+	 * is created.
+	 */
+	private void processPropertyConfiguration(Attributes attributes) {
+		String name = attributes.getValue(ATTRIBUTE_NAME);
+		String value = attributes.getValue(ATTRIBUTE_VALUE);
+		String os = attributes.getValue(ATTRIBUTE_OS);
+		if (os == null)
+			os = ""; //$NON-NLS-1$
+		String arch = attributes.getValue(ATTRIBUTE_ARCH);
+		if (arch == null)
+			arch = ""; //$NON-NLS-1$
+		String propOSArchKey = os + "." + arch; //$NON-NLS-1$
+		if (name == null)
+			return;
+		if (value == null)
+			value = ""; //$NON-NLS-1$
+		if (propOSArchKey.length() <= 1) {
+			// this is a generic property for all platforms and arch
+			if (properties == null)
+				properties = new HashMap<String, String>();
+			properties.put(name, value);
+		} else {
+			// store the property in the filtered map, keyed by "os.arch"
+			if (filteredProperties == null)
+				filteredProperties = new HashMap<String, HashMap<String, String>>();
+			HashMap<String, String> filteredMap = filteredProperties.get(propOSArchKey);
+			if (filteredMap == null) {
+				filteredMap = new HashMap<String, String>();
+				filteredProperties.put(propOSArchKey, filteredMap);
+			}
+			filteredMap.put(name, value);
+		}
+	}
 //
 //	private void processPluginConfiguration(Attributes attributes) {
 //		BundleInfo info = new BundleInfo();
@@ -939,156 +964,156 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //			// ignore malformed URI's. These should have already been caught by the UI
 //		}
 //	}
-//
-//	@Override
-//	public void endElement(String uri, String localName, String qName) {
-//		switch (state) {
-//			case STATE_PLUGINS :
-//				if (EL_PLUGINS.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//			case STATE_FEATURES :
-//				if (EL_FEATURES.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//			case STATE_LAUNCHER_ARGS :
-//				if (EL_LAUNCHER_ARGS.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//			case STATE_LAUNCHER :
-//				if (EL_LAUNCHER.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//			case STATE_CONFIGURATIONS :
-//				if (EL_CONFIGURATIONS.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//			case STATE_LICENSE :
-//				if (EL_LICENSE.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//
-//			case STATE_PROGRAM_ARGS :
-//			case STATE_PROGRAM_ARGS_LINUX :
-//			case STATE_PROGRAM_ARGS_MAC :
-//			case STATE_PROGRAM_ARGS_SOLARIS :
-//			case STATE_PROGRAM_ARGS_WIN :
-//			case STATE_VM_ARGS :
-//			case STATE_VM_ARGS_LINUX :
-//			case STATE_VM_ARGS_MAC :
-//			case STATE_VM_ARGS_SOLARIS :
-//			case STATE_VM_ARGS_WIN :
-//				state = STATE_LAUNCHER_ARGS;
-//				break;
-//			case STATE_LICENSE_URL :
-//			case STATE_LICENSE_TEXT :
-//				state = STATE_LICENSE;
-//				break;
-//
-//			case STATE_ARCH_X86 :
-//			case STATE_ARCH_X86_64 :
-//			case STATE_ARCH_PPC :
-//			case STATE_ARCH_IA_64 :
-//			case STATE_ARCH_IA_64_32 :
-//			case STATE_ARCH_PA_RISC :
-//			case STATE_ARCH_SPARC :
-//				state = outerState;
-//				break;
-//
-//			case STATE_CONFIG_INI :
-//				if (EL_CONFIG_INI.equals(localName))
-//					state = STATE_PRODUCT;
-//				else
-//					processConfigIniPlatform(localName, false);
-//				break;
-//
-//			case STATE_REPOSITORIES :
-//				if (EL_REPOSITORIES.equals(localName))
-//					state = STATE_PRODUCT;
-//				break;
-//
-//		}
-//	}
-//
-//	@Override
-//	public void characters(char[] ch, int start, int length) {
-//		switch (state) {
-//			case STATE_PROGRAM_ARGS :
-//				addLaunchArgumentToMap(PROGRAM_ARGS, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_PROGRAM_ARGS_LINUX :
-//				addLaunchArgumentToMap(PROGRAM_ARGS_LINUX, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_PROGRAM_ARGS_MAC :
-//				addLaunchArgumentToMap(PROGRAM_ARGS_MAC, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_PROGRAM_ARGS_SOLARIS :
-//				addLaunchArgumentToMap(PROGRAM_ARGS_SOLARIS, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_PROGRAM_ARGS_WIN :
-//				addLaunchArgumentToMap(PROGRAM_ARGS_WIN, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_VM_ARGS :
-//				addLaunchArgumentToMap(VM_ARGS, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_VM_ARGS_LINUX :
-//				addLaunchArgumentToMap(VM_ARGS_LINUX, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_VM_ARGS_MAC :
-//				addLaunchArgumentToMap(VM_ARGS_MAC, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_VM_ARGS_SOLARIS :
-//				addLaunchArgumentToMap(VM_ARGS_SOLARIS, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_VM_ARGS_WIN :
-//				addLaunchArgumentToMap(VM_ARGS_WIN, String.valueOf(ch, start, length));
-//				break;
-//			case STATE_ARCH_X86 :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_X86, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_X86_64 :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_X86_64, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_PPC :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_PPC, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_IA_64 :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_IA_64, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_IA_64_32 :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_IA_64_32, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_PA_RISC :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_PA_RISC, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_ARCH_SPARC :
-//				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_SPARC, String.valueOf(ch, start, length)); //$NON-NLS-1$
-//				break;
-//			case STATE_CONFIG_INI :
-//				if (platformConfigPath != null)
-//					platformConfigPath += String.valueOf(ch, start, length);
-//				break;
-//			case STATE_LICENSE_URL :
-//				licenseURL = String.valueOf(ch, start, length);
-//				break;
-//			case STATE_LICENSE_TEXT :
-//				if (licenseText != null)
-//					licenseText += String.valueOf(ch, start, length);
-//				break;
-//		}
-//	}
-//
-//	private void addLaunchArgumentToMap(String key, String value) {
-//		if (launcherArgs == null)
-//			launcherArgs = new Properties();
-//
-//		String oldValue = launcherArgs.getProperty(key);
-//		if (oldValue != null)
-//			launcherArgs.setProperty(key, oldValue + value);
-//		else
-//			launcherArgs.setProperty(key, value);
-//	}
-//
+
+	@Override
+	public void endElement(String uri, String localName, String qName) {
+		switch (state) {
+			case STATE_PLUGINS :
+				if (EL_PLUGINS.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+			case STATE_FEATURES :
+				if (EL_FEATURES.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+			case STATE_LAUNCHER_ARGS :
+				if (EL_LAUNCHER_ARGS.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+			case STATE_LAUNCHER :
+				if (EL_LAUNCHER.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+			case STATE_CONFIGURATIONS :
+				if (EL_CONFIGURATIONS.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+			case STATE_LICENSE :
+				if (EL_LICENSE.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+
+			case STATE_PROGRAM_ARGS :
+			case STATE_PROGRAM_ARGS_LINUX :
+			case STATE_PROGRAM_ARGS_MAC :
+			case STATE_PROGRAM_ARGS_SOLARIS :
+			case STATE_PROGRAM_ARGS_WIN :
+			case STATE_VM_ARGS :
+			case STATE_VM_ARGS_LINUX :
+			case STATE_VM_ARGS_MAC :
+			case STATE_VM_ARGS_SOLARIS :
+			case STATE_VM_ARGS_WIN :
+				state = STATE_LAUNCHER_ARGS;
+				break;
+			case STATE_LICENSE_URL :
+			case STATE_LICENSE_TEXT :
+				state = STATE_LICENSE;
+				break;
+
+			case STATE_ARCH_X86 :
+			case STATE_ARCH_X86_64 :
+			case STATE_ARCH_PPC :
+			case STATE_ARCH_IA_64 :
+			case STATE_ARCH_IA_64_32 :
+			case STATE_ARCH_PA_RISC :
+			case STATE_ARCH_SPARC :
+				state = outerState;
+				break;
+
+			case STATE_CONFIG_INI :
+				if (EL_CONFIG_INI.equals(localName))
+					state = STATE_PRODUCT;
+				else
+					processConfigIniPlatform(localName, false);
+				break;
+
+			case STATE_REPOSITORIES :
+				if (EL_REPOSITORIES.equals(localName))
+					state = STATE_PRODUCT;
+				break;
+
+		}
+	}
+
+	@Override
+	public void characters(char[] ch, int start, int length) {
+		switch (state) {
+			case STATE_PROGRAM_ARGS :
+				addLaunchArgumentToMap(PROGRAM_ARGS, String.valueOf(ch, start, length));
+				break;
+			case STATE_PROGRAM_ARGS_LINUX :
+				addLaunchArgumentToMap(PROGRAM_ARGS_LINUX, String.valueOf(ch, start, length));
+				break;
+			case STATE_PROGRAM_ARGS_MAC :
+				addLaunchArgumentToMap(PROGRAM_ARGS_MAC, String.valueOf(ch, start, length));
+				break;
+			case STATE_PROGRAM_ARGS_SOLARIS :
+				addLaunchArgumentToMap(PROGRAM_ARGS_SOLARIS, String.valueOf(ch, start, length));
+				break;
+			case STATE_PROGRAM_ARGS_WIN :
+				addLaunchArgumentToMap(PROGRAM_ARGS_WIN, String.valueOf(ch, start, length));
+				break;
+			case STATE_VM_ARGS :
+				addLaunchArgumentToMap(VM_ARGS, String.valueOf(ch, start, length));
+				break;
+			case STATE_VM_ARGS_LINUX :
+				addLaunchArgumentToMap(VM_ARGS_LINUX, String.valueOf(ch, start, length));
+				break;
+			case STATE_VM_ARGS_MAC :
+				addLaunchArgumentToMap(VM_ARGS_MAC, String.valueOf(ch, start, length));
+				break;
+			case STATE_VM_ARGS_SOLARIS :
+				addLaunchArgumentToMap(VM_ARGS_SOLARIS, String.valueOf(ch, start, length));
+				break;
+			case STATE_VM_ARGS_WIN :
+				addLaunchArgumentToMap(VM_ARGS_WIN, String.valueOf(ch, start, length));
+				break;
+			case STATE_ARCH_X86 :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_X86, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_X86_64 :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_X86_64, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_PPC :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_PPC, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_IA_64 :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_IA_64, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_IA_64_32 :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_IA_64_32, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_PA_RISC :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_PA_RISC, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_ARCH_SPARC :
+				addLaunchArgumentToMap(platformKeyPrefix + "." + EL_ARCH_SPARC, String.valueOf(ch, start, length)); //$NON-NLS-1$
+				break;
+			case STATE_CONFIG_INI :
+				if (platformConfigPath != null)
+					platformConfigPath += String.valueOf(ch, start, length);
+				break;
+			case STATE_LICENSE_URL :
+				licenseURL = String.valueOf(ch, start, length);
+				break;
+			case STATE_LICENSE_TEXT :
+				if (licenseText != null)
+					licenseText += String.valueOf(ch, start, length);
+				break;
+		}
+	}
+
+	private void addLaunchArgumentToMap(String key, String value) {
+		if (launcherArgs == null)
+			launcherArgs = new Properties();
+
+		String oldValue = launcherArgs.getProperty(key);
+		if (oldValue != null)
+			launcherArgs.setProperty(key, oldValue + value);
+		else
+			launcherArgs.setProperty(key, value);
+	}
+
 //	protected void processPlugin(Attributes attributes) {
 //		String fragment = attributes.getValue(ATTRIBUTE_FRAGMENT);
 //		String pluginId = attributes.getValue(ATTRIBUTE_ID);
@@ -1104,20 +1129,20 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //		}
 //	}
 //
-//	private void processFeature(Attributes attributes) {
-//		String featureId = attributes.getValue(ATTRIBUTE_ID);
-//		String featureVersion = attributes.getValue(ATTRIBUTE_VERSION);
-////		FeatureInstallMode installMode = FeatureInstallMode.parse(attributes.getValue(ATTRIBUTE_FEATURE_INSTALL_MODE));
-////		FeatureEntry featureEntry = new FeatureEntry(featureId, featureVersion != null ? featureVersion : GENERIC_VERSION_NUMBER, false);
-////
-////		switch (installMode) {
-////			case ROOT :
-////				rootFeatures.add(featureEntry);
-////				break;
-////			default :
-////				features.add(featureEntry);
-////		}
-//	}
+	private void processFeature(Attributes attributes) {
+		String featureId = attributes.getValue(ATTRIBUTE_ID);
+		String featureVersion = attributes.getValue(ATTRIBUTE_VERSION);
+//		FeatureInstallMode installMode = FeatureInstallMode.parse(attributes.getValue(ATTRIBUTE_FEATURE_INSTALL_MODE));
+//		FeatureEntry featureEntry = new FeatureEntry(featureId, featureVersion != null ? featureVersion : GENERIC_VERSION_NUMBER, false);
+//
+//		switch (installMode) {
+//			case ROOT :
+//				rootFeatures.add(featureEntry);
+//				break;
+//			default :
+//				features.add(featureEntry);
+//		}
+	}
 //
 //	private void processProduct(Attributes attributes) {
 //		id = attributes.getValue(ATTRIBUTE_ID);
@@ -1140,95 +1165,95 @@ public class E4ProductFile /*extends DefaultHandler implements IProductDescripto
 //
 //		version = attributes.getValue(ATTRIBUTE_VERSION);
 //	}
-//
-//	private void processConfigIni(Attributes attributes) {
-//		String path = null;
-//		if ("custom".equals(attributes.getValue("use"))) { //$NON-NLS-1$//$NON-NLS-2$
-//			path = attributes.getValue(ATTRIBUTE_PATH);
-//		}
-//		String os = attributes.getValue("os"); //$NON-NLS-1$
-//		if (os != null && os.length() > 0) {
-//			// TODO should we allow a platform-specific default to over-ride a custom generic path?
-//			if (path != null)
-//				platformSpecificConfigPaths.put(os, path);
-//		} else if (path != null) {
-//			configPath = path;
-//		}
-//	}
-//
-//	private void processConfigIniPlatform(String key, boolean begin) {
-//		if (begin) {
-//			configPlatform = key;
-//			platformConfigPath = ""; //$NON-NLS-1$
-//		} else if (configPlatform.equals(key) && platformConfigPath.length() > 0) {
-//			platformSpecificConfigPaths.put(key, platformConfigPath);
-//			platformConfigPath = null;
-//		}
-//	}
-//
-//	private void processLauncher(Attributes attributes) {
-//		launcherName = attributes.getValue(ATTRIBUTE_NAME);
-//	}
-//
-//	private void addIcon(String os, String value) {
-//		if (value == null)
-//			return;
-//
-//		File iconFile = new File(value);
-//		if (!iconFile.isFile()) {
-//			//workspace
+
+	private void processConfigIni(Attributes attributes) {
+		String path = null;
+		if ("custom".equals(attributes.getValue("use"))) { //$NON-NLS-1$//$NON-NLS-2$
+			path = attributes.getValue(ATTRIBUTE_PATH);
+		}
+		String os = attributes.getValue("os"); //$NON-NLS-1$
+		if (os != null && os.length() > 0) {
+			// TODO should we allow a platform-specific default to over-ride a custom generic path?
+			if (path != null)
+				platformSpecificConfigPaths.put(os, path);
+		} else if (path != null) {
+			configPath = path;
+		}
+	}
+
+	private void processConfigIniPlatform(String key, boolean begin) {
+		if (begin) {
+			configPlatform = key;
+			platformConfigPath = ""; //$NON-NLS-1$
+		} else if (configPlatform.equals(key) && platformConfigPath.length() > 0) {
+			platformSpecificConfigPaths.put(key, platformConfigPath);
+			platformConfigPath = null;
+		}
+	}
+
+	private void processLauncher(Attributes attributes) {
+		launcherName = attributes.getValue(ATTRIBUTE_NAME);
+	}
+
+	private void addIcon(String os, String value) {
+		if (value == null)
+			return;
+
+		File iconFile = new File(value);
+		if (!iconFile.isFile()) {
+			//workspace
 //			Location instanceLocation = ServiceHelper.getService(Activator.getContext(), Location.class, Location.INSTANCE_FILTER);
 //			if (instanceLocation != null && instanceLocation.getURL() != null) {
 //				File workspace = URLUtil.toFile(instanceLocation.getURL());
 //				if (workspace != null)
 //					iconFile = new File(workspace, value);
 //			}
-//		}
-//		if (!iconFile.isFile())
-//			iconFile = new File(getLocation().getParentFile(), value);
-//
-//		Collection<String> list = icons.get(os);
-//		if (list == null) {
-//			list = new ArrayList<String>(6);
-//			icons.put(os, list);
-//		}
-//		list.add(iconFile.getAbsolutePath());
-//	}
-//
-//	private void processSolaris(Attributes attributes) {
-//		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_LARGE));
-//		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_MEDIUM));
-//		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_SMALL));
-//		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_TINY));
-//	}
-//
-//	private void processWin(Attributes attributes) {
-//		//		useIco = Boolean.valueOf(attributes.getValue(P_USE_ICO)).booleanValue();
-//	}
-//
-//	private void processIco(Attributes attributes) {
-//		addIcon(OS_WIN32, attributes.getValue(ATTRIBUTE_PATH));
-//	}
-//
-//	private void processBmp(Attributes attributes) {
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_16_HIGH));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_16_LOW));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_24_LOW));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_32_HIGH));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_32_LOW));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_48_HIGH));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_48_LOW));
-//		addIcon(OS_WIN32, attributes.getValue(WIN32_256_HIGH));
-//	}
-//
-//	private void processLinux(Attributes attributes) {
-//		addIcon(OS_LINUX, attributes.getValue(ATTRIBUTE_ICON));
-//	}
-//
-//	private void processMac(Attributes attributes) {
-//		addIcon(OS_MACOSX, attributes.getValue(ATTRIBUTE_ICON));
-//	}
-//
+		}
+		if (!iconFile.isFile())
+			iconFile = new File(getLocation().getParentFile(), value);
+
+		Collection<String> list = icons.get(os);
+		if (list == null) {
+			list = new ArrayList<String>(6);
+			icons.put(os, list);
+		}
+		list.add(iconFile.getAbsolutePath());
+	}
+
+	private void processSolaris(Attributes attributes) {
+		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_LARGE));
+		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_MEDIUM));
+		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_SMALL));
+		addIcon(OS_SOLARIS, attributes.getValue(SOLARIS_TINY));
+	}
+
+	private void processWin(Attributes attributes) {
+		//		useIco = Boolean.valueOf(attributes.getValue(P_USE_ICO)).booleanValue();
+	}
+
+	private void processIco(Attributes attributes) {
+		addIcon(OS_WIN32, attributes.getValue(ATTRIBUTE_PATH));
+	}
+
+	private void processBmp(Attributes attributes) {
+		addIcon(OS_WIN32, attributes.getValue(WIN32_16_HIGH));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_16_LOW));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_24_LOW));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_32_HIGH));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_32_LOW));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_48_HIGH));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_48_LOW));
+		addIcon(OS_WIN32, attributes.getValue(WIN32_256_HIGH));
+	}
+
+	private void processLinux(Attributes attributes) {
+		addIcon(OS_LINUX, attributes.getValue(ATTRIBUTE_ICON));
+	}
+
+	private void processMac(Attributes attributes) {
+		addIcon(OS_MACOSX, attributes.getValue(ATTRIBUTE_ICON));
+	}
+
 //	public ProductContentType getProductContentType() {
 //		return productContentType;
 //	}

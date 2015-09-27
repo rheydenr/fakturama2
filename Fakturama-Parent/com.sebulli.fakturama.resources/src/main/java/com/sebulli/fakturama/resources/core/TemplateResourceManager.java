@@ -23,11 +23,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.translation.TranslationService;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -106,6 +110,20 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         return true;
     }
     
+
+	@Override
+	public Image getProgramImage(Display display, ProgramImages imageName) {
+		Image img = null;
+		try (InputStream in = ResourceBundleHelper.getBundleForName("com.sebulli.fakturama.resources").getResource(imageName.getPath()).openStream();){
+			img = new Image(display, in);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return img;
+	}
+        
+    
     /**
      * Copies a resource file from the resource to the file system
      * 
@@ -162,5 +180,5 @@ public class TemplateResourceManager implements ITemplateResourceManager {
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;
     }
-    
+
 }

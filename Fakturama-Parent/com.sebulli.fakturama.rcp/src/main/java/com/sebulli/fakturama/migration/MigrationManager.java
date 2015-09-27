@@ -14,7 +14,9 @@ package com.sebulli.fakturama.migration;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -51,6 +53,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -67,6 +70,8 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -163,7 +168,7 @@ public class MigrationManager {
 
 	@Inject
 	private IEclipsePreferences eclipsePrefs;
-
+	
 // this doesn't work because the IPreferenceStore isn't set at this stage
 //	@Inject
 //    @Preference(value=InstanceScope.SCOPE)
@@ -286,25 +291,6 @@ public class MigrationManager {
 		eclipsePrefs.flush();
 		
 		initMigLog(oldWorkDir);
-
-		// initialize DAOs via EclipseContext
-		// new Entities have their own DAO ;-)
-//		contactDAO = ContextInjectionFactory.make(ContactsDAO.class, context);
-//		contactCategoriesDAO = ContextInjectionFactory.make(ContactCategoriesDAO.class, context);
-//		documentDAO = ContextInjectionFactory.make(DocumentsDAO.class, context);
-//		propertiesDAO = ContextInjectionFactory.make(PropertiesDAO.class, context);
-//		paymentsDAO = ContextInjectionFactory.make(PaymentsDAO.class, context);
-//		productsDAO = ContextInjectionFactory.make(ProductsDAO.class, context);
-//		productCategoriesDAO = ContextInjectionFactory.make(ProductCategoriesDAO.class, context);
-//		expendituresDAO = ContextInjectionFactory.make(ExpendituresDAO.class, context);
-//		receiptVouchersDAO = ContextInjectionFactory.make(ReceiptVouchersDAO.class, context);
-//		itemAccountTypeDAO = ContextInjectionFactory.make(ItemAccountTypeDAO.class, context);
-//		voucherCategoriesDAO = ContextInjectionFactory.make(VoucherCategoriesDAO.class, context);
-//		shippingsDAO = ContextInjectionFactory.make(ShippingsDAO.class, context);
-//		shippingCategoriesDAO = ContextInjectionFactory.make(ShippingCategoriesDAO.class, context);
-//		vatsDAO = ContextInjectionFactory.make(VatsDAO.class, context);
-//        vatCategoriesDAO = ContextInjectionFactory.make(VatCategoriesDAO.class, context);
-//		textDAO = ContextInjectionFactory.make(TextsDAO.class, context);
 
 		// old entities only have one DAO for all entities
 		oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
@@ -527,7 +513,8 @@ public class MigrationManager {
 				product.setDescription(oldProduct.getDescription());
 				if(StringUtils.isNotBlank(oldProduct.getCategory()) && productCategories.containsKey(oldProduct.getCategory())) {
 					// add it to the new entity
-					product.addToCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
+					//product.addToCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
+					product.setCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
 				}
 				product.setItemNumber(oldProduct.getItemnr());
 				product.setName(oldProduct.getName());
@@ -569,7 +556,6 @@ public class MigrationManager {
 	 * @param oldProduct
 	 */
 	private void copyProductPicture(Product product, OldProducts oldProduct) {
-		product.setPictureName(oldProduct.getPicturename());
 		if (StringUtils.isNoneEmpty(oldProduct.getPicturename())) {
 
 			// First of all check, if the output file already exists.
@@ -579,23 +565,7 @@ public class MigrationManager {
 			if (Files.exists(outputFile)) {
 				return;
 			}
-
-			try {
-				String oldWorkspace = eclipsePrefs.get(
-						ConfigurationManager.MIGRATE_OLD_DATA, null);
-				Path oldFile = Paths.get(oldWorkspace,
-						Constants.PRODUCT_PICTURE_FOLDER,
-						oldProduct.getPicturename());
-
-				// Create the destination folder to store the file
-				if (!Files.isDirectory(Paths.get(generalWorkspace,
-						Constants.PRODUCT_PICTURE_FOLDER)))
-					Files.createDirectories(outputFile);
-				Files.copy(oldFile, outputFile);
-			} catch (IOException e) {
-//				log.error("error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason: "+e.getMessage());
-                migLogUser.info("!!! error while copying product picture for product [" + oldProduct.getId() + "] from old workspace. Reason:\n" + e);
-			}
+			product.setPicture(createImageFromFile(oldProduct.getPicturename()));
 		}
 	}
 
@@ -809,7 +779,7 @@ public class MigrationManager {
 			item.setOptional(oldItem.isOptional());
 			// owner field (oldItem) contains a reference to the containing document - we don't need it
 			// the "shared" field we also don't need
-			item.setPictureName(oldItem.getPicturename());
+			item.setPicture(createImageFromFile(oldItem.getPicturename()));
 			item.setPrice(roundValue(oldItem.getPrice()));
 			if(oldItem.getProductid() >= 0) {
 				Product prod = productsDAO.findById(newProducts.get(oldItem.getProductid()));
@@ -825,6 +795,28 @@ public class MigrationManager {
 			// the owning document is _always_ the document which was given as parameter herein
 			document.addToItems(item);
 		}
+	}
+
+	private byte[] createImageFromFile(String picturename) {
+		byte[] buffer = null;
+		String oldWorkspace = eclipsePrefs.get(
+				ConfigurationManager.MIGRATE_OLD_DATA, null);
+		Path oldFile = Paths.get(oldWorkspace,
+				Constants.PRODUCT_PICTURE_FOLDER,
+				picturename);
+//		Image image = new Image(Display.getCurrent(), oldFile.toFile().getAbsolutePath());
+//		return image.getImageData().data;
+		if(Files.exists(oldFile)) {
+			try {
+				buffer = new byte[Long.valueOf(Files.size(oldFile)).intValue()];
+				InputStream inputStream = Files.newInputStream(oldFile);
+				IOUtils.read(inputStream, buffer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return buffer;
 	}
 
 	private void runMigrateContactsSubTask(SubProgressMonitor subProgressMonitor) {

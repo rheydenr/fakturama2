@@ -75,6 +75,8 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
 
@@ -175,8 +177,6 @@ public class WebShopImportManager {
 	/**
 	 * Runs the reading of a http stream in an extra thread.
 	 * So it can be interrupted by clicking the cancel button. 
-	 * 
-	 * @author Gerd Bartelt
 	 */
 	public class InterruptConnection implements Runnable {
 	    
@@ -926,7 +926,7 @@ public class WebShopImportManager {
     			product.setName(itemName);
     			product.setItemNumber(itemModel);
                 ProductCategory productCategory = productCategoriesDAO.getCategory(shopCategory + itemType.getCategory(), true);
-    			product.addToCategories(productCategory);
+    			product.setCategories(productCategory);
     			
     			product.setDescription(itemDescription.toString());
     			product.setPrice1(priceNet.getNumber().numberValue(Double.class));
@@ -1096,8 +1096,6 @@ public class WebShopImportManager {
             String productDescription = product.getShortDescription();
             String productModel = product.getModel();
             String productName = product.getName();
-            String pictureName;
-
             // Convert VAT percent value to a factor (100% -> 1.00)
             Double vatPercentDouble = NumberUtils.DOUBLE_ZERO;
             vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
@@ -1136,12 +1134,17 @@ public class WebShopImportManager {
             if (product.getName().isEmpty() && !productModel.isEmpty())
                 productName = productModel;
 
-            pictureName = "";
-
             // Create the URL to the product image
+            byte[] picture = null;
             if (!product.getImage().isEmpty()) {
-                pictureName = ProductUtil.createPictureName(productName, productModel);
-                downloadImageFromUrl(shopURL + productImagePath + product.getImage(), pictureName);
+            	String pictureName = ProductUtil.createPictureName(productName, productModel);
+            	picture = downloadImageFromUrl(shopURL + productImagePath + product.getImage(), pictureName);
+            	
+/*
+BufferedInputStream inputStreamReader = new BufferedInputStream(new ByteArrayInputStream(imageByte));
+ImageData imageData = new ImageData(inputStreamReader);
+Image byteImage = new Image(getDisplay(), imageData );
+*/
             }
 
             // Convert the quantity string to a double value
@@ -1153,11 +1156,11 @@ public class WebShopImportManager {
 
             // save ProductCategory
             ProductCategory productCategoryFromBuilder = productCategoriesDAO.getCategory(shopCategory + product.getCategory(), true);
-            productItem.addToCategories(productCategoryFromBuilder);
+            productItem.setCategories(productCategoryFromBuilder);
             productItem.setDescription(productDescription);
             productItem.setPrice1(priceNet.getNumber().numberValue(Double.class));
             productItem.setVat(vat);
-            productItem.setPictureName(pictureName);
+            productItem.setPicture(picture);
             productItem.setQuantity(quantity);
             productItem.setWebshopId(product.getId() != null ? product.getId().longValue() : Long.valueOf(0));
             productItem.setQuantityUnit(product.getQunit());
@@ -1167,14 +1170,14 @@ public class WebShopImportManager {
             Product existingProduct = productsDAO.findOrCreate(productItem);
             if (existingProduct != null) {
                 // Update data
-                existingProduct.clearCategories();
-                productItem.getCategories().forEach(cat -> existingProduct.addToCategories(cat));
+              //  existingProduct.clearCategories();
+           //     productItem.getCategories().forEach(cat -> existingProduct.addToCategories(cat));
                 existingProduct.setName(productItem.getName());
                 existingProduct.setItemNumber(productItem.getItemNumber());
                 existingProduct.setDescription(productItem.getDescription());
                 existingProduct.setPrice1(productItem.getPrice1());
                 existingProduct.setVat(productItem.getVat());
-                existingProduct.setPictureName(productItem.getPictureName());
+                existingProduct.setPicture(productItem.getPicture());
                 existingProduct.setQuantity(productItem.getQuantity());
                 existingProduct.setWebshopId(productItem.getWebshopId());
                 existingProduct.setQuantityUnit(productItem.getQuantityUnit());
@@ -1194,17 +1197,17 @@ public class WebShopImportManager {
          * @param fileName
          *            The filename of the image
          */
-        private void downloadImageFromUrl(String address, String fileName) {            
+        private byte[] downloadImageFromUrl(String address, String fileName) {            
             String filePath = generalWorkspace + Constants.PRODUCT_PICTURE_FOLDER;
             
         	// Cancel if address or filename is empty
         	if (address.isEmpty() || filePath.isEmpty() || fileName.isEmpty())
-        		return;
+        		return null;
         
         	// First of all check, if the output file already exists.
         	Path outputFile = Paths.get(filePath, fileName);
         	if (Files.exists(outputFile))
-        		return;
+        		return null;
 
             // Connect to the web server
             URI u = URI.create(address);
@@ -1214,6 +1217,9 @@ public class WebShopImportManager {
                 if (!Files.isDirectory(Paths.get(filePath)))
                     Files.createDirectories(outputFile);
                 Files.copy(in, outputFile);
+                // TODO check if this works!
+                Image img = new Image(Display.getCurrent(), in);
+                return img.getImageData().data;
             }
             catch (MalformedURLException e) {
                 //T: Status message importing data from web shop
@@ -1223,6 +1229,7 @@ public class WebShopImportManager {
                 //T: Status message importing data from web shop
                 log.error(e, msg.importWebshopErrorCantopenpicture + " " + address);
             }
+            return null;
         }
 
 //        /**

@@ -51,7 +51,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
 
 		String exampleCategory = CommonConverter.getCategoryName(example, "");
 		exampleCategory = StringUtils.prependIfMissing(exampleCategory, "/", "/");
-		List<ProductCategory> foundCandidates = findByCategoryName(exampleCategory);
+		List<ProductCategory> foundCandidates = findProductCategoryByName(exampleCategory);
 		Optional<ProductCategory> s = foundCandidates.stream().filter(prodCategory -> prodCategory.getName().equalsIgnoreCase(example.getName())).findFirst();
 		result = s.isPresent() ? s.get() : null;
 		return result;
@@ -65,7 +65,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
      * @param productCategory the {@link ProductCategory} to search
      * @return {@link ProductCategory}
      */
-    public List<ProductCategory> findByCategoryName(String productCategory) {
+    public List<ProductCategory> findProductCategoryByName(String productCategory) {
     	List<ProductCategory> result = new ArrayList<ProductCategory>();
         if(StringUtils.isNotEmpty(productCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -113,7 +113,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
-                List<ProductCategory> foundCategories = findByCategoryName(category);
+                List<ProductCategory> foundCategories = findProductCategoryByName(category);
                 ProductCategory searchCat = null;
                 if(!foundCategories.isEmpty()) {
                 searchCat = foundCategories.get(0);

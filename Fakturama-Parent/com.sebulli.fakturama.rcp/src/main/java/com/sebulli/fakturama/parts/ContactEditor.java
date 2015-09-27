@@ -88,6 +88,7 @@ import com.sebulli.fakturama.parts.widget.contentprovider.StringHashMapContentPr
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
+import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
@@ -317,6 +318,7 @@ public class ContactEditor extends Editor<Contact> {
 	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_CONTACT.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);

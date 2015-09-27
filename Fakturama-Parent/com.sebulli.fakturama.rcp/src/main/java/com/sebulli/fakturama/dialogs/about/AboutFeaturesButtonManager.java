@@ -11,7 +11,7 @@ import java.util.Map;
  * image identity.
  */
 public class AboutFeaturesButtonManager {
-    private Map providerMap = new HashMap();
+    private Map<Key, List<AboutBundleGroupData>> providerMap = new HashMap<>();
 
     private static class Key {
         public String providerName;
@@ -58,13 +58,13 @@ public class AboutFeaturesButtonManager {
         String providerName = info.getProviderName();
         Key key = new Key(providerName, crc);
 
-        List infoList = (List) providerMap.get(key);
+        List<AboutBundleGroupData> infoList = (List) providerMap.get(key);
         if (infoList != null) {
             infoList.add(info);
             return false;
         }
 
-        infoList = new ArrayList();
+        infoList = new ArrayList<>();
         infoList.add(info);
         providerMap.put(key, infoList);
         return true;

@@ -46,6 +46,7 @@ import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.MessageKeyToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
+import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  * The text editor
@@ -138,6 +139,7 @@ public class ListEditor extends Editor<ItemAccountType> {
     public void createPartControl(Composite parent) {
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_LIST.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);

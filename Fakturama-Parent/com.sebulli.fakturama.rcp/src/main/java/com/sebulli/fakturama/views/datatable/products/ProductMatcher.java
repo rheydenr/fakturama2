@@ -45,7 +45,7 @@ public class ProductMatcher implements Matcher<Product> {
     public boolean matches(Product item) {
         boolean found = false;
         if(!isRootNode) {
-            String fullCategoryName = CommonConverter.getCategoryName(item.getCategories().isEmpty() ? null : item.getCategories().get(0), rootNodeName);
+            String fullCategoryName = CommonConverter.getCategoryName(item.getCategories() == null/*.isEmpty()*/ ? null : item.getCategories()/*.get(0)*/, rootNodeName);
             if(fullCategoryName.startsWith(productCategoryName)) {
                 found = true;
             }

@@ -1,11 +1,15 @@
 package com.sebulli.fakturama.dialogs.about;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 
@@ -24,8 +28,8 @@ public class AboutUtils {
 	 * @return
 	 */
 	public static AboutItem scan(String s) {
-		ArrayList linkRanges = new ArrayList();
-		ArrayList links = new ArrayList();
+        List<Integer[]> linkRanges = new ArrayList<>();
+        List<String> links = new ArrayList<>();
 
 		// slightly modified version of jface url detection
 		// see org.eclipse.jface.text.hyperlink.URLHyperlinkDetector
@@ -70,7 +74,7 @@ public class AboutUtils {
 					urlLength = endOffset - urlOffset;
 			}
 
-			linkRanges.add(new int[] { urlOffset, urlLength });
+			linkRanges.add(new Integer[] { urlOffset, urlLength });
 			links.add(s.substring(urlOffset, urlOffset + urlLength));
 
 			urlSeparatorOffset = s.indexOf("://", urlOffset + urlLength + 1); //$NON-NLS-1$
@@ -139,48 +143,48 @@ public class AboutUtils {
 	 *
 	 * @since 3.0.2
 	 */
-	private static String urlEncodeForSpaces(char[] input) {
-		StringBuffer retu = new StringBuffer(input.length);
-		for (int i = 0; i < input.length; i++) {
-			if (input[i] == ' ') {
-				retu.append("%20"); //$NON-NLS-1$
-			} else {
-				retu.append(input[i]);
-			}
-		}
-		return retu.toString();
-	}
-
-	/**
-	 * display an error message
-	 */
-	private static void openWebBrowserError(Shell shell, final String href,
-			final Throwable t) {
-		String title = "WorkbenchMessages.ProductInfoDialog_errorTitle";
-		String msg = NLS.bind(
-				"WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser",
-				href);
+//	private static String urlEncodeForSpaces(char[] input) {
+//		StringBuffer retu = new StringBuffer(input.length);
+//		for (int i = 0; i < input.length; i++) {
+//			if (input[i] == ' ') {
+//				retu.append("%20"); //$NON-NLS-1$
+//			} else {
+//				retu.append(input[i]);
+//			}
+//		}
+//		return retu.toString();
+//	}
+//
+//	/**
+//	 * display an error message
+//	 */
+//	private static void openWebBrowserError(Shell shell, final String href,
+//			final Throwable t) {
+//		String title = "WorkbenchMessages.ProductInfoDialog_errorTitle";
+//		String msg = NLS.bind(
+//				"WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser",
+//				href);
 //		IStatus status = WorkbenchPlugin.getStatus(t);
 //		StatusUtil.handleStatus(status, title + ": " + msg, StatusManager.SHOW, //$NON-NLS-1$
 //				shell);
-	}
-//
-//	public static void openErrorLogBrowser(Shell shell) {
-//		String filename = Platform.getLogFileLocation().toOSString();
-//
-//		File log = new File(filename);
-//		if (log.exists()) {
-//			// Make a copy of the file with a temporary name.
-//			// Working around an issue with windows file associations/browser
-//			// malfunction whereby the browser doesn't open on ".log" and we
-//			// aren't returned an error.
-//			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=97783
-//			File logCopy = makeDisplayCopy(log);
-//			if (logCopy != null) {
-//				AboutUtils.openLink(shell,
-//						"file:///" + logCopy.getAbsolutePath()); //$NON-NLS-1$
-//				return;
-//			}
+//	}
+
+	public static void openErrorLogBrowser(Shell shell) {
+		String filename = Platform.getLogFileLocation().toOSString();
+
+		File log = new File(filename);
+		if (log.exists()) {
+			// Make a copy of the file with a temporary name.
+			// Working around an issue with windows file associations/browser
+			// malfunction whereby the browser doesn't open on ".log" and we
+			// aren't returned an error.
+			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=97783
+			File logCopy = makeDisplayCopy(log);
+			if (logCopy != null) {
+				AboutUtils.openLink(shell,
+						"file:///" + logCopy.getAbsolutePath()); //$NON-NLS-1$
+				return;
+			}
 //			// Couldn't make copy, try to open the original log.
 //			// We try the original in this case rather than putting up an error,
 //			// because the copy could fail due to an I/O or out of space
@@ -193,20 +197,23 @@ public class AboutUtils {
 //			// ability to view the original log works just fine.
 //			AboutUtils.openLink(shell, "file:///" + filename); //$NON-NLS-1$
 //			return;
-//		}
-//		MessageDialog.openInformation(shell,
-//				"WorkbenchMessages.AboutSystemDialog_noLogTitle", NLS.bind(
-//						"WorkbenchMessages.AboutSystemDialog_noLogMessage",
-//						filename));
-//	}
+		}
+		MessageDialog.openInformation(shell,
+				"WorkbenchMessages.AboutSystemDialog_noLogTitle", NLS.bind(
+						"WorkbenchMessages.AboutSystemDialog_noLogMessage",
+						filename));
+	}
 
-//	/**
-//	 * Returns a copy of the given file to be used for display in a browser.
-//	 *
-//	 * @return the file, or <code>null</code>
-//	 */
-//	private static File makeDisplayCopy(File file) {
-//		IPath path = WorkbenchPlugin.getDefault().getDataLocation();
+	/**
+	 * Returns a copy of the given file to be used for display in a browser.
+	 *
+	 * @return the file, or <code>null</code>
+	 */
+	private static File makeDisplayCopy(File file) {
+		
+		// FIXME don't know how to get the data location...
+		
+//		Path path = Plugin.getDefault().getDataLocation();
 //		if (path == null) {
 //			return null;
 //		}
@@ -239,8 +246,8 @@ public class AboutUtils {
 //				return null;
 //			}
 //		}
-//		return copy;
-//
-//	}
+		return null; //copy;
+
+	}
 
 }

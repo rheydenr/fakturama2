@@ -85,6 +85,7 @@ import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListBuilder;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListTable;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
+import com.sebulli.fakturama.resources.core.Icon;
 
 public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends VoucherEditor<Expenditure>*/ {
 	
@@ -294,6 +295,7 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
     @PostConstruct
     public void init(Composite parent) {
         this.part = (MPart) parent.getData("modelElement");
+        this.part.setIconURI(Icon.COMMAND_EXPENDITURE.getIconURI());
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
         
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);

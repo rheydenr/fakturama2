@@ -51,6 +51,7 @@ import com.sebulli.fakturama.handlers.OpenListViewsHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
@@ -156,7 +157,7 @@ public class NavigationView {
         // Create the 3rd expand bar "Create new"
         PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);
         parameters = new HashMap<>();
-//        parameters.put(CallEditor.PARAM_EDITOR_TYPE, ProEd.ID);
+        parameters.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_PRODUCT*/, parameters);
         
         parameters = new HashMap<>();

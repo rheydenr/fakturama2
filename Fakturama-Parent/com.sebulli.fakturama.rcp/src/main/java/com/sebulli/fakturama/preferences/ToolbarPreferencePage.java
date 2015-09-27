@@ -76,6 +76,9 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 
 		// Get all documents
 		for (int i=1; i< DocumentType.MAXID; i++) {
+			if(DocumentType.findByKey(i) == DocumentType.NONE) {
+				continue;
+			}
 			addField(new BooleanFieldEditor("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), showIcon + msg.getMessageFromKey(DocumentType.getNewTextKey(DocumentType.findByKey(i))), getFieldEditorParent()));
 		}
 		

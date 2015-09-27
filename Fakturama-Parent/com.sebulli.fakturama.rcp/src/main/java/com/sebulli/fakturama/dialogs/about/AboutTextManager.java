@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.dialogs.about;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.jface.resource.JFaceColors;
@@ -32,8 +33,8 @@ public class AboutTextManager {
      * @return
      */
     public static AboutItem scan(String s) {
-        ArrayList linkRanges = new ArrayList();
-        ArrayList links = new ArrayList();
+        List<Integer[]> linkRanges = new ArrayList<>();
+        List<String> links = new ArrayList<>();
 
         // slightly modified version of jface url detection
         // see org.eclipse.jface.text.hyperlink.URLHyperlinkDetector
@@ -77,7 +78,7 @@ public class AboutTextManager {
 					urlLength= endOffset - urlOffset;
 			}
 
-			linkRanges.add(new int[] { urlOffset, urlLength });
+			linkRanges.add(new Integer[] { urlOffset, urlLength });
 			links.add(s.substring(urlOffset, urlOffset+urlLength));
 
 			urlSeparatorOffset= s.indexOf("://", urlOffset+urlLength+1); //$NON-NLS-1$

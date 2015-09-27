@@ -45,12 +45,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
-
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -58,7 +52,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
-import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -68,6 +62,12 @@ import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 /**
  * Builds the Product list table.
@@ -270,7 +270,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     /**
      * Handle an incoming refresh command. This could be initiated by an editor 
      * which has just saved a new element (document, Product, payment etc). Here we ONLY
-     * listen to "VatEditor" events.<br />
+     * listen to "ProductEditor" events.<br />
      * The tree of {@link ProductCategory}s is updated because we use a GlazedList for
      * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
      * react on every change of the underlying list (here in the field <code>categories</code>).
@@ -280,7 +280,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      * @param message an incoming message
      */
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(VatEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@EventTopic(ProductEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(productListData, GlazedLists.eventList(productsDAO.findAll(true)), false);
@@ -327,12 +327,12 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     @Override
     protected String getEditorId() {
-        return VatEditor.ID;
+        return ProductEditor.ID;
     }
 
     @Override
     protected String getEditorTypeId() {
-        return VatEditor.class.getSimpleName();
+        return ProductEditor.class.getSimpleName();
     }
     
     class ProductTableConfiguration extends AbstractRegistryConfiguration {
