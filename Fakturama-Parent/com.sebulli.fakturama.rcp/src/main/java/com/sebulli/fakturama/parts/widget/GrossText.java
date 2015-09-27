@@ -14,9 +14,13 @@
 
 package com.sebulli.fakturama.parts.widget;
 
+import javax.money.MonetaryAmount;
+
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.misc.DataUtils;
@@ -32,13 +36,13 @@ import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 public class GrossText {
 
 	// The  net value
-	private Double netValue;
+	private MonetaryAmount netValue;
 
 	// VAT value as factor
 	private Double vatValue;
 
 	// The corresponding text control that contains the net value
-	private NetText netText;
+	private FormattedText netText;
 
 	// The text control 
 	private FormattedText grossText;
@@ -58,7 +62,7 @@ public class GrossText {
 	 * @param vat
 	 *            The vat value ( factor )
 	 */
-	public GrossText(Composite parent, int style, Double net, Double vat) {
+	public GrossText(Composite parent, int style, MonetaryAmount net, Double vat) {
 
 		// Set the local variables
 		this.netValue = net;
@@ -67,24 +71,26 @@ public class GrossText {
 		// Create the text widget
 		this.grossText = new FormattedText(parent, style);
 		this.grossText.setFormatter(new MoneyFormatter());
-		grossText.setValue(netValue * (1 + vat));
+		grossText.setValue(netValue.multiply(1 + vat));
 
-//		// Set the text of the GrossText, based on the NetText's value.
-//		// Do this, if the text widget is selected (If "ENTER" is pressed).
-//		grossText.getControl().addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble(netValue, vatValue));
-//			}
-//		});
+		// Set the text of the GrossText, based on the NetText's value.
+		// Do this, if the text widget is selected (If "ENTER" is pressed).
+		grossText.getControl().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				grossText.setValue(DataUtils.getInstance().CalculateGrossFromNet(netValue, vatValue));
+			}
+		});
 
 		// Set the text of the NetText, based on the GrossText's value
 		grossText.getControl().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				if (grossText.getControl().isFocusControl()) {
-					netValue = DataUtils.getInstance().calculateNetFromGrossAsDouble((Double)grossText.getValue(), vatValue);
+					netValue = DataUtils.getInstance().calculateNetFromGross(
+							grossText != null ? grossText.getControl() : null, 
+							netText != null ? netText.getControl() : null, vatValue, netValue);
 					if(netText != null) {
-						netText.getNetText().setValue(netValue);
+						netText.setValue(netValue);
 					}
 				}
 			}
@@ -114,12 +120,11 @@ public class GrossText {
 	/**
 	 * Set a reference to the net text widget
 	 * 
-	 * @param netT
+	 * @param formattedText
 	 *            The net text widget
 	 */
-	public void setNetText(NetText netT) {
-		this.netText = netT;
-		this.netValue = ((Double) netText.getNetText().getValue());
+	public void setNetText(FormattedText formattedText) {
+		this.netText = formattedText;
 	}
 
 	/**
@@ -131,7 +136,14 @@ public class GrossText {
 	 */
 	public void setVatValue(Double vatValue) {
 		this.vatValue = vatValue;
-		grossText.setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getNetText().getValue(), vatValue));
+		grossText.setValue(DataUtils.getInstance().CalculateGrossFromNet(netValue, vatValue));
+	}
+
+	/**
+	 * @return the vatValue
+	 */
+	public final Double getVatValue() {
+		return vatValue;
 	}
 
 	/**
@@ -139,12 +151,21 @@ public class GrossText {
 	 * 
 	 * @return The net text widget.
 	 */
-	public NetText getNetText() {
+	public FormattedText getNetText() {
 		return netText;
 	}
 
-	public void recalculate(FormattedText netText2, Double vatValue2) {
-		this.netValue = (Double)netText2.getValue();
-		setVatValue(vatValue2);
+	/**
+	 * @return the netValue
+	 */
+	public final MonetaryAmount getNetValue() {
+		return netValue;
+	}
+
+	/**
+	 * @param netValue the netValue to set
+	 */
+	public final void setNetValue(MonetaryAmount netValue) {
+		this.netValue = netValue;
 	}
 }

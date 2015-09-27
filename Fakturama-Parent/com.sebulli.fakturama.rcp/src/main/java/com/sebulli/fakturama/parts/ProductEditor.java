@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.money.MonetaryAmount;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -60,12 +63,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -142,9 +147,9 @@ public class ProductEditor extends Editor<Product> {
 	private Text[] textBlock = new Text[NUMBER_OF_PRICES];
 	private NetText[] netText = new NetText[NUMBER_OF_PRICES];
 	private GrossText[] grossText = new GrossText[NUMBER_OF_PRICES];
-	private Double[] net = new Double[NUMBER_OF_PRICES];
-//	MonetaryAmount defaultPrice = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
-	Double defaultPrice = Double.valueOf(0.0);
+	private MonetaryAmount[] net;
+	MonetaryAmount defaultPrice = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
+//	Double defaultPrice = Double.valueOf(0.0);
 	private int scaledPrices;
 
 	// These flags are set by the preference settings.
@@ -185,10 +190,8 @@ public class ProductEditor extends Editor<Product> {
 
 		if (newProduct) {
 			// Check, if the item number is the next one
-			int result = setNextNr(textItemNr.getText(), Product_.itemNumber.getName());
-
-			// It's not the next free ID
-			if (result == ERROR_NOT_NEXT_ID) {
+			if (setNextNr(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
+				// It's not the next free ID
 				// Display an error message
 				MessageDialog.openError(top.getShell(),
 
@@ -210,21 +213,25 @@ public class ProductEditor extends Editor<Product> {
         // ... done through databinding...
 
 		int i;
-		Double lastScaledPrice = Double.valueOf(0.0);
+		MonetaryAmount lastScaledPrice = Money.from(defaultPrice);
 
 		try {
 			// Set all of the scaled prices (according to the count of possible scales from settings)
 			for (i = 0; i < scaledPrices; i++) {
-				String methodName = String.format("getPrice%d", i+1);
-				Object obj = MethodUtils.invokeExactMethod(editorProduct, methodName);
-				lastScaledPrice = (Double) obj;
+				lastScaledPrice = useNet ? netText[i].getNetValue() : grossText[i].getNetValue();
+				String methodName = String.format("setPrice%d", i+1);
+				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice.getNumber().doubleValue());
+//				String methodName = String.format("getPrice%d", i+1);
+//				Object obj = MethodUtils.invokeExactMethod(editorProduct, methodName);
+//				methodName = String.format("setPrice%d", i+1);
+//				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice);
 				// blocks are set via databinding
 			}
 		
 		// if not all 5 scales are set we set the remaining prices to the last scaled price
 			for (; i < 5; i++) {
 				String methodName = String.format("setPrice%d", i+1);
-				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice);
+				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice.getNumber().doubleValue());
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
@@ -286,6 +293,7 @@ if (StringUtils.isNumeric(tmpObjId)) {
 }
 
 // initialize prices
+net = new MonetaryAmount[NUMBER_OF_PRICES];
 Arrays.fill(net, defaultPrice);
 
 		// Test if the editor is opened to create a new data set. This is,
@@ -610,7 +618,7 @@ Arrays.fill(net, defaultPrice);
 				// Get the net price scaled price
 				String methodName = String.format("getPrice%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
-				net[i] = (priceObj != null) ? (Double) priceObj : defaultPrice;
+				net[i] = (priceObj != null) ? Money.of((Double)priceObj, DataUtils.getInstance().getDefaultCurrencyUnit()) : Money.from(defaultPrice);
 
 				// Create the columns for the quantity
 				labelBlock[i] = new Label(((i < scaledPrices) && (scaledPrices >= 2)) ? pricetable : invisible,
@@ -631,7 +639,14 @@ Arrays.fill(net, defaultPrice);
 				if (useNet) {
 					netText[i] = new NetText((i < scaledPrices) ? pricetable : invisible, SWT.BORDER | SWT.RIGHT,
 							net[i], editorProduct.getVat().getTaxValue());
-					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+					netText[i].getNetText().getControl().addModifyListener(new ModifyListener() {
+						
+						@Override
+						public void modifyText(ModifyEvent e) {
+							getMDirtyablePart().setDirty(true);
+						}
+					});
+//					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 				}
 
@@ -639,7 +654,14 @@ Arrays.fill(net, defaultPrice);
 				if (useGross) {
 					grossText[i] = new GrossText((i < scaledPrices) ? pricetable : invisible, SWT.BORDER | SWT.RIGHT,
 							net[i], editorProduct.getVat().getTaxValue());
-//					bindModelValue(editorProduct, grossText[i].getGrossText(), priceBlocks.get(i).getPrice().getName(), 6);
+					grossText[i].getGrossText().getControl().addModifyListener(new ModifyListener() {
+						
+						@Override
+						public void modifyText(ModifyEvent e) {
+							getMDirtyablePart().setDirty(true);							
+						}
+					});
+//						bindModelValue(editorProduct, grossText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT)
 							.applyTo(grossText[i].getGrossText().getControl());
 				}
@@ -647,8 +669,10 @@ Arrays.fill(net, defaultPrice);
 				// If a net and gross column was created, link both together,
 				// so, if one is modified, the other will be recalculated.
 				if (useNet && useGross) {
-					netText[i].setGrossText(grossText[i]);
-					grossText[i].setNetText(netText[i]);
+					netText[i].setGrossText(grossText[i].getGrossText());
+					grossText[i].setNetText(netText[i].getNetText());
+//					if(i == 0 && nextWidget == null) { // only for the first iteration
+//						nextWidget = grossText[i].getGrossText();
 				}
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				// TODO Auto-generated catch block
@@ -687,13 +711,11 @@ Arrays.fill(net, defaultPrice);
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 				if (!structuredSelection.isEmpty()) {
                     // Get the first element ...
-                    Object firstElement = structuredSelection.getFirstElement();
-
                     // Get the selected VAT
-                    VAT uds = (VAT) firstElement;
+                    VAT selectedVat = (VAT) structuredSelection.getFirstElement();
 
                     // Store the old value
-                    Double oldVat = editorProduct.getVat().getTaxValue();
+//                    Double oldVat = editorProduct.getVat().getTaxValue();
 
                     // Get the new value
 //                    vatId = uds.getId();
@@ -705,14 +727,14 @@ Arrays.fill(net, defaultPrice);
 						// Recalculate the price values if gross is selected,
 						// So the gross value will stay constant.
 						if (!useNet) {
-							net[i] = net[i] * ((1 + oldVat) / (1 + uds.getTaxValue()));
+							grossText[i].setNetValue(grossText[i].getNetValue().multiply((1 + grossText[i].getVatValue()) / (1 + selectedVat.getTaxValue())));
 						}
 
 						// Update net and gross text widget
 						if (netText[i] != null)
-							netText[i].setVatValue(uds.getTaxValue());
+							netText[i].setVatValue(selectedVat.getTaxValue());
 						if (grossText[i] != null)
-							grossText[i].setVatValue(uds.getTaxValue());
+							grossText[i].setVatValue(selectedVat.getTaxValue());
 					}
 				}
 			}

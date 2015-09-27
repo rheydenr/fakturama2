@@ -214,7 +214,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getExpenditureItem(), columnIndex);
                     break;
                 case TOTAL:
-                    retval = DataUtils.getInstance().calculateGrossFromNetAsDouble(rowObject.getExpenditureItem().getPrice(), rowObject.getExpenditureItem().getVat().getTaxValue());
+                    retval = DataUtils.getInstance().CalculateGrossFromNet(
+                    		Money.of(rowObject.getExpenditureItem().getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
+                    		rowObject.getExpenditureItem().getVat().getTaxValue());
                     break;
                 case PRICE:
                     if (useGross) { // "$VoucherItemGrossPrice"

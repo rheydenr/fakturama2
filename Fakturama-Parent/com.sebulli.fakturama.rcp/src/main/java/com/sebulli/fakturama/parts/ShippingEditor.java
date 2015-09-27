@@ -46,12 +46,14 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -329,20 +331,22 @@ public class ShippingEditor extends Editor<Shipping> {
 
         // Create a net text widget
         if (useNet) {
-            netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, editorShipping.getShippingValue(), vat.getTaxValue());
+            netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
+            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
             bindModelValue(editorShipping, netText.getNetText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // Create a gross text widget
         if (useGross) {
-            grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, editorShipping.getShippingValue(), vat.getTaxValue());
+            grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
+            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
         }
 
         // If net and gross were created, link both together
         // so, if one is modified, the other will be recalculated.
         if (useNet && useGross) {
-            netText.setGrossText(grossText);
-            grossText.setNetText(netText);
+            netText.setGrossText(grossText.getGrossText());
+            grossText.setNetText(netText.getNetText());
         }
 
         // Apply the gross text widget

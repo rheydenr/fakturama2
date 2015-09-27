@@ -2245,34 +2245,39 @@ public class DocumentEditor extends Editor<Document> {
         try {
 		    switch (documentType) {
             case INVOICE:
+                part.setIconURI(Icon.COMMAND_INVOICE.getIconURI());
                 icon = Icon.ICON_INVOICE;
-                this.part.setIconURI(Icon.COMMAND_INVOICE.getIconURI());
                 break;
             case OFFER:
+                part.setIconURI(Icon.COMMAND_OFFER.getIconURI());
                 icon = Icon.ICON_OFFER;
-                this.part.setIconURI(Icon.COMMAND_OFFER.getIconURI());
                 break;
             case ORDER:
+                part.setIconURI(Icon.COMMAND_ORDER.getIconURI());
                 icon = Icon.ICON_ORDER;
-                this.part.setIconURI(Icon.COMMAND_ORDER.getIconURI());
                 break;
             case CREDIT:
+                part.setIconURI(Icon.COMMAND_CREDIT.getIconURI());
                 icon = Icon.ICON_CREDIT;
-                this.part.setIconURI(Icon.COMMAND_CREDIT.getIconURI());
                 break;
             case DUNNING:
+                part.setIconURI(Icon.COMMAND_DUNNING.getIconURI());
                 icon = Icon.ICON_DUNNING;
                 break;
             case PROFORMA:
+                part.setIconURI(Icon.COMMAND_PROFORMA.getIconURI());
                 icon = Icon.ICON_PROFORMA;
                 break;
             case LETTER:
+                part.setIconURI(Icon.COMMAND_LETTER.getIconURI());
                 icon = Icon.ICON_LETTER;
                 break;
             case CONFIRMATION:
+                part.setIconURI(Icon.COMMAND_CONFIRMATION.getIconURI());
                 icon = Icon.ICON_CONFIRMATION;
                 break;
             case DELIVERY:
+                part.setIconURI(Icon.COMMAND_DELIVERY.getIconURI());
                 icon = Icon.ICON_DELIVERY;
                 break;
             default:

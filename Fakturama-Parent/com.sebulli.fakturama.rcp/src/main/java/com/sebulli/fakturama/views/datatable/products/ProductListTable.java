@@ -44,11 +44,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -57,6 +60,7 @@ import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.documents.SpecialCellValueProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -152,50 +156,53 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      * @param propertyNames
      * @return
      */
-    private IColumnPropertyAccessor<Product> createColumnPropertyAccessor(String[] propertyNames) {
-        final IColumnPropertyAccessor<Product> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Product>(propertyNames);
-        
-        // Add derived 'default' column
-        final IColumnPropertyAccessor<Product> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Product>() {
+	private IColumnPropertyAccessor<Product> createColumnPropertyAccessor(String[] propertyNames) {
+		final IColumnPropertyAccessor<Product> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Product>(
+				propertyNames);
+//		final SpecialCellValueProvider specialCellValueProvider = new SpecialCellValueProvider(msg);
 
-            public Object getDataValue(Product rowObject, int columnIndex) {
-                ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
-                switch (descriptor) {
-                case PRICE:
-                    
-                    /*
-                     *      String priceKey = "";
-        if (Activator.getDefault().getPreferenceStore().getInt("DOCUMENT_USE_NET_GROSS") == 1)
-            priceKey = "$Price1Gross";
-        else
-            priceKey = "price1";
+		// Add derived 'default' column
+		final IColumnPropertyAccessor<Product> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Product>() {
 
-                     */
-                    return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
-                default:
-                    return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
-                }
-            }
+			public Object getDataValue(Product rowObject, int columnIndex) {
+				ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
+				switch (descriptor) {
+				case PRICE:
+					// Fill the price column with the net or the gross price (
+					// for quantity = 1)
+					String priceKey = "";
+					if (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1) {
+						priceKey = "$Price1Gross";
+//                    cell.setText(new Price(product.getDoubleValueByKey("price1"), product.getDoubleValueByKeyFromOtherTable("vatid.VATS:value")).getUnitNet()
+//                            .asFormatedString());
+						return Money.of(rowObject.getPrice1(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(1+rowObject.getVat().getTaxValue());
+					} else {
+						priceKey = "price1";
+					}
+				default:
+					return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+				}
+			}
 
-            public void setDataValue(Product rowObject, int columnIndex, Object newValue) {
-                throw new UnsupportedOperationException("you can't change a value in list view!");
-            }
+			public void setDataValue(Product rowObject, int columnIndex, Object newValue) {
+				throw new UnsupportedOperationException("you can't change a value in list view!");
+			}
 
-            public int getColumnCount() {
-                return ProductListDescriptor.getProductPropertyNames().length;
-            }
+			public int getColumnCount() {
+				return ProductListDescriptor.getProductPropertyNames().length;
+			}
 
-            public String getColumnProperty(int columnIndex) {
-                ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
-                return msg.getMessageFromKey(descriptor.getMessageKey());
-            }
+			public String getColumnProperty(int columnIndex) {
+				ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
+				return msg.getMessageFromKey(descriptor.getMessageKey());
+			}
 
-            public int getColumnIndex(String propertyName) {
-                return columnPropertyAccessor.getColumnIndex(propertyName);
-            }
-        };
-        return derivedColumnPropertyAccessor;
-    }
+			public int getColumnIndex(String propertyName) {
+				return columnPropertyAccessor.getColumnIndex(propertyName);
+			}
+		};
+		return derivedColumnPropertyAccessor;
+	}
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 

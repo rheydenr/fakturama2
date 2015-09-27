@@ -135,7 +135,7 @@ public class OpenBrowserEditorHandler {
             }
                 stack.getChildren().add(myPart);
         }
-        else {
+        else if(myPart.getObject() != null) {
             // If the browser editor is already open, reset the URL
             ((BrowserEditor) myPart.getObject()).resetUrl(url);
         }

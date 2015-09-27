@@ -43,6 +43,8 @@ import javax.money.format.MonetaryFormats;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Text;
+import org.javamoney.moneta.Money;
 import org.javamoney.moneta.RoundedMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
 
@@ -107,7 +109,7 @@ public class DataUtils {
                 CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
                 mro = Monetary.getRounding(RoundingQueryBuilder.of()
                         .setCurrency(chf)
-                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                        // das ist fÃ¼r die Schweizer Rundungsmethode auf 0.05 SFr.!
                         .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
                         .build());
             }
@@ -159,8 +161,8 @@ public class DataUtils {
 
 //    
 //    /**
-//     * Test, if a value is rounded to cent values. e.g. 39,43000 € is a rounded
-//     * value 39,43200 € is not.
+//     * Test, if a value is rounded to cent values. e.g. 39,43000 â‚¬ is a rounded
+//     * value 39,43200 â‚¬ is not.
 //     * 
 //     * @param d
 //     *            Double value to test
@@ -494,7 +496,7 @@ public class DataUtils {
                 Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
 
-    //
+    
 //    /**
 //     * Calculates the gross value based on a net value and the vat
 //     * 
@@ -502,137 +504,124 @@ public class DataUtils {
 //     *            Net value as String
 //     * @param vat
 //     *            Vat as double
-//     * @param netvalue
+//     * @param netValue
 //     *            Net value as UniData. This is modified with the net value.
 //     * @return Gross value as string
 //     */
-//    public String CalculateGrossFromNet(String net, Double vat, Double netvalue) {
-//        netvalue = new Double(net);
-//        return CalculateGrossFromNet(netvalue, vat);
-//    }
-//
-//    /**
-//     * Calculates the gross value based on a net value and the vat
-//     * 
-//     * @param net
-//     *            Net value as double
-//     * @param vat
-//     *            Vat as double
-//     * @return Gross value as string
-//     */
-//    public String CalculateGrossFromNet(Double net, Double vat) {
-//        Double gross = net * (1 + vat);
-//        return doubleToFormattedPrice(gross);
+//    public String CalculateGrossFromNet(String net, Double vat, MonetaryAmount netValue) {
+//        netValue = new Double(net);
+//        return CalculateGrossFromNet(netValue, vat);
 //    }
 
     /**
      * Calculates the gross value based on a net value and the vat
      * 
-     * @param net
+     * @param netValue
      *            Net value as double
      * @param vat
      *            Vat as double
-     * @return Gross value as Double (unformatted)
+     * @return Gross value as string
      */
-    public Double calculateGrossFromNetAsDouble(Double net, Double vat) {
-        return net * (1 + vat);
+    public MonetaryAmount CalculateGrossFromNet(MonetaryAmount netValue, Double vat) {
+        return netValue.multiply(1 + vat);
     }
-//
-//    /**
-//     * Calculates the gross value based on a net value and the vat. Uses the net
-//     * value from a SWT text field and write the result into a gross SWT text
-//     * field
-//     * 
-//     * @param net
-//     *            SWT text field. This value is used as net value.
-//     * @param gross
-//     *            SWT text field. This filed is modified.
-//     * @param vat
-//     *            Vat as double
-//     * @param netvalue
-//     *            Net value as UniData. This is modified with the net value.
-//     */
-//    public void CalculateGrossFromNet(Text net, Text gross, Double vat, Double netvalue) {
-//        String s = "";
-//
-//        // If there is a net SWT text field specified, its value is used
-//        if (net != null) {
-//            s = CalculateGrossFromNet(net.getText(), vat, netvalue);
-//            // In the other case, the UniData netvalue is used
-//        }
-//        else {
-//            s = CalculateGrossFromNet(netvalue, vat);
-//        }
-//
-//        // Fill the SWT text field "gross" with the result
-//        if (gross != null)
-//            if (!gross.isFocusControl())
-//                gross.setText(s);
-//    }
-//
-//    /**
-//     * Convert a gross value to a net value.
-//     * 
-//     * @param gross
-//     *            Gross value as String
-//     * @param vat
-//     *            Vat as double
-//     * @param netvalue
-//     *            Net value as UniData. This is modified with the new net value.
-//     * @return Net value as string
-//     */
-//    public String CalculateNetFromGross(String gross, Double vat, UniData netvalue) {
-//        return CalculateNetFromGross(StringToDouble(gross), vat, netvalue);
-//    }
-//
-//    /**
-//     * Convert a gross value to a net value.
-//     * 
-//     * @param gross
-//     *            Gross value as Double
-//     * @param vat
-//     *            Vat as double
-//     * @param netvalue
-//     *            Net value as UniData. This is modified with the new net value.
-//     * @return Net value as string
-//     */
-//    public String CalculateNetFromGross(Double gross, Double vat, UniData netvalue) {
-//        netvalue.setValue(gross / (1 + vat));
-//        return doubleToFormattedPrice(netvalue.getValueAsDouble());
-//    }
-//
-//    /**
-//     * Calculates the net value based on a gross value and the vat. Uses the
-//     * gross value from a SWT text field and write the result into a net SWT
-//     * text field
-//     * 
-//     * @param gross
-//     *            SWT text field. This value is used as gross value.
-//     * @param net
-//     *            SWT text field. This filed is modified.
-//     * @param vat
-//     *            Vat as double
-//     * @param netvalue
-//     *            Net value as UniData. This is modified with the net value.
-//     */
-//    public void calculateNetFromGross(Text gross, Text net, Double vat, UniData netvalue) {
-//        String s = "";
-//
-//        // If there is a gross SWT text field specified, its value is used
-//        if (gross != null) {
-//            s = CalculateNetFromGross(gross.getText(), vat, netvalue);
-//            // In the other case: do not convert. Just format the netvalue.
-//        }
-//        else {
-//            s = doubleToFormattedPrice(netvalue.getValueAsDouble());
-//        }
-//
-//        // Fill the SWT text field "net" with the result
-//        if (net != null)
-//            if (!net.isFocusControl())
-//                net.setText(s);
-//
-//    }
+
+    /**
+     * Calculates the gross value based on a net value and the vat. Uses the net
+     * value from a SWT text field and write the result into a gross SWT text
+     * field
+     * 
+     * @param net
+     *            SWT text field. This value is used as net value.
+     * @param gross
+     *            SWT text field. This filed is modified.
+     * @param vat
+     *            Vat as double
+     * @param netValue
+     *            Net value as UniData. This is modified with the net value.
+     */
+    public void CalculateGrossFromNet(Text net, Text gross, Double vat, MonetaryAmount netValue) {
+    	MonetaryAmount s = null;
+
+        // If there is a net SWT text field specified, its value is used
+        if (net != null) {
+            s = CalculateGrossFromNet(Money.of(StringToDouble(net.getText()), getDefaultCurrencyUnit()), vat);
+            // In the other case, the UniData netvalue is used
+        }
+        else {
+            s = CalculateGrossFromNet(netValue, vat);
+        }
+
+        // Fill the SWT text field "gross" with the result
+        if (gross != null)
+            if (!gross.isFocusControl())
+                gross.setText(formatCurrency(s));
+    }
+
+    /**
+     * Convert a gross value to a net value.
+     * 
+     * @param gross
+     *            Gross value as String
+     * @param vat
+     *            Vat as double
+     * @param netvalue
+     *            Net value as UniData. This is modified with the new net value.
+     * @return Net value as string
+     */
+    public MonetaryAmount calculateNetFromGross(String gross, Double vat) {
+        return calculateNetFromGross(StringToDouble(gross), vat);
+    }
+
+    /**
+     * Convert a gross value to a net value.
+     * 
+     * @param gross
+     *            Gross value as Double
+     * @param vat
+     *            Vat as double
+     * @param netvalue
+     *            Net value as UniData. This is modified with the new net value.
+     * @return Net value as string
+     */
+    public MonetaryAmount calculateNetFromGross(Double gross, Double vat) {
+        return Money.of(gross / (1 + vat), getDefaultCurrencyUnit());
+    }
+
+    /**
+     * Calculates the net value based on a gross value and the vat. Uses the
+     * gross value from a SWT text field and write the result into a net SWT
+     * text field
+     * 
+     * @param gross
+     *            SWT text field. This value is used as gross value.
+     * @param net
+     *            SWT text field. This filed is modified.
+     * @param vat
+     *            Vat as double
+     * @param netvalue
+     *            Net value as UniData. This is modified with the net value.
+     */
+    public MonetaryAmount calculateNetFromGross(Text gross, Text net, Double vat, MonetaryAmount netvalue) {
+    	MonetaryAmount s = null;
+
+        // If there is a gross SWT text field specified, its value is used
+        if (gross != null) {
+            s = calculateNetFromGross(gross.getText(), vat);
+            // In the other case: do not convert. Just format the netvalue.
+        }
+        else {
+            s = netvalue;
+        }
+
+        // Fill the SWT text field "net" with the result
+        if (net != null)
+            if (!net.isFocusControl())
+                net.setText(s.toString());
+        
+        return s;
+
+    }
     
     public Double calculateNetFromGrossAsDouble(Double gross, Double vat) {
         Double s = NumberUtils.DOUBLE_ZERO;
@@ -641,10 +630,10 @@ public class DataUtils {
         if (gross != null) {
             s = gross / (1 + vat);
             // In the other case: do not convert. Just format the net value.
-//        }
-//        else {
-//            s = doubleToFormattedPrice(netvalue.getValueAsDouble());
         }
+//        else {
+//            s = doubleToFormattedPrice(netvalue);
+//        }
         return s;
     }
     
@@ -997,59 +986,59 @@ public class DataUtils {
      */
     public String replaceAllAccentedChars(String s) {
         
-        s = s.replace("À", "A");
-        s = s.replace("Á", "A");
-        s = s.replace("Â", "A");
-        s = s.replace("Ã", "A");
-        s = s.replace("Ä", "Ae");
-        s = s.replace("â", "a");
-        s = s.replace("ã", "a");
-        s = s.replace("ä", "ae");
-        s = s.replace("à", "a");
-        s = s.replace("á", "a");
+        s = s.replace("Ã€", "A");
+        s = s.replace("Ã�", "A");
+        s = s.replace("Ã‚", "A");
+        s = s.replace("Ãƒ", "A");
+        s = s.replace("Ã„", "Ae");
+        s = s.replace("Ã¢", "a");
+        s = s.replace("Ã£", "a");
+        s = s.replace("Ã¤", "ae");
+        s = s.replace("Ã ", "a");
+        s = s.replace("Ã¡", "a");
 
-        s = s.replace("È", "E");
-        s = s.replace("É", "E");
-        s = s.replace("Ê", "E");
-        s = s.replace("Ë", "E");
-        s = s.replace("ê", "e");
-        s = s.replace("ë", "e");
-        s = s.replace("è", "e");
-        s = s.replace("é", "e");
+        s = s.replace("Ãˆ", "E");
+        s = s.replace("Ã‰", "E");
+        s = s.replace("ÃŠ", "E");
+        s = s.replace("Ã‹", "E");
+        s = s.replace("Ãª", "e");
+        s = s.replace("Ã«", "e");
+        s = s.replace("Ã¨", "e");
+        s = s.replace("Ã©", "e");
 
-        s = s.replace("Ì", "I");
-        s = s.replace("Í", "I");
-        s = s.replace("Î", "I");
-        s = s.replace("Ï", "I");
-        s = s.replace("î", "i");
-        s = s.replace("ï", "i");
-        s = s.replace("ì", "i");
-        s = s.replace("í", "i");
+        s = s.replace("ÃŒ", "I");
+        s = s.replace("Ã�", "I");
+        s = s.replace("ÃŽ", "I");
+        s = s.replace("Ã�", "I");
+        s = s.replace("Ã®", "i");
+        s = s.replace("Ã¯", "i");
+        s = s.replace("Ã¬", "i");
+        s = s.replace("Ã­", "i");
 
-        s = s.replace("Ò", "O");
-        s = s.replace("Ó", "O");
-        s = s.replace("Ô", "O");
-        s = s.replace("Õ", "O");
-        s = s.replace("Ö", "Oe");
-        s = s.replace("ô", "o");
-        s = s.replace("õ", "o");
-        s = s.replace("ö", "oe");
-        s = s.replace("ò", "o");
-        s = s.replace("ó", "o");
+        s = s.replace("Ã’", "O");
+        s = s.replace("Ã“", "O");
+        s = s.replace("Ã”", "O");
+        s = s.replace("Ã•", "O");
+        s = s.replace("Ã–", "Oe");
+        s = s.replace("Ã´", "o");
+        s = s.replace("Ãµ", "o");
+        s = s.replace("Ã¶", "oe");
+        s = s.replace("Ã²", "o");
+        s = s.replace("Ã³", "o");
 
-        s = s.replace("Ù", "U");
-        s = s.replace("Ú", "U");
-        s = s.replace("Û", "U");
-        s = s.replace("Ü", "Ue");
-        s = s.replace("û", "u");
-        s = s.replace("ü", "ue");
-        s = s.replace("ù", "u");
-        s = s.replace("ú", "u");
+        s = s.replace("Ã™", "U");
+        s = s.replace("Ãš", "U");
+        s = s.replace("Ã›", "U");
+        s = s.replace("Ãœ", "Ue");
+        s = s.replace("Ã»", "u");
+        s = s.replace("Ã¼", "ue");
+        s = s.replace("Ã¹", "u");
+        s = s.replace("Ãº", "u");
 
-        s = s.replace("Ý", "Y");
-        s = s.replace("ý", "y");
-        s = s.replace("ñ", "n");
-        s = s.replace("ß", "ss");
+        s = s.replace("Ã�", "Y");
+        s = s.replace("Ã½", "y");
+        s = s.replace("Ã±", "n");
+        s = s.replace("ÃŸ", "ss");
 
         return s;
     }

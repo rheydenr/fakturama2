@@ -102,7 +102,8 @@ public class BrowserEditor {
 	public void createPartControl(final Composite parent) {
 // Initialize the editor. Set the URL as part name
         this.part = (MPart) parent.getData("modelElement");
-   
+        part.setIconURI(Icon.COMMAND_WWW.getIconURI());
+
 		url =  (String) part.getProperties().get(OpenBrowserEditorHandler.PARAM_URL);
 //		setPartName(input.getName());
 		isFakturamaProjectUrl = BooleanUtils.toBoolean(part.getProperties().get(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL));

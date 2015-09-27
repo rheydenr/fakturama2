@@ -14,12 +14,16 @@
 
 package com.sebulli.fakturama.parts.widget;
 
+import javax.money.MonetaryAmount;
+
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
@@ -27,13 +31,11 @@ import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
  * interacts with a GrossText control, that contains the gross value. If the
  * value of this control is changes, also the corresponding gross control is
  * modified.
- * 
- * @author Gerd Bartelt
  */
 public class NetText {
-
+	
 	// The  net value
-	private Double netValue;
+	private MonetaryAmount netValue;
 
 	// VAT value as factor
 	private Double vatValue;
@@ -42,7 +44,7 @@ public class NetText {
 	private FormattedText netText;
 
 	// The corresponding text control that contains the gross value
-	private GrossText grossText;
+	private FormattedText grossText;
 
 	/**
 	 * Constructor that creates the text widget and connects it with the
@@ -57,7 +59,7 @@ public class NetText {
 	 * @param vat
 	 *            The vat value ( factor )
 	 */
-	public NetText(Composite parent, int style, Double net, Double vat) {
+	public NetText(Composite parent, int style, MonetaryAmount net, Double vat) {
 
 		// Set the local variables
 		this.netValue = net;
@@ -81,9 +83,9 @@ public class NetText {
 		// Set the text of the GrossText, based on the NetText's value
 		netText.getControl().addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
-                if (netText.getControl().isFocusControl() && grossText != null) {
-                	grossText.recalculate(netText, vatValue);
-//                    grossText.getGrossText().setValue(DataUtils.getInstance().calculateGrossFromNetAsDouble((Double) netText.getValue(), vatValue));
+                if (netText.getControl().isFocusControl()) {  
+                    DataUtils.getInstance().CalculateGrossFromNet(netText.getControl(), grossText.getControl(), vatValue, netValue);
+                    netValue = Money.of((Double)netText.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
                 } else {
                     netText.getControl().notifyListeners(SWT.FocusOut, null);
                 }
@@ -107,18 +109,18 @@ public class NetText {
 	 * 
 	 * @return The text widget.
 	 */
-	public GrossText getGrossText() {
+	public FormattedText getGrossText() {
 		return this.grossText;
 	}
 
 	/**
 	 * Set a reference to the gross text widget
 	 * 
-	 * @param grossT
+	 * @param formattedText
 	 *            The gtoss text widget
 	 */
-	public void setGrossText(GrossText grossT) {
-		this.grossText = grossT;
+	public void setGrossText(FormattedText formattedText) {
+		this.grossText = formattedText;
 	}
 
 	/**
@@ -140,4 +142,17 @@ public class NetText {
 		return netText;
 	}
 
+	  /**
+	 * @return the netValue
+	 */
+	public final MonetaryAmount getNetValue() {
+		return netValue;
+	}
+
+	/**
+	 * @param netValue the netValue to set
+	 */
+	public final void setNetValue(MonetaryAmount netValue) {
+		this.netValue = netValue;
+	}
 }
