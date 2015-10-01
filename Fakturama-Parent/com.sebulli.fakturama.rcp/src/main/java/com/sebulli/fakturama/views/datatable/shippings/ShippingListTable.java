@@ -14,6 +14,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -61,6 +63,7 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.Shipping_;
@@ -84,6 +87,9 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    protected IEclipseContext context;
 
     @Inject
     private Logger log;
@@ -279,7 +285,9 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     @Override
     protected TopicTreeViewer<ShippingCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
+    	context.set("useDocumentAndContactFilter", false);
+    	context.set("useAll", true);
+    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

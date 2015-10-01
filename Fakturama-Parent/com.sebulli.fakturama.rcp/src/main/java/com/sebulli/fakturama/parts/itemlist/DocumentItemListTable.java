@@ -31,13 +31,9 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -96,16 +92,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.javamoney.moneta.Money;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -127,33 +119,20 @@ import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+
 /**
  *
  */
 public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO, DummyStringCategory> {
 
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private Logger log;
-
 //    this is for synchronizing the UI thread (unused at the moment)
 //    @Inject    
 //    private UISynchronize synch;
     
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
-    
     @Inject
     private ESelectionService selectionService;
-    
-    @Inject
-    private IPreferenceStore preferences;
     
     @Inject
     private IEclipseContext context;
@@ -219,7 +198,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (preferences.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1);
+            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1);
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -267,25 +246,25 @@ private Menu createContextMenu(NatTable natTable) {
         // get the visible properties to show in list view along with their position index
         final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
         
-        if(preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
+        if(eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
         }
 
-        if (containsOptionalItems || preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
+        if (containsOptionalItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
         }
 
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
         
-        if (preferences.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
+        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
         }
         
-        if (preferences.getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
+        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
         }
         
-        if (preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
         }        
         
@@ -298,7 +277,7 @@ private Menu createContextMenu(NatTable natTable) {
             // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
             
-            if (containsDiscountedItems || preferences.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
+            if (containsDiscountedItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
                 propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
             } 
             
@@ -337,7 +316,7 @@ private Menu createContextMenu(NatTable natTable) {
                     // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
                     String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     if (StringUtils.isNotBlank(imgPath)) {
-                        String picturePath = preferences.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
+                        String picturePath = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
                         retval = picturePath + imgPath;
                     } else {
                         retval = null;

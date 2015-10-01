@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -67,6 +69,7 @@ import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -88,6 +91,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Inject
     @Translation
     protected Messages msg;
+
+    @Inject
+    protected IEclipseContext context;
 
     @Inject
     private Logger log;
@@ -293,7 +299,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
 
     @Override
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
+    	context.set("useDocumentAndContactFilter", false);
+    	context.set("useAll", true);
+    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(accountDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

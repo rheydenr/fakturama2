@@ -15,6 +15,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -55,6 +57,7 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
@@ -72,7 +75,10 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  *
  */
 public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountType, ItemListTypeCategory> {
-
+ 
+	@Inject
+    protected IEclipseContext context;
+    
     // ID of this view
     public static final String ID = "fakturama.views.listTable";
     
@@ -241,7 +247,10 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
 
     @Override
     protected TopicTreeViewer<ItemListTypeCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
+    	context.set("useDocumentAndContactFilter", false);
+    	context.set("useAll", true);
+    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+//        topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
         List<ItemListTypeCategory> categoryList = itemListTypeCategoriesDAO.findAll();
         categories = GlazedLists.eventList(categoryList);
         categories.forEach(cat -> msg.getMessageFromKey(cat.getName()));

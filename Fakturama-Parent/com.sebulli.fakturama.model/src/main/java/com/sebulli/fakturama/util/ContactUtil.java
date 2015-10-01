@@ -49,11 +49,11 @@ public class ContactUtil {
                 line +=", ";
         }
         /*
-         * If we have a manual entered address then that first line is relevant.
-         * Therefore we've to skip the following in case we using a manual address
-         * (which is determined by a missing customer number)
+         * If we have a manually entered address then that first line is relevant.
+         * Therefore we've to skip the following in case we use a manual address
+         * (which is determined by a missing customer number).
          */
-        if(contact.getCustomerNumber() == null) {
+        if(contact.getCustomerNumber() == null && contact.getAddress().getManualAddress() != null) {
             String manualAddress = contact.getAddress().getManualAddress();
             String[] splitted = manualAddress.split("\\n");
             line += splitted[0];
@@ -169,7 +169,7 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null && (contact.getCustomerNumber() != null || contact.getAddress().getManualAddress() != null)) {
+		if(contact != null && (/*contact.getCustomerNumber() != null ||*/ contact.getAddress() != null)) {
 		    
 		    if(contact.getAddress().getManualAddress() != null) {
 		        // if a manual address is set we use this one

@@ -370,6 +370,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
+    	context.set("useDocumentAndContactFilter", true);
+    	context.set("useAll", false);
+//    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
         categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
         topicTreeViewer.setInput(categories);
@@ -441,6 +444,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         treeFilteredIssues.setMatcher(new DocumentMatcher(filter, 
                 treeObjectType,
                 msg));
+//        filterLabel.setToolTipText("ouch!");
         }
 
        filterLabel.pack(true);

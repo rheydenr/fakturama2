@@ -20,7 +20,7 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="app/app_16.png" i32="app/app_32.png" i48="app/app_48.png" i64="app/app_64.png" i128="app/app_128.png"/>
+   <windowImages i16="app/app_16.png" i32="app/app_32.png" i48="app/app_48.png" i64="app/app_64.png" i128="app/app_128.png" i256="app/app_256.png"/>
 
    <splash
       location="com.sebulli.fakturama.rcp"
@@ -33,15 +33,16 @@
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="/com.sebulli.fakturama.site/app/app_16_32.bmp"
+            winSmallHigh="/com.sebulli.fakturama.site/app/app_16_8.bmp"
             winSmallLow="/com.sebulli.fakturama.site/app/app_16_8.bmp"
-            winMediumHigh="/com.sebulli.fakturama.site/app/app_32_32.bmp"
+            winMediumHigh="/com.sebulli.fakturama.site/app/app_32_8.bmp"
             winMediumLow="/com.sebulli.fakturama.site/app/app_32_8.bmp"
             winLargeHigh="/com.sebulli.fakturama.site/app/app_48_32.bmp"
             winLargeLow="/com.sebulli.fakturama.site/app/app_48_8.bmp"
             winExtraLargeHigh="/com.sebulli.fakturama.site/app/app_256.bmp"/>
       </win>
    </launcher>
+
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
@@ -253,7 +254,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
       <feature id="org.slf4j.osgi.feature"/>
-      <feature id="org.apache.commons.feature" version="3.3"/>
    </features>
 
    <configurations>
@@ -274,7 +274,14 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </configurations>
 
    <repositories>
-      <repository location="http://www.fakturama.org/release/" enabled="true" />
+      <repository location="http://www.fakturama.info/files/release/update1_6/" enabled="true" />
    </repositories>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>

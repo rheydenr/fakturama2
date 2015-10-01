@@ -49,6 +49,7 @@ import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Proforma;
+import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -514,4 +515,21 @@ public List<Document> findAll(boolean forceRead) {
         List<String> stringList = resultList.stream().map(d -> d.getName()).collect(Collectors.toList());
         return StringUtils.join(stringList, ",");
     }
+//
+//	public void sumAllDocumentsWithinCategory(DocumentType type, String category) {
+//        FakturamaModelFactory modelFactory = new FakturamaModelFactory();
+//        BillingType billingType = modelFactory.createBillingTypeFromString(type.getTypeAsString());
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+//        Root<Document> root = criteria.from(Document.class);
+//
+//        CriteriaQuery<Document> cq = criteria.where(
+//                cb.and(
+//                        cb.equal(root.<BillingType> get(Document_.billingType), billingType),
+//                        cb.equal(root.<String> get(Document_.webshopId), webshopId),
+//                        cb.equal(root.<Date> get(Document_.webshopDate), res)
+//                      )
+//            );
+//        return getEntityManager().createQuery(cq).getResultList();
+//	}
 }

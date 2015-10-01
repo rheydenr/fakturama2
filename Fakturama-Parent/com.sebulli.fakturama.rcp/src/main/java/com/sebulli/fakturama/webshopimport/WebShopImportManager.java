@@ -79,6 +79,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
+import org.osgi.util.xml.XMLParserActivator;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -274,6 +275,9 @@ public class WebShopImportManager {
 	
 	@PostConstruct
 	public void initialize() {
+/* TODO use it!
+		XMLParserActivator
+*/
 		generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
 		productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}

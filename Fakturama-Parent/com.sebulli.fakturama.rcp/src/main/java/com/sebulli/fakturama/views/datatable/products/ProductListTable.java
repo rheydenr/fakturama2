@@ -13,6 +13,8 @@ package com.sebulli.fakturama.views.datatable.products;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -52,6 +54,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -87,6 +90,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 /**    this is for synchronizing the UI thread */
     @Inject    
     private UISynchronize sync;
+    
+    @Inject
+    protected IEclipseContext context;
     
     @Inject
     private ProductsDAO productsDAO;
@@ -265,7 +271,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
     @Override
     protected TopicTreeViewer<ProductCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ProductCategory>(top, msg, false, true);
+    	context.set("useDocumentAndContactFilter", false);
+    	context.set("useAll", true);
+    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(productCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.

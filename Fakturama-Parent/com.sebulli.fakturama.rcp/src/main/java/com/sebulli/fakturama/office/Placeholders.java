@@ -53,6 +53,7 @@ public class Placeholders {
     @Translation
     protected Messages msg;
 
+    @Inject
     private IEclipseContext context;
 //
 //    @Inject
@@ -344,7 +345,12 @@ public class Placeholders {
 		String addressCity = "";
 		String addressCountry = "";
 		
-		String[] addressLines = address.split("\\n");
+		String[] addressLines;
+		if (address == null) {
+			return "";
+		} else {
+			addressLines = address.split("\\n");
+		}
 		
 		Boolean countryFound = false;
 		Boolean cityFound = false;

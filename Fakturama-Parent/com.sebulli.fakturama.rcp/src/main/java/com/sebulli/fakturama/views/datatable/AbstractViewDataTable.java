@@ -497,25 +497,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	}
 
 	/**
-	 * Refresh the table and the tree viewer
-	 * @deprecated
-	 */
-	public void refresh() {
-
-		// Refresh the standard entry
-		refreshStdId();
-
-//		// Refresh the table
-//		if (tableViewer != null)
-//			tableViewer.refresh();
-
-		// Refresh the tree viewer
-		if (topicTreeViewer != null) {
-//			topicTreeViewer.refreshTree();
-		}
-	}
-
-	/**
 	 * Asks this part to take focus within the workbench.
 	 */
 	@Focus
@@ -566,28 +547,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 */
 	public void setContactFilter(long filter) {
 	    // per default this method does nothing
-	}
-
-	/**
-	 * Refresh the standard ID. Sets the new standard ID to the standard icon
-	 * column of the table
-	 * @deprecated
-	 */
-	public void refreshStdId() {
-
-		if (stdPropertyKey == null)
-			return;
-//		if (stdIconColumn == null)
-//			return;
-
-		try {
-			// Set the the new standard ID to the standard icon column
-			// TODO
-			//stdIconColumn.setStdEntry(Integer.parseInt(Data.INSTANCE.getProperty(stdPropertyKey)));
-		}
-		catch (NumberFormatException e) {
-		}
-
 	}
 	
     /**
