@@ -31,10 +31,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Contact;
@@ -43,6 +39,10 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 
 /**
  * This is the topic tree viewer that displays a tree of the categories of all
@@ -80,7 +80,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	// The corresponding table
 	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
     private TreeObjectContentProvider<T> contentProvider;
-	
+    
 	/**
 	 * Constructor Creates a
 	 * 

@@ -26,7 +26,7 @@ public enum ReceiptvoucherListDescriptor {
     DONOTBOOK(AbstractVoucher_.doNotBook.getName(), null, 0, 20),
     DATE(AbstractVoucher_.voucherDate.getName(), "common.field.date", 1, 80),
     VOUCHER(AbstractVoucher_.voucherNumber.getName(), "receiptvoucher.field.voucher", 2, 100),
-    DOCUMENT(AbstractVoucher_.documentNumber.getName(), "common.field.document", 3, 150),
+    DOCUMENT(AbstractVoucher_.documentNumber.getName(), "partdesc.docview", 3, 150),
     CUSTOMER(AbstractVoucher_.name.getName(), "receiptvoucher.field.customer", 4, 200),
     TOTAL(AbstractVoucher_.totalValue.getName(), "common.field.total", 5, 80)
     ;

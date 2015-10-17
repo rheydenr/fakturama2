@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -31,6 +32,7 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
 
 /**
  * Preference page for the number settings
@@ -173,20 +175,22 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-//		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
-//		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
 		
-	    List<String> documentTypes = Arrays.stream(DocumentType.values()).map(d -> d.getTypeAsString()).collect(Collectors.toList());
-	    documentTypes.add(ContactEditor.ID);
-//        documentTypes.add(ProductEditor.ID);
+	    List<String> documentTypes = Arrays.stream(DocumentType.values())
+	    		.filter(d -> d != DocumentType.NONE)
+	    		.map(d -> d.getTypeAsString()).collect(Collectors.toList());
+	    documentTypes.add(StringUtils.substringAfterLast(ContactEditor.ID, "."));
+        documentTypes.add(StringUtils.substringAfterLast(ProductEditor.ID, "."));
 	    
 //		for (DocumentType editorId : DocumentType.values()) {
 		for (String editorId : documentTypes) {

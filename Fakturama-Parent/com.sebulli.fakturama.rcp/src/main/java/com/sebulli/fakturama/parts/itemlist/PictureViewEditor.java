@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -23,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
@@ -94,11 +96,15 @@ public class PictureViewEditor extends AbstractCellEditor {
 //        return 0;
       // Display the picture, if it is set.
       if (originalCanonicalValue != null) {
-          this.pictureName = (String) originalCanonicalValue;
+//          this.pictureName = (String) originalCanonicalValue;
+//
+//          // Load the image, based on the picture name
+//          Image image = JFaceResources.getImageRegistry().get(pictureName);
 
-          // Load the image, based on the picture name
-          Image image = JFaceResources.getImageRegistry().get(pictureName);
-
+			ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) originalCanonicalValue);
+			Image image = new Image(Display.getCurrent(), imgStream);
+    	  
+    	  
           // Get the pictures size
           width = image.getBounds().width;
           height = image.getBounds().height;

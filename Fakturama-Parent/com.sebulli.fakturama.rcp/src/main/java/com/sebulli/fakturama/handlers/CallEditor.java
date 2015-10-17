@@ -235,7 +235,7 @@ public class CallEditor {
             case ContactListTable.ID:
             case "Debitor":
             case "Creditor":
-                myPart.setLabel(msg.commandContactsName);
+                myPart.setLabel(msg.pageContacts);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
                 myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
                 break;

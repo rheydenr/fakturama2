@@ -4,6 +4,7 @@
 package com.sebulli.fakturama.misc;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Order states.
@@ -33,7 +34,7 @@ public enum OrderState {
         return state;
     }
     
-    public static OrderState findByProgressValue(Integer progress) {
-        return Arrays.stream(OrderState.values()).filter(os -> os.getState() == progress).findFirst().get();
+    public static OrderState findByProgressValue(Optional<Integer> progress) {
+        return Arrays.stream(OrderState.values()).filter(os -> os.getState() == progress.orElse(Integer.valueOf(0))).findFirst().get();
     }
 }

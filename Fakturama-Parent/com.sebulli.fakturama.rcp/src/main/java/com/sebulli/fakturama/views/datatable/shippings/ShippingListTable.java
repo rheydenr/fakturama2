@@ -67,6 +67,7 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.Shipping_;
+import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -287,7 +288,8 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     protected TopicTreeViewer<ShippingCategory> createCategoryTreeViewer(Composite top) {
     	context.set("useDocumentAndContactFilter", false);
     	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

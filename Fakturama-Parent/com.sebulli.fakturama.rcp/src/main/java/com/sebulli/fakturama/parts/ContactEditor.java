@@ -341,7 +341,7 @@ public class ContactEditor extends Editor<Contact> {
                 editorContact = modelFactory.createDebitor();
             }
 			//T: Contact Editor Title of the editor if the data set is a new one.
-			part.setLabel(msg.commandNewContactName);
+			part.setLabel(msg.mainMenuNewContactName);
 
 			// Set the payment to the standard value
 			long paymentId = preferences.getLong(Constants.DEFAULT_PAYMENT);

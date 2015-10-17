@@ -73,7 +73,7 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_USER, msg.preferencesWebshopUser, getFieldEditorParent()));
 
 		//T: Preference page "Web Shop Import" - Label
-		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_PASSWORD, msg.preferencesWebshopPassword, getFieldEditorParent());
+		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_PASSWORD, msg.startFirstSelectDbCredentialsPassword, getFieldEditorParent());
 		passwordEditor.getTextControl(getFieldEditorParent()).setEchoChar('*');
 		addField(passwordEditor);
 

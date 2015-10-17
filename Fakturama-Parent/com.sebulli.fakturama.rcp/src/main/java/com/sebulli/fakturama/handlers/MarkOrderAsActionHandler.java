@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -136,7 +137,7 @@ public class MarkOrderAsActionHandler {
         if (document.getBillingType() == BillingType.ORDER) {
             try {
 
-                OrderState progress_old = OrderState.findByProgressValue(document.getProgress());
+                OrderState progress_old = OrderState.findByProgressValue(Optional.of(document.getProgress()));
                 // Stock
                 List<DocumentItem> items = document.getItems();
                 if (progress == OrderState.SHIPPED && progress_old != OrderState.SHIPPED) // mark as shipped - take from stock

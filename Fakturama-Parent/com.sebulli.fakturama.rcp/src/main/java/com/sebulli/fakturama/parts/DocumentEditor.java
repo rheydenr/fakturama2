@@ -1923,7 +1923,7 @@ public class DocumentEditor extends Editor<Document> {
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
 	                tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.INVOICE));
-        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.mainMenuNewProforma, 
                 tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
                 , createCommandParams(DocumentType.PROFORMA));
 			break;
@@ -1937,7 +1937,7 @@ public class DocumentEditor extends Editor<Document> {
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
                     tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.INVOICE));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
                     tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.PROFORMA));
 			break;
@@ -1948,7 +1948,7 @@ public class DocumentEditor extends Editor<Document> {
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
                     tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.INVOICE));
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentProformaName, 
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.mainMenuNewProforma, 
                     tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.PROFORMA));
 			break;

@@ -60,13 +60,13 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.YOUR_COMPANY_PREFERENCE_PAGE);
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, msg.preferencesYourcompanyName, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, msg.pageCompanyName, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, msg.preferencesYourcompanyOwner, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, msg.pageCompanyOwner, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, msg.preferencesYourcompanyStreet, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, msg.pageCompanyStreet, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, msg.commonFieldZipcode, getFieldEditorParent()));
@@ -90,13 +90,13 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE, msg.exporterDataWebsite, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, msg.preferencesYourcompanyVatno, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR, msg.pageCompanyVatno, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, msg.preferencesYourcompanyTaxoffice, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE, msg.pageCompanyTaxoffice, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, msg.preferencesYourcompanyBankname, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK, msg.pageCompanyBankname, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN, msg.exporterDataIban, getFieldEditorParent()));
@@ -105,7 +105,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC, msg.exporterDataBic, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, msg.preferencesYourcompanyCreditorid, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, msg.pageCompanyCreditorid, getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -113,7 +113,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 	 */
 	@Override
 	public String getDescription() {
-	    return msg.preferencesYourcompany;
+	    return msg.pageCompany;
 	}
 
 	/**

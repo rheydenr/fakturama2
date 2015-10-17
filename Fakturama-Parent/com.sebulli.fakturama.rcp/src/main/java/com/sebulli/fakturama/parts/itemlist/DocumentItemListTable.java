@@ -314,13 +314,14 @@ private Menu createContextMenu(NatTable natTable) {
                 case PICTURE:
                     // we have to build the picture path
                     // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
-                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    if (StringUtils.isNotBlank(imgPath)) {
-                        String picturePath = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
-                        retval = picturePath + imgPath;
-                    } else {
-                        retval = null;
-                    }
+//                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+//                    if (StringUtils.isNotBlank(imgPath)) {
+//                        String picturePath = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
+//                        retval = picturePath + imgPath;
+//                    } else {
+//                        retval = null;
+//                    }
+                	retval = rowObject.getDocumentItem().getPicture();
                     break;
                 case VAT:
                     retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);

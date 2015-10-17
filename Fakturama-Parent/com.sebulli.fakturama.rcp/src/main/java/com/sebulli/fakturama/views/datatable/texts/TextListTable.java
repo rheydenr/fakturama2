@@ -60,6 +60,7 @@ import com.sebulli.fakturama.dao.TextCategoriesDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.TextModule_;
@@ -283,7 +284,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     protected TopicTreeViewer<TextCategory> createCategoryTreeViewer(Composite top) {
     	context.set("useDocumentAndContactFilter", false);
     	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<TextCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        topicTreeViewer = new TopicTreeViewer<TextCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<TextCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(textCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

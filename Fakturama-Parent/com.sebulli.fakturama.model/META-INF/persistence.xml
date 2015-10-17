@@ -37,6 +37,7 @@
 			<persistence:class>com.sebulli.fakturama.model.Role</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Shipping</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ShippingCategory</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.CEFACTCode</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Tenant</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextModule</persistence:class>

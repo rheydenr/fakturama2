@@ -312,7 +312,7 @@ Arrays.fill(net, defaultPrice);
             }
             
 			//T: Header of product editor
-            part.setLabel(msg.mainMenuNewProductName);
+            part.setLabel(msg.commandNewProductName);
 
 			// Set the vat to the standard value
             int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);

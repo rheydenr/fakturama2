@@ -109,4 +109,28 @@ public class VoucherItemDTO implements IEntity {
         expenditureItem.setDeleted(newDeleted);
     }
 
+	@Override
+	public Date getValidFrom() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setValidFrom(Date newValidFrom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Date getValidTo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setValidTo(Date newValidTo) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

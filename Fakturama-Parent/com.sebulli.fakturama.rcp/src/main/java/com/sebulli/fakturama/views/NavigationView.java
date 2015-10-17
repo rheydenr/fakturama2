@@ -155,14 +155,14 @@ public class NavigationView {
         addAction(group2, Icon.COMMAND_RECEIPT_VOUCHER, "command.receiptvouchers", CommandIds.CMD_OPEN_RECEIPTVOUCHERS, parameters);
 
         // Create the 3rd expand bar "Create new"
-        PGroup group3 = createPGroup("command.new.name", Icon.ICON_PRODUCT_NEW);
+        PGroup group3 = createPGroup("main.menu.new", Icon.ICON_PRODUCT_NEW);
         parameters = new HashMap<>();
         parameters.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_PRODUCT*/, parameters);
         
         parameters = new HashMap<>();
         parameters.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
-        addAction(group3, Icon.COMMAND_CONTACT, "command.new.contact", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_CONTACT*/, parameters);
+        addAction(group3, Icon.COMMAND_CONTACT, "main.menu.new.contact", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_CONTACT*/, parameters);
 
         // Create the 4th expand bar "export"
         /*

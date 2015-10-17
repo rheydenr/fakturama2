@@ -32,7 +32,7 @@ public class ListViewRowHeaderDataProvider implements IDataProvider {
         String retval = null;
         if(withRowHeader) {
             // data Value is already the PosNo
-            retval = Integer.toString((Integer) bodyDataProvider.getDataValue(columnIndex, rowIndex));
+            retval = Integer.toString(((Double) bodyDataProvider.getDataValue(columnIndex, rowIndex)).intValue());
         }
         return retval;
     }

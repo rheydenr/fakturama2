@@ -13,6 +13,8 @@ package com.sebulli.fakturama.views.datatable.vats;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -60,6 +62,7 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
@@ -90,6 +93,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     
     @Inject
     private VatsDAO vatsDAO;
+
+    @Inject
+    private IEclipseContext context;
 
     @Inject
     private VatCategoriesDAO vatCategoriesDAO;
@@ -265,6 +271,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @Override
     protected TopicTreeViewer<VATCategory> createCategoryTreeViewer(Composite top) {
+//    	topicTreeViewer = (TopicTreeViewer<VATCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         topicTreeViewer = new TopicTreeViewer<VATCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(vatCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);

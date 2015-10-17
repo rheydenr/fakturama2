@@ -519,7 +519,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/progress"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The status of the transaction (is an order shipped, paid or in any other state)." name="progress" getter="getProgress" defaultValue="null" setter="setProgress" validJavaMemberName="progress" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The status of the transaction (is an order shipped, paid or in any other state)." name="progress" getter="getProgress" defaultValue="java.lang.Integer.valueOf(0)" setter="setProgress" validJavaMemberName="progress" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/serviceDate"/>
@@ -732,11 +732,19 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//IEntity/dateAdded"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The date when the contact was added." getter="getDateAdded" setter="setDateAdded" validJavaMemberName="dateAdded" useList="false"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The date when the entity was added." getter="getDateAdded" setter="setDateAdded" validJavaMemberName="dateAdded" useList="false"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//IEntity/deleted"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Indicates if the entity has been deleted." defaultValue="java.lang.Boolean.FALSE"/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//IEntity/validFrom"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The date from which this entity should be valid (used for historized entities)."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//IEntity/validTo"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="The date until this entity should be valid (used for historized entities)."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
@@ -1204,6 +1212,25 @@
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="VATCategory" qualifiedClassName="com.sebulli.fakturama.model.VATCategory" simpleClassName="VATCategory" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="true" serializable="true" abstract="false" daoQualifiedClassName="com.sebulli.fakturama.dao.VATCategoryDao">
         <classExtends>com.sebulli.fakturama.model.AbstractCategory</classExtends>
       </eClassAnnotations>
+    </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
+      <eClass href="Fakturama.ecore#//CEFACTCode"/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="This Entity contains the UN/CEFACT values for measurement codes and others. Each entry consists of a target type (i.e., Shipping, VAT or so) and the according code information." serializable="true">
+        <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
+      </eClassAnnotations>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//CEFACTCode/abbreviation"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The abbreviation of this code in a readable manner (can be overwritten by user)."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//CEFACTCode/code"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The UN/CEFACT code."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//CEFACTCode/target"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The target of this code. This can be &quot;Shipping&quot;, &quot;VAT&quot; or others. It is not modeled as reference to another &quot;target table&quot; because these values are invariant and only like an ID for a category."/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
   </annotatedEPackages>
 </annotationsmodel:AnnotatedModel>

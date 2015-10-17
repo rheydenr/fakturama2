@@ -249,8 +249,8 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
     protected TopicTreeViewer<ItemListTypeCategory> createCategoryTreeViewer(Composite top) {
     	context.set("useDocumentAndContactFilter", false);
     	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-//        topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
         List<ItemListTypeCategory> categoryList = itemListTypeCategoriesDAO.findAll();
         categories = GlazedLists.eventList(categoryList);
         categories.forEach(cat -> msg.getMessageFromKey(cat.getName()));

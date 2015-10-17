@@ -14,6 +14,8 @@
  
 package com.sebulli.fakturama.views.datatable.documents;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,7 +108,7 @@ public class DocumentMatcher implements Matcher<Document> {
                     break;
                 case ORDER:
                     // .. and the state of the shipping
-                    OrderState progress = OrderState.findByProgressValue(item.getProgress());
+                    OrderState progress = OrderState.findByProgressValue(Optional.of(item.getProgress()));
                     switch (progress) {
                     case NONE:
                     case PENDING:

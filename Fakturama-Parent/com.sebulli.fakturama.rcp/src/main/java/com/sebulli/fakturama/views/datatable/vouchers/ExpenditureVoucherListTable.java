@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -67,6 +69,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
+import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -105,6 +108,9 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;
     
+    @Inject
+    private IEclipseContext context;
+
     private EventList<Expenditure> expenditureListData;
     private EventList<VoucherCategory> categories;
 
@@ -273,6 +279,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
 
     @Override
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
+//    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(voucherCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);

@@ -235,6 +235,8 @@ public class ContactUtil {
 			if(address.getCountryCode() != null) {
     			Locale cLocale = new Locale.Builder().setRegion(address.getCountryCode()).build();
     			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
+			} else {
+    			formatString = replaceAllWithSpace(formatString, "\\{country\\}", "");
 			}
 			
 			String countrycode = StringUtils.defaultString(address.getCountryCode());

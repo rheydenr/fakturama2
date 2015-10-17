@@ -68,7 +68,7 @@ public class WebShopAuthorizationPreferencePage extends FieldEditorPreferencePag
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER, msg.preferencesWebshopUser, getFieldEditorParent()));
 
 		//T: Preference page "Web Shop Import" - Label
-		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, msg.preferencesWebshopPassword, getFieldEditorParent());
+		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD, msg.startFirstSelectDbCredentialsPassword, getFieldEditorParent());
 		passwordEditor.getTextControl(getFieldEditorParent()).setEchoChar('*');
 		addField(passwordEditor);
 

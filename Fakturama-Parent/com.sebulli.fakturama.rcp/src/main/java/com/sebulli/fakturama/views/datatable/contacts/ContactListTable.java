@@ -57,6 +57,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.DummyStringCategory;
+import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -323,9 +324,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     protected TopicTreeViewer<ContactCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+//    	context.set("useDocumentAndContactFilter", false);
+//    	context.set("useAll", true);
+//    	context.set(Composite.class, top);
+        topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(contactCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

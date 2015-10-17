@@ -183,8 +183,7 @@ public class ListEditor extends Editor<ItemAccountType> {
         Label labelCategory = new Label(top, SWT.NONE);
         //T: List Editor - Category ( Name of the List to place this entry)
         labelCategory.setText(msg.editorListListfield);
-        //T: Tool Tip Text
-        labelCategory.setToolTipText(msg.editorListListfieldTooltip);
+        labelCategory.setToolTipText(msg.editorListTooltip);
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
         createCategoryCombo();
@@ -221,7 +220,7 @@ public class ListEditor extends Editor<ItemAccountType> {
         categories.addAll(itemListTypeCategoriesDAO.findAll());
 
         comboCategory = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
-        comboCategory.setToolTipText(msg.editorListCategoryTooltip);
+        comboCategory.setToolTipText(msg.editorListTooltip);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override

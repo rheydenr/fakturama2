@@ -58,6 +58,7 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
+import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -273,7 +274,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     protected TopicTreeViewer<ProductCategory> createCategoryTreeViewer(Composite top) {
     	context.set("useDocumentAndContactFilter", false);
     	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        topicTreeViewer = new TopicTreeViewer<ProductCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(productCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.

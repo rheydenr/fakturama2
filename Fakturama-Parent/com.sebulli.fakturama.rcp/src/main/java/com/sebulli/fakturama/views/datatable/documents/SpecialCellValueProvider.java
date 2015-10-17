@@ -13,6 +13,8 @@
 
 package com.sebulli.fakturama.views.datatable.documents;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -224,7 +226,7 @@ public class SpecialCellValueProvider {
                         return Icon.COMMAND_ERROR;
                     }
                 case ORDER:
-                    OrderState progress = OrderState.findByProgressValue(rowObject.getProgress());
+                    OrderState progress = OrderState.findByProgressValue(Optional.ofNullable(rowObject.getProgress()));
                     switch (progress) {
                     case NONE:
                     case PENDING:

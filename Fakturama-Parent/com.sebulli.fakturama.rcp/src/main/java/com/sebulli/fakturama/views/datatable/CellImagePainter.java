@@ -3,6 +3,7 @@
  */
 package com.sebulli.fakturama.views.datatable;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +18,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -38,6 +40,10 @@ public class CellImagePainter extends ImagePainter {
             retval = getImageFrom((Image) dataValue);
         } else if(dataValue instanceof String) {
             retval = getImageFrom((String) dataValue);
+        } else if(dataValue instanceof byte[]) {
+			ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) dataValue);
+			retval = new Image(Display.getCurrent(), imgStream);
+			retval = new Image(Display.getCurrent(), retval.getImageData().scaledTo(50, 50));
         }
         return retval;
     }

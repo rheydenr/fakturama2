@@ -127,7 +127,7 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 	 */
 	@Override
 	public String getDescription() {
-	    return msg.preferencesNumberrangeFormat;
+	    return msg.pageContactsFormat;
 	}
 	
 	/**

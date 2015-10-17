@@ -72,6 +72,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
+import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -301,7 +302,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
     	context.set("useDocumentAndContactFilter", false);
     	context.set("useAll", true);
-    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
+//    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(accountDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

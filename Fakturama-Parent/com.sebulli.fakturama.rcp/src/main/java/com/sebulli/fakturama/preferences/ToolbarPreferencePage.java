@@ -95,13 +95,13 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_RECEIPTVOUCHER), getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
-		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.commandParcelserviceName, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.parcelServiceName, getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
-		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.mainMenuExtraCalculator, getFieldEditorParent()));
 	}
 	
 //	/* (non-Javadoc)
@@ -130,6 +130,9 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_SAVE, write);
 		// Get all documents
 		for (int i=1; i<= DocumentType.MAXID; i++) {
+			if(DocumentType.findByKey(i) == DocumentType.NONE) {
+				continue;
+			}
 			preferencesInDatabase.syncWithPreferencesFromDatabase("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), write);
 		}
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_NEW_PRODUCT, write);
@@ -163,6 +166,9 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		// Get all documents
 		// TODO change to to a loop over native enumerations!!!
 		for (int i=1; i<DocumentType.MAXID; i++) {
+			if(DocumentType.findByKey(i) == DocumentType.NONE) {
+				continue;
+			}
 			node.setDefault("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), 
 					i==3 || i ==5 || i == 6);
 		}

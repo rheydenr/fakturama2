@@ -118,7 +118,7 @@
       <page
             class="com.sebulli.fakturama.preferences.DocumentPreferencePage"
             id="com.sebulli.fakturama.preferences.documentPreferencePage"
-            name="%page.documents">
+            name="%command.documents.name">
       </page>
       <page
             category="com.sebulli.fakturama.preferences.documentPreferencePage"
@@ -129,7 +129,7 @@
       <page
             class="com.sebulli.fakturama.preferences.OfficePreferencePage"
             id="com.sebulli.fakturama.preferences.officePreferencePage"
-            name="%page.office">
+            name="%page.openoffice">
       </page>
       <page
             class="com.sebulli.fakturama.preferences.ExportPreferencePage"
