@@ -83,7 +83,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, msg.preferencesDocumentDisplaypreview, getFieldEditorParent()));
 		//T: Preference page "Document" 
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, msg.preferencesDocumentUsepos, getFieldEditorParent()));
+//		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, msg.preferencesDocumentUsepos, getFieldEditorParent()));
 		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, msg.preferencesDocumentUsediscountsingle, getFieldEditorParent()));
 		//T: Preference page "Document" 
@@ -125,7 +125,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 	 *            TRUE: Write to the data base
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
-		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, write);
+//		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, write);
@@ -160,7 +160,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, "1");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, false);
-		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, false);
+//		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, true);

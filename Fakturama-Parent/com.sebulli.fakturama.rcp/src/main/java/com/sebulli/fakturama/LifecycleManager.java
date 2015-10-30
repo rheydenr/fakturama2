@@ -1,10 +1,16 @@
 package com.sebulli.fakturama;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -26,12 +32,14 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
+import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
@@ -43,6 +51,7 @@ import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
+import com.sebulli.fakturama.resources.core.TemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
 /**
@@ -89,6 +98,7 @@ public class LifecycleManager {
                     context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
                     context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
                     context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
+                    context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
                     log.debug("start DAOs - end");
                     return Status.OK_STATUS;
                 }
@@ -139,6 +149,7 @@ public class LifecycleManager {
         VatsDAO vatsDAO = context.get(VatsDAO.class);
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
+        UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         
@@ -185,6 +196,12 @@ public class LifecycleManager {
             defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
         }
         defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+        
+        // init UN/CEFACT codes
+        if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
+//        	initializeCodes(unCefactCodeDAO);
+        }
+        
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
         // here we have to restore the preference values from database
         PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
@@ -192,7 +209,52 @@ public class LifecycleManager {
 //        preferencesInDatabase.loadPreferencesFromDatabase();
     }
     
-    @PreDestroy
+    /**
+     * Initializes all the UN/CEFACT codes which are needed for later ZUGFeRD export.
+     * The codes are read from resources bundle (properties file).
+     * 
+     * @param unCefactCodeDAO the dao
+     */
+    private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO) {
+    	try {
+    		InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource("codelists.xlsx").openStream();
+    		XSSFWorkbook wb = new XSSFWorkbook(wbStream);
+    		XSSFSheet sheet = wb.getSheetAt(0);
+			int rows = sheet.getPhysicalNumberOfRows();
+			for (int r = 0; r < rows; r++) {
+				XSSFRow row = sheet.getRow(r);
+				if (row == null) {
+					continue;
+				}
+
+				int cells = row.getPhysicalNumberOfCells();
+				for (int c = 0; c < cells; c++) {
+					XSSFCell cell = row.getCell(c);
+					String value = null;
+
+					switch (cell.getCellType()) {
+						case XSSFCell.CELL_TYPE_NUMERIC:
+							value = "NUMERIC value=" + cell.getNumericCellValue();
+							break;
+
+						case XSSFCell.CELL_TYPE_STRING:
+							value = "STRING value=" + cell.getStringCellValue();
+							break;
+
+						default:
+					}
+					System.out.println("CELL col=" + cell.getColumnIndex() + " VALUE="
+							+ value);
+				}
+			}
+//			wb.close();			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@PreDestroy
     public void postWindowClose() {
 
         //Closes all OpenOffice documents 

@@ -33,13 +33,13 @@
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="/com.sebulli.fakturama.site/app/app_16_8.bmp"
-            winSmallLow="/com.sebulli.fakturama.site/app/app_16_8.bmp"
-            winMediumHigh="/com.sebulli.fakturama.site/app/app_32_8.bmp"
-            winMediumLow="/com.sebulli.fakturama.site/app/app_32_8.bmp"
-            winLargeHigh="/com.sebulli.fakturama.site/app/app_48_32.bmp"
-            winLargeLow="/com.sebulli.fakturama.site/app/app_48_8.bmp"
-            winExtraLargeHigh="/com.sebulli.fakturama.site/app/app_256.bmp"/>
+            winSmallHigh="app/app_16_8.bmp"
+            winSmallLow="app/app_16_8.bmp"
+            winMediumHigh="app/app_32_8.bmp"
+            winMediumLow="app/app_32_8.bmp"
+            winLargeHigh="app/app_48_32.bmp"
+            winLargeLow="app/app_48_8.bmp"
+            winExtraLargeHigh="app/app_256.bmp"/>
       </win>
    </launcher>
 

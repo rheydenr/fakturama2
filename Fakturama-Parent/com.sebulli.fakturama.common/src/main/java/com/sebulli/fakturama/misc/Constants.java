@@ -277,7 +277,7 @@ public class Constants {
     /**
      * 
      */
-    public static final String PREFERENCES_DOCUMENT_USE_ITEM_POS = "DOCUMENT_USE_ITEM_POS";
+//    public static final String PREFERENCES_DOCUMENT_USE_ITEM_POS = "DOCUMENT_USE_ITEM_POS";
 
     /**
      * 

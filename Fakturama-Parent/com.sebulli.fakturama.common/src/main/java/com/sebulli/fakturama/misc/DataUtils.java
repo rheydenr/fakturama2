@@ -109,7 +109,7 @@ public class DataUtils {
                 CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
                 mro = Monetary.getRounding(RoundingQueryBuilder.of()
                         .setCurrency(chf)
-                        // das ist fÃ¼r die Schweizer Rundungsmethode auf 0.05 SFr.!
+                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
                         .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
                         .build());
             }
@@ -161,8 +161,8 @@ public class DataUtils {
 
 //    
 //    /**
-//     * Test, if a value is rounded to cent values. e.g. 39,43000 â‚¬ is a rounded
-//     * value 39,43200 â‚¬ is not.
+//     * Test, if a value is rounded to cent values. e.g. 39,43000 € is a rounded
+//     * value 39,43200 € is not.
 //     * 
 //     * @param d
 //     *            Double value to test
@@ -399,11 +399,7 @@ public class DataUtils {
     public String doubleToFormattedPrice(Double value) {
         CurrencyUnit currUnit = getCurrencyUnit(currencyLocale);
         MonetaryAmount rounded = RoundedMoney.of(value, currUnit);
-        if(mro != null) {
-            return getMonetaryAmountFormat().format(rounded.with(mro));
-        } else {
-            return getMonetaryAmountFormat().format(rounded);
-        }
+        return formatCurrency(rounded);
     }
 
     /**
@@ -464,8 +460,13 @@ public class DataUtils {
     }
     
     public String formatCurrency(MonetaryAmount amount) {
-        return formatCurrency(amount, currencyLocale, true);
+        if(mro != null) {
+            return getMonetaryAmountFormat().format(amount.with(mro));
+        } else {
+            return getMonetaryAmountFormat().format(amount);
+        }
     }
+    
     public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryRounding mro = getRounding(usd, cashRounding);
@@ -986,59 +987,59 @@ public class DataUtils {
      */
     public String replaceAllAccentedChars(String s) {
         
-        s = s.replace("Ã€", "A");
-        s = s.replace("Ã�", "A");
-        s = s.replace("Ã‚", "A");
-        s = s.replace("Ãƒ", "A");
-        s = s.replace("Ã„", "Ae");
-        s = s.replace("Ã¢", "a");
-        s = s.replace("Ã£", "a");
-        s = s.replace("Ã¤", "ae");
-        s = s.replace("Ã ", "a");
-        s = s.replace("Ã¡", "a");
+        s = s.replace("À", "A");
+        s = s.replace("�?", "A");
+        s = s.replace("Â", "A");
+        s = s.replace("Ã", "A");
+        s = s.replace("Ä", "Ae");
+        s = s.replace("â", "a");
+        s = s.replace("ã", "a");
+        s = s.replace("ä", "ae");
+        s = s.replace("à", "a");
+        s = s.replace("á", "a");
 
-        s = s.replace("Ãˆ", "E");
-        s = s.replace("Ã‰", "E");
-        s = s.replace("ÃŠ", "E");
-        s = s.replace("Ã‹", "E");
-        s = s.replace("Ãª", "e");
-        s = s.replace("Ã«", "e");
-        s = s.replace("Ã¨", "e");
-        s = s.replace("Ã©", "e");
+        s = s.replace("È", "E");
+        s = s.replace("É", "E");
+        s = s.replace("Ê", "E");
+        s = s.replace("Ë", "E");
+        s = s.replace("ê", "e");
+        s = s.replace("ë", "e");
+        s = s.replace("è", "e");
+        s = s.replace("é", "e");
 
-        s = s.replace("ÃŒ", "I");
-        s = s.replace("Ã�", "I");
-        s = s.replace("ÃŽ", "I");
-        s = s.replace("Ã�", "I");
-        s = s.replace("Ã®", "i");
-        s = s.replace("Ã¯", "i");
-        s = s.replace("Ã¬", "i");
-        s = s.replace("Ã­", "i");
+        s = s.replace("Ì", "I");
+        s = s.replace("�?", "I");
+        s = s.replace("Î", "I");
+        s = s.replace("�?", "I");
+        s = s.replace("î", "i");
+        s = s.replace("ï", "i");
+        s = s.replace("ì", "i");
+        s = s.replace("í", "i");
 
-        s = s.replace("Ã’", "O");
-        s = s.replace("Ã“", "O");
-        s = s.replace("Ã”", "O");
-        s = s.replace("Ã•", "O");
-        s = s.replace("Ã–", "Oe");
-        s = s.replace("Ã´", "o");
-        s = s.replace("Ãµ", "o");
-        s = s.replace("Ã¶", "oe");
-        s = s.replace("Ã²", "o");
-        s = s.replace("Ã³", "o");
+        s = s.replace("Ò", "O");
+        s = s.replace("Ó", "O");
+        s = s.replace("Ô", "O");
+        s = s.replace("Õ", "O");
+        s = s.replace("Ö", "Oe");
+        s = s.replace("ô", "o");
+        s = s.replace("õ", "o");
+        s = s.replace("ö", "oe");
+        s = s.replace("ò", "o");
+        s = s.replace("ó", "o");
 
-        s = s.replace("Ã™", "U");
-        s = s.replace("Ãš", "U");
-        s = s.replace("Ã›", "U");
-        s = s.replace("Ãœ", "Ue");
-        s = s.replace("Ã»", "u");
-        s = s.replace("Ã¼", "ue");
-        s = s.replace("Ã¹", "u");
-        s = s.replace("Ãº", "u");
+        s = s.replace("Ù", "U");
+        s = s.replace("Ú", "U");
+        s = s.replace("Û", "U");
+        s = s.replace("Ü", "Ue");
+        s = s.replace("û", "u");
+        s = s.replace("ü", "ue");
+        s = s.replace("ù", "u");
+        s = s.replace("ú", "u");
 
-        s = s.replace("Ã�", "Y");
-        s = s.replace("Ã½", "y");
-        s = s.replace("Ã±", "n");
-        s = s.replace("ÃŸ", "ss");
+        s = s.replace("�?", "Y");
+        s = s.replace("ý", "y");
+        s = s.replace("ñ", "n");
+        s = s.replace("ß", "ss");
 
         return s;
     }

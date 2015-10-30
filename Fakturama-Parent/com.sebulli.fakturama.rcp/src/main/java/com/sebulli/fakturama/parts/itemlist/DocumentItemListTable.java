@@ -246,9 +246,9 @@ private Menu createContextMenu(NatTable natTable) {
         // get the visible properties to show in list view along with their position index
         final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
         
-        if(eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
+        //if(eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
-        }
+        //}
 
         if (containsOptionalItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
@@ -300,6 +300,8 @@ private Menu createContextMenu(NatTable natTable) {
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 switch (descriptor) {
                 case POSITION:
+//                    retval = eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS) ? rowObject.getDocumentItem().getPosNr() : -1.0;
+                	// we ALWAYS use a position number!
                     retval = rowObject.getDocumentItem().getPosNr();
                     break;
                 case OPTIONAL:

@@ -29,6 +29,7 @@ public class Messages {
 	public String commandBrowserTooltip;
 	public String commandCalculatorName;
 	public String commandCalculatorTooltip;
+	public String commandContactsName;
 	public String commandContactsTooltip;
 	public String commandCreditorsName;
 	public String commandCreditorsTooltip;

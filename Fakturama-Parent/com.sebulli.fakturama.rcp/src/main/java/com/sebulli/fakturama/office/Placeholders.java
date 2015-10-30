@@ -22,7 +22,6 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -221,90 +220,6 @@ public class Placeholders {
     private ContactUtil contactUtil;
 	
 	/**
-	 * Returns the first name of a complete name
-	 * 
-	 * @param name
-	 * 		First name and last name
-	 * @return
-	 * 		Only the first name
-	 */
-	private String getFirstName (String name) {
-		String s = name.trim();
-		int lastSpace = s.lastIndexOf(" ");
-		if (lastSpace > 0)
-			return s.substring(0, lastSpace).trim();
-		else
-			return "";
-	}
-	
-	/**
-	 * Returns the last name of a complete name
-	 * 
-	 * @param name
-	 * 		First name and last name
-	 * @return
-	 * 		Only the last name
-	 */
-	private String getLastName (String name) {
-		String s = name.trim();
-		int lastSpace = s.lastIndexOf(" ");
-		if (lastSpace > 0)
-			return s.substring(lastSpace + 1).trim();
-		else
-			return "";
-	}
-	
-	/**
-	 * Returns the street name without the number
-	 * 
-	 * @param streetWithNo
-	 * 		
-	 * @return
-	 * 		Only the street name
-	 */
-	private String getStreetName (String streetWithNo) {
-		String s = streetWithNo.trim();
-		int indexNo = 0;
-		
-		// Search for the number
-		Matcher matcher = Pattern.compile( "\\d+" ).matcher( s );
-		if ( matcher.find() ) {
-			indexNo = matcher.start();
-		}
-		
-		// Extract the street
-		if (indexNo > 0)
-			return s.substring(0, indexNo).trim();
-		else
-			return s;
-	}
-
-	/**
-	 * Returns the street number without the name
-	 * 
-	 * @param streetWithNo
-	 * 		
-	 * @return
-	 * 		Only the street No
-	 */
-	private String getStreetNo (String streetWithNo) {
-		String s = streetWithNo.trim();
-		int indexNo = 0;
-		
-		// Search for the number
-		Matcher matcher = Pattern.compile( "\\d+" ).matcher( s );
-		if ( matcher.find() ) {
-			indexNo = matcher.start();
-		}
-		
-		// Extract the Number
-		if (indexNo > 0)
-			return s.substring(indexNo).trim();
-		else
-			return "";
-	}
-	
-	/**
 	 * Get a part of the telephone number
 	 * 
 	 * @param pre
@@ -334,106 +249,6 @@ public class Placeholders {
 			return pre ? parts[0] : parts[1];
 		}
 	}
-	
-	private String getDataFromAddressField(String address, String key) {
-		String addressName = "";
-		String addressFirstName = "";
-		String addressLastName = "";
-		String addressLine = "";
-		String addressStreet = "";
-		String addressZIP = "";
-		String addressCity = "";
-		String addressCountry = "";
-		
-		String[] addressLines;
-		if (address == null) {
-			return "";
-		} else {
-			addressLines = address.split("\\n");
-		}
-		
-		Boolean countryFound = false;
-		Boolean cityFound = false;
-		Boolean streetFound = false;
-		String line = "";
-		addressLine = "";
-		
-		// The first line is the name
-		addressName = addressLines[0];
-		addressFirstName = getFirstName(addressName);
-		addressLastName = getLastName(addressName);
-		
-		// Analyze all the other lines. Start with the last
-		for (int lineNr = addressLines.length -1; lineNr >= 1;lineNr--) {
-			
-			// Get one line
-			line = addressLines[lineNr].trim();
-			
-			// Use only non-empty lines
-			if (!line.isEmpty()) {
-				
-				if (!countryFound || !cityFound) {
-					Matcher matcher = Pattern.compile( "\\d+" ).matcher( line );
-					
-					// A Number was found. So this line was not the country, it must be the ZIP code
-					if ( matcher.find() ) {
-						if (matcher.start() < 4)  {
-							int codelen = matcher.end() - matcher.start();
-							
-							// Extract the ZIP code
-							if (codelen >= 4 && codelen <=5 ) {
-								addressZIP = matcher.group();
-
-								// and the city
-								addressCity = line.substring(matcher.end()+1).trim();
-								
-							}
-							cityFound = true;
-							countryFound = true;
-						}
-					}
-					else {
-						// It must be the country
-						addressCountry =  line;
-						countryFound = true;
-					}
-				}
-				// City and maybe country were found. Search now for the street.
-				else if (!streetFound){
-					Matcher matcher = Pattern.compile( "\\d+" ).matcher( line );
-					
-					// A Number was found. This must be the street number
-					if ( matcher.find() ) {
-						if (matcher.start() > 3)  {
-							// Extract the street number
-							addressStreet  = line;
-							streetFound = true;
-						}
-					}
-				}
-				// Street, city and maybe country were found. 
-				// Search now for additional address information
-				else {
-					if (!addressLine.isEmpty())
-						addressLine +=" ";
-					addressLine = line;
-				}
-			}
-		}
-
-		if (key.equals("name")) return addressName;
-		if (key.equals("firstname")) return addressFirstName;
-		if (key.equals("lastname")) return addressLastName;
-		if (key.equals("addressfirstline")) return addressLine;
-		if (key.equals("street")) return addressStreet;
-		if (key.equals("streetname")) return getStreetName(addressStreet);
-		if (key.equals("streetno")) return getStreetNo(addressStreet);
-		if (key.equals("zip")) return addressZIP;
-		if (key.equals("city")) return addressCity;
-		if (key.equals("county")) return addressCountry;
-		return "";
-	}
-	
 
 	/**
 	 * Replaces all line breaks by a "-"
@@ -743,13 +558,13 @@ public class Placeholders {
 
 			String owner = preferences.getString("YOURCOMPANY_COMPANY_OWNER");
 			if (key.equals("YOURCOMPANY.OWNER")) return  owner;
-			if (key.equals("YOURCOMPANY.OWNER.FIRSTNAME")) return  getFirstName(owner);
-			if (key.equals("YOURCOMPANY.OWNER.LASTNAME")) return  getLastName(owner);
+			if (key.equals("YOURCOMPANY.OWNER.FIRSTNAME")) return  contactUtil.getFirstName(owner);
+			if (key.equals("YOURCOMPANY.OWNER.LASTNAME")) return  contactUtil.getLastName(owner);
 
 			String streetWithNo = preferences.getString("YOURCOMPANY_COMPANY_STREET");
 			if (key.equals("YOURCOMPANY.STREET")) return  streetWithNo;
-			if (key.equals("YOURCOMPANY.STREETNAME")) return  getStreetName(streetWithNo);
-			if (key.equals("YOURCOMPANY.STREETNO")) return  getStreetNo(streetWithNo);
+			if (key.equals("YOURCOMPANY.STREETNAME")) return  contactUtil.getStreetName(streetWithNo);
+			if (key.equals("YOURCOMPANY.STREETNO")) return  contactUtil.getStreetNo(streetWithNo);
 
 			if (key.equals("YOURCOMPANY.ZIP")) return  preferences.getString("YOURCOMPANY_COMPANY_ZIP");
 			if (key.equals("YOURCOMPANY.CITY")) return  preferences.getString("YOURCOMPANY_COMPANY_CITY");
@@ -911,7 +726,7 @@ public class Placeholders {
 			addressField = Optional.ofNullable(document.getBillingContact().getAddress().getManualAddress()).orElse(contactUtil.getAddressAsString(document.getBillingContact()));
 		}
 
-		if (key2.equals("ADDRESS.FIRSTLINE")) return getDataFromAddressField(addressField,"addressfirstline");
+		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField,"addressfirstline");
 		
 		// There is a reference to a contact. Use this
 		if (contact != null) {
@@ -932,8 +747,8 @@ public class Placeholders {
 			Address address = contact.getAddress();
 			if(address != null) {
     			if (key.equals("ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("ADDRESS.STREETNAME")) return getStreetName(address.getStreet());
-    			if (key.equals("ADDRESS.STREETNO")) return getStreetNo(address.getStreet());
+    			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
+    			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("ADDRESS.CITY")) return address.getCity();
                 if (key.equals("ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
@@ -989,8 +804,8 @@ public class Placeholders {
             address = contact.getAddress();
             if(address != null) {
     			if (key.equals("DELIVERY.ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return getStreetName(address.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return getStreetNo(address.getStreet());
+    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
+    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
     			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
@@ -1003,16 +818,16 @@ public class Placeholders {
 		else {
 			if (key2.equals("ADDRESS.GENDER")) return "";
 			if (key2.equals("ADDRESS.TITLE")) return "";
-			if (key2.equals("ADDRESS.NAME")) return getDataFromAddressField(addressField,"name");
-			if (key2.equals("ADDRESS.FIRSTNAME")) return getDataFromAddressField(addressField,"firstname");
-			if (key2.equals("ADDRESS.LASTNAME")) return getDataFromAddressField(addressField,"lastname");
-			if (key2.equals("ADDRESS.COMPANY")) return getDataFromAddressField(addressField,"company");
-			if (key2.equals("ADDRESS.STREET")) return getDataFromAddressField(addressField,"street");
-			if (key2.equals("ADDRESS.STREETNAME")) return getDataFromAddressField(addressField,"streetname");
-			if (key2.equals("ADDRESS.STREETNO")) return getDataFromAddressField(addressField,"streetno");
-			if (key2.equals("ADDRESS.ZIP")) return getDataFromAddressField(addressField,"zip");
-			if (key2.equals("ADDRESS.CITY")) return getDataFromAddressField(addressField,"city");
-			String country = getDataFromAddressField(addressField,"country");
+			if (key2.equals("ADDRESS.NAME")) return contactUtil.getDataFromAddressField(addressField,"name");
+			if (key2.equals("ADDRESS.FIRSTNAME")) return contactUtil.getDataFromAddressField(addressField,"firstname");
+			if (key2.equals("ADDRESS.LASTNAME")) return contactUtil.getDataFromAddressField(addressField,"lastname");
+			if (key2.equals("ADDRESS.COMPANY")) return contactUtil.getDataFromAddressField(addressField,"company");
+			if (key2.equals("ADDRESS.STREET")) return contactUtil.getDataFromAddressField(addressField,"street");
+			if (key2.equals("ADDRESS.STREETNAME")) return contactUtil.getDataFromAddressField(addressField,"streetname");
+			if (key2.equals("ADDRESS.STREETNO")) return contactUtil.getDataFromAddressField(addressField,"streetno");
+			if (key2.equals("ADDRESS.ZIP")) return contactUtil.getDataFromAddressField(addressField,"zip");
+			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField,"city");
+			String country = contactUtil.getDataFromAddressField(addressField,"country");
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
             Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {

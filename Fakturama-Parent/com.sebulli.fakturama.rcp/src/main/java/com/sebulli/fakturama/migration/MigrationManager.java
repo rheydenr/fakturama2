@@ -14,7 +14,6 @@ package com.sebulli.fakturama.migration;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -32,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -70,8 +68,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -92,7 +88,6 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
@@ -144,6 +139,7 @@ import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.startup.ConfigurationManager;
+import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.payments.PaymentListTable;
@@ -186,6 +182,8 @@ public class MigrationManager {
     
     @Inject
 	private ContactCategoriesDAO contactCategoriesDAO;
+    
+    private ContactUtil contactUtil;
     
     @Inject
 	private DocumentsDAO documentDAO;
@@ -262,6 +260,7 @@ public class MigrationManager {
         this.zeroDate = new GregorianCalendar(2000, 0, 1);
         this.modelFactory = FakturamaModelPackage.MODELFACTORY;
         this.generalWorkspace  = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
+        this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 	}
 
 	/**
@@ -618,8 +617,35 @@ public class MigrationManager {
 					 * perhaps we have to check additionally if the address stored in document
 					 * is equal to the address stored in the database :-(
 					 */
-					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
-					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
+					// at first we try to interpret the address data
+					Contact contact = modelFactory.createDebitor();
+					// there is NO Customer No. since we extracted it from a plain String.
+					Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
+					contact.setAddress(address);
+					// try to get the name
+					String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), "lastname");
+					if(name.isEmpty()) {
+						name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), "name");
+					}
+					contact.setName(name);
+					contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), "firstname"));
+//					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
+					document.setBillingContact(contact);
+					
+					Contact deliveryContact = modelFactory.createDebitor();
+					Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
+					deliveryContact.setAddress(deliveryAddress);
+					String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname");
+					if(deliveryName.isEmpty()) {
+						deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "name");
+					}
+					deliveryContact.setName(deliveryName);
+//					deliveryContact.setName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname"));
+					deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "firstname"));
+					if(!deliveryContact.isSameAs(contact)) {
+						document.setDeliveryContact(deliveryContact);
+					}
+//					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
 				} else {
 					// use the previous filled Contact hashmap
 					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
@@ -922,23 +948,7 @@ public class MigrationManager {
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
 			// we don't have a CountryCode table :-(, therefore we have to look up in Locale classes
 			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
-			/*
-			 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
-			 * we have to look up the whole Locales  
-			 */
-			Optional<Locale> locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
-			// if not found we try to find it in localized form
-	        if (!locale.isPresent()) {
-	            Locale[] availableLocales = Locale.getAvailableLocales();
-	            for (Locale locale2 : availableLocales) {
-	                // don't try to make it parallel() because then it takes longer than a single stream!
-	                locale = Arrays.stream(availableLocales)
-	                        .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(country))
-	                        .findFirst();
-	                if (locale.isPresent())
-	                    break;
-	            }
-	        }
+			Optional<Locale> locale = contactUtil.determineCountryCode(country);
 			if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
 			    address.setCountryCode(locale.get().getCountry());
 			} else {

@@ -3,8 +3,11 @@
  */
 package com.sebulli.fakturama.util;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,12 +16,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 
 /**
  * Utility class for some additional useful methods for the {@link Contact}s.
@@ -31,8 +37,10 @@ public class ContactUtil {
     @Translation
     protected Messages msg;
 
-    @Inject
+    @Inject @org.eclipse.e4.core.di.annotations.Optional
 	private IPreferenceStore eclipsePrefs;
+    
+    private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
 	/**
      * the name of the company (if any) and the name of the contact
@@ -208,7 +216,239 @@ public class ContactUtil {
 		// return the complete address
 		return address;
 	}
+	
+	public Address createAddressFromString(String address) {
+		Address retval = modelFactory.createAddress();
+		retval.setStreet(getDataFromAddressField(address, "street"));
+		retval.setCity(getDataFromAddressField(address, "city"));
+		retval.setZip(getDataFromAddressField(address, "zip"));
+		String country = getDataFromAddressField(address, "county");
+		Optional<Locale> locale = determineCountryCode(country);
+		if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
+			retval.setCountryCode(locale.get().getCountry());
+		}
+		
+		// if all fields are empty we must not create a new address object
+		if(retval.getStreet().isEmpty() && retval.getCity().isEmpty() && retval.getZip().isEmpty()) {
+			retval = null;
+		}
+		return retval;
+	}
     
+
+	public Optional<Locale> determineCountryCode(String country) {
+		/*
+		 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
+		 * we have to look up the whole Locales  
+		 */
+		Optional<Locale> locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+		// if not found we try to find it in localized form
+		if (!locale.isPresent()) {
+		    Locale[] availableLocales = Locale.getAvailableLocales();
+		    for (Locale locale2 : availableLocales) {
+		        // don't try to make it parallel() because then it takes longer than a single stream!
+		        locale = Arrays.stream(availableLocales)
+		                .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(country))
+		                .findFirst();
+		        if (locale.isPresent())
+		            break;
+		    }
+		}
+		return locale;
+	}
+
+	/**
+	 * Extracts an address from a String value (if you entered an address in the text field
+	 * without using a {@link Contact}).
+	 * 
+	 * @param address the address as String (separated by '\n')
+	 * @param key which part of Address should be extracted
+	 * @return
+	 */
+	public String getDataFromAddressField(String address, String key) {
+		String addressName = "";
+		String addressFirstName = "";
+		String addressLastName = "";
+		String addressLine = "";
+		String addressStreet = "";
+		String addressZIP = "";
+		String addressCity = "";
+		String addressCountry = "";
+		
+		String[] addressLines;
+		if (address == null) {
+			return "";
+		} else {
+			addressLines = address.split("\\n");
+		}
+		
+		Boolean countryFound = false;
+		Boolean cityFound = false;
+		Boolean streetFound = false;
+		String line = "";
+		addressLine = "";
+		
+		// The first line is the name
+		addressName = addressLines[0];
+		addressFirstName = getFirstName(addressName);
+		addressLastName = getLastName(addressName);
+		
+		// Analyze all the other lines. Start with the last
+		for (int lineNr = addressLines.length -1; lineNr >= 1;lineNr--) {
+			
+			// Get one line
+			line = addressLines[lineNr].trim();
+			
+			// Use only non-empty lines
+			if (!line.isEmpty()) {
+				
+				if (!countryFound || !cityFound) {
+					Matcher matcher = Pattern.compile( "\\d+" ).matcher( line );
+					
+					// A Number was found. So this line was not the country, it must be the ZIP code
+					if ( matcher.find() ) {
+						if (matcher.start() < 4)  {
+							int codelen = matcher.end() - matcher.start();
+							
+							// Extract the ZIP code
+							if (codelen >= 4 && codelen <=5 ) {
+								addressZIP = matcher.group();
+
+								// and the city
+								addressCity = line.substring(matcher.end()+1).trim();
+								
+							}
+							cityFound = true;
+							countryFound = true;
+						}
+					}
+					else {
+						// It must be the country
+						addressCountry =  line;
+						countryFound = true;
+					}
+				}
+				// City and maybe country were found. Search now for the street.
+				else if (!streetFound){
+					Matcher matcher = Pattern.compile( "\\d+" ).matcher( line );
+					
+					// A Number was found. This must be the street number
+					if ( matcher.find() ) {
+						if (matcher.start() > 3)  {
+							// Extract the street number
+							addressStreet  = line;
+							streetFound = true;
+						}
+					}
+				}
+				// Street, city and maybe country were found. 
+				// Search now for additional address information
+				else {
+					if (!addressLine.isEmpty())
+						addressLine +=" ";
+					addressLine = line;
+				}
+			}
+		}
+
+		if (key.equals("name")) return addressName;
+		if (key.equals("firstname")) return addressFirstName;
+		if (key.equals("lastname")) return addressLastName;
+		if (key.equals("addressfirstline")) return addressLine;
+		if (key.equals("street")) return addressStreet;
+		if (key.equals("streetname")) return getStreetName(addressStreet);
+		if (key.equals("streetno")) return getStreetNo(addressStreet);
+		if (key.equals("zip")) return addressZIP;
+		if (key.equals("city")) return addressCity;
+		if (key.equals("county")) return addressCountry;
+		return "";
+	}
+	
+	
+	/**
+	 * Returns the first name of a complete name
+	 * 
+	 * @param name
+	 * 		First name and last name
+	 * @return
+	 * 		Only the first name
+	 */
+	public String getFirstName (String name) {
+		String s = name.trim();
+		int lastSpace = s.lastIndexOf(" ");
+		if (lastSpace > 0)
+			return s.substring(0, lastSpace).trim();
+		else
+			return "";
+	}
+	
+	/**
+	 * Returns the last name of a complete name
+	 * 
+	 * @param name
+	 * 		First name and last name
+	 * @return
+	 * 		Only the last name
+	 */
+	public String getLastName (String name) {
+		String s = name.trim();
+		int lastSpace = s.lastIndexOf(" ");
+		if (lastSpace > 0)
+			return s.substring(lastSpace + 1).trim();
+		else
+			return "";
+	}
+	
+	/**
+	 * Returns the street name without the number
+	 * 
+	 * @param streetWithNo
+	 * 		
+	 * @return
+	 * 		Only the street name
+	 */
+	public String getStreetName (String streetWithNo) {
+		String s = streetWithNo.trim();
+		int indexNo = 0;
+		
+		// Search for the number
+		Matcher matcher = Pattern.compile( "\\d+" ).matcher( s );
+		if ( matcher.find() ) {
+			indexNo = matcher.start();
+		}
+		
+		// Extract the street
+		if (indexNo > 0)
+			return s.substring(0, indexNo).trim();
+		else
+			return s;
+	}
+
+	/**
+	 * Returns the street number without the name
+	 * 
+	 * @param streetWithNo
+	 * 		
+	 * @return
+	 * 		Only the street No
+	 */
+	public String getStreetNo (String streetWithNo) {
+		String s = streetWithNo.trim();
+		int indexNo = 0;
+		
+		// Search for the number
+		Matcher matcher = Pattern.compile( "\\d+" ).matcher( s );
+		if ( matcher.find() ) {
+			indexNo = matcher.start();
+		}
+		
+		// Extract the Number
+		if (indexNo > 0)
+			return s.substring(indexNo).trim();
+		else
+			return "";
+	}
+
 
 	/**
 	 * Replaces the placeholders of a string with information from the given {@link Contact}.
@@ -252,6 +492,7 @@ public class ContactUtil {
 		return formatString;
 	}
 
+	
 	/**
 	 * Generate the greeting string, depending on the gender
 	 * 
