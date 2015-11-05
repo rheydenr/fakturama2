@@ -33,16 +33,15 @@
       <solaris/>
       <win useIco="false">
          <bmp
-            winSmallHigh="app/app_16_8.bmp"
+            winSmallHigh="app/app_16_32.bmp"
             winSmallLow="app/app_16_8.bmp"
-            winMediumHigh="app/app_32_8.bmp"
+            winMediumHigh="app/app_32_32.bmp"
             winMediumLow="app/app_32_8.bmp"
             winLargeHigh="app/app_48_32.bmp"
             winLargeLow="app/app_48_8.bmp"
             winExtraLargeHigh="app/app_256.bmp"/>
       </win>
    </launcher>
-
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
