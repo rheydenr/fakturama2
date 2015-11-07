@@ -15,6 +15,14 @@ import org.eclipse.e4.core.services.nls.Message;
  * strings.
  * 
  */
+
+
+/*
+ * Tip: Suche mit \.(\w)
+ * Ersetze durch \U\1
+ */
+
+
 @Message(contributionURI = "platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 	public String aboutText;
@@ -158,6 +166,10 @@ public class Messages {
 	public String dialogCustomerStatisticsPart1;
 	public String dialogDeletedatasetMessage;
 	public String dialogDeletedatasetTitle;
+	
+	public String dialogItemdescriptionHeader;
+	public String dialogItemdescriptionHint;
+	
 	public String dialogMessageboxTitleInfo;
 	public String dialogMessageboxTitleWarning;
 	public String dialogOrderstatusFieldNotify;

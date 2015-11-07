@@ -27,17 +27,20 @@ public class ListViewRowHeaderDataProvider implements IDataProvider {
         this.bodyDataProvider = bodyDataProvider;
         this.withRowHeader = withRowHeader;
     }
+    
     @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
         String retval = null;
         if(withRowHeader) {
             // data Value is already the PosNo
-        	Double dataValue = (Double) bodyDataProvider.getDataValue(columnIndex, rowIndex);
-            if(dataValue == -1.0) {
-            	retval = "";
-            } else {
+        	// the "-1" is only a placeholder for the very first column (which has to 
+        	// be the position number); this is converted in the IColumnPropertyAccessor
+        	Number dataValue = (Number) bodyDataProvider.getDataValue(-1, rowIndex);
+//            if(dataValue instanceof Integer && dataValue == Integer.valueOf(-1)) {
+//            	retval = Integer.toString(rowIndex);
+//            } else {
             	retval = Integer.toString(dataValue.intValue());
-            }
+//            }
         }
         return retval;
     }

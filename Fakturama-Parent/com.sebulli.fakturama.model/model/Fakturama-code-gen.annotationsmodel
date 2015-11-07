@@ -1219,6 +1219,13 @@
         <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
       </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
+        <entity>
+          <entityListeners>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
+          </entityListeners>
+        </entity>
+      </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//CEFACTCode/abbreviation_de"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The abbreviation of this code in a readable manner (can be overwritten by user)."/>

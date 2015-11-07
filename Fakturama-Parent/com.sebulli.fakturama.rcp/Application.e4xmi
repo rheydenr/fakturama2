@@ -473,6 +473,7 @@
     <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="up" iconURI="icon://COMMAND_UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_5-b7sIWpEeWfCoLoCa3btA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
     </menus>
   </descriptors>
   <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">

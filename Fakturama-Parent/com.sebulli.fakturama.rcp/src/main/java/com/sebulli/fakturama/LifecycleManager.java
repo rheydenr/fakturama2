@@ -3,10 +3,13 @@ package com.sebulli.fakturama;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.util.Date;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -44,7 +47,9 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -60,7 +65,9 @@ import com.sebulli.fakturama.startup.ConfigurationManager;
  */
 public class LifecycleManager {
 
-    @Inject
+    private static final String CODELISTS_XLSX = "codelists.xlsx";
+
+	@Inject
     private IEclipseContext context;
     
     @Inject
@@ -199,7 +206,7 @@ public class LifecycleManager {
         
         // init UN/CEFACT codes
         if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
-//        	initializeCodes(unCefactCodeDAO);
+        	initializeCodes(unCefactCodeDAO, modelFactory);
         }
         
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
@@ -211,47 +218,50 @@ public class LifecycleManager {
     
     /**
      * Initializes all the UN/CEFACT codes which are needed for later ZUGFeRD export.
-     * The codes are read from resources bundle (properties file).
+     * The codes are read from resources bundle (file codelists.xlsx).
+     * 
+     * Format: Rubrik | Code | Name_en | Name_de | abbrev_en | abbrev_de | Hinweis
      * 
      * @param unCefactCodeDAO the dao
+     * @param modelFactory 
      */
-    private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO) {
-    	try {
-    		InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource("codelists.xlsx").openStream();
+    private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO, FakturamaModelFactory modelFactory) {
+    	try(InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource(CODELISTS_XLSX).openStream();){
     		XSSFWorkbook wb = new XSSFWorkbook(wbStream);
     		XSSFSheet sheet = wb.getSheetAt(0);
 			int rows = sheet.getPhysicalNumberOfRows();
-			for (int r = 0; r < rows; r++) {
+			// skip the first n rows
+			int skiprows = 1;  // in case we have somedays more than one header line
+			for (int r = skiprows; r < rows; r++) {
 				XSSFRow row = sheet.getRow(r);
 				if (row == null) {
 					continue;
 				}
-
-				int cells = row.getPhysicalNumberOfCells();
-				for (int c = 0; c < cells; c++) {
-					XSSFCell cell = row.getCell(c);
-					String value = null;
-
-					switch (cell.getCellType()) {
-						case XSSFCell.CELL_TYPE_NUMERIC:
-							value = "NUMERIC value=" + cell.getNumericCellValue();
-							break;
-
-						case XSSFCell.CELL_TYPE_STRING:
-							value = "STRING value=" + cell.getStringCellValue();
-							break;
-
-						default:
-					}
-					System.out.println("CELL col=" + cell.getColumnIndex() + " VALUE="
-							+ value);
-				}
+				
+				int i = 0; // column index
+				CEFACTCode cEFACTCode = modelFactory.createCEFACTCode();
+				cEFACTCode.setTarget(row.getCell(i++).getStringCellValue());
+				cEFACTCode.setCode(row.getCell(i++).getStringCellValue());
+				cEFACTCode.setName(getNullSafeCellValue(row.getCell(i++)));
+				cEFACTCode.setName_de(getNullSafeCellValue(row.getCell(i++)));
+				cEFACTCode.setAbbreviation_en(getNullSafeCellValue(row.getCell(i++)));
+				cEFACTCode.setAbbreviation_de(getNullSafeCellValue(row.getCell(i++)));
+				cEFACTCode.setValidFrom(Date.from(Instant.now()));
+//				cEFACTCode.setDateAdded(Date.from(Instant.now()));
+				unCefactCodeDAO.save(cEFACTCode);
 			}
-//			wb.close();			
-		} catch (IOException e) {
+		} catch (IOException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private String getNullSafeCellValue(XSSFCell cell) {
+		String retval = null;
+		if(cell != null) {
+			retval = cell.getStringCellValue();
+		}
+		return retval;
 	}
 
 	@PreDestroy

@@ -28,7 +28,6 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -52,11 +51,14 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
+import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
+import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
@@ -71,6 +73,9 @@ import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorat
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
+import org.eclipse.nebula.widgets.nattable.selection.EditTraversalStrategy;
+import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
+import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
@@ -86,6 +91,7 @@ import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -155,8 +161,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private boolean containsDiscountedItems = false;
     private boolean useGross;
 //    private int netgross = DocumentSummary.NOTSPECIFIED;
-
-    private Control top;
+    
+    /**
+     * {@link VAT} entry for use in conjunction with "no VAT" entry
+     */
+    private VAT noVatReference = null;
     
     private static final String OPTIONAL_CELL_LABEL = "Optional_Cell_LABEL";
     private static final String PERCENT_CELL_LABEL = "Percent_Cell_LABEL";
@@ -203,7 +212,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
         
-        this.top = super.createPartControl(parent, DocumentItemDTO.class, false, ID);
+        super.createPartControl(parent, DocumentItemDTO.class, false, ID);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
         // Listen to double clicks (omitted at the moment, perhaps at a later time
 //        hookDoubleClickCommand(natTable, gridLayer);
@@ -247,7 +256,7 @@ private Menu createContextMenu(NatTable natTable) {
         final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
         
         //if(eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
+        //    propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
         //}
 
         if (containsOptionalItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
@@ -297,7 +306,12 @@ private Menu createContextMenu(NatTable natTable) {
              */
             public Object getDataValue(DocumentItemDTO rowObject, int columnIndex) {
                 Object retval = "???";
-                DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
+                DocumentItemListDescriptor descriptor;
+                if(columnIndex < 0) {
+                	descriptor = DocumentItemListDescriptor.POSITION;
+                } else {
+                	descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
+                }
                 switch (descriptor) {
                 case POSITION:
 //                    retval = eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS) ? rowObject.getDocumentItem().getPosNr() : -1.0;
@@ -326,18 +340,19 @@ private Menu createContextMenu(NatTable natTable) {
                 	retval = rowObject.getDocumentItem().getPicture();
                     break;
                 case VAT:
-                    retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                    retval = noVatReference != null ? noVatReference 
+                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case UNITPRICE:
-/* TODO CHECK! old code:
- * 
-            if (documentEditor.getUseGross())
-                return new Price(item).getUnitGross().asFormatedString();
-            else
-                return new Price(item).getUnitNet().asFormatedString();
- *              
- */
-                    retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                	MonetaryAmount amount;
+                	if(useGross) {
+                		amount = new Price(rowObject.getDocumentItem()).getUnitGrossRounded();
+                	} else {
+                		amount = new Price(rowObject.getDocumentItem()).getUnitNetRounded();
+                	}
+                	retval = amount.getNumber().doubleValue();
+                	
+                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case TOTALPRICE:
                     if (useGross) { // "$ItemGrossTotal"
@@ -501,8 +516,9 @@ private Menu createContextMenu(NatTable natTable) {
         };
 
         //build the grid layer
-        gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames, derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, true);
-        DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
+		gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames,
+				derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, msg, true);
+		DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         
         // set default percentage width 
         tableDataLayer.setColumnPercentageSizing(true);
@@ -530,15 +546,11 @@ private Menu createContextMenu(NatTable natTable) {
             }
             
         });
-        
-        // for further use, if we need it...
-        //      ILayer columnHeaderLayer = gridLayer.getColumnHeaderLayer();
-        //      ILayer rowHeaderLayer = gridLayer.getRowHeaderLayer();
-        
-        // TODO geht nich!
-//        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
-//        viewportLayer.registerCommandHandler(
-//                new MoveCellSelectionCommandHandler(selectionLayer, ITraversalStrategy.TABLE_TRAVERSAL_STRATEGY));
+         
+        // add some edit configuration
+        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
+        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditConfiguration());
+        gridListLayer.getViewportLayer().addConfiguration(new DocumentItemTableConfiguration());
         
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
@@ -560,7 +572,10 @@ private Menu createContextMenu(NatTable natTable) {
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUNIT, TEXT_CELL_LABEL);
 
         final NatTable natTable = new NatTable(tableComposite /*, 
-                SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridListLayer.getGridLayer(), false);
+                SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER,
+                // FIXME: Doesn't work! 
+                gridListLayer.getViewportLayer()*/, 
+                gridListLayer.getGridLayer(), false);
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
         
@@ -582,6 +597,21 @@ private Menu createContextMenu(NatTable natTable) {
         });
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
+
+        // register a MoveCellSelectionCommandHandler with
+        // TABLE_CYCLE_TRAVERSAL_STRATEGY for horizontal traversal
+        // and AXIS_CYCLE_TRAVERSAL_STRATEGY for vertical traversal
+        // NOTE:
+        // You could achieve the same by registering a command handler
+        // with TABLE_CYCLE_TRAVERSAL_STRATEGY and registering
+        // MoveSelectionActions with a customized ITraversalStrategy, e.g.
+        // AXIS_CYCLE_TRAVERSAL_STRATEGY
+        
+        // FIXME: Doesn't work!
+        gridListLayer.getViewportLayer().registerCommandHandler(
+                new MoveCellSelectionCommandHandler(gridListLayer.getSelectionLayer(),
+                        new EditTraversalStrategy(ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, natTable),
+                        new EditTraversalStrategy(ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, natTable)));
         
         return natTable;
     }
@@ -651,22 +681,14 @@ private Menu createContextMenu(NatTable natTable) {
     }
     
     private void initItemsList() {
-
         // Create a set of new temporary items.
         // These items exist only in the memory.
         // If the editor is opened, the items from the document are
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
-        List<DocumentItemDTO> wrappedItems = new ArrayList<>();
-//        @SuppressWarnings("unused")
-//        DocumentItem dummyItem = document.getItems().get(0);
-//        List<DocumentItemDTO> wrappedItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
-        for (DocumentItem item : document.getItems()) {
-            if(!item.getDeleted()) {
-                wrappedItems.add(new DocumentItemDTO(item));
-            }
-        }
-        wrappedItems.sort(Comparator.comparing((DocumentItemDTO d) -> d.getDocumentItem().getPosNr()));
+        List<DocumentItemDTO> wrappedItems = document.getItems().stream()
+        		.sorted(Comparator.comparing((DocumentItem d) -> d.getPosNr()))
+        		.map(DocumentItemDTO::new).collect(Collectors.toList());
         documentItemsListData = GlazedLists.eventList(wrappedItems);
 
         //            // Set the sign
@@ -693,8 +715,8 @@ private Menu createContextMenu(NatTable natTable) {
         Optional<DocumentItemDTO> discountedValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getItemRebate() != null).findFirst();
         containsDiscountedItems = discountedValue.isPresent();
 
-        // Renumber all Items
-        renumberItems();
+        // Renumber all Items ==> WHY???
+//        renumberItems();
     }
     
     @Override
@@ -751,11 +773,15 @@ private Menu createContextMenu(NatTable natTable) {
 
 
     /**
-     * Set the "novat" in all items. If a document is marks as "novat", the VAT
-     * of all items is set to "0.0%"
+     * Set the "novat" in all items. If a document is marked as "novat", the {@link VAT}
+     * of all items is displayed as "0.0%"
+     * @param noVat <code>true</code> if no {@link VAT} should be used
+     * @param dataSetVat in case of <em>noVat</em> is <code>true</code> the {@link VAT} entry for
+     * the 0% {@link VAT} (i.e, "no VAT" - there could be more than one entry for 0% {@link VAT}); else this parameter is <code>null</code>
      */
-    public void setItemsNoVat(Boolean noVat) {
+    public void setItemsNoVat(Boolean noVat, VAT dataSetVat) {
         getDocumentItemsListData().forEach(item -> item.getDocumentItem().setNoVat(noVat));
+        this.noVatReference = dataSetVat;
     }
 
     /**
@@ -778,6 +804,14 @@ private Menu createContextMenu(NatTable natTable) {
         for (DocumentItemDTO documentItemDTO : documentItemsListData) {
             documentItemDTO.getDocumentItem().setPosNr(no++);
         }
+    }
+    
+    /**
+     * If an external process wants to update the NatTable we use this method.
+     */
+    public void refresh() {
+    	natTable.refresh();
+    	
     }
 
     class DocumentItemTableConfiguration extends AbstractRegistryConfiguration {
@@ -812,6 +846,10 @@ private Menu createContextMenu(NatTable natTable) {
                     EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
                     DisplayMode.EDIT, DESCRIPTION_CELL_LABEL);
+            // configure to open the adjacent editor after commit
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.OPEN_ADJACENT_EDITOR,
+                    Boolean.TRUE);
             
             // center position number
             configRegistry.registerConfigAttribute(
@@ -840,58 +878,9 @@ private Menu createContextMenu(NatTable natTable) {
                     styleRightAligned,      
                     DisplayMode.NORMAL, DECIMAL_CELL_LABEL ); 
             
-            // description column
-            configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, 
-                    new MultiLineTextCellEditor(false),
-                    DisplayMode.NORMAL, 
-                    DESCRIPTION_CELL_LABEL);
-            
-          //register a combobox editor for VAT values 
-            configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITABLE_RULE, 
-                    IEditableRule.ALWAYS_EDITABLE, 
-                    DisplayMode.EDIT, VAT_CELL_LABEL);
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_STYLE,
-                    styleRightAligned,      
-                    DisplayMode.NORMAL, VAT_CELL_LABEL ); 
-            configRegistry.registerConfigAttribute( 
-                    CellConfigAttributes.CELL_PAINTER, 
-                    new ComboBoxPainter(), 
-                    DisplayMode.NORMAL, VAT_CELL_LABEL);
-            VatValueComboProvider dataProvider = new VatValueComboProvider(vatsDAO.findAll());
-            ComboBoxCellEditor vatValueCombobox = new ComboBoxCellEditor(dataProvider);
-            vatValueCombobox.setFreeEdit(false);
-            configRegistry.registerConfigAttribute( 
-                    EditConfigAttributes.CELL_EDITOR, 
-                    vatValueCombobox, 
-                    DisplayMode.NORMAL, VAT_CELL_LABEL); 
-            configRegistry.registerConfigAttribute( 
-                    CellConfigAttributes.DISPLAY_CONVERTER, 
-                    new VatDisplayConverter(), 
-                    DisplayMode.NORMAL, VAT_CELL_LABEL); 
-            
-            // for optional values
-            configRegistry.registerConfigAttribute(
-                    EditConfigAttributes.CELL_EDITOR, 
-                    new CheckBoxCellEditor(), 
-                    DisplayMode.EDIT, OPTIONAL_CELL_LABEL);
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.CELL_PAINTER, 
-                    new CheckBoxPainter(Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize), GUIHelper.getImage("arrow_down")), 
-                 //   new DefaultCheckmarkPainter(),
-                    DisplayMode.NORMAL, OPTIONAL_CELL_LABEL);  
-//            configRegistry.registerConfigAttribute(
-//                    CellConfigAttributes.CELL_STYLE,
-//                    styleCentered,      
-//                    DisplayMode.NORMAL, OPTIONAL_CELL_LABEL); 
-            //using a CheckBoxCellEditor also needs a Boolean conversion to work correctly
-            configRegistry.registerConfigAttribute(
-                    CellConfigAttributes.DISPLAY_CONVERTER, 
-                    new DefaultBooleanDisplayConverter(), 
-                    DisplayMode.NORMAL, 
-                    OPTIONAL_CELL_LABEL);
+            registerDescriptionColumn(configRegistry, styleLeftAligned);
+            registerVATColumn(configRegistry, styleRightAligned); 
+            registerOptionalColumn(configRegistry);
 
             // for discount values
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
@@ -1001,6 +990,119 @@ private Menu createContextMenu(NatTable natTable) {
                     DisplayMode.EDIT,
                     PICTURE_CELL_LABEL);
         }
+
+		/**
+		 * Registers the configuration for the description column.
+		 * 
+		 * @param configRegistry the config registry
+		 * @param styleLeftAligned 
+		 */
+		private void registerDescriptionColumn(IConfigRegistry configRegistry, Style styleLeftAligned) {
+			// description column
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, 
+                    new MultiLineTextCellEditor(false),
+                    DisplayMode.NORMAL, 
+                    DESCRIPTION_CELL_LABEL);
+            // configure the multi line text editor to always open in a
+            // subdialog
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.OPEN_IN_DIALOG,
+                    Boolean.TRUE,
+                    DisplayMode.EDIT,
+                    DESCRIPTION_CELL_LABEL);
+            
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    styleLeftAligned,
+                    DisplayMode.NORMAL,
+                    DESCRIPTION_CELL_LABEL);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    styleLeftAligned,
+                    DisplayMode.EDIT,
+                    DESCRIPTION_CELL_LABEL);
+            
+            // configure custom dialog settings
+            Display display = Display.getCurrent();
+            Map<String, Object> editDialogSettings = new HashMap<>();
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_TITLE, msg.dialogItemdescriptionHeader);
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_INFORMATION));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
+            
+            Point size = new Point(400, 300);
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
+            int screenWidth = display.getBounds().width;
+            int screenHeight = display.getBounds().height;
+            Point location = new Point(
+                    (screenWidth / (2 * display.getMonitors().length)) - (size.x / 2),
+                    (screenHeight / 2) - (size.y / 2));
+            editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
+            
+            // add custom message
+            editDialogSettings.put(ICellEditDialog.DIALOG_MESSAGE, msg.dialogItemdescriptionHint);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.EDIT_DIALOG_SETTINGS,
+                    editDialogSettings,
+                    DisplayMode.EDIT,
+                    DESCRIPTION_CELL_LABEL);		
+        }
+
+		/**
+		 * Registers the configuration for the optional value column (if an item is optional).
+		 * 
+		 * @param configRegistry the config registry
+		 */
+		private void registerOptionalColumn(IConfigRegistry configRegistry) {
+			// for optional values
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, 
+                    new CheckBoxCellEditor(), 
+                    DisplayMode.EDIT, OPTIONAL_CELL_LABEL);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_PAINTER, 
+                    new CheckBoxPainter(Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize), GUIHelper.getImage("arrow_down")), 
+                    DisplayMode.NORMAL, OPTIONAL_CELL_LABEL);  
+            //using a CheckBoxCellEditor also needs a Boolean conversion to work correctly
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER, 
+                    new DefaultBooleanDisplayConverter(), 
+                    DisplayMode.NORMAL, 
+                    OPTIONAL_CELL_LABEL);
+		}
+
+		/**
+		 * Registers the configuration for the {@link VAT} column.
+		 * 
+		 * @param configRegistry the config registry
+		 * @param styleRightAligned a style attribute
+		 */
+		private void registerVATColumn(IConfigRegistry configRegistry, Style styleRightAligned) {
+			//register a combobox editor for VAT values 
+			    configRegistry.registerConfigAttribute(
+			            EditConfigAttributes.CELL_EDITABLE_RULE, 
+			            IEditableRule.ALWAYS_EDITABLE, 
+			            DisplayMode.EDIT, VAT_CELL_LABEL);
+			    configRegistry.registerConfigAttribute(
+			            CellConfigAttributes.CELL_STYLE,
+			            styleRightAligned,      
+			            DisplayMode.NORMAL, VAT_CELL_LABEL ); 
+			    configRegistry.registerConfigAttribute( 
+			            CellConfigAttributes.CELL_PAINTER, 
+			            new ComboBoxPainter(), 
+			            DisplayMode.NORMAL, VAT_CELL_LABEL);
+			    VatValueComboProvider dataProvider = new VatValueComboProvider(vatsDAO.findAll());
+			    ComboBoxCellEditor vatValueCombobox = new ComboBoxCellEditor(dataProvider);
+			    vatValueCombobox.setFreeEdit(false);
+			    configRegistry.registerConfigAttribute( 
+			            EditConfigAttributes.CELL_EDITOR, 
+			            vatValueCombobox, 
+			            DisplayMode.NORMAL, VAT_CELL_LABEL); 
+			    configRegistry.registerConfigAttribute( 
+			            CellConfigAttributes.DISPLAY_CONVERTER, 
+			            new VatDisplayConverter(), 
+			            DisplayMode.NORMAL, VAT_CELL_LABEL);
+		}
     }
 
     /**
@@ -1036,4 +1138,18 @@ private Menu createContextMenu(NatTable natTable) {
     protected AbstractDAO<DocumentItemDTO> getEntityDAO() {
         throw new UnsupportedOperationException("Inside a list table there's no extra DAO.");
     }
+
+	/**
+	 * @return the useGross
+	 */
+	public final boolean isUseGross() {
+		return useGross;
+	}
+
+	/**
+	 * @param useGross the useGross to set
+	 */
+	public final void setUseGross(boolean useGross) {
+		this.useGross = useGross;
+	}
 }

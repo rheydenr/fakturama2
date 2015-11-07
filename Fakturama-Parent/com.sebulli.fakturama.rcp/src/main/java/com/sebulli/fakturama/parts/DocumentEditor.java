@@ -42,8 +42,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -56,7 +54,6 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -108,7 +105,6 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -121,8 +117,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
@@ -213,13 +207,7 @@ public class DocumentEditor extends Editor<Document> {
     protected VatsDAO vatDao;
     
     @Inject
-    private TextsDAO textsDAO;
-    
-    /**
-     * the model factory
-     */
-    private final FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
-
+    private TextsDAO textsDAO; 
 	// SWT components of the editor
 	private Composite top;
 	private Text txtName;
@@ -974,6 +962,9 @@ public class DocumentEditor extends Editor<Document> {
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
+        
+        // update useGross in itemsList
+        itemListTable.setUseGross(useGross);
 		
 		// Use the customers settings instead, if they are set
 		if (addressId != null && address_changed) {
@@ -1011,7 +1002,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			// Update the columns
-//			if (itemTableColumns != null ) {
+			if (itemListTable != null ) {
 //				if (useGross) {
 //					if (unitPriceColumn >= 0)
 //						itemTableColumns.get(unitPriceColumn).setDataKey("$ItemGrossPrice");
@@ -1024,15 +1015,15 @@ public class DocumentEditor extends Editor<Document> {
 //					if (totalPriceColumn >= 0)
 //						itemTableColumns.get(totalPriceColumn).setDataKey("$ItemNetTotal");
 //				}
-//
-//				// for deliveries there's no netLabel...
-//				if(netLabel != null) {
-//					// Update the total text
-//					netLabel.setText(getTotalText());
-//				}
-//
-//				tableViewerItems.refresh();
-//			}
+
+				// for deliveries there's no netLabel...
+				if(netLabel != null) {
+					// Update the total text
+					netLabel.setText(getTotalText());
+				}
+
+				itemListTable.refresh();
+			}
 			
 			// Update the shipping value;
 			calculate();
@@ -1449,7 +1440,7 @@ public class DocumentEditor extends Editor<Document> {
 			public void widgetSelected(SelectionEvent e) {
 				netgross = comboNetGross.getCombo().getSelectionIndex();
 				// recalculate the total sum
-				calculate();
+//				calculate();
 				updateUseGross(false);
 			}
 
@@ -1603,7 +1594,7 @@ public class DocumentEditor extends Editor<Document> {
 					VAT dataSetVat = (VAT) firstElement;
 
 					// get the "no-VAT" values
-					if (dataSetVat != null) {
+					if (dataSetVat.getId() > 0) {
 						noVat = true;
 						noVatName = dataSetVat.getName();
 //						noVatDescription = dataSetVat.getDescription();
@@ -1611,12 +1602,20 @@ public class DocumentEditor extends Editor<Document> {
 					else {
 						noVat = false;
 						noVatName = "";
+						/* because later on we have to
+						 * to decide if noVAT is set based on null or not null 
+						 */
+						dataSetVat = null;  
 //						noVatDescription = "";
 					}
 
 					// set all items to 0%
-					itemListTable.setItemsNoVat(noVat);
+					itemListTable.setItemsNoVat(noVat, dataSetVat);
+					// update NoVat reference
+					document.setNoVatReference(dataSetVat);
 //					tableViewerItems.refresh();
+					
+					getMDirtyablePart().setDirty(true);
 
 					// recalculate the total sum
 					calculate();

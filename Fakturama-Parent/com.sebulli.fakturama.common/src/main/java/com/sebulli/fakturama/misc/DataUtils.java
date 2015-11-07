@@ -478,6 +478,11 @@ public class DataUtils {
                 .build());
         return format.format(amount.with(mro));
     }
+    
+    public MonetaryRounding getDefaultRounding() {
+    	return getRounding(getDefaultCurrencyUnit());
+    }
+    
     public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
         return formatCurrency(amount, locale, useCurrencySymbol, 
                 Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
@@ -988,7 +993,7 @@ public class DataUtils {
     public String replaceAllAccentedChars(String s) {
         
         s = s.replace("À", "A");
-        s = s.replace("�?", "A");
+        s = s.replace("�?", "A");
         s = s.replace("Â", "A");
         s = s.replace("Ã", "A");
         s = s.replace("Ä", "Ae");
@@ -1008,9 +1013,9 @@ public class DataUtils {
         s = s.replace("é", "e");
 
         s = s.replace("Ì", "I");
-        s = s.replace("�?", "I");
+        s = s.replace("�?", "I");
         s = s.replace("Î", "I");
-        s = s.replace("�?", "I");
+        s = s.replace("�?", "I");
         s = s.replace("î", "i");
         s = s.replace("ï", "i");
         s = s.replace("ì", "i");
@@ -1036,7 +1041,7 @@ public class DataUtils {
         s = s.replace("ù", "u");
         s = s.replace("ú", "u");
 
-        s = s.replace("�?", "Y");
+        s = s.replace("�?", "Y");
         s = s.replace("ý", "y");
         s = s.replace("ñ", "n");
         s = s.replace("ß", "ss");

@@ -222,10 +222,10 @@ public class ItemListBuilder {
             }
         });
 
-    ////Create the context menu
+    //Create the context menu
     //createContextMenu(tableViewerItems);
     
-    return itemListTable;
+        return itemListTable;
     }
 
     public ItemListBuilder withParent(Composite parent) {
