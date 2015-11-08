@@ -7,7 +7,7 @@
         <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_OJDuMG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.rcp.partsashcontainer.0" containerData="2000">
             <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation View" tooltip=""/>
-            <children xsi:type="basic:PartStack" xmi:id="_n4EDAG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.errorview.partstack" containerData="2000">
+            <children xsi:type="basic:PartStack" xmi:id="_n4EDAG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.errorview.partstack" toBeRendered="false" visible="false" containerData="2000">
               <children xsi:type="basic:Part" xmi:id="_QYYFcG0kEeSXL4Yk4alD9Q" elementId="part:com.sebulli.fakturama.views.errorView" visible="false" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.ErrorView" label="%view.errorlog.name" iconURI="icon://COMMAND_ERROR" closeable="true"/>
             </children>
           </children>
@@ -402,7 +402,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_cSH2QEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.parcelservice.id" label="%command.parcelservice.name" iconURI="icon://COMMAND_PARCEL" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_RCrwcPo9EeKmVtv93KLoRw" elementId="menu:main.menu.extra.id" label="%main.menu.extra">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="menu:main.menu.organize_documents.id" label="%main.menu.extra.reorganize" iconURI="icon://COMMAND_REORGANIZE"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="menu:main.menu.organize_documents.id" label="%main.menu.extra.reorganize" iconURI="icon://COMMAND_REORGANIZE" command="_uB33QIZSEeWRb8xKRQdEJg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_jPhn4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.window.id" label="%main.menu.window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_0iJK8EgWEeOrp6PdA0AQig" elementId="menu:main.menu.calculator.id" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" command="_-UipAEy_EeOA3qmx22wNtw"/>
@@ -451,6 +451,7 @@
   <handlers xmi:id="_cmZ3IOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.up" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryUpMenuItem" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
   <handlers xmi:id="_CfeC4O3vEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.handler.documents.removeref" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.RemoveInvoiceReferenceHandler" command="_3Wx3MO3uEeScLKnTyMNVVA"/>
+  <handlers xmi:id="_FOmckIZTEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.handler.documents.reorganize" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ReorganizeDocuments" command="_uB33QIZSEeWRb8xKRQdEJg"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -472,7 +473,8 @@
     <tags>removeOnHide</tags>
     <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="up" iconURI="icon://COMMAND_UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="%command.documents.move.up.name" iconURI="icon://COMMAND_UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_XlcO0IZEEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.documentitemlist.move.down" label="%command.documents.move.down.name" iconURI="icon://COMMAND_DOWN" command="_y4hyMOhnEeSelNaW6sEw-A"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_5-b7sIWpEeWfCoLoCa3btA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
     </menus>
   </descriptors>
@@ -569,9 +571,12 @@
     <parameters xmi:id="_kukB0MUQEeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.objId" name="the selected object id" typeId="" optional="false"/>
     <parameters xmi:id="_JbW54MUREeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem.partid" name="the ID of the calling part (since we have to close it)" typeId="" optional="false"/>
   </commands>
-  <commands xmi:id="_58wvUOOYEeSCoO-pHSKlQQ" elementId="com.sebulli.fakturama.rcp.command.moverowup" commandName="MoveRowUp"/>
-  <commands xmi:id="_y4hyMOhnEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.rcp.command.moverowdown" commandName="MoveRowDown"/>
+  <commands xmi:id="_58wvUOOYEeSCoO-pHSKlQQ" elementId="com.sebulli.fakturama.command.moveEntryUp" commandName="%command.documents.move.up.name"/>
+  <commands xmi:id="_y4hyMOhnEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.command.moveEntryDown" commandName="%command.documents.move.down.name"/>
   <commands xmi:id="_3Wx3MO3uEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.command.removeref" commandName="RemoveInvoiceReference" description="removes an invoice reference from a delivery document" category="_ck9sUCTREeS9z6SQNducwg"/>
+  <commands xmi:id="_uB33QIZSEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.command.reorganizeDocuments" commandName="%main.menu.extra.reorganize" category="_ck9sUCTREeS9z6SQNducwg">
+    <parameters xmi:id="_C4kMwIZoEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.command.documents.reorganize.silent" name="run silently"/>
+  </commands>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

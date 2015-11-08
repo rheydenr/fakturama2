@@ -207,7 +207,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1);
+            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -616,18 +616,18 @@ private Menu createContextMenu(NatTable natTable) {
         return natTable;
     }
 
-    @Override
-    protected void createDefaultContextMenu() {
-        super.createDefaultContextMenu();
-
-        final Menu e4Menu = createContextMenu(natTable);
-
-        // remove the menu reference from NatTable instance
-        natTable.setMenu(null);
-        natTable.getUiBindingRegistry().registerMouseDownBinding(new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
-                new PopupMenuAction(e4Menu));
-
-    }
+//    @Override
+//    protected void createDefaultContextMenu() {
+//        super.createDefaultContextMenu();
+//
+//        final Menu e4Menu = createContextMenu(natTable);
+//
+//        // remove the menu reference from NatTable instance
+//        natTable.setMenu(null);
+//        natTable.getUiBindingRegistry().registerMouseDownBinding(new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+//                new PopupMenuAction(e4Menu));
+//
+//    }
 
     /**
      * @param reverseMap

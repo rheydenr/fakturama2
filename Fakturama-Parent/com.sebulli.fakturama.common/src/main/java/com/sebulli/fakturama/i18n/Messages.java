@@ -716,8 +716,8 @@ public class Messages {
 	public String receiptvoucherFieldBook;
 	public String receiptvoucherFieldCustomer;
 	public String receiptvoucherFieldVoucher;
-	public String Reorganizedocumentsaction118;
-	public String Reorganizedocumentsaction119;
+	public String dialogReorganizeQuestion;
+	public String dialogReorganizeDonemessage;
 	public String startFirstRestartmessage;
 	public String startFirstSelectDbCredentialsJdbc;
 	public String startFirstSelectDbCredentialsName;

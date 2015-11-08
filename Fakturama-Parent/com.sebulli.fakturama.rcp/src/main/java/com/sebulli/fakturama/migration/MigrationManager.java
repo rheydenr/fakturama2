@@ -54,11 +54,14 @@ import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 //import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -88,6 +91,8 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
+import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.handlers.ReorganizeDocuments;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
@@ -165,6 +170,12 @@ public class MigrationManager {
 	@Inject
 	private IEclipsePreferences eclipsePrefs;
 	
+	@Inject
+	private EHandlerService handlerService;
+
+    @Inject
+    private ECommandService commandService;
+
 // this doesn't work because the IPreferenceStore isn't set at this stage
 //	@Inject
 //    @Preference(value=InstanceScope.SCOPE)
@@ -329,52 +340,16 @@ public class MigrationManager {
 					}
 					monitor.done();
 				}
-
-				/**
-				 * entry point for migration of old data (db only)
-				 * 
-				 * @param parent the current {@link Shell}
-				 * @throws BackingStoreException
-				 */
-				@Execute
-				public void migrateOldData(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent) throws BackingStoreException {
-					eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
-					eclipsePrefs.flush();
-			
-					// now start a ProgressMonitorDialog for tracing the progress of migration
-					ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
-					try {
-						IRunnableWithProgress op = new IRunnableWithProgress() {
-			
-							@Override
-							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-								monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
-								for (OldTableinfo tableinfo : orderedTasks) {
-									monitor.setTaskName(msg.startMigrationConvert + tableinfo.name());
-									checkCancel(monitor);
-									runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
-			//						monitor.worked(1);
-								}
-								monitor.done();
-							}
-						};
-						;
-						progressMonitorDialog.run(true, true, op);
-					}
-					catch (InvocationTargetException e) {
-						log.error("Fehler: ", e.getMessage());
-					}
-					catch (InterruptedException e) {
-						// handle cancellation
-						throw new OperationCanceledException();
-					}
-					finally {
-						log.info(msg.startMigrationEnd);
-					}
-				}
 			};
-			;
 			progressMonitorDialog.run(true, true, op);
+			
+			// now we have to update the file paths of the stored documents
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put(ReorganizeDocuments.RUN_REORGANIZE_SILENTLY, Boolean.TRUE.toString());
+            ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_REORGANIZE_DOCUMENTS, parameters);
+            if (handlerService.canExecute(pCmd)) {
+                handlerService.executeHandler(pCmd);
+            }
 		}
 		catch (InvocationTargetException e) {
 			log.error("Fehler: ", e.getMessage());
@@ -394,7 +369,6 @@ public class MigrationManager {
         for (Handler handler : migLogUser.getHandlers()) {
             handler.close();
         }
-        
 	}
 	
 

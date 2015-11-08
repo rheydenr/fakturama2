@@ -65,9 +65,7 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
 //    @CanExecute
     public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION)
                             @Optional Object selection) {
-       if (selection!=null/* && selection instanceof MyObject*/)
-        return true;
-       return false;
+    	return (selection!=null/* && selection instanceof MyObject*/);
     }
     
     @Execute
@@ -81,7 +79,8 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
             // Do not move one single item
             if (natTable.getRowCount() > 2 && pos > 0) {  // the header row has to be added for this calculation!
                 ILayerCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos - 1);
-                natTable.doCommand(cmd);natTable.refresh();
+                natTable.doCommand(cmd);
+                natTable.refresh();
             }
         }
     }
