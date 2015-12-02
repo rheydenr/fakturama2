@@ -349,4 +349,9 @@ public class VatEditor extends Editor<VAT> {
     protected Class<VAT> getModelClass() {
         return VAT.class;
     }
+    
+    @Override
+    protected String getEditorID() {
+    	return EDITOR_ID;
+    }
 }

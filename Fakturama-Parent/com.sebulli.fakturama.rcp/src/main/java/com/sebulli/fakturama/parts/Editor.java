@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.parts;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
@@ -38,6 +39,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
@@ -58,7 +60,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -80,7 +81,7 @@ public abstract class Editor<T extends IEntity> {
 
     @Inject
     protected IPreferenceStore defaultValuePrefs;
-	
+
 	@Inject
 	@Translation
 	protected Messages msg;
@@ -222,15 +223,13 @@ public abstract class Editor<T extends IEntity> {
 					if (uds.getId() >= 0) {
 						defaultValuePrefs.setValue(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
-//						try {
-//                            defaultValuePrefs.flush();
-                            
+						try {
+							((IPersistentPreferenceStore)defaultValuePrefs).save();
                             // Refresh the table view of all VATs
-						// FIXME all VATs??? There're also default shippings!!!
-                            evtBroker.post("VatEditor", "update");
-//                        } catch (BackingStoreException e1) {
-//                            log.error(e1, "Error while flushing default value preferences.");
-//                        }
+                            evtBroker.post(getEditorID(), "update");
+                        } catch (IOException e1) {
+                            log.error(e1, "Error while flushing default value preferences.");
+                        }
 					}
 				}
 

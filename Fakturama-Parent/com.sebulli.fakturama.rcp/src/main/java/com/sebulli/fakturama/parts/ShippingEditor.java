@@ -629,4 +629,9 @@ public class ShippingEditor extends Editor<Shipping> {
     protected Class<Shipping> getModelClass() {
         return Shipping.class;
     }
+    
+    @Override
+    protected String getEditorID() {
+    	return EDITOR_ID;
+    }
 }

@@ -53,8 +53,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
-import javax.money.format.MonetaryAmountFormat;
-import javax.money.format.MonetaryFormats;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
@@ -79,7 +77,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.javamoney.moneta.FastMoney;
-import org.osgi.util.xml.XMLParserActivator;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -223,7 +220,6 @@ public class WebShopImportManager {
 	    public boolean isError() {
 	    	return isError;
 	    }
-	    
 	    	    
 	    /**
 	     * Returns a reference to the input stream
@@ -530,7 +526,7 @@ public class WebShopImportManager {
                     return;
                 }
                 
-        		// 1. We need to create JAXContext instance
+        		// 1. We need to create JAXBContext instance
         		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 
         		// 2. Use JAXBContext instance to create the Unmarshaller.
@@ -1027,7 +1023,7 @@ public class WebShopImportManager {
         
         	// Set the document data
         	dataSetDocument.setOrderDate(Date.from(instant));
-//        	dataSetDocument.setCreationDate(Date.from(Instant.now()));
+        	dataSetDocument.setDateAdded(Date.from(Instant.now()));
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());
     	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : 0.0);
         	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
@@ -1052,7 +1048,6 @@ public class WebShopImportManager {
 			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType.getTotal(), currencyCode); 
         	// If there is a difference, show a warning.
         	if (!calcTotal.isEqualTo(totalFromWebshop)) {
-        		MonetaryAmountFormat defaultFormat = MonetaryFormats.getAmountFormat(LocaleUtil.getInstance(lang).getDefaultLocale());
         		//T: Error message importing data from web shop
         		//T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
         		String error = msg.toolbarNewOrderName + ":";
@@ -1060,7 +1055,7 @@ public class WebShopImportManager {
         		error += msg.importWebshopInfoTotalsum;
         		error += "\n" + DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()) + "\n";
         		error += msg.importWebshopErrorTotalsumincorrect;
-        		error += "\n" + defaultFormat.format(calcTotal) + "\n";
+        		error += "\n" + DataUtils.getInstance().formatCurrency(calcTotal) + "\n";
         		error += msg.importWebshopErrorTotalsumcheckit;
         		runResult = error;
         	}        
@@ -1143,7 +1138,6 @@ public class WebShopImportManager {
             if (!product.getImage().isEmpty()) {
             	String pictureName = ProductUtil.createPictureName(productName, productModel);
             	picture = downloadImageFromUrl(shopURL + productImagePath + product.getImage(), pictureName);
-            	
 /*
 BufferedInputStream inputStreamReader = new BufferedInputStream(new ByteArrayInputStream(imageByte));
 ImageData imageData = new ImageData(inputStreamReader);

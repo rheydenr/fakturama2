@@ -9,7 +9,6 @@ import java.util.Date;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -33,13 +32,13 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
@@ -49,7 +48,6 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -84,8 +82,6 @@ public class LifecycleManager {
     @Inject
     protected ITemplateResourceManager resourceManager;
     
-    protected IPreferenceStoreProvider preferenceStoreProvider;
- 
     private static final boolean RESTART_APPLICATION = true;
 
     private Job dbInitJob;
@@ -173,7 +169,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
+//        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         
         Shipping defaultShipping = modelFactory.createShipping();
         defaultShipping.setName(msg.dataDefaultShipping);
@@ -186,7 +182,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+//        defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
 
         Payment defaultPayment = modelFactory.createPayment();
         defaultPayment.setName(msg.dataDefaultPayment);
@@ -202,7 +198,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_PAYMENT) == Long.valueOf(0L)) {
             defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+//        defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // init UN/CEFACT codes
         if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
@@ -269,7 +265,6 @@ public class LifecycleManager {
 
         //Closes all OpenOffice documents 
  //       OfficeManager.INSTANCE.closeAll();
-
         if (context.get(PreferencesInDatabase.class) != null) {
             context.get(PreferencesInDatabase.class).savePreferencesInDatabase();
 //            Data.INSTANCE.close();

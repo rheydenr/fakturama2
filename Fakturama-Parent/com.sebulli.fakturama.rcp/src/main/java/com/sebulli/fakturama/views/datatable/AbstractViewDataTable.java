@@ -23,11 +23,13 @@ import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -46,8 +48,11 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
@@ -103,7 +108,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
     @Inject
     protected IPreferenceStore eclipsePrefs;
-    
+ 
     @Inject
     protected Logger log;
 
@@ -268,6 +273,21 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
             properties.load(propertiesInputStream);
             natTable.saveState(getTableId(), properties);
+            
+            // removing superfluous entries (i.e., count of rows, sorting)
+            final Iterator mapIter = properties.keySet().iterator();
+            String[] prefixes = new String[]{
+            		getTableId() + "." + GridRegion.BODY + RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
+            		getTableId() + "." + GridRegion.COLUMN_HEADER + SortStatePersistor.PERSISTENCE_KEY_SORTING_STATE,
+            	};
+            String elem;
+			while (mapIter.hasNext()) {
+				elem = (String) mapIter.next();
+				if (StringUtils.containsAny(elem, prefixes)) {
+					mapIter.remove();
+				}
+			}
+            
             log.info("Saving NatTable state to " + Constants.VIEWTABLE_PREFERENCES_FILE);
             properties.store(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE), "NatTable state");
         } catch (IOException ioex) {
@@ -356,7 +376,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @param gridLayer
      */
 	@Deprecated
-    protected void hookDoubleClickCommand(final NatTable nattable, final ListViewGridLayer<T> gridLayer) {
+    protected void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<T> gridLayer) {
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 

@@ -7,6 +7,7 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
@@ -37,6 +38,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
     private SortedList<T> sortedList;
     private RowReorderLayer rowReorderLayer;
     private GlazedListsEventLayer<T> glazedListsEventLayer;
+	private ViewportLayer viewportLayer;
 
     public BodyLayerStack(EventList<T> eventList, IColumnPropertyAccessor<T> columnPropertyAccessor) {
         this(eventList, columnPropertyAccessor, new IRowIdAccessor<T>() {
@@ -78,7 +80,11 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         // Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
         
-        ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+        viewportLayer = new ViewportLayer(selectionLayer);
+        // as the selection mouse bindings are registered for the region label
+        // GridRegion.BODY we need to set that region label to the viewport so
+        // the selection via mouse is working correctly
+//        viewportLayer.setRegionName(GridRegion.BODY);
 
         setUnderlyingLayer(viewportLayer);
 
@@ -120,4 +126,11 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
     public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
         return glazedListsEventLayer;
     }
+
+	/**
+	 * @return the viewportLayer
+	 */
+	public final ViewportLayer getViewportLayer() {
+		return viewportLayer;
+	}
 }

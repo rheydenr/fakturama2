@@ -53,8 +53,6 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
 
-//        EclipseContextFactory.getServiceContext(context).get(IEclipsePreferences.class);
-
         // background color for focused widgets
         JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
    }
