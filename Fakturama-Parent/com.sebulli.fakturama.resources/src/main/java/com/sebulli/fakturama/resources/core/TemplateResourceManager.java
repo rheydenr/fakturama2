@@ -94,11 +94,12 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                 }
         
                 // Copy the parcel service templates
-                Path parcelServiceFolder = Paths.get(workspace, templateFolderName, translate("parcel.service.name")); // new File(ParcelServiceManager.getTemplatePath());
+                String translatedServiceString = translate("page.parcelservice");
+				Path parcelServiceFolder = Paths.get(workspace, templateFolderName, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
                 if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "DHL_de.txt"));
-                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "eFILIALE_de.txt"));
-                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translate("parcel.service.name"), "myHermes_de.txt"));
+                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "DHL_de.txt"));
+                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "eFILIALE_de.txt"));
+                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "myHermes_de.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");

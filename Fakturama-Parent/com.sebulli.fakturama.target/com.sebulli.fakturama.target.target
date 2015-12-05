@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="338">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="345">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201508180411"/>
-<unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201508180411"/>
-<unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201508180411"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
-</location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
 <repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.5.0.v20150804081228"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.5.0.v20150804081228"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.13.0/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.ecore.feature.group" version="2.11.0.v20150512-0501"/>
@@ -44,20 +27,11 @@
 <repository location="http://download.eclipse.org/gemini/jpa/updates"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.0.v20150309-bf26070"/>
-<unit id="org.eclipse.persistence.jpa.source.feature.group" version="2.6.0.v20150309-bf26070"/>
-<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.3.0.201503261201"/>
 <unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.3.0.201503261201"/>
 <unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.3.0.201503261201"/>
 <unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.3.0.201503261201"/>
 <repository location="http://download.eclipse.org/nattable/releases/1.3.0/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201510072120"/>
-<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201510152238"/>
@@ -69,34 +43,6 @@
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.1.v20150831-1342"/>
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.5.0.v20150818-0640"/>
-<unit id="org.eclipse.platform.ide" version="4.5.1.M20150904-0015"/>
-<repository location="http://download.eclipse.org/releases/mars"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
-<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
-<unit id="org.apache.xmlbeans" version="2.3.0.v201405241900"/>
-<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<unit id="org.dom4j" version="1.6.1.v201312101416"/>
-<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201511041902"/>
 <unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201511041902"/>
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
@@ -106,6 +52,63 @@
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201511041902"/>
 <unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201511041902"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.persistence.jpa.source.feature.group" version="2.6.1.v20150916-55dc7c3"/>
+<unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.1.v20150916-55dc7c3"/>
+<repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201512041500"/>
+<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.5.0.v20150818-0640"/>
+<unit id="org.eclipse.platform.ide" version="4.5.1.M20150904-0015"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.1.v20150831-1342"/>
+<repository location="http://download.eclipse.org/releases/mars"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201509290912"/>
+<unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201509290912"/>
+<unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201509290912"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
+<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+<unit id="org.dom4j" version="1.6.1.v201312101416"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
+<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
+<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
+<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
+<unit id="org.apache.xmlbeans" version="2.3.0.v201405241900"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_lt.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20151128060001"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.13.1/mars"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

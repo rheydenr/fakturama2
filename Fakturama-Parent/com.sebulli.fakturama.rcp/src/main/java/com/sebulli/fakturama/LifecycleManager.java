@@ -9,9 +9,10 @@ import java.util.Date;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,7 +33,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.FrameworkUtil;
@@ -157,10 +157,10 @@ public class LifecycleManager {
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
-//        context.set(IPreferenceStore.class, defaultValuesNode);
+        context.set(IPreferenceStore.class, defaultValuesNode);
         context.getParent().set(IPreferenceStore.class, defaultValuesNode);
         // Set the default values to this entries
-        VAT defaultVat = modelFactory.createVAT(); //defaultValuesNode.getString(Constants.DEFAULT_VAT);
+        VAT defaultVat = modelFactory.createVAT();
         defaultVat.setName(msg.dataDefaultVat);
         defaultVat.setDescription(msg.dataDefaultVatDescription);
         defaultVat.setTaxValue(Double.valueOf(0.0));
@@ -169,7 +169,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
         }
-//        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
+        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         
         Shipping defaultShipping = modelFactory.createShipping();
         defaultShipping.setName(msg.dataDefaultShipping);
@@ -182,7 +182,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
         }
-//        defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+        defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
 
         Payment defaultPayment = modelFactory.createPayment();
         defaultPayment.setName(msg.dataDefaultPayment);
@@ -198,7 +198,7 @@ public class LifecycleManager {
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_PAYMENT) == Long.valueOf(0L)) {
             defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
         }
-//        defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+        defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // init UN/CEFACT codes
         if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
@@ -207,8 +207,8 @@ public class LifecycleManager {
         
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
         // here we have to restore the preference values from database
-        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
-        context.set(PreferencesInDatabase.class, preferencesInDatabase);
+//        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
+//        context.set(PreferencesInDatabase.class, preferencesInDatabase);
 //        preferencesInDatabase.loadPreferencesFromDatabase();
     }
     
@@ -223,13 +223,14 @@ public class LifecycleManager {
      */
     private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO, FakturamaModelFactory modelFactory) {
     	try(InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource(CODELISTS_XLSX).openStream();){
-    		XSSFWorkbook wb = new XSSFWorkbook(wbStream);
-    		XSSFSheet sheet = wb.getSheetAt(0);
+    		log.info("importing code lists from " + CODELISTS_XLSX);
+    		Workbook wb = new XSSFWorkbook(wbStream);
+    		Sheet sheet = wb.getSheetAt(0);
 			int rows = sheet.getPhysicalNumberOfRows();
 			// skip the first n rows
 			int skiprows = 1;  // in case we have somedays more than one header line
 			for (int r = skiprows; r < rows; r++) {
-				XSSFRow row = sheet.getRow(r);
+				Row row = sheet.getRow(r);
 				if (row == null) {
 					continue;
 				}
@@ -252,7 +253,7 @@ public class LifecycleManager {
 		}
 	}
 
-	private String getNullSafeCellValue(XSSFCell cell) {
+	private String getNullSafeCellValue(Cell cell) {
 		String retval = null;
 		if(cell != null) {
 			retval = cell.getStringCellValue();
