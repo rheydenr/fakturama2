@@ -52,7 +52,6 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
-import org.eclipse.nebula.widgets.nattable.edit.command.EditCellCommand;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
@@ -80,7 +79,6 @@ import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.selection.command.SelectCellCommand;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -89,11 +87,9 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
-import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
-import org.eclipse.nebula.widgets.nattable.viewport.command.ShowRowInViewportCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -381,6 +377,7 @@ private Menu createContextMenu(NatTable natTable) {
             public void setDataValue(DocumentItemDTO rowObject, int columnIndex, Object newValue) {
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 boolean calculate = true;
+                boolean valueChanged = true;  
                 switch (descriptor) {
                 case OPTIONAL:
                     rowObject.getDocumentItem().setOptional((Boolean) newValue);
@@ -437,6 +434,7 @@ private Menu createContextMenu(NatTable natTable) {
                 case PICTURE:
                     // setting a new picture isn't allowed in this context!
                     calculate = false; // no recalculation needed
+                    valueChanged = false;
                     break;
                 case VAT:
                     // Set the VAT
@@ -491,12 +489,14 @@ private Menu createContextMenu(NatTable natTable) {
                     break;
                 }
 
-                // Recalculate the total sum of the document if necessary
-                // do it via the messaging system and send a message to DocumentEditor
-                Map<String, Object> event = new HashMap<>();
-                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
-                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
-                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+                if(valueChanged) {
+	                // Recalculate the total sum of the document if necessary
+	                // do it via the messaging system and send a message to DocumentEditor
+	                Map<String, Object> event = new HashMap<>();
+	                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
+	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+                }
             }
 
             public int getColumnCount() {

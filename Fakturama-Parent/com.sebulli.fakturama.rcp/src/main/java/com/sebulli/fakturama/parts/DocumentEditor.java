@@ -1613,7 +1613,7 @@ public class DocumentEditor extends Editor<Document> {
 					itemListTable.setItemsNoVat(noVat, dataSetVat);
 					// update NoVat reference
 					document.setNoVatReference(dataSetVat);
-//					tableViewerItems.refresh();
+					itemListTable.refresh();
 					
 					getMDirtyablePart().setDirty(true);
 
