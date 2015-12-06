@@ -97,6 +97,7 @@ public class LifecycleManager {
     
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
+                	
                     log.debug("start DAOs - begin");
                     context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
                     context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));

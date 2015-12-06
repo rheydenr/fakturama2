@@ -36,8 +36,10 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -65,7 +67,6 @@ import com.sebulli.fakturama.views.datatable.vouchers.ReceiptVoucherListTable;
 /**
  * Universal Handler to open an UniDataSet editor
  * 
- * @author Gerd Bartelt
  */
 public class CallEditor {
     
@@ -101,7 +102,10 @@ public class CallEditor {
     @Inject
     @Translation
     protected Messages msg;
-	
+
+    @Inject
+    private IPreferenceStore preferences;
+
 	@Inject
 	private EPartService partService;
 
@@ -120,7 +124,6 @@ public class CallEditor {
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
-            // TODO close other parts if this is set in preferences!
             IEclipseContext stackContext = null;
             List<MContext> stackElements = modelService.findElements(documentPartStack, null, MContext.class, null);
             for (MContext contexts : stackElements) {
@@ -128,6 +131,11 @@ public class CallEditor {
                     stackContext = contexts.getContext();
                     break;
                 }
+            }
+            
+            // close other editors if set in preferences
+            if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
+            	partService.getParts().forEach(part -> { if(part.getTags().contains("removeOnHide")) {partService.hidePart(part);}});
             }
 
             Map<String, String> params = new HashMap<>();

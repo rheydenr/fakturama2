@@ -56,6 +56,7 @@
 			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
+			<!-- DOESN'T WORK!!! persistence:property name="eclipselink.logging.logger" value="com.sebulli.fakturama.log.FakturamaLogger" / -->
             <!-- custom SessionLog implementation -->
             <!-- persistence:property name="eclipselink.logging.logger" value="org.eclipse.persistence.platform.server.ServerLog"/ -->
 			<!-- persistence:property name="eclipselink.profiler" value="org.eclipse.persistence.tools.profiler.PerformanceProfiler.logProfiler"/ -->

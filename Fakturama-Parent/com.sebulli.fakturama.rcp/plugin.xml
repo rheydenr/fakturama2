@@ -56,7 +56,7 @@
    <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
       <preferenceStoreProvider
-            class="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.ScopedPreferenceStore"
+            class="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider"
             pluginId="com.sebulli.fakturama.rcp">
       </preferenceStoreProvider>
    </extension>

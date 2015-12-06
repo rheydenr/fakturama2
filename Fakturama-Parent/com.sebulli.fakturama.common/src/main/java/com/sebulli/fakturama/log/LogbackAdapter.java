@@ -22,13 +22,13 @@ import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sebulli.fakturama.common.Activator;
+import com.sebulli.fakturama.misc.Constants;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
-
-import com.sebulli.fakturama.common.Activator;
-import com.sebulli.fakturama.misc.Constants;
 
 /**
  * The LogbackAdaptor converts the LogEntry objects it receives into calls to
@@ -147,21 +147,36 @@ public class LogbackAdapter implements LogListener {
 				break;
 			}
 		} else {
-			switch (log.getLevel()) {
-			case LogService.LOG_DEBUG:
-				logger.debug(Activator.BUNDLE_MARKER, log.getMessage());
-				break;
-			case LogService.LOG_INFO:
-				logger.info(Activator.BUNDLE_MARKER, log.getMessage());
-				break;
-			case LogService.LOG_WARNING:
-				logger.warn(Activator.BUNDLE_MARKER, log.getMessage());
-				break;
-			case LogService.LOG_ERROR:
-				logger.error(Activator.BUNDLE_MARKER, log.getMessage());
-				break;
+			String message = filter(log.getMessage());
+			if(message != null) {
+				switch (log.getLevel()) {
+				case LogService.LOG_DEBUG:
+					logger.debug(Activator.BUNDLE_MARKER, message);
+					break;
+				case LogService.LOG_INFO:
+					logger.info(Activator.BUNDLE_MARKER, message);
+					break;
+				case LogService.LOG_WARNING:
+					logger.warn(Activator.BUNDLE_MARKER, message);
+					break;
+				case LogService.LOG_ERROR:
+					logger.error(Activator.BUNDLE_MARKER, message);
+					break;
+				}
 			}
 		}
+	}
+
+	/**
+	 * Filter unwanted messages.
+	 *
+	 * @param message the message
+	 */
+	private String filter(String message) {
+	    String filteredMessage = message;
+	    if(message.startsWith("BundleEvent")) filteredMessage = null;
+	    if(message.startsWith("ServiceEvent")) filteredMessage = null;
+		return filteredMessage;
 	}
 
 	/**

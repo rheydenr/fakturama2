@@ -97,7 +97,7 @@ public class DataUtils {
      */
     private void initialize() {
         useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
-        boolean currencyCheckboxEnabled = Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, false);
+        boolean currencyCheckboxEnabled = Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true);
         
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();

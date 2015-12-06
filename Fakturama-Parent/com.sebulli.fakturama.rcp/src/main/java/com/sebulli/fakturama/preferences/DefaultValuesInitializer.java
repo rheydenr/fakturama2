@@ -59,10 +59,10 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 		log.log(LogService.LOG_INFO, "Entering default Preference Initializer");
 	    // TODO Later on we use registered preference pages which register itself on a registry:
 		
-        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator
-                .getContext().getBundle().getSymbolicName());
-//        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
-//        		.getContext().getBundle().getSymbolicName()), Constants.DEFAULT_PREFERENCES_NODE);
+//        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator
+//                .getContext().getBundle().getSymbolicName());
+        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
+        		.getContext().getBundle().getSymbolicName()), Constants.DEFAULT_PREFERENCES_NODE);
 //		for (IInitializablePreference iInitializablePreference : classesToInit) {
 //		    iInitializablePreference.setInitValues(defaultValuesNode);
 //		}

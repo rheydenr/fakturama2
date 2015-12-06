@@ -219,6 +219,7 @@ public class ItemListBuilder {
             // Delete the selected item
             public void mouseDown(MouseEvent e) {
                 itemListTable.removeSelectedEntry();
+                itemListTable.renumberItems();
             }
         });
 

@@ -320,7 +320,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_E5OvIEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.debtors.id" label="%command.debtors.name" iconURI="icon://COMMAND_CONTACT" command="_RmPT0-tOEeKo5Ms1QUgPTw">
           <parameters xmi:id="_yppDcO0OEeSUiJK9ZlP2cw" elementId="menu:com.sebulli.fakturama.lists.debtors" name="com.sebulli.fakturama.lists.contacttype" value="fakturama.views.debitorTable"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_EwVjEO0PEeSUiJK9ZlP2cw" elementId="menu:main.menu.data.creditors.id" label="%command.creditors.name" iconURI="icon://COMMAND_CONTACT" command="_RmPT0-tOEeKo5Ms1QUgPTw">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_EwVjEO0PEeSUiJK9ZlP2cw" elementId="menu:main.menu.data.creditors.id" label="%command.creditors.name" iconURI="icon://COMMAND_VENDOR" command="_RmPT0-tOEeKo5Ms1QUgPTw">
           <parameters xmi:id="_PvYqkO0PEeSUiJK9ZlP2cw" elementId="menu:com.sebulli.fakturama.lists.creditors" name="com.sebulli.fakturama.lists.contacttype" value="fakturama.views.creditorTable"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FTj6sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.payments.id" label="%command.payments.name" iconURI="icon://COMMAND_PAYMENT" command="__1BmsCY8EeSOztFzZzvbWw"/>

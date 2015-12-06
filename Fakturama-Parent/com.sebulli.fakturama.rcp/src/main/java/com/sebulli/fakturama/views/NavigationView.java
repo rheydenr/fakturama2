@@ -181,6 +181,11 @@ public class NavigationView {
         addAction(group5, Icon.COMMAND_WWW, "command.browser", CommandIds.CMD_OPEN_BROWSER_EDITOR, parameters);
         addAction(group5, Icon.COMMAND_CALCULATOR, "command.calculator", CommandIds.CMD_OPEN_CALCULATOR);
         //	    addAction(group5, Icon.COMMAND_REORGANIZE, "ReorganizeDocumentsAction.116", CommandIds.CMD_REOGANIZE_DOCUMENTS);
+
+        // if preference set collapse all PGroups initially
+        if (preferences.getBoolean(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR)) {
+            groupList.stream().forEach(g -> g.setExpanded(false));
+        }
     }
 
     private void addAction(PGroup group, Icon commandIcon, String commandIconDescriptor, final String commandId, final Map<String, Object> parameters) {
