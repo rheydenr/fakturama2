@@ -255,10 +255,13 @@
         </children>
         <windows xsi:type="basic:Dialog" xmi:id="_FBhH4L-XEeSGvuNl8B-b9A" elementId="fakturama.dialog.selectdeliverynotes" toBeRendered="false" visible="false" label="%dialog.selectdeliverynotes.title" width="800" height="550"/>
         <windows xsi:type="basic:Dialog" xmi:id="_7hlEYMg2EeSV-dFmKAsTIA" elementId="fakturama.dialog.select.product" toBeRendered="false" visible="false" label="%dialog.selectproduct.title" tooltip="%dialog.selectproduct.tooltip" bindingContexts="_RmPTzetOEeKo5Ms1QUgPTw" width="800" height="550">
-          <children xsi:type="basic:Part" xmi:id="_OcsWUG1FEeWlUPfPZRP9hA" elementId="fakturama.dialog.select.article.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.products.ProductListTable" label="Article selection dialog" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw"/>
+          <children xsi:type="basic:Part" xmi:id="_OcsWUG1FEeWlUPfPZRP9hA" elementId="fakturama.dialog.select.article.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.products.ProductListTable" label="Article selection dialog" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw">
+            <properties key="fakturama.datatable.products.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
+          </children>
           <properties key="mode" value="selectarticle"/>
         </windows>
         <windows xsi:type="basic:TrimmedWindow" xmi:id="_uxpIYOlDEeSaxYhVwolNzQ" elementId="fakturama.dialog.select.contact" toBeRendered="false" visible="false" selectedElement="_S_GZ4L-TEeSGvuNl8B-b9A" label="%dialog.selectaddress.title" tooltip="%dialog.selectaddress.tooltip" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw" width="800" height="600">
+          <tags>UNUSED</tags>
           <children xsi:type="basic:Part" xmi:id="_S_GZ4L-TEeSGvuNl8B-b9A" elementId="fakturama.dialog.select.contact.mainpart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="Contacts selection dialog" bindingContexts="_RmPTy-tOEeKo5Ms1QUgPTw">
             <variables>varpart</variables>
             <properties key="fakturama.datatable.contacts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>

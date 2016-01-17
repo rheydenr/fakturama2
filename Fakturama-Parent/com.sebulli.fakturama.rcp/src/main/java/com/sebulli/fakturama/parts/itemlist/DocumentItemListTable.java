@@ -154,13 +154,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
     private Document document;
     private DocumentType documentType;
+    
+//    /** for accessing the surrounding {@link DocumentEditor} we have to pull it in */
+//	private DocumentEditor container;
 
     // Flag if there are items with property "optional" set
     private boolean containsOptionalItems = false;
 
     // Flag if there are items with an discount set
     private boolean containsDiscountedItems = false;
-    private boolean useGross;
+//    private boolean useGross;
 //    private int netgross = DocumentSummary.NOTSPECIFIED;
     
     /**
@@ -186,6 +189,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     private SelectionLayer selectionLayer;
+    private DocumentEditor container;
     
     private ProductUtil productUtil;
     
@@ -198,20 +202,20 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      * @param useGross 
      * @return
      */
-    public Control createPartControl(Composite parent, Document document, boolean useGross,
+    public Control createPartControl(Composite parent, Document document,/* boolean useGross,*/DocumentEditor container,
             int netgross) {
         log.info("create DocumentItem list part");
         this.document = document;
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
-        this.useGross = useGross;
+        this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         
-        // Get some settings from the preference store
-        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
-        } else {
-            useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
-        }
+//        // Get some settings from the preference store
+//        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
+//            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
+//        } else {
+//            useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
+//        }
         
         super.createPartControl(parent, DocumentItemDTO.class, false, ID);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
@@ -346,7 +350,7 @@ private Menu createContextMenu(NatTable natTable) {
                     break;
                 case UNITPRICE:
                 	MonetaryAmount amount;
-                	if(useGross) {
+                	if(container.getUseGross()) {
                 		amount = new Price(rowObject.getDocumentItem()).getUnitGrossRounded();
                 	} else {
                 		amount = new Price(rowObject.getDocumentItem()).getUnitNetRounded();
@@ -356,7 +360,7 @@ private Menu createContextMenu(NatTable natTable) {
                     //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case TOTALPRICE:
-                    if (useGross) { // "$ItemGrossTotal"
+                    if (container.getUseGross()) { // "$ItemGrossTotal"
                         // Fill the cell with the total gross value of the item
                         retval = rowObject.getPrice().getTotalGrossRounded();
                     } else { // "$ItemNetTotal"
@@ -461,7 +465,8 @@ private Menu createContextMenu(NatTable natTable) {
                     break;
                 case UNITPRICE:
                     String priceString = ((String) newValue).toLowerCase();
-
+                    boolean useGross = container.getUseGross();
+                    
                     // If the price is tagged with an "Net" or "Gross", force this
                     // value to a net or gross value
                     //T: Tag to mark a price as net or gross
@@ -798,6 +803,7 @@ private Menu createContextMenu(NatTable natTable) {
     public void addNewItem(DocumentItemDTO newItem) {
 //      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
         getDocumentItemsListData().add(newItem);
+        renumberItems();
         ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
 		natTable.doCommand(scrollToLastPositionCommand);
     }
@@ -1145,18 +1151,32 @@ private Menu createContextMenu(NatTable natTable) {
     protected AbstractDAO<DocumentItemDTO> getEntityDAO() {
         throw new UnsupportedOperationException("Inside a list table there's no extra DAO.");
     }
+//
+//	/**
+//	 * @return the useGross
+//	 */
+//	public final boolean isUseGross() {
+//		return useGross;
+//	}
+//
+//	/**
+//	 * @param useGross the useGross to set
+//	 */
+//	public final void setUseGross(boolean useGross) {
+//		this.useGross = useGross;
+//	}
 
 	/**
-	 * @return the useGross
+	 * @return the container
 	 */
-	public final boolean isUseGross() {
-		return useGross;
+	public final DocumentEditor getContainer() {
+		return container;
 	}
 
 	/**
-	 * @param useGross the useGross to set
+	 * @param container the container to set
 	 */
-	public final void setUseGross(boolean useGross) {
-		this.useGross = useGross;
+	public final void setContainer(DocumentEditor container) {
+		this.container = container;
 	}
 }

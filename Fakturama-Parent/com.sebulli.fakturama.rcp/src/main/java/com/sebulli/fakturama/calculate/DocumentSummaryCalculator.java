@@ -369,7 +369,6 @@ public class DocumentSummaryCalculator {
 			retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
 		}
 
-		
 		retval.setDiscountNet(retval.getDiscountNet().with(rounding));
 		retval.setDiscountGross(retval.getDiscountGross().with(rounding));
 
@@ -401,7 +400,7 @@ public class DocumentSummaryCalculator {
 		// Add the entries of the document summary set also to the global one
 		if (globalVatSummarySet != null) {
 			globalVatSummarySet.addVatSummarySet(documentVatSummaryItems);
-    }
+		}
 
 		return retval;
 	}

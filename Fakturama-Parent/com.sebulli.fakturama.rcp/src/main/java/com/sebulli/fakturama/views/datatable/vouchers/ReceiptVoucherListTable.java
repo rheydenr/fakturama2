@@ -18,7 +18,6 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -27,11 +26,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
@@ -39,10 +35,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
-import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
-import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -51,12 +43,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
@@ -74,6 +60,12 @@ import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 
 
@@ -137,7 +129,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new ReceiptVoucherTableConfiguration());
+        natTable.addConfiguration(new VoucherTableConfiguration());
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
@@ -238,6 +230,10 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
+        columnLabelAccumulator.registerColumnOverrides(ReceiptvoucherListDescriptor.DONOTBOOK.getPosition(), VoucherTableConfiguration.DONOTBOOK_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ReceiptvoucherListDescriptor.TOTAL.getPosition(), MONEYVALUE_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(ReceiptvoucherListDescriptor.DATE.getPosition(), DATE_CELL_LABEL);
+
        
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
@@ -330,7 +326,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
      */
     @Override
     protected String getEditorId() {
-        return ""; //ReceiptVoucherEditor.ID;
+        return ReceiptVoucherEditor.ID;
     }
 
     @Override
@@ -338,25 +334,6 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         return VatEditor.class.getSimpleName();
     }
     
-    class ReceiptVoucherTableConfiguration extends AbstractRegistryConfiguration {
-
-        @Override
-        public void configureRegistry(IConfigRegistry configRegistry) {
-            Style styleLeftAligned = new Style();
-            styleLeftAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
-            Style styleRightAligned = new Style();
-            styleRightAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
-            Style styleCentered = new Style();
-            styleCentered.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
-
-            // default style for the most of the cells
-            configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
-                                                   styleLeftAligned,                // value of the attribute
-                                                   DisplayMode.NORMAL,              // apply during normal rendering i.e not during selection or edit
-                                                   GridRegion.BODY.toString());     // apply the above for all cells with this label
-        }
-    }
-
     protected String getPopupId() {
         return POPUP_ID;
     }

@@ -323,21 +323,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         tableDataLayer.setColumnPercentageSizing(true);
         Arrays.stream(DocumentListDescriptor.values()).forEach(
                 descriptor -> tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth()));
-//        GlazedListsEventLayer<Document> paymentListEventLayer = new GlazedListsEventLayer<Document>(tableDataLayer, documentListData);
-//
-//        // add a label accumulator to be able to register converter
-//        // this is crucial for using custom values display
-//        paymentListEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-//        
-//        // Custom selection configuration
-//        selectionLayer = gridLayer.getBodyLayerStack().getSelectionLayer();
-//        
-//        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-//        RowSelectionModel<Document> selectionModel = new RowSelectionModel<Document>(selectionLayer, firstBodyDataProvider, rowIdAccessor, false);
-//        selectionLayer.setSelectionModel(selectionModel);
-//        selectionModel.setMultipleSelectionAllowed(true);
-////         Select complete rows
-//        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<Document>());
 
         // now is the time where we can create the NatTable itself
 

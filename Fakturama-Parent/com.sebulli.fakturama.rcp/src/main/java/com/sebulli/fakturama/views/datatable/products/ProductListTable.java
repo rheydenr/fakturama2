@@ -10,9 +10,13 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.products;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -31,6 +35,7 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
@@ -51,6 +56,7 @@ import org.javamoney.moneta.Money;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -59,6 +65,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -87,6 +94,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     public static final String ID = "fakturama.views.productTable";
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.productlist.popup";
+    public static final String SELECTED_PRODUCT_ID = "fakturama.productlist.selectedproductid";
 
 /**    this is for synchronizing the UI thread */
     @Inject    
@@ -107,6 +115,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     private EntityGridListLayer<Product> gridListLayer;
 
     private MPart listTablePart;
+    private Product selectedObject;
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -118,10 +127,87 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         this.listTablePart = listTablePart;
         super.createPartControl(parent, Product.class, true, ID);
         // Listen to double clicks
+        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
+        if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
+            hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
+        } else {
+            hookDoubleClickCommand2(natTable, getGridLayer());
+        }
         hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
         return top;
+    }
+    
+    @Override
+    public Product getSelectedObject() {
+        return selectedObject;
+    }
+
+    @Override
+    protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<Product> gridLayer) {
+        hookDoubleClickCommand(nattable, gridLayer, null);
+    }
+    
+    private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<Product> gridLayer, String commandId) {
+        
+        if (commandId != null) {
+            // if we are in "selectproduct" mode we have to register a single click mouse event
+            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+				public void run(NatTable natTable, MouseEvent event) {
+                    int rowPos = natTable.getRowPositionByY(event.y);
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                    selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                }
+            });
+        }
+        // Add a double click listener
+        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+            @Override
+            public void run(NatTable natTable, MouseEvent event) {
+                //get the row position for the click in the NatTable
+                int rowPos = natTable.getRowPositionByY(event.y);
+                //transform the NatTable row position to the row position of the body layer stack
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                // Call the corresponding editor. The editor is set
+                // in the variable "editor", which is used as a parameter
+                // when calling the editor command.
+                // in E4 we create a new Part (or use an existing one with the same ID)
+                // from PartDescriptor
+                Map<String, Object> params = new HashMap<>();
+                ParameterizedCommand parameterizedCommand;
+                if(commandId != null) {
+                    // If we don't give a target document number the event will  be catched by *all*
+                    // open editors which listens to this event. This is (obviously :-) ) not
+                    // the intended behavior...
+                    Map<String, Object> eventParams = new HashMap<>();
+                    // the transientData HashMap contains the target document number
+                    // (was set in MouseEvent handler)
+                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+                    eventParams.put(SELECTED_PRODUCT_ID, Long.valueOf(selectedObject.getId()));
+//                    // alternatively use the Selection Service
+                    // ==> no! Because this SelectionService has another context than 
+                    // the receiver of this topic. Therefore the receiver's SelectionService
+                    // is empty :-(
+//                    selectionService.setSelection(selectedObject);
+                    
+                    // selecting an entry and closing the dialog are two different actions.
+                    // the "CloseContact" event is caught by SelectContactDialog#handleDialogDoubleClickClose. 
+                    evtBroker.post("DialogSelection/Contact", eventParams);
+                    evtBroker.post("DialogAction/CloseContact", eventParams);
+                } else {
+                    // if we come from the list view then we should open a new editor 
+                    params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                    params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                    handlerService.executeHandler(parameterizedCommand);
+                }
+            }
+        });
     }
 
     @Override

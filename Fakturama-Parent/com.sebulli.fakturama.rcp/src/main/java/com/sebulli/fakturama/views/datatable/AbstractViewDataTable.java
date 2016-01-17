@@ -99,12 +99,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     protected static final String NO_CATEGORY_LABEL = "$shownothing";
     protected static final String NO_SORT_LABEL = "noSortLabel";
 
-    protected static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
-    protected static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
-    protected static final String NUMBER_CELL_LABEL = "Number_Cell_LABEL";
-    protected static final String DATE_CELL_LABEL = "DateValue_Cell_LABEL";
-    protected static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
-    protected static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
+    public static final String ICON_CELL_LABEL = "Icon_Cell_LABEL";
+    public static final String MONEYVALUE_CELL_LABEL = "MoneyValue_Cell_LABEL";
+    public static final String NUMBER_CELL_LABEL = "Number_Cell_LABEL";
+    public static final String DATE_CELL_LABEL = "DateValue_Cell_LABEL";
+    public static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
+    public static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
 
     @Inject
     protected IPreferenceStore eclipsePrefs;

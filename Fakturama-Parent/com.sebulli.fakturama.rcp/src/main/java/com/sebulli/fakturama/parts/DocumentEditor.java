@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -170,6 +172,9 @@ public class DocumentEditor extends Editor<Document> {
 
     @Inject
     protected ECommandService commandService;
+    
+    @Inject
+    protected ESelectionService selectionService;
     
     @Inject
     private EModelService modelService;
@@ -964,7 +969,7 @@ public class DocumentEditor extends Editor<Document> {
         }
         
         // update useGross in itemsList
-        itemListTable.setUseGross(useGross);
+        itemListTable.refresh();  // done below
 		
 		// Use the customers settings instead, if they are set
 		if (addressId != null && address_changed) {
@@ -1003,18 +1008,18 @@ public class DocumentEditor extends Editor<Document> {
 
 			// Update the columns
 			if (itemListTable != null ) {
-//				if (useGross) {
+				if (useGross) {
 //					if (unitPriceColumn >= 0)
 //						itemTableColumns.get(unitPriceColumn).setDataKey("$ItemGrossPrice");
 //					if (totalPriceColumn >= 0)
 //						itemTableColumns.get(totalPriceColumn).setDataKey("$ItemGrossTotal");
-//				}
-//				else {
+				}
+				else {
 //					if (unitPriceColumn >= 0)
 //						itemTableColumns.get(unitPriceColumn).setDataKey("price");
 //					if (totalPriceColumn >= 0)
 //						itemTableColumns.get(totalPriceColumn).setDataKey("$ItemNetTotal");
-//				}
+				}
 
 				// for deliveries there's no netLabel...
 				if(netLabel != null) {
@@ -1284,7 +1289,6 @@ public class DocumentEditor extends Editor<Document> {
 		    billingAddress = contactUtil.getAddressAsString(contact);
 		}
 		
-
 		this.addressId = contact;
 
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
@@ -1680,8 +1684,14 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
+			    context.set(ESelectionService.class, selectionService);
 			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    dlg.open();
+			    Collection<Contact> result = dlg.getResult();
+			    if(result != null) {
+			    	setAddress(result.iterator().next());
+			    	getMDirtyablePart().setDirty(true);
+			    }
 			}
 		});
 
@@ -1756,8 +1766,8 @@ public class DocumentEditor extends Editor<Document> {
 		        .withParent(top)
 		        .withDocument(document)
 		        .withNetGross(netgross)
-		        .withUseGross(useGross)
-//		        .withContainer(this)
+//		        .withUseGross(useGross)
+		        .withContainer(this)
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
@@ -2362,7 +2372,6 @@ public class DocumentEditor extends Editor<Document> {
                 // If a Contact is selected the manualAddress field has to be set to null!
 //                document.getBillingContact().getAddress().setManualAddress(null);
 //                document.setBillingContact(contact);
-                getMDirtyablePart().setDirty(true);
                 break;
             case "Product":
                 // select a product (for an item entry)
@@ -2370,29 +2379,7 @@ public class DocumentEditor extends Editor<Document> {
                 @SuppressWarnings("unchecked")
                 List<Long> selectedIds = (List<Long>)event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
                 List<Product> selectedProducts = productsDAO.findSelectedProducts(selectedIds);
-                for (Product product : selectedProducts) {
-                    DocumentItem newItem = modelFactory.createDocumentItem();
-                    newItem.setName(product.getName());
-                    newItem.setProduct(product);
-                    newItem.setItemNumber(product.getItemNumber());
-                    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
-                    newItem.setQuantityUnit(product.getQuantityUnit());
-                    newItem.setDescription(product.getDescription());
-                    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
-                    newItem.setItemVat(product.getVat());
-                    newItem.setPicture(product.getPicture());
-                    newItem.setWeight(product.getWeight());
-
-                    // Use the products description, or clear it
-                    if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {
-                        newItem.setDescription("");
-                    }
-                    itemListTable.addNewItem(new DocumentItemDTO(newItem));
-                }
-
-                //          if (newItem!= null)
-                //              tableViewerItems.reveal(newItem);
-                calculate();
+                addItemsToItemList(selectedProducts);
                 break;
             case "Delivery":
                 // select a delivery note for creating a collective invoice 
@@ -2471,8 +2458,38 @@ public class DocumentEditor extends Editor<Document> {
             default:
                 break;
             }
+            getMDirtyablePart().setDirty(true);
         }
-    } 
+    }
+
+	/**
+	 * @param selectedProducts
+	 */
+	public void addItemsToItemList(Collection<Product> selectedProducts) {
+		for (Product product : selectedProducts) {
+		    DocumentItem newItem = modelFactory.createDocumentItem();
+		    newItem.setName(product.getName());
+		    newItem.setProduct(product);
+		    newItem.setItemNumber(product.getItemNumber());
+		    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
+		    newItem.setQuantityUnit(product.getQuantityUnit());
+		    newItem.setDescription(product.getDescription());
+		    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
+		    newItem.setItemVat(product.getVat());
+		    newItem.setPicture(product.getPicture());
+		    newItem.setWeight(product.getWeight());
+
+		    // Use the products description, or clear it
+		    if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {
+		        newItem.setDescription("");
+		    }
+		    itemListTable.addNewItem(new DocumentItemDTO(newItem));
+		}
+
+		//          if (newItem!= null)
+		//              tableViewerItems.reveal(newItem);
+		calculate();
+	} 
 
     /**
      * Searches for the standard {@link Shipping} entry.
@@ -2626,4 +2643,9 @@ public class DocumentEditor extends Editor<Document> {
     protected Class<Document> getModelClass() {
         return Document.class;
     }
+
+	public void addItemToItemList(Product next) {
+		// TODO Auto-generated method stub
+		
+	}
 }

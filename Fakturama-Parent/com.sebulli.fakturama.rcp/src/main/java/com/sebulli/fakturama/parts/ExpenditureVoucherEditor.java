@@ -390,9 +390,9 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
             public void widgetSelected(SelectionEvent e) {
                 if (!bBook.getSelection()) {
                     //T: Dialog in the voucher editor to uncheck the book field 
-                    if (!MessageDialog.openConfirm(parent.getShell(), msg.voucherDialogBookConfirmHeader,
+                    if (MessageDialog.openConfirm(parent.getShell(), msg.voucherDialogBookConfirmHeader,
                             msg.voucherDialogBookConfirmWarning)) {
-                        bBook.setSelection(true);
+                        bBook.setSelection(false);
                         getMDirtyablePart().setDirty(true);
                     }
                 }

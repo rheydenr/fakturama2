@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
@@ -100,8 +101,7 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
-//        part.getProperties().put(DocumentEditor.DOCUMENT_ID, (String) context.get(DocumentEditor.DOCUMENT_ID));
-        part.getProperties().put("fakturama.datatable.contacts.clickhandler", "com.sebulli.fakturama.command.selectitem");
+        part.getProperties().put(Constants.PROPERTY_CONTACTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         debitorListTable = ContextInjectionFactory.make(DebitorListTable.class, context);
 
@@ -121,7 +121,6 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(debitorListTable.getSelectedObject().getId()));
-            evtBroker.post("DialogSelection/Contact", eventParams);
             setResult(debitorListTable.getSelectedObject());
             // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
         }

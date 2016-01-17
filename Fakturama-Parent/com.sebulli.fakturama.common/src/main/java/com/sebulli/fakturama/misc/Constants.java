@@ -483,5 +483,11 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_OPENOFFICE_PATH = "OPENOFFICE_PATH";
+
+	public static final String PROPERTY_CONTACTS_CLICKHANDLER = "fakturama.datatable.contacts.clickhandler";
+
+	public static final String PROPERTY_PRODUCTS_CLICKHANDLER = "fakturama.datatable.products.clickhandler";
+
+	public static final String COMMAND_SELECTITEM = "com.sebulli.fakturama.command.selectitem";
     
 }

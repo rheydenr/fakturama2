@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -36,16 +38,21 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dialogs.SelectContactDialog;
+import com.sebulli.fakturama.dialogs.SelectProductDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
@@ -72,6 +79,9 @@ public class ItemListBuilder {
     @Inject
     @Preference 
     protected IEclipsePreferences preferences;
+    
+    @Inject
+    protected ESelectionService selectionService;
 
     @Inject
     protected VatsDAO vatDao;
@@ -80,8 +90,9 @@ public class ItemListBuilder {
     private Document document;
 
     private DocumentType documentType;
-    private boolean useGross;
+//    private boolean useGross;
     private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
+	private DocumentEditor container;
 
 //    protected NatTable natTable;
 
@@ -121,13 +132,18 @@ public class ItemListBuilder {
                 // T: Document Editor
                 // T: Title of the dialog to select a product
                 // SelectProductDialog
-                MDialog dialog = (MDialog) modelService.find("fakturama.dialog.select.product", application);
-                dialog.setToBeRendered(true);
-                dialog.setVisible(true);
-                dialog.setOnTop(true);
-                modelService.bringToTop(dialog);
+			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
+			    context.set(ESelectionService.class, selectionService);
+			    SelectProductDialog dlg = ContextInjectionFactory.make(SelectProductDialog.class, context);
+			    dlg.open();
 
                 // handling of adding a new list item is done via event handling in DocumentEditor
+			    // (setting via dlg.getResult() would get too complicated, since we have to hold
+			    // a reference to the calling editor)
+			    Collection<Product> result = dlg.getResult();
+			    if(result != null) {
+			    	container.addItemsToItemList(result);
+			    }
             }
         });
 
@@ -177,7 +193,8 @@ public class ItemListBuilder {
         // Composite that contains the table
         // The table viewer
         final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
-        Control tableComposite = itemListTable.createPartControl(parent, document, useGross, netgross);
+//        itemListTable.setContainer(container);
+        Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
 
         addButton.addMouseListener(new MouseAdapter() {
@@ -234,10 +251,10 @@ public class ItemListBuilder {
         return this;
     }
 
-    public ItemListBuilder withUseGross(boolean useGross) {
-        this.useGross = useGross;
-        return this;
-    }
+//    public ItemListBuilder withUseGross(boolean useGross) {
+//        this.useGross = useGross;
+//        return this;
+//    }
 
     public ItemListBuilder withNetGross(int netgross) {
         this.netgross = netgross;
@@ -254,5 +271,10 @@ public class ItemListBuilder {
 //        this.documentSummary = documentSummary;
 //        return this;
 //    }
+
+	public ItemListBuilder withContainer(DocumentEditor documentEditor) {
+		this.container = documentEditor;
+		return this;
+	}
 
 }

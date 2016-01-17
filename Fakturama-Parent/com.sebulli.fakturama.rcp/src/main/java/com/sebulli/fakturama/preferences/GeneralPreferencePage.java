@@ -21,6 +21,10 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -96,8 +100,11 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         Locale[] locales = NumberFormat.getAvailableLocales();
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY);
-        List<Locale> currencyLocaleList = Arrays.stream(locales).sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
-                .filter(l -> l.getCountry().length() != 0).collect(Collectors.toList());
+        List<Locale> currencyLocaleList = Arrays.stream(locales)
+                .filter(distinctByKey(l->l.getDisplayCountry()))
+                .filter(l -> l.getCountry().length() != 0)
+                .sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
+                .collect(Collectors.toList());
         String[][] currencyLocales = new String[currencyLocaleList.size()][2];
         for (Locale locale : currencyLocaleList) {
             currencyLocales[index][0] = locale.getDisplayCountry() + " (" + locale.getDisplayLanguage() + ")";
@@ -127,6 +134,11 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         addField(thousandsSeparatorCheckbox);
 	}
 	
+	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
+	    Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
 	/**
 	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
 	 */

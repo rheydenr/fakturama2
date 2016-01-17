@@ -54,6 +54,7 @@ import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.DummyStringCategory;
@@ -111,8 +112,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         this.listTablePart = listTablePart;
         // if another click handler is set we use it
         // Listen to double clicks
-        Object commandId = this.listTablePart.getProperties().get("fakturama.datatable.contacts.clickhandler");
-        if(commandId != null) { // exactly would it be "com.sebulli.fakturama.command.selectitem"
+        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_CONTACTS_CLICKHANDLER);
+        if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         } else {
             hookDoubleClickCommand2(natTable, getGridLayer());
