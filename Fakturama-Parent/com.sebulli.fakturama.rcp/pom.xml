@@ -12,7 +12,7 @@
 	<packaging>eclipse-plugin</packaging>
 
 	<name>com.sebulli.fakturama.rcp</name>
-	<url>http://www.fakturama.org</url>
+	<url>http://www.fakturama.info</url>
 
 	<build>
 		<plugins>
