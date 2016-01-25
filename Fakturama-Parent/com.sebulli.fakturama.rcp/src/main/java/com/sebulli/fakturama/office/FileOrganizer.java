@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,7 +32,9 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
@@ -47,6 +48,9 @@ public class FileOrganizer {
 	@Inject
 	@Translation
 	protected Messages msg;
+	
+	@Inject
+	private ILogger log;
 
 	@Inject
 	protected DocumentsDAO documentsDAO;
@@ -344,10 +348,9 @@ public class FileOrganizer {
 			if (changed) {
 				try {
 					documentsDAO.update(document);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                } catch (FakturamaStoringException e) {
+                    log.error(e);
+                }
 			}
 
 			// Count the documents

@@ -104,6 +104,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dialogs.SelectContactDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
@@ -453,9 +454,8 @@ public class DocumentEditor extends Editor<Document> {
 			    addressId.setAddress(address);
 			    try {
                     addressId = contactDAO.save(addressId);
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                } catch (FakturamaStoringException e) {
+                    log.error(e);
                 }
 			}
 
@@ -565,9 +565,8 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (FakturamaStoringException e) {
+                log.error(e);
             }
 		}
 		
@@ -630,9 +629,8 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (FakturamaStoringException e) {
+            log.error(e);
         }
 
 		//Set the editor's name
@@ -1684,7 +1682,6 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
-			    context.set(ESelectionService.class, selectionService);
 			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    dlg.open();
 			    Collection<Contact> result = dlg.getResult();
@@ -2414,10 +2411,8 @@ public class DocumentEditor extends Editor<Document> {
                                 deliveryNote.setInvoiceReference((Invoice) document);
                                 try {
                                     documentsDAO.save(deliveryNote);
-                                }
-                                catch (SQLException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                } catch (FakturamaStoringException e) {
+                                    log.error(e);
                                 }
                                 
                                 // Change also the transaction id of the imported delivery note

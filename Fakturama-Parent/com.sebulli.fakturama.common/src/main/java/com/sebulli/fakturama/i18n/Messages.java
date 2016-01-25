@@ -172,6 +172,7 @@ public class Messages {
 	
 	public String dialogMessageboxTitleInfo;
 	public String dialogMessageboxTitleWarning;
+	public String dialogMessageboxTitleError;
 	public String dialogOrderstatusFieldNotify;
 	public String dialogOrderstatusTitle;
 	public String dialogPrintooDocumentalreadycreated;
@@ -572,6 +573,7 @@ public class Messages {
 	public String pageToolbar;
 	public String pageWebshop;
 	public String pageWebshopauthorization;
+	public String pageWebshopsettings;
 	public String Parcelserviceformfiller648;
 	public String Parcelserviceformfiller649;
 	public String Parcelserviceformfiller650;
@@ -705,10 +707,20 @@ public class Messages {
 	public String preferencesWebshopLabelShippingsincategory;
 	public String preferencesWebshopMaxproducts;
 	public String preferencesWebshopModifiedproducts;
-	public String preferencesWebshopNoifycustomerOnprogress;
-	public String preferencesWebshopNoifycustomerOnshipped;
+	public String preferencesWebshopNotifycustomerOnprogress;
+	public String preferencesWebshopNotifycustomerOnshipped;
+	public String preferencesWebshopSettings;
 	public String preferencesWebshopUrl;
 	public String preferencesWebshopUser;
+	public String preferencesWebshopSettingsAssignstate;
+	public String preferencesWebshopSettingsAssignstateMissing;
+	public String preferencesWebshopSettingsDescription;
+	public String preferencesWebshopSettingsGetallstates;
+	public String preferencesWebshopSettingsShopinfo;
+	public String preferencesWebshopSettingsStateFakturama;
+	public String preferencesWebshopSettingsStateWebshop;
+	public String preferencesWebshopSettingsVersion;
+	
 	public String productDataGross;
 	public String productDataNet;
 	public String productFieldItemno;

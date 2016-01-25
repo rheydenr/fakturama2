@@ -20,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,6 +69,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
@@ -604,7 +604,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                         evtBroker.post(getEditorTypeId() + "/forceClose", params);
                     }
                 }
-                catch (SQLException e) {
+                catch (FakturamaStoringException e) {
                     log.error(e, "can't save the current Entity: " + objToDelete.toString());
                 }
             }

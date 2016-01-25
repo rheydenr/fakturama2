@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,6 +90,7 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.ReorganizeDocuments;
 import com.sebulli.fakturama.i18n.Messages;
@@ -515,7 +515,7 @@ public class MigrationManager {
 				newProducts.put(oldProduct.getId(), product.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 				log.error("error while migrating Product. (old) ID=" + oldProduct.getId() + "; Message: " + e.getMessage());
 			}
 		}
@@ -723,7 +723,7 @@ public class MigrationManager {
                 }
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | NumberFormatException e) {
+			catch (FakturamaStoringException | NumberFormatException e) {
 				log.error("error while migrating Document. (old) ID=" + oldDocument.getId());
 			}
 		}
@@ -741,7 +741,7 @@ public class MigrationManager {
 					documentDAO.save(document);
 				}
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 				log.error("error while migrating Document. (old) ID=" + oldDocument.getId());
 			}
 
@@ -878,7 +878,7 @@ public class MigrationManager {
 				newContacts.put(oldContact.getId(), contact.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | RuntimeException e) {
+			catch (FakturamaStoringException | RuntimeException e) {
 				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Reason: " + e.getMessage());
 			}
 		}
@@ -1000,7 +1000,7 @@ public class MigrationManager {
 				receiptVouchersDAO.save(receiptVoucher);
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | ParseException e) {
+			catch (FakturamaStoringException | ParseException e) {
 				migLogUser.info("!!! error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
 			}
 		}
@@ -1053,7 +1053,7 @@ public class MigrationManager {
 				expendituresDAO.save(expenditure);
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException | ParseException e) {
+			catch (FakturamaStoringException | ParseException e) {
 				migLogUser.info("!!! error while migrating Expenditure. (old) ID=" + oldExpenditure.getId());
             }
 		}
@@ -1079,18 +1079,22 @@ public class MigrationManager {
 		// the message key has to be provided here (we us it as combo value later on)
 		cat.setName("data.list.accountnumbers");  // old: "billing_accounts"
 		for (OldList oldVoucherItemCategory : resultSet) {
+			try {
 		    ItemAccountType itemAccountType = modelFactory.createItemAccountType();
 		    itemAccountType.setName(oldVoucherItemCategory.getName());
 		    itemAccountType.setValue(oldVoucherItemCategory.getValue());
 		    itemAccountType.setDeleted(oldVoucherItemCategory.isDeleted());
 		    itemAccountType.setCategory(cat);
-		    itemAccountType = itemAccountTypeDAO.findOrCreate(itemAccountType);
+				itemAccountType = itemAccountTypeDAO.findOrCreate(itemAccountType);
 		    // Only the name is usable for an identification because the category 
 		    // name is always the same.
 		    itemAccountTypes.put(oldVoucherItemCategory.getName(), itemAccountType);
 		    // "refresh" cat (if it is new and didn't have any id it could else
 		    // be saved again and again and again... (with every new itemAccountType)
 		    if(cat.getId() == 0) cat = itemAccountType.getCategory();
+            } catch (FakturamaStoringException e) {
+                log.error(e);
+            }
         }
 		return itemAccountTypes;
 	}
@@ -1132,7 +1136,7 @@ public class MigrationManager {
 				newPayments.put(oldPayment.getId(), payment.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Payment. (old) ID=" + oldPayment.getId());
 			}
 		}
@@ -1167,7 +1171,7 @@ public class MigrationManager {
 				textDAO.save(text);
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Text. (old) ID=" + oldTexts.getId());
 			}
 		}
@@ -1203,7 +1207,7 @@ public class MigrationManager {
 				newVats.put(oldVat.getId(), vat.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 			    migLogUser.info("!!! error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
 			}
 		}
@@ -1243,7 +1247,7 @@ public class MigrationManager {
 				newShippings.put(oldShipping.getId(), shipping.getId());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException e) {
+			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Shipping. (old) ID=" + oldShipping.getId());
 			}
 		}
@@ -1342,7 +1346,7 @@ public class MigrationManager {
 				eclipsePrefs.put(prop.getName(), prop.getValue());
 				subProgressMonitor.worked(1);
 			}
-			catch (SQLException sqlex) {
+			catch (FakturamaStoringException sqlex) {
 				migLogUser.info("!!! error while migrating UserProperty. (old) ID=" + oldProperty.getId());
 			}
 		}

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +63,7 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -351,9 +351,8 @@ public class OfficeDocument {
 
             try {
                 documentsDAO.update(document);
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (FakturamaStoringException e) {
+                log.error(e);
             }
 
             // Refresh the document view

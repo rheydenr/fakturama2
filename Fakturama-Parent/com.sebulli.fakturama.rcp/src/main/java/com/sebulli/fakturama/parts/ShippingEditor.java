@@ -16,7 +16,6 @@ package com.sebulli.fakturama.parts;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +50,7 @@ import org.javamoney.moneta.Money;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -168,7 +168,7 @@ public class ShippingEditor extends Editor<Shipping> {
             editorShipping.setShippingValue(val.doubleValue());
             editorShipping = shippingDao.update(editorShipping);
         }
-        catch (SQLException e) {
+        catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Shipping: " + editorShipping.toString());
         }
 

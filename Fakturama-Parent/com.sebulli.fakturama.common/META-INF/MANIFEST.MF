@@ -4,6 +4,7 @@ Bundle-Name: Common
 Bundle-SymbolicName: com.sebulli.fakturama.common
 Bundle-Version: 2.0.0.qualifier
 Export-Package: com.sebulli.fakturama.common,
+ com.sebulli.fakturama.exception,
  com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
  com.sebulli.fakturama.misc

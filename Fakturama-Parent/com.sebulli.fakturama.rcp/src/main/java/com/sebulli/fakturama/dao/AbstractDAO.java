@@ -35,9 +35,11 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IEntity;
 
 
 
@@ -59,7 +61,7 @@ public abstract class AbstractDAO<T> {
      * @return the persisted object
      * @throws SQLException if an error is occurred
      */
-    public T save(T object) throws SQLException {
+    public T save(T object) throws FakturamaStoringException {
         
 /*
  * BESSER: 
@@ -103,27 +105,54 @@ em.joinTransaction();
 
 } */
         
-        checkConnection();
-        EntityTransaction trx = getEntityManager().getTransaction();
-        trx.begin();
-        // merge before persist since we could have referenced entities which are already persisted 
-        object = getEntityManager().merge(object);
-        getEntityManager().persist(object);
-        trx.commit();
-        return object;
+		try {
+			checkConnection();
+			EntityTransaction trx = getEntityManager().getTransaction();
+			trx.begin();
+			// merge before persist since we could have referenced entities
+			// which are already persisted
+			object = getEntityManager().merge(object);
+			getEntityManager().persist(object);
+			trx.commit();
+		} catch (SQLException e) {
+			throw new FakturamaStoringException("Error saving to the database.", e, object);
+		}
+		return object;
     }
     
-    public T update(T object) throws SQLException {
-        checkConnection();//getEntityManager().find(object.getClass(), 8L)
+    public T update(T object) throws FakturamaStoringException {
+        try {
+			checkConnection();
         EntityTransaction trx = getEntityManager().getTransaction();
         trx.begin();
         object = getEntityManager().merge(object);
         getEntityManager().persist(object);
         trx.commit();
-        return object;
+		} catch (SQLException e) {
+			throw new FakturamaStoringException("Error updating to the database.", e, object);
+		}
+       return object;
     }
 
-/* * * * * * * * * [some common finders] * * * * * * * * * * * * * * * * * * * * * /
+    /**
+     * Inserts a new object into the database. If the object is already there only an update is performed.
+     *  
+     * @param object the object to be inserted or updated
+     * @return the new or updated object
+     * @throws SQLException 
+     */
+	public T insertOrUpdate(T object) throws FakturamaStoringException {
+		T foundObject = findByExample(object);
+		if (foundObject == null) {
+			foundObject = save(object);
+		} else {
+		    ((IEntity)object).setId(((IEntity)foundObject).getId());				
+			foundObject = update(object);
+		}
+		return foundObject;
+	}
+
+	/* * * * * * * * * [some common finders] * * * * * * * * * * * * * * * * * * * * * /
     /**
      * Get all {@link T} from Database.
      *
@@ -198,13 +227,13 @@ em.joinTransaction();
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    
     
     /**
-     * Adds a new entity if it doesn't exist. I.e., if an semantically equal object is in the database,
+     * Adds a new entity if it doesn't exist. I.e., if a semantically equal object is in the database,
      * no saving is done (this is useful e.g. for webshop import).
      * 
      * @param obj the entity to write
      * @return the refreshed entity
      */
-    public T addIfNew(T obj) throws SQLException {
+    public T addIfNew(T obj) throws FakturamaStoringException {
         T retval = findByExample(obj);
         if(retval == null) {
             retval = save(obj);
@@ -217,12 +246,13 @@ em.joinTransaction();
      * for web shop import where a new contact is only created if it doesn't exist. 
      * </P><P>
      * This method is analogous to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
-     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)} we has to
+     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)} which has to
      * be overridden by sub classes.
      * @param contact Entity to test
      * @return found or newly created Entity
+     * @throws FakturamaStoringException 
      */
-    public T findOrCreate(T object) {
+    public T findOrCreate(T object) throws FakturamaStoringException {
         T retval = null;
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
@@ -234,23 +264,18 @@ em.joinTransaction();
         }
 
         List<T> resultList = getEntityManager().createQuery(select).getResultList();
-        try {
-            if (resultList.isEmpty()) {
-                retval = save(object);
-            }
-            else {
-                retval = resultList.get(0);
-            }
+        if (resultList.isEmpty()) {
+            retval = save(object);
         }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        else {
+            retval = resultList.get(0);
         }
         return retval;
     }
   
     /**
      * Restrictions for {@link AbstractDAO#findOrCreate} method. Has to be overridden by sub classes.
+     * Here you can define the fields which are compared for finding an already persisted entity.
      * 
      * @param object
      * @param criteriaBuilder
@@ -266,17 +291,25 @@ em.joinTransaction();
     public T findByExample(T example) {
         ReadAllQuery query = new ReadAllQuery(getEntityClass());
         query.setExampleObject(example);
-        QueryByExamplePolicy policy = new QueryByExamplePolicy();
-        policy.addSpecialOperation(String.class, "containsSubstring");
-        policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
-        policy.setShouldUseEqualityForNulls(true);
-        query.setQueryByExamplePolicy(policy);
+        query.setQueryByExamplePolicy(getQueryByExamplePolicy());
         List<T> resultList = JpaHelper.createQuery(query, getEntityManager()).getResultList();
         if(resultList.isEmpty()) {
             return null;
         } else {
             return resultList.get(0);
         }
+    }
+    
+    /**
+     * Common {@link QueryByExamplePolicy}. May be overwritten if some fields don't have to appear in the query.
+     * @return
+     */
+    protected QueryByExamplePolicy getQueryByExamplePolicy() {
+        QueryByExamplePolicy policy = new QueryByExamplePolicy();
+        policy.addSpecialOperation(String.class, "containsSubstring");
+        policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
+        policy.setShouldUseEqualityForNulls(true);
+        return policy;
     }
     
     /**
@@ -304,7 +337,7 @@ em.joinTransaction();
      * 
      * @throws SQLException
      */
-    private void checkConnection() throws SQLException {
+    protected void checkConnection() throws SQLException {
         if (getEntityManager() == null) {
             throw new SQLException("EntityManager is null. Not connected to database!");
         }
@@ -312,4 +345,11 @@ em.joinTransaction();
 
 	protected abstract EntityManager getEntityManager();
 	protected abstract Class<T> getEntityClass();
+
+	/**
+	 * @return the log
+	 */
+	public final ILogger getLog() {
+		return log;
+	}
 }

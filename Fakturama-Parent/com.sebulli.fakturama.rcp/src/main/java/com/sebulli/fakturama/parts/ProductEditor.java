@@ -68,6 +68,7 @@ import org.javamoney.moneta.Money;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -253,10 +254,9 @@ public class ProductEditor extends Editor<Product> {
 		}
 			try {
 				editorProduct = productsDAO.save(editorProduct);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            } catch (FakturamaStoringException e) {
+                log.error(e);
+            }
 
 		// Set the Editor's name to the product name.
 		this.part.setLabel(editorProduct.getName());

@@ -35,6 +35,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
 
@@ -138,9 +139,8 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
                 parentCategory = searchCat;
             }
         }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (FakturamaStoringException e) {
+        	getLog().error(e);
         }
         return parentCategory;
     }

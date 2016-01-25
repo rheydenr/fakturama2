@@ -28,6 +28,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.internal.events.EventBroker;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.AbstractSelectionDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -122,6 +123,7 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(debitorListTable.getSelectedObject().getId()));
             setResult(debitorListTable.getSelectedObject());
+            
             // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
         }
         super.okPressed();

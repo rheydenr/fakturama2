@@ -43,6 +43,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -125,7 +126,7 @@ public class LifecycleManager {
 			try {
 				fillWithInitialData();
 			}
-			catch (SQLException sqlex) {
+			catch (FakturamaStoringException sqlex) {
 				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
 			}
         }
@@ -140,7 +141,7 @@ public class LifecycleManager {
      * If a new data base was created, fill some data with initial values
      * @throws SQLException 
      */
-    private void fillWithInitialData() throws SQLException {
+    private void fillWithInitialData() throws FakturamaStoringException {
         // wait some seconds until dbInitJob is finished.
         // else you get a NPE!!!
         try {
@@ -248,9 +249,8 @@ public class LifecycleManager {
 //				cEFACTCode.setDateAdded(Date.from(Instant.now()));
 				unCefactCodeDAO.save(cEFACTCode);
 			}
-		} catch (IOException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException | FakturamaStoringException e) {
+            log.error(e);
 		}
 	}
 

@@ -1,7 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -16,6 +14,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.oldmodel.OldProperties;
 
@@ -99,9 +98,8 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
                 save(prop);
             }
         }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (FakturamaStoringException e) {
+            getLog().error(e);
         }
     }
 }

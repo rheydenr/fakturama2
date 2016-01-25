@@ -65,6 +65,7 @@ import org.eclipse.swt.widgets.Text;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
@@ -266,7 +267,7 @@ public class ContactEditor extends Editor<Contact> {
             // save the new or updated Contact
             editorContact = contactDAO.update(editorContact);
         }
-        catch (SQLException e) {
+        catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
         }
 		newContact = false;

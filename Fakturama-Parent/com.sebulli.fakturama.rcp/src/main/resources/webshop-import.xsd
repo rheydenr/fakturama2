@@ -5,16 +5,36 @@
 	<xs:element name="webshopexport">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element type="xs:string" name="phpversion"/>
 				<xs:element name="webshop" type="fkt:WebshopType" />
+				<xs:element type="xs:string" name="complete_version"/>
 				<xs:element name="products" maxOccurs="1" minOccurs="0"
 					type="fkt:ProductsType" />
 				<xs:element name="orders" maxOccurs="1" minOccurs="0"
 					type="fkt:OrdersType" />
 				<xs:element type="xs:string" name="error" minOccurs="0" />
+		        <xs:element type="fkt:StatusListType" name="status_list" />
 			</xs:sequence>
-			<xs:attribute type="xs:float" name="version" />
+			<xs:attribute type="xs:string" name="version" />
 		</xs:complexType>
 	</xs:element>
+	
+	      <xs:complexType name="StatusListType">
+            <xs:sequence>
+              <xs:element type="fkt:StatusType" name="status" maxOccurs="unbounded" minOccurs="0">
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+	
+	                <xs:complexType name="StatusType">
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="id"/>
+                      <xs:attribute type="xs:string" name="name"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+	
 
 	<xs:complexType name="OrdersType">
 		<xs:sequence>

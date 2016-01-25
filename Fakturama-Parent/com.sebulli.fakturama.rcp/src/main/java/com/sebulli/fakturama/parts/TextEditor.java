@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -42,6 +41,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.TextCategoriesDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
@@ -130,7 +130,7 @@ public class TextEditor extends Editor<TextModule> {
              */
             editorText = textsDAO.update(editorText);
         }
-        catch (SQLException e) {
+        catch (FakturamaStoringException e) {
             log.error(e, "can't save the current VAT: " + editorText.toString());
         }
 

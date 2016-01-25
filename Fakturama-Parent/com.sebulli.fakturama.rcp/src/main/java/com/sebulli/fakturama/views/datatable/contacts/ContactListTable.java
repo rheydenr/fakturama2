@@ -3,7 +3,6 @@
  */
 package com.sebulli.fakturama.views.datatable.contacts;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -45,20 +43,14 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.DummyStringCategory;
-import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -68,6 +60,11 @@ import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
 
 /**
  * View with the table of all contacts
@@ -354,7 +351,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 objToDelete.setDeleted(Boolean.TRUE);
                 contactDAO.save(objToDelete);
             }
-            catch (SQLException e) {
+            catch (FakturamaStoringException e) {
                 log.error(e, "can't save the current Contact: " + objToDelete.toString());
             }
     

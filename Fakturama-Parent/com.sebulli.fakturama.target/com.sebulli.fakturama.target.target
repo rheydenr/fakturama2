@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="350">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="355">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
@@ -101,14 +101,19 @@
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201601132332"/>
-<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201601132332"/>
+<unit id="org.eclipse.draw2d.feature.group" version="3.10.1.201508170204"/>
+<repository location="http://download.eclipse.org/tools/gef/updates/releases/"/>
+</location>
+<location path="d:\git\org.eclipse.nebula\widgets\treemapper\" type="Directory"/>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201601221637"/>
+<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201601221637"/>
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201601132332"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201601132332"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601132332"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601221638"/>
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201601221638"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201601221638"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>

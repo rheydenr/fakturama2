@@ -1239,5 +1239,39 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The target of this code. This can be &quot;Shipping&quot;, &quot;VAT&quot; or others. It is not modeled as reference to another &quot;target table&quot; because these values are invariant and only like an ID for a category."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEEnum">
+      <eEnum href="Fakturama.ecore#//ItemType"/>
+      <eEnumAnnotations xsi:type="modelannotations:EEnumModelGenAnnotation" documentation="The type of a document position. This can be a &quot;normal&quot; Position, Free text, a delivery part (which is a part of a delivery in a collecting invoice) or a subtotal line."/>
+    </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
+      <eClass href="Fakturama.ecore#//WebshopStateMapping"/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Mapping between order states of a web shop to the order states of the Fakturama application. Since we plan to assign multiple web shops we store a mapping with its webshop ID. This is for later use, at the moment we don't use it." serializable="true">
+        <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+      </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
+        <entity>
+          <entityListeners>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
+          </entityListeners>
+        </entity>
+      </eClassAnnotations>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/webshopId"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="ID of the webshop for which this assignment is for"/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/webshopStateId"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="ID of the state from web shop"/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/orderState"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="OrderState from Fakturama, to which the web shop state is mapped."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//IEntity/name"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="description (or name) of the state from web shop"/>
+      </annotatedEStructuralFeatures>
+    </annotatedEClassifiers>
   </annotatedEPackages>
 </annotationsmodel:AnnotatedModel>

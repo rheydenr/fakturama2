@@ -69,6 +69,7 @@ import com.sebulli.fakturama.dao.VoucherItemsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.dto.VoucherSummary;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
@@ -197,9 +198,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         if (newVoucher) {
             try {
                 voucher = expendituresDAO.save(voucher);
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (FakturamaStoringException e) {
+                log.error(e);
             }
         }
 
@@ -215,9 +215,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         for (IEntity expenditureItem : itemListTable.getMarkedForDeletion()) {
             try {
                 voucherItemsDAO.save((ExpenditureItem)expenditureItem);
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (FakturamaStoringException e) {
+                log.error(e);
             }
         }
 
@@ -595,9 +594,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 	public Expenditure addVoucher(Expenditure pVoucher) {
 		try {
             voucher = expendituresDAO.save(pVoucher);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (FakturamaStoringException e) {
+            log.error(e);
         }
 		return voucher;
 	}
@@ -622,9 +620,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 	public Expenditure updateVoucher(Expenditure pVoucher) {
 		try {
             voucher = expendituresDAO.update(pVoucher);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (FakturamaStoringException e) {
+            log.error(e);
         }
 		return voucher;
 	}

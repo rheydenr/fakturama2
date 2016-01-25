@@ -17,7 +17,6 @@ package com.sebulli.fakturama.parts;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -51,6 +50,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -156,7 +156,7 @@ public class PaymentEditor extends Editor<Payment> {
             payment.setDiscountValue(val.doubleValue());
             payment = paymentsDAO.update(payment);
         }
-        catch (SQLException e) {
+        catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Payment: " + payment.toString());
         }
             

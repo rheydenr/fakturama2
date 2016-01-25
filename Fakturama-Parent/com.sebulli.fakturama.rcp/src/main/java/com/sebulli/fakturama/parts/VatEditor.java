@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -47,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
@@ -137,7 +137,7 @@ public class VatEditor extends Editor<VAT> {
              */
             editorVat = vatDao.update(editorVat);
         }
-        catch (SQLException e) {
+        catch (FakturamaStoringException e) {
             log.error(e, "can't save the current VAT: " + editorVat.toString());
         }
 

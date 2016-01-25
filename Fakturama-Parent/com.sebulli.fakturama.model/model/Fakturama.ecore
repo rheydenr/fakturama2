@@ -147,6 +147,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="itemVat" eType="#//VAT"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="gtin" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="posNr" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="itemType" eType="#//ItemType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Invoice" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Order" eSuperTypes="#//Document"/>
@@ -209,6 +210,12 @@
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="category" eType="#//ItemListTypeCategory"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ItemType">
+    <eLiterals name="POSITION"/>
+    <eLiterals name="FREETEXT" value="1" literal=""/>
+    <eLiterals name="DELIVERY_PART" value="2"/>
+    <eLiterals name="SUBTOTAL" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Payment" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
@@ -358,5 +365,11 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="target" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name_de" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WebshopStateMapping" eSuperTypes="#//IEntity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopId" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopStateId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderState" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

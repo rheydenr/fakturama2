@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -39,13 +38,13 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.MessageKeyToCategoryConverter;
-import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
@@ -102,7 +101,7 @@ public class ListEditor extends Editor<ItemAccountType> {
              * all went ok. That's the point...
              */
             editorListEntry = itemAccountTypeDAO.update(editorListEntry);
-        } catch (SQLException e) {
+        } catch (FakturamaStoringException e) {
             log.error(e, "can't save the current ItemAccountType: " + editorListEntry.toString());
         }
 

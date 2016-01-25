@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
 Bundle-Version: 2.0.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/org.eclipse.nebula.widgets.treemapper-0.1.0-SNAPSHOT.jar
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: OSGI-INF/l10n/bundle
@@ -43,7 +44,9 @@ Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.javamoney.osgi;bundle-version="1.0.0",
  org.eclipse.emf;bundle-version="2.6.0",
  org.eclipse.osgi,
- org.apache.poi.ooxml;bundle-version="3.9.0"
+ org.apache.poi.ooxml;bundle-version="3.9.0",
+ org.eclipse.draw2d;bundle-version="3.10.1",
+ org.eclipse.nebula.widgets.treemapper;bundle-version="0.1.0"
 Import-Package: javax.inject;version="1.0.0",
  org.apache.commons.io,
  org.eclipse.core.commands,

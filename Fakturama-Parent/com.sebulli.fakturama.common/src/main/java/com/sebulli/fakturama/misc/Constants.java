@@ -489,5 +489,7 @@ public class Constants {
 	public static final String PROPERTY_PRODUCTS_CLICKHANDLER = "fakturama.datatable.products.clickhandler";
 
 	public static final String COMMAND_SELECTITEM = "com.sebulli.fakturama.command.selectitem";
+
+	public static final int RC_OK = 0;
     
 }

@@ -17,6 +17,7 @@ package com.sebulli.fakturama.preferences;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -25,7 +26,12 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 
+import com.sebulli.fakturama.dialogs.WebShopStatusSettingsDialog;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 
@@ -36,20 +42,21 @@ import com.sebulli.fakturama.misc.Constants;
  */
 public class WebShopImportPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
 
-
     @Inject
     @Translation
     protected Messages msg;
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
+    
+    @Inject
+    private IEclipseContext context;
 
 	/**
 	 * Constructor
 	 */
 	public WebShopImportPreferencePage() {
 		super(GRID);
-
 	}
 
 	/**
@@ -87,9 +94,9 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY, msg.preferencesWebshopLabelShippingsincategory, getFieldEditorParent()));
 
 		//T: Preference page "Web Shop Import" - Label
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_PROCESSING, msg.preferencesWebshopNoifycustomerOnprogress, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_PROCESSING, msg.preferencesWebshopNotifycustomerOnprogress, getFieldEditorParent()));
 		//T: Preference page "Web Shop Import" - Label
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_SHIPPED, msg.preferencesWebshopNoifycustomerOnshipped, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_SHIPPED, msg.preferencesWebshopNotifycustomerOnshipped, getFieldEditorParent()));
 		//T: Preference page "Web Shop Import" - Label
 		addField(new IntegerFieldEditor(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS, msg.preferencesWebshopMaxproducts, getFieldEditorParent()));
 		//T: Preference page "Web Shop Import" - Label
@@ -97,6 +104,18 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		//T: Preference page "Web Shop Import" - Label
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR, msg.preferencesWebshopEanasitemno, getFieldEditorParent()));
 
+		Button b = new Button(getFieldEditorParent(), SWT.PUSH);
+		b.setText(msg.pageWebshopsettings);
+		b.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				context.set(Messages.class, msg);
+				WebShopStatusSettingsDialog dialog = ContextInjectionFactory.make(WebShopStatusSettingsDialog.class, context);
+				dialog.open();				
+				// modelService isn't available at this moment, therefore we can't use the dialog from ApplicationModel
+			}
+		});
 	
 	}
 

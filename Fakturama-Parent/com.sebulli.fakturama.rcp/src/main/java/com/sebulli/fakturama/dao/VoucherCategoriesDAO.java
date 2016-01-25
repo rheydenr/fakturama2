@@ -32,6 +32,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.VATCategory_;
@@ -172,9 +173,8 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
                 parentCategory = searchCat;
             }
         }
-        catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (FakturamaStoringException e) {
+            getLog().error(e);
         }
         return parentCategory;
     }

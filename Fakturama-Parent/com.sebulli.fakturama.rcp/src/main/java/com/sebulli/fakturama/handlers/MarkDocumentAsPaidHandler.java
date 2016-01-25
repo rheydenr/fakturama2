@@ -31,7 +31,9 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
@@ -50,8 +52,8 @@ public class MarkDocumentAsPaidHandler {
     @Translation
     private Messages msg;
 
-    //    @Inject
-    //    private Logger log;
+        @Inject
+        private ILogger log;
 
     @Inject
     @Preference
@@ -113,10 +115,8 @@ public class MarkDocumentAsPaidHandler {
                         
                         // Refresh the corresponding table view
                         evtBroker.post(DocumentEditor.EDITOR_ID, "update");
-                    }
-                    catch (SQLException e) {
-                        // TODO Change it to an application exception!
-                        e.printStackTrace();
+                    } catch (FakturamaStoringException e) {
+                        log.error(e);
                     }
                 }
             }

@@ -24,6 +24,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -45,6 +47,9 @@ public class RemoveInvoiceReferenceHandler {
 
     @Inject
     private DocumentsDAO documentsDAO;
+
+    @Inject
+    private ILogger log;
 
     @SuppressWarnings("unchecked")
     @CanExecute
@@ -73,9 +78,8 @@ public class RemoveInvoiceReferenceHandler {
 
                 // also in the database
                 documentsDAO.update(document);
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            }                     catch (FakturamaStoringException e) {
+                log.error(e);
             }
 
             // Refresh the table with delivery notes.

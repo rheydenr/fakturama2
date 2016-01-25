@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -190,8 +191,8 @@ public class MarkOrderAsActionHandler {
                     // It will update the state in the web shop the next time
                     // when we synchronize with the shop.
                     Map<String, Object> parameters = new HashMap<>();
-                    parameters.put(WebShopImportHandler.PARAM_IS_GET_PRODUCTS, "FALSE");
-                    ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT_MGR, parameters);
+                    parameters.put(WebShopImportManager.PARAM_IS_GET_PRODUCTS, "FALSE");
+                    ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT, parameters);
                     /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
                     //                  webShopImportManager.prepareChangeState();
                     //
@@ -209,9 +210,8 @@ public class MarkOrderAsActionHandler {
 
                 }
             }
-            catch (SQLException e) {
-                // TODO Change it to an application exception!
-                e.printStackTrace();
+            catch (FakturamaStoringException e) {
+                log.error(e);
             }
         }
     }
