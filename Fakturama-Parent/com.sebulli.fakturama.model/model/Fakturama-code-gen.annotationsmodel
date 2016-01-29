@@ -75,6 +75,12 @@
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
+      <eClass href="Fakturama.ecore#//VoucherCategory"/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Account for ReceiptVouchers or other bookkeeping relevant items" name="Account" qualifiedClassName="com.sebulli.fakturama.model.VoucherCategory" simpleClassName="VoucherCategory" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="true" serializable="true" abstract="false">
+        <classExtends>com.sebulli.fakturama.model.AbstractCategory</classExtends>
+      </eClassAnnotations>
+    </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//AbstractVoucherItem"/>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -94,12 +100,6 @@
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
-      <eClass href="Fakturama.ecore#//VoucherCategory"/>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Account for ReceiptVouchers or other bookkeeping relevant items" name="Account" qualifiedClassName="com.sebulli.fakturama.model.VoucherCategory" simpleClassName="VoucherCategory" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasSuperEClass="true" serializable="true" abstract="false">
-        <classExtends>com.sebulli.fakturama.model.AbstractCategory</classExtends>
-      </eClassAnnotations>
-    </annotatedEClassifiers>
-    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//BankAccount"/>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -108,10 +108,14 @@
           </entityListeners>
         </entity>
       </eClassAnnotations>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" serializable="true">
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Represents a banking account" serializable="true">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//IEntity/name"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The name is equal to account name."/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Address"/>

@@ -773,7 +773,7 @@ public class ContactEditor extends Editor<Contact> {
 		labelAccount.setText(msg.editorContactFieldAccountnumberName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
 		txtAccount = new Text(tabBank, SWT.BORDER);
-		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.account.getName(), 32);
+		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.name.getName(), 32);
 		txtAccount.setEnabled(false);
 		txtAccount.setToolTipText(msg.editorContactFieldAccountnumberDisabledinfo);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);

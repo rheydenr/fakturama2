@@ -760,7 +760,7 @@ public class Placeholders {
 			BankAccount bankAccount = contact.getBankAccount();
 			if(bankAccount != null) {
                 if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
-    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getAccount();
+    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
     			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
     			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
     			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();

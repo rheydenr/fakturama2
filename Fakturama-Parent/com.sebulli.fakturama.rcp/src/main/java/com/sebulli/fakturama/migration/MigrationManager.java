@@ -628,6 +628,7 @@ public class MigrationManager {
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
 				document.setBillingType(billingType);
 				document.setCustomerRef(oldDocument.getCustomerref());
+				document.setValidFrom(getSaveParsedDate(oldDocument.getDate()));
 				document.setDeleted(oldDocument.isDeleted());
 				// delivery address? got from contact? Assume that it's equal to contact address 
 				// as long there's no delivery address stored 
@@ -826,7 +827,7 @@ public class MigrationManager {
 				Contact contact = createBaseContactFromOldContact(false, oldContact);
                 if (StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
                     BankAccount bankAccount = modelFactory.createBankAccount();
-                    bankAccount.setAccount(oldContact.getAccount());
+                    bankAccount.setName(oldContact.getAccount());
                     bankAccount.setAccountHolder(oldContact.getAccountHolder());
 
                     bankAccount.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", ""))); // could run into trouble if bankCode contains spaces

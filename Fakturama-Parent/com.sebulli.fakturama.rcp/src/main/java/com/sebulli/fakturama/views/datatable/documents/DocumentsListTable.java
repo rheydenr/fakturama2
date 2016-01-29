@@ -78,6 +78,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.MessageRegistry;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
@@ -111,6 +112,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     public static final String ID = "fakturama.views.documentTable";     
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.document.popup";
+    public static final String SELECTED_DELIVERY_ID = "fakturama.deliverylist.selecteddeliveryid";
 
     @Inject
     private IEclipseContext context;
@@ -136,31 +138,111 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private ContactUtil contactUtil;
 
     private MPart listTablePart;
-    
+
+    private Document selectedObject;
+
     @Inject
     protected MessageRegistry registry;
     
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
+        this.listTablePart = listTablePart;
+        
         super.createPartControl(parent, Document.class, true, ID);
 
-        this.listTablePart = listTablePart;
+        // if another click handler is set we use it
         // Listen to double clicks
-        hookDoubleClickCommand2(natTable, gridLayer);
-        topicTreeViewer.setTable(this);
-        
-        // On creating, set the unpaid invoices
-        topicTreeViewer.selectItemByName(
-                String.format("%s/%s", 
-                        msg.getMessageFromKey(DocumentType.INVOICE.getPluralDescription()), 
-                        msg.documentOrderStateUnpaid)
-                );
+        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
+            hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
+        } else {
+            hookDoubleClickCommand2(natTable, getGridLayer());
+	        topicTreeViewer.setTable(this);
+	        
+	        // On creating, set the unpaid invoices
+	        topicTreeViewer.selectItemByName(
+	                String.format("%s/%s", 
+	                        msg.getMessageFromKey(DocumentType.INVOICE.getPluralDescription()), 
+	                        msg.documentOrderStateUnpaid)
+	                );
+        }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
         contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         
         return top;
+    }
+    
+    private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<Document> gridLayer, String commandId) {
+        
+        if (commandId != null) {
+            // if we are in "selectdelivery" mode we have to register a single click mouse event
+            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+                public void run(NatTable natTable, MouseEvent event) {
+                    int rowPos = natTable.getRowPositionByY(event.y);
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                    selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+//                    selectionService.setSelection(selectionService);
+                }
+            });
+        }
+        // Add a double click listener
+        nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+            @Override
+            public void run(NatTable natTable, MouseEvent event) {
+                //get the row position for the click in the NatTable
+                int rowPos = natTable.getRowPositionByY(event.y);
+                //transform the NatTable row position to the row position of the body layer stack
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                // Call the corresponding editor. The editor is set
+                // in the variable "editor", which is used as a parameter
+                // when calling the editor command.
+                // in E4 we create a new Part (or use an existing one with the same ID)
+                // from PartDescriptor
+                Map<String, Object> params = new HashMap<>();
+                ParameterizedCommand parameterizedCommand;
+                if(commandId != null) {
+                    // If we don't give a target document number the event will  be catched by *all*
+                    // open editors which listens to this event. This is (obviously :-) ) not
+                    // the intended behavior...
+                    Map<String, Object> eventParams = new HashMap<>();
+                    // the transientData HashMap contains the target document number
+                    // (was set in MouseEvent handler)
+                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+                    // TODO how about multiple selections?
+                    List<Long> resultList = Arrays.asList(selectedObject.getId());
+                    eventParams.put(SELECTED_DELIVERY_ID, resultList);
+//                    // alternatively use the Selection Service
+                    // ==> no! Because this SelectionService has another context than 
+                    // the receiver of this topic. Therefore the receiver's SelectionService
+                    // is empty :-(
+//                    selectionService.setSelection(selectedObject);
+                    
+                    // selecting an entry and closing the dialog are two different actions.
+                    // the "CloseContact" event is caught by SelectContactDialog#handleDialogDoubleClickClose. 
+                    evtBroker.post("DialogSelection/Delivery", eventParams);
+                    evtBroker.post("DialogAction/CloseDelivery", eventParams);
+                } else {
+                    // if we come from the list view then we should open a new editor 
+                    params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                    params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    if(selectedObject instanceof Document) {
+                        params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
+                    }
+                    parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                    handlerService.executeHandler(parameterizedCommand);
+                }
+            }
+        });
+    }
+    
+    @Override
+    protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<Document> gridLayer) {
+        hookDoubleClickCommand(nattable, gridLayer, null);
     }
 
     @Override
@@ -196,7 +278,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                         Document selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
                         
                         // Set the transaction and the contact filter
-                        if (selectedObject != null) {
+                        if (selectedObject != null && topicTreeViewer != null) {
                             if(selectedObject.getTransactionId() != null) {
                                 topicTreeViewer.setTransaction(selectedObject.getTransactionId());
                             }
@@ -286,9 +368,14 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         return derivedColumnPropertyAccessor;
     }
     
-    protected NatTable createListTable(Composite searchAndTableComposite) {       
+    protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-        documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
+    	if(this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER) != null) {
+    		// if a click handler is set we are in "dialog" mode which only uses delivery notes.
+    		documentListData = GlazedLists.eventList(documentsDAO.findAllDeliveriesWithoutInvoice());
+    	} else {
+    		documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
+    	}
 
         // get the visible properties to show in list view
         String[] propertyNames = documentsDAO.getVisibleProperties();
@@ -355,15 +442,21 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", true);
-    	context.set("useAll", false);
-//    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-        topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
-        categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
-        topicTreeViewer.setInput(categories);
-        topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
-        
+    	
+        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
+        	topicTreeViewer = null;
+        } else {
+	        context.set("useDocumentAndContactFilter", true);
+	        context.set("useAll", false);
+	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+	        topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+	        categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
+	        topicTreeViewer.setInput(categories);
+	        topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+        }
         return topicTreeViewer;
+        
     }
     
     /**

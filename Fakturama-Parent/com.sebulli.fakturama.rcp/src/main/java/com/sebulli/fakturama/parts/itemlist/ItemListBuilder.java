@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dialogs.SelectContactDialog;
+import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.dialogs.SelectProductDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -137,13 +138,13 @@ public class ItemListBuilder {
 			    SelectProductDialog dlg = ContextInjectionFactory.make(SelectProductDialog.class, context);
 			    dlg.open();
 
-                // handling of adding a new list item is done via event handling in DocumentEditor
-			    // (setting via dlg.getResult() would get too complicated, since we have to hold
-			    // a reference to the calling editor)
-			    Collection<Product> result = dlg.getResult();
-			    if(result != null) {
-			    	container.addItemsToItemList(result);
-			    }
+//                // handling of adding a new list item is done via event handling in DocumentEditor
+//			    // (setting via dlg.getResult() would get too complicated, since we have to hold
+//			    // a reference to the calling editor)
+//			    Collection<Product> result = dlg.getResult();
+//			    if(result != null) {
+//			    	container.addItemsToItemList(result);
+//			    }
             }
         });
 
@@ -164,12 +165,15 @@ public class ItemListBuilder {
                     //T: Document Editor
                     //T: Title of the dialog to select a delivery note
                     //              SelectDeliveryNoteDialog
-                    //              dialog = new SelectDeliveryNoteDialog(_("Select a delivey note"), addressId);
-                    MDialog dialog = (MDialog) modelService.find("fakturama.dialog.selectdeliverynotes", application);
-                    dialog.setToBeRendered(true);
-                    dialog.setVisible(true);
-                    dialog.setOnTop(true);
-                    modelService.bringToTop(dialog);
+    			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
+    			    context.set(ESelectionService.class, selectionService);
+    			    SelectDeliveryNoteDialog dlg = ContextInjectionFactory.make(SelectDeliveryNoteDialog.class, context);
+    			    dlg.open();
+//                    MDialog dialog = (MDialog) modelService.find("fakturama.dialog.selectdeliverynotes", application);
+//                    dialog.setToBeRendered(true);
+//                    dialog.setVisible(true);
+//                    dialog.setOnTop(true);
+//                    modelService.bringToTop(dialog);
 
                     // handling of adding a new list item is done via event handling in DocumentEditor
                 }

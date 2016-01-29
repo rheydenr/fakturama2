@@ -409,7 +409,7 @@ public class DocumentSummaryCalculator {
         // TODO  HOW CAN I DO THIS WITH Optional ???????
 //        return Optional.ofNullable(item.getItemVat()).orElse(Optional.ofNullable(item.getProduct()).get().getVat());
         VAT retval = item.getItemVat();
-        if(retval == null) {
+        if(retval == null && item.getProduct() != null) {
             retval = item.getProduct().getVat();
         }
         return retval;

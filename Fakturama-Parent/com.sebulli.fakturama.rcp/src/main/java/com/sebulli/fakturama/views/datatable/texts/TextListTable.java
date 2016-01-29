@@ -21,7 +21,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -60,10 +59,10 @@ import com.sebulli.fakturama.dao.TextCategoriesDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.TextModule_;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -105,7 +104,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     private TextCategoriesDAO textCategoriesDAO;
     
     protected MPart listTablePart;
-    
+    private TextModule selectedObject;
+
     private EventList<TextModule> textListData;
     private EventList<TextCategory> categories;
 
@@ -131,6 +131,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
        }
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
         return top;
     }
     
@@ -320,6 +321,18 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     }
     
     private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<TextModule> gridLayer, String commandId) {
+        if (commandId != null) {
+            // if we are in "selecttext" mode we have to register a single click mouse event
+            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+
+				public void run(NatTable natTable, MouseEvent event) {
+                    int rowPos = natTable.getRowPositionByY(event.y);
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                    selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                }
+            });
+        }
+        
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -330,7 +343,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
                 //transform the NatTable row position to the row position of the body layer stack
                 int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
                 // extract the selected Object
-                TextModule selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
                 // when calling the editor command.
@@ -345,7 +358,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
                     Map<String, Object> eventParams = new HashMap<>();
                     // the transientData HashMap contains the target document number
                     // (was set in MouseEvent handler)
-                    eventParams.putAll(listTablePart.getParent().getTransientData());
+                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
                     eventParams.put(SELECTED_TEXT_ID, Long.valueOf(selectedObject.getId()));
 //                    // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
@@ -353,7 +366,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
                     // is empty :-(
 //                    selectionService.setSelection(selectedObject);
                     evtBroker.post("DialogSelection/TextModule", eventParams);
-                    listTablePart.getParent().setVisible(false);
+                    evtBroker.post("DialogAction/CloseTextModule", eventParams);
                 } else {
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));

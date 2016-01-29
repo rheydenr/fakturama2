@@ -14,82 +14,129 @@
 
 package com.sebulli.fakturama.dialogs;
 
+import java.util.Collection;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.AbstractSelectionDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Delivery;
+import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
+import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 
 /**
  * Dialog to select a delivery note from a table
  * 
  * @author Gerd Bartelt
  */
-public class SelectDeliveryNoteDialog  {
+public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> {
 
-//	protected ViewDataSetTableContentProvider contentProvider;
-//	protected int contactID = -1;
-//	
-//	/**
-//	 * Constructor
-//	 * 
-//	 * @param string
-//	 *            Dialog title
-//	 */
-//	public SelectDeliveryNoteDialog(String string, int contactID) {
-//		super(string, true);
-//		this.contactID = contactID;
-//	}
-//
-//	/**
-//	 * Create the dialog area
-//	 * 
-//	 * @param parent
-//	 *            Parent composite
-//	 * @return The new created dialog area
-//	 */
-//	@Override
-//	protected Control createDialogArea(Composite parent) {
-//
-//		// Mark the columns that are used by the search function.
-//		searchColumns = new String[4];
-//		searchColumns[0] = "name";
-//		searchColumns[1] = "date";
-//		searchColumns[2] = "addressfirstline";
-//		searchColumns[3] = "total";
-//
-//		// Create the dialog area
-//		Control control = super.createDialogArea(parent);
-//
-//		// Set the content provider
-//		contentProvider = new ViewDataSetTableContentProvider(tableViewer);
-//		contentProvider.setTransactionFilter(-1);
-//		contentProvider.setContactFilter(contactID);
-//		contentProvider.setCategoryFilter(DocumentType.getPluralString(DocumentType.DELIVERY) + "/" + DataSetDocument.getStringHASNOINVOICE());
-//		tableViewer.setContentProvider(contentProvider);
-//		tableViewer.setSorter(new TableSorter());
-//
-//		// Get the column width from the preferences
-//		int cw_icon = Activator.getDefault().getPreferenceStore().getInt("COLUMNWIDTH_DOCUMENTS_ICON");
-//		int cw_document = Activator.getDefault().getPreferenceStore().getInt("COLUMNWIDTH_DOCUMENTS_DOCUMENT");
-//		int cw_date = Activator.getDefault().getPreferenceStore().getInt("COLUMNWIDTH_DOCUMENTS_DATE");
-//		int cw_name = Activator.getDefault().getPreferenceStore().getInt("COLUMNWIDTH_DOCUMENTS_NAME");
-//		
-//		// Create the table columns
-//		// new TableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, "ID", 30, 0, true, "id");
-//		new UniDataSetTableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, "", cw_icon,  true, "$documenttype");
-//		//T: Used as heading of a table. Keep the word short.
-//		new UniDataSetTableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, _("Document"), cw_document, true, "name");
-//		//T: Used as heading of a table. Keep the word short.
-//		new UniDataSetTableColumn(tableColumnLayout, tableViewer, SWT.RIGHT, _("Date"), cw_date, true, "date");
-//		//T: Used as heading of a table. Keep the word short.
-//		new UniDataSetTableColumn(tableColumnLayout, tableViewer, SWT.LEFT, _("Name"), cw_name, false, "addressfirstline");
-//
-//		// Set the input
-//		tableViewer.setInput(Data.INSTANCE.getDocuments());
-//		
-//		return control;
-//	}
+	@Inject
+	@Translation
+	protected Messages msg;
+
+	@Inject
+	private IEventBroker evtBroker;
+
+	@Inject
+	private EModelService modelService;
+
+	@Inject
+	private IEclipseContext context;
+
+	private DocumentsListTable deliveriesListTable;
+
+	private Control top;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param string
+	 *            Dialog title
+	 */
+	@Inject
+	public SelectDeliveryNoteDialog(Shell shell, @Translation Messages msg) {
+		super(shell);
+		this.msg = msg;
+		// Set the title
+		setTitle(msg.dialogSelectdeliverynotesTitle);
+	}
+
+	/**
+	 * Create the dialog area
+	 * 
+	 * @param parent
+	 *            Parent composite
+	 * @return The new created dialog area
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent) {
+
+		// Create the dialog area
+		top = super.createDialogArea(parent);
+		GridLayoutFactory.fillDefaults().numColumns(1).applyTo((Composite) top);
+
+		context.set(Composite.class, (Composite) top);
+		context.set(IEventBroker.class, evtBroker);
+		MPart part = modelService.createModelElement(MPart.class);
+		part.setContext(context);
+		part.getProperties().put(Constants.PROPERTY_DELIVERIES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+		context.set(MPart.class, part);
+		deliveriesListTable = ContextInjectionFactory.make(DocumentsListTable.class, context);
+
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
+
+		return top;
+	}
+
+	/**
+	 * Called if a user doubleclicks on an entry. Then the entry will be
+	 * selected and the dialog closes. Since these are two different actions it
+	 * couldn't put into one method.
+	 * 
+	 * @param event
+	 */
+	@Inject
+	@org.eclipse.e4.core.di.annotations.Optional
+	protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseDelivery") Event event) {
+		if (event != null) {
+			if (deliveriesListTable.getSelectedObject() != null) {
+				// only for convenience, the result is already set by NatTable
+				// on double click and send to the
+				// DocumentEditor.
+				setResult((Delivery) deliveriesListTable.getSelectedObject());
+			}
+			super.okPressed();
+		}
+	}
+
+	/**
+	 * Set the initial size of the dialogs in pixel
+	 * 
+	 * @return Size as Point object
+	 */
+	@Override
+	protected Point getInitialSize() {
+		return new Point(800, 550);
+	}
 
 }

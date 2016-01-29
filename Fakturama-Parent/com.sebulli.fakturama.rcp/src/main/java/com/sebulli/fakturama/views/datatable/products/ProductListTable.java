@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.products;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -60,18 +60,15 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
-import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.documents.SpecialCellValueProvider;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -188,7 +185,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     // the transientData HashMap contains the target document number
                     // (was set in MouseEvent handler)
                     eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-                    eventParams.put(SELECTED_PRODUCT_ID, Long.valueOf(selectedObject.getId()));
+                    eventParams.put(SELECTED_PRODUCT_ID, Arrays.asList(Long.valueOf(selectedObject.getId())));
 //                    // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
                     // the receiver of this topic. Therefore the receiver's SelectionService
@@ -196,9 +193,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 //                    selectionService.setSelection(selectedObject);
                     
                     // selecting an entry and closing the dialog are two different actions.
-                    // the "CloseContact" event is caught by SelectContactDialog#handleDialogDoubleClickClose. 
-                    evtBroker.post("DialogSelection/Contact", eventParams);
-                    evtBroker.post("DialogAction/CloseContact", eventParams);
+                    // the "CloseProduct" event is caught by SelectProductDialog#handleDialogDoubleClickClose. 
+                    evtBroker.post("DialogSelection/Product", eventParams);
+                    evtBroker.post("DialogAction/CloseProduct", eventParams);
                 } else {
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="355">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="358">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
@@ -17,6 +17,10 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
 <repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.draw2d.feature.group" version="3.10.1.201508170204"/>
+<repository location="http://download.eclipse.org/tools/gef/updates/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.ecore.feature.group" version="2.11.0.v20150512-0501"/>
@@ -49,8 +53,19 @@
 <repository location="http://download.eclipse.org/gemini/updates/dbaccess/1.1.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201512150757"/>
+<unit id="org.eclipse.xtend.dependencies.feature.group" version="2.2.0.v201512150757"/>
+<unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201512150757"/>
+<unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201512150757"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
 <repository location="http://download.eclipse.org/gemini/jpa/updates"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201512081336"/>
+<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.3.0.201503261201"/>
@@ -90,30 +105,15 @@
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201512150757"/>
-<unit id="org.eclipse.xtend.dependencies.feature.group" version="2.2.0.v201512150757"/>
-<unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201512150757"/>
-<unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201512150757"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201512081336"/>
-<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.draw2d.feature.group" version="3.10.1.201508170204"/>
-<repository location="http://download.eclipse.org/tools/gef/updates/releases/"/>
-</location>
-<location path="d:\git\org.eclipse.nebula\widgets\treemapper\" type="Directory"/>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201601221637"/>
-<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201601221637"/>
+<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201601272237"/>
+<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201601272237"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201601272237"/>
 <repository location="http://download.eclipse.org/technology/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601221638"/>
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201601221638"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201601221638"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601272237"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201601272237"/>
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201601272237"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
 </location>
 </locations>

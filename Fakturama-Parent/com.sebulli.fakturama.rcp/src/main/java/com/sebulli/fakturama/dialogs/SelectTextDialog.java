@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.dialogs;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,17 +38,16 @@ import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.parts.DocumentEditor;
-import com.sebulli.fakturama.views.datatable.products.ProductListTable;
+import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 
 /**
- * Dialog to select a product from a table
+ * Dialog to select a text from a table
  * 
  * @author Gerd Bartelt
  */
-public class SelectProductDialog extends AbstractSelectionDialog<Product> {
-    
+public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
     @Inject
     @Translation
     protected Messages msg;
@@ -63,7 +61,7 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
     @Inject
     private IEclipseContext context;
     
-    private ProductListTable productListTable;
+    private TextListTable textListTable;
     
     private Control top;
 
@@ -73,13 +71,14 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
 	 * @param string
 	 *            Dialog title
 	 */
-	@Inject
-	public SelectProductDialog(Shell shell, @Translation Messages msg) {
+    @Inject
+	public SelectTextDialog(Shell shell, @Translation Messages msg) {
         super(shell);
         this.msg = msg;
         // Set the title
-        setTitle(msg.dialogSelectproductTitle);
+        setTitle(msg.dialogSelecttextTitle);
 	}
+
 
 	/**
 	 * Create the dialog area
@@ -99,9 +98,9 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
-        part.getProperties().put(Constants.PROPERTY_PRODUCTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+        part.getProperties().put(Constants.PROPERTY_TEXTMODULES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
-        productListTable = ContextInjectionFactory.make(ProductListTable.class, context);
+        textListTable = ContextInjectionFactory.make(TextListTable.class, context);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
 
@@ -115,12 +114,12 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
      */
     @Override
     protected void okPressed() {
-        if (productListTable.getSelectedObject() != null) {
+        if (textListTable.getSelectedObject() != null) {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-            eventParams.put(ProductListTable.SELECTED_PRODUCT_ID, Long.valueOf(productListTable.getSelectedObject().getId()));
-            evtBroker.post("DialogSelection/Product", eventParams);
-// alternative:            setResult(productListTable.getSelectedObject());
+            eventParams.put(TextListTable.SELECTED_TEXT_ID, Long.valueOf(textListTable.getSelectedObject().getId()));
+            evtBroker.post("DialogSelection/TextModule", eventParams);
+// alternative:            setResult(textListTable.getSelectedObject());
         }
         super.okPressed();
     }
@@ -134,12 +133,12 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
      */
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
-    protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseProduct") Event event) {
+    protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseTextModule") Event event) {
         if (event != null) {
-            if (productListTable.getSelectedObject() != null) {
+            if (textListTable.getSelectedObject() != null) {
                 // only for convenience, the result is already set by NatTable on double click and send to the 
                 // DocumentEditor.
-                setResult(productListTable.getSelectedObject());
+                setResult(textListTable.getSelectedObject());
             }
             super.okPressed();
         }

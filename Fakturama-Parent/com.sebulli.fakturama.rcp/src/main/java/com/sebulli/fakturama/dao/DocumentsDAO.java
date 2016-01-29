@@ -18,6 +18,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -49,7 +51,6 @@ import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
 import com.sebulli.fakturama.model.Proforma;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -360,18 +361,33 @@ public List<Document> findAll(boolean forceRead) {
      * @param selectedIds
      * @return
      */
-    public List<Delivery> findSelectedDeliveries(List<Long> selectedIds) {
-        // setCategoryFilter(DocumentType.getPluralString(DocumentType.DELIVERY) + "/" + DataSetDocument.getStringHASNOINVOICE());
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Delivery> criteria = cb.createQuery(Delivery.class);
-        Root<Delivery> root = criteria.from(Delivery.class);
-        CriteriaQuery<Delivery> cq = criteria.where(
-                cb.and(
-                        cb.isNull(root.get(Delivery_.invoiceReference)),
-                        root.get(Delivery_.id).in(selectedIds)
-                       )
-                );
-        return getEntityManager().createQuery(cq).getResultList();
+	public List<Delivery> findSelectedDeliveries(List<Long> selectedIds) {
+		// setCategoryFilter(DocumentType.getPluralString(DocumentType.DELIVERY)
+		// + "/" + DataSetDocument.getStringHASNOINVOICE());
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Delivery> criteria = cb.createQuery(Delivery.class);
+		Root<Delivery> root = criteria.from(Delivery.class);
+		CriteriaQuery<Delivery> cq;
+		Predicate baseClause = cb.and(cb.equal(root.<BillingType> get(Document_.billingType), BillingType.DELIVERY),
+				cb.isNull(root.get(Delivery_.invoiceReference)),
+				cb.equal(root.<Boolean> get(Document_.deleted), false));
+		if (selectedIds != null) {
+			cq = criteria.where(cb.and(baseClause, root.get(Delivery_.id).in(selectedIds)));
+		} else {
+			cq = criteria.where(baseClause);
+		}
+
+		return getEntityManager().createQuery(cq).getResultList();
+	}
+    
+    /**
+     * Finds all {@link Delivery} documents without an invoice (should be used for
+     * {@link SelectDeliveryNoteDialog}). 
+     * 
+     * @return List of {@link Delivery} documents
+     */
+    public List<Delivery> findAllDeliveriesWithoutInvoice() {
+    	return findSelectedDeliveries(null);
     }
 
     /**

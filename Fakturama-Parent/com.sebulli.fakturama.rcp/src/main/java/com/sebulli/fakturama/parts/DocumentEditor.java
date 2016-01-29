@@ -102,6 +102,8 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dialogs.SelectContactDialog;
+import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
+import com.sebulli.fakturama.dialogs.SelectTextDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -142,6 +144,8 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
+import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 
 
@@ -307,6 +311,7 @@ public class DocumentEditor extends Editor<Document> {
     private CurrencyUnit currencyUnit;
     private DocumentSummary documentSummary;
     private ContactUtil contactUtil;
+	private Text selectedMessageField;
 	
 //	/**
 //	 * Constructor
@@ -1799,14 +1804,26 @@ public class DocumentEditor extends Editor<Document> {
 
 			// Open the text dialog and select a text
 			public void mouseDown(MouseEvent e) {
-                MTrimmedWindow dialog = (MTrimmedWindow) modelService.find("fakturama.dialog.select.text", application);
-                dialog = (MTrimmedWindow) modelService.cloneElement(dialog, (MSnippetContainer) modelService.find("com.sebulli.fakturama.application", application));
-                dialog.setToBeRendered(true);
-                dialog.setVisible(true);
-                dialog.setOnTop(true);
-                dialog.getTransientData().put(DOCUMENT_ID, document.getName());
-                modelService.bringToTop(dialog);
+//                MTrimmedWindow dialog = (MTrimmedWindow) modelService.find("fakturama.dialog.select.text", application);
+//                dialog = (MTrimmedWindow) modelService.cloneElement(dialog, (MSnippetContainer) modelService.find("com.sebulli.fakturama.application", application));
+//                dialog.setToBeRendered(true);
+//                dialog.setVisible(true);
+//                dialog.setOnTop(true);
+//                dialog.getTransientData().put(DOCUMENT_ID, document.getName());
+//                modelService.bringToTop(dialog);
+				
+                
+                selectedMessageField = txtMessage;
 
+                if (txtMessage2 != null && txtMessage2.isFocusControl())
+                  selectedMessageField = txtMessage2;
+                if (txtMessage3 != null && txtMessage3.isFocusControl())
+                  selectedMessageField = txtMessage3;
+			
+			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
+			    context.set(ESelectionService.class, selectionService);
+			    SelectTextDialog dlg = ContextInjectionFactory.make(SelectTextDialog.class, context);
+			    dlg.open();
                 // handling of adding a new list item is done via event handling in DocumentEditor
 			}
 		});
@@ -2374,14 +2391,14 @@ public class DocumentEditor extends Editor<Document> {
                 // select a product (for an item entry)
                 // Get the array list of all selected elements
                 @SuppressWarnings("unchecked")
-                List<Long> selectedIds = (List<Long>)event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
+                List<Long> selectedIds = (List<Long>)event.getProperty(ProductListTable.SELECTED_PRODUCT_ID);
                 List<Product> selectedProducts = productsDAO.findSelectedProducts(selectedIds);
                 addItemsToItemList(selectedProducts);
                 break;
             case "Delivery":
                 // select a delivery note for creating a collective invoice 
                 @SuppressWarnings("unchecked")
-                List<Delivery> selectedDeliveries = documentsDAO.findSelectedDeliveries((List<Long>)event.getProperty(ContactListTable.SELECTED_CONTACT_ID));
+                List<Delivery> selectedDeliveries = documentsDAO.findSelectedDeliveries((List<Long>)event.getProperty(DocumentsListTable.SELECTED_DELIVERY_ID));
                 // Get the array list of all selected elements
                 for (Delivery deliveryNote : selectedDeliveries) {
                             // Get all items by ID from the item string
@@ -2430,15 +2447,8 @@ public class DocumentEditor extends Editor<Document> {
                 Long textModuleId = (Long) event.getProperty(TextListTable.SELECTED_TEXT_ID);
               TextModule text = textsDAO.findById(textModuleId);
                   
-                  // Get the message field with the focus
-                  Text selectedMessageField = txtMessage;
-
-                  if (txtMessage2 != null && txtMessage2.isFocusControl())
-                    selectedMessageField = txtMessage2;
-                  if (txtMessage3 != null && txtMessage3.isFocusControl())
-                    selectedMessageField = txtMessage3;
-                  
-                  // Insert the selected text in the message text
+              // Insert the selected text in the message text (selected widget is set in the calling method)
+              // look at addMessageButton
                   if (text != null && selectedMessageField != null) {
                       int begin = selectedMessageField.getSelection().x;
                       int end = selectedMessageField.getSelection().y;
