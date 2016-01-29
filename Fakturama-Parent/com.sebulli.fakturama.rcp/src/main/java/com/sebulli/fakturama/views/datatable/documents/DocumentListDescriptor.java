@@ -24,13 +24,13 @@ import com.sebulli.fakturama.model.Document_;
      */
     public enum DocumentListDescriptor {
 
-        ICON("$documenttype", null, 0, 20), 
-        DOCUMENT(Document_.name.getName(), "common.field.document", 1, 80), 
-        DATE(Document_.serviceDate.getName(), "common.field.date", 2, 80), 
-        NAME(Document_.addressFirstLine.getName(), "common.field.name", 3, 200), 
-        STATE("$status", "common.field.state", 4, 100),
-        TOTAL(Document_.totalValue.getName(), "common.field.total", 5, 70),
-        PRINTED("$printed", "common.field.printed", 6, 60),
+        ICON("$documenttype", null, 0, 5), 
+        DOCUMENT(Document_.name.getName(), "common.field.document", 1, 10), 
+        DATE(Document_.serviceDate.getName(), "common.field.date", 2, 10), 
+        NAME(Document_.addressFirstLine.getName(), "common.field.name", 3, 40), 
+        STATE("$status", "common.field.state", 4, 10),
+        TOTAL(Document_.totalValue.getName(), "common.field.total", 5, 20),
+        PRINTED("$printed", "common.field.printed", 6, 5),
         ;
 
         private String propertyName, messageKey;

@@ -213,7 +213,7 @@ public class WebShopImportManager implements IWebshopConnection {
 			return;
 
 		try (Writer writer = new FileWriter(generalWorkspace + "/orders2sync.txt")) {
-			getOrderstosynchronize().store(writer, "OrdersNotInSyncWithWebshop");
+			getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -253,8 +253,7 @@ public class WebShopImportManager implements IWebshopConnection {
 		//Replace the "=" by "&equal;
 		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%3D", "%26equal%3B");
 		
-		if (notify)
-			value += "*" + comment;
+		if (notify)	value += "*" + comment;
 
 		getOrderstosynchronize().setProperty(orderId, value);
 		saveOrdersToSynchronize();
@@ -271,7 +270,8 @@ public class WebShopImportManager implements IWebshopConnection {
         try (Reader reader = new FileReader(generalWorkspace + "/orders2sync.txt")) {
             getOrderstosynchronize().load(reader);
         } catch (FileNotFoundException fnex) {
-            getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
+            //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
+        	// it's not really important...
         } catch (IOException e) {
             getLog().error(e);
         }

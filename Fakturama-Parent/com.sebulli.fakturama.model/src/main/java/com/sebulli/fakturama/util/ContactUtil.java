@@ -315,7 +315,7 @@ public class ContactUtil {
 								addressZIP = matcher.group();
 
 								// and the city
-								addressCity = line.substring(matcher.end()+1).trim();
+								addressCity = line.length() > 5 ? line.substring(matcher.end()+1).trim() : "";
 								
 							}
 							cityFound = true;

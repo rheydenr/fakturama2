@@ -15,6 +15,7 @@ package com.sebulli.fakturama.dao;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.eclipse.persistence.config.BatchWriting;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -53,6 +56,10 @@ public abstract class AbstractDAO<T> {
     private ILogger log;
     
     protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
+    
+    public T save(T object) throws FakturamaStoringException {
+    	return save(object, false);
+    }
 
     /**
      * Persists the given object.
@@ -61,7 +68,7 @@ public abstract class AbstractDAO<T> {
      * @return the persisted object
      * @throws SQLException if an error is occurred
      */
-    public T save(T object) throws FakturamaStoringException {
+    public T save(T object, boolean withBatch) throws FakturamaStoringException {
         
 /*
  * BESSER: 
@@ -107,11 +114,17 @@ em.joinTransaction();
         
 		try {
 			checkConnection();
-			EntityTransaction trx = getEntityManager().getTransaction();
+			EntityManager entityManager = getEntityManager();
+			EntityTransaction trx = entityManager.getTransaction();
 			trx.begin();
 			// merge before persist since we could have referenced entities
 			// which are already persisted
-			object = getEntityManager().merge(object);
+			entityManager = getEntityManager();
+			if(withBatch) {
+				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
+				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
+			}
+			object = entityManager.merge(object);
 			getEntityManager().persist(object);
 			trx.commit();
 		} catch (SQLException e) {
@@ -265,6 +278,7 @@ em.joinTransaction();
 
         List<T> resultList = getEntityManager().createQuery(select).getResultList();
         if (resultList.isEmpty()) {
+        	((IEntity)object).setValidFrom(new Date());
             retval = save(object);
         }
         else {

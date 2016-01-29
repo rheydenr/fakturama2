@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -20,10 +22,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -36,6 +36,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.handlers.ReorganizeDocuments;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.MigrationManager;
@@ -93,9 +95,6 @@ public class ConfigurationManager {
     /**
 	 * Checks if the application was started the first time or if the workspace
 	 * has changed.
-	 * 
-	 * @param cmdService {@link ECommandService} for creating commands
-	 * @param handlerService {@link EHandlerService} for executing commands
 	 * 
 	 */
 	public void checkAndUpdateConfiguration() {
@@ -170,6 +169,7 @@ public class ConfigurationManager {
 					// now check if an old database has to be converted
 					context.set(IEclipsePreferences.class, eclipsePrefs);
 					if (eclipsePrefs.get(MIGRATE_OLD_DATA, null) != null) {
+						
 					    MigrationManager migMan = ContextInjectionFactory.make(MigrationManager.class, context);
 						migMan.migrateOldData(shell);
 	                    eclipsePrefs.remove(MIGRATE_OLD_DATA);
@@ -252,6 +252,16 @@ public class ConfigurationManager {
 	 * 
 	 */
 	private void initWorkspace(String requestedWorkspace) {
+		/*
+			
+			// now we have to update the file paths of the stored documents
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put(ReorganizeDocuments.RUN_REORGANIZE_SILENTLY, Boolean.TRUE.toString());
+            ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_REORGANIZE_DOCUMENTS, parameters);
+            if (handlerService.canExecute(pCmd)) {
+                handlerService.executeHandler(pCmd);
+            }
+		 */
 		resourceManager.createWorkspaceTemplates(requestedWorkspace, context);
 	}
 

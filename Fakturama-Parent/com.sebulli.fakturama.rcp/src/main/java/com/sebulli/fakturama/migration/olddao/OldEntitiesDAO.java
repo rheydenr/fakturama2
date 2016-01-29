@@ -12,7 +12,9 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.oldmodel.OldContacts;
@@ -65,11 +67,13 @@ public class OldEntitiesDAO {
 	 */
 	public List<OldContacts> findAllContacts() {
 		// Use only the undeleted entries
-		return em.createQuery("select c from OldContacts c where c.deleted = false", OldContacts.class).getResultList();
+		return em.createQuery("select c from OldContacts c where c.deleted = false", OldContacts.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	public Long countAllContacts() {
-		return em.createQuery("select count(c) from OldContacts c where c.deleted = false", Long.class).getSingleResult();
+		return em.createQuery("select count(c) from OldContacts c where c.deleted = false", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 
 	/**
@@ -88,7 +92,8 @@ public class OldEntitiesDAO {
 	 * @return list of all categories
 	 */
 	public List<String> findAllContactCategories() {
-		List<String> result = em.createQuery("select distinct c.category from OldContacts c where c.deleted = false and c.category <> ''", String.class).getResultList();
+		List<String> result = em.createQuery("select distinct c.category from OldContacts c where c.deleted = false and c.category <> ''", String.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 		return result;
 	}
 
@@ -96,11 +101,13 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [Properties] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllProperties() {
-		return em.createQuery("select count(p) from OldProperties p", Long.class).getSingleResult();
+		return em.createQuery("select count(p) from OldProperties p", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldProperties> findAllProperties() {
-		return em.createQuery("select p from OldProperties p", OldProperties.class).getResultList();
+		return em.createQuery("select p from OldProperties p", OldProperties.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	public OldProperties findPropertyById(int id) {
@@ -108,22 +115,27 @@ public class OldEntitiesDAO {
 	}
 	
 	public List<OldProperties> findAllPropertiesWithoutColumnWidthProperties() {
-	    return em.createQuery("select p from OldProperties p where p.name not like 'COLUMNWIDTH_%' order by p.name", OldProperties.class).getResultList();
+	    return em.createQuery("select p from OldProperties p where p.name not like 'COLUMNWIDTH_%' order by p.name", OldProperties.class)
+	    		.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	public List<OldProperties> findAllColumnWidthProperties() {
-	    return em.createQuery("select p from OldProperties p where p.name like 'COLUMNWIDTH_%' order by p.name", OldProperties.class).getResultList();
+		em.setProperty("eclipselink.read-only", true);
+	    return em.createQuery("select p from OldProperties p where p.name like 'COLUMNWIDTH_%' order by p.name", OldProperties.class)
+	    		.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	
 	/* * * * * * * * * * * * * * * * * * [Shippings] * * * * * * * * * * * * * * * * * * * * * */ 
 	
 	public Long countAllShippings() {// where s.deleted = false
-		return em.createQuery("select count(s) from OldShippings s", Long.class).getSingleResult();
+		return em.createQuery("select count(s) from OldShippings s", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldShippings> findAllShippings() { // where s.deleted = false
-		return em.createQuery("select s from OldShippings s", OldShippings.class).getResultList();
+		return em.createQuery("select s from OldShippings s", OldShippings.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
     /**
@@ -132,7 +144,8 @@ public class OldEntitiesDAO {
      * @return List of Strings with all old Shipping categories
      */
 	public List<String> findAllShippingCategories() {
-		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and s.category <> ''", String.class).getResultList();
+		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and s.category <> ''", String.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	public OldShippings findShippingById(int shippingId) {
@@ -141,11 +154,13 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [VATs] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllVats() {// where v.deleted = false
-		return em.createQuery("select count(v) from OldVats v", Long.class).getSingleResult();
+		return em.createQuery("select count(v) from OldVats v", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldVats> findAllVats() {// where v.deleted = false
-		return em.createQuery("select v from OldVats v", OldVats.class).getResultList();
+		return em.createQuery("select v from OldVats v", OldVats.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 	/**
@@ -154,7 +169,8 @@ public class OldEntitiesDAO {
 	 * @return List of Strings with all old VAT categories
 	 */
 	public List<String> findAllVatCategories() {
-		return em.createQuery("select distinct v.category from OldVats v where v.deleted = false and v.category <> ''", String.class).getResultList();
+		return em.createQuery("select distinct v.category from OldVats v where v.deleted = false and v.category <> ''", String.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 	public OldVats findVatById(int vatid) {
@@ -164,12 +180,14 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [Lists] * * * * * * * * * * * * * * * * * * * * * */ 
 	
 	public Long countAllLists() {
-		return em.createQuery("select count(l) from OldList l where l.deleted = false", Long.class).getSingleResult();
+		return em.createQuery("select count(l) from OldList l where l.deleted = false", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldList> findAllCountryCodes() {
 		// SELECT * FROM "PUBLIC"."LIST" where category like 'country%' order by value, name
-		return em.createQuery("select l from OldList l where l.deleted = false and l.category like 'country%' order by l.value, l.id", OldList.class).getResultList();
+		return em.createQuery("select l from OldList l where l.deleted = false and l.category like 'country%' order by l.value, l.id", OldList.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	/**
@@ -186,31 +204,36 @@ public class OldEntitiesDAO {
 	 */
 	public List<OldList> findAllAccounts() {
 		return em.createQuery("select a from OldList a where a.category = 'billing_accounts'", 
-		        OldList.class).getResultList();
+		        OldList.class).setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	/* * * * * * * * * * * * * * * * * * [Texts] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllTexts() {
-		return em.createQuery("select count(t) from OldTexts t where t.deleted = false", Long.class).getSingleResult();
+		return em.createQuery("select count(t) from OldTexts t where t.deleted = false", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldTexts> findAllTexts() {
-		return em.createQuery("select t from OldTexts t where t.deleted = false", OldTexts.class).getResultList();
+		return em.createQuery("select t from OldTexts t where t.deleted = false", OldTexts.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 	public List<String> findAllTextCategories() {
-		return em.createQuery("select distinct t.category from OldTexts t where t.deleted = false and t.category <> ''", String.class).getResultList();
+		return em.createQuery("select distinct t.category from OldTexts t where t.deleted = false and t.category <> ''", String.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 
 	/* * * * * * * * * * * * * * * * * * [Documents section] * * * * * * * * * * * * * * * * * * * * * */ 
 	public Long countAllDocuments() {
-		return em.createQuery("select count(d) from OldDocuments d where d.deleted = false", Long.class).getSingleResult();
+		return em.createQuery("select count(d) from OldDocuments d where d.deleted = false", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldDocuments> findAllDocuments() {
-		return em.createQuery("select d from OldDocuments d where d.deleted = false", OldDocuments.class).getResultList();
+		return em.createQuery("select d from OldDocuments d where d.deleted = false", OldDocuments.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 	// there are no categories...
@@ -220,7 +243,8 @@ public class OldEntitiesDAO {
 	 * @return
 	 */
 	public List<OldDocuments> findAllInvoiceRelatedDocuments() {
-		return em.createQuery("select d from OldDocuments d where d.deleted = false and d.invoiceid >= 0 and d.invoiceid <> d.id ", OldDocuments.class).getResultList();
+		return em.createQuery("select d from OldDocuments d where d.deleted = false and d.invoiceid >= 0 and d.invoiceid <> d.id ", OldDocuments.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 
 	/**
@@ -229,7 +253,7 @@ public class OldEntitiesDAO {
 	 */
 	public OldDocuments findDocumentById(int id) {
 		TypedQuery<OldDocuments> query = em.createQuery("select d from OldDocuments d where d.id = :id ", OldDocuments.class);
-		query.setParameter("id", id);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE).setParameter("id", id);
 		return query.getSingleResult();
 	}
 
@@ -237,7 +261,7 @@ public class OldEntitiesDAO {
 
 	public OldItems findDocumentItem(int id) {
 		TypedQuery<OldItems> query = em.createQuery("select oi from OldItems oi where oi.id = :id ", OldItems.class);
-		query.setParameter("id", id);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE).setParameter("id", id);
 		return query.getSingleResult();
 	}
 	
@@ -249,7 +273,8 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [Payments section] * * * * * * * * * * * * * * * * * * * * * */ 
 
 	public Long countAllPayments() {// where p.deleted = false
-		return em.createQuery("select count(p) from OldPayments p", Long.class).getSingleResult();
+		return em.createQuery("select count(p) from OldPayments p", Long.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
 	public List<OldPayments> findAllPayments() {// where p.deleted = false

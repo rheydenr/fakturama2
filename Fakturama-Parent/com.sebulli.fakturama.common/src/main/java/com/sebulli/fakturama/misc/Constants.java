@@ -491,5 +491,6 @@ public class Constants {
 	public static final String COMMAND_SELECTITEM = "com.sebulli.fakturama.command.selectitem";
 
 	public static final int RC_OK = 0;
-    
+
+	public static final String WEBSHOP_NAMESPACE = "http://www.fakturama.org";
 }

@@ -1,7 +1,8 @@
 
 <xs:schema attributeFormDefault="unqualified"
-	elementFormDefault="qualified" targetNamespace="http://www.fakturama.org"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fkt="http://www.fakturama.org">
+		elementFormDefault="qualified" targetNamespace="http://www.fakturama.org"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fkt="http://www.fakturama.org">
+
 	<xs:element name="webshopexport">
 		<xs:complexType>
 			<xs:sequence>
@@ -9,47 +10,50 @@
 				<xs:element name="webshop" type="fkt:WebshopType" />
 				<xs:element type="xs:string" name="complete_version"/>
 				<xs:element name="products" maxOccurs="1" minOccurs="0"
-					type="fkt:ProductsType" />
+						type="fkt:ProductsType" />
 				<xs:element name="orders" maxOccurs="1" minOccurs="0"
-					type="fkt:OrdersType" />
+						type="fkt:OrdersType" /> 
 				<xs:element type="xs:string" name="error" minOccurs="0" />
-		        <xs:element type="fkt:StatusListType" name="status_list" />
+				<xs:element type="fkt:StatusListType" name="status_list" />
 			</xs:sequence>
 			<xs:attribute type="xs:string" name="version" />
 		</xs:complexType>
 	</xs:element>
-	
-	      <xs:complexType name="StatusListType">
-            <xs:sequence>
-              <xs:element type="fkt:StatusType" name="status" maxOccurs="unbounded" minOccurs="0">
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-	
-	                <xs:complexType name="StatusType">
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="id"/>
-                      <xs:attribute type="xs:string" name="name"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-	
+
+	<xs:complexType name="StatusListType">
+		<xs:sequence>
+			<xs:element type="fkt:StatusType" name="status" maxOccurs="unbounded" minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="StatusType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="id"/>
+				<xs:attribute type="xs:string" name="name"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
 
 	<xs:complexType name="OrdersType">
 		<xs:sequence>
-			<xs:element name="order" maxOccurs="unbounded"
-				minOccurs="0" type="fkt:OrderType" />
+			<xs:element ref="fkt:order" maxOccurs="unbounded"
+					minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:element name="product" type="fkt:ProductType"/>
+	<xs:element name="order"   type="fkt:OrderType" />
 
 	<xs:complexType name="OrderType">
 		<xs:sequence>
 			<xs:element name="contact" type="fkt:ContactType" />
 			<xs:element name="comments" type="fkt:CommentType"
-				minOccurs="0" maxOccurs="unbounded" />
+					minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="item" type="fkt:ItemType" maxOccurs="unbounded"
-				minOccurs="0" />
+					minOccurs="0" />
 			<xs:element name="shipping" type="fkt:ShippingType" />
 			<xs:element name="payment" type="fkt:PaymentType" />
 		</xs:sequence>
@@ -106,7 +110,7 @@
 			<xs:element type="xs:string" name="qunit" />
 			<xs:element type="xs:string" name="vatname" />
 			<xs:element type="fkt:AttributeType" name="attribute"
-				maxOccurs="unbounded" minOccurs="0" />
+					maxOccurs="unbounded" minOccurs="0" />
 			<xs:element type="xs:string" name="short_description" />
 			<xs:element type="xs:string" name="image" />
 		</xs:sequence>
@@ -146,8 +150,8 @@
 
 	<xs:complexType name="ProductsType">
 		<xs:sequence>
-			<xs:element name="product" maxOccurs="unbounded"
-				minOccurs="0" type="fkt:ProductType" />
+			<xs:element ref="fkt:product" maxOccurs="unbounded"
+					minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute type="xs:string" name="imagepath" />
 	</xs:complexType>

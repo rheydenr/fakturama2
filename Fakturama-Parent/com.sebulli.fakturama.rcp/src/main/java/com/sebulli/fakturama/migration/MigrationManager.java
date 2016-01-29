@@ -169,12 +169,6 @@ public class MigrationManager {
 
 	@Inject
 	private IEclipsePreferences eclipsePrefs;
-	
-	@Inject
-	private EHandlerService handlerService;
-
-    @Inject
-    private ECommandService commandService;
 
 // this doesn't work because the IPreferenceStore isn't set at this stage
 //	@Inject
@@ -256,7 +250,6 @@ public class MigrationManager {
  //   @Inject
 	private OldEntitiesDAO oldDao;
 
-	
 	@Inject
 	private IApplicationContext appContext;
 
@@ -266,6 +259,11 @@ public class MigrationManager {
     private Map<String, ItemAccountType> itemAccountTypes;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    /**
+     * 
+	 * @param cmdService {@link ECommandService} for creating commands
+	 * @param handlerService {@link EHandlerService} for executing commands
+     */
     @PostConstruct
     public void init() {
         this.zeroDate = new GregorianCalendar(2000, 0, 1);
@@ -342,14 +340,6 @@ public class MigrationManager {
 				}
 			};
 			progressMonitorDialog.run(true, true, op);
-			
-			// now we have to update the file paths of the stored documents
-			Map<String, Object> parameters = new HashMap<>();
-			parameters.put(ReorganizeDocuments.RUN_REORGANIZE_SILENTLY, Boolean.TRUE.toString());
-            ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_REORGANIZE_DOCUMENTS, parameters);
-            if (handlerService.canExecute(pCmd)) {
-                handlerService.executeHandler(pCmd);
-            }
 		}
 		catch (InvocationTargetException e) {
 			log.error("Fehler: ", e.getMessage());
@@ -510,8 +500,9 @@ public class MigrationManager {
 				}
 				product.setWebshopId(new Long(oldProduct.getWebshopid()));
 				product.setWeight(oldProduct.getWeight());
+				product.setValidFrom(new Date());
 				
-				product = productsDAO.save(product);
+				product = productsDAO.save(product, true);
 				newProducts.put(oldProduct.getId(), product.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -704,7 +695,7 @@ public class MigrationManager {
                 document.setShippingAutoVat(ShippingVatType.get(oldDocument.getShippingautovat()));
                 document.setShippingValue(oldDocument.getShipping());
 
-                document = documentDAO.save(document);
+                document = documentDAO.save(document, true);
                 // store the pair for later processing
                 // if the old Document has an InvoiceId and that ID is the same as the Document's ID
                 // then we have to store it for further processing.
@@ -738,7 +729,7 @@ public class MigrationManager {
 				Invoice relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
 					document.setInvoiceReference(relatedDocument);
-					documentDAO.save(document);
+					documentDAO.save(document, true);
 				}
 			}
 			catch (FakturamaStoringException e) {
@@ -798,6 +789,9 @@ public class MigrationManager {
 	}
 
 	private byte[] createImageFromFile(String picturename) {
+
+		if(picturename.isEmpty()) return null;
+		
 		byte[] buffer = null;
 		String oldWorkspace = eclipsePrefs.get(
 				ConfigurationManager.MIGRATE_OLD_DATA, null);
@@ -839,6 +833,7 @@ public class MigrationManager {
                     bankAccount.setBankName(oldContact.getBankName());
                     bankAccount.setIban(oldContact.getIban());
                     bankAccount.setBic(oldContact.getBic());
+                    bankAccount.setValidFrom(new Date());
                     contact.setBankAccount(bankAccount);
                 }
 				contact.setBirthday(getSaveParsedDate(oldContact.getBirthday()));
@@ -872,7 +867,7 @@ public class MigrationManager {
 				contact.setVatNumberValid(BooleanUtils.toBooleanObject(oldContact.getVatnrvalid()));
 				contact.setWebsite(oldContact.getWebsite());
 				contact.setMandateReference(oldContact.getMandatRef());
-				contact = contactDAO.save(contact);
+				contact = contactDAO.save(contact, true);
 				
 				// store it for further using (only ID for memory saving)
 				newContacts.put(oldContact.getId(), contact.getId());
@@ -914,12 +909,14 @@ public class MigrationManager {
 			contact.setGender(isDeliveryAddress ? oldContact.getDeliveryGender() : oldContact.getGender());
 			contact.setName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName()));
 			contact.setTitle(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryTitle(), oldContact.getTitle()));
+			contact.setValidFrom(new Date());
 			
 			// create address
 			Address address = modelFactory.createAddress();
 			address.setStreet(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryStreet(), oldContact.getStreet()));
 			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
+			address.setValidFrom(new Date());
 			// we don't have a CountryCode table :-(, therefore we have to look up in Locale classes
 			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
 			Optional<Locale> locale = contactUtil.determineCountryCode(country);
@@ -990,6 +987,7 @@ public class MigrationManager {
 						item.setPrice(oldReceiptvoucherItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
 						item.setVat(newVat);
+						item.setValidFrom(new Date());
 //						receiptVoucher.addToItems(item);
 						receiptVoucher.getItems().add(item);
 					}
@@ -997,7 +995,8 @@ public class MigrationManager {
 				receiptVoucher.setName(oldReceiptvoucher.getName());
 				receiptVoucher.setPaidValue(oldReceiptvoucher.getPaid());
 				receiptVoucher.setTotalValue(oldReceiptvoucher.getTotal());
-				receiptVouchersDAO.save(receiptVoucher);
+				receiptVoucher.setValidFrom(new Date());
+				receiptVouchersDAO.save(receiptVoucher, true);
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
@@ -1027,6 +1026,7 @@ public class MigrationManager {
 				expenditure.setDiscounted(oldExpenditure.isDiscounted());
 				expenditure.setDocumentNumber(oldExpenditure.getDocumentnr());
 				expenditure.setDoNotBook(oldExpenditure.isDonotbook());
+				expenditure.setValidFrom(new Date());
 				if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
 				    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
 					expenditure.setVoucherDate(expenditureDate);
@@ -1042,6 +1042,7 @@ public class MigrationManager {
 						item.setDeleted(oldExpenditureItem.isDeleted());
 						item.setName(oldExpenditureItem.getName());
 						item.setPrice(oldExpenditureItem.getPrice());
+						item.setValidFrom(new Date());
 						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
 						item.setVat(newVat);
 						expenditure.addToItems(item);
@@ -1050,7 +1051,7 @@ public class MigrationManager {
 				expenditure.setName(oldExpenditure.getName());
 				expenditure.setPaidValue(oldExpenditure.getPaid());
 				expenditure.setTotalValue(oldExpenditure.getTotal());
-				expendituresDAO.save(expenditure);
+				expendituresDAO.save(expenditure, true);
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
@@ -1084,6 +1085,7 @@ public class MigrationManager {
 		    itemAccountType.setName(oldVoucherItemCategory.getName());
 		    itemAccountType.setValue(oldVoucherItemCategory.getValue());
 		    itemAccountType.setDeleted(oldVoucherItemCategory.isDeleted());
+		    itemAccountType.setValidFrom(new Date());
 		    itemAccountType.setCategory(cat);
 				itemAccountType = itemAccountTypeDAO.findOrCreate(itemAccountType);
 		    // Only the name is usable for an identification because the category 
@@ -1128,11 +1130,12 @@ public class MigrationManager {
 				payment.setDiscountValue(oldPayment.getDiscountvalue());
 				payment.setDescription(oldPayment.getDescription());
 				payment.setNetDays(oldPayment.getNetdays());
+				payment.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
 					// add it to the new entity
 					payment.setCategory(voucherCategoriesDAO.getOrCreateCategory(oldPayment.getCategory(), true));
 				}
-				payment = paymentsDAO.save(payment);
+				payment = paymentsDAO.save(payment, true);
 				newPayments.put(oldPayment.getId(), payment.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -1163,12 +1166,13 @@ public class MigrationManager {
 				text.setName(oldTexts.getName());
 				text.setText(oldTexts.getText());
 				text.setDeleted(Boolean.FALSE);
+				text.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldTexts.getCategory()) && textCategoriesMap.containsKey(oldTexts.getCategory())) {
 					// add it to the new entity
 //					text.addToCategories(textCategoriesMap.get(oldTexts.getCategory()));
 					text.setCategories(textCategoriesMap.get(oldTexts.getCategory()));
 				}
-				textDAO.save(text);
+				textDAO.save(text, true);
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
@@ -1197,12 +1201,13 @@ public class MigrationManager {
 				vat.setTaxValue(roundValue(oldVat.getValue()));
 				vat.setDeleted(oldVat.isDeleted()); // sometimes we need deleted entries (for some items)
 				vat.setDescription(oldVat.getDescription());
+				vat.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
 				    // get VatCategory from DAO since it may not be stored
 					vat.setCategory(vatCategoriesDAO.getOrCreateCategory(oldVat.getCategory(), true));
 				}
-				vat = vatsDAO.save(vat);
+				vat = vatsDAO.save(vat, true);
 				// use a HashMap as a simple cache
 				newVats.put(oldVat.getId(), vat.getId());
 				subProgressMonitor.worked(1);
@@ -1235,6 +1240,7 @@ public class MigrationManager {
 				shipping.setDeleted(oldShipping.isDeleted());  // sometimes we need deleted entries (for some items)
 				shipping.setAutoVat(ShippingVatType.get(oldShipping.getAutovat()));
 				shipping.setDescription(oldShipping.getDescription());
+				shipping.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldShipping.getCategory()) && shippingCategoriesMap.containsKey(oldShipping.getCategory())) {
 					// add it to the new entity
 //					shipping.addToCategories(shippingCategoriesMap.get(oldShipping.getCategory()));
@@ -1243,7 +1249,7 @@ public class MigrationManager {
 				
 				VAT newVat = vatsDAO.findById(newVats.get(oldShipping.getVatid()));
 				shipping.setShippingVat(newVat);
-				shipping = shippingsDAO.save(shipping);
+				shipping = shippingsDAO.save(shipping, true);
 				newShippings.put(oldShipping.getId(), shipping.getId());
 				subProgressMonitor.worked(1);
 			}
@@ -1331,16 +1337,16 @@ public class MigrationManager {
                     propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
                     propFormatExample.setUser(currentUser);
                     propFormatExample.setValue(retval);
-                    propertiesDAO.save(propUseSymbol);
+                    propertiesDAO.save(propUseSymbol, true);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
-                    propertiesDAO.save(propFormatExample);
+                    propertiesDAO.save(propFormatExample, true);
                     eclipsePrefs.put(propFormatExample.getName(), propFormatExample.getValue());
                	break;
                 default:
                     break;
                 }
                 prop.setValue(propValue);
-                propertiesDAO.save(prop);
+                propertiesDAO.save(prop, true);
                 
                 // save the preference in preference store
 				eclipsePrefs.put(prop.getName(), prop.getValue());

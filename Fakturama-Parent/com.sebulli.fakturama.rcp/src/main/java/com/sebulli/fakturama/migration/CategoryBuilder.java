@@ -13,6 +13,7 @@
 package com.sebulli.fakturama.migration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,7 @@ public class CategoryBuilder<T extends AbstractCategory> {
 			newCategory = categoryClazz.newInstance();
 			newCategory.setName(categoryName);
 			newCategory.setParent(parentCategory);
+			newCategory.setValidFrom(new Date());
 		} catch (InstantiationException | IllegalAccessException e) {
 			log.error(e, "couldn't create new Category of type " + categoryClazz.getName());
 		}
