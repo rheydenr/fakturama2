@@ -717,6 +717,7 @@ public class Messages {
 	public String preferencesWebshopSettingsDescription;
 	public String preferencesWebshopSettingsGetallstates;
 	public String preferencesWebshopSettingsShopinfo;
+	public String preferencesWebshopSettingsStateError;
 	public String preferencesWebshopSettingsStateFakturama;
 	public String preferencesWebshopSettingsStateWebshop;
 	public String preferencesWebshopSettingsVersion;

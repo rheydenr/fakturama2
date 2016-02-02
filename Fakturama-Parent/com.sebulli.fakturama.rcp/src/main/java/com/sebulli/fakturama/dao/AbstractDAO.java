@@ -119,7 +119,6 @@ em.joinTransaction();
 			trx.begin();
 			// merge before persist since we could have referenced entities
 			// which are already persisted
-			entityManager = getEntityManager();
 			if(withBatch) {
 				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
 				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
@@ -133,19 +132,21 @@ em.joinTransaction();
 		return object;
     }
     
-    public T update(T object) throws FakturamaStoringException {
-        try {
+	public T update(T object) throws FakturamaStoringException {
+		try {
 			checkConnection();
-        EntityTransaction trx = getEntityManager().getTransaction();
-        trx.begin();
-        object = getEntityManager().merge(object);
-        getEntityManager().persist(object);
-        trx.commit();
+			EntityTransaction trx = getEntityManager().getTransaction();
+			trx.begin();
+			object = getEntityManager().merge(object);
+			
+			//getEntityManager().persist(object);
+			//getEntityManager().flush();
+			trx.commit();
 		} catch (SQLException e) {
 			throw new FakturamaStoringException("Error updating to the database.", e, object);
 		}
-       return object;
-    }
+		return object;
+	}
 
     /**
      * Inserts a new object into the database. If the object is already there only an update is performed.

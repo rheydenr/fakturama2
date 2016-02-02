@@ -16,6 +16,9 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.commands.AbstractParameterValueConverter;
+import org.eclipse.core.commands.CommandManager;
+import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -76,6 +79,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.handlers.paramconverter.LongParameterValueConverter;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
@@ -140,6 +144,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private MPart listTablePart;
 
     private Document selectedObject;
+    
+    @Inject
+    private CommandManager cmdMan;    	
 
     @Inject
     protected MessageRegistry registry;
@@ -148,6 +155,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
         this.listTablePart = listTablePart;
+        // This is for text only!!!
+        ParameterType parameterType = cmdMan.getParameterType("myParam");
+    	AbstractParameterValueConverter parameterTypeConverter = new LongParameterValueConverter();
+		parameterType.define("myParam", parameterTypeConverter);
+        // +++ END TEST +++
         
         super.createPartControl(parent, Document.class, true, ID);
 

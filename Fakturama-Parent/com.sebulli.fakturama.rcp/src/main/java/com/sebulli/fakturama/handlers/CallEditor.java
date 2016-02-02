@@ -162,21 +162,25 @@ public class CallEditor {
 	 */
 	private MPart createEditorPart(String type, IEclipseContext stackContext, MPartStack stack, String duplicate, Map<String, String> params) {
 		MPart myPart = null;
-		Collection<MPart> parts = partService.getParts();
-        if (params.get(PARAM_OBJ_ID) != null) {
-    		// at first we look for an existing Part
-            for (MPart mPart : parts) {
-    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type) && mPart.getContext() != null) {
-    				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
-    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
-    					myPart = mPart;
-    					break;
-    				}
-    			}
-    		}
-        }
+		
+		// search only if not dupliated!
+		if(!Boolean.toString(true).equals(duplicate)) {
+			Collection<MPart> parts = partService.getParts();
+	        if (params.get(PARAM_OBJ_ID) != null) {
+	    		// at first we look for an existing Part
+	            for (MPart mPart : parts) {
+	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type) && mPart.getContext() != null) {
+	    				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
+	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
+	    					myPart = mPart;
+	    					break;
+	    				}
+	    			}
+	    		}
+	        }
+		}
         
-		// if not found then we create a new one from a part descriptor
+		// if not found (or should create a duplicate) then we create a new one from a part descriptor
 		if (myPart == null) {
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);

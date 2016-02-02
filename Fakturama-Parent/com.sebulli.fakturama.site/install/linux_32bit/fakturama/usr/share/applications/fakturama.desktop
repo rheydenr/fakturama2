@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Fakturama
 Name[de]=Fakturama
-Comment=Invoicing Software - http://www.fakturama.org
-Comment[de]=Programm - http://www.fakturama.org
+Comment=Invoicing Software - http://www.fakturama.info
+Comment[de]=Programm - http://www.fakturama.info
 Exec=/usr/share/Fakturama/Fakturama
 Icon=Fakturama
 Terminal=false

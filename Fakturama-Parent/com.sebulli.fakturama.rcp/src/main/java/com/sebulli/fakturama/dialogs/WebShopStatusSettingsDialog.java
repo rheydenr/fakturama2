@@ -162,16 +162,20 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 					connectorVersion.setText(expenseObj.getVersion());
 					
 					// fill WebshopStateTreeMapper
-					List<StatusType> statusList = expenseObj.getStatusList().getStatus();
-					List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.size());
-					for (StatusType state : statusList) {
-						WebshopOrderState webshopOrderState = new WebshopOrderState(state.getId(), 
-								state.getName());
-						leftTreeInput.add(webshopOrderState);
+					if(expenseObj.getStatusList() == null) {
+						MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError, msg.preferencesWebshopSettingsStateError);
+					} else {
+						List<StatusType> statusList = expenseObj.getStatusList().getStatus();
+						List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.size());
+						for (StatusType state : statusList) {
+							WebshopOrderState webshopOrderState = new WebshopOrderState(state.getId(), 
+									state.getName());
+							leftTreeInput.add(webshopOrderState);
+						}
+						// throw away all mappings
+						mappings.clear();
+						setInputAndActivateTreeMapperWidget(leftTreeInput, true);
 					}
-					// throw away all mappings
-					mappings.clear();
-					setInputAndActivateTreeMapperWidget(leftTreeInput, true);
 				}
 			}
 		});
@@ -575,9 +579,6 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
 			MessageDialog.openError(parent.getShell(), msg.importWebshopActionError, errorMessage);
 			log.error(errorMessage);
-		} else {
-			MessageDialog.openInformation(parent.getShell(), msg.importWebshopActionLabel,
-					msg.importWebshopInfoSuccess);
 		}
 		return executionResult;
 	}

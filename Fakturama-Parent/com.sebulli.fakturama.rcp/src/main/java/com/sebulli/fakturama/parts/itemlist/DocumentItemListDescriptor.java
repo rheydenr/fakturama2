@@ -22,18 +22,18 @@ package com.sebulli.fakturama.parts.itemlist;
 public enum DocumentItemListDescriptor {
     // enums with empty property name have no counterparts in database
     // (these are calculated values)
-    POSITION("posNr", "editor.document.field.position", 0, 55), // $Row
-    OPTIONAL("optional", "common.field.optional", 1, 55),          // $Optional
-    QUANTITY("quantity", "common.field.quantity", 2, 55),
-    QUNIT("quantityUnit", "editor.document.field.qunit", 3, 70),
+    POSITION("posNr", "editor.document.field.position", 0, 5), // $Row
+    OPTIONAL("optional", "common.field.optional", 1, 5),          // $Optional
+    QUANTITY("quantity", "common.field.quantity.short", 2, 10),
+    QUNIT("quantityUnit", "editor.document.field.qunit", 3, 10),
     ITEMNUMBER("itemNumber", "product.field.itemno", 4, 20),
-    PICTURE("pictureName", "common.field.picture", 5, 50), // $ProductPictureSmall
-    NAME("name", "common.field.name", 6, 120),
-    DESCRIPTION("description", "common.field.description", 7, 200),
-    VAT("itemVat", "common.field.vat", 8, 30), // $ItemVatPercent
-    UNITPRICE("price", "common.field.unitprice", 9, 30), // was $ItemGrossPrice if $useGross is set, else "price"
-    DISCOUNT("itemRebate", "common.field.discount", 10, 20),
-    TOTALPRICE("", "common.field.price", 11, 20)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
+    PICTURE("pictureName", "common.field.picture", 5, 20), // $ProductPictureSmall
+    NAME("name", "common.field.name", 6, 0),
+    DESCRIPTION("description", "common.field.description", 7, 0),
+    VAT("itemVat", "common.field.vat", 8, 10), // $ItemVatPercent
+    UNITPRICE("price", "common.field.unitprice", 9, 10), // was $ItemGrossPrice if $useGross is set, else "price"
+    DISCOUNT("itemRebate", "common.field.discount", 10, 5),
+    TOTALPRICE("", "common.field.price", 11, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
     ;
 
     private String propertyName, messageKey;

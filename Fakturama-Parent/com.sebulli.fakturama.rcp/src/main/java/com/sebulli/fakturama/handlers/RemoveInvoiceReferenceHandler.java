@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,25 +65,24 @@ public class RemoveInvoiceReferenceHandler {
         return retval;
     }
 
-    @Execute
-    public void run() {
-        @SuppressWarnings("unchecked")
-        List<Document> uds = (List<Document>) selectionService.getSelection();
-        for (Document document : uds) {
-            try {
+	@Execute
+	public void run() {
+		@SuppressWarnings("unchecked")
+		List<Document> uds = (List<Document>) selectionService.getSelection();
+		for (Document document : uds) {
+			try {
 
-                // remove the reference
-                document.setInvoiceReference(null);
+				// remove the reference
+				document.setInvoiceReference(null);
 
-                // also in the database
-                documentsDAO.update(document);
-            }                     catch (FakturamaStoringException e) {
-                log.error(e);
-            }
+				// also in the database
+				documentsDAO.update(document);
+			} catch (FakturamaStoringException e) {
+				log.error(e);
+			}
 
-            // Refresh the table with delivery notes.
-            evtBroker.post(DocumentEditor.EDITOR_ID, "update");
-
-        }
-    }
+			// Refresh the table with delivery notes.
+			evtBroker.post(DocumentEditor.EDITOR_ID, "update");
+		}
+	}
 }

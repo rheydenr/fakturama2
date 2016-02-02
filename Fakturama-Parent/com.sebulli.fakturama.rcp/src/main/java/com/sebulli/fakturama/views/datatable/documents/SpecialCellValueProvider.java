@@ -216,7 +216,7 @@ public class SpecialCellValueProvider {
                         return Icon.COMMAND_ERROR;
                     }
                 case DELIVERY:
-                    if (rowObject.getSourceDocument() != null) { return Icon.COMMAND_INVOICE; }
+                    if (rowObject.getInvoiceReference() != null) { return Icon.COMMAND_INVOICE; }
                     break;
                 case DUNNING:
                     if (rowObject.getPayDate() != null) {

@@ -685,7 +685,7 @@ public class MigrationManager {
     				document.setPayment(newPayment);
 				}
 				document.setTotalValue(roundValue(oldDocument.getTotal()));
-				document.setTransactionId(new Long(oldDocument.getTransaction()));
+				document.setTransactionId(new Integer(oldDocument.getTransaction()));
 				document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
 				document.setWebshopId(oldDocument.getWebshopid());
 				document.setProgress(oldDocument.getProgress());

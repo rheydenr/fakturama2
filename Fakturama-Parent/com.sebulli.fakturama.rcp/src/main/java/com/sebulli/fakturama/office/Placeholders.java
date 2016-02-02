@@ -633,7 +633,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.MESSAGE1")) return document.getMessage();
 		if (key.equals("DOCUMENT.MESSAGE2")) return document.getMessage2();
 		if (key.equals("DOCUMENT.MESSAGE3")) return document.getMessage3();
-		if (key.equals("DOCUMENT.TRANSACTION")) return Optional.ofNullable(document.getTransactionId()).orElse(Long.valueOf(0)).toString();
+		if (key.equals("DOCUMENT.TRANSACTION")) return Optional.ofNullable(document.getTransactionId()).orElse(Integer.valueOf(0)).toString();
 		if (key.equals("DOCUMENT.INVOICE")) return document.getInvoiceReference() != null ? document.getInvoiceReference().getName() : "";
 		if (key.equals("DOCUMENT.WEBSHOP.ID")) return document.getWebshopId();
 		if (key.equals("DOCUMENT.WEBSHOP.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getWebshopDate());

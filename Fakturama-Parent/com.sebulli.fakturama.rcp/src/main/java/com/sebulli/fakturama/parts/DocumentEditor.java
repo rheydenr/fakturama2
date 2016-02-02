@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,12 +44,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.MSnippetContainer;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -83,6 +78,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -102,7 +98,6 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dialogs.SelectContactDialog;
-import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -117,6 +112,7 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -182,16 +178,13 @@ public class DocumentEditor extends Editor<Document> {
     protected ESelectionService selectionService;
     
     @Inject
-    private EModelService modelService;
-    
-    @Inject
     private EPartService partService;
     
 //    @Inject
 //    private EHelpService helpService;
-    
-    @Inject
-    private MApplication application;
+//    
+//    @Inject
+//    private MApplication application;
 
     @Inject
     private IEclipseContext context;
@@ -312,6 +305,7 @@ public class DocumentEditor extends Editor<Document> {
     private DocumentSummary documentSummary;
     private ContactUtil contactUtil;
 	private Text selectedMessageField;
+	private Group copyGroup;
 	
 //	/**
 //	 * Constructor
@@ -386,6 +380,7 @@ public class DocumentEditor extends Editor<Document> {
 					msg.editorDocumentErrorDocnumberNotnextfree + " " + getNextNr() + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
+					return;
 				}
 			}
 		}
@@ -419,6 +414,12 @@ public class DocumentEditor extends Editor<Document> {
             if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
+            if(document.getDeliveryContact() == null) {
+            	Debitor contact = modelFactory.createDebitor();
+            	Address address = modelFactory.createAddress();
+            	contact.setAddress(address);
+            	document.setDeliveryContact(contact);
+            }
 			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 
 			// Use the delivery address if the billing address is empty
@@ -640,7 +641,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		//Set the editor's name
 		this.part.setLabel(document.getName());
-
+		setCopyGroupEnabled(true);
+		
         // Refresh the table view of all documents
         evtBroker.post(EDITOR_ID, "update");
         
@@ -701,11 +703,17 @@ public class DocumentEditor extends Editor<Document> {
 			if (documentType == DocumentType.NONE) {
 				documentType = DocumentType.ORDER;
 			}
-			document = DocumentTypeUtil.createDocumentByType(documentType);
+			
+			// if this document should be a copy of an existing document, create it
 			if (duplicated) {
-				document.setSourceDocument(parentDoc);
+				document = copyFromSourceDocument(parentDoc, documentType);
+			} else {
+				// create a blank new document
+				document = DocumentTypeUtil.createDocumentByType(documentType);
 			}
             document.setBillingType(billingType);
+            // a new document is always dirty...
+            getMDirtyablePart().setDirty(true);
 
 			// Copy the entry "message", or reset it to ""
 			if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
@@ -729,7 +737,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			// If it's a credit or a dunning, set it to unpaid
-			if ( (documentType == DocumentType.CREDIT)|| (documentType == DocumentType.DUNNING)) {
+			if ( documentType == DocumentType.CREDIT|| documentType == DocumentType.DUNNING) {
 				document.setPaid(false);
 			}
 			
@@ -737,6 +745,7 @@ public class DocumentEditor extends Editor<Document> {
 //            part.setLabel(documentType.getNewText());
 
 			// In a new document, set some standard values
+			Date today = Calendar.getInstance().getTime();
 			if (!duplicated) {
 				// Default shipping
 				shipping = lookupDefaultShippingValue();
@@ -757,6 +766,8 @@ public class DocumentEditor extends Editor<Document> {
                 document.setPayment(payment);
 //				document.setStringValueByKey("paymentdescription", Data.INSTANCE.getPayments().getDatasetById(paymentId).getStringValueByKey("description"));
 				document.setDueDays(payment.getNetDays());
+				document.setOrderDate(today);
+				document.setServiceDate(today);
 			}
 			else {
 				payment = document.getPayment();
@@ -765,11 +776,8 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 			// set some dates
-			Date today = Calendar.getInstance().getTime();
-			document.setOrderDate(today);
 			document.setDocumentDate(today);
 //			document.setPayDate(today);
-			document.setServiceDate(today);
 //			document.setPaid(Boolean.FALSE);
 			
 			document.setNetGross(DocumentSummary.ROUND_NET_VALUES);
@@ -803,6 +811,7 @@ public class DocumentEditor extends Editor<Document> {
 		    noVatName = document.getNoVatReference().getName();
 //		    noVatDescription = document.getNoVatReference().getDescription();
 		}
+		
 		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
 		
 //		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
@@ -827,6 +836,56 @@ public class DocumentEditor extends Editor<Document> {
         }
   
         createPartControl(parent);
+	}
+
+    /**
+     * Creates a copy of the given {@link Document}.
+     * 
+     * @param parentDoc the source document
+     * @param pDocumentType
+     * @return a copy of the source document
+     */
+	private Document copyFromSourceDocument(Document parentDoc, DocumentType pDocumentType) {
+		Document retval = DocumentTypeUtil.createDocumentByType(documentType);
+		retval.setSourceDocument(parentDoc);
+		retval.setShipping(parentDoc.getShipping());
+		retval.setShippingValue(parentDoc.getShippingValue());
+		retval.setShippingAutoVat(parentDoc.getShippingAutoVat());
+		retval.setPayment(parentDoc.getPayment());
+		retval.setTotalValue(parentDoc.getTotalValue());
+		retval.setPaidValue(parentDoc.getPaidValue());
+		retval.setPaid(parentDoc.getPaid());
+		retval.setPayDate(parentDoc.getPayDate());
+		retval.setTransactionId(parentDoc.getTransactionId());
+		retval.setDueDays(parentDoc.getDueDays());
+		retval.setDeposit(parentDoc.getDeposit());
+		retval.setBillingContact(parentDoc.getBillingContact());
+		retval.setDeliveryContact(parentDoc.getDeliveryContact());
+		retval.setAddressFirstLine(parentDoc.getAddressFirstLine());
+		retval.setCustomerRef(parentDoc.getCustomerRef());
+		retval.setConsultant(parentDoc.getConsultant());
+		retval.setServiceDate(parentDoc.getServiceDate());
+		retval.setOrderDate(parentDoc.getOrderDate());
+		if(parentDoc.getBillingType() == BillingType.INVOICE) {
+			retval.setInvoiceReference((Invoice) parentDoc);
+		}
+
+		// copy items
+		for (DocumentItem item : parentDoc.getItems()) {
+			DocumentItem newItem = modelFactory.createDocumentItem();
+			// ok, looks a bit odd, but I've generated a (very simple!) copy method which
+			// returns a new object. TODO refactor the generation method (see Template!)
+			newItem = item.clone();
+			retval.addToItems(newItem);
+		}
+		retval.setItemsRebate(parentDoc.getItemsRebate());
+		
+		retval.setNoVatReference(parentDoc.getNoVatReference());
+		retval.setNetGross(parentDoc.getNetGross());
+		retval.setMessage(parentDoc.getMessage());
+		retval.setMessage2(parentDoc.getMessage2());
+		retval.setMessage3(parentDoc.getMessage3());
+		return retval;
 	}
 
 	/**
@@ -1638,9 +1697,7 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-		// Group with tool bar with buttons to generate
-		// a new document from this document
-		Group copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
+		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.
@@ -1650,6 +1707,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Toolbar
         createCopyToolbar(copyGroup);
+        if(document.getId() == 0) {
+        	setCopyGroupEnabled(false);
+        }
 		
 		// Composite that contains the address label and the address icon
 		Composite addressComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
@@ -1709,6 +1769,7 @@ public class DocumentEditor extends Editor<Document> {
 				// Open a new Contact Editor 
                 Map<String, Object> params = new HashMap<>();
                 params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
+                // since we need a reference to the document where the address has to put in :-)
                 params.put(CallEditor.PARAM_CALLING_DOC, document.getName());
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
@@ -1726,9 +1787,9 @@ public class DocumentEditor extends Editor<Document> {
 		// The address field
 		txtAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		if (documentType == DocumentType.DELIVERY) {
-			txtAddress.setText(contactUtil.getAddressAsString(document.getDeliveryContact()));
+			txtAddress.setText(contactUtil.getAddressAsString(document.getDeliveryContact() != null ? document.getDeliveryContact() : document.getBillingContact()));
 		} else {
-			txtAddress.setText(contactUtil.getAddressAsString(document.getBillingContact()));
+			txtAddress.setText(contactUtil.getAddressAsString(document.getBillingContact() != null ? document.getBillingContact() : document.getDeliveryContact()));
 		}
 		
 		/*
@@ -1889,7 +1950,7 @@ public class DocumentEditor extends Editor<Document> {
 				GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(messageFieldsComposite);
 			}
 
-			createTotalComposite(documentType.hasPrice());
+//			createTotalComposite(documentType.hasPrice());
 			
 			// Get the documents'shipping values.
 			shipping = document.getShipping();
@@ -1926,6 +1987,16 @@ public class DocumentEditor extends Editor<Document> {
 		}
 	}
 
+	/**
+	 * @param enabled 
+	 * 
+	 */
+	private void setCopyGroupEnabled(boolean enabled) {
+		for (Control long1 : copyGroup.getChildren()) {
+			long1.setEnabled(enabled);
+		}
+	}
+
     /**
      * Create the ToolBar for duplicate / copy a document into another.
      * 
@@ -1946,9 +2017,9 @@ public class DocumentEditor extends Editor<Document> {
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
 	                tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.INVOICE));
-        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.mainMenuNewProforma, 
-                tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-                , createCommandParams(DocumentType.PROFORMA));
+	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.mainMenuNewProforma, 
+	                tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+	                , createCommandParams(DocumentType.PROFORMA));
 			break;
 		case ORDER:
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
@@ -2352,6 +2423,7 @@ public class DocumentEditor extends Editor<Document> {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
+        params.put(CallEditor.PARAM_DUPLICATE, Boolean.toString(true));
         return params;
     }
 
@@ -2522,16 +2594,18 @@ public class DocumentEditor extends Editor<Document> {
             item.setData(TOOLITEM_COMMAND, pCmd);
         }
         catch (NotDefinedException e1) {
-            log.error(e1, "Fehler! ");
+            log.error(e1, "Unknown command or creation of a parameterized command failed!");
         }
         item.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (handlerService.canExecute(pCmd)) {
-                    handlerService.executeHandler(pCmd);
+                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+                ParameterizedCommand pCmdCopy = cmdService.createCommand(commandId, params);
+                if (handlerService.canExecute(pCmdCopy)) {
+                    handlerService.executeHandler(pCmdCopy);
                 } else {
                     MessageDialog.openInformation(toolBar.getShell(),
-                            "Action Info", "current action can't be executed!");
+                            msg.dialogMessageboxTitleError, "current action can't be executed!");
                 }
             }
         });
@@ -2591,6 +2665,10 @@ public class DocumentEditor extends Editor<Document> {
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
+    
+    public void setDirty(boolean isDirty) {
+    	getMDirtyablePart().setDirty(isDirty);
+    }
 
     /**
      * This method is for setting the dirty state to <code>true</code>. This
@@ -2648,9 +2726,4 @@ public class DocumentEditor extends Editor<Document> {
     protected Class<Document> getModelClass() {
         return Document.class;
     }
-
-	public void addItemToItemList(Product next) {
-		// TODO Auto-generated method stub
-		
-	}
 }

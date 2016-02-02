@@ -154,8 +154,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private Document document;
     private DocumentType documentType;
     
-//    /** for accessing the surrounding {@link DocumentEditor} we have to pull it in */
-//	private DocumentEditor container;
+    /** for accessing the surrounding {@link DocumentEditor} we have to pull it in */
+	private DocumentEditor container;
 
     // Flag if there are items with property "optional" set
     private boolean containsOptionalItems = false;
@@ -188,7 +188,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     private SelectionLayer selectionLayer;
-    private DocumentEditor container;
     
     private ProductUtil productUtil;
     
@@ -601,6 +600,7 @@ private Menu createContextMenu(NatTable natTable) {
                         DocumentItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
                         objToRenumber.getDocumentItem().setPosNr(++newIdx);
                     }
+                    getContainer().setDirty(true);
                 }
             }
         });

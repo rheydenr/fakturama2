@@ -501,12 +501,12 @@ public List<Document> findAll(boolean forceRead) {
      * @param transaction
      * @return
      */
-    public List<Document> findByTransactionId(Long transaction) {
+    public List<Document> findByTransactionId(Integer transaction) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
         Root<Document> root = criteria.from(Document.class);
         CriteriaQuery<Document> cq = criteria.where(
-                cb.equal(root.<Long>get(Document_.transactionId), transaction));
+                cb.equal(root.<Integer>get(Document_.transactionId), transaction));
         return getEntityManager().createQuery(cq).getResultList();
     }
     
@@ -518,7 +518,7 @@ public List<Document> findAll(boolean forceRead) {
      * @return
      *      String with the document names
      */
-    public String getReference(Long transaction, DocumentType docType) {
+    public String getReference(Integer transaction, DocumentType docType) {
         BillingType billingType = BillingType.get(docType.getKey());
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
@@ -526,7 +526,7 @@ public List<Document> findAll(boolean forceRead) {
         CriteriaQuery<Document> cq = criteria.where(
                 cb.and(
                         cb.equal(root.<BillingType>get(Document_.billingType), billingType),
-                        cb.equal(root.<Long>get(Document_.transactionId), transaction)));
+                        cb.equal(root.<Integer>get(Document_.transactionId), transaction)));
         List<Document> resultList = getEntityManager().createQuery(cq).getResultList();
         List<String> stringList = resultList.stream().map(d -> d.getName()).collect(Collectors.toList());
         return StringUtils.join(stringList, ",");

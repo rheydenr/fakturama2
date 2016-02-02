@@ -35,6 +35,7 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 «FOREACH this.classImplements AS classImplements SEPARATOR ","»«classImplements-»
 «ENDFOREACH-»
 «ENDIF-»
+«IF !this.abstract-»«IF this.classImplements.size > 0-»,«ELSE-» implements «ENDIF-» java.lang.Cloneable«ENDIF-»
 {
 «IF this.serializable-»
   /**
@@ -310,10 +311,10 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 	 */
 	 @Override
 	 public String toString() {
-	 	return  "«this.name» "
+	 	return  "«this.name»"
 	 	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
 			«IF !featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many-»
-		 		+ " [«featureAnnotation.name»: " +  «featureAnnotation.getter»() + "]"
+		 		+ " «featureAnnotation.name»: [" +  «featureAnnotation.getter»() + "]"
 	  		«ENDIF-»
 	 	«ENDFOREACH-»;
 	 }

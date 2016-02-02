@@ -483,7 +483,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/transactionId"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This id is for grouping of multiple docuements that belongs to the same transaction. It is a unique ID which determines the transaction." name="transactionId" getter="getTransactionId" defaultValue="null" setter="setTransactionId" validJavaMemberName="transactionId" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This id is for grouping of multiple documents that belongs to the same transaction. It is a unique ID which determines the transaction." name="transactionId" getter="getTransactionId" defaultValue="null" setter="setTransactionId" validJavaMemberName="transactionId" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/webshopId"/>
@@ -555,7 +555,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/deposit"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Indicator that shows if the paid value is only a deposit. If so, this fflag is set to &lt;code>true&lt;/code>."/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Indicator that shows if the paid value is only a deposit. If so, this flag is set to &lt;code>true&lt;/code>."/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/additionalInfo"/>

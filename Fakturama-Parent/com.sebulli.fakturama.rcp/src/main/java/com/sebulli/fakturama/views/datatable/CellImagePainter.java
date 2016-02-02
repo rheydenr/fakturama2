@@ -41,12 +41,40 @@ public class CellImagePainter extends ImagePainter {
         } else if(dataValue instanceof String) {
             retval = getImageFrom((String) dataValue);
         } else if(dataValue instanceof byte[]) {
-			ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) dataValue);
-			retval = new Image(Display.getCurrent(), imgStream);
-			retval = new Image(Display.getCurrent(), retval.getImageData().scaledTo(50, 50));
+			retval = getImagefromByteArray(dataValue);
         }
         return retval;
     }
+
+	/**
+	 * @param dataValue
+	 * @return
+	 */
+	private Image getImagefromByteArray(Object dataValue) {
+		Image image, retval;
+		ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) dataValue);
+		image = new Image(Display.getCurrent(), imgStream);
+
+		// Get the pictures size
+		int width = image.getBounds().width;
+		int height = image.getBounds().height;
+
+		// Scale the image to 64x48 Pixel
+		if (width != 0 && height != 0) {
+
+			// Picture is more width than height.
+			if (width >= 64 * height / 48) {
+				height = (height * 64) / width;
+				width = 64;
+			} else { // if (height > ((48*width)/64)) {
+				width = (width * 48) / height;
+				height = 48;
+			}
+		}
+
+		retval = new Image(Display.getCurrent(), image.getImageData().scaledTo(width, height));
+		return retval;
+	}
     
     private Image getImageFrom(Icon dataValue) {
         Image retval = null;

@@ -14,6 +14,8 @@
  
 package com.sebulli.fakturama.util;
 
+import java.util.UUID;
+
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
@@ -102,6 +104,18 @@ public class DocumentTypeUtil {
             document = modelFactory.createOrder();
             break;
         }
+        document.setTransactionId(getNewTransactionId());
         return document;
     }
+    
+	
+	/**
+	 * Generates a random transaction number
+	 * 
+	 * @return new random ID
+	 */
+	public static int getNewTransactionId () {
+		return Math.abs(UUID.randomUUID().hashCode());
+	}
+
 }

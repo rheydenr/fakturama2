@@ -35,8 +35,36 @@ Additional code for JavaBeans
 	 	}
 	 	return retval;
 	  }
+	  
+	  «IF !this.abstract-»
+	@Override
+	public «this.simpleClassName-» clone() {
+		    «this.simpleClassName-» retval = new «this.simpleClassName-»();
+		  	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation -»
+				«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many -»
+					retval.«featureAnnotation.setter»(this.«featureAnnotation.getter»());
+				«ELSEIF featureAnnotation.EStructuralFeature.many -»
+					/* reference to a Set («featureAnnotation.name») cannot be compared... */
+				«ELSE -»
+					«EXPAND copyAttribute FOR featureAnnotation -»
+		  		«ENDIF-»
+		 	«ENDFOREACH-»
+		 	return retval;
+	      }	
+	   «ENDIF-»
 
 «ENDDEFINE»
+
+«DEFINE copyAttribute FOR EAttributeModelGenAnnotation -»
+	«IF this.primitive -»
+	«REM»ugly hack, but I don't know how to identify the entities ID :-( /* INFO: «this» */ «ENDREM-»
+		«IF this.name != 'id' -»
+	   		retval.«this.setter»(this.«this.getter»());
+   		«ELSE» «ENDIF»
+	«ELSE -»
+		  retval.«this.setter»(this.«this.getter»());
+	«ENDIF -»
+«ENDDEFINE -»
 
 «DEFINE attribute FOR EAttributeModelGenAnnotation -»
 	«IF this.primitive -»

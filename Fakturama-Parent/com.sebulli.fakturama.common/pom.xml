@@ -11,7 +11,7 @@
   <packaging>eclipse-plugin</packaging>
 
   <name>com.sebulli.fakturama.common</name>
-  <url>http://www.fakturama.org</url>
+  <url>http://www.fakturama.info</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

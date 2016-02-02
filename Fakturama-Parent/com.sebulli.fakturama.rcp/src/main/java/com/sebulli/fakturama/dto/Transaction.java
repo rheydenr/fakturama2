@@ -38,7 +38,7 @@ public class Transaction {
     private DocumentsDAO documentsDAO;
 		
 	// The transcation no.
-	Long transaction = Long.valueOf(-1);
+	Integer transaction = Integer.valueOf(-1);
 	// An list with all documents with the same transaction number
 	List<Document> documents = null;
 	
@@ -65,15 +65,6 @@ public class Transaction {
 		// Get all documents
 		documents = documentsDAO.findByTransactionId(transaction);
 		return this;
-	}
-	
-	/**
-	 * Generates a random transaction number
-	 * 
-	 * @return new random ID
-	 */
-	public static int getNewTransactionId () {
-		return Math.abs(UUID.randomUUID().hashCode());
 	}
 	
 	/**

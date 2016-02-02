@@ -1,3 +1,3 @@
-see Wiki on com.google.com
+see Wiki on Fakturama
 
-http://code.google.com/p/fakturama/wiki/Create_Installers
+https://fakturama.atlassian.net/wiki/display/COM/How+to+create+the+installers
