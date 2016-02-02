@@ -9,7 +9,7 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-  <artifactId>org.fakturama.exporters</artifactId>
+  <artifactId>org.fakturama.export</artifactId>
   <packaging>eclipse-plugin</packaging>
 
 </project>
