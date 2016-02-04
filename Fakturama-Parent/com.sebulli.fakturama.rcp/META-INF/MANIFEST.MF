@@ -96,8 +96,7 @@ Import-Package: javax.inject;version="1.0.0",
  org.osgi.service.prefs;version="1.1.1",
  org.osgi.util.tracker;version="1.5.1",
  org.osgi.util.xml;version="1.0.1"
-Service-Component: OSGI-INF/parcelservice.xml,
- OSGI-INF/exportservice.xml
+Service-Component: OSGI-INF/parcelservice.xml
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.fakturama.export.handler

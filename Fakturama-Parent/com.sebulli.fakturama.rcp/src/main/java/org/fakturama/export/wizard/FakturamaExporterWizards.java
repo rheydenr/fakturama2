@@ -36,11 +36,17 @@ import org.fakturama.export.AbstractWizardNode;
 import org.fakturama.export.IFakturamaExportService;
 
 /**
- * Each export wizard is "registered" here to get available in the selection tree. 
+ * Each export wizard is "registered" here to get available in the selection tree. This
+ * wizard is the main "entry point" to all export wizards. It presents a selection 
+ * tree which contains all available export wizards.
  *
  */
 public class FakturamaExporterWizards extends WizardSelectionPage {
 	
+	/**
+	 * The export service is injected by OSGi container. It resides in a bundle
+	 * which contains several exporters. 
+	 */
 	private IFakturamaExportService exportService;
 	
 	private AbstractWizardNode selectedWizardNode;
