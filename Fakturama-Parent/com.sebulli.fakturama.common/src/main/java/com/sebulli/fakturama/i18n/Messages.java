@@ -400,8 +400,8 @@ public class Messages {
 	public String Exportwizard171;
 	public String Exportwizard172;
 	public String Exportwizard173;
-	public String Exportwizard203;
-	public String Exportwizard204;
+	public String wizardExportContactsAllcontactsTitle;
+	public String wizardExportContactsAllcontactsDescription;
 	public String Exportwizard205;
 	public String Exportwizard206;
 	public String Exportwizard207;
@@ -433,7 +433,7 @@ public class Messages {
 	public String Importer144;
 	public String Importer145;
 	public String Importer146;
-	public String Importoptionpage122;
+	public String wizardCommonPreviewLabel;
 	public String Importoptionpage123;
 	public String Importoptionpage124;
 	public String Importoptionpage125;

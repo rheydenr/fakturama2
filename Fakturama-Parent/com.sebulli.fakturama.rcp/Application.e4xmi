@@ -458,6 +458,7 @@
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
   <handlers xmi:id="_CfeC4O3vEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.handler.documents.removeref" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.RemoveInvoiceReferenceHandler" command="_3Wx3MO3uEeScLKnTyMNVVA"/>
   <handlers xmi:id="_FOmckIZTEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.handler.documents.reorganize" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ReorganizeDocuments" command="_uB33QIZSEeWRb8xKRQdEJg"/>
+  <handlers xmi:id="_HpX4IMn6EeWTOb3yCbo1Ow" elementId="main.menu.file.export.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/org.fakturama.export.handler.ExportHandler" command="_RAuAAEf5EeO7mNzAwIZUXQ"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>

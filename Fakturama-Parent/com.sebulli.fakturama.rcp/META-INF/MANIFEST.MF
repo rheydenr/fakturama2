@@ -31,6 +31,7 @@ Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.eclipse.e4.ui.model.workbench;bundle-version="1.1.0",
  org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.di,
+ org.eclipse.e4.core.di,
  ca.odell.glazedlists,
  com.ibm.icu;bundle-version="52.1.0",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
@@ -86,6 +87,7 @@ Import-Package: javax.inject;version="1.0.0",
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
+ org.fakturama.export;version="2.0.0",
  org.osgi.framework;version="1.8.0",
  org.osgi.framework.wiring;version="1.2.0",
  org.osgi.service.event;version="1.3.0",
@@ -94,6 +96,8 @@ Import-Package: javax.inject;version="1.0.0",
  org.osgi.service.prefs;version="1.1.1",
  org.osgi.util.tracker;version="1.5.1",
  org.osgi.util.xml;version="1.0.1"
-Service-Component: OSGI-INF/parcelservice.xml
+Service-Component: OSGI-INF/parcelservice.xml,
+ OSGI-INF/exportservice.xml
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.fakturama.export.handler

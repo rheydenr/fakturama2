@@ -23,9 +23,10 @@
 	    <module>com.sebulli.fakturama.resources.icons</module>
 	    <module>com.sebulli.fakturama.resources.templates</module>
 	    <module>org.fakturama.print.openoffice</module>
-	    
 	    <module>org.fakturama.export</module>
+	    <module>org.fakturama.export.base</module>
 	    <module>org.fakturama.import</module>
+	    <module>org.fakturama.export.feature</module>
 	</modules>
 	<build>
 		<plugins>
@@ -96,4 +97,11 @@
 </pluginRepositories>	
 	<name>Fakturama</name>
 	<url>www.fakturama.info</url>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://fakturama.atlassian.net/secure/Dashboard.jspa</url>
+	</issueManagement>
+	<scm>
+		<url>https://bitbucket.org/fakturamadev/fakturama-2</url>
+	</scm>
 </project>
