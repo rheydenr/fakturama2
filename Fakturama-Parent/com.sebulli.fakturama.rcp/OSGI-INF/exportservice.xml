@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" name="myExporter">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="startUp" deactivate="shutDown" enabled="true" name="myExporter">
    <implementation class="de.rhe.tester.FakturamaExportService"/>
    <service>
       <provide interface="org.fakturama.export.IFakturamaExportService"/>

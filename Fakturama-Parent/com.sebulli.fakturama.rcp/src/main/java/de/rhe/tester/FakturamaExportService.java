@@ -28,12 +28,14 @@ import org.fakturama.export.wizard.contacts.AddressListExportWizardNode;
 public class FakturamaExportService implements IFakturamaExportService {
 
 	private AbstractWizardNode[] wizardNodes;
-	
+
+	//@Inject IEclipseContext ctx;
 	public void startUp() {
-		wizardNodes = new AbstractWizardNode[]{
-                new AddressListExportWizardNode("Java Project"),
-                new AddressListExportWizardNode("Scala Project"),
-                new AddressListExportWizardNode("JavaScript Project")
+		wizardNodes = new AbstractWizardNode[]{new AddressListExportWizardNode("Java Project"),
+//		wizardNodes = new AbstractWizardNode[]{
+//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Java Project"),
+//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Scala Project"),
+//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx)  //("JavaScript Project")
         };
 	}
 	
