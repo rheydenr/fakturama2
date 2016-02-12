@@ -15,27 +15,65 @@
 package de.rhe.tester;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.log.Logger;
 import org.fakturama.export.AbstractWizardNode;
 import org.fakturama.export.IFakturamaExportService;
 import org.fakturama.export.wizard.contacts.AddressListExportWizardNode;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
- * Implementation of the {@link IFakturamaExportService}.
- *
+ * Implementation of the {@link IFakturamaExportService} *
  */
 public class FakturamaExportService implements IFakturamaExportService {
 
 	private AbstractWizardNode[] wizardNodes;
+    
+@Inject 
+	IEclipseContext ctx;
 
-	//@Inject IEclipseContext ctx;
+//@Inject
+//private LogS log;
+
+//	
+//	/**
+//	 * @param ctx
+//	 */
+//	@Inject
+//	public FakturamaExportService(IEclipseContext ctx) {
+//		this.ctx = ctx;
+//	}
+
 	public void startUp() {
-		wizardNodes = new AbstractWizardNode[]{new AddressListExportWizardNode("Java Project"),
-//		wizardNodes = new AbstractWizardNode[]{
-//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Java Project"),
-//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Scala Project"),
-//                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx)  //("JavaScript Project")
+		
+        Bundle bundle = FrameworkUtil.getBundle(Messages.class);
+        BundleContext bundleContext = bundle.getBundleContext();
+        try {
+			Collection<ServiceReference<IEclipseContext>> serviceReferences = bundleContext.getServiceReferences(IEclipseContext.class, null);
+			ServiceReference<IEclipseContext> next = serviceReferences.iterator().next();
+			ctx = bundleContext.getService(next);
+		} catch (InvalidSyntaxException e) {
+//			log.error(e);
+		}
+		
+//		wizardNodes = new AbstractWizardNode[]{new AddressListExportWizardNode("Java Project"),
+		wizardNodes = new AbstractWizardNode[]{
+                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Java Project"),
+                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx), //("Scala Project"),
+                ContextInjectionFactory.make(AddressListExportWizardNode.class, ctx)  //("JavaScript Project")
         };
 	}
 	

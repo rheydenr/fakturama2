@@ -1,5 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Import
+Bundle-Name: Import Wizard Service
 Bundle-SymbolicName: org.fakturama.import
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: Fakturama.org
+Require-Bundle: org.eclipse.jface,
+ javax.inject;bundle-version="1.0.0",
+ org.eclipse.equinox.ds;bundle-version="1.4.300"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

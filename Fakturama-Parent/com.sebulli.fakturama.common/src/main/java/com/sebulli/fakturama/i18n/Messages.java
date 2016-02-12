@@ -417,6 +417,10 @@ public class Messages {
 	public String Exportwizardpagestartenddate222;
 	public String Exportwizardunpaid241;
 	public String Exportwizardunpaid242;
+	public String wizardExportCommonTitle;
+	public String wizardExportCommonFilterlabel;
+	public String wizardExportCommonDescription;
+	public String wizardExportCommonHeadline;
 	public String Importer130;
 	public String Importer131;
 	public String Importer132;

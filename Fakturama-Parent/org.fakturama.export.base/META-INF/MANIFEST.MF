@@ -16,6 +16,8 @@ Service-Component: OSGI-INF/exportservice.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: de.rhe.tester,
  org.fakturama.export.wizard;version="2.0.0",
- org.fakturama.export.wizard.contacts,
- org.fakturama.service.export.wizard
-Import-Package: org.fakturama.export;version="2.0.0"
+ org.fakturama.export.wizard.contacts
+Import-Package: org.eclipse.e4.ui.model.application,
+ org.eclipse.e4.ui.model.application.ui,
+ org.fakturama.export;version="2.0.0",
+ org.osgi.framework;version="1.8.0"

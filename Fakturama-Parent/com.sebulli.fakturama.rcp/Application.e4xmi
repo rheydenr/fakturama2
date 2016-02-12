@@ -342,7 +342,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_JKS7sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.lists.id" label="%command.lists.name" iconURI="icon://COMMAND_LIST" command="_kmeVQCY9EeSOztFzZzvbWw">
           <parameters xmi:id="_R7WncO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.63" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.viewListTable"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_rAi1sCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_rAi1sCY9EeSOztFzZzvbWw">
+          <parameters xmi:id="_dl3NQM0eEeWKM-ChS55k7g" elementId="fakturama-parent.parameter.0" name="com.sebulli.fakturama.lists.viewtype" value="expenditurevoucher"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_J3O6MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.receiptvouchers.id" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER" command="_xbxzwCY9EeSOztFzZzvbWw"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_X0yC4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.new.id" label="%main.menu.new" mnemonics="U">

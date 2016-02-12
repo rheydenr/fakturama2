@@ -108,6 +108,19 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <discovery label="Fakturama Project Web Site" url="http://www.fakturama.info"/>
    </url>
 
+   <requires>
+      <import plugin="javax.inject" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.equinox.ds" version="1.4.300" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.services"/>
+      <import plugin="org.eclipse.jface" version="3.11.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.contexts" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di" version="1.5.0" match="greaterOrEqual"/>
+      <import plugin="com.sebulli.fakturama.common" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="com.sebulli.fakturama.resources" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.ui.model.workbench"/>
+      <import plugin="org.eclipse.osgi"/>
+   </requires>
+
    <plugin
          id="org.fakturama.export"
          download-size="0"

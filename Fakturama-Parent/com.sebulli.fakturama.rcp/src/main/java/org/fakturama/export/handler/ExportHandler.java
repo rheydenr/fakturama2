@@ -22,13 +22,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.wizard.FakturamaExporterWizardsSelector;
 
 /**
- * Main entry point for the export wizards.
+ * Main entry point for the export wizards. This handler calls
+ * the initial export wizard selection dialog from which one
+ * can start a single export wizard.
  *
  */
 public class ExportHandler {
 	
 	@Execute
 	public void execute(IEclipseContext ctx, Shell shell) {
+		// create the selection wizard dialog
 		FakturamaExporterWizardsSelector fakturamaExporterWizardsSelector = ContextInjectionFactory.make(FakturamaExporterWizardsSelector.class, ctx);
 		WizardDialog dlg = new WizardDialog(shell, fakturamaExporterWizardsSelector);
 		dlg.open();

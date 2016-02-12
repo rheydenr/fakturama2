@@ -49,11 +49,6 @@ public enum IconSize {
 	 */
 	OverlayIconSize("48x48"),
 	
-	/**
-	 * used for previews
-	 */
-	PreviewIconSize("preview"),
-	
 	AppIconSize("app");
 
 	/**
