@@ -35,7 +35,10 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -55,6 +58,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
  * Web shop import manager. This class provides the functionality to connect to
@@ -76,6 +80,12 @@ public class WebShopImportManager implements IWebshopConnection {
     @Inject
     @Translation
 	private Messages msg;
+    
+    @Inject
+    private EModelService modelService;
+    
+    @Inject
+    private MApplication application;
 
     /**
      * contains the result from Web shop connector execution
@@ -195,8 +205,8 @@ public class WebShopImportManager implements IWebshopConnection {
 
 		// After the web shop import, open the document view
 		// and set the focus to the new imported orders.
-//		ViewManager.showView(ViewDocumentTable.ID);
-//		IViewPart view = ApplicationWorkbenchWindowAdvisor.getActiveWorkbenchWindow().getActivePage().findView(ViewDocumentTable.ID);
+		MUIElement view = modelService.find(DocumentsListTable.ID, application);
+		modelService.bringToTop(view);
 //		ViewDocumentTable viewDocumentTable = (ViewDocumentTable) view;
 //		viewDocumentTable.getTopicTreeViewer().selectItemByName(DocumentType.ORDER.getPluralString() + "/" + DataSetDocument.getStringNOTSHIPPED());
         return executionResult;

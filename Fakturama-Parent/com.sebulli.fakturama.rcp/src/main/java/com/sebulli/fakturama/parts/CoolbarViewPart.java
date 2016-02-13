@@ -16,7 +16,10 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.IPartListener;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -48,8 +51,6 @@ import com.sebulli.fakturama.resources.core.IconSize;
  * Composite for the Coolbar. Since this couldn't configured via Application Model we have to implement it ourself.
  * The Application Model Toolbar doesn't support text below button (or you write a new renderer, what I didn't want).
  * 
- * @author R. Heydenreich
- *
  */
 public class CoolbarViewPart {
     
@@ -60,6 +61,9 @@ public class CoolbarViewPart {
 	
 	@Inject
 	private EHandlerService handlerService;
+	
+	@Inject
+	private EPartService partService;
 
     @Inject
     private IPreferenceStore preferences;
@@ -114,7 +118,7 @@ public class CoolbarViewPart {
 		 */
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP));
-		/*ToolItem ooPrintButton = */createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
+		ToolItem ooPrintButton = createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
 //		ooPrintButton.addSelectionListener(new SelectionAdapter() {
@@ -206,25 +210,32 @@ public class CoolbarViewPart {
         return params;
     }
 
-	@Inject
-	@Optional
-	public void handleEvent(@UIEventTopic("TOOLBARPREFS") String msg) {
-	    // doesn't work :-(
-//	    coolbarmgr.update(true);
-//	    createControls(top);
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    protected void handleDialogSelection(@UIEventTopic("EditorPart/updateCoolBar") Event event) {
+        if (event != null) {
+            updateCoolbar();
+        }
+	}
+
+	/**
+	 * 
+	 */
+	private void updateCoolbar() {
+		for (ToolBar toolBar : coolBarsByKey) {
+		    for (ToolItem toolItem : toolBar.getItems()) {
+		        ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
+		        if(pCmd != null) {
+		            toolItem.setEnabled(pCmd.getCommand().isEnabled());
+		        }
+		    }
+		}
 	}
 	
     @Inject
     @Optional
     void dirtyChanged(@UIEventTopic(UIEvents.Dirtyable.TOPIC_DIRTY) Event eventData) {
-        for (ToolBar toolBar : coolBarsByKey) {
-            for (ToolItem toolItem : toolBar.getItems()) {
-                ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
-                if(pCmd != null) {
-                    toolItem.setEnabled(pCmd.getCommand().isEnabled());
-                }
-            }
-        }
+        updateCoolbar();
     }
 	
 //
@@ -296,7 +307,7 @@ public class CoolbarViewPart {
 			item.setData(TOOLITEM_COMMAND, pCmd);
 		}
 		catch (NotDefinedException e1) {
-			log.error(e1, "Fehler! ");
+			log.error(e1, "Fehler!");
 		}
 		item.addSelectionListener(new SelectionAdapter() {
 			@Override

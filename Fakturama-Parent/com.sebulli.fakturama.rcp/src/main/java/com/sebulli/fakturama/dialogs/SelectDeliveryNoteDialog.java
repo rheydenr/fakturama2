@@ -15,6 +15,8 @@
 package com.sebulli.fakturama.dialogs;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -24,7 +26,9 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.internal.events.EventBroker;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.AbstractSelectionDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -40,6 +44,8 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 
@@ -59,6 +65,9 @@ public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> 
 
 	@Inject
 	private EModelService modelService;
+
+    @Inject
+    private ESelectionService selectionService;
 
 	@Inject
 	private IEclipseContext context;
@@ -119,15 +128,29 @@ public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> 
 	@org.eclipse.e4.core.di.annotations.Optional
 	protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseDelivery") Event event) {
 		if (event != null) {
-			if (deliveriesListTable.getSelectedObject() != null) {
-				// only for convenience, the result is already set by NatTable
-				// on double click and send to the
-				// DocumentEditor.
-				setResult((Delivery) deliveriesListTable.getSelectedObject());
-			}
-			super.okPressed();
+			okPressed();
 		}
 	}
+
+    /**
+     * If an entry is selected it will be put in an Event which will be posted by {@link EventBroker}.
+     * After this the dialog closes. The Event is caught by the {@link DocumentEditor} which will use it as
+     * new entries for documents items list.
+     */
+    @Override
+    protected void okPressed() {
+        if (deliveriesListTable.getSelectedObject() != null) {
+            Map<String, Object> eventParams = new HashMap<>();
+            eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+            
+            eventParams.put(DocumentsListTable.SELECTED_DELIVERY_ID, deliveriesListTable.getSelectedObjects());
+            evtBroker.post("DialogSelection/Delivery", eventParams);
+//            setResult(deliveriesListTable.getSelectedObjects());
+            selectionService.setSelection(deliveriesListTable.getSelectedObjects());
+        }
+        super.okPressed();
+    }
+
 
 	/**
 	 * Set the initial size of the dialogs in pixel

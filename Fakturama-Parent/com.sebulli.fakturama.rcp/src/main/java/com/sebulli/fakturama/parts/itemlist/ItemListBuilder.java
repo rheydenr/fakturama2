@@ -70,7 +70,7 @@ public class ItemListBuilder {
 
     @Inject
     private EModelService modelService;
-
+    
     @Inject
     private MApplication application;
     
@@ -231,6 +231,9 @@ public class ItemListBuilder {
 
                 // Renumber all Items
                 // renumberItems();
+                
+                // set document dirty
+                container.setDirty(true);
 
             }
         });

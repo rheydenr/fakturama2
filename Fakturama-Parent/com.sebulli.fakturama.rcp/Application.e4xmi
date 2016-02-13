@@ -343,9 +343,11 @@
           <parameters xmi:id="_R7WncO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.63" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.viewListTable"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_rAi1sCY9EeSOztFzZzvbWw">
-          <parameters xmi:id="_dl3NQM0eEeWKM-ChS55k7g" elementId="fakturama-parent.parameter.0" name="com.sebulli.fakturama.lists.viewtype" value="expenditurevoucher"/>
+          <parameters xmi:id="_dl3NQM0eEeWKM-ChS55k7g" elementId="fakturama.menu.data.expenditurevouchers.viewparam" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.expenditureVoucherTable"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_J3O6MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.receiptvouchers.id" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER" command="_xbxzwCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_J3O6MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.receiptvouchers.id" label="%command.receiptvouchers.name" iconURI="icon://COMMAND_RECEIPT_VOUCHER" command="_xbxzwCY9EeSOztFzZzvbWw">
+          <parameters xmi:id="_tcU88NJ_EeWAJOJFtG_Mdg" elementId="fakturama.menu.data.receiptvouchers.viewparam" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.receiptVoucherTable"/>
+        </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_X0yC4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.new.id" label="%main.menu.new" mnemonics="U">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_VrJiQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.document.id" label="%main.menu.new.letter" iconURI="icon://COMMAND_LETTER" tooltip="%main.menu.new: %main.menu.new.letter" command="_A9gvoDtXEeOcltwCzP-ZbQ">
@@ -593,6 +595,7 @@
   <addons xmi:id="_RmPT2etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.handler.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_RmPT2utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_RmPT2-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <addons xmi:id="_LyIVYNKOEeWAJOJFtG_Mdg" elementId="fakturama.rcp.addon.closepart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.addons.ClosePartAddon"/>
   <categories xmi:id="_no8mgEstEeOZ37-tYt-QvQ" elementId="com.sebulli.fakturama.toolbar.category" name="toolbar commands" description="Commands for Toolbars and Icons"/>
   <categories xmi:id="_ck9sUCTREeS9z6SQNducwg" elementId="com.sebulli.fakturama.menu.category" name="Menubar command category"/>
 </application:Application>

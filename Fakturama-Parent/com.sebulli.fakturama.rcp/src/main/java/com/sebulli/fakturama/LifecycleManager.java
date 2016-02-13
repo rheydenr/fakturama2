@@ -170,8 +170,8 @@ public class LifecycleManager {
             defaultVat = vatsDAO.save(defaultVat);
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
+            defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         
         Shipping defaultShipping = modelFactory.createShipping();
         defaultShipping.setName(msg.dataDefaultShipping);
@@ -183,8 +183,8 @@ public class LifecycleManager {
             defaultShipping = shippingsDAO.save(defaultShipping);
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
+            defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
 
         Payment defaultPayment = modelFactory.createPayment();
         defaultPayment.setName(msg.dataDefaultPayment);
@@ -199,8 +199,8 @@ public class LifecycleManager {
             defaultPayment = paymentsDAO.save(defaultPayment);
         } else if(defaultValuesNode.getLong(Constants.DEFAULT_PAYMENT) == Long.valueOf(0L)) {
             defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
+            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         
         // init UN/CEFACT codes
         if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {

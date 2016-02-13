@@ -28,6 +28,7 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MContext;
@@ -108,6 +109,9 @@ public class CallEditor {
 
 	@Inject
 	private EPartService partService;
+	
+    @Inject
+    private IEventBroker evtBroker;
 
 	/**
 	 * Execute the command
@@ -144,7 +148,10 @@ public class CallEditor {
             params.put(PARAM_CALLING_DOC, callingDoc);
             
             // Define  the editor and try to open it
-			partService.showPart(createEditorPart(editorType, stackContext, documentPartStack, duplicate, params), PartState.ACTIVATE);
+			MPart editorPart = createEditorPart(editorType, stackContext, documentPartStack, duplicate, params);
+			partService.showPart(editorPart, PartState.ACTIVATE);
+//			editorPart.a
+            evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 //	
 //	@CanExecute

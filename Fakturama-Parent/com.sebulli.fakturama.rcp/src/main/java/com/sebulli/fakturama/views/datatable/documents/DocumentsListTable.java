@@ -68,12 +68,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
-
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -102,6 +96,12 @@ import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 /**
  * Builds the Document list table.
@@ -226,7 +226,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     // (was set in MouseEvent handler)
                     eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
                     // TODO how about multiple selections?
-                    List<Long> resultList = Arrays.asList(selectedObject.getId());
+                    List<Document> resultList = Arrays.asList(getSelectedObjects());
                     eventParams.put(SELECTED_DELIVERY_ID, resultList);
 //                    // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
@@ -236,7 +236,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     
                     // selecting an entry and closing the dialog are two different actions.
                     // the "CloseContact" event is caught by SelectContactDialog#handleDialogDoubleClickClose. 
-                    evtBroker.post("DialogSelection/Delivery", eventParams);
                     evtBroker.post("DialogAction/CloseDelivery", eventParams);
                 } else {
                     // if we come from the list view then we should open a new editor 

@@ -306,6 +306,7 @@ public class DocumentEditor extends Editor<Document> {
     private ContactUtil contactUtil;
 	private Text selectedMessageField;
 	private Group copyGroup;
+	private List<Document> pendingDeliveryMerges;
 	
 //	/**
 //	 * Constructor
@@ -384,11 +385,12 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			}
 		}
-
-		// Exit save if there is a document with the same number
-		if (thereIsOneWithSameNumber()) {
-			return;
-		}
+//
+//		// Exit save if there is a document with the same number
+		// already checked in saveAllowed()
+//		if (thereIsOneWithSameNumber()) {
+//			return;
+//		}
 
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
@@ -403,7 +405,7 @@ public class DocumentEditor extends Editor<Document> {
 			document.setOrderDate(dtOrderDate.getSelection());
 		}
 
-	      String addressById = "";
+	    String addressById = "";
 
 		// Test, if the txtAddress field was modified
 		// and write the content of the txtAddress to the documents address or
@@ -575,6 +577,12 @@ public class DocumentEditor extends Editor<Document> {
                 log.error(e);
             }
 		}
+
+		// update pending delivery notes
+		for (Document deliveryNote : pendingDeliveryMerges) {
+			// Change also the transaction id of the imported delivery note
+			documentsDAO.mergeTwoTransactions(document, deliveryNote);
+		}
 		
 		// Update the invoice references in all documents within the same transaction
 		if(documentType.equals(DocumentType.INVOICE)) {
@@ -673,7 +681,8 @@ public class DocumentEditor extends Editor<Document> {
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-                
+        pendingDeliveryMerges = new ArrayList<>();
+        
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             Long objId = Long.valueOf(tmpObjId);
@@ -1252,7 +1261,7 @@ public class DocumentEditor extends Editor<Document> {
 	private void createDepositContainer(boolean clickedByUser) {
 		// Create the widget for the date, when the invoice was paid
 		Label paidDateLabel = new Label(paidDataContainer, SWT.NONE);
-		paidDateLabel.setText("am");
+		paidDateLabel.setText(msg.editorDocumentPaidat);
 		//T: Tool Tip Text
 		paidDateLabel.setToolTipText(msg.editorDocumentDateofpayment);
 
@@ -2469,51 +2478,46 @@ public class DocumentEditor extends Editor<Document> {
                 break;
             case "Delivery":
                 // select a delivery note for creating a collective invoice 
-                @SuppressWarnings("unchecked")
-                List<Delivery> selectedDeliveries = documentsDAO.findSelectedDeliveries((List<Long>)event.getProperty(DocumentsListTable.SELECTED_DELIVERY_ID));
+                Document[] selectedDeliveries = (Document[]) event.getProperty(DocumentsListTable.SELECTED_DELIVERY_ID);
                 // Get the array list of all selected elements
-                for (Delivery deliveryNote : selectedDeliveries) {
-                            // Get all items by ID from the item string
-                            List<DocumentItem> itemsString = deliveryNote.getItems();
-                            // And copy the item to a new one
-                            DocumentItem newItem = modelFactory.createDocumentItem();
-                            // Add the new item
-                            itemsString.forEach(item -> itemListTable.addNewItem(new DocumentItemDTO(newItem)));
-                            
-                            // Put the number of the delivery note in a new line of the message field
-                            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE)) {
-                                String dNName = deliveryNote.getName();
-                                
-                                if (!txtMessage.getText().isEmpty())
-                                    dNName = System.lineSeparator() + dNName;
-                                txtMessage.setText(txtMessage.getText() + dNName);
-                            }
-                            
-                            // Set the delivery notes reference to this invoice
-                            long documentID = document.getId();
-                            // If the document has no id, collect the imported 
-                            // delivery notes in a list.
-                            if (documentID > 0) {
-                                
-                                // Set the reference of the imported delivery note to
-                                // this invoice
-                                deliveryNote.setInvoiceReference((Invoice) document);
-                                try {
-                                    documentsDAO.save(deliveryNote);
-                                } catch (FakturamaStoringException e) {
-                                    log.error(e);
-                                }
-                                
-                                // Change also the transaction id of the imported delivery note
-                                documentsDAO.mergeTwoTransactions(document, deliveryNote);
-                            }
-                            else
-                                importedDeliveryNotes.add(deliveryNote.getId());
+                for (Document deliveryNote : selectedDeliveries) {
+                    // Get all items by ID from the item string
+                    List<DocumentItem> itemsString = deliveryNote.getItems();
+                    for (DocumentItem documentItem : itemsString) {
+	                    // And copy the item to a new one
+//	                    DocumentItem newItem = modelFactory.createDocumentItem();
+	                    DocumentItem newItem = documentItem.clone();
+	                    // Add the new item
+	                    itemListTable.addNewItem(new DocumentItemDTO(newItem));
+					}
+                    
+                    // Put the number of the delivery note in a new line of the message field
+                    if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE)) {
+                        String dNName = deliveryNote.getName();
+                        
+                        if (!txtMessage.getText().isEmpty())
+                            dNName = System.lineSeparator() + dNName;
+                        txtMessage.setText(txtMessage.getText() + dNName);
+                    }
+                    
+                    // Set the delivery notes reference to this invoice
+                    long documentID = document.getId();
+                    // If the document has no id, collect the imported 
+                    // delivery notes in a list.
+                    if (documentID > 0) {
+                        
+                        // Set the reference of the imported delivery note to
+                        // this invoice
+                        deliveryNote.setInvoiceReference((Invoice) document);
+                        pendingDeliveryMerges.add(deliveryNote);
+                    }
+                    else
+                        importedDeliveryNotes.add(deliveryNote.getId());
                 }
 //                    tableViewerItems.refresh();
 //                    if (newItem!= null)
 //                        tableViewerItems.reveal(newItem);
-                    calculate();
+                calculate();
                 break;
             case "TextModule":
                 Long textModuleId = (Long) event.getProperty(TextListTable.SELECTED_TEXT_ID);

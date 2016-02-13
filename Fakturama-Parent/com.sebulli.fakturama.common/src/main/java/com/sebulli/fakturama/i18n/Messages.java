@@ -281,6 +281,7 @@ public class Messages {
 	public String editorDocumentItems;
 	public String editorDocumentNetgrossTooltip;
 	public String editorDocumentPaidvalue;
+	public String editorDocumentPaidat;
 	public String editorDocumentPayuntil;
 	public String editorDocumentPayuntilTooltip;
 	public String editorDocumentRefnumberTooltip;

@@ -126,7 +126,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     protected ESelectionService selectionService;
     
     /**
-     * Event Broker for receiving update events to the list table
+     * Event Broker for sending update events from the list table
      */
     @Inject
     protected IEventBroker evtBroker;

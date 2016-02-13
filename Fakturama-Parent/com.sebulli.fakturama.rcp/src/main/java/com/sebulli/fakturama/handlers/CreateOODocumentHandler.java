@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +28,12 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -50,9 +54,12 @@ import org.eclipse.swt.widgets.Shell;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.office.OfficeDocument;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
  * This action starts the OpenOffice exporter. If there is more than one
@@ -107,6 +114,11 @@ public class CreateOODocumentHandler {
     //		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
     //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
     //	}
+    
+    @CanExecute
+    public boolean canExecute(@Optional @Active MPart activePart) {
+        return activePart != null && activePart.getElementId().contentEquals(DocumentEditor.ID);
+    }
 
     /**
      * Scans the template path for all templates. If a template exists, add it
