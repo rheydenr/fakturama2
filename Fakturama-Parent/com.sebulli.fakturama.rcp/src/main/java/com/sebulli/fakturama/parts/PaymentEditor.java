@@ -467,6 +467,11 @@ public class PaymentEditor extends Editor<Payment> {
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
+    
+    @Override
+    protected String getEditorID() {
+    	return EDITOR_ID;
+    }
 
     @Override
     protected Class<Payment> getModelClass() {
