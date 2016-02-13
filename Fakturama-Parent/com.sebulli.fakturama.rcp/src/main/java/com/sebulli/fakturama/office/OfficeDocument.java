@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -270,6 +271,8 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setCreator("Fakturama application");
         textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
 
+        Path documentPath = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
+        		document);
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
 
             // Create the directories, if they don't exist.
@@ -278,13 +281,11 @@ public class OfficeDocument {
                 try {
                     Files.createDirectories(directory);
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                	log.error(e, "could not create output directory: " + directory.toString());
                 }
             }
 
-            try (OutputStream fs = Files.newOutputStream(fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
-                    document));) {
+            try (OutputStream fs = Files.newOutputStream(documentPath);) {
 
                 // Save the document
                 textdoc.save(fs);
@@ -302,8 +303,7 @@ public class OfficeDocument {
                     try {
                         Files.createDirectories(directory);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	log.error(e, "could not create output directory: " + directory.toString());
                     }
                 }
 
@@ -314,17 +314,23 @@ public class OfficeDocument {
                 Path ooPath = ooStarter.getCheckedOOPath();
                 if(ooPath != null) {
                     // FIXME How to create a PDF/A1 document?
-                    String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
+					String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
                             //program%sswriter File.separator, 
                             ooPath.toString(), 
-                            directory.toAbsolutePath(), 
-                            fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
-                                    document).toAbsolutePath());
+                            directory.toAbsolutePath(), // this is the PDF path
+                            documentPath.toAbsolutePath());
                     //				PDFFilter pdfFilter = new PDFFilter();
                     //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
                     
                     // TODO error handling!!!
                 Runtime.getRuntime().exec(sysCall);
+                    
+                    // now, if the file name templates are different, we have to rename the pdf
+                    Path pdfFilename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
+                    Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.odt$", ".pdf"));
+                    if (!Files.exists(pdfFilename) && Files.exists(tmpPdf)) {
+						Files.move(tmpPdf, pdfFilename);
+                    }
                 wasSaved = true;
                 }
             } catch (Exception e) {
@@ -338,13 +344,12 @@ public class OfficeDocument {
             document.setPrinted(Boolean.TRUE);
             document.setPrintTemplate(template.toString());
 
-            Path filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT, document);
-            if (Files.exists(filename)) {
-                document.setOdtPath(filename.toString());
+            if (Files.exists(documentPath)) {
+                document.setOdtPath(documentPath.toString());
             }
 
             // Update the document entry "pdfpath"
-            filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
+            Path filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
             if (Files.exists(filename)) {
                 document.setPdfPath(filename.toString());
             }

@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -229,7 +230,7 @@ public class Placeholders {
 	 */
 	private String getTelPrePost(String no, boolean pre){
 		// if no contains "/" ord " " (space) then split there
-		String parts[] = no.trim().split("[ /]", 2);
+		String parts[] = StringUtils.defaultString(no).trim().split("[ /]", 2);
 		
 		// Split the number
 		if (parts.length < 2) {
@@ -401,7 +402,7 @@ public class Placeholders {
 		}
 		
 		// Encode some special characters
-		value = encodeEntinities(value);
+		value = encodeEntities(value);
 		return value;
 	}
 	
@@ -485,7 +486,7 @@ public class Placeholders {
 	 * @return
 	 *  Converted
 	 */
-	private String encodeEntinities(String s) {
+	private String encodeEntities(String s) {
 	
 		s = s.replaceAll("%LT", "<");
 		s = s.replaceAll("%GT", ">");
@@ -726,7 +727,7 @@ public class Placeholders {
 			addressField = Optional.ofNullable(document.getBillingContact().getAddress().getManualAddress()).orElse(contactUtil.getAddressAsString(document.getBillingContact()));
 		}
 
-		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField,"addressfirstline");
+		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, "addressfirstline");
 		
 		// There is a reference to a contact. Use this
 		if (contact != null) {
@@ -839,6 +840,7 @@ public class Placeholders {
 
 			if (key2.equals("ADDRESS.GREETING")) return contactUtil.getCommonGreeting();
 
+			// indeterminable fields in this case
 			if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")
 			    || key.equals("ADDRESS.BANK.ACCOUNT")
                 || key.equals("ADDRESS.BANK.CODE")

@@ -14,6 +14,8 @@
  
 package com.sebulli.fakturama.util;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import com.sebulli.fakturama.misc.DocumentType;
@@ -104,7 +106,9 @@ public class DocumentTypeUtil {
             document = modelFactory.createOrder();
             break;
         }
+        // some initializations
         document.setTransactionId(getNewTransactionId());
+        document.setValidFrom(Date.from(Instant.now()));
         return document;
     }
     

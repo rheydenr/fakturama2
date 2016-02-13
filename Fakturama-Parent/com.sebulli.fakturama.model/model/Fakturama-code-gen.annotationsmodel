@@ -213,7 +213,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/gender"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="the Integer coded value of the contact's gender (1=male / 2=female / 3=unknown)" name="gender" getter="getGender" defaultValue="null" setter="setGender" validJavaMemberName="gender" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="the Integer coded value of the contact's gender (0=unknown / 1=male / 2=female / 3=company)" name="gender" getter="getGender" defaultValue="java.lang.Integer.valueOf(0)" setter="setGender" validJavaMemberName="gender" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/company"/>

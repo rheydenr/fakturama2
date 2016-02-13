@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -126,6 +127,7 @@ public class FileOrganizer {
 
 		// Replace the placeholders
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName());
+		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docref\\}", document.getCustomerRef());
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
 				DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))));
 
@@ -133,7 +135,7 @@ public class FileOrganizer {
 		address = replaceIllegalCharacters(address);
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{address\\}", address);
 
-		String name = document.getBillingContact().getName();
+		String name = StringUtils.defaultString(document.getBillingContact().getName());
 		name = replaceIllegalCharacters(name);
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{name\\}", name);
 

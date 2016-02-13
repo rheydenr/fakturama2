@@ -374,7 +374,7 @@ public class ContactUtil {
 	 * 		Only the first name
 	 */
 	public String getFirstName (String name) {
-		String s = name.trim();
+		String s = StringUtils.defaultString(name).trim();
 		int lastSpace = s.lastIndexOf(" ");
 		if (lastSpace > 0)
 			return s.substring(0, lastSpace).trim();
@@ -391,7 +391,7 @@ public class ContactUtil {
 	 * 		Only the last name
 	 */
 	public String getLastName (String name) {
-		String s = name.trim();
+		String s = StringUtils.defaultString(name).trim();
 		int lastSpace = s.lastIndexOf(" ");
 		if (lastSpace > 0)
 			return s.substring(lastSpace + 1).trim();
@@ -408,6 +408,9 @@ public class ContactUtil {
 	 * 		Only the street name
 	 */
 	public String getStreetName (String streetWithNo) {
+		if(streetWithNo == null) {
+			return "";
+		}
 		String s = streetWithNo.trim();
 		int indexNo = 0;
 		
@@ -433,6 +436,9 @@ public class ContactUtil {
 	 * 		Only the street No
 	 */
 	public String getStreetNo (String streetWithNo) {
+		if(streetWithNo == null) {
+			return "";
+		}
 		String s = streetWithNo.trim();
 		int indexNo = 0;
 		
@@ -459,6 +465,9 @@ public class ContactUtil {
 	 * @return the formatted string.
 	 */
 	public String replaceFormatString(String formatString, Contact contact) {
+		if(contact == null) {
+			return formatString;
+		}
 		// Replace the placeholders
 		formatString = replaceAllWithSpace(formatString, "\\{company\\}", contact.getCompany());
 		formatString = replaceAllWithSpace(formatString, "\\{title\\}", contact.getTitle());
