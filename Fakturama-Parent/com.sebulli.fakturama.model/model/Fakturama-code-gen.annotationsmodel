@@ -409,7 +409,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/dueDays"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="dueDays" getter="getDueDays" defaultValue="null" setter="setDueDays" validJavaMemberName="dueDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="dueDays" getter="getDueDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setDueDays" validJavaMemberName="dueDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/itemsRebate"/>
@@ -535,7 +535,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/netGross"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Information about rounding of document prices. The following values are valid: &lt;ul>&lt;li>0 &amp;hellip; no rounding&lt;/li>&lt;li>1 &amp;hellip; The prices are rounded, that the net values are full cent values.&lt;/li>&lt;li>2 &amp;hellip; The prices are rounded, that the gross values are full cent values.&lt;/li>&lt;/ul>" getter="getNetGross" setter="setNetGross" validJavaMemberName="netGross" featureMapQualifiedClassName="" useList="false"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Information about rounding of document prices. The following values are valid: &lt;ul>&lt;li>0 &amp;hellip; no rounding&lt;/li>&lt;li>1 &amp;hellip; The prices are rounded, that the net values are full cent values.&lt;/li>&lt;li>2 &amp;hellip; The prices are rounded, that the gross values are full cent values.&lt;/li>&lt;/ul>" defaultValue="java.lang.Integer.valueOf(0)" getter="getNetGross" setter="setNetGross" validJavaMemberName="netGross" featureMapQualifiedClassName="" useList="false"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/sourceDocument"/>

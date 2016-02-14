@@ -15,7 +15,6 @@
 package com.sebulli.fakturama.parts;
 
 
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +101,8 @@ public class ContactEditor extends Editor<Contact> {
 
 	/** Editor's ID */
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
+	
+	public static final String EDITOR_ID = "ContactEditor";
 
 	/** This UniDataSet represents the editor's input */ 
 	private Contact editorContact;

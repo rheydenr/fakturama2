@@ -73,6 +73,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -113,7 +114,6 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Debitor;
-import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -812,7 +812,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// These variables contain settings that are not in
 		// visible SWT widgets.
-		duedays = document.getDueDays();
+		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
 		addressId = document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
@@ -828,7 +828,7 @@ public class DocumentEditor extends Editor<Document> {
             if (document.getBillingType() == BillingType.DUNNING) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
             } else {
-                dunningLevel = 1;
+                dunningLevel = Integer.valueOf(1);
             }
         }
 
@@ -1494,7 +1494,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		
 		// combo list to select between net or gross
-		comboNetGross = new ComboViewer(documentType.hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER);
+		comboNetGross = new ComboViewer(documentType.hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
 		
 		Map<Integer, String> netGrossContent = new HashMap<>();

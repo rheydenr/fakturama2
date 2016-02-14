@@ -334,7 +334,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("ContactEditor") String message) {
+    public void handleRefreshEvent(@EventTopic(ContactEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(contactListData, getListData(true), false);

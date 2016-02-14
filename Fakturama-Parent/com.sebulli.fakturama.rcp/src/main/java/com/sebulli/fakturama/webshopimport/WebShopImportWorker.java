@@ -412,6 +412,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
          */
         private void createOrderFromXMLOrderNode(OrderType order, String lang) throws FakturamaStoringException {
         	ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, this.webShopImportManager.getContext());   			
+            Date today = Date.from(Instant.now());
         	
     		// Order data
     		String webshopId;
@@ -486,13 +487,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             contactItem.setCompany(contact.getCompany());
             contactItem.setPhone(contact.getPhone());
             contactItem.setEmail(contact.getEmail());
-            contactItem.setValidFrom(Date.from(Instant.now()));
+			contactItem.setValidFrom(today);
             
             Address address = fakturamaModelFactory.createAddress();
             address.setStreet(contact.getStreet());
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
-            address.setValidFrom(Date.from(Instant.now()));
+            address.setValidFrom(today);
             String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
@@ -504,7 +505,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             deliveryAddress.setStreet(contact.getDeliveryStreet());
             deliveryAddress.setZip(contact.getDeliveryZip());
             deliveryAddress.setCity(contact.getDeliveryCity());
-            deliveryAddress.setValidFrom(Date.from(Instant.now()));
+            deliveryAddress.setValidFrom(today);
             countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getDeliveryCountry());
             deliveryAddress.setCountryCode(countryCode);
             
@@ -553,6 +554,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	}
         
         	// Get all the items of this order
+        	int itemIndex = 1;
         	for (ItemType itemType : order.getItem()) {
         	    itemModel = itemType.getModel();
         	    itemName = itemType.getName();
@@ -622,7 +624,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			product.setDescription(itemDescription.toString());
     			product.setPrice1(priceNet.getNumber().numberValue(Double.class));
     			product.setVat(vat);
-    			product.setValidFrom(Date.from(Instant.now()));
+    			product.setValidFrom(today);
     			//product.setProductId(itemType.getProductid());
     
     			// Add the new product to the data base, if it's not existing yet
@@ -632,6 +634,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     
     			// Add this product to the list of items
     			DocumentItem item = fakturamaModelFactory.createDocumentItem();
+    			item.setPosNr(itemIndex++);
     			//(Double.valueOf(itemQuantity), product, itemDiscountDouble);
     			/*
     			 * per default some other values are set from product
@@ -645,7 +648,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			item.setDescription(newOrExistingProduct.getDescription());
     			item.setQuantity(Double.valueOf(itemType.getQuantity()));
     			item.setQuantityUnit(StringUtils.isBlank(itemType.getQunit()) ? newOrExistingProduct.getQuantityUnit() : itemType.getQunit());
-    			item.setValidFrom(Date.from(Instant.now()));
+    			item.setValidFrom(today);
     			item.setProduct(newOrExistingProduct);
     			item.setItemVat(vat);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));
@@ -659,7 +662,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			// Update the modified item data
     			dataSetDocument.addToItems(item);
         	}
-        
+        	
         	// Get the shipping(s)
         	ShippingType shippingType = order.getShipping();
     		// Import the shipping data
@@ -685,7 +688,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			shipping.setShippingValue(shippingGross);
     			shipping.setShippingVat(shippingvat);
     			shipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
-    			shipping.setValidFrom(Date.from(Instant.now()));
+    			shipping.setValidFrom(today);
     			shipping = this.webShopImportManager.getShippingsDAO().findOrCreate(shipping);
     
     			// Set the document entries for the shipping
@@ -717,8 +720,9 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	dataSetDocument.setProgress(10);
         
         	// Set the document data
-        	dataSetDocument.setOrderDate(Date.from(instant));
-        	dataSetDocument.setDateAdded(Date.from(Instant.now()));
+//        	dataSetDocument.setOrderDate(Date.from(instant)); // TODO which date is meant?
+        	dataSetDocument.setDocumentDate(Date.from(instant));
+        	dataSetDocument.setDateAdded(today);
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());
     	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : 0.0);
         	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());

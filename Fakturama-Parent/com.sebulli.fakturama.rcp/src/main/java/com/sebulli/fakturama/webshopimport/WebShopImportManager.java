@@ -33,6 +33,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -58,6 +59,11 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.PaymentEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
+import com.sebulli.fakturama.parts.ShippingEditor;
+import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
@@ -94,7 +100,13 @@ public class WebShopImportManager implements IWebshopConnection {
     
     @Inject 
     private Logger log;
-    
+
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+
     @Inject
 	private IPreferenceStore preferences;
 
@@ -196,12 +208,13 @@ public class WebShopImportManager implements IWebshopConnection {
         	MessageDialog.openInformation(parent, getMsg().importWebshopActionLabel, getMsg().importWebshopInfoSuccess);
 		}
 
-		// Refresh the views - this is done automatically because we use GlazedLists!
-//		ApplicationWorkbenchAdvisor.refreshView(ViewProductTable.ID);
-//		ApplicationWorkbenchAdvisor.refreshView(ViewContactTable.ID);
-//		ApplicationWorkbenchAdvisor.refreshView(ViewPaymentTable.ID);
-//		ApplicationWorkbenchAdvisor.refreshView(ViewShippingTable.ID);
-//		ApplicationWorkbenchAdvisor.refreshView(ViewVatTable.ID);
+		// Refresh the views -> fire some update events
+		// => the messages are handled by list views! 
+		evtBroker.post(ProductEditor.EDITOR_ID, "update");
+		evtBroker.post(ContactEditor.EDITOR_ID, "update");
+		evtBroker.post(PaymentEditor.EDITOR_ID, "update");
+		evtBroker.post(ShippingEditor.EDITOR_ID, "update");
+		evtBroker.post(VatEditor.EDITOR_ID, "update");
 
 		// After the web shop import, open the document view
 		// and set the focus to the new imported orders.

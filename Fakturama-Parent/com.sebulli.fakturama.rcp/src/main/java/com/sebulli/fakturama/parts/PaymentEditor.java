@@ -26,11 +26,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -52,7 +47,6 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
@@ -68,25 +62,8 @@ import com.sebulli.fakturama.resources.core.Icon;
  */
 public class PaymentEditor extends Editor<Payment> {
 
-    @Inject
-    @Translation
-    protected Messages msg;
-
-    @Inject
-    private Logger log;
-
 	// Editor's ID
     public static final String EDITOR_ID = "PaymentEditor";
-
-    /**
-     * Event Broker for receiving update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
-
-    @Inject
-    @Preference
-    private IEclipsePreferences preferences;
     
 //    private EventList<Payment> paymentListData;
 //    private EventList<Account> categories;
@@ -159,8 +136,6 @@ public class PaymentEditor extends Editor<Payment> {
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Payment: " + payment.toString());
         }
-            
-		
 		
 		// If it is a new payment, add it to the payment list and
 		// to the data base
