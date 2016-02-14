@@ -32,6 +32,8 @@ public final class ProductUtil {
      * @param itemNr
      *            The item number of the product
      * @return Picture name as String
+     * 
+     * @deprecated since we store the picture in the database we don't need a picture name.
      */
     public static String createPictureName(String name, String itemNr) {
 

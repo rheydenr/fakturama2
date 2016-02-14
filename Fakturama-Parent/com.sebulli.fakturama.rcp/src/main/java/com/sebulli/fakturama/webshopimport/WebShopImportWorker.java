@@ -33,19 +33,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.javamoney.moneta.FastMoney;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -322,8 +318,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             		try {
 						logBuffer.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						webShopImportManager.getLog().error(e, "couldn't close output stream for webshopimport logfile.");
 					}
             	}
             }
@@ -712,7 +707,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			payment.setName(paymentType.getName());
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);
-    			payment = this.webShopImportManager.getPaymentsDAO().findOrCreate(payment);  // here the validFrom is set, too
+    			payment = this.webShopImportManager.getPaymentsDAO().findOrCreate(payment);  // here the validFrom is also set
             	dataSetDocument.setPayment(payment);
     		}
         
@@ -838,13 +833,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             // Create the URL to the product image
             byte[] picture = null;
             if (!product.getImage().isEmpty()) {
-            	String pictureName = ProductUtil.createPictureName(productName, productModel);
-            	picture = downloadImageFromUrl(shopURL + productImagePath + product.getImage(), pictureName);
-/*
-BufferedInputStream inputStreamReader = new BufferedInputStream(new ByteArrayInputStream(imageByte));
-ImageData imageData = new ImageData(inputStreamReader);
-Image byteImage = new Image(getDisplay(), imageData );
-*/
+            	picture = downloadImageFromUrl(shopURL + productImagePath + product.getImage());
             }
 
             // Convert the quantity string to a double value
@@ -889,49 +878,23 @@ Image byteImage = new Image(getDisplay(), imageData );
         }
 
         /**
-         * Download an image and save it to the file system
+         * Download an image and return it as byte array
          * 
          * @param address
          *            The URL of the image
-         * @param filePath
-         *            The folder to store the image
-         * @param fileName
-         *            The filename of the image
          */
-        private byte[] downloadImageFromUrl(String address, String fileName) {            
+        private byte[] downloadImageFromUrl(String address) {            
             String filePath = generalWorkspace + Constants.PRODUCT_PICTURE_FOLDER;
             
         	// Cancel if address or filename is empty
-        	if (address.isEmpty() || filePath.isEmpty() || fileName.isEmpty())
+        	if (address.isEmpty() || filePath.isEmpty())
         		return null;
-        
-        	// First of all check, if the output file already exists.
-        	Path outputFile = Paths.get(filePath, fileName);
-			if (Files.exists(outputFile)) {
-                Image img;
-				try (InputStream picStream = Files.newInputStream(outputFile)){
-					img = new Image(Display.getCurrent(), picStream);
-					return img.getImageData().data;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		
-        		return null;
-        	}
 
+        	// always get the image from server, we don't store it in file system anymore
             // Connect to the web server
             URI u = URI.create(address);
-            try (InputStream in = u.toURL().openStream();
-            	InputStream picStream = Files.newInputStream(outputFile)) {
-        
-                // Create the destination folder to store the file
-                if (!Files.isDirectory(Paths.get(filePath)))
-                    Files.createDirectories(outputFile);
-                Files.copy(in, outputFile);
-                // TODO check if this works!
-                Image img = new Image(Display.getCurrent(), picStream);
-                return img.getImageData().data;
+            try (InputStream in = u.toURL().openStream()) {
+                return IOUtils.toByteArray(in); 
             }
             catch (MalformedURLException e) {
                 //T: Status message importing data from web shop
@@ -967,15 +930,24 @@ Image byteImage = new Image(getDisplay(), imageData );
 //        
 //        }
         
-        private void debugInputStream(InputStream is) {
-    		String result = getStringFromInputStream(is);
+	/**
+	 * Debug input stream.
+	 *
+	 * @param is
+	 *            the {@link InputStream}
+	 */
+	private void debugInputStream(InputStream is) {
+		String result = getStringFromInputStream(is);
+		System.out.println(result);
+		System.out.println("Done");
+	}
 
-    		System.out.println(result);
-    		System.out.println("Done");
-
-        }
-
-    	// convert InputStream to String
+    	/**
+	     * convert InputStream to String.
+	     *
+	     * @param is the {@link InputStream}
+	     * @return the string from input stream
+	     */
     	private String getStringFromInputStream(InputStream is) {
 
     		BufferedReader br = null;
@@ -1000,9 +972,6 @@ Image byteImage = new Image(getDisplay(), imageData );
     				}
     			}
     		}
-
     		return sb.toString();
-
     	}
-
 	 }

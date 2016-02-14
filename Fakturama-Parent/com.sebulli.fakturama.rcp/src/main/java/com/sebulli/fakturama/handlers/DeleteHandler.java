@@ -11,6 +11,8 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
+import com.sebulli.fakturama.authorization.AllowedFor;
+import com.sebulli.fakturama.authorization.FakturamaRole;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 
 /**
@@ -20,6 +22,7 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 public class DeleteHandler {
 
     @CanExecute
+    @AllowedFor(roles={FakturamaRole.ADMIN, FakturamaRole.USER}) // experimental!!!
     public boolean isEnabled(@Active MPart activePart) {
     	return activePart.getObject() instanceof AbstractViewDataTable;
     }
