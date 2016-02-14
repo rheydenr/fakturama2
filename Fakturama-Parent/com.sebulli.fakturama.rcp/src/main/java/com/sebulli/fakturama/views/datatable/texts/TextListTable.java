@@ -379,6 +379,11 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     }
     
     @Override
+    public TextModule getSelectedObject() {
+        return selectedObject;
+    }
+
+    @Override
     protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<TextModule> gridLayer) {
         hookDoubleClickCommand(nattable, gridLayer, null);
     }

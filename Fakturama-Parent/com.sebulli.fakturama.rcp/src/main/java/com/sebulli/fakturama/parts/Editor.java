@@ -516,6 +516,13 @@ public abstract class Editor<T extends IEntity> {
                     getMDirtyablePart().setDirty(true);
                 }
             });
+        } else if(source instanceof Button) {
+        	((Button)source).addSelectionListener(new SelectionAdapter() {
+        		@Override
+        		public void widgetSelected(SelectionEvent e) {
+        			getMDirtyablePart().setDirty(true);
+        		}
+        	});
         }
     }
 	

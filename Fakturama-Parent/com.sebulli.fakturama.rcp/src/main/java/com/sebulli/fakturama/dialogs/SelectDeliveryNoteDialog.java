@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.dialogs;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,27 +31,21 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.AbstractSelectionDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Delivery;
-import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.parts.DocumentEditor;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
-import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 
 /**
  * Dialog to select a delivery note from a table
  * 
- * @author Gerd Bartelt
  */
 public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> {
 

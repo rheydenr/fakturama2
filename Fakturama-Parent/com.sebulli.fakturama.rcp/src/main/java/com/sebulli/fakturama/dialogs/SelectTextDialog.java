@@ -134,14 +134,9 @@ public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseTextModule") Event event) {
-        if (event != null) {
-            if (textListTable.getSelectedObject() != null) {
-                // only for convenience, the result is already set by NatTable on double click and send to the 
-                // DocumentEditor.
-                setResult(textListTable.getSelectedObject());
-            }
-            super.okPressed();
-        }
+		if (event != null) {
+			okPressed();
+		}
     }
 
     /**

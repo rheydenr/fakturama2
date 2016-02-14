@@ -522,6 +522,10 @@ public class DocumentEditor extends Editor<Document> {
                     deposit = Money.of(document.getPaidValue(), currencyUnit);
                     document.setDeposit(Boolean.TRUE);
                     document.setPaid(Boolean.FALSE);
+                } else {
+            		// set the deposit flag
+           			document.setDeposit(Boolean.FALSE);
+                    document.setPaid(Boolean.TRUE);
                 }
                 if (documentType == DocumentType.INVOICE) {
                     // update dunnings
@@ -2094,12 +2098,11 @@ public class DocumentEditor extends Editor<Document> {
     private void createPaidControls() {
         // The paid label
         bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
-        // FIXME Binding???
-        if (BooleanUtils.toBoolean(document.getPaid())) {
-        	bPaid.setSelection(document.getPaid());
-        }
+        bindModelValue(document, bPaid, Document_.paid.getName());
         if (BooleanUtils.toBoolean(document.getDeposit())) {
-        	bPaid.setSelection(document.getDeposit());
+        	// deposit means that not the whole amount is paid
+        	bPaid.setGrayed(true);
+        	bPaid.setSelection(true);
         	deposit = Money.of(document.getPaidValue(), currencyUnit);
         }
         
@@ -2120,6 +2123,8 @@ public class DocumentEditor extends Editor<Document> {
         	// ... Recreate the paid composite
         	public void widgetSelected(SelectionEvent e) {
         		createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
+        		// remove the grayed state
+        		bPaid.setGrayed(false);
         	}
         });
 
