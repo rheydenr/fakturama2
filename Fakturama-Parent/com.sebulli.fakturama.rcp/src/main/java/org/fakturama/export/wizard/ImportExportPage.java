@@ -24,11 +24,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.fakturama.export.IFakturamaExportService;
 import org.fakturama.wizards.AbstractWorkbenchWizardNode;
 import org.fakturama.wizards.DataTransferWizardCollectionComparator;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IE4WizardDescriptor;
+import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWorkbenchWizard;
 import org.fakturama.wizards.internal.dialogs.DialogUtil;
 import org.fakturama.wizards.internal.dialogs.WizardActivityFilter;
@@ -305,7 +305,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
         };
     }
 	
-	public abstract IFakturamaExportService getExportService();
+	public abstract IFakturamaWizardService getExportService();
     
     /**
      * Uses the dialog store to restore widget values to the values that they

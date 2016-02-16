@@ -11,9 +11,9 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.fakturama.export.IFakturamaExportService;
 import org.fakturama.wizards.ExportWizardRegistry;
 import org.fakturama.wizards.IE4WizardCategory;
+import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWizardRegistry;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -38,7 +38,7 @@ public class ExportPage extends ImportExportPage {
 	 * which contains several exporters.
 	 */
 	@Inject
-	private IFakturamaExportService exportService;
+	private IFakturamaWizardService exportService;
 	
 	@Inject
 	private IEclipseContext ctx;
@@ -104,7 +104,7 @@ public class ExportPage extends ImportExportPage {
 	/**
 	 * @return the exportService
 	 */
-	public IFakturamaExportService getExportService() {
+	public IFakturamaWizardService getExportService() {
 		return exportService;
 	}
 

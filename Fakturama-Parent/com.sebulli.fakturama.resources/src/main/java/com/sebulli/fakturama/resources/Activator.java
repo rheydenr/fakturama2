@@ -18,7 +18,7 @@ public class Activator implements BundleActivator {
 
 	public static final String BUNDLE_ID = "com.sebulli.fakturama.resources";
 	
-	static private Activator defaultInstance;
+	private static Activator defaultInstance;
 
 	private BundleContext context;
 

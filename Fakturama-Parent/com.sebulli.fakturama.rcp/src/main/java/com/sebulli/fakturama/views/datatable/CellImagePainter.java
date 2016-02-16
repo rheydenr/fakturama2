@@ -159,32 +159,31 @@ public class CellImagePainter extends ImagePainter {
      * @return an {@link Image}
      */
     private Image getImage(String path) {
-        Image image = JFaceResources.getImageRegistry().get(path);
+        Image image = JFaceResources.getImage(path);
         if (image == null) {
-            addIconImageDescriptor(path);
-            image = JFaceResources.getImageRegistry().get(path);
+            image = addIconImageDescriptor(path);
         }
         return image;
     }
 
     /**
-     * Add an image descriptor for a specific key and {@link IconSize} to the
+     * Add an image descriptor for a specific key to the
      * global {@link ImageRegistry}
      * 
      * @param name
      * @param is
      * @return <code>true</code> if successfully added, else <code>false</code>
      */
-    private boolean addIconImageDescriptor(String path) {
+    private Image addIconImageDescriptor(String path) {
         try {
             URL fileLocation = new File(path).toURI().toURL();
             ImageDescriptor id = ImageDescriptor.createFromURL(fileLocation);
             JFaceResources.getImageRegistry().put(path, id);
         }
         catch (MissingResourceException | MalformedURLException | IllegalArgumentException e) {
-            return false;
+            return null;
         }
-        return true;
+        return JFaceResources.getImage(path);
     }
 
 }

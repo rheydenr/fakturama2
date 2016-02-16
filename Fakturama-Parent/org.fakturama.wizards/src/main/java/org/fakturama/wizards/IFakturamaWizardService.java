@@ -12,19 +12,17 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package org.fakturama.export;
+package org.fakturama.wizards;
 
 import java.util.List;
 
 import org.eclipse.jface.wizard.IWizardNode;
-import org.fakturama.wizards.IWorkbenchWizard;
-import org.fakturama.wizards.WizardEntry;
 
 /**
  * Service interface for exporter services.
  *
  */
-public interface IFakturamaExportService {
+public interface IFakturamaWizardService {
 
 	/**
 	 * Retrieve a {@link List} of {@link IWizardNode}s which this service offers.

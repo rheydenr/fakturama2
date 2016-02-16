@@ -23,8 +23,8 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.fakturama.export.IFakturamaExportService;
 import org.fakturama.wizards.IExportWizard;
+import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWorkbenchWizard;
 import org.fakturama.wizards.WizardEntry;
 import org.osgi.framework.Bundle;
@@ -37,9 +37,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 
 /**
- * Implementation of the {@link IFakturamaExportService}
+ * Implementation of the {@link IFakturamaWizardService}
  */
-public class FakturamaExportService implements IFakturamaExportService {
+public class FakturamaExportService implements IFakturamaWizardService {
 
 	private List<WizardEntry> wizardNodes = new ArrayList<>();
 

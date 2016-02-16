@@ -15,7 +15,9 @@ import org.fakturama.wizards.IE4WizardDescriptor;
 import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
 import org.fakturama.wizards.model.AdaptableList;
 import org.fakturama.wizards.model.IWorkbenchAdapter;
-import org.osgi.service.url.URLStreamHandlerService;
+
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 
 /**
  * Instances of this class are a collection of WizardCollectionElements,
@@ -35,7 +37,6 @@ public class WizardCollectionElement extends AdaptableList implements
     private AdaptableList wizards = new AdaptableList();
 
 	private IConfigurationElement configElement;
-	URLStreamHandlerService urlStreamHandlerService;
 
     /**
      * Creates a new <code>WizardCollectionElement</code>. Parent can be
@@ -47,18 +48,11 @@ public class WizardCollectionElement extends AdaptableList implements
      * @param urlStreamHandlerService 
      */
     public WizardCollectionElement(String id, String pluginId, String name,
-            WizardCollectionElement parent, URLStreamHandlerService urlStreamHandlerService) {
+            WizardCollectionElement parent) {
         this.name = name;
         this.id = id;
         this.pluginId = pluginId;
         this.parent = parent;
-        this.urlStreamHandlerService = urlStreamHandlerService;
-//        try {
-//			urlStreamHandlerService.openConnection(new URL("icon://COMMAND_LETTER")).getContent();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
     }
 
     /**
@@ -312,7 +306,7 @@ public class WizardCollectionElement extends AdaptableList implements
      * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
      */
     public ImageDescriptor getImageDescriptor(Object object) {
-        return null;//WorkbenchImages.getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
+        return Icon.FOLDER_ICON.getImageDescriptor(IconSize.DefaultIconSize);
     }
 
     /*

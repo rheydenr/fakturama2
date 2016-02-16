@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wizards
-Bundle-SymbolicName: org.fakturama.wizards
+Bundle-SymbolicName: org.fakturama.wizards;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.resources;bundle-version="2.0.0",
@@ -47,7 +47,9 @@ Import-Package: ch.qos.logback.classic,
  org.osgi.service.log,
  org.osgi.util.tracker,
  org.slf4j
-Export-Package: org.fakturama.wizards,
+Export-Package: org.fakturama.wizards;version="2.0.0",
  org.fakturama.wizards.internal.dialogs,
  org.fakturama.wizards.internal.registry,
  org.fakturama.wizards.model
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.fakturama.wizards.Activator

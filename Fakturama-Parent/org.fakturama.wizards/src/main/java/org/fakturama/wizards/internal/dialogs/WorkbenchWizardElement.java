@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.swt.graphics.Image;
+import org.fakturama.wizards.Activator;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IE4WizardDescriptor;
 import org.fakturama.wizards.IWorkbenchWizard;
@@ -156,8 +157,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	        if (iconName == null) {
 				return null;
 			}
-	        
-	        
+	       imageDescriptor = Activator.getDefault().imageDescriptorFromPlugin(configurationElement.getNamespaceIdentifier(), iconName);
 //            imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
 //                    configurationElement.getNamespaceIdentifier(), iconName);    
     	}

@@ -19,7 +19,6 @@ import org.fakturama.wizards.IE4WizardDescriptor;
 import org.fakturama.wizards.activities.WorkbenchActivityHelper;
 import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
-import org.osgi.service.url.URLStreamHandlerService;
 
 import com.sebulli.fakturama.misc.Util;
 
@@ -33,9 +32,6 @@ public class WizardsRegistryReader extends RegistryReader {
 
 	@Inject
 	private IExtensionRegistry registry;
-	
-	@Inject
-	private URLStreamHandlerService urlStreamHandlerService;
 
 	private String pluginPoint;
     
@@ -158,7 +154,7 @@ public class WizardsRegistryReader extends RegistryReader {
             WizardCollectionElement parent, String id, String pluginId,
             String label) {
         WizardCollectionElement newElement = new WizardCollectionElement(id,
-                pluginId, label, parent, urlStreamHandlerService);
+                pluginId, label, parent);
 
         parent.add(newElement);
         return newElement;
@@ -169,7 +165,7 @@ public class WizardsRegistryReader extends RegistryReader {
      * initial elements, if needed.
      */
     protected void createEmptyWizardCollection() {
-        wizardElements = new WizardCollectionElement(ROOT_ENTRY, null, ROOT_ENTRY, null, urlStreamHandlerService);//$NON-NLS-2$//$NON-NLS-1$
+        wizardElements = new WizardCollectionElement(ROOT_ENTRY, null, ROOT_ENTRY, null);//$NON-NLS-2$//$NON-NLS-1$
     }
     
     /**

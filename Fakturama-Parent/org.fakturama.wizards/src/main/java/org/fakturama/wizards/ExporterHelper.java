@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package org.fakturama.export;
+package org.fakturama.wizards;
 
 
 /**

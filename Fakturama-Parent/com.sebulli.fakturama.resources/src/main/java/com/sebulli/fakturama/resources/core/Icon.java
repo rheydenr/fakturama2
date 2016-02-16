@@ -49,6 +49,7 @@ public enum Icon {
 	COMMAND_EXPENDITURE,
 	COMMAND_EXPENDITURE_VOUCHER,
 	COMMAND_EXPORT,
+	FOLDER_ICON,
 	COMMAND_IMPORT,
 	COMMAND_INVOICE,
 	COMMAND_LETTER,
@@ -211,10 +212,10 @@ public enum Icon {
 	 * @return an {@link Image}
 	 */
 	public Image getImage(IconSize is) {
-		Image image = JFaceResources.getImageRegistry().get(this.name()+is.name());
+		Image image = JFaceResources.getImage(this.name()+is.name());
 		if (image == null) {
 			addIconImageDescriptor(this.name(), is);
-			image = JFaceResources.getImageRegistry().get(this.name()+is.name());
+			image = JFaceResources.getImage(this.name()+is.name());
 		}
 		return image;
 	}

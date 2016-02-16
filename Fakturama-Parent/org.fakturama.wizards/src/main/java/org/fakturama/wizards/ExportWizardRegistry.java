@@ -29,6 +29,10 @@ import org.fakturama.wizards.internal.registry.WizardsRegistryReader;
  */
 public class ExportWizardRegistry extends AbstractExtensionWizardRegistry {
 
+	private static final String REGISTRY_READER_ADDON_ID = "fakturama.addon.wizardregistry.reader";
+
+	public static final String PLUGINPOINT_EXPORT_WIZARDS = "exportWizards";
+
 	@Inject
 	private IExtensionRegistry registry;
 	
@@ -41,17 +45,17 @@ public class ExportWizardRegistry extends AbstractExtensionWizardRegistry {
 
 	@Override
 	protected String getPlugin() {
-		return "org.fakturama.export";
+		return Activator.getDefault().getBundle().getSymbolicName();
 	}
 	
 	@PostConstruct
 	public void initialize(MApplication application) {
 		if(wizardsRegistryReader == null) {
 			MAddon addon = application.getAddons().stream().filter(
-					a -> a.getElementId().equals("fakturama.addon.wizardregistry.reader")).findFirst().get();
+					a -> a.getElementId().equals(REGISTRY_READER_ADDON_ID)).findFirst().get();
 			wizardsRegistryReader = (WizardsRegistryReader) addon.getObject();
-			wizardsRegistryReader.setPlugin("org.fakturama.export");
-			wizardsRegistryReader.setPluginPoint("exportWizards");
+			wizardsRegistryReader.setPlugin(getPlugin());
+			wizardsRegistryReader.setPluginPoint(PLUGINPOINT_EXPORT_WIZARDS);
 		}
 	}
 
