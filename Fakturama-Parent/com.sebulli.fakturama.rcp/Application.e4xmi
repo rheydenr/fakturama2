@@ -596,6 +596,8 @@
   <addons xmi:id="_RmPT2utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_RmPT2-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_LyIVYNKOEeWAJOJFtG_Mdg" elementId="fakturama.rcp.addon.closepart" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.addons.ClosePartAddon"/>
+  <addons xmi:id="_YiIAsNQ8EeWToNpiaenuMA" elementId="fakturama.addon.wizardregistry.reader" contributionURI="bundleclass://org.fakturama.wizards/org.fakturama.wizards.internal.registry.WizardsRegistryReadertryReader"/>
+  <addons xmi:id="_9yVlUNQwEeWToNpiaenuMA" elementId="fakturama.addon.wizardregistry" contributionURI="bundleclass://org.fakturama.wizards/org.fakturama.wizards.ExportWizardRegistry"/>
   <categories xmi:id="_no8mgEstEeOZ37-tYt-QvQ" elementId="com.sebulli.fakturama.toolbar.category" name="toolbar commands" description="Commands for Toolbars and Icons"/>
   <categories xmi:id="_ck9sUCTREeS9z6SQNducwg" elementId="com.sebulli.fakturama.menu.category" name="Menubar command category"/>
 </application:Application>

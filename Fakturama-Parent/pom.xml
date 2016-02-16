@@ -27,6 +27,7 @@
 	    <module>org.fakturama.export.base</module>
 	    <module>org.fakturama.import</module>
 	    <module>org.fakturama.export.feature</module>
+	    <module>org.fakturama.wizards</module>
 	</modules>
 	<build>
 		<plugins>

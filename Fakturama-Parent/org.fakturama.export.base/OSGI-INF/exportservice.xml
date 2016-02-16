@@ -4,4 +4,5 @@
    <service>
       <provide interface="org.fakturama.export.IFakturamaExportService"/>
    </service>
+   <reference cardinality="1..1" interface="com.sebulli.fakturama.log.ILogger" name="ILogger" policy="static"/>
 </scr:component>

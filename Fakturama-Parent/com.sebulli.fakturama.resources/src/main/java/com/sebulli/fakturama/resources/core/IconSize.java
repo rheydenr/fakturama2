@@ -49,6 +49,11 @@ public enum IconSize {
 	 */
 	OverlayIconSize("48x48"),
 	
+	/**
+	 * for wizard dialog headers
+	 */
+	WizardHeaderIconSize("75x66"),
+	
 	AppIconSize("app");
 
 	/**

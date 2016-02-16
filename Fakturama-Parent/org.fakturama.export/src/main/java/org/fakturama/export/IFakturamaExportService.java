@@ -17,6 +17,8 @@ package org.fakturama.export;
 import java.util.List;
 
 import org.eclipse.jface.wizard.IWizardNode;
+import org.fakturama.wizards.IWorkbenchWizard;
+import org.fakturama.wizards.WizardEntry;
 
 /**
  * Service interface for exporter services.
@@ -28,5 +30,13 @@ public interface IFakturamaExportService {
 	 * Retrieve a {@link List} of {@link IWizardNode}s which this service offers.
 	 * @return
 	 */
-	public List<AbstractWizardNode> getExporterList();
+	public List<WizardEntry> getExporterList();
+
+	/**
+	 * Creates the given wizard. 
+	 * 
+	 * @param className 
+	 * @return
+	 */
+	public IWorkbenchWizard createWizard(String className);
 }

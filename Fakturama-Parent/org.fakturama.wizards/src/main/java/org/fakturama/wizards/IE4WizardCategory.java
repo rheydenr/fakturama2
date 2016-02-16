@@ -1,4 +1,4 @@
-package org.fakturama.export.wizard;
+package org.fakturama.wizards;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -11,7 +11,10 @@ import org.eclipse.core.runtime.IPath;
  * @since 3.1
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IWizardCategory {
+public interface IE4WizardCategory {
+	
+	public void setLabel(String label);
+	public void setId(String id);
 
 	/**
 	 * Returns the category child object corresponding to the passed path
@@ -22,7 +25,7 @@ public interface IWizardCategory {
 	 *            the search path
 	 * @return the category or <code>null</code>
 	 */
-	IWizardCategory findCategory(IPath path);
+	IE4WizardCategory findCategory(IPath path);
 
 	/**
 	 * Find a wizard that has the provided id. This will search recursivly over
@@ -32,14 +35,14 @@ public interface IWizardCategory {
 	 *            the id to search for
 	 * @return the wizard or <code>null</code>
 	 */
-	IWizardDescriptor findWizard(String id);
+	IE4WizardDescriptor findWizard(String id);
 
 	/**
 	 * Return the immediate child categories.
 	 * 
 	 * @return the child categories. Never <code>null</code>.
 	 */
-	IWizardCategory[] getCategories();
+	IE4WizardCategory[] getCategories();
 
 	/**
 	 * Return the identifier of this category.
@@ -60,7 +63,7 @@ public interface IWizardCategory {
 	 * 
 	 * @return the parent category. May be <code>null</code>.
 	 */
-	IWizardCategory getParent();
+	IE4WizardCategory getParent();
 
 	/**
 	 * Return this wizards path. The segments of this path will correspond to
@@ -76,5 +79,5 @@ public interface IWizardCategory {
 	 * 
 	 * @return the wizards in this category. Never <code>null</code>
 	 */
-	IWizardDescriptor[] getWizards();
+	IE4WizardDescriptor[] getWizards();
 }

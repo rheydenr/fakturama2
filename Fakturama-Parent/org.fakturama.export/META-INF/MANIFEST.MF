@@ -1,12 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Export Wizard Service
-Bundle-SymbolicName: org.fakturama.export
+Bundle-SymbolicName: org.fakturama.export;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: Fakturama.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.fakturama.export;version="2.0.0"
-Require-Bundle: org.eclipse.jface,
- javax.inject;bundle-version="1.0.0",
- org.eclipse.equinox.ds;bundle-version="1.4.300"
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.jface.wizard,
+ org.fakturama.wizards

@@ -14,6 +14,10 @@
 
 package org.fakturama.export.wizard;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -23,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 
 /**
@@ -31,32 +36,41 @@ import com.sebulli.fakturama.i18n.Messages;
  */
 public class EmptyWizardPage extends WizardPage {
 
-	Messages msg;
+	private static final String WIZARD_PAGE_NAME = "Wizard Page";
+	
+	@Inject
+	private Messages msg;
+	
+	@Inject
+	private ILogger log;
+	
 	private Image previewImage = null;
+	
+	public EmptyWizardPage() {
+		super(WIZARD_PAGE_NAME);
+	}
 	
 	/**
 	 * Constructor Create the page and set title and message.
 	 */
 	public EmptyWizardPage(String title, String message) {
-		super("Wizard Page");
+		super(WIZARD_PAGE_NAME);
 		//T: Title of the Sales Export Wizard Page 1
 		setTitle(title);
 		//T: Text of the Sales Export Wizard Page 1
 		setMessage( message );
 	}
+	
 	/**
-	 * Constructor Create the page and set title, message and preview image
+	 * Create the page and set title, message and preview image
 	 */
-	public EmptyWizardPage(String title, String message, Image previewImage) {
-		super("Wizard Page");
+	@PostConstruct
+	public void initialize(IEclipseContext ctx) {
 		//T: Title of the Sales Export Wizard Page 1
-		setTitle(title);
+		setTitle((String) ctx.get("title"));
 		//T: Text of the Sales Export Wizard Page 1
-		setMessage( message );
-		
-// 	Image prodImage = resourceManager.getProgramImage(display, ProgramImages.NO_PICTURE);
-
-		this.previewImage = previewImage;
+		setMessage((String) ctx.get("description"));
+		this.previewImage = (Image) ctx.get("previewimage");
 	}
 
 	/**
@@ -81,13 +95,11 @@ public class EmptyWizardPage extends WizardPage {
 				preview.setImage(previewImage);
 			}
 			catch (Exception e) {
-//				Logger.logError(e, "Icon not found");
+				log.error(e, "Icon not found");
 			}
-			
 		}
 
 		setControl(top);
-
 	}
 
 }

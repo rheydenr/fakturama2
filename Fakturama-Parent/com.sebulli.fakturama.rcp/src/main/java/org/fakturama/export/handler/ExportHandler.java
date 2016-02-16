@@ -19,22 +19,34 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.fakturama.export.wizard.FakturamaExporterWizardsSelector;
+import org.fakturama.export.wizard.FakturamaImportExportWizard;
 
 /**
  * Main entry point for the export wizards. This handler calls
  * the initial export wizard selection dialog from which one
  * can start a single export wizard.
+ * <p>
+ * This class is similar to org.eclipse.ui.internal.handlers.WizardHandler.
  *
  */
 public class ExportHandler {
-	
+    private static final int SIZING_WIZARD_WIDTH = 470;
+    private static final int SIZING_WIZARD_HEIGHT = 550;
+
 	@Execute
 	public void execute(IEclipseContext ctx, Shell shell) {
-		// create the selection wizard dialog
-		FakturamaExporterWizardsSelector fakturamaExporterWizardsSelector = ContextInjectionFactory.make(FakturamaExporterWizardsSelector.class, ctx);
-		WizardDialog dlg = new WizardDialog(shell, fakturamaExporterWizardsSelector);
-		dlg.open();
+		// create the wizard selection dialog
+		ctx.set(FakturamaImportExportWizard.WIZARD_MODE, FakturamaImportExportWizard.EXPORT);
+		FakturamaImportExportWizard wizard = ContextInjectionFactory.make(FakturamaImportExportWizard.class, ctx);
+		// IDialogSettings omitted since we have no WorkbenchPlugin which holds these settings
+		// FIXME: How and where do we store dialog settings??? ApplicationModel?
+		wizard.setForcePreviousAndNextButtons(true);
+		WizardDialog dialog = new WizardDialog(shell, wizard);
+		dialog.create();
+		dialog.getShell().setSize(
+				Math.max(SIZING_WIZARD_WIDTH, dialog.getShell()
+						.getSize().x), SIZING_WIZARD_HEIGHT);
+		dialog.open();
 	}
 		
 }

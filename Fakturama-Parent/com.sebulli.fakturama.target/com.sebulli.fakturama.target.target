@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="365">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="368">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
@@ -92,15 +92,6 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0.201510152238"/>
-<unit id="org.javamoney.feature.feature.group" version="1.0.1.201510152238"/>
-<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.35"/>
-<unit id="org.apache.commons.feature.feature.group" version="3.3.0"/>
-<unit id="org.slf4j.osgi.feature.feature.group" version="1.0.0.201510152238"/>
-<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
-<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201602010922"/>
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
@@ -115,6 +106,15 @@
 <unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201602111357"/>
 <unit id="org.eclipse.nebula.cwt.feature.feature.group" version="0.9.0.201602111357"/>
 <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0"/>
+<unit id="org.slf4j.osgi.feature.feature.group" version="1.0.0"/>
+<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.38"/>
+<unit id="org.hsql.jdbc.feature.feature.group" version="2.3.0"/>
+<unit id="org.javamoney.feature.feature.group" version="1.0.1"/>
+<unit id="org.apache.commons.feature.feature.group" version="3.3.0"/>
+<repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -24,9 +23,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -38,7 +34,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dialogs.SelectContactDialog;
 import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.dialogs.SelectProductDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
@@ -46,12 +41,10 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
-import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -67,12 +60,6 @@ public class ItemListBuilder {
     @Inject
     @Translation
     protected Messages msg;
-
-    @Inject
-    private EModelService modelService;
-    
-    @Inject
-    private MApplication application;
     
     @Inject
     private IEclipseContext context;

@@ -1,7 +1,8 @@
-package org.fakturama.export.wizard;
+package org.fakturama.wizards;
 
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * Base interface for all wizards defined via workbench extension points.
@@ -12,10 +13,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  * @since 3.1
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IWizardDescriptor {
+public interface IE4WizardDescriptor {
+	
+	public String getName();
+	public void setName(String name);
 
 	/**
-	 * Answer the selection for the reciever based on whether the it can handle
+	 * Answer the selection for the receiver based on whether the it can handle
 	 * the selection. If it can return the selection. If it can handle the
 	 * adapted to IResource value of the selection. If it satisfies neither of
 	 * these conditions return an empty IStructuredSelection.
@@ -25,6 +29,14 @@ public interface IWizardDescriptor {
 	 *            IStructuredSelection
 	 */
 	IStructuredSelection adaptedSelection(IStructuredSelection selection);
+	
+	/**
+	 * Create a wizard.
+	 * 
+	 * @return the wizard 
+	 * @throws CoreException 
+	 */
+	IWorkbenchWizard createWizard() throws CoreException;
 
 	/**
 	 * Return the description.
@@ -40,20 +52,12 @@ public interface IWizardDescriptor {
 	 */
 	String[] getTags();
 	
-//	/**
-//	 * Create a wizard.
-//	 * 
-//	 * @return the wizard 
-//	 * @throws CoreException thrown if there is a problem creating the wizard
-//	 */
-//	AbstraW createWizard() throws CoreException;
-	
 	/**
 	 * Return the description image for this wizard.
 	 * 
 	 * @return the description image for this wizard or <code>null</code>
 	 */
-	public ImageDescriptor getDescriptionImage();
+	public Image getDescriptionImage();
 
 	/**
 	 * Return the help system href for this wizard.
@@ -67,7 +71,7 @@ public interface IWizardDescriptor {
 	 * 
 	 * @return the category or <code>null</code>
 	 */
-	IWizardCategory getCategory();
+	IE4WizardCategory getCategory();
 	
 	/**
 	 * Answer <code>true</code> if this wizard is able to finish without
@@ -91,4 +95,9 @@ public interface IWizardDescriptor {
 	 * @return <code>true</code> if this wizard has wizard pages
 	 */
 	boolean hasPages();
+	public void setDescription(String description);
+	public void setCategory(IE4WizardCategory category);
+	public void setDescriptionImage(Image descriptionImage);
+	public String getId();
+	
 }

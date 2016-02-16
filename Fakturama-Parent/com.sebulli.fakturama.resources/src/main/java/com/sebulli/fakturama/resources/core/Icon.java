@@ -187,6 +187,17 @@ public enum Icon {
 	// 48x64 overlay
 	OVERLAY_CHECKED,
 	
+	// from org.eclipse.ui
+	// 75x66
+	EXPORT_WIZ,
+	EXPORT_DIR,
+	EXPORT_PREF,
+	IMPORT_WIZ,
+	IMPORT_DIR,
+	IMPORT_PREF,
+	NEW_WIZ,
+	WORKSET,
+	
 	ABOUT_ICON;	
 	// @formatter:on
 
