@@ -2,8 +2,8 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**

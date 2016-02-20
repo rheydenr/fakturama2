@@ -30,14 +30,12 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 
 /**
  *
  */
 public class Activator implements BundleActivator {
-
 	
 	private static Activator defaultInstance;
 

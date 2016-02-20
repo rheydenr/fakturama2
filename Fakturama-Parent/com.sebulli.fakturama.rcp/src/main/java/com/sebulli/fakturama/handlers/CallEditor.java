@@ -104,7 +104,7 @@ public class CallEditor {
     @Translation
     protected Messages msg;
 
-    @Inject
+    @Inject @Optional
     private IPreferenceStore preferences;
 
 	@Inject
@@ -131,7 +131,7 @@ public class CallEditor {
             IEclipseContext stackContext = null;
             List<MContext> stackElements = modelService.findElements(documentPartStack, null, MContext.class, null);
             for (MContext contexts : stackElements) {
-                if(((MPart)contexts).getElementId().contentEquals(DOCVIEW_PART_ID)) {
+                if(((MPart)contexts).getElementId() != null && ((MPart)contexts).getElementId().contentEquals(DOCVIEW_PART_ID)) {
                     stackContext = contexts.getContext();
                     break;
                 }

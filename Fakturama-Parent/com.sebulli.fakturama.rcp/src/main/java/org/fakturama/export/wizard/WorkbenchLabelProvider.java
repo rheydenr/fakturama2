@@ -116,30 +116,6 @@ public class WorkbenchLabelProvider extends LabelProvider implements
         return (IWorkbenchAdapter)Util.getAdapter(o, IWorkbenchAdapter.class);
     }
 
-//    /**
-//     * Returns the implementation of IWorkbenchAdapter2 for the given
-//     * object.  
-//     * @param o the object to look up.
-//     * @return IWorkbenchAdapter2 or<code>null</code> if the adapter is not defined or the
-//     * object is not adaptable. 
-//     */
-//    protected final IWorkbenchAdapter2 getAdapter2(Object o) {
-//        return (IWorkbenchAdapter2)Util.getAdapter(o, IWorkbenchAdapter2.class);
-//    }
-//
-//	/**
-//	 * Returns the implementation of IWorkbenchAdapter3 for the given object.
-//	 * 
-//	 * @param o
-//	 *            the object to look up.
-//	 * @return IWorkbenchAdapter3 or<code>null</code> if the adapter is not
-//	 *         defined or the object is not adaptable.
-//	 * @since 3.7
-//	 */
-//	protected final IWorkbenchAdapter3 getAdapter3(Object o) {
-//		return (IWorkbenchAdapter3) Util.getAdapter(o, IWorkbenchAdapter3.class);
-//	}
-
 	/**
 	 * Lazy load the resource manager
 	 * 

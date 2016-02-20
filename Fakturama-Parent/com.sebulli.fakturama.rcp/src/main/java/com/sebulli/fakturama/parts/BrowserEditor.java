@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -42,6 +43,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -111,12 +113,12 @@ public class BrowserEditor {
         if (this.isFakturamaProjectUrl) {
             url = OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL;
         } else {
-            url = preferences.getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
+            url = getPreferences().getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
             if (url.isEmpty() || url.equals(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)) {
                 url = "file://" +
-                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
+                    StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
                     StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
                     "Start/start.html";
             }
@@ -129,7 +131,7 @@ public class BrowserEditor {
             return;
         }
 		
-		showURLbar = preferences.getBoolean(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR);
+		showURLbar = getPreferences().getBoolean(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR);
 
 		GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
@@ -277,7 +279,7 @@ public class BrowserEditor {
 			int browserStyle = SWT.NONE;
 			
 			// Use the browser style from the preferences
-			int browserType = preferences.getInt(Constants.PREFERENCES_BROWSER_TYPE);
+			int browserType = getPreferences().getInt(Constants.PREFERENCES_BROWSER_TYPE);
 			
 			if (browserType == 1)
 				browserStyle = SWT.WEBKIT;
@@ -299,7 +301,7 @@ public class BrowserEditor {
 						if (urlText != null) {
 						    
 							String startUrl = "file://" +
-				                    StringUtils.appendIfMissing(preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
+				                    StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
 				                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
 				                    "Start/start.html";
 
@@ -407,5 +409,22 @@ public class BrowserEditor {
 	 */
 	public void testParcelServiceForm() {
 	//	ParcelServiceFormFiller.testParcelServiceForm(browser);  
+	}
+
+	/**
+	 * @return the preferences
+	 */
+	private IPreferenceStore getPreferences() {
+		if(preferences == null) {
+			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+		}
+		return preferences;
+	}
+
+	/**
+	 * @param preferences the preferences to set
+	 */
+	private void setPreferences(IPreferenceStore preferences) {
+		this.preferences = preferences;
 	}
 }

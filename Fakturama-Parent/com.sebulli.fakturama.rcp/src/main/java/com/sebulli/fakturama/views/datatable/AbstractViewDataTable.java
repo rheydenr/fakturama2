@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -68,6 +69,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -107,7 +109,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     public static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
 
     @Inject
-    protected IPreferenceStore eclipsePrefs;
+	private IPreferenceStore eclipsePrefs;
  
     @Inject
     protected Logger log;
@@ -240,7 +242,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 */
     public void onStart(NatTable natTable) {
         Properties properties = new Properties();
-        String requestedWorkspace = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE);
+        String requestedWorkspace = getEclipsePrefs().getString(Constants.GENERAL_WORKSPACE);
         Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
 
         try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
@@ -261,7 +263,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      */
     public void onStop(NatTable natTable) {
         Properties properties = new Properties();
-        String requestedWorkspace = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE);
+        String requestedWorkspace = getEclipsePrefs().getString(Constants.GENERAL_WORKSPACE);
         Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
         if(Files.notExists(propertiesFile)) {
             try {
@@ -632,4 +634,23 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
         return selectionStyle;
     }
+
+
+	/**
+	 * @return the eclipsePrefs
+	 */
+	protected IPreferenceStore getEclipsePrefs() {
+		if(eclipsePrefs == null) {
+			eclipsePrefs = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+		}
+		return eclipsePrefs;
+	}
+
+
+	/**
+	 * @param eclipsePrefs the eclipsePrefs to set
+	 */
+	protected void setEclipsePrefs(IPreferenceStore eclipsePrefs) {
+		this.eclipsePrefs = eclipsePrefs;
+	}
 }

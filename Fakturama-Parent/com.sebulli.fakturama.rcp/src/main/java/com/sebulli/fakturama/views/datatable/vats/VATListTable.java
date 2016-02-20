@@ -13,8 +13,10 @@ package com.sebulli.fakturama.views.datatable.vats;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -93,6 +95,11 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 
     @Inject
     private VatCategoriesDAO vatCategoriesDAO;
+
+    @Inject
+    @Preference
+    private IEclipsePreferences preferences;
+
     
     private EventList<VAT> vatListData;
     private EventList<VATCategory> categories;
@@ -282,7 +289,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
      * @return
      */
     private long getDefaultVATId() {
-        return eclipsePrefs.getLong(Constants.DEFAULT_VAT);
+        return preferences.getLong(Constants.DEFAULT_VAT, 1L);
     }
     
     /**

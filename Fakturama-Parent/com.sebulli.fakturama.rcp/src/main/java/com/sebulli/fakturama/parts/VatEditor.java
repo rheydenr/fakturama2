@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -53,7 +54,6 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 

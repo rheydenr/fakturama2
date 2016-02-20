@@ -5,6 +5,7 @@ package com.sebulli.fakturama.parts.converter;
 
 import org.eclipse.core.databinding.conversion.Converter;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.ItemListTypeCategory;

@@ -101,4 +101,6 @@ Import-Package: javax.inject;version="1.0.0",
 Service-Component: OSGI-INF/parcelservice.xml
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.fakturama.export.handler
+Export-Package: com.sebulli.fakturama.dao,
+ com.sebulli.fakturama.dto,
+ org.fakturama.export.handler

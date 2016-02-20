@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.osgi.service.log.LogService;
 
 /**
  *	Template implementation of a registry reader that creates objects
@@ -25,6 +28,9 @@ import org.eclipse.core.runtime.IExtensionRegistry;
  */
 public abstract class RegistryReader {
 	
+	@Inject
+	protected LogService logger;
+
     // for dynamic UI - remove this cache to avoid inconsistency
     //protected static Hashtable extensionPoints = new Hashtable();
     /**
@@ -37,7 +43,7 @@ public abstract class RegistryReader {
      * Logs the error in the workbench log using the provided
      * text and the information in the configuration element.
      */
-    protected static void logError(IConfigurationElement element, String text) {
+    protected void logError(IConfigurationElement element, String text) {
         IExtension extension = element.getDeclaringExtension();
         StringBuffer buf = new StringBuffer();
         buf
@@ -49,13 +55,13 @@ public abstract class RegistryReader {
         	buf.append(id);
         }
         buf.append(": " + text);//$NON-NLS-1$
-//        WorkbenchPlugin.log(buf.toString());
+        logger.log(LogService.LOG_ERROR, buf.toString());//$NON-NLS-1$
     }
 
     /**
      * Logs a very common registry error when a required attribute is missing.
      */
-    protected static void logMissingAttribute(IConfigurationElement element,
+    protected void logMissingAttribute(IConfigurationElement element,
             String attributeName) {
         logError(element,
                 "Required attribute '" + attributeName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
@@ -64,7 +70,7 @@ public abstract class RegistryReader {
     /**
      * Logs a very common registry error when a required child is missing.
      */
-    protected static void logMissingElement(IConfigurationElement element,
+    protected void logMissingElement(IConfigurationElement element,
             String elementName) {
         logError(element,
                 "Required sub element '" + elementName + "' not defined");//$NON-NLS-2$//$NON-NLS-1$
@@ -73,12 +79,12 @@ public abstract class RegistryReader {
     /**
      * Logs a registry error when the configuration element is unknown.
      */
-    protected static void logUnknownElement(IConfigurationElement element) {
+    protected  void logUnknownElement(IConfigurationElement element) {
         logError(element, "Unknown extension tag found: " + element.getName());//$NON-NLS-1$
     }
 
     /**
-     * Apply a reproducable order to the list of extensions
+     * Apply a reproducible order to the list of extensions
      * provided, such that the order will not change as
      * extensions are added or removed.
      * @param extensions the extensions to order
@@ -149,7 +155,7 @@ public abstract class RegistryReader {
      * supplied plugin ID and extension point.
      * 
      * @param registry the registry to read from
-     * @param pluginId the plugin id of the extenion point
+     * @param pluginId the plugin id of the extension point
      * @param extensionPoint the extension point id
      */
     public void readRegistry(IExtensionRegistry registry, String pluginId,

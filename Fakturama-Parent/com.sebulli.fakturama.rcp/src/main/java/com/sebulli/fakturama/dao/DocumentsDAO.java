@@ -31,7 +31,6 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;

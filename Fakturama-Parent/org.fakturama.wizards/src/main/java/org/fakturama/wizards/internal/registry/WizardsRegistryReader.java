@@ -16,9 +16,11 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.fakturama.wizards.IE4WizardDescriptor;
+import org.fakturama.wizards.WorkbenchException;
 import org.fakturama.wizards.activities.WorkbenchActivityHelper;
 import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
+import org.osgi.service.log.LogService;
 
 import com.sebulli.fakturama.misc.Util;
 
@@ -89,12 +91,12 @@ public class WizardsRegistryReader extends RegistryReader {
         }
     }
 
-    private static final Comparator comparer = new Comparator() {
+    private static final Comparator<CategoryNode> comparer = new Comparator<CategoryNode>() {
         private Collator collator = Collator.getInstance();
 
-        public int compare(Object arg0, Object arg1) {
-            String s1 = ((CategoryNode) arg0).getPath();
-            String s2 = ((CategoryNode) arg1).getPath();
+        public int compare(CategoryNode arg0, CategoryNode arg1) {
+            String s1 = arg0.getPath();
+            String s2 = arg1.getPath();
             return collator.compare(s1, s2);
         }
     };
@@ -136,7 +138,6 @@ public class WizardsRegistryReader extends RegistryReader {
     private WizardCollectionElement createCollectionElement(WizardCollectionElement parent, IConfigurationElement element) {
         WizardCollectionElement newElement = new WizardCollectionElement(
 				element, parent);
-
         parent.add(newElement);
         return newElement;		
 	}
@@ -187,8 +188,8 @@ public class WizardsRegistryReader extends RegistryReader {
         Category category = null;
         try {
             category = new Category(config);
-        } catch (Exception e) {
-//            WorkbenchPlugin.log("Cannot create category: ", e.getStatus());//$NON-NLS-1$
+        } catch (WorkbenchException e) {
+            logger.log(LogService.LOG_ERROR, "Cannot create category: ", e);//$NON-NLS-1$
             return;
         }
 
@@ -539,7 +540,7 @@ public class WizardsRegistryReader extends RegistryReader {
             WizardCollectionElement collection = (WizardCollectionElement) wizards[nX];
             IE4WizardDescriptor element = collection.findWizard(id, true);
 //            if (element != null && !WorkbenchActivityHelper.restrictUseOf(element)) {
-//				return element;
+//				return element.;
 //			}
         }
         return null;

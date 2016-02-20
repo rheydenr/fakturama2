@@ -89,11 +89,15 @@ public class FakturamaExportService implements IFakturamaWizardService {
 				return (IWorkbenchWizard) ContextInjectionFactory.make(wizardClass, ctx);
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e, "error while creating a wizard ("+className+")");
 		}
 		
 		return null;
+	}
+
+	@Override
+	public String getExtensionPointPlugin() {
+		return FrameworkUtil.getBundle(getClass()).getSymbolicName();
 	}
 
 }

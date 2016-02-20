@@ -60,7 +60,7 @@ public class OpenBrowserEditorHandler {
     @Inject
     private EPartService partService;
     
-    @Inject
+    @Inject @Optional
     private IPreferenceStore preferences;
 
     /**

@@ -22,9 +22,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.DummyStringCategory;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 
 /**

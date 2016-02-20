@@ -16,13 +16,24 @@ package org.fakturama.export.wizard.contacts;
 
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.fakturama.export.wizard.OOCalcExporter;
+
+import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.model.Contact;
 
 /**
  * This class generates a list with all contacts
  * 
  * @author Gerd Bartelt
  */
-public class AddressListExport /*extends OOCalcExporter*/{
+public class AddressListExport extends OOCalcExporter {
+	
+	@Inject
+	private ContactsDAO contactsDAO;
 	
 	/**
 	 * Constructor
@@ -39,18 +50,18 @@ public class AddressListExport /*extends OOCalcExporter*/{
 	 * 			<code>true</code> if the export was successful
 	 */
 	public boolean export() {
-//
-//		// Try to generate a spreadsheet
-//		if (!createSpreadSheet())
-//			return false;
-//
-//		// Get all undeleted contacts
-//		ArrayList<DataSetContact> contacts = Data.INSTANCE.getContacts().getActiveDatasets();
-//
-//		// Counter for the current row and columns in the Calc document
-//		int row = 0;
-//		int col = 0;
-//
+
+		// Try to generate a spreadsheet
+		if (!createSpreadSheet())
+			return false;
+
+		// Get all undeleted contacts
+		List<Contact> contacts = contactsDAO.findAll();
+
+		// Counter for the current row and columns in the Calc document
+		int row = 0;
+		int col = 0;
+
 //		//T: Table heading 
 //		String deliveryAddress = " ("+_("Delivery Address")+")";
 //

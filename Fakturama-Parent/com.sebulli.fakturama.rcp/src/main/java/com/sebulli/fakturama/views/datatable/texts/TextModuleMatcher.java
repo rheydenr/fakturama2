@@ -2,8 +2,8 @@ package com.sebulli.fakturama.views.datatable.texts;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.TextModule;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**

@@ -262,21 +262,21 @@ private Menu createContextMenu(NatTable natTable) {
         //    propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
         //}
 
-        if (containsOptionalItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
+        if (containsOptionalItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
         }
 
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
         
-        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
         }
         
-        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
         }
         
-        if (eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
         }        
         
@@ -289,7 +289,7 @@ private Menu createContextMenu(NatTable natTable) {
             // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
             
-            if (containsDiscountedItems || eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
+            if (containsDiscountedItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
                 propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
             } 
             

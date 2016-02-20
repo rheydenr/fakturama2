@@ -9,7 +9,7 @@
             application="org.eclipse.e4.ui.workbench.swt.E4Application">
          <property
                name="clearPersistedState"
-               value="true">
+               value="false">
          </property>
          <property
                name="applicationCSS"

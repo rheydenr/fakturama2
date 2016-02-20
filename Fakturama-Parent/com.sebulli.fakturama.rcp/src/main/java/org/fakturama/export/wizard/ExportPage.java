@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -95,7 +94,7 @@ public class ExportPage extends ImportExportPage {
 	private IWizardRegistry getExportWizardRegistry() {
 		if(exportWizardRegistry == null) {
 			MAddon addon = application.getAddons().stream().filter(
-					a -> a.getElementId().equals("fakturama.addon.wizardregistry")).findFirst().get();
+					a -> a.getElementId().equals(ExportWizardRegistry.REGISTRY_ADDON_ID)).findFirst().get();
 			exportWizardRegistry = (ExportWizardRegistry) addon.getObject();
 		}
 		return exportWizardRegistry;
@@ -115,12 +114,12 @@ public class ExportPage extends ImportExportPage {
 	}
 	
 	protected void restoreWidgetValues(){
-//        IE4WizardCategory exportRoot = WorkbenchPlugin.getDefault().getExportWizardRegistry().getRootCategory();
-//        expandPreviouslyExpandedCategories(STORE_EXPANDED_EXPORT_CATEGORIES, exportRoot, exportTree.getViewer());
-//        selectPreviouslySelected(STORE_SELECTED_EXPORT_WIZARD_ID, exportRoot, exportTree.getViewer());       
+        IE4WizardCategory exportRoot = getExportWizardRegistry().getRootCategory();
+        expandPreviouslyExpandedCategories(STORE_EXPANDED_EXPORT_CATEGORIES, exportRoot, exportTree.getViewer());
+        selectPreviouslySelected(STORE_SELECTED_EXPORT_WIZARD_ID, exportRoot, exportTree.getViewer());       
         super.restoreWidgetValues();
 	}
-//	
+	
 //	protected ITriggerPoint getTriggerPoint(){
 //		return getWorkbench().getActivitySupport()
 //    		.getTriggerPointManager().getTriggerPoint(WorkbenchTriggerPoints.EXPORT_WIZARDS);

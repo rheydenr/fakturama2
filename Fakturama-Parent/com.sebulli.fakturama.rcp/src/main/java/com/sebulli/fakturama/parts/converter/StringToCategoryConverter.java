@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.databinding.conversion.Converter;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.AbstractCategory;
 
 /**

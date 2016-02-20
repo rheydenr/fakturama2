@@ -23,7 +23,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -107,7 +106,7 @@ public class WebShopImportManager implements IWebshopConnection {
     @Inject
     protected IEventBroker evtBroker;
 
-    @Inject
+    @Inject @Optional
 	private IPreferenceStore preferences;
 
     @Inject IEclipseContext context;
@@ -137,21 +136,15 @@ public class WebShopImportManager implements IWebshopConnection {
 	// Configuration of the web shop request
 	private boolean getProducts, getOrders;
 
-	private String generalWorkspace;
-
 	@CanExecute
 	public boolean canExecute() {
 	    // cancel if the webshop is disabled.
         return getPreferences().getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED);
 	}
 	
-	@PostConstruct
-	public void initialize() {
 /* TODO use it!
 		XMLParserActivator
 */
-		generalWorkspace = getPreferences().getString(Constants.GENERAL_WORKSPACE);
-	}
 
 	/**
 	 * Prepare the web shop import to request products and orders.
@@ -235,7 +228,7 @@ public class WebShopImportManager implements IWebshopConnection {
 		if (getOrderstosynchronize().isEmpty())
 			return;
 
-		try (Writer writer = new FileWriter(generalWorkspace + "/orders2sync.txt")) {
+		try (Writer writer = new FileWriter(getGeneralWorkspace() + "/orders2sync.txt")) {
 			getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
 		}
 		catch (IOException e) {
@@ -290,7 +283,7 @@ public class WebShopImportManager implements IWebshopConnection {
     @Override
 	public void readOrdersToSynchronize() {
         setOrderstosynchronize(new Properties());
-        try (Reader reader = new FileReader(generalWorkspace + "/orders2sync.txt")) {
+        try (Reader reader = new FileReader(getGeneralWorkspace() + "/orders2sync.txt")) {
             getOrderstosynchronize().load(reader);
         } catch (FileNotFoundException fnex) {
             //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
@@ -486,5 +479,12 @@ public class WebShopImportManager implements IWebshopConnection {
 	@Override
 	public final void setData(Object data) {
 		this.data = data;
+	}
+
+	/**
+	 * @return the generalWorkspace
+	 */
+	private String getGeneralWorkspace() {
+		return getPreferences().getString(Constants.GENERAL_WORKSPACE);
 	}
 }

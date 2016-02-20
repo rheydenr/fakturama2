@@ -78,7 +78,7 @@ public class CreateOODocumentHandler {
     @Inject
     protected IEclipseContext context;
 
-    @Inject
+    @Inject @Optional
     private IPreferenceStore preferences;
 
     @Inject

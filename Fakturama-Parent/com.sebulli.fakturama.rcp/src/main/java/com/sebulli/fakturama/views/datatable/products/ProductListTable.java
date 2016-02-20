@@ -261,7 +261,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 					// Fill the price column with the net or the gross price (
 					// for quantity = 1)
 					String priceKey = "";
-					if (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1) {
+					if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1) {
 						priceKey = "$Price1Gross";
 //                    cell.setText(new Price(product.getDoubleValueByKey("price1"), product.getDoubleValueByKeyFromOtherTable("vatid.VATS:value")).getUnitNet()
 //                            .asFormatedString());

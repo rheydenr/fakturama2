@@ -32,12 +32,12 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.VATCategory_;
 import com.sebulli.fakturama.model.VoucherCategory;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 
 /**
  *

@@ -5,6 +5,8 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -18,13 +20,19 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
 /**
- * Export wizard to export sales
+ * Export wizard to export an address list
  * 
  */
 public class AddressListExportWizard extends Wizard implements IExportWizard {
 
+	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
+
+	public static final String WIZARD_DESCRIPTION = "description";
+
+	public static final String WIZARD_TITLE = "title";
+
 	@Inject
-//	@Translation
+	@Translation
 	protected Messages msg;
 	
 	@Inject
@@ -35,24 +43,6 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 
 	@Inject
 	private IEclipseContext ctx;
-	
-	/**
-	 * Adds the first page to the wizard
-	 */
-	public AddressListExportWizard() { }
-	
-	@PostConstruct
-	public void initialize() {
-		//T: Title of the export wizard
-		setWindowTitle(msg.pageExport);
-		//T: Title of the export wizard
-		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS);
-		ctx.set("title", msg.wizardExportContactsAllcontactsTitle);
-		ctx.set("description", msg.wizardExportContactsAllcontactsDescription);
-		ctx.set("previewimage", previewImage);
-		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
-		addPage(page1);
-	}
 
 	/**
 	 * Performs any actions appropriate in response to the user having pressed
@@ -66,9 +56,19 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 		return exporter.export();
 	}
 
+	/**
+	 * Adds the first (and only) page to the wizard
+	 */
+	@PostConstruct
 	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-//		initialize();
+	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
+		setWindowTitle(msg.pageExport);
+		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS);
+		ctx.set(WIZARD_TITLE, msg.wizardExportContactsAllcontactsTitle);
+		ctx.set(WIZARD_DESCRIPTION, msg.wizardExportContactsAllcontactsDescription);
+		ctx.set(WIZARD_PREVIEW_IMAGE, previewImage);
+		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
+		addPage(page1);
 	}
 
 

@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -78,7 +79,6 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;

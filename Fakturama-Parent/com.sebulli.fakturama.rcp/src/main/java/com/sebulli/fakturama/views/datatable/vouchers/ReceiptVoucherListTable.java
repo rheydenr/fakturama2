@@ -90,9 +90,6 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
 
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;
-    
-    @Inject
-    private IEclipseContext context;
 
     private EventList<ReceiptVoucher> receiptVoucherListData;
     private EventList<VoucherCategory> categories;
@@ -318,7 +315,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
 
     @Override
     protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_EXPENDITURE;
+        return CommandIds.LISTTOOLBAR_ADD_RECEIPTVOUCHER;
     }
 
     /* (non-Javadoc)

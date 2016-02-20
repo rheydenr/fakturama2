@@ -38,7 +38,9 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.prefs.BackingStoreException;
 
+import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
@@ -49,6 +51,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -115,13 +118,17 @@ public class LifecycleManager {
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
         }
         
-        // TODO Change it to a service or at least a handler...
+        // TODO Change it to a service
         ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkAndUpdateConfiguration();
         if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
             		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
+            IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+            context.set(IPreferenceStore.class, defaultValuesNode);
+            context.getParent().set(IPreferenceStore.class, defaultValuesNode);
+
         } else {
 			try {
 				fillWithInitialData();
@@ -148,19 +155,17 @@ public class LifecycleManager {
             dbInitJob.join();
         }
         catch (InterruptedException e) {
-            log.info("ready to go ahead and look for default values in db.");
+            log.info("ready to go ahead and looking for default values in db.");
         }
-        FakturamaModelFactory modelFactory = new FakturamaModelFactory();
+        FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
         VatsDAO vatsDAO = context.get(VatsDAO.class);
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
-        
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
-        context.set(IPreferenceStore.class, defaultValuesNode);
-        context.getParent().set(IPreferenceStore.class, defaultValuesNode);
+        
         // Set the default values to this entries
         VAT defaultVat = modelFactory.createVAT();
         defaultVat.setName(msg.dataDefaultVat);
@@ -168,10 +173,11 @@ public class LifecycleManager {
         defaultVat.setTaxValue(Double.valueOf(0.0));
         if(vatsDAO.getCount() == Long.valueOf(0L)) {
             defaultVat = vatsDAO.save(defaultVat);
-        } else if(defaultValuesNode.getLong(Constants.DEFAULT_VAT) == Long.valueOf(0L)) {
+        } else {
             defaultVat = vatsDAO.findOrCreate(defaultVat);
-            defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
         }
+        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
+        eclipsePrefs.put(Constants.DEFAULT_VAT, Long.toString(defaultVat.getId()));
         
         Shipping defaultShipping = modelFactory.createShipping();
         defaultShipping.setName(msg.dataDefaultShipping);
@@ -179,11 +185,12 @@ public class LifecycleManager {
         defaultShipping.setShippingValue(Double.valueOf(0.0));
         defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
         defaultShipping.setShippingVat(vatsDAO.findById(defaultValuesNode.getLong(Constants.DEFAULT_VAT)));
-        if (shippingsDAO.getCount() == Long.valueOf(0L)) {
+        if (eclipsePrefs.get(Constants.DEFAULT_SHIPPING, "0").equals("0") || shippingsDAO.getCount() == Long.valueOf(0L)) {
             defaultShipping = shippingsDAO.save(defaultShipping);
-        } else if(defaultValuesNode.getLong(Constants.DEFAULT_SHIPPING) == Long.valueOf(0L)) {
+        } else if(eclipsePrefs.get(Constants.DEFAULT_SHIPPING, "0").equals("0")) {
             defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
             defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+            eclipsePrefs.put(Constants.DEFAULT_SHIPPING, Long.toString(defaultShipping.getId()));
         }
 
         Payment defaultPayment = modelFactory.createPayment();
@@ -195,11 +202,12 @@ public class LifecycleManager {
         defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
         defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
         defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
-        if(paymentsDAO.getCount() == Long.valueOf(0L)) {
+        if(eclipsePrefs.get(Constants.DEFAULT_PAYMENT, "0").equals("0") || paymentsDAO.getCount() == Long.valueOf(0L)) {
             defaultPayment = paymentsDAO.save(defaultPayment);
-        } else if(defaultValuesNode.getLong(Constants.DEFAULT_PAYMENT) == Long.valueOf(0L)) {
+        } else if(eclipsePrefs.get(Constants.DEFAULT_PAYMENT, "0").equals("0")) {
             defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
             defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+            eclipsePrefs.put(Constants.DEFAULT_PAYMENT, Long.toString(defaultPayment.getId()));
         }
         
         // init UN/CEFACT codes
@@ -207,11 +215,18 @@ public class LifecycleManager {
         	initializeCodes(unCefactCodeDAO, modelFactory);
         }
         
+        try {
+			eclipsePrefs.flush();
+		} catch (BackingStoreException e) {
+			log.error(e);
+		}
+//        preferencesInDatabase.loadPreferencesFromDatabase();
+        context.set(IPreferenceStore.class, defaultValuesNode);
+        context.getParent().set(IPreferenceStore.class, defaultValuesNode);
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
         // here we have to restore the preference values from database
-//        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
-//        context.set(PreferencesInDatabase.class, preferencesInDatabase);
-//        preferencesInDatabase.loadPreferencesFromDatabase();
+        PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
+        context.set(PreferencesInDatabase.class, preferencesInDatabase);
     }
     
     /**
@@ -268,7 +283,8 @@ public class LifecycleManager {
         //Closes all OpenOffice documents 
  //       OfficeManager.INSTANCE.closeAll();
         if (context.get(PreferencesInDatabase.class) != null) {
-            context.get(PreferencesInDatabase.class).savePreferencesInDatabase();
+        	// TODO at the moment this is EXTREMELY slow, therefore we have to comment out that
+//            context.get(PreferencesInDatabase.class).savePreferencesInDatabase();
 //            Data.INSTANCE.close();
 
             // TODO: Create a database backup

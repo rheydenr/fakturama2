@@ -18,7 +18,6 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -90,9 +89,6 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Expenditu
 
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;
-    
-    @Inject
-    private IEclipseContext context;
 
     private EventList<Expenditure> expenditureListData;
     private EventList<VoucherCategory> categories;

@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -52,7 +53,6 @@ import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 

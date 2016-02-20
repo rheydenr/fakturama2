@@ -20,10 +20,10 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ProductCategory_;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 
 @Creatable
 public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {

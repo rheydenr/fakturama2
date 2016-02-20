@@ -2,24 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wizards
 Bundle-SymbolicName: org.fakturama.wizards;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Require-Bundle: com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.eclipse.e4.core.services,
  javax.inject;bundle-version="1.0.0",
  org.eclipse.equinox.ds;bundle-version="1.4.200",
- org.apache.commons.lang3,
  org.eclipse.core.runtime;bundle-version="3.10.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: ch.qos.logback.classic,
- ch.qos.logback.classic.joran,
- ch.qos.logback.classic.spi,
- ch.qos.logback.classic.util,
- ch.qos.logback.core,
- ch.qos.logback.core.joran,
- ch.qos.logback.core.joran.spi,
- ch.qos.logback.core.spi,
- org.apache.commons.collections4,
+Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bidimap,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
@@ -39,14 +30,11 @@ Import-Package: ch.qos.logback.classic,
  org.eclipse.jface.viewers,
  org.eclipse.jface.wizard,
  org.eclipse.swt,
- org.eclipse.swt.browser,
  org.eclipse.swt.custom,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets,
  org.osgi.framework,
- org.osgi.service.log,
- org.osgi.util.tracker,
- org.slf4j
+ org.osgi.service.log
 Export-Package: org.fakturama.wizards;version="2.0.0",
  org.fakturama.wizards.internal.dialogs,
  org.fakturama.wizards.internal.registry,

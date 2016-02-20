@@ -12,6 +12,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -36,6 +37,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
@@ -97,6 +99,10 @@ public class CoolbarViewPart {
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
 		top.setLayout(layout);
 		top.setSize(SWT.DEFAULT, 70);
+		
+		if(preferences == null) {
+			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+		}
 
 		coolbarmgr = new CoolBarManager(SWT.NONE);
 		IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);

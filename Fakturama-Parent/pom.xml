@@ -24,7 +24,6 @@
 	    <module>com.sebulli.fakturama.resources.templates</module>
 	    <module>org.fakturama.print.openoffice</module>
 	    <module>org.fakturama.export</module>
-	    
 	    <module>org.fakturama.import</module>
 	    <module>org.fakturama.export.feature</module>
 	    <module>org.fakturama.wizards</module>

@@ -65,6 +65,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -77,7 +78,6 @@ import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;

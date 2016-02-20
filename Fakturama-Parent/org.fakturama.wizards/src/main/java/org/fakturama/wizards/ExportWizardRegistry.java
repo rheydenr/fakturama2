@@ -25,12 +25,20 @@ import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
 import org.fakturama.wizards.internal.registry.WizardsRegistryReader;
 
 /**
- *
+ * The {@link ExportWizardRegistry} gets the {@link MAddon} for
+ * the registry reader.
  */
 public class ExportWizardRegistry extends AbstractExtensionWizardRegistry {
 
-	private static final String REGISTRY_READER_ADDON_ID = "fakturama.addon.wizardregistry.reader";
+	/**
+	 * ID within ApplicationModel.e4xmi
+	 */
+	public static final String REGISTRY_ADDON_ID = "fakturama.addon.wizardregistry";
+	public static final String REGISTRY_READER_ADDON_ID = REGISTRY_ADDON_ID + ".reader";
 
+	/**
+	 * The name of the export wizard extension point.
+	 */
 	public static final String PLUGINPOINT_EXPORT_WIZARDS = "exportWizards";
 
 	@Inject

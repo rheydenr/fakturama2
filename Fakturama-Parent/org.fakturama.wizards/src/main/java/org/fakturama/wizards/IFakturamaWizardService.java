@@ -27,6 +27,7 @@ public interface IFakturamaWizardService {
 	/**
 	 * Retrieve a {@link List} of {@link IWizardNode}s which this service offers.
 	 * @return
+	 * @deprecated now used with extension point "exportWizard"
 	 */
 	public List<WizardEntry> getExporterList();
 
@@ -37,4 +38,12 @@ public interface IFakturamaWizardService {
 	 * @return
 	 */
 	public IWorkbenchWizard createWizard(String className);
+	
+	/**
+	 * Get the information about that plugin that holds the extension point with
+	 * the list of wizards.
+	 * 
+	 * @return plugin id
+	 */
+	public String getExtensionPointPlugin();
 }

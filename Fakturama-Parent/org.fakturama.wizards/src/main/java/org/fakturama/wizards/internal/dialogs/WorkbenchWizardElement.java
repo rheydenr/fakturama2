@@ -158,8 +158,6 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 				return null;
 			}
 	       imageDescriptor = Activator.getDefault().imageDescriptorFromPlugin(configurationElement.getNamespaceIdentifier(), iconName);
-//            imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-//                    configurationElement.getNamespaceIdentifier(), iconName);    
     	}
         return imageDescriptor;
     }

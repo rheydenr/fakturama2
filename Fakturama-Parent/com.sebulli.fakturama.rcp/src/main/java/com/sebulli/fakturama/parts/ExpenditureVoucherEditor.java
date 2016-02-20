@@ -63,6 +63,7 @@ import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dao.VoucherItemsDAO;
@@ -81,7 +82,6 @@ import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
-import com.sebulli.fakturama.parts.converter.CommonConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListBuilder;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListTable;
