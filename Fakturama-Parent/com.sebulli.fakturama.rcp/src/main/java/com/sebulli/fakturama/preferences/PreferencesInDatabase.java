@@ -19,8 +19,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.PropertiesDAO;
@@ -37,6 +39,10 @@ public class PreferencesInDatabase {
 
     @Inject
     private IPreferenceStore preferences;
+    
+    @Inject
+    @Preference
+    private IEclipsePreferences pref;
     
     @Inject
     private PropertiesDAO propertiesDAO;

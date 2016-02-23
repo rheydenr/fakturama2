@@ -57,7 +57,7 @@ public final class CommandIds {
 	public static final String CMD_NEW_ = "com.sebulli.fakturama.command.new";
 
 	public static final String TOOLBAR_CONTACT = "main.menu.new.contact.name";
-    public static final String TOOLBAR_PRODUCT = "main.menu.new.product.name";
+    public static final String TOOLBAR_PRODUCT = "command.new.product.name";
     public static final String TOOLBAR_VAT = "main.menu.new.vat";
     
     public static final String TOOLBAR_DOCUMENT = "main.menu.new.document";

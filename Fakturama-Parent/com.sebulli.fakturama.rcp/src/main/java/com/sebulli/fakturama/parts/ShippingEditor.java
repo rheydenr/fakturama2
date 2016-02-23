@@ -18,6 +18,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -219,7 +220,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // If new...
         if (newShipping) {
             // Create a new data set
-            editorShipping = new Shipping();
+            editorShipping = modelFactory.createShipping();
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 ShippingCategory newCat = shippingCategoriesDAO.findShippingCategoryByName(category);
@@ -230,6 +231,8 @@ public class ShippingEditor extends Editor<Shipping> {
             int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
             vat = vatsDao.findById(vatId);  // initially set default VAT
             editorShipping.setShippingVat(vat);
+            
+            editorShipping.setValidFrom(new Date());
 
             //T: Shipping Editor: Part Name of a new Shipping Entry
             part.setLabel(msg.mainMenuNewShipping);
@@ -340,6 +343,7 @@ public class ShippingEditor extends Editor<Shipping> {
         if (useGross) {
             grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
             		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
+            bindModelValue(editorShipping, grossText.getGrossText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // If net and gross were created, link both together

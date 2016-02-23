@@ -14,6 +14,14 @@
 
 package org.fakturama.export.wizard;
 
+import org.odftoolkit.odfdom.type.Color;
+import org.odftoolkit.simple.style.Border;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.SupportedLinearMeasure;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.CellRange;
+import org.odftoolkit.simple.table.Table;
+
 /**
  * Formats an OpenOffice Calc cell. Sets the border, the color or the font
  * style.
@@ -21,18 +29,18 @@ package org.fakturama.export.wizard;
  */
 public class CellFormatter {
 
-//	/**
-//	 * Set the property of a Calc cell.
-//	 * 
-//	 * @param cell
-//	 *            The cell to format
-//	 * @param property
-//	 *            The property
-//	 * @param value
-//	 *            The value of the property
-//	 */
-//	private static void setCellProperty(XCell cell, String property, Object value) {
-//
+	/**
+	 * Set the property of a Calc cell.
+	 * 
+	 * @param cell
+	 *            The cell to format
+	 * @param property
+	 *            The property
+	 * @param value
+	 *            The value of the property
+	 */
+	private static void setCellProperty(Cell cell, String property, Object value) {
+
 //		// Get the property set of a cell
 //		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cell);
 //
@@ -54,21 +62,21 @@ public class CellFormatter {
 //		catch (WrappedTargetException e) {
 //			Logger.logError(e, "Error 'WrappedTarget' setting cell property " + property + " to " + value.toString());
 //		}
+
+	}
 //
-//	}
-//
-//	/**
-//	 * Set the property of a Calc cells range.
-//	 * 
-//	 * @param cell
-//	 *            The cells to format
-//	 * @param property
-//	 *            The property
-//	 * @param value
-//	 *            The value of the property
-//	 */
-//	private static void setCellsProperty(XCellRange cells, String property, Object value) {
-//
+	/**
+	 * Set the property of a Calc cells range.
+	 * 
+	 * @param cell
+	 *            The cells to format
+	 * @param property
+	 *            The property
+	 * @param value
+	 *            The value of the property
+	 */
+	private static void setCellsProperty(CellRange cells, String property, Object value) {
+
 //		// Get the property set of a cell
 //		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cells);
 //
@@ -90,51 +98,43 @@ public class CellFormatter {
 //		catch (WrappedTargetException e) {
 //			Logger.logError(e, "Error 'WrappedTarget' setting cell property " + property + " to " + value.toString());
 //		}
-//
-//	}
-//
-//	/**
-//	 * Set the border of a cell to a specified color
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param color
-//	 *            The new color of the border
-//	 * @param top
-//	 *            Select, if the top border should be modified
-//	 * @param right
-//	 *            Select, if the right border should be modified
-//	 * @param bottom
-//	 *            Select, if the bottom border should be modified
-//	 * @param left
-//	 *            Select, if the left border should be modified
-//	 */
-//	public static void setBorder(XSpreadsheet spreadsheet, int row, int column, int color, boolean top, boolean right, boolean bottom, boolean left) {
-//
-//		// Get the cell by the row and the column
-//		XCell cell = getCell(spreadsheet, row, column);
-//
-//		// Create an invisible border
-//		BorderLine noBorderLine = new BorderLine();
-//		noBorderLine.Color = 0;
-//		noBorderLine.InnerLineWidth = 0;
-//		noBorderLine.OuterLineWidth = 0;
-//		noBorderLine.LineDistance = 0;
-//
-//		// Create a single line boarder
-//		BorderLine singleBorderLine = new BorderLine();
-//		singleBorderLine.Color = color;
-//		singleBorderLine.InnerLineWidth = 30;
-//		singleBorderLine.OuterLineWidth = 0;
-//		singleBorderLine.LineDistance = 0;
-//
-//		// Create a border object to format a table
-//		TableBorder tableBorder = new TableBorder();
-//
+
+	}
+
+	/**
+	 * Set the border of a cell to a specified color
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param color
+	 *            The new color of the border
+	 * @param top
+	 *            Select, if the top border should be modified
+	 * @param right
+	 *            Select, if the right border should be modified
+	 * @param bottom
+	 *            Select, if the bottom border should be modified
+	 * @param left
+	 *            Select, if the left border should be modified
+	 */
+	public static void setBorder(Table spreadsheet, int row, int column, Color color, boolean top, boolean right, boolean bottom, boolean left) {
+
+		// Get the cell by the row and the column
+		Cell cell = getCell(spreadsheet, row, column);
+
+		// Create an invisible border
+		Border noBorderLine = Border.NONE;
+
+		// Create a single line border
+		Border singleBorderLine = new Border(color, 30.0, 0.0, 0.0, SupportedLinearMeasure.PT);
+
+		// Create a border object to format a table
+		Border tableBorder = Border.NONE;
+
 //		// Set the top border
 //		if (top)
 //			tableBorder.TopLine = singleBorderLine;
@@ -168,11 +168,11 @@ public class CellFormatter {
 //		tableBorder.IsHorizontalLineValid = true;
 //		tableBorder.VerticalLine = noBorderLine;
 //		tableBorder.IsVerticalLineValid = true;
-//
-//		// Set the cell property
-//		setCellProperty(cell, "TableBorder", tableBorder);
-//
-//	}
+
+		// Set the cell property
+		setCellProperty(cell, "TableBorder", tableBorder);
+
+	}
 //
 //	/**
 //	 * Set the text color of a cell
@@ -194,68 +194,68 @@ public class CellFormatter {
 //		// Set the new color
 //		setCellProperty(cell, "CharColor", new Integer(color));
 //	}
-//
-//	/**
-//	 * Set the background color of a cell
-//	 * 
-//	 * @param spreadsheet
-//	 *            The Spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param color
-//	 *            The new color of the background
-//	 */
-//	public static void setBackgroundColor(XSpreadsheet spreadsheet, int row, int column, int color) {
-//
-//		// Get the cell by the row and the column
-//		XCell cell = getCell(spreadsheet, row, column);
-//
-//		// Set the new background color
-//		setCellProperty(cell, "CellBackColor", new Integer(color));
-//	}
-//
-//	/**
-//	 * Set the background color of a cell
-//	 * 
-//	 * @param spreadsheet
-//	 *            The Spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param color
-//	 *            The new color of the background
-//	 */
-//	public static void setBackgroundColor(XSpreadsheet spreadsheet, int left, int top, int right, int bottom, int color) {
-//
-//		// Get the cell by the row and the column
-//		XCellRange cells = getCells(spreadsheet, left, top, right, bottom);
-//
-//		// Set the new background color
-//		setCellsProperty(cells, "CellBackColor", new Integer(color));
-//	}
-//
-//	/**
-//	 * Set the font weight of a cell to bold
-//	 * 
-//	 * @param spreadsheet
-//	 *            The Spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 */
-//	public static void setBold(XSpreadsheet spreadsheet, int row, int column) {
-//
-//		// Get the cell by the row and the column
-//		XCell cell = getCell(spreadsheet, row, column);
-//
-//		// Set the new font weight
-//		setCellProperty(cell, "CharWeight", new Float(com.sun.star.awt.FontWeight.BOLD));
-//	}
-//
+
+	/**
+	 * Set the background color of a cell
+	 * 
+	 * @param spreadsheet
+	 *            The Spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param color
+	 *            The new color of the background
+	 */
+	public static void setBackgroundColor(Table spreadsheet, int row, int column, int color) {
+
+		// Get the cell by the row and the column
+		Cell cell = getCell(spreadsheet, row, column);
+
+		// Set the new background color
+		setCellProperty(cell, "CellBackColor", new Integer(color));
+	}
+
+	/**
+	 * Set the background color of a cell
+	 * 
+	 * @param spreadsheet
+	 *            The Spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param color
+	 *            The new color of the background
+	 */
+	public static void setBackgroundColor(Table spreadsheet, int left, int top, int right, int bottom, int color) {
+
+		// Get the cell by the row and the column
+		CellRange cells = getCells(spreadsheet, left, top, right, bottom);
+
+		// Set the new background color
+		setCellsProperty(cells, "CellBackColor", new Integer(color));
+	}
+
+	/**
+	 * Set the font weight of a cell to bold
+	 * 
+	 * @param spreadsheet
+	 *            The Spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 */
+	public static void setBold(Table spreadsheet, int row, int column) {
+
+		// Get the cell by the row and the column
+		Cell cell = getCell(spreadsheet, row, column);
+
+		// Set the new font weight
+		cell.getStyleHandler().getTextPropertiesForWrite().setFontStyle(FontStyle.BOLD);
+	}
+
 //	/**
 //	 * Set the font style of a cell to italic
 //	 * 
@@ -309,54 +309,49 @@ public class CellFormatter {
 //		// Set the new cell format
 //		setCellProperty(cell, "NumberFormat", new Integer(nCurrKey));
 //	}
-//
-//	/**
-//	 * Get a cell by spreadsheet, row and column
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @return The cell
-//	 */
-//	public static XCell getCell(XSpreadsheet spreadsheet, int row, int column) {
-//
-//		// Try to get the cell
-//		try {
-//			return spreadsheet.createCursor().getCellByPosition(column, row);
-//		}
-//		catch (IndexOutOfBoundsException e) {
-//			return null;
-//		}
-//	}
-//
-//	/**
-//	 * Get a cell range by spreadsheet, left, top, right, bottom
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param left
-//	 *            The left side of the range
-//	 * @param top
-//	 *            The top side of the range
-//	 * @param right
-//	 *            The right side of the range
-//	 * @param bottom
-//	 *            The bottom side of the range
-//	 * @return The cell range
-//	 */
-//	public static XCellRange getCells(XSpreadsheet spreadsheet, int left, int top, int right, int bottom) {
-//
-//		// Try to get the cell
+
+	/**
+	 * Get a cell by spreadsheet, row and column
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @return The cell
+	 */
+	public static Cell getCell(Table spreadsheet, int row, int column) {
+
+		// Try to get the cell
+		return spreadsheet.getCellByPosition(column, row);
+	}
+
+	/**
+	 * Get a cell range by spreadsheet, left, top, right, bottom
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param left
+	 *            The left side of the range
+	 * @param top
+	 *            The top side of the range
+	 * @param right
+	 *            The right side of the range
+	 * @param bottom
+	 *            The bottom side of the range
+	 * @return The cell range
+	 */
+	public static CellRange getCells(Table spreadsheet, int left, int top, int right, int bottom) {
+
+		// Try to get the cell
 //		try {
 //			return spreadsheet.createCursor().getCellRangeByPosition(left, top, right, bottom);
 //		}
 //		catch (IndexOutOfBoundsException e) {
-//			return null;
+			return null;
 //		}
-//	}
+	}
 //
 //	/**
 //	 * Get the name of a Calc cell by row and column

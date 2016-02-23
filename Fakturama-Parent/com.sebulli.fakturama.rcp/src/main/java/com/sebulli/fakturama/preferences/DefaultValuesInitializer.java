@@ -18,15 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.service.log.LogService;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.Activator;
-import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Initializes the preference pages with default values
@@ -57,12 +54,10 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() { 
 		LogService log = EclipseContextFactory.getServiceContext(Activator.getContext()).get(LogService.class);
 		log.log(LogService.LOG_INFO, "Entering default Preference Initializer");
-	    // TODO Later on we use registered preference pages which register itself on a registry:
 		
-//        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator
-//                .getContext().getBundle().getSymbolicName());
-        IPreferenceStore defaultValuesNode = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.format("/%s/%s", InstanceScope.SCOPE, Activator
-        		.getContext().getBundle().getSymbolicName()), Constants.DEFAULT_PREFERENCES_NODE);
+		IPreferenceStore defaultValuesNode = FakturamaPreferenceStoreProvider.getInstance().getPreferenceStore(); 		
+
+// TODO Later on we use registered preference pages which register itself on a registry:
 //		for (IInitializablePreference iInitializablePreference : classesToInit) {
 //		    iInitializablePreference.setInitValues(defaultValuesNode);
 //		}

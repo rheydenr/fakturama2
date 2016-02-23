@@ -2,7 +2,6 @@ package com.sebulli.fakturama;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 
@@ -40,7 +39,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
@@ -92,7 +90,7 @@ public class LifecycleManager {
 
     @PostContextCreate
     public void checksBeforeStartup(final IEventBroker eventBroker) {
-        IApplicationContext appContext = context.get(IApplicationContext.class);  
+//        IApplicationContext appContext = context.get(IApplicationContext.class);  
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
@@ -117,36 +115,12 @@ public class LifecycleManager {
             // is started the first time
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
         }
-        
-        // TODO Change it to a service
-        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
-        // launch ConfigurationManager.checkFirstStart
-        configMgr.checkAndUpdateConfiguration();
-        if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
-            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
-            		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
-            IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
-            context.set(IPreferenceStore.class, defaultValuesNode);
-            context.getParent().set(IPreferenceStore.class, defaultValuesNode);
-
-        } else {
-			try {
-				fillWithInitialData();
-			}
-			catch (FakturamaStoringException sqlex) {
-				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
-			}
-        }
-
-        // close the static splash screen
-        // TODO check if we could call it twice (one call is before Migrationmanager)
-        appContext.applicationRunning();
     }
 
     /**
      * Some steps to do before workbench is showing.
-     * If a new data base was created, fill some data with initial values
-     * @throws SQLException 
+     * If a new database was created, fill some data with initial values
+     * @throws FakturamaStoringException 
      */
     private void fillWithInitialData() throws FakturamaStoringException {
         // wait some seconds until dbInitJob is finished.
@@ -167,53 +141,47 @@ public class LifecycleManager {
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
         
         // Set the default values to this entries
-        VAT defaultVat = modelFactory.createVAT();
-        defaultVat.setName(msg.dataDefaultVat);
-        defaultVat.setDescription(msg.dataDefaultVatDescription);
-        defaultVat.setTaxValue(Double.valueOf(0.0));
-        if(vatsDAO.getCount() == Long.valueOf(0L)) {
+        if(eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0)) == 0L) {
+	        VAT defaultVat = modelFactory.createVAT();
+	        defaultVat.setName(msg.dataDefaultVat);
+	        defaultVat.setDescription(msg.dataDefaultVatDescription);
+	        defaultVat.setTaxValue(Double.valueOf(0.0));
             defaultVat = vatsDAO.save(defaultVat);
-        } else {
-            defaultVat = vatsDAO.findOrCreate(defaultVat);
+//	        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
+	        eclipsePrefs.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
-        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
-        eclipsePrefs.put(Constants.DEFAULT_VAT, Long.toString(defaultVat.getId()));
         
-        Shipping defaultShipping = modelFactory.createShipping();
-        defaultShipping.setName(msg.dataDefaultShipping);
-        defaultShipping.setDescription(msg.dataDefaultShippingDescription);
-        defaultShipping.setShippingValue(Double.valueOf(0.0));
-        defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
-        defaultShipping.setShippingVat(vatsDAO.findById(defaultValuesNode.getLong(Constants.DEFAULT_VAT)));
-        if (eclipsePrefs.get(Constants.DEFAULT_SHIPPING, "0").equals("0") || shippingsDAO.getCount() == Long.valueOf(0L)) {
+        if (eclipsePrefs.getLong(Constants.DEFAULT_SHIPPING, Long.valueOf(0)) == 0L) {
+	        Shipping defaultShipping = modelFactory.createShipping();
+	        defaultShipping.setName(msg.dataDefaultShipping);
+	        defaultShipping.setDescription(msg.dataDefaultShippingDescription);
+	        defaultShipping.setShippingValue(Double.valueOf(0.0));
+	        defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
+	        defaultShipping.setShippingVat(vatsDAO.findById(eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0))));
             defaultShipping = shippingsDAO.save(defaultShipping);
-        } else if(eclipsePrefs.get(Constants.DEFAULT_SHIPPING, "0").equals("0")) {
-            defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
-            defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
-            eclipsePrefs.put(Constants.DEFAULT_SHIPPING, Long.toString(defaultShipping.getId()));
+//            defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
+            eclipsePrefs.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
 
-        Payment defaultPayment = modelFactory.createPayment();
-        defaultPayment.setName(msg.dataDefaultPayment);
-        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
-        defaultPayment.setDiscountValue(Double.valueOf(0.0));
-        defaultPayment.setDiscountDays(Integer.valueOf(0));
-        defaultPayment.setDiscountDays(Integer.valueOf(0));
-        defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
-        defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
-        defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
-        if(eclipsePrefs.get(Constants.DEFAULT_PAYMENT, "0").equals("0") || paymentsDAO.getCount() == Long.valueOf(0L)) {
+        if(eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
+	        Payment defaultPayment = modelFactory.createPayment();
+	        defaultPayment.setName(msg.dataDefaultPayment);
+	        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
+	        defaultPayment.setDiscountValue(Double.valueOf(0.0));
+	        defaultPayment.setDiscountDays(Integer.valueOf(0));
+	        defaultPayment.setDiscountDays(Integer.valueOf(0));
+	        defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
+	        defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
+	        defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
             defaultPayment = paymentsDAO.save(defaultPayment);
-        } else if(eclipsePrefs.get(Constants.DEFAULT_PAYMENT, "0").equals("0")) {
-            defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
-            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
-            eclipsePrefs.put(Constants.DEFAULT_PAYMENT, Long.toString(defaultPayment.getId()));
+//            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
+            eclipsePrefs.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         
         // init UN/CEFACT codes
         if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
         	initializeCodes(unCefactCodeDAO, modelFactory);
-        }
+        } 
         
         try {
 			eclipsePrefs.flush();
@@ -293,9 +261,35 @@ public class LifecycleManager {
     }
 
     @ProcessAdditions
-    void processAdditions(MApplication app, EModelService modelService) {
+    void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext) {
+        
+    	// TODO put the Login Dialog in here
+
+        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
+        // launch ConfigurationManager.checkFirstStart
+        configMgr.checkAndUpdateConfiguration();
+        if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
+            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
+            		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
+            IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+            context.set(IPreferenceStore.class, defaultValuesNode);
+            context.getParent().set(IPreferenceStore.class, defaultValuesNode);
+
+        } else {
+			try {
+				fillWithInitialData();
+			}
+			catch (FakturamaStoringException sqlex) {
+				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
+			}
+        }
+    	
         MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
         mainMTrimmedWindow.setLabel("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
+
+        // close the static splash screen
+        // TODO check if we could call it twice (one call is before Migrationmanager)
+        appContext.applicationRunning();
     }
 
     /**

@@ -14,6 +14,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -21,6 +22,7 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -101,16 +103,19 @@ public class CoolbarViewPart {
 		top.setSize(SWT.DEFAULT, 70);
 		
 		if(preferences == null) {
-			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+			// this is only the case if we start it for the very first time
+			// and nothing is initialized
+			return;
+//			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
 		}
 
 		coolbarmgr = new CoolBarManager(SWT.NONE);
 		IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);
-		coolbarmgr.add(toolbarmgr);
+//		coolbarmgr.add(toolbarmgr);
 		
 		CoolBar coolbar1 = coolbarmgr.createControl(top);
 		ToolBar toolBar1 = new ToolBar(coolbar1, SWT.FLAT);
-		
+		coolbarmgr.add(new ToolBarContributionItem(toolbarmgr));
 		/*
 		 * Leider gibt es keine vernünftige Verbindung zw. (altem) Command und der entsprechenden Preference.
 		 * deswegen müssen wir ein händisches Mapping erstellen, das so aussieht (Beispiel):
@@ -222,6 +227,16 @@ public class CoolbarViewPart {
         }
 	}
 
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    protected void recreateCoolBar(@UIEventTopic("EditorPart/recreateCoolBar") Event event) {
+        if (event != null) {
+        	// doesn't work :-( => the coolbar is completely empty after re-creating...
+//            coolbarmgr.removeAll();
+//            createControls(top);
+        }
+	}
+
 	/**
 	 * 
 	 */
@@ -265,8 +280,8 @@ public class CoolbarViewPart {
 		coolItem.setControl(toolBar);
 	    Point preferred = coolItem.computeSize(size.x, size.y);
 	    coolItem.setPreferredSize(preferred);
-	    
-        coolBarsByKey.add(toolBar);
+
+	    coolBarsByKey.add(toolBar);
 	}
 	
 	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 

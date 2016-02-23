@@ -42,9 +42,6 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
-//    
-//    @Inject
-//    protected IEventBroker eventBroker;
 
 	/**
 	 * Constructor
@@ -95,13 +92,13 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_RECEIPTVOUCHER), getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
-		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.parcelServiceName, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.commandParcelserviceName, getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
 		
 		//T: Preference page "toolbar" 
-		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.mainMenuExtraCalculator, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName , getFieldEditorParent()));
 	}
 	
 //	/* (non-Javadoc)

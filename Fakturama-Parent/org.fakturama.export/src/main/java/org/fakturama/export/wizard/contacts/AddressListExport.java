@@ -15,15 +15,19 @@
 package org.fakturama.export.wizard.contacts;
 
 
-import java.util.ArrayList;
+import java.text.DateFormat;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.export.wizard.OOCalcExporter;
+import org.odftoolkit.odfdom.type.Color;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.util.ContactUtil;
 
 /**
  * This class generates a list with all contacts
@@ -34,6 +38,9 @@ public class AddressListExport extends OOCalcExporter {
 	
 	@Inject
 	private ContactsDAO contactsDAO;
+    
+    @Inject
+    private IEclipseContext context;
 	
 	/**
 	 * Constructor
@@ -50,6 +57,7 @@ public class AddressListExport extends OOCalcExporter {
 	 * 			<code>true</code> if the export was successful
 	 */
 	public boolean export() {
+		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())
@@ -62,146 +70,111 @@ public class AddressListExport extends OOCalcExporter {
 		int row = 0;
 		int col = 0;
 
-//		//T: Table heading 
-//		String deliveryAddress = " ("+_("Delivery Address")+")";
-//
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, "ID");
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Category"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Gender"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Title","ADDRESS"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("First Name"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++,_("Last Name"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Company"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Street"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("ZIP"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("City"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Country"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Gender")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Title","ADDRESS")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("First Name")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++,_("Last Name")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Company")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Street")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("ZIP")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("City")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Country")+ deliveryAddress);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Account Holder"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Account Number"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Bank Code"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Name of the Bank"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("IBAN"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("BIC"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Customer ID"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Notice"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Date"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Payment"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Reliability"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Telephone"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Telefax"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Mobile"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("E-Mail"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Web Site"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("VAT Number"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("VAT Number valid"));
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, _("Discount","CUSTOMER"));
-//		
-//		// Draw a horizontal line
-//		for (col = 0; col < 39; col++) {
-//			setBorder(row, col, 0x000000, false, false, true, false);
-//		}
-//		row++;
-//		
-//		// Export the document data
-//		for (DataSetContact contact : contacts) {
-//			
-//			col = 0;
-//			
-//			// Place the contact information into the table
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("id"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("category"));
-//			setCellText(row, col++, DataSetContact.getGenderString(contact.getIntValueByKey("gender")));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("title"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("firstname"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("name"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("company"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("street"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("zip"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("city"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("country"));
-//			setCellText(row, col++, DataSetContact.getGenderString(contact.getIntValueByKey("delivery_gender")));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_title"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_firstname"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_name"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_company"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_street"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_zip"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_city"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("delivery_country"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("account_holder"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("account"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("bank_code"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("bank_name"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("iban"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("bic"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("nr"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("note"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("date_added"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKeyFromOtherTable("payment.PAYMENTS:description"));
-//			setCellText(row, col++, DataSetContact.getReliabilityString(contact.getIntValueByKey("reliability")));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("phone"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("fax"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("mobile"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("email"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("website"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("vatnr"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("vatnrvalid"));
-//			setCellText(row, col++, contact.getFormatedStringValueByKey("discount"));
-//
-//			// Alternate the background color
-//			//if ((row % 2) == 0)
-//			//	setBackgroundColor( 0, row, col-1, row, 0x00e8ebed);
-//
-//			row++;
-//		}
+		//T: Table heading 
+		String deliveryAddress = " ("+msg.commonFieldDeliveryaddress+")";
+
+		//T: Used as heading of a table. Keep the word short.
+		setCellTextInBold(row, col++, "ID");
+		setCellTextInBold(row, col++, msg.commonFieldCategory);
+		setCellTextInBold(row, col++, msg.commonFieldGender);
+		setCellTextInBold(row, col++, msg.commonFieldTitle);
+		setCellTextInBold(row, col++, msg.commonFieldFirstname);
+		setCellTextInBold(row, col++, msg.commonFieldLastname);
+		setCellTextInBold(row, col++, msg.commonFieldCompany);
+		setCellTextInBold(row, col++, msg.commonFieldStreet);
+		setCellTextInBold(row, col++, msg.commonFieldZipcode);
+		setCellTextInBold(row, col++, msg.commonFieldCity);
+		setCellTextInBold(row, col++, msg.commonFieldCountry);
+		setCellTextInBold(row, col++, msg.commonFieldGender + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldTitle + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldFirstname + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldLastname + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldCompany + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldStreet + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldZipcode + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldCity + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldCountry + deliveryAddress);
+		setCellTextInBold(row, col++, msg.commonFieldAccountholder);
+		setCellTextInBold(row, col++, msg.commonFieldAccount);
+		setCellTextInBold(row, col++, msg.editorContactFieldBankcodeName);
+		setCellTextInBold(row, col++, msg.editorContactFieldBankName);
+		setCellTextInBold(row, col++, msg.exporterDataIban);
+		setCellTextInBold(row, col++, msg.exporterDataBic);
+		setCellTextInBold(row, col++, msg.editorContactFieldNumberName);
+		setCellTextInBold(row, col++, msg.editorContactLabelNotice);
+		setCellTextInBold(row, col++, msg.commonFieldDate);
+		setCellTextInBold(row, col++, msg.editorContactFieldPaymentName);
+		setCellTextInBold(row, col++, msg.editorContactFieldReliabilityName);
+		setCellTextInBold(row, col++, msg.exporterDataTelephone);
+		setCellTextInBold(row, col++, msg.exporterDataTelefax);
+		setCellTextInBold(row, col++, msg.exporterDataMobile);
+		setCellTextInBold(row, col++, msg.exporterDataEmail);
+		setCellTextInBold(row, col++, msg.exporterDataWebsite);
+		setCellTextInBold(row, col++, msg.exporterDataVatno);
+		setCellTextInBold(row, col++, msg.exporterDataVatnoValid);
+		setCellTextInBold(row, col++, msg.exporterDataRebate);
+		
+		// Draw a horizontal line
+		for (col = 0; col < 39; col++) {
+			setBorder(row, col, Color.BLACK, false, false, true, false);
+		}
+		row++;
+		
+		// Export the document data
+		for (Contact contact : contacts) {
+			
+			col = 0;
+			
+			// Place the contact information into the table
+			setCellText(row, col++, Long.toString(contact.getId()));
+			setCellText(row, col++, contact.getCategories().getName());
+			setCellText(row, col++, contactUtil.getGenderString(contact.getGender()));
+			setCellText(row, col++, contact.getTitle());
+			setCellText(row, col++, contact.getFirstName());
+			setCellText(row, col++, contact.getName());
+			setCellText(row, col++, contact.getCompany());
+			setCellText(row, col++, contact.getAddress().getStreet());
+			setCellText(row, col++, contact.getAddress().getZip());
+			setCellText(row, col++, contact.getAddress().getCity());
+			setCellText(row, col++, contact.getAddress().getCountryCode());
+			if(contact.getAlternateContacts() != null) {
+				Contact deliveryContact = contact.getAlternateContacts();
+			setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
+			setCellText(row, col++, deliveryContact.getTitle());
+			setCellText(row, col++, deliveryContact.getFirstName());
+			setCellText(row, col++, deliveryContact.getName());
+			setCellText(row, col++, deliveryContact.getCompany());
+			setCellText(row, col++, deliveryContact.getAddress().getStreet());
+			setCellText(row, col++, deliveryContact.getAddress().getZip());
+			setCellText(row, col++, deliveryContact.getAddress().getCity());
+			setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
+			}
+			setCellText(row, col++, contact.getBankAccount().getAccountHolder());
+			setCellText(row, col++, contact.getBankAccount().getName());
+			setCellText(row, col++, contact.getBankAccount().getBankCode().toString());
+			setCellText(row, col++, contact.getBankAccount().getBankName());
+			setCellText(row, col++, contact.getBankAccount().getIban());
+			setCellText(row, col++, contact.getBankAccount().getBic());
+			setCellText(row, col++, contact.getCustomerNumber());
+			setCellText(row, col++, contact.getNote());
+			setCellText(row, col++, DateFormat.getDateInstance().format(contact.getDateAdded()));
+			setCellText(row, col++, contact.getPayment().getDescription());
+			setCellText(row, col++, contact.getReliability().getName());
+			setCellText(row, col++, contact.getPhone());
+			setCellText(row, col++, contact.getFax());
+			setCellText(row, col++, contact.getMobile());
+			setCellText(row, col++, contact.getEmail());
+			setCellText(row, col++, contact.getWebsite());
+			setCellText(row, col++, contact.getVatNumber());
+			setCellText(row, col++, contact.getVatNumberValid().toString());
+			setCellText(row, col++, Double.toString(contact.getDiscount()));
+
+			// Alternate the background color
+			if ((row % 2) == 0)
+				setBackgroundColor( 0, row, col-1, row, 0x00e8ebed);
+
+			row++;
+		}
 
 		// True = Export was successful
 		return true;

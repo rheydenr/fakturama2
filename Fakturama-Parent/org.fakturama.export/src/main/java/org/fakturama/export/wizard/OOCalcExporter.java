@@ -16,7 +16,16 @@ package org.fakturama.export.wizard;
 
 import java.util.GregorianCalendar;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Table;
+
+import com.sebulli.fakturama.i18n.Messages;
 
 /**
  * The sales exporter. This class collects all the sales and fills a Calc table
@@ -24,6 +33,13 @@ import org.odftoolkit.simple.SpreadsheetDocument;
  * 
  */
 public class OOCalcExporter {
+
+	@Inject
+	@Translation
+	protected Messages msg;
+    
+    @Inject
+    protected Logger log;
 
 	public final static boolean PAID = true;
 	public final static boolean UNPAID = false;
@@ -39,9 +55,9 @@ public class OOCalcExporter {
 	protected String documentDateKey;
 	// Settings from the preference page
 	protected boolean usePaidDate ;
-//
-//	// The "Export" spreadsheet
-//	protected XSpreadsheet spreadsheet = null;
+
+	// The "Export" spreadsheet
+	protected Table spreadsheet = null;
 //	protected XSpreadsheetDocument xSpreadsheetDocument = null;
 
 	// export paid or unpaid invoices
@@ -205,87 +221,60 @@ public class OOCalcExporter {
 	protected boolean createSpreadSheet() {
 
 		// Create a new OpenOffice Calc document
-		
+
 		SpreadsheetDocument oOdocument = null;
-//		try {
-//			oOdocument = officeAplication.getDocumentService().constructNewDocument(IDocument.CALC, DocumentDescriptor.DEFAULT);
-//		}
-//		catch (NOAException e) {
-//			Logger.logError(e, "NOA Error opening CALC");
-//			return false;
-//		}
-//		catch (OfficeApplicationException e) {
-//			Logger.logError(e, "OO Error opening CALC");
-//			return false;
-//		}
-//
-//		// Get the spreadsheets
-//		ISpreadsheetDocument spreadDocument = (ISpreadsheetDocument) oOdocument;
-//		xSpreadsheetDocument = spreadDocument.getSpreadsheetDocument();
-//		XSpreadsheets spreadsheets = xSpreadsheetDocument.getSheets();
-//
-//		try {
-//			//T: Name of the Table
-//			String tableName = _("Export");
-//			spreadsheets.insertNewByName(tableName, (short) 0);
-//
-//			// Remove all other spreadsheets
-//			String names[] = spreadsheets.getElementNames();
-//			for (String name : names) {
-//				if (!name.equals(tableName))
-//					spreadsheets.removeByName(name);
-//			}
-//
-//			// Get a reference to the Export sheet
-//			spreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(XSpreadsheet.class, spreadsheets.getByName(tableName));
-//
-//		}
-//		catch (NoSuchElementException e) {
-//			Logger.logError(e, "Error getting spreadsheet");
-//			return false;
-//		}
-//		catch (WrappedTargetException e) {
-//			Logger.logError(e, "Error getting spreadsheet");
-//			return false;
-//		}
+		try {
+			oOdocument = SpreadsheetDocument.newSpreadsheetDocument();
+		} catch (Exception e) {
+			log.error(e, "OO Error opening CALC");
+			return false;
+		}
+
+		// Get the spreadsheets
+
+		// T: Name of the Table
+		String tableName = msg.pageExport;
+
+		// Get a reference to the Export sheet
+		spreadsheet = oOdocument.appendSheet(tableName);
 		return true;
 
-	}
-	
+	}	
 
-//	/**
-//	 * Fill a cell with a text
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param text
-//	 *            The text that will be insert
-//	 */
-//	protected void setCellText(int row, int column, String text) {
-//		XText cellText = (XText) UnoRuntime.queryInterface(XText.class, CellFormatter.getCell(spreadsheet, row, column));
-//		cellText.setString(text);
-//	}
-//
-//	/**
-//	 * Fill a cell with a text. Use a bold font.
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param text
-//	 *            The text that will be insert
-//	 */
-//	protected void setCellTextInBold(int row, int column, String text) {
-//		setCellText(row, column, text);
-//		CellFormatter.setBold(spreadsheet, row, column);
-//	}
+	/**
+	 * Fill a cell with a text
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param text
+	 *            The text that will be insert
+	 */
+	protected void setCellText(int row, int column, String text) {
+		
+		Cell cellText = CellFormatter.getCell(spreadsheet, row, column);
+		cellText.setStringValue(text);
+	}
+
+	/**
+	 * Fill a cell with a text. Use a bold font.
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param text
+	 *            The text that will be insert
+	 */
+	protected void setCellTextInBold(int row, int column, String text) {
+		setCellText(row, column, text);
+		CellFormatter.setBold(spreadsheet, row, column);
+	}
 //
 //	/**
 //	 * Fill a cell with a text. Use an italic font style.
@@ -340,21 +329,21 @@ public class OOCalcExporter {
 //		CellFormatter.getCell(spreadsheet, row, column).setValue(d);
 //		CellFormatter.setLocalCurrency(xSpreadsheetDocument, spreadsheet, row, column);
 //	}
-//	
-//	protected void setBackgroundColor(int row, int column, int color) {
-//		CellFormatter.setBackgroundColor(spreadsheet, row, column, color);
-//	}
-//
-//	protected void setBackgroundColor(int left, int top, int right, int bottom, int color) {
-//		CellFormatter.setBackgroundColor(spreadsheet, left, top, right, bottom , color);
-//	}
-//
-//	protected void setBold(int row, int column) {
-//		CellFormatter.setBold(spreadsheet, row, column);
-//	}
-//	protected void setBorder(int row, int column, int color, boolean top, boolean right, boolean bottom, boolean left) {
-//		CellFormatter.setBorder(spreadsheet, row, column, color, top, right, bottom, left); 
-//	}
+	
+	protected void setBackgroundColor(int row, int column, int color) {
+		CellFormatter.setBackgroundColor(spreadsheet, row, column, color);
+	}
+
+	protected void setBackgroundColor(int left, int top, int right, int bottom, int color) {
+		CellFormatter.setBackgroundColor(spreadsheet, left, top, right, bottom , color);
+	}
+
+	protected void setBold(int row, int column) {
+		CellFormatter.setBold(spreadsheet, row, column);
+	}
+	protected void setBorder(int row, int column, Color color, boolean top, boolean right, boolean bottom, boolean left) {
+		CellFormatter.setBorder(spreadsheet, row, column, color, top, right, bottom, left); 
+	}
 //
 //	protected void setFormula(int column, int row, String formula) {
 //		try {
@@ -364,5 +353,9 @@ public class OOCalcExporter {
 //			Logger.logError(e, "No access to cell: " + column + ":" +row);
 //		}
 //	}
+	
+	public void save() {
+//		spreadsheet.s
+	}
 
 }

@@ -220,7 +220,7 @@ public abstract class Editor<T extends IEntity> {
 				 */
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if (uds.getId() >= 0) {
+					if (uds.getId() > 0) {
 						defaultValuePrefs.setValue(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
 						try {
