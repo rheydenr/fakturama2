@@ -460,6 +460,18 @@ public class ShippingEditor extends Editor<Shipping> {
         comboAutoVat.setContentProvider(new ShippingVatTypeContentProvider());
         comboAutoVat.setLabelProvider(new ShippingVatTypeLabelProvider(msg));
         comboAutoVat.setInput(shippingVatTypes);
+        
+        // On creating this editor, select the entry of the autoVat list,
+        // that is set by the shipping.
+        try {
+            bindModelValue(editorShipping, comboAutoVat, Shipping_.autoVat.getName());
+//            comboAutoVat.select(autoVat.getValue());
+//            autoVatChanged();
+        }
+        catch (IndexOutOfBoundsException e) {
+//            comboAutoVat.setText("invalid");
+            autoVat = ShippingVatType.SHIPPINGVATGROSS;
+        }
 
         comboAutoVat.addSelectionChangedListener(new ISelectionChangedListener() {
             
@@ -479,18 +491,6 @@ public class ShippingEditor extends Editor<Shipping> {
 //                checkDirty();
             }
         });
-        
-        // On creating this editor, select the entry of the autoVat list,
-        // that is set by the shipping.
-        try {
-            bindModelValue(editorShipping, comboAutoVat, Shipping_.autoVat.getName());
-//            comboAutoVat.select(autoVat.getValue());
-            autoVatChanged();
-        }
-        catch (IndexOutOfBoundsException e) {
-//            comboAutoVat.setText("invalid");
-            autoVat = ShippingVatType.SHIPPINGVATGROSS;
-        }
         
         // Create the composite to make this Shipping to the standard Shipping. 
         Label labelStdShipping = new Label(top, SWT.NONE);

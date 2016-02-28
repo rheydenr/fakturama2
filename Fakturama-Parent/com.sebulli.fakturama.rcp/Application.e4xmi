@@ -125,7 +125,7 @@
               <children xsi:type="basic:Part" xmi:id="_tCv5gOYVEeSmXZiiofyvSg" elementId="fakturama.views.debitorTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="%command.debtors.name" iconURI="icon://COMMAND_CONTACT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
                 <toolbar xmi:id="_0B414OYVEeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.toolbar.5">
                   <children xsi:type="menu:HandledToolItem" xmi:id="_nmjpIO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.listview.debtor.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.debtor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
-                    <parameters xmi:id="_3JJNQO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.rcp.parameter.59" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.contactEditor"/>
+                    <parameters xmi:id="_3JJNQO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.rcp.parameter.59" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.debitorEditor"/>
                   </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_-W7poO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.listview.debtor.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>

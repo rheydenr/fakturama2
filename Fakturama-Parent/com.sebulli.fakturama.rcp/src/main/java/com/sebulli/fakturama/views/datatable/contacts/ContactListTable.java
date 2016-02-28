@@ -52,6 +52,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -309,12 +310,12 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     protected String getEditorId() {
-        return ContactEditor.ID;
+        return DebitorEditor.ID;
     }
     
     @Override
     protected String getEditorTypeId() {
-        return ContactEditor.class.getSimpleName();
+        return DebitorEditor.class.getSimpleName();
     }
 
     /* (non-Javadoc)

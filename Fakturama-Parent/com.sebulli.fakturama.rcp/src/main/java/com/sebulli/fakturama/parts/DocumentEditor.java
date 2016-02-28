@@ -1383,6 +1383,8 @@ public class DocumentEditor extends Editor<Document> {
 		showHideWarningIcon();
 		addressAndIconComposite.layout(true);
 		updateUseGross(true);
+		
+		getMDirtyablePart().setDirty(false);
 	}
 	
 	/**

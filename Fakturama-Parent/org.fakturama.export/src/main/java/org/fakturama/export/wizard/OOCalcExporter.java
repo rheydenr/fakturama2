@@ -18,14 +18,24 @@ import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.OSDependent;
 
 /**
  * The sales exporter. This class collects all the sales and fills a Calc table
@@ -40,6 +50,13 @@ public class OOCalcExporter {
     
     @Inject
     protected Logger log;
+	
+	@Inject
+	private Shell shell;
+	
+    @Inject
+    @Preference(nodePath = "com.sebulli.fakturama.rcp")
+    private IEclipsePreferences eclipsePrefs;
 
 	public final static boolean PAID = true;
 	public final static boolean UNPAID = false;
@@ -62,6 +79,8 @@ public class OOCalcExporter {
 
 	// export paid or unpaid invoices
 	protected boolean exportPaid = true;
+
+private SpreadsheetDocument oOdocument;
 
 	
 	/**
@@ -222,7 +241,7 @@ public class OOCalcExporter {
 
 		// Create a new OpenOffice Calc document
 
-		SpreadsheetDocument oOdocument = null;
+		oOdocument = null;
 		try {
 			oOdocument = SpreadsheetDocument.newSpreadsheetDocument();
 		} catch (Exception e) {
@@ -236,7 +255,8 @@ public class OOCalcExporter {
 		String tableName = msg.pageExport;
 
 		// Get a reference to the Export sheet
-		spreadsheet = oOdocument.appendSheet(tableName);
+		spreadsheet = oOdocument.getSheetByIndex(0);
+		spreadsheet.setTableName(tableName);
 		return true;
 
 	}	
@@ -355,7 +375,32 @@ public class OOCalcExporter {
 //	}
 	
 	public void save() {
-//		spreadsheet.s
+		String fileName = getOutputFileName();
+		if(StringUtils.isNotBlank(fileName)) {
+			try {
+				oOdocument.save(fileName);
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, String.format(msg.wizardCommonSaveInfo, fileName));
+			} catch (Exception e) {
+				log.error(e, "Could not store exported document.");
+			}
+		} 
+	}
+
+	private String getOutputFileName() {
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		String[] filterNames = new String[] { "OpenOffice Calc Files", msg.wizardCommonMaskAllfiles + " (*)" };
+		String[] filterExtensions = new String[] { "*.ods", "*" };
+		String filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "/");
+		if (OSDependent.isWin()) {
+			filterNames = new String[] { "OpenOffice Calc Files", msg.wizardCommonMaskAllfiles + " (*.*)" };
+			filterExtensions = new String[] { "*.ods", "*.*" };
+			filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "c:\\");
+		}
+		dialog.setFilterNames(filterNames);
+		dialog.setFilterExtensions(filterExtensions);
+		dialog.setFilterPath(filterPath);
+		dialog.setFileName("AddressListExport");
+		return dialog.open();
 	}
 
 }

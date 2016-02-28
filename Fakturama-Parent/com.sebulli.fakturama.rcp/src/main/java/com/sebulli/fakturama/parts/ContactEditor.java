@@ -53,6 +53,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -62,6 +63,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -97,7 +99,7 @@ import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
  * 
  */
 
-public class ContactEditor extends Editor<Contact> {
+public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	/** Editor's ID */
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
@@ -105,7 +107,7 @@ public class ContactEditor extends Editor<Contact> {
 	public static final String EDITOR_ID = "ContactEditor";
 
 	/** This UniDataSet represents the editor's input */ 
-	private Contact editorContact;
+	private C editorContact;
 
 	// SWT widgets of the editor
     private Composite top;
@@ -175,9 +177,9 @@ public class ContactEditor extends Editor<Contact> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-	
-	@Inject
-	private ContactsDAO contactDAO;
+//	
+//	@Inject
+//	private ContactsDAO contactDAO;
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
@@ -243,7 +245,7 @@ public class ContactEditor extends Editor<Contact> {
 
 		// Always set the editor's data set to "undeleted"
 		editorContact.setDeleted(Boolean.FALSE);
-
+		
 		// Set the address data
 		// ... done through databinding...		
 // TODO?		contact.setCompany(DataUtils.removeCR(txtCompany.getText()));
@@ -266,7 +268,7 @@ public class ContactEditor extends Editor<Contact> {
 
         try {
             // save the new or updated Contact
-            editorContact = contactDAO.update(editorContact);
+            editorContact = getContactsDao().update(editorContact);
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
@@ -302,6 +304,8 @@ public class ContactEditor extends Editor<Contact> {
         getMDirtyablePart().setDirty(false);
 	}
 
+	protected abstract AbstractDAO<C> getContactsDao();
+
 	/**
 	 * Initializes the editor. If an existing data set is opened, the local
 	 * variable "contact" is set to this data set. If the editor is opened to
@@ -325,7 +329,7 @@ public class ContactEditor extends Editor<Contact> {
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
-            editorContact = contactDAO.findById(objId);
+            editorContact = getContactsDao().findById(objId);
         }
 
 		// Test, if the editor is opened to create a new data set. This is,
@@ -337,11 +341,11 @@ public class ContactEditor extends Editor<Contact> {
             String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
 
 			// Create a new data set
-            if(category.contentEquals(Creditor.class.getName())) {
-                editorContact = modelFactory.createCreditor();
-            } else {
-                editorContact = modelFactory.createDebitor();
-            }
+//            if(category.contentEquals(Creditor.class.getName())) {
+                editorContact = createNewContact(modelFactory);
+//            } else {
+//                editorContact = modelFactory.createDebitor();
+//            }
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			part.setLabel(msg.mainMenuNewContactName);
 
@@ -363,6 +367,8 @@ public class ContactEditor extends Editor<Contact> {
 		createPartControl(parent);
 	}
 
+	protected abstract C createNewContact(FakturamaModelFactory modelFactory2);
+
 	/**
 	 * Defines, if the delivery address is equal to the billing address
 	 * 
@@ -370,14 +376,18 @@ public class ContactEditor extends Editor<Contact> {
 	 */
 	private void deliveryAddressIsEqual(boolean isEqual) {
 		deliveryGroup.setVisible(!isEqual);
-//		if (isEqual)
+		if (isEqual) {
 //			copyAddressToDeliveryAdress();
+			editorContact.setAlternateContacts(null);
+		} else {
+			editorContact.setAlternateContacts(modelFactory.createDebitor());
+		}
 	}
 
-//	/**
-//	 * Copy all the address data to the delivery address
-//	 */
-//	private void copyAddressToDeliveryAdress() {
+	/**
+	 * Copy all the address data to the delivery address
+	 */
+	private void copyAddressToDeliveryAdress() {
 ////		comboDeliveryGender.select(comboGender.getSelectionIndex());
 //		txtDeliveryTitle.setText(txtTitle.getText());
 //		txtDeliveryFirstname.setText(txtFirstname.getText());
@@ -387,7 +397,7 @@ public class ContactEditor extends Editor<Contact> {
 //		txtDeliveryZip.setText(txtZip.getText());
 //		txtDeliveryCity.setText(txtCity.getText());
 ////		txtDeliveryCountry.setText(comboCountry.getText());
-//	}
+	}
 
 	/**
 	 * Creates the SWT controls for this workbench part
@@ -454,6 +464,9 @@ public class ContactEditor extends Editor<Contact> {
 			item3.setText(msg.editorContactLabelBankaccount);
 			tabBank = new Composite(tabFolder, SWT.NONE);
 			item3.setControl(tabBank);
+			if(editorContact.getBankAccount() == null) {
+				editorContact.setBankAccount(modelFactory.createBankAccount());
+			}
 		}
 		else {
 			tabBank = new Composite(invisible, SWT.NONE);
@@ -1171,12 +1184,7 @@ protected MDirtyable getMDirtyablePart() {
 
 @Override
 protected String getEditorID() {
-    return Contact.class.getSimpleName();
-}
-
-@Override
-protected Class<Contact> getModelClass() {
-    return Contact.class;
+    return EDITOR_ID;
 }
 }
 

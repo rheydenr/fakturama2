@@ -401,6 +401,10 @@ public class Messages {
 	public String Exportwizard171;
 	public String Exportwizard172;
 	public String Exportwizard173;
+	public String wizardCommonPreviewLabel;
+	public String wizardCommonSaveInfo;
+	public String wizardCommonMaskAllfiles;
+	public String wizardCommonMaskCalcfiles;
 	public String wizardExportContactsAllcontactsTitle;
 	public String wizardExportContactsAllcontactsDescription;
 	public String Exportwizard205;
@@ -438,7 +442,6 @@ public class Messages {
 	public String Importer144;
 	public String Importer145;
 	public String Importer146;
-	public String wizardCommonPreviewLabel;
 	public String Importoptionpage123;
 	public String Importoptionpage124;
 	public String Importoptionpage125;
@@ -640,8 +643,10 @@ public class Messages {
 	public String preferencesNumberrangeFormatConfirmationoValue;
 	public String preferencesNumberrangeFormatCreditnoLabel;
 	public String preferencesNumberrangeFormatCreditnoValue;
-	public String preferencesNumberrangeFormatCustomernoLabel;
-	public String preferencesNumberrangeFormatCustomernoValue;
+	public String preferencesNumberrangeFormatDebitornoLabel;
+	public String preferencesNumberrangeFormatDebitornoValue;
+	public String preferencesNumberrangeFormatCreditornoLabel;
+	public String preferencesNumberrangeFormatCreditornoValue;
 	public String preferencesNumberrangeFormatDeliverynotenoLabel;
 	public String preferencesNumberrangeFormatDeliverynotenoValue;
 	public String preferencesNumberrangeFormatDescription;
@@ -663,7 +668,8 @@ public class Messages {
 	public String preferencesNumberrangeValuesLabelNextdunningno;
 	public String preferencesNumberrangeValuesLabelNextinvoiceno;
 	public String preferencesNumberrangeValuesLabelNextitemno;
-	public String preferencesNumberrangeValuesLabelNextno;
+	public String preferencesNumberrangeValuesLabelNextdebitorno;
+	public String preferencesNumberrangeValuesLabelNextcreditorno;
 	public String preferencesNumberrangeValuesLabelNextofferno;
 	public String preferencesNumberrangeValuesLabelNextorderno;
 	public String preferencesNumberrangeValuesLabelNextproformano;

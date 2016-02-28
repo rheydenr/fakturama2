@@ -72,7 +72,8 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
     /**
      * 
      */
-    public static final String PREFERENCES_NUMBERRANGE_CONTACT_FORMAT = "NUMBERRANGE_CONTACT_FORMAT";
+    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT = "NUMBERRANGE_DEBITOR_FORMAT";
+    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_FORMAT = "NUMBERRANGE_CREDITOR_FORMAT";
     
     @Inject
     @Translation
@@ -101,7 +102,8 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.NUMBERRANGE_FORMAT_PREFERENCE_PAGE);
 
 		//T: Preference page "Number Range Format" - Label "Format of the Customer ID"
-		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, msg.preferencesNumberrangeFormatCustomernoLabel, getFieldEditorParent()));
+		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT, msg.preferencesNumberrangeFormatDebitornoLabel, getFieldEditorParent()));
+		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_CREDITOR_FORMAT, msg.preferencesNumberrangeFormatCreditornoLabel, getFieldEditorParent()));
 		//T: Preference page "Number Range Format" - Label "Format of the item No."
 		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, msg.preferencesNumberrangeFormatItemnoLabel, getFieldEditorParent()));
 		//T: Preference page "Number Range Format" - Label "Format of the invoice No."
@@ -118,7 +120,7 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_CREDIT_FORMAT, msg.preferencesNumberrangeFormatCreditnoLabel, getFieldEditorParent()));
 		//T: Preference page "Number Range Format" - Label "Format of the dunning No."
 		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, msg.preferencesNumberrangeFormatDunningnoLabel, getFieldEditorParent()));
-		//T: Preference page "Number Range Format" - Label "Format of the dunning No."
+		//T: Preference page "Number Range Format" - Label "Format of the proforma No."
 		addField(new StringFieldEditor(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, msg.preferencesNumberrangeFormatProformanoLabel, getFieldEditorParent()));
 	}
 
@@ -127,7 +129,9 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 	 */
 	@Override
 	public String getDescription() {
-	    return msg.pageContactsFormat;
+
+		//T: Preference page "Number Range Format" - Title with an example of the format
+	    return msg.preferencesNumberrangeFormatDescription;
 	}
 	
 	/**
@@ -138,7 +142,8 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
 
-		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CREDITOR_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_INVOICE_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DELIVERY_FORMAT, write);
@@ -168,7 +173,8 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 	 */
 	public void setInitValues(IPreferenceStore node) {
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Customer" with {6nr} for a 6 digits number
-		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_FORMAT, msg.preferencesNumberrangeFormatCustomernoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT, msg.preferencesNumberrangeFormatDebitornoValue);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDITOR_FORMAT, msg.preferencesNumberrangeFormatCreditornoValue);
 		//Preference page "Number Range Format" - Default value: Abbreviation for "Product/Item" with {6nr} for a 6 digits number
 		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_FORMAT, "");
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Invoice" with {6nr} for a 6 digits number

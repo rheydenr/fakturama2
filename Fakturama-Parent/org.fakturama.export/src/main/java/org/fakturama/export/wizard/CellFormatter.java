@@ -16,6 +16,7 @@ package org.fakturama.export.wizard;
 
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.style.Border;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.CellBordersType;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.SupportedLinearMeasure;
 import org.odftoolkit.simple.table.Cell;
@@ -76,7 +77,7 @@ public class CellFormatter {
 	 *            The value of the property
 	 */
 	private static void setCellsProperty(CellRange cells, String property, Object value) {
-
+		
 //		// Get the property set of a cell
 //		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cells);
 //
@@ -135,42 +136,42 @@ public class CellFormatter {
 		// Create a border object to format a table
 		Border tableBorder = Border.NONE;
 
-//		// Set the top border
-//		if (top)
-//			tableBorder.TopLine = singleBorderLine;
-//		else
-//			tableBorder.TopLine = noBorderLine;
+		// Set the top border
+		if (top)
+			cell.setBorders(CellBordersType.TOP, singleBorderLine);
+		else
+			cell.setBorders(CellBordersType.TOP, noBorderLine);
 //		tableBorder.IsTopLineValid = true;
-//
-//		// Set the bottom border
-//		if (bottom)
-//			tableBorder.BottomLine = singleBorderLine;
-//		else
-//			tableBorder.BottomLine = noBorderLine;
+
+		// Set the bottom border
+		if (bottom)
+			cell.setBorders(CellBordersType.BOTTOM, singleBorderLine);
+		else
+			cell.setBorders(CellBordersType.BOTTOM, noBorderLine);
 //		tableBorder.IsBottomLineValid = true;
-//
-//		// Set the left border
-//		if (left)
-//			tableBorder.LeftLine = singleBorderLine;
-//		else
-//			tableBorder.LeftLine = noBorderLine;
+
+		// Set the left border
+		if (left)
+			cell.setBorders(CellBordersType.LEFT, singleBorderLine);
+		else
+			cell.setBorders(CellBordersType.LEFT, noBorderLine);
 //		tableBorder.IsLeftLineValid = true;
-//
-//		// Set the right border
-//		if (right)
-//			tableBorder.RightLine = singleBorderLine;
-//		else
-//			tableBorder.RightLine = noBorderLine;
+
+		// Set the right border
+		if (right)
+			cell.setBorders(CellBordersType.RIGHT, singleBorderLine);
+		else
+			cell.setBorders(CellBordersType.RIGHT, noBorderLine);
 //		tableBorder.IsRightLineValid = true;
-//
-//		// other settings
+
+		// other settings
 //		tableBorder.HorizontalLine = noBorderLine;
 //		tableBorder.IsHorizontalLineValid = true;
 //		tableBorder.VerticalLine = noBorderLine;
 //		tableBorder.IsVerticalLineValid = true;
 
 		// Set the cell property
-		setCellProperty(cell, "TableBorder", tableBorder);
+//		setCellProperty(cell, "TableBorder", tableBorder);
 
 	}
 //

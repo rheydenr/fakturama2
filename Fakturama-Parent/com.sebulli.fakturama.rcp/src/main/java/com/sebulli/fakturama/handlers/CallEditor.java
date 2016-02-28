@@ -16,7 +16,6 @@ package com.sebulli.fakturama.handlers;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -24,6 +23,7 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -31,7 +31,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -44,6 +43,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.ListEditor;
@@ -97,7 +97,11 @@ public class CallEditor {
      */
     public static final String PARAM_CALLING_DOC = "org.fakturama.document.caller";
 
+    /**
+     * the ID of the docs part descriptor
+     */
     public static final String DOCVIEW_PARTDESCRIPTOR_ID = "org.fakturama.rcp.docview";
+    
     public static final String DOCVIEW_PART_ID = "org.fakturama.rcp.docdetail";
 
     @Inject
@@ -128,14 +132,6 @@ public class CallEditor {
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
-            IEclipseContext stackContext = null;
-            List<MContext> stackElements = modelService.findElements(documentPartStack, null, MContext.class, null);
-            for (MContext contexts : stackElements) {
-                if(((MPart)contexts).getElementId() != null && ((MPart)contexts).getElementId().contentEquals(DOCVIEW_PART_ID)) {
-                    stackContext = contexts.getContext();
-                    break;
-                }
-            }
             
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
@@ -148,7 +144,7 @@ public class CallEditor {
             params.put(PARAM_CALLING_DOC, callingDoc);
             
             // Define  the editor and try to open it
-			MPart editorPart = createEditorPart(editorType, stackContext, documentPartStack, duplicate, params);
+			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);
 			partService.showPart(editorPart, PartState.ACTIVATE);
 //			editorPart.a
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
@@ -167,16 +163,20 @@ public class CallEditor {
 	 * @param category 
 	 * @return
 	 */
-	private MPart createEditorPart(String type, IEclipseContext stackContext, MPartStack stack, String duplicate, Map<String, String> params) {
+	private MPart createEditorPart(String type, MPartStack stack, String duplicate, Map<String, String> params) {
 		MPart myPart = null;
-		
-		// search only if not dupliated!
+		IEclipseContext stackContext = null;
+		// search only if not duplicated!
 		if(!Boolean.toString(true).equals(duplicate)) {
 			Collection<MPart> parts = partService.getParts();
 	        if (params.get(PARAM_OBJ_ID) != null) {
 	    		// at first we look for an existing Part
 	            for (MPart mPart : parts) {
-	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type) && mPart.getContext() != null) {
+	            	/*
+	            	 * Problem: Open a part and then exit the application. Start the application again and try to open (from list view)
+	            	 * the SAME document/payment/shipping/whatever. Since the context is null, a new document window is opened :-(
+	            	 */
+	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
 	    					myPart = mPart;
@@ -186,25 +186,12 @@ public class CallEditor {
 	    		}
 	        }
 		}
-        
+		
 		// if not found (or should create a duplicate) then we create a new one from a part descriptor
 		if (myPart == null) {
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
 			myPart.setVisible(true);
-			
-			if(stackContext == null) {
-			    stackContext = EclipseContextFactory.create();
-
-/*
- * What's this? - The MPart has to be injected into current context. Some Services
- * (e.g., EMenuService) need an MPart to work. But the MPart is injected from
- * Context and therefore we have to put an MPart (or, more concrete, *this* MPart)
- * into context. That's it :-) 
- */
-			    stackContext.set(MPart.class, myPart);
-			}
-		    myPart.setContext(stackContext);
 
 			myPart.getProperties().putAll(params);
 			stack.getChildren().add(myPart);
@@ -252,7 +239,11 @@ public class CallEditor {
                 break;
             case ContactEditor.ID:
             case ContactListTable.ID:
-            case "Debitor":
+            case DebitorEditor.ID:
+                myPart.setLabel(msg.pageContacts);
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + DebitorEditor.class.getName());
+                myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
+                break;
             case "Creditor":
                 myPart.setLabel(msg.pageContacts);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
@@ -271,6 +262,22 @@ public class CallEditor {
 				myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
 				break;
 			}
+		}
+		
+		if(stackContext == null) {
+			stackContext = EclipseContextFactory.create();
+			
+			/*
+			 * What's this? - The MPart has to be injected into current context. Some Services
+			 * (e.g., EMenuService) need an MPart to work. But the MPart is injected from
+			 * Context and therefore we have to put an MPart (or, more concrete, *this* MPart)
+			 * into context. That's it :-) 
+			 */
+			stackContext.set(MPart.class, myPart);
+		}
+		if(myPart.getContext() == null) {
+//			myPart.setContext(stackContext);
+			ContextInjectionFactory.inject(myPart, stackContext);
 		}
 		return myPart;
 	}

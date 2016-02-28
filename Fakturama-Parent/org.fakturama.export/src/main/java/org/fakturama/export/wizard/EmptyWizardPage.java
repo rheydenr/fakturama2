@@ -22,6 +22,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -45,6 +46,12 @@ public class EmptyWizardPage extends WizardPage {
 	private ILogger log;
 	
 	private Image previewImage = null;
+
+	public static final String WIZARD_TITLE = "title";
+
+	public static final String WIZARD_DESCRIPTION = "description";
+
+	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
 	
 	public EmptyWizardPage() {
 		super(WIZARD_PAGE_NAME);
@@ -67,10 +74,10 @@ public class EmptyWizardPage extends WizardPage {
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		//T: Title of the Sales Export Wizard Page 1
-		setTitle((String) ctx.get("title"));
+		setTitle((String) ctx.get(WIZARD_TITLE));
 		//T: Text of the Sales Export Wizard Page 1
-		setMessage((String) ctx.get("description"));
-		this.previewImage = (Image) ctx.get("previewimage");
+		setMessage((String) ctx.get(WIZARD_DESCRIPTION));
+		this.previewImage = (Image) ctx.get(WIZARD_PREVIEW_IMAGE);
 	}
 
 	/**
@@ -94,7 +101,7 @@ public class EmptyWizardPage extends WizardPage {
 			try {
 				preview.setImage(previewImage);
 			}
-			catch (Exception e) {
+			catch (IllegalArgumentException | SWTException e) {
 				log.error(e, "Icon not found");
 			}
 		}

@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.export.wizard.OOCalcExporter;
@@ -127,47 +129,80 @@ public class AddressListExport extends OOCalcExporter {
 			
 			// Place the contact information into the table
 			setCellText(row, col++, Long.toString(contact.getId()));
-			setCellText(row, col++, contact.getCategories().getName());
+			if(contact.getCategories() != null) {
+				setCellText(row, col++, contact.getCategories().getName());
+			} else {
+				col++;
+			}
 			setCellText(row, col++, contactUtil.getGenderString(contact.getGender()));
 			setCellText(row, col++, contact.getTitle());
 			setCellText(row, col++, contact.getFirstName());
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
-			setCellText(row, col++, contact.getAddress().getStreet());
-			setCellText(row, col++, contact.getAddress().getZip());
-			setCellText(row, col++, contact.getAddress().getCity());
-			setCellText(row, col++, contact.getAddress().getCountryCode());
-			if(contact.getAlternateContacts() != null) {
-				Contact deliveryContact = contact.getAlternateContacts();
-			setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
-			setCellText(row, col++, deliveryContact.getTitle());
-			setCellText(row, col++, deliveryContact.getFirstName());
-			setCellText(row, col++, deliveryContact.getName());
-			setCellText(row, col++, deliveryContact.getCompany());
-			setCellText(row, col++, deliveryContact.getAddress().getStreet());
-			setCellText(row, col++, deliveryContact.getAddress().getZip());
-			setCellText(row, col++, deliveryContact.getAddress().getCity());
-			setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
+			
+			if(contact.getAddress() != null) {
+				setCellText(row, col++, contact.getAddress().getStreet());
+				setCellText(row, col++, contact.getAddress().getZip());
+				setCellText(row, col++, contact.getAddress().getCity());
+				setCellText(row, col++, contact.getAddress().getCountryCode());
+			} else {
+				col += 4;
 			}
-			setCellText(row, col++, contact.getBankAccount().getAccountHolder());
-			setCellText(row, col++, contact.getBankAccount().getName());
-			setCellText(row, col++, contact.getBankAccount().getBankCode().toString());
-			setCellText(row, col++, contact.getBankAccount().getBankName());
-			setCellText(row, col++, contact.getBankAccount().getIban());
-			setCellText(row, col++, contact.getBankAccount().getBic());
+			
+			if (contact.getAlternateContacts() != null) {
+				Contact deliveryContact = contact.getAlternateContacts();
+				setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
+				setCellText(row, col++, deliveryContact.getTitle());
+				setCellText(row, col++, deliveryContact.getFirstName());
+				setCellText(row, col++, deliveryContact.getName());
+				setCellText(row, col++, deliveryContact.getCompany());
+				if (deliveryContact.getAddress() != null) {
+					setCellText(row, col++, deliveryContact.getAddress().getStreet());
+					setCellText(row, col++, deliveryContact.getAddress().getZip());
+					setCellText(row, col++, deliveryContact.getAddress().getCity());
+					setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
+				} else {
+					col += 4;
+				}
+			} else {
+				col += 9;
+			}
+			
+			if(contact.getBankAccount() != null) {
+				setCellText(row, col++, contact.getBankAccount().getAccountHolder());
+				setCellText(row, col++, contact.getBankAccount().getName());
+				setCellText(row, col++, contact.getBankAccount().getBankCode() != null ? contact.getBankAccount().getBankCode().toString() : "");
+				setCellText(row, col++, contact.getBankAccount().getBankName());
+				setCellText(row, col++, contact.getBankAccount().getIban());
+				setCellText(row, col++, contact.getBankAccount().getBic());
+			} else {
+				col += 6;
+			}
+			
 			setCellText(row, col++, contact.getCustomerNumber());
 			setCellText(row, col++, contact.getNote());
 			setCellText(row, col++, DateFormat.getDateInstance().format(contact.getDateAdded()));
-			setCellText(row, col++, contact.getPayment().getDescription());
-			setCellText(row, col++, contact.getReliability().getName());
+			
+			if(contact.getPayment() != null) {
+				setCellText(row, col++, contact.getPayment().getDescription());
+			} else {
+				col++;
+			}
+			
+			if(contact.getReliability() != null) {
+				setCellText(row, col++, contact.getReliability().getName());
+			} else {
+				col++;
+			}
+			
 			setCellText(row, col++, contact.getPhone());
 			setCellText(row, col++, contact.getFax());
 			setCellText(row, col++, contact.getMobile());
 			setCellText(row, col++, contact.getEmail());
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
-			setCellText(row, col++, contact.getVatNumberValid().toString());
-			setCellText(row, col++, Double.toString(contact.getDiscount()));
+			setCellText(row, col++, BooleanUtils.toStringTrueFalse(contact.getVatNumberValid()));
+			setCellText(row, col++, Double.toString(contact.getDiscount() != null ? contact.getDiscount() : Double.valueOf(0.0)));
 
 			// Alternate the background color
 			if ((row % 2) == 0)
@@ -175,6 +210,8 @@ public class AddressListExport extends OOCalcExporter {
 
 			row++;
 		}
+		
+		save();
 
 		// True = Export was successful
 		return true;

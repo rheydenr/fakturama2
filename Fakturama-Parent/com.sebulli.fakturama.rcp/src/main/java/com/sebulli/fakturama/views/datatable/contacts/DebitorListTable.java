@@ -18,6 +18,7 @@ import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
+import com.sebulli.fakturama.parts.DebitorEditor;
 
 /**
  * View with the table of all contacts
@@ -43,7 +44,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("ContactEditor") String message) {
+    public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
         sync.syncExec(() -> top.setRedraw(false));
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(contactListData, getListData(true), false);

@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -31,8 +30,9 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.parts.ContactEditor;
-import com.sebulli.fakturama.parts.ProductEditor;
+import com.sebulli.fakturama.model.Creditor;
+import com.sebulli.fakturama.model.Debitor;
+import com.sebulli.fakturama.model.Product;
 
 /**
  * Preference page for the number settings
@@ -80,7 +80,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
     /**
      * 
      */
-    public static final String PREFERENCES_NUMBERRANGE_CONTACT_NR = "NUMBERRANGE_CONTACT_NR";
+    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_NR = "NUMBERRANGE_DEBITOR_NR";
+    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_NR = "NUMBERRANGE_CREDITOR_NR";
 
     @Inject
     @Translation
@@ -109,7 +110,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.NUMBERRANGE_PREFERENCE_PAGE);
 
 		//T: Preference page "Number Range Values" - Label "next free number"
-		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_CONTACT_NR, msg.preferencesNumberrangeValuesLabelNextno, getFieldEditorParent()));
+		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_DEBITOR_NR, msg.preferencesNumberrangeValuesLabelNextdebitorno, getFieldEditorParent()));
+		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_CREDITOR_NR, msg.preferencesNumberrangeValuesLabelNextcreditorno, getFieldEditorParent()));
 		//T: Preference page "Number Range Values" - Label "next free number"
 		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_PRODUCT_NR, msg.preferencesNumberrangeValuesLabelNextitemno, getFieldEditorParent()));
 		//T: Preference page "Number Range Values" - Label "next free number"
@@ -146,7 +148,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
 
-		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CONTACT_NR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DEBITOR_NR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CREDITOR_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PRODUCT_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_INVOICE_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DELIVERY_NR, write);
@@ -175,7 +178,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_NUMBERRANGE_CONTACT_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DEBITOR_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDITOR_NR, 1);
 		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
 		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
 		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
@@ -189,14 +193,14 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	    List<String> documentTypes = Arrays.stream(DocumentType.values())
 	    		.filter(d -> d != DocumentType.NONE)
 	    		.map(d -> d.getTypeAsString()).collect(Collectors.toList());
-	    documentTypes.add(StringUtils.substringAfterLast(ContactEditor.ID, "."));
-        documentTypes.add(StringUtils.substringAfterLast(ProductEditor.ID, "."));
+	    documentTypes.add(Debitor.class.getSimpleName());
+	    documentTypes.add(Creditor.class.getSimpleName());
+        documentTypes.add(Product.class.getSimpleName());
 	    
-//		for (DocumentType editorId : DocumentType.values()) {
 		for (String editorId : documentTypes) {
-            node.setDefault("last_setnextnr_date_" + editorId, "2000-01-01");
-            node.setDefault("PREFERENCES_NUMBERRANGE_" + editorId.toUpperCase() + "_FORMAT", "NO_DEFAULT_VALUE");
-            node.setDefault("PREFERENCES_NUMBERRANGE_" + editorId.toUpperCase() + "_NR", 1);
+            node.setDefault("last_setnextnr_date_" + editorId.toLowerCase(), "2000-01-01");
+//            node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_FORMAT", "NO_DEFAULT_VALUE");
+            node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_NR", 1);
         }
 	}
 }

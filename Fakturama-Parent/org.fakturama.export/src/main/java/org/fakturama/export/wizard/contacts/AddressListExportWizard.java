@@ -25,12 +25,6 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  */
 public class AddressListExportWizard extends Wizard implements IExportWizard {
 
-	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
-
-	public static final String WIZARD_DESCRIPTION = "description";
-
-	public static final String WIZARD_TITLE = "title";
-
 	@Inject
 	@Translation
 	protected Messages msg;
@@ -64,9 +58,9 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
 		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS);
-		ctx.set(WIZARD_TITLE, msg.wizardExportContactsAllcontactsTitle);
-		ctx.set(WIZARD_DESCRIPTION, msg.wizardExportContactsAllcontactsDescription);
-		ctx.set(WIZARD_PREVIEW_IMAGE, previewImage);
+		ctx.set(EmptyWizardPage.WIZARD_TITLE, msg.wizardExportContactsAllcontactsTitle);
+		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, msg.wizardExportContactsAllcontactsDescription);
+		ctx.set(EmptyWizardPage.WIZARD_PREVIEW_IMAGE, previewImage);
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);
 	}
