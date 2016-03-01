@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.fakturama.export.ExportMessages;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
@@ -48,7 +49,11 @@ public class OOCalcExporter {
 	@Inject
 	@Translation
 	protected Messages msg;
-    
+	
+	@Inject
+	@Translation
+	protected ExportMessages exportMessages;
+
     @Inject
     protected Logger log;
 	
@@ -405,7 +410,7 @@ public class OOCalcExporter {
 		if(StringUtils.isNotBlank(fileName)) {
 			try {
 				oOdocument.save(fileName);
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, String.format(msg.wizardCommonSaveInfo, fileName));
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, String.format(exportMessages.wizardCommonSaveInfo, fileName));
 			} catch (Exception e) {
 				log.error(e, "Could not store exported document.");
 			}
@@ -414,11 +419,11 @@ public class OOCalcExporter {
 
 	private String getOutputFileName() {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		String[] filterNames = new String[] { "OpenOffice Calc Files", msg.wizardCommonMaskAllfiles + " (*)" };
+		String[] filterNames = new String[] { "OpenOffice Calc Files", exportMessages.wizardCommonMaskAllfiles + " (*)" };
 		String[] filterExtensions = new String[] { "*.ods", "*" };
 		String filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "/");
 		if (OSDependent.isWin()) {
-			filterNames = new String[] { "OpenOffice Calc Files", msg.wizardCommonMaskAllfiles + " (*.*)" };
+			filterNames = new String[] { "OpenOffice Calc Files", exportMessages.wizardCommonMaskAllfiles + " (*.*)" };
 			filterExtensions = new String[] { "*.ods", "*.*" };
 			filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "c:\\");
 		}

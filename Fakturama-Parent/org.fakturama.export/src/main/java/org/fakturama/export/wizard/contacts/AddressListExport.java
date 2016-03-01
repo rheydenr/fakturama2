@@ -42,14 +42,6 @@ public class AddressListExport extends OOCalcExporter {
     
     @Inject
     private IEclipseContext context;
-	
-	/**
-	 * Constructor
-	 * 
-	 */
-	public AddressListExport() {
-		super();
-	}
 
 	/**
 	 * 	Do the export job.

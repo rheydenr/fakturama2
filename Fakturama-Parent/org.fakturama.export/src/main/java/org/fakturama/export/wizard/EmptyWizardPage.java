@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -26,8 +27,8 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.fakturama.export.ExportMessages;
 
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 
 
@@ -40,7 +41,8 @@ public class EmptyWizardPage extends WizardPage {
 	private static final String WIZARD_PAGE_NAME = "Wizard Page";
 	
 	@Inject
-	private Messages msg;
+	@Translation
+	protected ExportMessages exportMessages;
 	
 	@Inject
 	private ILogger log;
@@ -48,9 +50,7 @@ public class EmptyWizardPage extends WizardPage {
 	private Image previewImage = null;
 
 	public static final String WIZARD_TITLE = "title";
-
 	public static final String WIZARD_DESCRIPTION = "description";
-
 	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
 	
 	public EmptyWizardPage() {
@@ -96,7 +96,7 @@ public class EmptyWizardPage extends WizardPage {
 		if (previewImage != null) {
 			// Preview image
 			Label preview = new Label(top, SWT.NONE);
-			preview.setText(msg.wizardCommonPreviewLabel);
+			preview.setText(exportMessages.wizardCommonPreviewLabel);
 			GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(preview);
 			try {
 				preview.setImage(previewImage);

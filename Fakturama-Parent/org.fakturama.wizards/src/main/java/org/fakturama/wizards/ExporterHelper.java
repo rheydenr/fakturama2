@@ -23,6 +23,9 @@ package org.fakturama.wizards;
 public class ExporterHelper {
 
 	public static String inQuotes(String s) {
+		if(s == null) {
+			return "";
+		}
 		
 		// Replace all illegal characters
 		s = s.replaceAll("\"", "”");

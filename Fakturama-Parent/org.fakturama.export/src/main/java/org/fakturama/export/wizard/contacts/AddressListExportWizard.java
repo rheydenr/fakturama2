@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.wizards.IExportWizard;
 
@@ -29,6 +30,10 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 	@Translation
 	protected Messages msg;
 	
+	@Inject
+	@Translation
+	protected ExportMessages exportMessages;
+
 	@Inject
 	private ITemplateResourceManager resourceManager;
     
@@ -58,8 +63,8 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
 		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS);
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, msg.wizardExportContactsAllcontactsTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, msg.wizardExportContactsAllcontactsDescription);
+		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportContactsAllcontactsTitle);
+		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportContactsAllcontactsDescription);
 		ctx.set(EmptyWizardPage.WIZARD_PREVIEW_IMAGE, previewImage);
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);

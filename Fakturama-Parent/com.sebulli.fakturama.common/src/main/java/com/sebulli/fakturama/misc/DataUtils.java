@@ -381,11 +381,12 @@ public class DataUtils {
      *            the format of the string
      * @return Converted value as String
      */
-    public String DoubleToDecimalFormatedValue(Double d, String format) {
+    public String DoubleToDecimalFormatedValue(final Double d, String format) {
+    	Double value = (d != null) ? d : Double.valueOf(0.0);
 
         // Format as ...
         DecimalFormat decimalFormat = new DecimalFormat(format);
-        return decimalFormat.format(d);
+        return decimalFormat.format(value);
     }
 
     /**

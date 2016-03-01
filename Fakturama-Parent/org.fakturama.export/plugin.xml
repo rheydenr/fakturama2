@@ -105,7 +105,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.lists/com.sebulli.fakturama.export.csv.lists"
-            class="org.fakturama.export.wizard.csv.contacts.ExportWizard"
+            class="org.fakturama.export.wizard.csv.contacts.AddressExportWizard"
             icon="icons/16/contact.png"
             id="com.sebulli.fakturama.export.csv.contacts.exportWizard"
             name="%wizard.export.csv.contacts.name">
