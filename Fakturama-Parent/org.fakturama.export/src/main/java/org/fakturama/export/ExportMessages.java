@@ -23,16 +23,15 @@ import org.eclipse.e4.core.services.nls.Message;
 public class ExportMessages {
 
 	public String Exportreceiptwizard254;
-	public String Exportwizard155;
 	public String Exportwizard156;
-	public String Exportwizard157;
+	public String wizardExportFilenameTypeVcard;
 	public String Exportwizard168;
 	public String Exportwizard169;
 	public String Exportwizard170;
 	public String Exportwizard171;
 	public String Exportwizard172;
 	public String Exportwizard173;
-	public String Exportwizard206;
+	public String wizardExportFilenameTypeCsv;
 	public String Exportwizard207;
 	public String Exportwizard208;
 	public String Exportwizard218;
@@ -95,6 +94,7 @@ public class ExportMessages {
 	public String wizardExportSalesUnpaidDescription;
 	public String wizardExportSalesUnpaidName;
 	public String wizardExportSalesandvouchersCategory;
+	public String wizardExportVcfContactsTitle;
 	public String wizardExportVcfContactsDescription;
 	public String wizardExportVcfContactsName;
 }

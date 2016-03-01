@@ -115,7 +115,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.lists"
-            class="org.fakturama.export.wizard.vcf.contacts.ExportWizard"
+            class="org.fakturama.export.wizard.vcf.contacts.VcardExportWizard"
             icon="icons/16/vcard.png"
             id="com.sebulli.fakturama.export.vcf.contacts.exportWizard"
             name="%wizard.export.vcf.contacts.name">
