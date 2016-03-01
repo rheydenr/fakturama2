@@ -25,6 +25,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.ReliabilityType;
 
 /**
  * Utility class for some additional useful methods for the {@link Contact}s.
@@ -536,6 +537,63 @@ public class ContactUtil {
 		return greeting;
 	}
 	
+		
+	
+	/**
+	 * Get the reliability String by the number
+	 * 
+	 * @param i
+	 *            Gender number
+	 * @return Gender as string
+	 */
+	public String getReliabilityString(ReliabilityType type) {
+		return getReliabilityString(type, true);
+	}
+	
+	/**
+	 * Get the reliability String by the number
+	 * 
+	 * @param type
+	 *            Gender number
+	 * @param translate
+	 *            TRUE, if the string should be translated
+	 * @return Gender as string
+	 */
+	public String getReliabilityString(ReliabilityType type, boolean translate) {
+		switch (type) {
+		case NONE:
+			return "---";
+		case POOR:
+			//T: Reliability
+			return msg.contactFieldReliabilityPoorName;
+		case MEDIUM:
+			//T: Reliability
+			return msg.contactFieldReliabilityMediumName;
+		case GOOD:
+			//T: Reliability
+			return msg.contactFieldReliabilityGoodName;
+		}
+		return "";
+	}
+	
+	///**
+	// * Get the reliability number by the string
+	// * 
+	// * @param s
+	// *          Reliability string
+	// * @return
+	// * 			The number
+	// */
+	//public int getReliabilityID(String s) {
+	//	// Test all strings
+	//	for (int i = 0;i < 4 ; i++) {
+	//		if (getReliabilityString(i,false).equalsIgnoreCase(s)) return i;
+	//		if (getReliabilityString(i,true).equalsIgnoreCase(s)) return i;
+	//	}
+	//	// Default = "---"
+	//	return 0;
+	//}
+
     /**
      * Returns <code>true</code> if billing and delivery address are equal
      * 

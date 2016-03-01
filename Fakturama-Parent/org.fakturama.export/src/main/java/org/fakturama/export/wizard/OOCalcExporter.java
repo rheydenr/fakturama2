@@ -17,10 +17,10 @@ package org.fakturama.export.wizard;
 import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
+import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
@@ -75,12 +76,11 @@ public class OOCalcExporter {
 
 	// The "Export" spreadsheet
 	protected Table spreadsheet = null;
-//	protected XSpreadsheetDocument xSpreadsheetDocument = null;
 
 	// export paid or unpaid invoices
 	protected boolean exportPaid = true;
 
-private SpreadsheetDocument oOdocument;
+	private SpreadsheetDocument oOdocument;
 
 	
 	/**
@@ -272,11 +272,14 @@ private SpreadsheetDocument oOdocument;
 	 *            The cell column
 	 * @param text
 	 *            The text that will be insert
+	 *            
+	 * @return for your convenience, it returns the changed cell
 	 */
-	protected void setCellText(int row, int column, String text) {
+	protected Cell setCellText(int row, int column, String text) {
 		
 		Cell cellText = CellFormatter.getCell(spreadsheet, row, column);
 		cellText.setStringValue(text);
+		return cellText;
 	}
 
 	/**
@@ -295,67 +298,90 @@ private SpreadsheetDocument oOdocument;
 		setCellText(row, column, text);
 		CellFormatter.setBold(spreadsheet, row, column);
 	}
-//
-//	/**
-//	 * Fill a cell with a text. Use an italic font style.
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param text
-//	 *            The text that will be insert
-//	 */
-//	protected void setCellTextInItalic(int row, int column, String text) {
-//		setCellText(row, column, text);
-//		CellFormatter.setItalic(spreadsheet, row, column);
-//	}
-//
-//	/**
-//	 * Fill a cell with a text. Use a red and bold font
-//	 * 
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param text
-//	 *            The text that will be insert
-//	 */
-//	protected void setCellTextInRedBold(int row, int column, String text) {
-//		setCellText(row, column, text);
-//		CellFormatter.setBold(spreadsheet, row, column);
-//		CellFormatter.setColor(spreadsheet, row, column, 0x00FF0000);
-//	}
-//
-//	/**
-//	 * Set a cell to a double value and format it with the local currency.
-//	 * 
-//	 * @param xSpreadsheetDocument
-//	 *            The spreadsheet document
-//	 * @param spreadsheet
-//	 *            The spreadsheet that contains the cell
-//	 * @param row
-//	 *            The cell row
-//	 * @param column
-//	 *            The cell column
-//	 * @param d
-//	 *            The value that will be inserted.
-//	 */
-//	protected void setCellValueAsLocalCurrency( int row, int column, Double d) {
-//		CellFormatter.getCell(spreadsheet, row, column).setValue(d);
-//		CellFormatter.setLocalCurrency(xSpreadsheetDocument, spreadsheet, row, column);
-//	}
+
+	/**
+	 * Fill a cell with a text. Use an italic font style.
+	 * 
+	 * @param spreadsheet
+	 *            The spreadsheet that contains the cell
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param text
+	 *            The text that will be insert
+	 */
+	protected void setCellTextInItalic(int row, int column, String text) {
+		Cell cell = setCellText(row, column, text);
+		cell.getStyleHandler().getTextPropertiesForWrite().setFontStyle(FontStyle.ITALIC);
+	}
+
+	/**
+	 * Fill a cell with a text. Use a red and bold font.
+	 * 
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param text
+	 *            The text that will be inserted
+	 */
+	protected void setCellTextInRedBold(int row, int column, String text) {
+		Cell cell = setCellText(row, column, text);
+		cell.getStyleHandler().getTextPropertiesForWrite().setFontStyle(FontStyle.BOLD);
+		cell.getStyleHandler().getTextPropertiesForWrite().setFontColor(Color.RED);
+	}
+
+	/**
+	 * Set a cell to a double value and format it with the local currency.
+	 * 
+	 * @param row
+	 *            The cell row
+	 * @param column
+	 *            The cell column
+	 * @param d
+	 *            The value that will be inserted.
+	 */
+	protected void setCellValueAsLocalCurrency( int row, int column, MonetaryAmount d) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setCurrencyValue(d.getNumber().doubleValue(), d.getCurrency().getCurrencyCode());
+	}
 	
-	protected void setBackgroundColor(int row, int column, int color) {
+	protected void setCellValueAsPercent( int row, int column, Double d) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setPercentageValue(d);
+	}
+	
+	protected void setCellValueAsBoolean( int row, int column, Boolean b) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setBooleanValue(b);
+	}
+	
+	/**
+	 * Sets the background color.
+	 *
+	 * @param row
+	 *            the row
+	 * @param column
+	 *            the column
+	 * @param color
+	 *            the color
+	 */
+	protected void setBackgroundColor(int row, int column, String color) {
 		CellFormatter.setBackgroundColor(spreadsheet, row, column, color);
 	}
 
-	protected void setBackgroundColor(int left, int top, int right, int bottom, int color) {
-		CellFormatter.setBackgroundColor(spreadsheet, left, top, right, bottom , color);
+	/**
+	 * Sets the background color in a given cell range.
+	 *
+	 * @param left the leftmost column in this range
+	 * @param top the topmost row in this range
+	 * @param right the rightmost column in this range
+	 * @param bottom the bottom row in this range
+	 * @param color the color to set (as String, see W3C colors)
+	 */
+	protected void setBackgroundColor(int left, int top, int right, int bottom, String color) {
+		CellFormatter.setBackgroundColor(spreadsheet, left, top, right, bottom, color);
 	}
 
 	protected void setBold(int row, int column) {

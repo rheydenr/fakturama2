@@ -18,6 +18,7 @@ import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.style.Border;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.CellBordersType;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
+import org.odftoolkit.simple.style.StyleTypeDefinitions.LineType;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.SupportedLinearMeasure;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.CellRange;
@@ -44,42 +45,6 @@ public class CellFormatter {
 
 //		// Get the property set of a cell
 //		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cell);
-//
-//		try {
-//
-//			// Set the cell's property to a new value
-//			xPropertySet.setPropertyValue(property, value);
-//
-//		}
-//		catch (UnknownPropertyException e) {
-//			Logger.logError(e, "Error 'UnknownProperty' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (PropertyVetoException e) {
-//			Logger.logError(e, "Error 'PropertyVeto' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (IllegalArgumentException e) {
-//			Logger.logError(e, "Error 'IllegalArgument' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (WrappedTargetException e) {
-//			Logger.logError(e, "Error 'WrappedTarget' setting cell property " + property + " to " + value.toString());
-//		}
-
-	}
-//
-	/**
-	 * Set the property of a Calc cells range.
-	 * 
-	 * @param cell
-	 *            The cells to format
-	 * @param property
-	 *            The property
-	 * @param value
-	 *            The value of the property
-	 */
-	private static void setCellsProperty(CellRange cells, String property, Object value) {
-		
-//		// Get the property set of a cell
-//		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cells);
 //
 //		try {
 //
@@ -131,10 +96,11 @@ public class CellFormatter {
 		Border noBorderLine = Border.NONE;
 
 		// Create a single line border
-		Border singleBorderLine = new Border(color, 30.0, 0.0, 0.0, SupportedLinearMeasure.PT);
+		Border singleBorderLine = new Border(color, 1.0, 0.0, 0.0, SupportedLinearMeasure.PT);
+		singleBorderLine.setLineStyle(LineType.SINGLE);
 
 		// Create a border object to format a table
-		Border tableBorder = Border.NONE;
+//		Border tableBorder = Border.NONE;
 
 		// Set the top border
 		if (top)
@@ -208,13 +174,12 @@ public class CellFormatter {
 	 * @param color
 	 *            The new color of the background
 	 */
-	public static void setBackgroundColor(Table spreadsheet, int row, int column, int color) {
+	public static void setBackgroundColor(Table spreadsheet, int row, int column, String color) {
 
 		// Get the cell by the row and the column
 		Cell cell = getCell(spreadsheet, row, column);
-
-		// Set the new background color
-		setCellProperty(cell, "CellBackColor", new Integer(color));
+		
+		cell.setCellBackgroundColor(Color.valueOf(color));
 	}
 
 	/**
@@ -222,20 +187,24 @@ public class CellFormatter {
 	 * 
 	 * @param spreadsheet
 	 *            The Spreadsheet that contains the cell
-	 * @param row
-	 *            The cell row
-	 * @param column
-	 *            The cell column
+	 * @param left
+	 *            the leftmost column in this range
+	 * @param top
+	 *            the topmost row in this range
+	 * @param right
+	 *            the rightmost column in this range
+	 * @param bottom
+	 *            the bottom row in this range
 	 * @param color
-	 *            The new color of the background
+	 *            the color to set (as String, see W3C colors)
 	 */
-	public static void setBackgroundColor(Table spreadsheet, int left, int top, int right, int bottom, int color) {
-
-		// Get the cell by the row and the column
-		CellRange cells = getCells(spreadsheet, left, top, right, bottom);
-
+	public static void setBackgroundColor(Table spreadsheet, int left, int top, int right, int bottom, String color) {
 		// Set the new background color
-		setCellsProperty(cells, "CellBackColor", new Integer(color));
+		for (int column = left; column <= right; column++) {
+			for (int row = top; row <= bottom; row++) {
+				setBackgroundColor(spreadsheet, row, column, color);
+			}
+		}
 	}
 
 	/**
@@ -346,12 +315,12 @@ public class CellFormatter {
 	public static CellRange getCells(Table spreadsheet, int left, int top, int right, int bottom) {
 
 		// Try to get the cell
-//		try {
-//			return spreadsheet.createCursor().getCellRangeByPosition(left, top, right, bottom);
-//		}
-//		catch (IndexOutOfBoundsException e) {
+		try {
+			return spreadsheet.getCellRangeByPosition(left, top, right, bottom);
+		}
+		catch (IndexOutOfBoundsException e) {
 			return null;
-//		}
+		}
 	}
 //
 //	/**

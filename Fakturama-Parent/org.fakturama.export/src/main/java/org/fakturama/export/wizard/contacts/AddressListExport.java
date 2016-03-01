@@ -21,7 +21,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.export.wizard.OOCalcExporter;
@@ -190,7 +189,7 @@ public class AddressListExport extends OOCalcExporter {
 			}
 			
 			if(contact.getReliability() != null) {
-				setCellText(row, col++, contact.getReliability().getName());
+				setCellText(row, col++, contactUtil.getReliabilityString(contact.getReliability()));
 			} else {
 				col++;
 			}
@@ -201,12 +200,12 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getEmail());
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
-			setCellText(row, col++, BooleanUtils.toStringTrueFalse(contact.getVatNumberValid()));
-			setCellText(row, col++, Double.toString(contact.getDiscount() != null ? contact.getDiscount() : Double.valueOf(0.0)));
+			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
+			setCellValueAsPercent(row, col++, contact.getDiscount());
 
 			// Alternate the background color
 			if ((row % 2) == 0)
-				setBackgroundColor( 0, row, col-1, row, 0x00e8ebed);
+				setBackgroundColor( 0, row, col-1, row, "#e8ebed");
 
 			row++;
 		}
