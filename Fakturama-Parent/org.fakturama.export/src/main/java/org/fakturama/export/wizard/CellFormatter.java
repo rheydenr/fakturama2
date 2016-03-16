@@ -32,42 +32,6 @@ import org.odftoolkit.simple.table.Table;
 public class CellFormatter {
 
 	/**
-	 * Set the property of a Calc cell.
-	 * 
-	 * @param cell
-	 *            The cell to format
-	 * @param property
-	 *            The property
-	 * @param value
-	 *            The value of the property
-	 */
-	private static void setCellProperty(Cell cell, String property, Object value) {
-
-//		// Get the property set of a cell
-//		XPropertySet xPropertySet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cell);
-//
-//		try {
-//
-//			// Set the cell's property to a new value
-//			xPropertySet.setPropertyValue(property, value);
-//
-//		}
-//		catch (UnknownPropertyException e) {
-//			Logger.logError(e, "Error 'UnknownProperty' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (PropertyVetoException e) {
-//			Logger.logError(e, "Error 'PropertyVeto' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (IllegalArgumentException e) {
-//			Logger.logError(e, "Error 'IllegalArgument' setting cell property " + property + " to " + value.toString());
-//		}
-//		catch (WrappedTargetException e) {
-//			Logger.logError(e, "Error 'WrappedTarget' setting cell property " + property + " to " + value.toString());
-//		}
-
-	}
-
-	/**
 	 * Set the border of a cell to a specified color
 	 * 
 	 * @param spreadsheet

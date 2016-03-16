@@ -97,4 +97,6 @@ public class ExportMessages {
 	public String wizardExportVcfContactsTitle;
 	public String wizardExportVcfContactsDescription;
 	public String wizardExportVcfContactsName;
+	public String wizardCommonSaveFileexists;
 }
+

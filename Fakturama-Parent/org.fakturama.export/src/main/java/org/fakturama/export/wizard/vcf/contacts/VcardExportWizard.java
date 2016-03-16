@@ -19,9 +19,12 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.InjectionException;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
@@ -56,6 +59,9 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 	
 	@Inject
 	private ITemplateResourceManager resourceManager;
+
+	@Inject
+	private Logger log;
 
 	// The first (and only) page of this wizard
 	EmptyWizardPage page1;
@@ -94,12 +100,18 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
 		String selectedFile = fileDialog.open();
-		if (selectedFile != null) {
-			VcardExport exporter = ContextInjectionFactory.make(VcardExport.class, ctx);
-			return exporter.export(selectedFile);
+		boolean retval = false;
+		try {
+			if (selectedFile != null) {
+				VcardExport exporter = ContextInjectionFactory.make(VcardExport.class, ctx);
+				retval = exporter.export(selectedFile);
+			}
+		} catch (Exception e) {
+			// catch an unspecified exception since we don't know which one is thrown.
+			MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, "Export finished with error, see log file!");
+			log.error(e, "export VCard didn't finish successfully! Following error occured:");
 		}
-		else 
-			return false;
+		return retval;
 	}
 
 }

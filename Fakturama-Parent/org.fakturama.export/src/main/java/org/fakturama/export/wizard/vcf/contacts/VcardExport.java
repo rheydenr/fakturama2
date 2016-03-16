@@ -201,8 +201,14 @@ public class VcardExport {
 							contact.getAddress().getCountryCode()
 							);
 				}
-				Contact alternateContacts = contact.getAlternateContacts();
-				if(alternateContacts != null && alternateContacts.getAddress() != null) {
+				
+				Contact alternateContacts;
+				if (contact.getAlternateContacts() != null) {
+					alternateContacts = contact.getAlternateContacts();
+				} else {
+					alternateContacts = contact;
+				}
+				if(alternateContacts.getAddress() != null) {
 					writeVCard("ADR;TYPE=postal:",
 							"",
 							alternateContacts.getCompany(),

@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.export.wizard.OOCalcExporter;
@@ -140,23 +139,24 @@ public class AddressListExport extends OOCalcExporter {
 				col += 4;
 			}
 			
+			Contact deliveryContact;
 			if (contact.getAlternateContacts() != null) {
-				Contact deliveryContact = contact.getAlternateContacts();
-				setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
-				setCellText(row, col++, deliveryContact.getTitle());
-				setCellText(row, col++, deliveryContact.getFirstName());
-				setCellText(row, col++, deliveryContact.getName());
-				setCellText(row, col++, deliveryContact.getCompany());
-				if (deliveryContact.getAddress() != null) {
-					setCellText(row, col++, deliveryContact.getAddress().getStreet());
-					setCellText(row, col++, deliveryContact.getAddress().getZip());
-					setCellText(row, col++, deliveryContact.getAddress().getCity());
-					setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
-				} else {
-					col += 4;
-				}
+				deliveryContact = contact.getAlternateContacts();
 			} else {
-				col += 9;
+				deliveryContact = contact;
+			}
+			setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
+			setCellText(row, col++, deliveryContact.getTitle());
+			setCellText(row, col++, deliveryContact.getFirstName());
+			setCellText(row, col++, deliveryContact.getName());
+			setCellText(row, col++, deliveryContact.getCompany());
+			if (deliveryContact.getAddress() != null) {
+				setCellText(row, col++, deliveryContact.getAddress().getStreet());
+				setCellText(row, col++, deliveryContact.getAddress().getZip());
+				setCellText(row, col++, deliveryContact.getAddress().getCity());
+				setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
+			} else {
+				col += 4;
 			}
 			
 			if(contact.getBankAccount() != null) {

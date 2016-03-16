@@ -15,15 +15,8 @@
 package com.sebulli.fakturama.addons;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.commands.MHandler;
-import org.eclipse.e4.ui.model.application.commands.MHandlerContainer;
-import org.eclipse.e4.ui.model.application.ui.MContext;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 /**

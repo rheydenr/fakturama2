@@ -144,23 +144,25 @@ public class AddressExport {
 					stringBuffer.append(";;;;");
 				}
 		
+				
+				Contact deliveryContact;
 				if (contact.getAlternateContacts() != null) {
-					Contact deliveryContact = contact.getAlternateContacts();
-					stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getGenderString(deliveryContact.getGender()))).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getTitle())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getFirstName())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getName())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getCompany())).append(";");
-					if (deliveryContact.getAddress() != null) {
-						stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
-						   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
-						   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCountryCode())).append(";");
-					} else {
-						stringBuffer.append(";;;;");
-					}
+					deliveryContact = contact.getAlternateContacts();
 				} else {
-					stringBuffer.append(";;;;;;;;;");
+					deliveryContact = contact;
+				}
+				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getGenderString(deliveryContact.getGender()))).append(";")
+				   .append(ExporterHelper.inQuotes(deliveryContact.getTitle())).append(";")
+				   .append(ExporterHelper.inQuotes(deliveryContact.getFirstName())).append(";")
+				   .append(ExporterHelper.inQuotes(deliveryContact.getName())).append(";")
+				   .append(ExporterHelper.inQuotes(deliveryContact.getCompany())).append(";");
+				if (deliveryContact.getAddress() != null) {
+					stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCountryCode())).append(";");
+				} else {
+					stringBuffer.append(";;;;");
 				}
 				
 				if(contact.getBankAccount() != null) {

@@ -80,8 +80,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 */
 	private IEclipsePreferences preferences;
 	
-	private static final Map<String, String> jdbcUrlMap = new HashMap<String, String>();;
-
+	private static final Map<String, String> jdbcUrlMap = new HashMap<String, String>();
+	public static final int EMPTY_WORKSPACE = 100;
 
 	private List<ServiceReference<DataSourceFactory>> connectionProviders = new ArrayList<>();
     private int jdbcClassComboIndex = 0;
@@ -315,12 +315,16 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		ServiceReference<DataSourceFactory> firstElement = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
 		String driver = selection.isEmpty() ? DEFAULT_JDBC_CLASS : (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 
+//        String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "org.hsqldb.jdbc.JDBCDriver");
+		
 		// storing DB credentials
 		try {
 			workspace = txtWorkdir.getText();
 			
 			// handle workdir and JDBC connection
-			if (!workspace.isEmpty()) {
+			if (workspace.isEmpty()) {
+				MessageDialog.openError(parent, msg.dialogMessageboxTitleError, msg.startFirstSelectWorkdirNoselection);
+			} else {
     			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
     			
     			// for default DB setting we use the workdir as DB store
@@ -343,8 +347,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				preferences.flush();
 				// restarting application
 				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
+				super.okPressed();
 			}
-			super.okPressed();
 		} catch (BackingStoreException e) {
 			log.error(e);
 		}

@@ -471,6 +471,8 @@
       <parameters xmi:id="_YDkFkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.58" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
     </bindings>
     <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.eclipse.ui.file.print.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+    <bindings xmi:id="_JrWiQOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.close" keySequence="M1+W" command="_RmrPQCTQEeS9z6SQNducwg"/>
+    <bindings xmi:id="_ff0UIOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.closeall" keySequence="M1+SHIFT+W" command="_pBm00CvEEeSxtNFFgqSUpw"/>
   </bindingTables>
   <bindingTables xmi:id="_smR5cGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingtable.viewlist" bindingContext="_c7LSgGFOEeShb_NtiSSU9w">
     <bindings xmi:id="_x7JsYGFOEeShb_NtiSSU9w" elementId="fakturama.keybinding.listview.deleteentry" keySequence="M1+D" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
@@ -528,6 +530,7 @@
     <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
     <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="org.fakturama.document.duplicate" name="document is a duplicate of an other document"/>
     <parameters xmi:id="_LK9-cA7gEeWUIKlpoQDe6Q" elementId="org.fakturama.document.caller" name="calling document editor"/>
+    <parameters xmi:id="_lXWsEOfXEeWRUaWo1qt8mA" elementId="org.fakturama.rcp.forcenew" name="force to create a new document" typeId=""/>
   </commands>
   <commands xmi:id="_MFWfwEy7EeOA3qmx22wNtw" elementId="command.new.product" commandName="%toolbar.new.product.name" description="%command.new.product.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_6BSUcGMEEeWIcrS-VkgIGw" elementId="com.sebulli.fakturama.editors.editortype" name="Prouduct type"/>

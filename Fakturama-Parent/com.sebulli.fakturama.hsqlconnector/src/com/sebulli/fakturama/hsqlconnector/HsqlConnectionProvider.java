@@ -5,8 +5,6 @@ import com.sebulli.fakturama.dbconnector.IDbConnection;
 /**
  * Provides the implementation for an HSQL DB.
  * 
- * @author rheydenr
- *
  */
 public class HsqlConnectionProvider implements IDbConnection {
 

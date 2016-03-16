@@ -2,7 +2,6 @@ package org.fakturama.export.wizard;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -39,9 +38,6 @@ public class ExportPage extends ImportExportPage {
 	@Inject
 	private IFakturamaWizardService exportService;
 	
-	@Inject
-	private IEclipseContext ctx;
-
 	@Inject
 	private Messages msg;
 	

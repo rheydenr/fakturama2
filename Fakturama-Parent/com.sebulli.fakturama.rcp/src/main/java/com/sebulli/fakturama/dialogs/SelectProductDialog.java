@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.dialogs;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,7 +119,8 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
         if (productListTable.getSelectedObject() != null) {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-            eventParams.put(ProductListTable.SELECTED_PRODUCT_ID, Long.valueOf(productListTable.getSelectedObject().getId()));
+            // it has to be a List!
+            eventParams.put(ProductListTable.SELECTED_PRODUCT_ID, Arrays.asList(productListTable.getSelectedObject().getId()));
             evtBroker.post("DialogSelection/Product", eventParams);
 // alternative:            setResult(productListTable.getSelectedObject());
         }

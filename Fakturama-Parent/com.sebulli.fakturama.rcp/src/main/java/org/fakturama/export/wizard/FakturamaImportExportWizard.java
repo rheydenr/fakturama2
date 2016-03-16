@@ -69,9 +69,8 @@ public class FakturamaImportExportWizard extends Wizard {
         
         ImageDescriptor wizardBannerImage = null;
         if (IMPORT.equals(page)){
-//        	wizardBannerImage = WorkbenchImages
-//                .getImageDescriptor(IWorkbenchGraphicConstants.IMG_WIZBAN_IMPORT_WIZ);
-//        	setWindowTitle(msg.wizardImportCommonTitle);
+        	wizardBannerImage = Icon.IMPORT_WIZ.getImageDescriptor(IconSize.WizardHeaderIconSize);
+        	setWindowTitle(msg.wizardExportCommonTitle);
         }
         else if (EXPORT.equals(page)){
         	wizardBannerImage = Icon.EXPORT_WIZ.getImageDescriptor(IconSize.WizardHeaderIconSize);
@@ -111,7 +110,8 @@ public class FakturamaImportExportWizard extends Wizard {
     
     @Override
     public boolean performFinish() {
-        return false;
+    	importExportPage.saveWidgetValues();
+        return true;
     }
     
 }

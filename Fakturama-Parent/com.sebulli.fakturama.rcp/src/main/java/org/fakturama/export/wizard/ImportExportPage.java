@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.IWizardNode;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -80,7 +79,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 		 * from the tree.
 		 * 
 		 * @param parent Composite on which the tree viewer is to be created
-		 * @return Comoposite with all widgets
+		 * @return Composite with all widgets
 		 */
 		protected Composite createControl(Composite parent){
 	        Font font = parent.getFont();
@@ -134,7 +133,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 	            }
 	        }
 
-	        // ensure the category is expanded.  If there is a remembered expansion it will be set later.
+	        // ensure the category is expanded. If there is a remembered expansion it will be set later.
 	        if (expandTop) {
 				viewer.setAutoExpandLevel(2);
 			}
@@ -321,27 +320,27 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * expanded no longer exists then it is ignored.
      */
     protected void expandPreviouslyExpandedCategories(String setting, IE4WizardCategory wizardCategories, TreeViewer viewer) {
-//        String[] expandedCategoryPaths =  getDialogSettings()
-//                .getArray(setting);
-//        if (expandedCategoryPaths == null || expandedCategoryPaths.length == 0) {
-//			return;
-//		}
-//
-//        List categoriesToExpand = new ArrayList(expandedCategoryPaths.length);
-//
-//        if (wizardCategories != null) {
-//            for (int i = 0; i < expandedCategoryPaths.length; i++) {
-//                IE4WizardCategory category = wizardCategories
-//                        .findCategory(new Path(expandedCategoryPaths[i]));
-//                if (category != null) {
-//					categoriesToExpand.add(category);
-//				}
-//            }
-//        }
-//
-//        if (!categoriesToExpand.isEmpty()) {
-//			viewer.setExpandedElements(categoriesToExpand.toArray());
-//		}
+        String[] expandedCategoryPaths = getDialogSettings()
+                .getArray(setting);
+        if (expandedCategoryPaths == null || expandedCategoryPaths.length == 0) {
+			return;
+		}
+
+        List categoriesToExpand = new ArrayList(expandedCategoryPaths.length);
+
+        if (wizardCategories != null) {
+            for (int i = 0; i < expandedCategoryPaths.length; i++) {
+                IE4WizardCategory category = wizardCategories
+                        .findCategory(new Path(expandedCategoryPaths[i]));
+                if (category != null) {
+					categoriesToExpand.add(category);
+				}
+            }
+        }
+
+        if (!categoriesToExpand.isEmpty()) {
+			viewer.setExpandedElements(categoriesToExpand.toArray());
+		}
 
     }
 
@@ -351,28 +350,28 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * previously selected no longer exists then it is ignored.
      */
     protected void selectPreviouslySelected(String setting, IE4WizardCategory wizardCategories, final TreeViewer viewer) {
-//        String selectedId = getDialogSettings().get(setting);
-//        if (selectedId == null) {
-//			return;
-//		}
-//
-//        if (wizardCategories == null) {
-//			return;
-//		}
-//
-//        Object selected = wizardCategories.findCategory(new Path(
-//                selectedId));
-//
-//        if (selected == null) {
-//            selected = wizardCategories.findWizard(selectedId);
-//
-//            if (selected == null) {
-//				// if we cant find either a category or a wizard, abort.
-//                return;
-//			}
-//        }
-//
-//        viewer.setSelection(new StructuredSelection(selected), true);
+        String selectedId = getDialogSettings().get(setting);
+        if (selectedId == null) {
+			return;
+		}
+
+        if (wizardCategories == null) {
+			return;
+		}
+
+        Object selected = wizardCategories.findCategory(new Path(
+                selectedId));
+
+        if (selected == null) {
+            selected = wizardCategories.findWizard(selectedId);
+
+            if (selected == null) {
+				// if we cant find either a category or a wizard, abort.
+                return;
+			}
+        }
+
+        viewer.setSelection(new StructuredSelection(selected), true);
     }
  
     /**
@@ -381,18 +380,18 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * instance of this page.
      */
     protected void storeExpandedCategories(String setting, TreeViewer viewer) {
-//        Object[] expandedElements = viewer.getExpandedElements();
-//        List expandedElementPaths = new ArrayList(expandedElements.length);
-//        for (int i = 0; i < expandedElements.length; ++i) {
-//            if (expandedElements[i] instanceof IE4WizardCategory) {
-//				expandedElementPaths
-//                        .add(((IE4WizardCategory) expandedElements[i])
-//                                .getPath().toString());
-//			}
-//        }
-//        getDialogSettings().put(setting,
-//                (String[]) expandedElementPaths
-//                        .toArray(new String[expandedElementPaths.size()]));
+        Object[] expandedElements = viewer.getExpandedElements();
+        List expandedElementPaths = new ArrayList(expandedElements.length);
+        for (int i = 0; i < expandedElements.length; ++i) {
+            if (expandedElements[i] instanceof IE4WizardCategory) {
+				expandedElementPaths
+                        .add(((IE4WizardCategory) expandedElements[i])
+                                .getPath().toString());
+			}
+        }
+        getDialogSettings().put(setting,
+                (String[]) expandedElementPaths
+                        .toArray(new String[expandedElementPaths.size()]));
     }
 
     /**
@@ -400,20 +399,20 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * order to recreate this page's state in the next instance of this page.
      */
     protected void storeSelectedCategoryAndWizard(String setting, TreeViewer viewer) {
-//        Object selected = ((IStructuredSelection) viewer
-//                .getSelection()).getFirstElement();
-//
-//        if (selected != null) {
-//            if (selected instanceof IE4WizardCategory) {
-//				getDialogSettings().put(setting,
-//                        ((IE4WizardCategory) selected).getPath()
-//                                .toString());
-//			} else {
-//				// else its a wizard
-//            	getDialogSettings().put(setting,
-//                        ((IE4WizardDescriptor) selected).getId());
-//			}
-//        }
+        Object selected = ((IStructuredSelection) viewer
+                .getSelection()).getFirstElement();
+
+        if (selected != null) {
+            if (selected instanceof IE4WizardCategory) {
+				getDialogSettings().put(setting,
+                        ((IE4WizardCategory) selected).getPath()
+                                .toString());
+			} else {
+				// else its a wizard
+            	getDialogSettings().put(setting,
+                        ((IE4WizardDescriptor) selected).getId());
+			}
+        }
     }
     
     /**

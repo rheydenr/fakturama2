@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -216,6 +217,8 @@ public class CoolbarViewPart {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
+		// if called from CoolBar it is *always* a new one...
+        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         return params;
     }
 
@@ -316,19 +319,26 @@ public class CoolbarViewPart {
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
-			item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
-			item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
-			if(disabledIcon != null) {
-				item.setDisabledImage(disabledIcon);
+			if(pCmd != null) {
+				item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
+				item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
+				if(disabledIcon != null) {
+					item.setDisabledImage(disabledIcon);
+				}
+				
+				item.setEnabled(pCmd.getCommand().isEnabled());
+				item.setData(TOOLITEM_COMMAND, pCmd);
+			} else {
+				// this *MUST* be a great error!
+				log.error("No command found for " + commandId + " (" + commandName + ")" + ". Please check your Applicationmodel!");
 			}
 			
-			item.setEnabled(pCmd.getCommand().isEnabled());
-			item.setData(TOOLITEM_COMMAND, pCmd);
 		}
 		catch (NotDefinedException e1) {
 			log.error(e1, "Fehler!");
 		}
 		item.addSelectionListener(new SelectionAdapter() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (handlerService.canExecute(pCmd)) {

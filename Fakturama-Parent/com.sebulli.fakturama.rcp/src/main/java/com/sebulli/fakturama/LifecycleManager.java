@@ -1,12 +1,20 @@
 package com.sebulli.fakturama;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Date;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,6 +32,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -32,7 +41,10 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
@@ -65,6 +77,12 @@ import com.sebulli.fakturama.startup.ConfigurationManager;
  */
 public class LifecycleManager {
 
+    /**
+     * The name of the dialog settings file (value 
+     * <code>"dialog_settings.xml"</code>).
+     */
+    private static final String FN_DIALOG_SETTINGS = "dialog_settings.xml"; //$NON-NLS-1$
+
     private static final String CODELISTS_XLSX = "codelists.xlsx";
 
 	@Inject
@@ -83,7 +101,9 @@ public class LifecycleManager {
     
     @Inject
     protected ITemplateResourceManager resourceManager;
-    
+
+	private IDialogSettings dialogSettings;
+
     private static final boolean RESTART_APPLICATION = true;
 
     private Job dbInitJob;
@@ -246,7 +266,7 @@ public class LifecycleManager {
 	}
 
 	@PreDestroy
-    public void postWindowClose() {
+    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
 
         //Closes all OpenOffice documents 
  //       OfficeManager.INSTANCE.closeAll();
@@ -258,10 +278,48 @@ public class LifecycleManager {
             // TODO: Create a database backup
 //            BackupManager.createBackup();
         }
+        
+        if(dialogSettings != null) {
+        	saveDialogSettings(instanceLocation);
+        }
+    }
+	
+    /**
+     * Saves this plug-in's dialog settings.
+     * Any problems which arise are silently ignored.
+     * @param instanceLocation 
+     */
+    protected void saveDialogSettings(Location instanceLocation) {
+        if (dialogSettings == null) {
+            return;
+        }
+
+        try {
+        	URL path = instanceLocation.getDataArea(Activator.PLUGIN_ID);
+        	Path storage = null;
+        	if(path == null) {
+				return;
+			} else {
+				storage = Paths.get(path.toURI());
+				if(Files.notExists(storage)) {
+					Files.createDirectories(storage);
+				}
+			}
+
+        	storage = storage.resolve(FN_DIALOG_SETTINGS);
+            if(Files.notExists(storage)) {
+            	Files.createFile(storage);
+            }
+            dialogSettings.save(storage.toString());
+        } catch (IOException | IllegalStateException | URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @ProcessAdditions
-    void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext) {
+    void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
+    		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
         
     	// TODO put the Login Dialog in here
 
@@ -286,6 +344,8 @@ public class LifecycleManager {
     	
         MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
         mainMTrimmedWindow.setLabel("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
+        
+        initDialogSettings(instanceLocation);
 
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
@@ -316,5 +376,56 @@ public class LifecycleManager {
             }
         }
     }
+    
+    
+	private IDialogSettings initDialogSettings(Location instanceLocation) {
+		if(dialogSettings == null) {
+			dialogSettings = loadDialogSettings(instanceLocation);
+			context.set(IDialogSettings.class, dialogSettings);
+		}
+		return dialogSettings;
+	}
+		
+	
 
+    /**
+     * Loads the dialog settings for this plug-in.
+     * The default implementation first looks for a standard named file in the 
+     * plug-in's read/write state area; if no such file exists, the plug-in's
+     * install directory is checked to see if one was installed with some default
+     * settings; if no file is found in either place, a new empty dialog settings
+     * is created. If a problem occurs, an empty settings is silently used.
+     * <p>
+     * This framework method may be overridden, although this is typically
+     * unnecessary.
+     * </p>
+     * 
+     * Borrowed from org.eclipse.ui.plugin.AbstractUIPlugin
+     * @param instanceLocation 
+     */
+    private IDialogSettings loadDialogSettings(Location instanceLocation) {
+    	IDialogSettings dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
+    	
+    	//look for bundle specific dialog settings
+        URL dsURL = null;
+		try {
+			dsURL = instanceLocation.getDataArea(Activator.PLUGIN_ID + "/" + FN_DIALOG_SETTINGS);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        if (dsURL == null) {
+			return null;
+		}
+        
+        try(InputStream is = dsURL.openStream();) {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is, "utf-8")); //$NON-NLS-1$
+            dialogSettings.load(reader);
+        } catch (IOException e) {
+            // load failed so ensure we have an empty settings
+            dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
+        }
+		return dialogSettings;
+    }
 }

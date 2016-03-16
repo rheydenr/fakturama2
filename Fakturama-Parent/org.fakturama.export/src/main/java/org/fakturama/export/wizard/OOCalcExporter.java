@@ -14,11 +14,15 @@
 
 package org.fakturama.export.wizard;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -354,12 +358,12 @@ public class OOCalcExporter {
 	
 	protected void setCellValueAsPercent( int row, int column, Double d) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
-		cell.setPercentageValue(d);
+		cell.setPercentageValue(d != null ? d : Double.valueOf(0.0));
 	}
 	
 	protected void setCellValueAsBoolean( int row, int column, Boolean b) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
-		cell.setBooleanValue(b);
+		cell.setBooleanValue(BooleanUtils.isTrue(b));
 	}
 	
 	/**
@@ -406,15 +410,26 @@ public class OOCalcExporter {
 //	}
 	
 	public void save() {
-		String fileName = getOutputFileName();
-		if(StringUtils.isNotBlank(fileName)) {
-			try {
-				oOdocument.save(fileName);
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, String.format(exportMessages.wizardCommonSaveInfo, fileName));
-			} catch (Exception e) {
-				log.error(e, "Could not store exported document.");
-			}
-		} 
+		boolean answer = true;
+		try {
+			do {
+				String fileName = getOutputFileName();
+				if (StringUtils.isNotBlank(fileName)) {
+					Path saveFileName = Paths.get(fileName);
+					if (Files.exists(saveFileName)) {
+						answer = MessageDialog.openQuestion(shell, msg.dialogMessageboxTitleWarning,
+								exportMessages.wizardCommonSaveFileexists);
+					}
+					if (answer) {
+						oOdocument.save(fileName);
+						MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo,
+								String.format(exportMessages.wizardCommonSaveInfo, fileName));
+					}
+				}
+			} while(!answer);
+		} catch (Exception e) {
+			log.error(e, "Could not store exported document.");
+		}
 	}
 
 	private String getOutputFileName() {

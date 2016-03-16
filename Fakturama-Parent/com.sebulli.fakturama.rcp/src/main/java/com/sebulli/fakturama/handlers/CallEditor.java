@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -104,6 +105,11 @@ public class CallEditor {
     
     public static final String DOCVIEW_PART_ID = "org.fakturama.rcp.docdetail";
 
+    /**
+     * If a caller wants to force to create a new document.
+     */
+	public static final String PARAM_FORCE_NEW = "org.fakturama.rcp.forcenew";
+
     @Inject
     @Translation
     protected Messages msg;
@@ -128,10 +134,12 @@ public class CallEditor {
 			@Optional @Named(PARAM_CATEGORY) String category,
             @Optional @Named(PARAM_DUPLICATE) String duplicate,
             @Optional @Named(PARAM_CALLING_DOC) String callingDoc,
+            @Optional @Named(PARAM_FORCE_NEW) String pForceNew,
             final MApplication application,
             final EModelService modelService) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
+            boolean forceNew = BooleanUtils.toBoolean(pForceNew);
             
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
@@ -139,9 +147,12 @@ public class CallEditor {
             }
 
             Map<String, String> params = new HashMap<>();
-            params.put(PARAM_OBJ_ID, objId);
+            // forceNew means we want to create a new document unconditionally
+            if(!forceNew) {
+            	params.put(PARAM_OBJ_ID, objId);
+            	params.put(PARAM_CALLING_DOC, callingDoc);
+            }
             params.put(PARAM_CATEGORY, category);
-            params.put(PARAM_CALLING_DOC, callingDoc);
             
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);

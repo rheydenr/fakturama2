@@ -707,6 +707,7 @@ public class Messages {
 	public String startFirstSelectOldworkdirVerbose;
 	public String startFirstSelectWorkdir;
 	public String startFirstSelectWorkdirShort;
+	public String startFirstSelectWorkdirNoselection;
 	public String startFirstSelectWorkdirVerbose;
 	public String startFirstTitle;
 	public String startMigration;

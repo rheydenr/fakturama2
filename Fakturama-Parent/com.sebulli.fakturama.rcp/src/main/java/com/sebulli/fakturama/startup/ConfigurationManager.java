@@ -8,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,7 +20,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -36,8 +33,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.handlers.ReorganizeDocuments;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.MigrationManager;
@@ -234,7 +229,8 @@ public class ConfigurationManager {
 	private void selectWorkspace(String requestedWorkspace, Shell shell) {
 	    // you can't use the ModelService because it isn't available at this moment :-(
 		InitialStartupDialog startDialog = new InitialStartupDialog(shell, eclipsePrefs, log, msg, requestedWorkspace);
-		if (startDialog.open() != Window.OK) {
+		int result = startDialog.open();
+		if (result != Window.OK || eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) == null) {
 			// close the application
 			log.warn("Dialog was closed without setting any preferences. Exiting.");
 			//	ExitHandler!
