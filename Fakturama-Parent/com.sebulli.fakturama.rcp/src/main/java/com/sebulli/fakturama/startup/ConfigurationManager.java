@@ -108,11 +108,16 @@ public class ConfigurationManager {
 		OptionBuilder.hasArg();
 		OptionBuilder.withLongOpt(IWorkbench.PERSIST_STATE);
         Option persistState = OptionBuilder.create("r");
+        
+		OptionBuilder.withArgName("showlocation");
+		OptionBuilder.withLongOpt("showlocation");
+        Option showlocation = OptionBuilder.create("s");
 
         // create Options object
         Options options = new Options();
         options.addOption(selectWorkspaceOpt);
         options.addOption(persistState);
+        options.addOption(showlocation);
         
         CommandLineParser parser = new BasicParser();
         try {
