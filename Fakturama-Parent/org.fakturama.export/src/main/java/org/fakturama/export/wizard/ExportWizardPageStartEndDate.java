@@ -25,12 +25,13 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
 
@@ -50,8 +51,8 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	// start and end date
 	private Label labelStart;
 	private Label labelEnd;
-	private DateTime dtStartDate;
-	private DateTime dtEndDate;
+	private CDateTime dtStartDate;
+	private CDateTime dtEndDate;
 
 	// Use start and end date or export all
 	private Button bDoNotUseTimePeriod;
@@ -143,8 +144,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).indent(20, 0).applyTo(labelEnd);
 
 		// Start date
-		dtStartDate = new DateTime(top, SWT.DROP_DOWN);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(dtStartDate);
+		dtStartDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
+		dtStartDate.setSelection(Calendar.getInstance().getTime());
+		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtStartDate);
 
 		dtStartDate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -153,8 +155,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		});
 		
 		// End date
-		dtEndDate = new DateTime(top, SWT.DROP_DOWN);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).indent(20, 0).applyTo(dtEndDate);
+		dtEndDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
+		dtEndDate.setSelection(Calendar.getInstance().getTime());
+		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).indent(20, 0).applyTo(dtEndDate);
 
 		dtEndDate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -167,11 +170,15 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		
 		// Set the start and end date to the 1st and last day of the
 		// last month.
-		GregorianCalendar calendar = new GregorianCalendar(dtEndDate.getYear(), dtEndDate.getMonth(), 1);
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(dtEndDate.getSelection());
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		calendar.add(Calendar.DAY_OF_MONTH, -1);
-		dtEndDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-		calendar = new GregorianCalendar(dtEndDate.getYear(), dtEndDate.getMonth(), 1);
-		dtStartDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+		dtEndDate.setSelection(calendar.getTime());
+		
+		calendar.setTime(dtEndDate.getSelection());
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		dtStartDate.setSelection(calendar.getTime());
 		
 		// Check button: delivery address equals address
 		bDoNotUseTimePeriod = new Button(top, SWT.CHECK);
@@ -195,7 +202,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	 * @return Start date as a GregorianCalendar object
 	 */
 	public GregorianCalendar getStartDate() {
-		return new GregorianCalendar(dtStartDate.getYear(), dtStartDate.getMonth(), dtStartDate.getDay());
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(dtStartDate.getSelection());
+		return calendar;
 	}
 
 	/**
@@ -204,7 +213,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	 * @return End date as a GregorianCalendar object
 	 */
 	public GregorianCalendar getEndDate() {
-		return new GregorianCalendar(dtEndDate.getYear(), dtEndDate.getMonth(), dtEndDate.getDay());
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(dtEndDate.getSelection());
+		return calendar;
 	}
 	
 	/**

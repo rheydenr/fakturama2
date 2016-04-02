@@ -15,7 +15,6 @@
 package org.fakturama.export.wizard.accounts;
 
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.annotation.PostConstruct;
@@ -29,13 +28,14 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
@@ -61,7 +61,7 @@ public class AccountSettingsPage extends WizardPage {
 	private IEclipsePreferences eclipsePrefs;
 
 	//Control elements
-	private DateTime dtDate;
+	private CDateTime dtDate;
 	private FormattedText txtValue;
 	private MonetaryAmount value = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
 	private Label warning;
@@ -73,7 +73,7 @@ public class AccountSettingsPage extends WizardPage {
 		super("ExportOptionPage");
 		//T: Title of the Sales Export Wizard Page 1
 		setTitle(title);
-		setMessage(label );
+		setMessage(label);
 	}
 	
 	/**
@@ -118,7 +118,8 @@ public class AccountSettingsPage extends WizardPage {
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(dateAndValue);
 		
 		// Start date
-		dtDate = new DateTime(dateAndValue, SWT.DROP_DOWN);
+		dtDate = new CDateTime(dateAndValue, CDT.BORDER | CDT.DROP_DOWN);
+		dtDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(dtDate);
 
 		dtDate.addSelectionListener(new SelectionAdapter() {
@@ -156,7 +157,9 @@ public class AccountSettingsPage extends WizardPage {
 	 * @return date as a GregorianCalendar object
 	 */
 	public GregorianCalendar getDate() {
-		return new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
+		GregorianCalendar retval = new GregorianCalendar();
+		retval.setTime(dtDate.getSelection());
+		return retval;
 	}
 
 	/**
@@ -183,7 +186,7 @@ public class AccountSettingsPage extends WizardPage {
 
 		// Set the date widget with the property from the database
 		if (dtDate != null) {
-			dtDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+			dtDate.setSelection(calendar.getTime());
 		}
 
 		// Create a property key to store the value and add the name of the account
@@ -198,21 +201,12 @@ public class AccountSettingsPage extends WizardPage {
 	}
 
 	/**
-	 * Return the  date as a GregorianCalendar object
-	 * 
-	 * @return date as a GregorianCalendar object
-	 */
-	public GregorianCalendar getDateAsCalendar() {
-		return new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-	}
-
-	/**
 	 * Test, whether the page is complete
 	 */
 	@Override
 	public boolean isPageComplete() {
 
-		// It is not complete, if the previouse page isn't
+		// It is not complete if the previous page isn't
 		if (!this.getPreviousPage().canFlipToNextPage())
 			return false;
 
@@ -226,7 +220,7 @@ public class AccountSettingsPage extends WizardPage {
 			return false;
 
 		// The date must be before the start date
-		boolean isAfterStartDate = getDateAsCalendar().after(startPage.getStartDate());
+		boolean isAfterStartDate = getDate().after(startPage.getStartDate());
 		
 		// If not, show a warning text
 		if (warning != null)

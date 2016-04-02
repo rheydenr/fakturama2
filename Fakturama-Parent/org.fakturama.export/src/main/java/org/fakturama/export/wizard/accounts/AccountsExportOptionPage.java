@@ -33,6 +33,7 @@ import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 
 import com.sebulli.fakturama.calculate.AccountSummaryCalculator;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.VoucherCategory;
 
 /**
@@ -132,7 +133,7 @@ public class AccountsExportOptionPage extends WizardPage {
 
 		// Add all account entries to the combo
 		for (VoucherCategory account : accountSummary.getAccounts()) {
-			comboAccount.add(account.getName());
+			comboAccount.add(CommonConverter.getCategoryName(account, ""));
 		}
 	}
 
