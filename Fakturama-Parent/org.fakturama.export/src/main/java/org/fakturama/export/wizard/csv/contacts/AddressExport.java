@@ -66,7 +66,6 @@ public class AddressExport {
 		
 		// Create a new file
 		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE);){
-			
 
 			bos.write(
 					//T: Used as heading of a table. Keep the word short.
@@ -119,10 +118,10 @@ public class AddressExport {
 			// Get all undeleted contacts
 			List<Contact> contacts = contactsDAO.findAll();
 			
-			// Export the product data
+			// Export the contact data
 			for (Contact contact : contacts) {
 				
-				// Place the products information into the table
+				// Place the contacts information into the table
 				StringBuffer stringBuffer = new StringBuffer();
 				stringBuffer.append(contact.getId()).append(";");
 				if(contact.getCategories() != null) {

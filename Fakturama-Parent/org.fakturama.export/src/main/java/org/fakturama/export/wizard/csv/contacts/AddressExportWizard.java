@@ -94,7 +94,7 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 
 		//T: Text in a file name dialog
-		fileDialog.setFilterNames(new String[] { "ExportWizard.206 (*.csv)" });
+		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeCsv + " (*.csv)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
 		String selectedFile = fileDialog.open();
@@ -102,9 +102,9 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 			AddressExport exporter = ContextInjectionFactory.make(AddressExport.class, ctx);
 			boolean result = exporter.export(selectedFile);
 			if(result) {
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "Export successful!");
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardExportCommonSuccess);
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Export not successful!");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, exportMessages.wizardExportCommonNosuccess);
 			}
 			return true;   // this closes the wizard dialog
 		}

@@ -12,7 +12,8 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package org.fakturama.export.wizard.vcf.contacts;
+package org.fakturama.export.wizard.csv.products;
+
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -20,7 +21,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -30,6 +30,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.wizards.IExportWizard;
@@ -41,9 +42,8 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
 /**
  * Export wizard to export sales
  * 
- * @author Gerd Bartelt
  */
-public class VcardExportWizard extends Wizard implements IExportWizard {
+public class ProductExportWizard extends Wizard implements IExportWizard {
 
 	@Inject
 	@Translation
@@ -52,29 +52,33 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
-
-	@Inject
-	private IEclipseContext ctx;
 	
 	@Inject
 	private ITemplateResourceManager resourceManager;
-
+	
 	@Inject
-	private Logger log;
+	private Shell shell;
 
 	// The first (and only) page of this wizard
-	EmptyWizardPage page1;
+	private EmptyWizardPage page1;
+
+	@Inject
+	private IEclipseContext ctx;
 
 	/**
-	 * Adds the first (and only) page to the wizard
+	 * Initializes this creation wizard using the passed workbench and object
+	 * selection.
+	 * 
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+	 *      org.eclipse.jface.viewers.IStructuredSelection)
 	 */
 	@PostConstruct
 	@Override
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
-		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS_VCF);
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportVcfContactsTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportVcfContactsDescription);
+		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_PRODUCTS_CSV);
+		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportProductsAllproductsTitle);
+		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportCsvProductsTitle);
 		ctx.set(EmptyWizardPage.WIZARD_PREVIEW_IMAGE, previewImage);
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);
@@ -89,28 +93,27 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		
+
 		// Create a "SAVE AS" file dialog
 		FileDialog fileDialog = new FileDialog(page1.getShell(), SWT.SAVE);
 		
-		fileDialog.setFilterExtensions(new String[] { "*.vcf" });
+		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 		//T: Text in a file name dialog
-		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeVcard +" (*.vcf)" });
+		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeCsv + " (*.csv)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
 		String selectedFile = fileDialog.open();
-		boolean retval = false;
-		try {
-			if (selectedFile != null) {
-				VcardExport exporter = ContextInjectionFactory.make(VcardExport.class, ctx);
-				retval = exporter.export(selectedFile);
+		if (selectedFile != null) {
+			ProductExporter exporter = ContextInjectionFactory.make(ProductExporter.class, ctx);
+			boolean result = exporter.export(selectedFile);
+			if(result) {
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardExportCommonSuccess);
+			} else {
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, exportMessages.wizardExportCommonNosuccess);
 			}
-		} catch (Exception e) {
-			// catch an unspecified exception since we don't know which one is thrown.
-			MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, "Export finished with error, see log file!");
-			log.error(e, "export VCard didn't finish successfully! Following error occured:");
+			return true;   // this closes the wizard dialog
 		}
-		return retval;
+		else 
+			return false;
 	}
-
 }

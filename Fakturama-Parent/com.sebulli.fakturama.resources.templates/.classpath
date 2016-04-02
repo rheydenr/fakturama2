@@ -15,6 +15,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

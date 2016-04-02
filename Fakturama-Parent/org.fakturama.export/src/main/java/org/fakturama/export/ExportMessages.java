@@ -21,28 +21,30 @@ import org.eclipse.e4.core.services.nls.Message;
  */
 @Message
 public class ExportMessages {
-
+	public String wizardExportAccountsStartdatevalue;
+	public String wizardExportAccountsStartvalue;
+	public String wizardExportAccountsStartvalueError;
 	public String Exportreceiptwizard254;
 	public String Exportwizard156;
 	public String wizardExportFilenameTypeVcard;
-	public String Exportwizard168;
-	public String Exportwizard169;
-	public String Exportwizard170;
-	public String Exportwizard171;
-	public String Exportwizard172;
-	public String Exportwizard173;
+	public String wizardExportAccountsTableTitle;
+	public String wizardExportAccountsTableDescription;
+	public String wizardExportAccountsTableListentries;
+	public String wizardExportAccountsTableListentriesTitle;
+	public String wizardExportAccountsTableAccountsettingsTitle;
+	public String wizardExportAccountsTableAccountsettingsDescription;
 	public String wizardExportFilenameTypeCsv;
-	public String Exportwizard207;
-	public String Exportwizard208;
+	public String wizardExportProductsAllproductsTitle;
+	public String wizardExportCsvProductsTitle;
 	public String Exportwizard218;
 	public String Exportwizard230;
 	public String Exportwizard231;
 	public String Exportwizard244;
 	public String Exportwizard256;
-	public String Exportwizardpagestartenddate219;
-	public String Exportwizardpagestartenddate220;
-	public String Exportwizardpagestartenddate221;
-	public String Exportwizardpagestartenddate222;
+	public String wizardExportDateselectTitle;
+	public String wizardExportDateselectStartdate;
+	public String wizardExportDateselectEnddate;
+	public String wizardExportDateselectExportall;
 	public String Exportwizardunpaid241;
 	public String Exportwizardunpaid242;
 	public String wizardCommonMaskAllfiles;
@@ -57,12 +59,12 @@ public class ExportMessages {
 	public String Exporter255;
 	public String Exportexpenditurewizard245;
 	public String Exportexpenditurewizard246;
-	public String Exportoptionpage167;
-	public String Exportoptionpage227;
-	public String Exportoptionpage228;
-	public String Exportoptionpage229;
-	public String Exportoptionpage243;
-	public String Exportoptionpage253;
+	public String wizardExportOptionSelect;
+	public String wizardExportOptionSorting;
+	public String wizardExportOptionSortingQuantity;
+	public String wizardExportOptionSortingVolume;
+	public String wizardExportOptionZerotax;
+	public String wizardExportOptionVouchersum;
 
 	public String wizardExportAccountsDescription;
 	public String wizardExportAccountsName;
@@ -98,5 +100,7 @@ public class ExportMessages {
 	public String wizardExportVcfContactsDescription;
 	public String wizardExportVcfContactsName;
 	public String wizardCommonSaveFileexists;
+	public String wizardExportCommonSuccess;
+	public String wizardExportCommonNosuccess;
 }
 

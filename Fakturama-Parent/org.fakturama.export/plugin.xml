@@ -35,7 +35,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.salesandvouchers"
-            class="org.fakturama.export.wizard.accounts.ExportWizard"
+            class="org.fakturama.export.wizard.accounts.AccountsExportWizard"
             icon="icons/16/accounts.png"
             id="com.sebulli.fakturama.export.accounts.exportWizard"
             name="%wizard.export.accounts.name">
@@ -95,7 +95,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.lists/com.sebulli.fakturama.export.csv.lists"
-            class="org.fakturama.export.wizard.csv.products.ExportWizard"
+            class="org.fakturama.export.wizard.csv.products.ProductExportWizard"
             icon="icons/16/product.png"
             id="com.sebulli.fakturama.export.csv.products.exportWizard"
             name="%wizard.export.csv.products.name">

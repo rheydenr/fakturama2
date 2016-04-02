@@ -26,9 +26,6 @@ import org.eclipse.e4.core.services.nls.Message;
 @Message(contributionURI = "platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
 	public String aboutText;
-	public String Accountsettingspage159;
-	public String Accountsettingspage160;
-	public String Accountsettingspage161;
 	public String applicationName;
 	public String commandBrowserCommand;
 	public String commandBrowserName;
