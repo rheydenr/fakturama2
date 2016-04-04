@@ -207,5 +207,10 @@ public class AddressListExport extends OOCalcExporter {
 		// True = Export was successful
 		return true;
 	}
+	
+	@Override
+	protected String getOutputFileName() {
+		return "AddressListExport";
+	}
 
 }

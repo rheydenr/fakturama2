@@ -145,6 +145,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 
 		// Start date
 		dtStartDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
+		dtStartDate.setFormat(CDT.DATE_MEDIUM);
 		dtStartDate.setSelection(Calendar.getInstance().getTime());
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtStartDate);
 
@@ -156,6 +157,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		
 		// End date
 		dtEndDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
+		dtEndDate.setFormat(CDT.DATE_MEDIUM);
 		dtEndDate.setSelection(Calendar.getInstance().getTime());
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).indent(20, 0).applyTo(dtEndDate);
 

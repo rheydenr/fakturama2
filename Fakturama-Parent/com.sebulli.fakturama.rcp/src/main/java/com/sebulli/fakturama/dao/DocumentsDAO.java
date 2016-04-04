@@ -31,6 +31,8 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
+import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -49,7 +51,10 @@ import com.sebulli.fakturama.model.Invoice_;
 import com.sebulli.fakturama.model.Letter;
 import com.sebulli.fakturama.model.Offer;
 import com.sebulli.fakturama.model.Order;
+import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.Proforma;
+import com.sebulli.fakturama.model.VoucherCategory;
 
 @Creatable
 public class DocumentsDAO extends AbstractDAO<Document> {
@@ -107,7 +112,7 @@ public List<Document> findAll(boolean forceRead) {
     CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
     Root<Document> root = criteria.from(getEntityClass());
-    CriteriaQuery<Document> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
+    CriteriaQuery<Document> cq = criteria.where(cb.not(root.get(Document_.deleted)));
     TypedQuery<Document> query = getEntityManager().createQuery(cq);
     if(forceRead) {
         query.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -115,7 +120,60 @@ public List<Document> findAll(boolean forceRead) {
     }
     return query.getResultList();
 }
+
+/**
+ * Finds Documents having a given account. Only {@link BillingType#INVOICE}
+ * and {@link BillingType#CREDIT} are considered. An account is a {@link VoucherCategory}
+ * from a {@link Payment}.
+ * 
+ * @param account which account should be used for filtering
+ * @return List of {@link AccountEntry}s, sorted by Document date
+ */
+public List<AccountEntry> findAccountedDocuments(VoucherCategory account) {
+	return findAccountedDocuments(account, null, null);
+}
 	
+/**
+ * Finds Documents having a given account. Only {@link BillingType#INVOICE}
+ * and {@link BillingType#CREDIT} are considered. An account is a {@link VoucherCategory}
+ * from a {@link Payment}. The Documents can be filtered for a certain date range.
+ * 
+ * @param account which account should be used for filtering
+ * @param startDate Date for filtering (can be <code>null</code>)
+ * @param endDate Date for filtering (can be <code>null</code>)
+ * @return List of {@link AccountEntry}s, sorted by Document date
+ */
+public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date startDate, Date endDate) {
+    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+    CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
+    Root<Document> root = criteria.from(getEntityClass());
+    Predicate predicate = cb.and(
+			cb.not(root.get(Document_.deleted)),
+			cb.or(
+					cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
+					cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
+				  ),
+			cb.equal(root.get(Document_.payment).get(Payment_.category), account)
+	);
+    
+    // take the paydate into account (NOT the document date!)
+    if(startDate != null && endDate != null) {
+    	// if startDate is after endDate we switch the two dates silently
+    	predicate = cb.and(predicate,
+    			cb.between(root.get(Document_.payDate), startDate.before(endDate) ? startDate : endDate, 
+    					endDate.after(startDate) ? endDate : startDate)
+    		);
+    }
+	CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Document_.payDate)));
+    TypedQuery<Document> query = getEntityManager().createQuery(cq);
+	List<Document> documentList = query.getResultList();
+	List<AccountEntry> resultList = new ArrayList<>();
+	for (Document document : documentList) {
+		AccountEntry accountEntry = new AccountEntry(document);
+		resultList.add(accountEntry);
+	}
+	return resultList;
+}
 
 
     /**
@@ -124,7 +182,7 @@ public List<Document> findAll(boolean forceRead) {
      * @param dateAsISO8601String
      * @return
      */
-    public List<Document> findDocumentByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
+    public List<Document> findByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
         FakturamaModelFactory modelFactory = new FakturamaModelFactory();
         BillingType billingType = modelFactory.createBillingTypeFromString(type.getTypeAsString());
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

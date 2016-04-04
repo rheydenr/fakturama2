@@ -92,17 +92,17 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
      * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
      * and then check the parent. 
      * 
-     * @param vatCategory the Category to search
+     * @param voucherCategory the Category to search
      * @return {@link VoucherCategory}
      */
-    public VoucherCategory findVoucherCategoryByName(String vatCategory) {
+    public VoucherCategory findVoucherCategoryByName(String voucherCategory) {
         VoucherCategory result = null;
-        if(StringUtils.isNotEmpty(vatCategory)) {
+        if(StringUtils.isNotEmpty(voucherCategory)) {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
             CriteriaQuery<VoucherCategory> cq = cb.createQuery(getEntityClass());
             Root<VoucherCategory> rootEntity = cq.from(getEntityClass());
             // extract the rightmost value
-            String[] splittedCategories = vatCategory.split("/");
+            String[] splittedCategories = voucherCategory.split("/");
             String leafCategory = splittedCategories[splittedCategories.length - 1];        
             CriteriaQuery<VoucherCategory> selectQuery = cq.select(rootEntity)
                     .where(cb.and(
@@ -113,7 +113,7 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
             try {
                 List<VoucherCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
-                String testCat = StringUtils.removeStart(vatCategory, "/");
+                String testCat = StringUtils.removeStart(voucherCategory, "/");
                 for (VoucherCategory vatCategory2 : tmpResultList) {
                     if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
                         result = vatCategory2;

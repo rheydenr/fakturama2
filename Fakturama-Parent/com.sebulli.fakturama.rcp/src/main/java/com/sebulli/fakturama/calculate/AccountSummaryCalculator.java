@@ -16,6 +16,8 @@ package com.sebulli.fakturama.calculate;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
@@ -23,18 +25,33 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
+import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
-import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VoucherCategory;
 
 public class AccountSummaryCalculator {
-	
+
 	@Inject
-	private PaymentsDAO paymentsDAO;
+	private IEclipseContext ctx;
 	
     @Inject
-    private VoucherCategoriesDAO accountDAO;
+    private VoucherCategoriesDAO accountDAO;  
+    
+    @Inject
+    private ExpendituresDAO expendituresDAO;
+    
+    @Inject
+    private ReceiptVouchersDAO receiptVouchersDAO;
+    
+    @Inject
+    private DocumentsDAO documentsDAO;
 
 	HashMap<String,Integer> paymentIds = new HashMap<String,Integer>();  
 	
@@ -42,7 +59,7 @@ public class AccountSummaryCalculator {
 	private SortedSet<VoucherCategory> accounts; 
 	
 	// Array with all entries of one account
-	private List<VoucherCategory> accountEntries;
+	private List<AccountEntry> accountEntries;
 	
 	/**
 	 * Constructor
@@ -83,7 +100,7 @@ public class AccountSummaryCalculator {
 	 * @param account
 	 * @param vouchers
 	 * @param sign
-	 * 	The sign (+1 for receipts or for expenditures -1)
+	 * 	The sign (+1 for receipts, -1 for expenditures)
 	 */
 //	private void collectVouchers (String account, DataSetArray<?> vouchers , double sign) {
 //
@@ -139,30 +156,43 @@ public class AccountSummaryCalculator {
 //			}
 //		}
 //	}
-//	
-//	/**
-//	 * Getter for account entries
-//	 * 
-//	 * @return
-//	 */
-//	public ArrayList<DataSetAccountEntry> getAccountEntries() {
-//		return accountEntries;
-//	}
 	
-//	/**
-//	 * Collects all entries from all vouchers
-//	 * 
-//	 * @param account
-//	 * 		The account name
-//	 */
-//	public void collectEntries(String account) {
-//		
-//		accountEntries = new ArrayList<VoucherCategory>() ;
-//
-//		collectDocuments( account, Data.INSTANCE.getDocuments(), Data.INSTANCE.getPayments());
-//		collectVouchers( account, Data.INSTANCE.getReceiptVouchers(), 1.0);
-//		collectVouchers( account, Data.INSTANCE.getExpenditureVouchers(), -1.0);
-//	}
+	/**
+	 * Getter for account entries
+	 * 
+	 * @return
+	 */
+	public List<AccountEntry> getAccountEntries() {
+		return accountEntries;
+	}
 	
-	
+	/**
+	 * Collects all entries from all vouchers
+	 * 
+	 * @param account
+	 * 		The account name
+	 */
+	public void collectEntries(String account) {
+		
+		accountEntries = new ArrayList<AccountEntry>();
+		VoucherCategory category = accountDAO.findVoucherCategoryByName(account);
+
+		// collectDocuments( account, Data.INSTANCE.getDocuments(), Data.INSTANCE.getPayments());
+		Date endDate = null;
+		if(ctx.get(Constants.PARAM_END_DATE) != null) {
+			endDate = ((GregorianCalendar)ctx.get(Constants.PARAM_END_DATE)).getTime();
+		}
+		
+		Date startDate = null;
+		if(ctx.get(Constants.PARAM_START_DATE) != null) {
+			startDate = ((GregorianCalendar)ctx.get(Constants.PARAM_START_DATE)).getTime();
+		}
+		
+		accountEntries.addAll(documentsDAO.findAccountedDocuments(category, 
+				startDate, endDate)); 
+		accountEntries.addAll(receiptVouchersDAO.findAccountedReceiptVouchers(category,
+				startDate, endDate)); // collectVouchers( account, Data.INSTANCE.getReceiptVouchers(), 1.0);
+		accountEntries.addAll(expendituresDAO.findAccountedExpenditures(category,
+				startDate, endDate)); // collectVouchers( account, Data.INSTANCE.getExpenditureVouchers(), -1.0);
+	}
 }

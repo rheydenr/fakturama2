@@ -39,8 +39,10 @@ import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
+import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
 
 /**
@@ -70,7 +72,6 @@ public class OOCalcExporter {
 
 	public final static boolean PAID = true;
 	public final static boolean UNPAID = false;
-	
 	// The begin and end date to specify the export periode
 	protected GregorianCalendar startDate;
 	protected GregorianCalendar endDate;
@@ -81,7 +82,7 @@ public class OOCalcExporter {
 	// the date key to sort the documents
 	protected String documentDateKey;
 	// Settings from the preference page
-	protected boolean usePaidDate ;
+	protected boolean usePaidDate;
 
 	// The "Export" spreadsheet
 	protected Table spreadsheet = null;
@@ -115,38 +116,37 @@ public class OOCalcExporter {
 		this.doNotUseTimePeriod = doNotUseTimePeriod;
 	}
 
-//	protected void fillCompanyInformation(int row) {
-//		
-//		// Fill the first cells with company data
-//		setCellTextInItalic(row++, 0, Activator.getDefault().getPreferenceStore().getString("YOURCOMPANY_COMPANY_NAME"));
-//		setCellTextInItalic(row++, 0, Activator.getDefault().getPreferenceStore().getString("YOURCOMPANY_COMPANY_OWNER"));
-//		setCellTextInItalic(row++, 0, Activator.getDefault().getPreferenceStore().getString("YOURCOMPANY_COMPANY_STREET"));
-//		setCellTextInItalic(row++, 0, Activator.getDefault().getPreferenceStore().getString("YOURCOMPANY_COMPANY_ZIP") + " "
-//				+ Activator.getDefault().getPreferenceStore().getString("YOURCOMPANY_COMPANY_CITY"));
-//
-//	}
-//	
-//	protected void fillTimeIntervall(int row) {
-//
-//		// Do not display a time period
-//		if (doNotUseTimePeriod) {
-//			return;
-//		}
-//		
-//		// Display the time interval
-//		//T: Sales Exporter - Text in the Calc document for the period
-//		setCellTextInBold(row++, 0, _("Period"));
-//		//T: Sales Exporter - Text in the Calc document for the period
-//		setCellText(row, 0, _("from:"));
-//		setCellText(row++, 1, DataUtils.getDateTimeAsLocalString(startDate));
-//		//T: Sales Exporter - Text in the Calc document for the period
-//		setCellText(row, 0, _("till:"));
-//		setCellText(row++, 1, DataUtils.getDateTimeAsLocalString(endDate));
-//	}
-//	
-//	
+	protected void fillCompanyInformation(int row) {
+		
+		// Fill the first cells with company data
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, "") + " "
+				+ eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, ""));
+	}
+	
+	protected void fillTimeIntervall(int row) {
+
+		// Do not display a time period
+		if (doNotUseTimePeriod) {
+			return;
+		}
+		
+		// Display the time interval
+		//T: Sales Exporter - Text in the Calc document for the period
+		setCellTextInBold(row++, 0, exportMessages.wizardExportOutputPeriod);
+		//T: Sales Exporter - Text in the Calc document for the period
+		setCellText(row, 0, exportMessages.wizardExportOutputStartdate);
+		setCellText(row++, 1, DataUtils.getInstance().getDateTimeAsLocalString(startDate));
+		//T: Sales Exporter - Text in the Calc document for the period
+		setCellText(row, 0, exportMessages.wizardExportOutputEnddate);
+		setCellText(row++, 1, DataUtils.getInstance().getDateTimeAsLocalString(endDate));
+	}
+	
+	
 //	/**
-//	 * Returns, if a given document should be used to export. Only invoice and
+//	 * Returns if a given document should be used to export. Only invoice and
 //	 * credit documents that are paid in the specified time interval are
 //	 * exported.
 //	 * 
@@ -198,27 +198,27 @@ public class OOCalcExporter {
 //			// export unpaid
 //			return isInvoiceOrCreditInIntervall && !document.getBooleanValueByKey("paid");
 //	}
-//
-//	/**
-//	 * Returns, if a given data set should be used to export. Only
-//	 * entries in the specified time interval are exported.
-//	 * 
-//	 * @param uds
-//	 *            The uni data set that is tested
-//	 * @return True, if the uni data set should be exported
-//	 */
-//	protected boolean isInTimeIntervall(UniDataSet uds) {
-//
-//		// By default, the document will be exported.
-//		boolean isInIntervall = true;
-//
-//		// Use the time period
-//		if (doNotUseTimePeriod) {
-//			return true;
-//		}
-//		
-//		// Get the date of the voucher and convert it to a
-//		// GregorianCalendar object.
+
+	/**
+	 * Returns if a given data set should be used to export. Only
+	 * entries in the specified time interval are exported.
+	 * 
+	 * @param uds
+	 *            The uni data set that is tested
+	 * @return <code>true</code> if the uni data set should be exported
+	 */
+	protected boolean isInTimeIntervall(AccountEntry uds) {
+
+		// By default, the document will be exported.
+		boolean isInIntervall = true;
+
+		// Use the time period
+		if (doNotUseTimePeriod) {
+			return true;
+		}
+		
+		// Get the date of the voucher and convert it to a
+		// GregorianCalendar object.
 //		GregorianCalendar documentDate = new GregorianCalendar();
 //		try {
 //			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -233,18 +233,18 @@ public class OOCalcExporter {
 //		catch (ParseException e) {
 //			Logger.logError(e, "Error parsing Date");
 //		}
-//
-//		// Test, if the voucher's date is in the interval
-//		if ((startDate != null) && (endDate != null)) {
-//			if (startDate.after(documentDate))
-//				isInIntervall = false;
-//			if (endDate.before(documentDate))
-//				isInIntervall = false;
-//		}
-//
-//		// Return, if voucher is in the interval
-//		return isInIntervall;
-//	}
+
+		// Test, if the voucher's date is in the interval
+		if ((startDate != null) && (endDate != null)) {
+			if (startDate.after(uds.date))
+				isInIntervall = false;
+			if (endDate.before(uds.date))
+				isInIntervall = false;
+		}
+
+		// Return, if voucher is in the interval
+		return isInIntervall;
+	}
 	
 	protected boolean createSpreadSheet() {
 
@@ -413,7 +413,7 @@ public class OOCalcExporter {
 		boolean answer = true;
 		try {
 			do {
-				String fileName = getOutputFileName();
+				String fileName = createOutputFileDialog();
 				if (StringUtils.isNotBlank(fileName)) {
 					Path saveFileName = Paths.get(fileName);
 					if (Files.exists(saveFileName)) {
@@ -429,10 +429,11 @@ public class OOCalcExporter {
 			} while(!answer);
 		} catch (Exception e) {
 			log.error(e, "Could not store exported document.");
+			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "can't save your document: " + e.getMessage());
 		}
 	}
 
-	private String getOutputFileName() {
+	private String createOutputFileDialog() {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		String[] filterNames = new String[] { "OpenOffice Calc Files", exportMessages.wizardCommonMaskAllfiles + " (*)" };
 		String[] filterExtensions = new String[] { "*.ods", "*" };
@@ -445,8 +446,17 @@ public class OOCalcExporter {
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFilterPath(filterPath);
-		dialog.setFileName("AddressListExport");
+		dialog.setFileName(getOutputFileName());
 		return dialog.open();
+	}
+
+	/**
+	 * Returns the output file name. Can be overwritten.
+	 *
+	 * @return the output file name
+	 */
+	protected String getOutputFileName() {
+		return "DEFAULT";
 	}
 
 }

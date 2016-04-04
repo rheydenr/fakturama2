@@ -434,7 +434,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	// Check, if this order is still existing
         	// date="2011-08-04 15:35:52"
         	LocalDateTime calendarWebshopDate = LocalDateTime.parse(webshopDate, DateTimeFormatter.ISO_DATE_TIME);
-            if(!this.webShopImportManager.getDocumentsDAO().findDocumentByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
+            if(!this.webShopImportManager.getDocumentsDAO().findByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
         		return;
         	}
         

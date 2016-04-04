@@ -51,9 +51,9 @@ public class ExportMessages {
 	public String wizardCommonMaskCalcfiles;
 	public String wizardCommonPreviewLabel;
 	public String wizardCommonSaveInfo;
-	public String Oocalcexporter257;
-	public String Oocalcexporter258;
-	public String Oocalcexporter259;
+	public String wizardExportOutputPeriod;
+	public String wizardExportOutputStartdate;
+	public String wizardExportOutputEnddate;
 	public String Exporter223;
 	public String Exporter252;
 	public String Exporter255;

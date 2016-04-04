@@ -27,6 +27,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -35,6 +36,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
@@ -142,9 +144,10 @@ public class AccountSettingsPage extends WizardPage {
 		//T: Export Sales Wizard Page
 		warning.setText(exportMessages.wizardExportAccountsStartvalueError);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(warning);
-		Color red = new Color(null, 255,0,0);
+		
+		JFaceResources.getColorRegistry().put("red", new RGB(255,0,0));
+		Color red = JFaceResources.getColorRegistry().get("red");
 		warning.setForeground(red);
-		red.dispose();
 		
 		// Show or hide the warning
 		isPageComplete();
@@ -169,7 +172,7 @@ public class AccountSettingsPage extends WizardPage {
 	 * 		The value as {@link MonetaryAmount}
 	 */
 	public MonetaryAmount getValue() {
-		return value;
+		return Money.of((Double)txtValue.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	/**
@@ -178,7 +181,7 @@ public class AccountSettingsPage extends WizardPage {
 	public void setAccountStartValues(String account) {
 		
 		// Create a property key to store the date and add the name of the account
-		String datePropertyKey = "export_account_date_" + account.toLowerCase();
+		String datePropertyKey = "export_account_date_" + account.toLowerCase().replaceAll("/", "\\\\/");
 		String date = eclipsePrefs.get(datePropertyKey, "2000-01-01");
 		
 		GregorianCalendar calendar = new GregorianCalendar();
@@ -190,7 +193,7 @@ public class AccountSettingsPage extends WizardPage {
 		}
 
 		// Create a property key to store the value and add the name of the account
-		String valuePropertyKey = "export_account_value_" + account.toLowerCase();
+		String valuePropertyKey = "export_account_value_" + account.toLowerCase().replaceAll("/", "\\\\/");
 		String valueString = eclipsePrefs.get(valuePropertyKey, "0.0");
 
 		// Set the widget with the value

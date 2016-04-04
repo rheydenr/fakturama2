@@ -495,4 +495,8 @@ public class Constants {
 	public static final int RC_OK = 0;
 
 	public static final String WEBSHOP_NAMESPACE = "http://www.fakturama.org";
+
+	public final static String PARAM_START_DATE = "startdate";
+
+	public final static String PARAM_END_DATE = "enddate";
 }

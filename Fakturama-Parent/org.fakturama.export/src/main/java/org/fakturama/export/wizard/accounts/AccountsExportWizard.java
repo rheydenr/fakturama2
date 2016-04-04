@@ -35,6 +35,7 @@ import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.wizards.IExportWizard;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
@@ -101,24 +102,25 @@ public class AccountsExportWizard extends Wizard implements IExportWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		
 		GregorianCalendar accountDate = page3.getDate();
 				
-		String datePropertyKey = "export_account_date_"  + page2.getSelectedAccount().toLowerCase();
+		String datePropertyKey = "export_account_date_"  + page2.getSelectedAccount().toLowerCase().replaceAll("/", "\\\\/");
 		if (!datePropertyKey.isEmpty()) {
 			String datePropertyValue = DataUtils.getInstance().getDateAndTimeAsString(accountDate);
 			eclipsePrefs.put(datePropertyKey, datePropertyValue);
 		}
 
-		String valuePropertyKey = "export_account_value_"  + page2.getSelectedAccount().toLowerCase();
+		String valuePropertyKey = "export_account_value_"  + page2.getSelectedAccount().toLowerCase().replaceAll("/", "\\\\/");
 		MonetaryAmount startValue = page3.getValue();
 		if (!valuePropertyKey.isEmpty()) {
 			String valuePropertyValue = Double.toString(startValue.getNumber().doubleValue());
 			eclipsePrefs.put(valuePropertyKey, valuePropertyValue);
 		}
 		
-		AccountsExporter exporter = new AccountsExporter(page1.getStartDate(), page1.getEndDate(),
-				page1.getDoNotUseTimePeriod());
+		ctx.set(Constants.PARAM_START_DATE, page1.getStartDate());
+		ctx.set(Constants.PARAM_END_DATE, page1.getEndDate());
+		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, page1.getDoNotUseTimePeriod());
+		AccountsExporter exporter = ContextInjectionFactory.make(AccountsExporter.class, ctx);
 		return exporter.export(page2.getSelectedAccount(), page3.getDate(), 
 				startValue);
 	}
