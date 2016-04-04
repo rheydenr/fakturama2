@@ -24,7 +24,7 @@ public class ExportMessages {
 	public String wizardExportAccountsStartdatevalue;
 	public String wizardExportAccountsStartvalue;
 	public String wizardExportAccountsStartvalueError;
-	public String Exportreceiptwizard254;
+	public String wizardExportReceiptvouchersTitle;
 	public String Exportwizard156;
 	public String wizardExportFilenameTypeVcard;
 	public String wizardExportAccountsTableTitle;
@@ -55,10 +55,10 @@ public class ExportMessages {
 	public String wizardExportOutputStartdate;
 	public String wizardExportOutputEnddate;
 	public String Exporter223;
-	public String Exporter252;
+	public String wizardExportVouchersSummary;
 	public String Exporter255;
-	public String Exportexpenditurewizard245;
-	public String Exportexpenditurewizard246;
+	public String wizardExportExpendituresTitle;
+	public String wizardExportExpendituresDescription;
 	public String wizardExportOptionSelect;
 	public String wizardExportOptionSorting;
 	public String wizardExportOptionSortingQuantity;

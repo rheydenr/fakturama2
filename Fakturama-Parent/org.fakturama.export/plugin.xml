@@ -55,7 +55,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.salesandvouchers"
-            class="org.fakturama.export.wizard.vouchers.ExportExpenditureWizard"
+            class="org.fakturama.export.wizard.vouchers.ExpenditureExportWizard"
             icon="icons/16/expenditure_voucher.png"
             id="com.sebulli.fakturama.export.vouchers.exportExpenditureWizard"
             name="%wizard.export.expenditurevouchers.name">
@@ -65,7 +65,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.salesandvouchers"
-            class="org.fakturama.export.wizard.vouchers.ExportReceiptWizard"
+            class="org.fakturama.export.wizard.vouchers.ReceiptExportWizard"
             icon="icons/16/receipt_voucher.png"
             id="com.sebulli.fakturama.export.vouchers.exportReceiptWizard"
             name="%wizard.export.receiptvouchers.name">
