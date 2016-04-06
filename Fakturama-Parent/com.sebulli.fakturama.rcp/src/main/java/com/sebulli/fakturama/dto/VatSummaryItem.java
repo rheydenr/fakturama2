@@ -45,6 +45,8 @@ public class VatSummaryItem implements Comparable<Object> {
 	private String vatName;
 	private String description;
 	private Double vatPercent;
+	
+	private ItemAccountType accountType;
 
 	/**
 	 * Constructor Creates a VatSummaryItem from a net and vat value and the vat
@@ -88,12 +90,12 @@ public class VatSummaryItem implements Comparable<Object> {
 		this.description = description;
 	}
 
-	public VatSummaryItem(String vatDescription, Double vatPercent, MonetaryAmount totalNet, MonetaryAmount itemVat, ItemAccountType accountType) {
-		this.description = vatDescription;
+	public VatSummaryItem(String vatName, Double vatPercent, MonetaryAmount totalNet, MonetaryAmount itemVat, ItemAccountType accountType) {
+		this.vatName = vatName;
 		this.vatPercent = vatPercent;
  		this.net = totalNet;
 		this.vat = itemVat;
-		// this.accountType = accountType;
+		this.description = accountType.getName();
    }
 
     /**
@@ -234,6 +236,13 @@ public class VatSummaryItem implements Comparable<Object> {
 	 */
 	public void setVatRoundingError(Double value) {
 		vatRoundingError = value;
+	}
+
+	/**
+	 * @return the accountType
+	 */
+	public final ItemAccountType getAccountType() {
+		return accountType;
 	}
 
 	/**

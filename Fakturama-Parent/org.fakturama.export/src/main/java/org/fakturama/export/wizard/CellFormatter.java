@@ -286,52 +286,52 @@ public class CellFormatter {
 			return null;
 		}
 	}
-//
-//	/**
-//	 * Get the name of a Calc cell by row and column
-//	 * 
-//	 * @param row
-//	 * @param column
-//	 * @return Cell name (like "A2")
-//	 */
-//	public static String getCellName(int row, int column) {
-//
-//		// Most significant character
-//		char cM = 0;
-//		// Least significant character
-//		char cL;
-//
-//		// Convert the column into a decimal format with
-//		// a base of 26 ( Number of letters in the alphabet) 
-//		// Use 2 characters. So A will be 1, Z will be 26 and
-//		// AA will be 27
-//		int columnM = column / 26;
-//		int columnL = column % 26;
-//
-//		// Maximum 25x26 columns
-//		if (column > (25 * 26)) {
+
+	/**
+	 * Get the name of a Calc cell by row and column
+	 * 
+	 * @param row
+	 * @param column
+	 * @return Cell name (like "A2")
+	 */
+	public static String getCellName(int row, int column) {
+
+		// Most significant character
+		char cM = 0;
+		// Least significant character
+		char cL;
+
+		// Convert the column into a decimal format with
+		// a base of 26 ( Number of letters in the alphabet) 
+		// Use 2 characters. So A will be 1, Z will be 26 and
+		// AA will be 27
+		int columnM = column / 26;
+		int columnL = column % 26;
+
+		// Maximum 25x26 columns
+		if (column > (25 * 26)) {
 //			Logger.logError("Columns out of range");
-//			return "ZZ1";
-//		}
-//
-//		// Only if the column is > 26 (columnM >0), use
-//		// a second letter
-//		if (columnM > 0)
-//			cM = (char) ('A' + columnM - 1);
-//
-//		// Convert the number to a letter
-//		cL = (char) ('A' + columnL);
-//
-//		// Add Column letter and row number
-//		String s = "";
-//		s = cL + Integer.toString(row + 1);
-//
-//		// Use a second letter
-//		if (columnM > 0)
-//			s = cM + s;
-//
-//		// The complete cell name
-//		return s;
-//	}
+			return "ZZ1";
+		}
+
+		// Only if the column is > 26 (columnM >0), use
+		// a second letter
+		if (columnM > 0)
+			cM = (char) ('A' + columnM - 1);
+
+		// Convert the number to a letter
+		cL = (char) ('A' + columnL);
+
+		// Add Column letter and row number
+		String s = "";
+		s = cL + Integer.toString(row + 1);
+
+		// Use a second letter
+		if (columnM > 0)
+			s = cM + s;
+
+		// The complete cell name
+		return s;
+	}
 
 }

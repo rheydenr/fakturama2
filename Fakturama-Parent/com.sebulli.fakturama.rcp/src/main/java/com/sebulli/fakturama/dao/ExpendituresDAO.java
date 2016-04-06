@@ -2,6 +2,7 @@ package com.sebulli.fakturama.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -20,6 +21,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.model.AbstractVoucher;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -86,7 +88,32 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 		}
 		return resultList;
 	}
-    
+
+	/**
+	 * Finds all Vouchers within a given date range. If one of the dates (or both) is <code>null</code> then all
+	 * Vouchers will be in the returned List.
+	 * 
+	 * @param startDate start of date range
+	 * @param endDate end of date range
+	 * @return List of Vouchers
+	 */
+	public List<Expenditure> findVouchersInDateRange(GregorianCalendar startDate, GregorianCalendar endDate) {
+	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	    CriteriaQuery<Expenditure> criteria = cb.createQuery(getEntityClass());
+	    Root<Expenditure> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.not(root.get(Expenditure_.deleted));
+	    if(startDate != null && endDate != null) {
+	    	// if startDate is after endDate we switch the two dates silently
+	    	predicate = cb.and(predicate,
+	    			cb.between(root.get(Expenditure_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
+	    					endDate.after(startDate) ? endDate.getTime() : startDate.getTime())
+	    		);
+	    }
+		CriteriaQuery<Expenditure> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Expenditure_.voucherDate)));
+	    TypedQuery<Expenditure> query = getEntityManager().createQuery(cq);
+		return query.getResultList();
+	}
+  
     /**
     * Gets the all visible properties of this Expenditure object.
     * 

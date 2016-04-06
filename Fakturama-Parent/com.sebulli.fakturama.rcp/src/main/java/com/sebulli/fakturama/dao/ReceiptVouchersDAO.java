@@ -1,7 +1,9 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -20,6 +22,9 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.Expenditure;
+import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReceiptVoucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -121,5 +126,23 @@ public String[] getVisibleProperties() {
 	 */
 	protected void setEntityManager(EntityManager em) {
 		this.em = em;
+	}
+
+	public List<ReceiptVoucher> findVouchersInDateRange(GregorianCalendar startDate,
+			GregorianCalendar endDate) {
+	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	    CriteriaQuery<ReceiptVoucher> criteria = cb.createQuery(getEntityClass());
+	    Root<ReceiptVoucher> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.not(root.get(ReceiptVoucher_.deleted));
+	    if(startDate != null && endDate != null) {
+	    	// if startDate is after endDate we switch the two dates silently
+	    	predicate = cb.and(predicate,
+	    			cb.between(root.get(ReceiptVoucher_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
+	    					endDate.after(startDate) ? endDate.getTime() : startDate.getTime())
+	    		);
+	    }
+		CriteriaQuery<ReceiptVoucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(ReceiptVoucher_.voucherDate)));
+	    TypedQuery<ReceiptVoucher> query = getEntityManager().createQuery(cq);
+		return query.getResultList();
 	}
 }

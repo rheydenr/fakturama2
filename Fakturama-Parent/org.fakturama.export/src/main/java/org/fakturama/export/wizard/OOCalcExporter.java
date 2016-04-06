@@ -17,6 +17,7 @@ package org.fakturama.export.wizard;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
+import com.sebulli.fakturama.model.AbstractVoucher;
 
 /**
  * The sales exporter. This class collects all the sales and fills a Calc table
@@ -198,7 +200,7 @@ public class OOCalcExporter {
 //			// export unpaid
 //			return isInvoiceOrCreditInIntervall && !document.getBooleanValueByKey("paid");
 //	}
-
+	
 	/**
 	 * Returns if a given data set should be used to export. Only
 	 * entries in the specified time interval are exported.
@@ -208,6 +210,22 @@ public class OOCalcExporter {
 	 * @return <code>true</code> if the uni data set should be exported
 	 */
 	protected boolean isInTimeIntervall(AccountEntry uds) {
+		return isInTimeIntervall(uds.date);
+	}
+	
+	/**
+	 * Returns if a given data set should be used to export. Only
+	 * entries in the specified time interval are exported.
+	 * 
+	 * @param uds
+	 *            The uni data set that is tested
+	 * @return <code>true</code> if the uni data set should be exported
+	 */
+	protected boolean isInTimeIntervall(AbstractVoucher uds) {
+		return isInTimeIntervall(uds.getVoucherDate());
+	}
+
+	private boolean isInTimeIntervall(Date testDate) {
 
 		// By default, the document will be exported.
 		boolean isInIntervall = true;
@@ -236,9 +254,9 @@ public class OOCalcExporter {
 
 		// Test, if the voucher's date is in the interval
 		if ((startDate != null) && (endDate != null)) {
-			if (startDate.after(uds.date))
+			if (startDate.after(testDate))
 				isInIntervall = false;
-			if (endDate.before(uds.date))
+			if (endDate.before(testDate))
 				isInIntervall = false;
 		}
 
@@ -354,6 +372,7 @@ public class OOCalcExporter {
 	protected void setCellValueAsLocalCurrency( int row, int column, MonetaryAmount d) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setCurrencyValue(d.getNumber().doubleValue(), d.getCurrency().getCurrencyCode());
+		cell.setCurrencyCode(d.getCurrency().getCurrencyCode());
 	}
 	
 	protected void setCellValueAsPercent( int row, int column, Double d) {
@@ -399,15 +418,15 @@ public class OOCalcExporter {
 	protected void setBorder(int row, int column, Color color, boolean top, boolean right, boolean bottom, boolean left) {
 		CellFormatter.setBorder(spreadsheet, row, column, color, top, right, bottom, left); 
 	}
-//
-//	protected void setFormula(int column, int row, String formula) {
-//		try {
-//			spreadsheet.getCellByPosition(column, row).setFormula(formula);
-//		}
-//		catch (IndexOutOfBoundsException e) {
-//			Logger.logError(e, "No access to cell: " + column + ":" +row);
-//		}
-//	}
+
+	protected void setFormula(int column, int row, String formula) {
+		try {
+			spreadsheet.getCellByPosition(column, row).setFormula(formula);
+		}
+		catch (IndexOutOfBoundsException e) {
+			log.error(e, "No access to cell: " + column + ":" +row);
+		}
+	}
 	
 	public void save() {
 		boolean answer = true;

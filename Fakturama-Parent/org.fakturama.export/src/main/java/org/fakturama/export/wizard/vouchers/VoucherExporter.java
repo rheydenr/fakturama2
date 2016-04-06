@@ -16,18 +16,35 @@ package org.fakturama.export.wizard.vouchers;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.money.MonetaryAmount;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.fakturama.export.wizard.CellFormatter;
+import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
+import org.javamoney.moneta.Money;
 import org.odftoolkit.odfdom.type.Color;
 
+import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
+import com.sebulli.fakturama.dto.VatSummaryItem;
+import com.sebulli.fakturama.dto.VoucherSummary;
+import com.sebulli.fakturama.dto.VoucherSummarySetManager;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.AbstractVoucherItem;
+import com.sebulli.fakturama.model.Expenditure;
+import com.sebulli.fakturama.model.ExpenditureItem;
+import com.sebulli.fakturama.model.ReceiptVoucher;
+import com.sebulli.fakturama.model.ReceiptVoucherItem;
 
 
 /**
@@ -39,7 +56,10 @@ public class VoucherExporter extends OOCalcExporter {
 	
 	public static final int SUPPLIER = 1;
 	public static final int CUSTOMER = 2;
-    
+
+	@Inject
+	private IEclipseContext ctx;
+
     @Inject
     private ExpendituresDAO expendituresDAO;
     
@@ -49,6 +69,7 @@ public class VoucherExporter extends OOCalcExporter {
 	// Settings from the preference page
 	private boolean showVoucherSumColumn;
 	private boolean showZeroVatColumn;
+	private String outputFileName;
 
 
 	/**
@@ -59,14 +80,23 @@ public class VoucherExporter extends OOCalcExporter {
 	 * @param endDate
 	 *            Begin date
 	 */
-	public VoucherExporter(GregorianCalendar startDate, GregorianCalendar endDate,
-			 boolean doNotUseTimePeriod,
-			 boolean showVoucherSumColumn,
-			boolean showZeroVatColumn) {
-		super(startDate, endDate, doNotUseTimePeriod);
-		this.showVoucherSumColumn = showVoucherSumColumn;
-		this.showZeroVatColumn = showZeroVatColumn;
+	@PostConstruct
+	public void initialize(IEclipseContext ctx) {
+		if(ctx.get(Constants.PARAM_START_DATE) != null) {
+			startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
+		} else {
+			startDate = null;
+		}
 		
+		if(ctx.get(Constants.PARAM_END_DATE) != null) {
+			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
+		} else {
+			endDate = null;
+		}
+		doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
+
+		this.showVoucherSumColumn = (Boolean)ctx.get(VoucherExportOptionPage.SHOW_VOUCHER_SUM_COLUMN);
+		this.showZeroVatColumn = (Boolean)ctx.get(VoucherExportOptionPage.SHOW_ZERO_VAT_COLUMN);
 	}
 
 	/**
@@ -78,12 +108,18 @@ public class VoucherExporter extends OOCalcExporter {
 	public boolean export(String title, int type) {
 		
 		String customerSupplier = "";
+		List<AbstractVoucher> vouchers = new ArrayList<>();
+		
 		switch (type) {
-		case 1:
+		case SUPPLIER:
 			customerSupplier = msg.expenditurevoucherFieldSupplier;
+			vouchers.addAll(expendituresDAO.findVouchersInDateRange(startDate, endDate));
+			outputFileName = msg.commandExpenditurevouchersName;
 			break;
 		default:
-			customerSupplier = msg.expenditurevoucherFieldSupplier;
+			customerSupplier = msg.receiptvoucherFieldCustomer;
+			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
+			outputFileName = msg.commandReceiptvouchersName;
 			break;
 		}
 
@@ -91,331 +127,344 @@ public class VoucherExporter extends OOCalcExporter {
 		if (!createSpreadSheet())
 			return false;
 //
-//		// Sort the vouchers by category and date
+//		// Sort the vouchers by category and date --> this is done by database
 //		Collections.sort(vouchers, new UniDataSetSorter("category", "date"));
-//
-//
-//		// Count the columns that contain a VAT and net value 
-//		int columnsWithVatHeading = 0;
-//		int columnsWithNetHeading = 0;
-//
-//		// Count the columns that contain a VAT value of 0% 
-//		int zeroVatColumns = 0;
-//
-//		// Fill the first 4 rows with the company information
-//		fillCompanyInformation(0);
-//		fillTimeIntervall(5);
-//		
-//		// Counter for the current row and columns in the Calc document
-//		int row = 9;
-//		int col = 0;
-//
-//
-//		// Create a voucher summary set manager that collects all voucher VAT
-//		// values of all vouchers
-//		VoucherSummarySetManager voucherSummarySetAllVouchers = new VoucherSummarySetManager();
-//
-//		// Set the title
-//		setCellTextInBold(row++, 0, title);
-//		row++;
-//
-//		// Table column headings
-//		int headLine = row;
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.commonFieldCategory);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.commonFieldDate);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.exporterDataVoucher);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.exporterDataDocno);
-//		// Customer or supplier
-//		setCellTextInBold(row, col++, customerSupplier);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.commonFieldText);
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.exporterDataAccounttype);
-//
-//		if (showVoucherSumColumn) {
-//			//T: Used as heading of a table. Keep the word short.
-//			setCellTextInBold(row, col++, msg.productDataNet);
-//			//T: Used as heading of a table. Keep the word short.
-//			setCellTextInBold(row, col++, msg.productDataGross);
-//		}
-//
-//		row++;
-//		int columnOffset = col;
-//
-//		// The vouchers are exported in 2 runs.
-//		// First, only the summary of all vouchers is calculated and
-//		// the columns are created.
-//		// Later all the vouchers are analyzed a second time and then they
-//		// are exported voucher by voucher into the table.
-//		for (DataSetVoucher voucher : vouchers) {
-//
-//			if (isInTimeIntervall(voucher)) {
-//				voucherSummarySetAllVouchers.add(voucher, false);
-//			}
-//		}
-//
-//		boolean vatIsNotZero = false;
-//
-//		vatIsNotZero = false;
-//		col = columnOffset;
-//		columnsWithVatHeading = 0;
-//		columnsWithNetHeading = 0;
-//
-//		// A column for each Vat value is created 
-//		// The VAT summary items are sorted. So first ignore the VAT entries
-//		// with 0%. 
-//		// If the VAT value is >0%, create a column with heading.
-//		for (Iterator<VatSummaryItem> iterator = voucherSummarySetAllVouchers.getVoucherSummaryItems().iterator(); iterator.hasNext();) {
-//			VatSummaryItem item = iterator.next();
-//
-//			// Create a column, if the value is not 0%
-//			if ((item.getVat().doubleValue() > 0.001) || vatIsNotZero || showZeroVatColumn) {
-//
-//				// If the first non-zero VAT column is created,
-//				// do not check the value any more.
-//				vatIsNotZero = true;
-//
-//				// Count the columns
-//				columnsWithVatHeading++;
-//
-//				// Create a column heading in bold
-//				int column = voucherSummarySetAllVouchers.getIndex(item) - zeroVatColumns;
-//
-//				// Add VAT name and description and use 2 lines
-//				String text = item.getVatName();
-//				String description = item.getDescription();
-//
-//				if (!description.isEmpty())
-//					text += "\n" + description;
-//
-//				setCellTextInBold(headLine, column + columnOffset, text);
-//
-//			}
-//			else
-//				// Count the columns with 0% VAT
-//				zeroVatColumns++;
-//		}
-//
-//		// A column for each Net value is created 
-//		// The Net summary items are sorted. 
-//		for (Iterator<VatSummaryItem> iterator = voucherSummarySetAllVouchers.getVoucherSummaryItems().iterator(); iterator.hasNext();) {
-//			VatSummaryItem item = iterator.next();
-//
-//			// Count the columns
-//			columnsWithNetHeading++;
-//
-//			// Create a column heading in bold
-//			int column = voucherSummarySetAllVouchers.getIndex(item);
-//
-//			// Add VAT name and description and use 2 lines
-//			//T: Used as heading of a table. Keep the word short.
-//			String text = msg.productDataNet + "\n" + item.getVatName();
-//			String description = item.getDescription();
-//
-//			if (!description.isEmpty())
-//				text += "\n" + description;
-//
-//			setCellTextInBold(headLine, columnsWithVatHeading + column + columnOffset, text);
-//		}
-//
-//		int voucherIndex = 0;
-//
-//		// Second run.
-//		// Export the voucher data
-//		for (DataSetVoucher voucher : vouchers) {
-//
-//			if (isInTimeIntervall(voucher)) {
-//
-//				for (int voucherItemIndex = 0; voucherItemIndex < voucher.getItems().getDatasets().size(); voucherItemIndex++) {
-//
-//					DataSetVoucherItem voucherItem = voucher.getItem(voucherItemIndex);
-//
-//					// Now analyze voucher by voucher
-//					VoucherSummarySetManager vatSummarySetOneVoucher = new VoucherSummarySetManager();
-//					voucher.calculate();
-//
-//					// Add the voucher to the VAT summary
-//					vatSummarySetOneVoucher.add(voucher, false, voucherItemIndex);
-//
-//					// Fill the row with the voucher data
-//					col = 0;
-//
-//					if (voucherItemIndex == 0) {
-//						setCellText(row, col++, voucher.getStringValueByKey("category"));
-//						setCellText(row, col++, DataUtils.DateAsLocalString(voucher.getStringValueByKey("date")));
-//						setCellText(row, col++, voucher.getStringValueByKey("nr"));
-//						setCellText(row, col++, voucher.getStringValueByKey("documentnr"));
-//						setCellText(row, col++, voucher.getStringValueByKey("name"));
-//					}
-//
-//					col = 5;
-//					setCellText(row, col++, voucherItem.getStringValueByKey("name"));
-//					setCellText(row, col++, voucherItem.getStringValueByKey("category"));
-//
-//					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
-//
-//					// Calculate the total VAT of the voucher
-//					PriceValue totalVat = new PriceValue(0.0);
-//
-//					// Get all VAT entries of this voucher and place them into the
-//					// corresponding column.
-//					for (Iterator<VatSummaryItem> iterator = vatSummarySetOneVoucher.getVoucherSummaryItems().iterator(); iterator.hasNext();) {
-//						VatSummaryItem item = iterator.next();
-//
-//						// Get the column
-//						int column = voucherSummarySetAllVouchers.getIndex(item) - zeroVatColumns;
-//
-//						// If column is <0, it was a VAT entry with 0%
-//						if (column >= 0) {
-//
-//							// Round the VAT and add fill the table cell
-//							PriceValue vat = new PriceValue(item.getVat());
-//							totalVat.add(vat.asRoundedDouble());
-//							setCellValueAsLocalCurrency(row, column + columnOffset, vat.asRoundedDouble());
-//						}
-//					}
-//
-//					// Get all net entries of this voucher and place them into the
-//					// corresponding column.
-//					for (Iterator<VatSummaryItem> iterator = vatSummarySetOneVoucher.getVoucherSummaryItems().iterator(); iterator.hasNext();) {
-//						VatSummaryItem item = iterator.next();
-//
-//						// Get the column
-//						int column = voucherSummarySetAllVouchers.getIndex(item);
-//
-//						// If column is <0, it was a VAT entry with 0%
-//						if (column >= 0) {
-//
-//							// Round the net and add fill the table cell
-//							PriceValue net = new PriceValue(item.getNet());
-//							//totalVat.add(net.asRoundedDouble());
-//							setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + columnOffset,
-//									net.asRoundedDouble());
-//						}
-//					}
-//
-//					// Display the sum of an voucher only in the row of the first
-//					// voucher item
-//					if (showVoucherSumColumn) {
-//						if (voucherItemIndex == 0) {
-//							col = columnOffset - 2;
-//							// Calculate the vouchers net and gross total 
-//							setCellValueAsLocalCurrency(row, col++, voucher.getSummary().getTotalNet().asDouble());
-//							setCellValueAsLocalCurrency(row, col++, voucher.getSummary().getTotalGross().asDouble());
-//						}
-//					}
-//
-//					// Set the background of the table rows. Use an light and
-//					// alternating blue color.
-//					if ((voucherIndex % 2) == 0)
-//						setBackgroundColor(0, row, columnsWithVatHeading + columnsWithNetHeading + columnOffset - 1, row,
-//								0x00e8ebed);
-//
-//					row++;
-//
-//				}
-//				voucherIndex++;
-//			}
-//		}
-//
-//		// Insert a formula to calculate the sum of a column.
-//		// "sumrow" is the row under the table.
-//		int sumrow = row;
-//
-//		// Show the sum only, if there are values in the table
-//		if (sumrow > (headLine + 1)) {
-//			for (int i = (showVoucherSumColumn ? -2 : 0); i < (columnsWithVatHeading + columnsWithNetHeading); i++) {
-//				col = columnOffset + i;
-//				try {
-//					// Create formula for the sum. 
-//					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
-//					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
-//					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
-//					setBold(sumrow, col);
-//				}
-//				catch (IndexOutOfBoundsException e) {
-//				}
-//			}
-//		}
-//
-//		// Draw a horizontal line (set the border of the top and the bottom
-//		// of the table).
-//		for (col = 0; col < (columnsWithVatHeading + columnsWithNetHeading) + columnOffset; col++) {
-//			setBorder(headLine, col, 0x000000, false, false, true, false);
-//			setBorder(sumrow, col, 0x000000, true, false, false, false);
-//		}
-//
-//		// Create a voucher summary set manager that collects all 
-//		// categories of voucher items
-//		VoucherSummarySetManager voucherSummaryCategories = new VoucherSummarySetManager();
-//
-//		// Calculate the summary
-//		for (DataSetVoucher voucher : vouchers) {
-//
-//			if (isInTimeIntervall(voucher)) {
-//				voucherSummaryCategories.add(voucher, true);
-//			}
-//		}
-//
-//		row += 3;
-//		// Table heading
-//		
-//		//T: Sales Exporter - Text in the Calc document
-//		setCellTextInBold(row++, 0, exportMessages.wizardExportVouchersSummary);
-//		row++;
-//
-//		col = 0;
-//
-//		//Heading for the categories
-//		//T: Used as heading of a table. Keep the word short.
-//		setCellTextInBold(row, col++, msg.exporterDataAccounttype);
-//		setCellTextInBold(row, col++, DataSetVAT.getPurchaseTaxString());
-//		setCellTextInBold(row, col++, DataSetVAT.getPurchaseTaxString());
-//		setCellTextInBold(row, col++, msg.productDataNet);
-//
-//		// Draw a horizontal line
-//		for (col = 0; col < 4; col++) {
-//			setBorder(row, col, Color.BLACK, false, false, true, false);
-//		}
-//
-//		row++;
-//
-//		// A column for each Vat value is created 
-//		// The VAT summary items are sorted. So first ignore the VAT entries
-//		// with 0%. 
-//		// If the VAT value is >0%, create a column with heading.
-//		for (Iterator<VatSummaryItem> iterator = voucherSummaryCategories.getVoucherSummaryItems().iterator(); iterator.hasNext();) {
-//			VatSummaryItem item = iterator.next();
-//
-//			col = 0;
-//			// Round the net and add fill the table cell
-//			PriceValue vat = new PriceValue(item.getVat());
-//			PriceValue net = new PriceValue(item.getNet());
-//
-//			setCellText(row, col++, item.getDescription());
-//			setCellText(row, col++, item.getVatName());
-//			setCellValueAsLocalCurrency(row, col++, vat.asRoundedDouble());
-//			setCellValueAsLocalCurrency(row, col++, net.asRoundedDouble());
-//
-//			// Set the background of the table rows. Use an light and
-//			// alternating blue color.
-//			if ((row % 2) == 0)
-//				setBackgroundColor(0, row, 3, row, "#e8ebed");
-//
-//			row++;
-//
-//		}
-//
-//		// Draw a horizontal line
-//		for (col = 0; col < 4; col++) {
-//			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
-//		}
 
+		// Count the columns that contain a VAT and net value 
+		int columnsWithVatHeading = 0;
+		int columnsWithNetHeading = 0;
+
+		// Count the columns that contain a VAT value of 0% 
+		int zeroVatColumns = 0;
+
+		// Fill the first 4 rows with the company information
+		fillCompanyInformation(0);
+		fillTimeIntervall(5);
+		
+		// Counter for the current row and columns in the Calc document
+		int row = 9;
+		int col = 0;
+
+
+		// Set the title
+		setCellTextInBold(row++, 0, title);
+		row++;
+
+		// Table column headings
+		int headLine = row;
+		//T: Used as heading of a table. Keep the word short.
+		setCellTextInBold(row, col++, msg.commonFieldCategory);
+		setCellTextInBold(row, col++, msg.commonFieldDate);
+		setCellTextInBold(row, col++, msg.exporterDataVoucher);
+		setCellTextInBold(row, col++, msg.exporterDataDocno);
+
+		// Customer or supplier
+		setCellTextInBold(row, col++, customerSupplier);
+		setCellTextInBold(row, col++, msg.commonFieldText);
+		setCellTextInBold(row, col++, msg.exporterDataAccounttype);
+
+		if (showVoucherSumColumn) {
+			setCellTextInBold(row, col++, msg.productDataNet);
+			setCellTextInBold(row, col++, msg.productDataGross);
+		}
+
+		row++;
+		int columnOffset = col;
+
+		// The vouchers are exported in 2 runs.
+		// First, only the summary of all vouchers is calculated and
+		// the columns are created.
+		// Later all the vouchers are analyzed a second time and then they
+		// are exported voucher by voucher into the table.
+		VoucherSummarySetManager voucherSummarySetAllVouchers = createSummarySet(vouchers, false);
+
+		boolean vatIsNotZero = false;
+
+		vatIsNotZero = false;
+		col = columnOffset;
+		columnsWithVatHeading = 0;
+		columnsWithNetHeading = 0;
+
+		// A column for each Vat value is created 
+		// The VAT summary items are sorted. So first ignore the VAT entries
+		// with 0%. 
+		// If the VAT value is >0%, create a column with heading.
+		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
+
+			// Create a column, if the value is not 0%
+			if (item.getVat() != null && item.getVat().getNumber().doubleValue() > 0.001 || vatIsNotZero || showZeroVatColumn) {
+
+				// If the first non-zero VAT column is created,
+				// do not check the value any more.
+				vatIsNotZero = true;
+
+				// Count the columns
+				columnsWithVatHeading++;
+
+				// Create a column heading in bold
+				int column = voucherSummarySetAllVouchers.getIndex(item) - zeroVatColumns;
+
+				// Add VAT name and description and use 2 lines
+				String text = item.getVatName();
+				String description = item.getDescription();
+
+				if (!description.isEmpty())
+					text += "\n" + description;
+
+				setCellTextInBold(headLine, column + columnOffset, text);
+
+			}
+			else {
+				// Count the columns with 0% VAT
+				zeroVatColumns++;
+			}
+		}
+
+		// A column for each Net value is created 
+		// The Net summary items are sorted. 
+		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
+
+			// Count the columns
+			columnsWithNetHeading++;
+
+			// Create a column heading in bold
+			int column = voucherSummarySetAllVouchers.getIndex(item);
+
+			// Add VAT name and description and use 2 lines
+			//T: Used as heading of a table. Keep the word short.
+			String text = msg.productDataNet + "\n" + item.getVatName();
+			String description = item.getDescription();
+
+			if (!description.isEmpty())
+				text += "\n" + description;
+
+			setCellTextInBold(headLine, columnsWithVatHeading + column + columnOffset, text);
+		}
+
+		int voucherIndex = 0;
+		VoucherSummaryCalculator calc = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
+
+		// Second run.
+		// Export the voucher data
+		for (AbstractVoucher voucher : vouchers) {
+
+			if (isInTimeIntervall(voucher)) {
+				List<AbstractVoucherItem> items = new ArrayList<>();
+				if(voucher instanceof Expenditure) {
+					items.addAll(((Expenditure)voucher).getItems());
+				} else {
+					items.addAll(((ReceiptVoucher)voucher).getItems());
+				}
+				
+				int voucherItemIndex = 0;
+				for (AbstractVoucherItem voucherItem : items) {
+
+					// Now analyze voucher by voucher
+					VoucherSummarySetManager vatSummarySetOneVoucher = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
+					MonetaryAmount paidValue = Money.of(voucher.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
+					MonetaryAmount totalValue = Money.of(voucher.getTotalValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
+					VoucherSummary voucherSummaryValue = calc.calculate(items, paidValue, totalValue, voucher.getDiscounted());
+//					voucher.calculate();
+
+					// Add the voucher to the VAT summary
+					if(voucher instanceof Expenditure) {
+						vatSummarySetOneVoucher.add((Expenditure) voucher, false, voucherItemIndex);
+					} else {
+						vatSummarySetOneVoucher.add((ReceiptVoucher)voucher, false, voucherItemIndex);
+					}
+					
+					// Fill the row with the voucher data
+					col = 0;
+
+					if (voucherItemIndex == 0) {
+						setCellText(row, col++, voucher.getAccount().getName());
+						setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(voucher.getVoucherDate()));
+						setCellText(row, col++, voucher.getVoucherNumber());
+						setCellText(row, col++, voucher.getDocumentNumber());
+						setCellText(row, col++, voucher.getName());
+					}
+
+					col = 5;
+					setCellText(row, col++, voucherItem.getName());
+					if(voucherItem instanceof ExpenditureItem) {
+						setCellText(row, col++, ((ExpenditureItem) voucherItem).getAccountType().getName());
+					} else {
+						setCellText(row, col++, ((ReceiptVoucherItem) voucherItem).getAccountType().getName());
+					}
+
+					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
+
+					// Calculate the total VAT of the voucher
+					MonetaryAmount totalVat = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
+
+					// Get all VAT entries of this voucher and place them into the
+					// corresponding column.
+					for (VatSummaryItem item : vatSummarySetOneVoucher.getVoucherSummaryItems()) {
+
+						// Get the column
+						int column = voucherSummarySetAllVouchers.getIndex(item) - zeroVatColumns;
+
+						// If column is <0, it was a VAT entry with 0%
+						if (column >= 0) {
+
+							// Round the VAT and add fill the table cell
+							totalVat = totalVat.add(item.getVat());
+							setCellValueAsLocalCurrency(row, column + columnOffset, item.getVat());
+						}
+					}
+
+					// Get all net entries of this voucher and place them into the
+					// corresponding column.
+					for (VatSummaryItem item : vatSummarySetOneVoucher.getVoucherSummaryItems()) {
+						// Get the column
+						int column = voucherSummarySetAllVouchers.getIndex(item);
+
+						// If column is <0, it was a VAT entry with 0%
+						if (column >= 0) {
+
+							// Round the net and add fill the table cell
+							//totalVat.add(net.asRoundedDouble());
+							setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + columnOffset,
+									item.getNet());
+						}
+					}
+
+					// Display the sum of an voucher only in the row of the first
+					// voucher item
+					if (showVoucherSumColumn) {
+						if (voucherItemIndex == 0) {
+							col = columnOffset - 2;
+							// Calculate the vouchers net and gross total 
+							setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalNet());
+							setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalGross());
+						}
+					}
+
+					// Set the background of the table rows. Use an light and
+					// alternating blue color.
+					if ((voucherIndex % 2) == 0)
+						setBackgroundColor(0, row, columnsWithVatHeading + columnsWithNetHeading + columnOffset - 1, row,
+								"#e8ebed");
+
+					row++;
+
+				}
+				voucherIndex++;
+			}
+		}
+
+		// Insert a formula to calculate the sum of a column.
+		// "sumrow" is the row under the table.
+		int sumrow = row;
+
+		// Show the sum only, if there are values in the table
+		if (sumrow > (headLine + 1)) {
+			for (int i = (showVoucherSumColumn ? -2 : 0); i < (columnsWithVatHeading + columnsWithNetHeading); i++) {
+				col = columnOffset + i;
+				try {
+					// Create formula for the sum. 
+					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
+					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
+					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
+					setBold(sumrow, col);
+				}
+				catch (IndexOutOfBoundsException e) {
+				}
+			}
+		}
+
+		// Draw a horizontal line (set the border of the top and the bottom
+		// of the table).
+		for (col = 0; col < (columnsWithVatHeading + columnsWithNetHeading) + columnOffset; col++) {
+			setBorder(headLine, col, Color.BLACK, false, false, true, false);
+			setBorder(sumrow, col, Color.BLACK, true, false, false, false);
+		}
+
+		// Create a voucher summary set manager that collects all 
+		// categories of voucher items
+		VoucherSummarySetManager voucherSummaryCategories = createSummarySet(vouchers, true);
+
+		row += 3;
+		// Table heading
+		
+		//T: Sales Exporter - Text in the Calc document
+		setCellTextInBold(row++, 0, exportMessages.wizardExportVouchersSummary);
+		row++;
+
+		col = 0;
+
+		//Heading for the categories
+		//T: Used as heading of a table. Keep the word short.
+		setCellTextInBold(row, col++, msg.exporterDataAccounttype);
+		setCellTextInBold(row, col++, msg.getPurchaseTaxString());
+		setCellTextInBold(row, col++, msg.getPurchaseTaxString());
+		setCellTextInBold(row, col++, msg.productDataNet);
+
+		// Draw a horizontal line
+		for (col = 0; col < 4; col++) {
+			setBorder(row, col, Color.BLACK, false, false, true, false);
+		}
+
+		row++;
+
+		// A column for each Vat value is created 
+		// The VAT summary items are sorted. So first ignore the VAT entries
+		// with 0%. 
+		// If the VAT value is >0%, create a column with heading.
+		for (VatSummaryItem item : voucherSummaryCategories.getVoucherSummaryItems()) {
+
+			col = 0;
+			setCellText(row, col++, item.getDescription());
+			setCellText(row, col++, item.getVatName());
+			setCellValueAsLocalCurrency(row, col++, item.getVat());
+			setCellValueAsLocalCurrency(row, col++, item.getNet());
+
+			// Set the background of the table rows. Use an light and
+			// alternating blue color.
+			if ((row % 2) == 0)
+				setBackgroundColor(0, row, 3, row, "#e8ebed");
+
+			row++;
+
+		}
+
+		// Draw a horizontal line
+		for (col = 0; col < 4; col++) {
+			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
+		}
+
+		save();
+		
 		// True = Export was successful
 		return true;
+	}
+
+	/**
+	 * @param vouchers
+	 * @param useCategories
+	 */
+	private VoucherSummarySetManager createSummarySet(List<AbstractVoucher> vouchers,
+			boolean useCategories) {
+		// Create a voucher summary set manager that collects all voucher VAT
+		// values of all vouchers
+		VoucherSummarySetManager voucherSummarySetAllVouchers = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
+
+		for (AbstractVoucher voucher : vouchers) {
+
+			if (isInTimeIntervall(voucher)) {
+				
+				if(voucher instanceof Expenditure) {
+					voucherSummarySetAllVouchers.add((Expenditure) voucher, useCategories);
+				} else {
+					voucherSummarySetAllVouchers.add((ReceiptVoucher) voucher, useCategories);
+				}
+			}
+		}
+		return voucherSummarySetAllVouchers;
+	}
+	
+	@Override
+	protected String getOutputFileName() {
+		return outputFileName;
 	}
 }

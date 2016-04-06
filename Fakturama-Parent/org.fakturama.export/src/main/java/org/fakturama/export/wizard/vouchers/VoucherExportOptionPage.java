@@ -58,6 +58,10 @@ public class VoucherExportOptionPage extends WizardPage {
 	private Button buttonShowVoucherSumColumn;
 	private Button buttonShowZeroVatColumn;
 	
+	public static final String SHOW_VOUCHER_SUM_COLUMN = "ShowVoucherSumColumn";
+	public static final String SHOW_ZERO_VAT_COLUMN = "ShowZeroVatColumn";
+	
+	
 	/**
 	 * Constructor Create the page and set title and message.
 	 */

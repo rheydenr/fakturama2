@@ -58,9 +58,9 @@
 			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
-			<!--  if you want to sho the generated SQL commands and their parameter substitution -->
-			<persistence:property name="eclipselink.logging.level.sql" value="FINE"/>
-			<persistence:property name="eclipselink.logging.parameters" value="true"/>
+			<!--  if you want to show the generated SQL commands and their parameter substitution -->
+			<!--  persistence:property name="eclipselink.logging.level.sql" value="FINE"/> -->
+			<!--  persistence:property name="eclipselink.logging.parameters" value="true"/> -->
 			
 			<!-- DOESN'T WORK!!! persistence:property name="eclipselink.logging.logger" value="com.sebulli.fakturama.log.FakturamaLogger" / -->
             <!-- custom SessionLog implementation -->

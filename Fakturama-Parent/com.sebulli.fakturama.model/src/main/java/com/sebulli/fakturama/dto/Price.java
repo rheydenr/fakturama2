@@ -25,8 +25,8 @@ import org.javamoney.moneta.RoundedMoney;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.AbstractVoucherItem;
 import com.sebulli.fakturama.model.DocumentItem;
-import com.sebulli.fakturama.model.ExpenditureItem;
 
 /**
  * Price class.
@@ -118,7 +118,7 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this expenditure item
 	 */
-	public Price(ExpenditureItem item, Double scaleFactor) {
+	public Price(AbstractVoucherItem item, Double scaleFactor) {
 		this(1.0, Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), item.getVat().getTaxValue(), Double.valueOf(0.0), false, false);
 	}
 

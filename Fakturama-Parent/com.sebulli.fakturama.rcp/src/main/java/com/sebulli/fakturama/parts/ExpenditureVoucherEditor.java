@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -75,6 +74,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.AbstractVoucherItem;
 import com.sebulli.fakturama.model.AbstractVoucher_;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ExpenditureItem;
@@ -724,7 +724,7 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         
         VoucherSummaryCalculator voucherSummaryCalculator = ContextInjectionFactory.make(VoucherSummaryCalculator.class, context);
         // unwrap VoucherItemDTOs at first
-        List<ExpenditureItem> docItems = new ArrayList<>();
+        List<AbstractVoucherItem> docItems = new ArrayList<>();
         if(itemListTable != null) {
             // don't use Lambdas because the List isn't initialized yet.
             for (VoucherItemDTO item : itemListTable.getExpenditureItemsListData()) {

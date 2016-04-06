@@ -32,6 +32,7 @@ import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.wizards.IExportWizard;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Export wizard to export receipt vouchers
@@ -90,11 +91,13 @@ public class ReceiptExportWizard extends Wizard implements IExportWizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		VoucherExporter exporter = new VoucherExporter(page1.getStartDate(), page1.getEndDate(),
-				page1.getDoNotUseTimePeriod(),
-				page2.getShowVoucherSumColumn(),
-				page2.getShowZeroVatColumn());
-		//T: Title in the exported calc document
+		ctx.set(Constants.PARAM_START_DATE, page1.getStartDate());
+		ctx.set(Constants.PARAM_END_DATE, page1.getEndDate());
+		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, page1.getDoNotUseTimePeriod());
+		ctx.set(VoucherExportOptionPage.SHOW_VOUCHER_SUM_COLUMN, page2.getShowVoucherSumColumn());
+		ctx.set(VoucherExportOptionPage.SHOW_ZERO_VAT_COLUMN, page2.getShowZeroVatColumn());
+
+		VoucherExporter exporter = ContextInjectionFactory.make(VoucherExporter.class, ctx);
 		return exporter.export(msg.commandReceiptvouchersName,
 				VoucherExporter.CUSTOMER);
 	}

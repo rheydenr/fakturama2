@@ -115,7 +115,7 @@ public class AccountsExporter extends OOCalcExporter {
 		accountSummary.collectEntries(account);
 		accountEntries = accountSummary.getAccountEntries();
 		
-		// Sort the vouchers by category and date
+		// Sort the accountEntries by category and date --> already done by database
 //		Collections.sort(accountEntries, new UniDataSetSorter("date"));
 		accountEntries.sort((AccountEntry entry1, AccountEntry entry2) -> {return entry1.date.before(entry2.date) ? -1 : 1;});
 
@@ -161,11 +161,6 @@ public class AccountsExporter extends OOCalcExporter {
 
 		boolean somethingExported = false;
 		
-		// The vouchers are exported in 2 runs.
-		// First, only the summary of all vouchers is calculated and
-		// the columns are created.
-		// Later all the vouchers are analyzed a second time and then they
-		// are exported voucher by voucher into the table.
 		for (AccountEntry accountEntry : accountEntries) {
 
 			// calculate the balance of all vouchers and documents,
