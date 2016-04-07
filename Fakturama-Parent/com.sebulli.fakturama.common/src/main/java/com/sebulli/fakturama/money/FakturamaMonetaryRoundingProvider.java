@@ -15,6 +15,8 @@ import javax.money.Monetary;
 import javax.money.RoundingQuery;
 import javax.money.spi.RoundingProviderSpi;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 /**
  *
  */
@@ -44,7 +46,7 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
 //        }
         CurrencyUnit currency = roundingQuery.getCurrency();
         if (currency != null) {
-            if (roundingQuery.getBoolean("cashRounding")) {
+            if (BooleanUtils.isTrue(roundingQuery.getBoolean("cashRounding"))) {
                 if (currency.getCurrencyCode().equals("CHF")) {
                     return new FakturamaCashRounding(currency, RoundingMode.HALF_UP, 5);
                 } else {

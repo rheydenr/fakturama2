@@ -46,6 +46,8 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Document;
 
 /**
  * The sales exporter. This class collects all the sales and fills a Calc table
@@ -82,7 +84,7 @@ public class OOCalcExporter {
 	protected boolean doNotUseTimePeriod;
 
 	// the date key to sort the documents
-	protected String documentDateKey;
+//	protected String documentDateKey;
 	// Settings from the preference page
 	protected boolean usePaidDate;
 
@@ -147,59 +149,54 @@ public class OOCalcExporter {
 	}
 	
 	
-//	/**
-//	 * Returns if a given document should be used to export. Only invoice and
-//	 * credit documents that are paid in the specified time interval are
-//	 * exported.
-//	 * 
-//	 * @param document
-//	 *            The document that is tested
-//	 * @return True, if the document should be exported
-//	 */
-//	protected boolean documentShouldBeExported(DataSetDocument document) {
-//
-//		// By default, the document will be exported.
-//		boolean isInIntervall = true;
-//
-//		// Use the time period
-//		if (!doNotUseTimePeriod) {
-//			// Get the date of the document and convert it to a
-//			// GregorianCalendar object.
-//			GregorianCalendar documentDate = new GregorianCalendar();
-//			try {
-//				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-//
-//				String documentDateString = document.getStringValueByKey(documentDateKey);
-//
-//				documentDate.setTime(formatter.parse(documentDateString));
-//			}
-//			catch (ParseException e) {
-//				Logger.logError(e, "Error parsing Date");
-//			}
-//
-//			// Test, if the document's date is in the interval
-//			if ((startDate != null) && (endDate != null)) {
-//				if (startDate.after(documentDate))
-//					isInIntervall = false;
-//				if (endDate.before(documentDate))
-//					isInIntervall = false;
-//			}
-//		}
-//
-//		// Only invoiced and credits in the interval
-//		// will be exported.
-//		boolean isInvoiceOrCreditInIntervall = ((document.getIntValueByKey("category") == DocumentType.INVOICE.getInt()) || (document.getIntValueByKey("category") == DocumentType.CREDIT
-//				.getInt())) && isInIntervall;
-//		
-//		
-//		// Export paid or unpaid documents
-//		if (exportPaid)
-//			// export paid
-//			return isInvoiceOrCreditInIntervall && document.getBooleanValueByKey("paid");
-//		else
-//			// export unpaid
-//			return isInvoiceOrCreditInIntervall && !document.getBooleanValueByKey("paid");
-//	}
+	/**
+	 * Returns if a given document should be used to export. Only invoice and
+	 * credit documents that are paid in the specified time interval are
+	 * exported.
+	 * 
+	 * @param document
+	 *            The document that is tested
+	 * @return True, if the document should be exported
+	 * @deprecated Do it with database queries!
+	 */
+	protected boolean documentShouldBeExported(Document document) {
+
+		// By default, the document will be exported.
+		boolean isInIntervall = true;
+
+		// Use the time period
+		if (!doNotUseTimePeriod) {
+			// Get the date of the document and convert it to a
+			// GregorianCalendar object.
+			GregorianCalendar documentDate = new GregorianCalendar();
+			
+			// Use pay date or document date
+			Date documentDateString = usePaidDate ? document.getPayDate() : document.getDocumentDate();
+			documentDate.setTime(documentDateString);
+
+			// Test, if the document's date is in the interval
+			if ((startDate != null) && (endDate != null)) {
+				if (startDate.after(documentDate))
+					isInIntervall = false;
+				if (endDate.before(documentDate))
+					isInIntervall = false;
+			}
+		}
+
+		// Only invoiced and credits in the interval
+		// will be exported.
+		boolean isInvoiceOrCreditInIntervall = ((document.getBillingType() == BillingType.INVOICE) 
+				|| (document.getBillingType() == BillingType.CREDIT
+				)) && isInIntervall;
+		
+		// Export paid or unpaid documents
+		if (exportPaid)
+			// export paid
+			return isInvoiceOrCreditInIntervall && document.getPaid();
+		else
+			// export unpaid
+			return isInvoiceOrCreditInIntervall && !document.getPaid();
+	}
 	
 	/**
 	 * Returns if a given data set should be used to export. Only

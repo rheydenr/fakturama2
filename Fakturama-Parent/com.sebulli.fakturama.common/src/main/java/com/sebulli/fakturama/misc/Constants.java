@@ -499,4 +499,9 @@ public class Constants {
 	public final static String PARAM_START_DATE = "startdate";
 
 	public final static String PARAM_END_DATE = "enddate";
+
+	/**
+	 * 
+	 */
+	public static final String PREFERENCES_EXPORTSALES_PAIDDATE = "EXPORTSALES_PAIDDATE";
 }

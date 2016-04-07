@@ -36,11 +36,11 @@ public class ExportMessages {
 	public String wizardExportFilenameTypeCsv;
 	public String wizardExportProductsAllproductsTitle;
 	public String wizardExportCsvProductsTitle;
-	public String Exportwizard218;
-	public String Exportwizard230;
-	public String Exportwizard231;
-	public String Exportwizard244;
-	public String Exportwizard256;
+	public String wizardExportProductsTitle;
+	public String wizardExportProductandbuyersTitle;
+	public String wizardExportBuyersLongdescription;
+	public String wizardExportSalesTitle;
+	public String wizardExportBuyersTitle;
 	public String wizardExportDateselectTitle;
 	public String wizardExportDateselectStartdate;
 	public String wizardExportDateselectEnddate;
@@ -56,7 +56,7 @@ public class ExportMessages {
 	public String wizardExportOutputEnddate;
 	public String Exporter223;
 	public String wizardExportVouchersSummary;
-	public String Exporter255;
+	public String wizardExportBuyersTabletitle;
 	public String wizardExportExpendituresTitle;
 	public String wizardExportExpendituresDescription;
 	public String wizardExportOptionSelect;
@@ -85,8 +85,8 @@ public class ExportMessages {
 	public String wizardExportFilename;
 	public String wizardExportListsCategory;
 	public String wizardExportProductandbuyersCategory;
-	public String wizardExportProductbuyersDescription;
-	public String wizardExportProductbuyersName;
+	public String wizardExportProductandbuyersDescription;
+	public String wizardExportProductandbuyersName;
 	public String wizardExportProductsDescription;
 	public String wizardExportProductsName;
 	public String wizardExportReceiptvouchersDescription;

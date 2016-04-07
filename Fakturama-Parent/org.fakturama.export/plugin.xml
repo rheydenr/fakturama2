@@ -8,14 +8,14 @@
             class="org.fakturama.export.wizard.productbuyers.ExportWizard"
             icon="icons/16/product_buyers.png"
             id="com.sebulli.fakturama.export.productbuyers.exportWizard"
-            name="%wizard.export.productbuyers.name">
+            name="%wizard.export.productandbuyers.name">
          <description>
             %wizard.export.productbuyers.description
          </description>
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.productandbuyers"
-            class="org.fakturama.export.wizard.buyers.ExportWizard"
+            class="org.fakturama.export.wizard.buyers.BuyerVolumesExportWizard"
             icon="icons/16/buyers.png"
             id="com.sebulli.fakturama.export.buyers.exportWizard"
             name="%wizard.export.buyers.name">
@@ -75,7 +75,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.lists"
-            class="org.fakturama.fakturama.export.wizard.products.ExportWizard"
+            class="org.fakturama.export.wizard.products.ExportWizard"
             icon="icons/16/product.png"
             id="com.sebulli.fakturama.export.products.exportWizard"
             name="%wizard.export.products.name">

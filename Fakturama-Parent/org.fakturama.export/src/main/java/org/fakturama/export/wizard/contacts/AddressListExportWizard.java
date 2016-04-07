@@ -69,6 +69,4 @@ public class AddressListExportWizard extends Wizard implements IExportWizard {
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);
 	}
-
-
 }

@@ -25,6 +25,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
 
 /**
  * Preference page for the sales export functionality
@@ -32,11 +33,6 @@ import com.sebulli.fakturama.i18n.Messages;
  * @author Gerd Bartelt
  */
 public class ExportPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
-    
-    /**
-     * 
-     */
-    public static final String PREFERENCES_EXPORTSALES_PAIDDATE = "EXPORTSALES_PAIDDATE";
     
     @Inject
     @Translation
@@ -65,7 +61,7 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.EXPORT_PREFERENCE_PAGE);
 
 		//T: Preference page "Export Sales" - Label "Use Pay Date instead of Invoice Date"
-		addField(new BooleanFieldEditor(PREFERENCES_EXPORTSALES_PAIDDATE, msg.preferencesExportUsepaydate, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, msg.preferencesExportUsepaydate, getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -83,7 +79,7 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 	 *            TRUE: Write to the data base
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
-		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_EXPORTSALES_PAIDDATE, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, write);
 	}
 
     @Override
@@ -102,6 +98,6 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_EXPORTSALES_PAIDDATE, true);
+		node.setDefault(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, true);
 	}
 }

@@ -605,4 +605,42 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 //            );
 //        return getEntityManager().createQuery(cq).getResultList();
 //	}
+
+    /**
+     * Finds all {@link Document}s within a given date range (or any document if no date is given).
+     * Only {@link BillingType#INVOICE} and {@link BillingType#CREDIT} are taken into account.
+     * 
+     * @param usePaidDate use "paid date" (<code>true</code>) or use "document date" (<code>false</code>)
+     * @param startDate the start of the date range to retrieve (or <code>null</code>)
+     * @param endDate the end of the date range to retrieve (or <code>null</code>)
+     * @return List of {@link Document}s (sort by date according to <tt>usePaidDate</tt>)
+     */
+	public List<Document> findPaidDocumentsInRange(boolean usePaidDate, Date startDate,
+			Date endDate) {
+	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	    CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
+	    Root<Document> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.and(
+				cb.not(root.get(Document_.deleted)),
+				cb.or(
+						cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
+						cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
+					  )
+		);
+	    
+	    // take the paydate OR the document date into account
+	    if(startDate != null && endDate != null) {
+	    	// if startDate is after endDate we switch the two dates silently
+	    	predicate = cb.and(predicate,
+	    			cb.between(root.get(usePaidDate ? Document_.payDate : Document_.documentDate), 
+	    					startDate.before(endDate) ? startDate : endDate, 
+	    					endDate.after(startDate) ? endDate : startDate)
+	    		);
+	    }
+		CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(
+				cb.asc(
+						root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
+	    TypedQuery<Document> query = getEntityManager().createQuery(cq);
+		return query.getResultList();
+	}
 }

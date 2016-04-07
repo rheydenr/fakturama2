@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.internal.win32.CANDIDATEFORM;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -44,6 +45,8 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	
 	public static final String WIZARD_DATESELECT_DONTUSETIMEPERIOD = "WIZARD_DATESELECT_DONTUSETIMEPERIOD";
 
+	public static final String WIZARD_SINGLEPAGE = "singlepage";
+
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
@@ -53,6 +56,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	private Label labelEnd;
 	private CDateTime dtStartDate;
 	private CDateTime dtEndDate;
+	private boolean singlePage = false;
 
 	// Use start and end date or export all
 	private Button bDoNotUseTimePeriod;
@@ -91,6 +95,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		setMessage(exportMessages.wizardExportDateselectTitle);
 		this.label = (String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION);
 		this.doNotUseTimePeriod = (Boolean) ctx.get(WIZARD_DATESELECT_DONTUSETIMEPERIOD);
+		this.singlePage = (Boolean) ctx.get(WIZARD_SINGLEPAGE);
 	}
 	
 	/**
@@ -241,7 +246,12 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		if (doNotUseTimePeriod)
 			return true;
 		
-		return (getEndDate().after(getStartDate()));
+		return !singlePage && getEndDate().after(getStartDate());
+	}
+	
+	@Override
+	public boolean isPageComplete() {
+		return singlePage && getEndDate().after(getStartDate()) ;
 	}
 	
 }
