@@ -372,6 +372,12 @@ public class OOCalcExporter {
 		cell.setCurrencyCode(d.getCurrency().getCurrencyCode());
 	}
 	
+	protected void setCellValueAsLocalCurrency( int row, int column, Double d) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setCurrencyValue(d, DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
+		cell.setCurrencyCode(DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
+	}
+	
 	protected void setCellValueAsPercent( int row, int column, Double d) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setPercentageValue(d != null ? d : Double.valueOf(0.0));

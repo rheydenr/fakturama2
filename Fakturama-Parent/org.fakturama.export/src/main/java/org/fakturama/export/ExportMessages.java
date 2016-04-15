@@ -45,8 +45,8 @@ public class ExportMessages {
 	public String wizardExportDateselectStartdate;
 	public String wizardExportDateselectEnddate;
 	public String wizardExportDateselectExportall;
-	public String Exportwizardunpaid241;
-	public String Exportwizardunpaid242;
+	public String wizardExportSalesUnpaidTitle;
+	public String wizardExportSalesUnpaidLongdescription;
 	public String wizardCommonMaskAllfiles;
 	public String wizardCommonMaskCalcfiles;
 	public String wizardCommonPreviewLabel;

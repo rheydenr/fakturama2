@@ -16,6 +16,7 @@ package org.fakturama.export.wizard;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -95,7 +96,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		setMessage(exportMessages.wizardExportDateselectTitle);
 		this.label = (String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION);
 		this.doNotUseTimePeriod = (Boolean) ctx.get(WIZARD_DATESELECT_DONTUSETIMEPERIOD);
-		this.singlePage = (Boolean) ctx.get(WIZARD_SINGLEPAGE);
+		this.singlePage = Optional.ofNullable((Boolean)ctx.get(WIZARD_SINGLEPAGE)).orElse(Boolean.FALSE);
 	}
 	
 	/**
@@ -251,7 +252,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	
 	@Override
 	public boolean isPageComplete() {
-		return singlePage && getEndDate().after(getStartDate()) ;
+		return /*singlePage && */getEndDate().after(getStartDate()) ;
 	}
 	
 }

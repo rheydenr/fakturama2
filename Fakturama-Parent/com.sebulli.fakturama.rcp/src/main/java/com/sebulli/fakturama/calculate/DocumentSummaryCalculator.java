@@ -4,6 +4,7 @@
 package com.sebulli.fakturama.calculate;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -43,8 +44,8 @@ public class DocumentSummaryCalculator {
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
         MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
-        return calculate(null, dataSetDocument.getItems(), dataSetDocument.getShippingValue(), dataSetDocument.getShipping().getShippingVat(), 
-                dataSetDocument.getShipping().getAutoVat(), dataSetDocument.getItemsRebate(), noVatReference, 
+        return calculate(null, dataSetDocument.getItems(), Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(Double.valueOf(0.0)), dataSetDocument.getShipping().getShippingVat(), 
+                dataSetDocument.getShipping().getAutoVat(), Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(Double.valueOf(0.0)), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
     
@@ -157,7 +158,7 @@ public class DocumentSummaryCalculator {
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(itemsDiscount));
 
-		final MonetaryAmount zero = Money.of(Double.valueOf(0.0), currencyCode);
+		final MonetaryAmount zero = Money.zero(currencyCode);
 
 		// Calculate discount
 		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, Double.valueOf(0.0))) {

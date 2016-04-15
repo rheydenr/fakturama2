@@ -606,9 +606,24 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 //        return getEntityManager().createQuery(cq).getResultList();
 //	}
 
+
     /**
      * Finds all {@link Document}s within a given date range (or any document if no date is given).
-     * Only {@link BillingType#INVOICE} and {@link BillingType#CREDIT} are taken into account.
+     * Only unpaid {@link BillingType#INVOICE} and {@link BillingType#CREDIT} are taken into account.
+     * 
+     * @param usePaidDate use "paid date" (<code>true</code>) or use "document date" (<code>false</code>)
+     * @param startDate the start of the date range to retrieve (or <code>null</code>)
+     * @param endDate the end of the date range to retrieve (or <code>null</code>)
+     * @return List of {@link Document}s (sort by date according to <tt>usePaidDate</tt>)
+     */
+	public List<Document> findUnpaidDocumentsInRange(boolean usePaidDate, Date startDate,
+			Date endDate) {
+		return findPaidOrUnpaidDocumentsInRange(usePaidDate, startDate, endDate, false);
+	}    
+
+    /**
+     * Finds all {@link Document}s within a given date range (or any document if no date is given).
+     * Only paid {@link BillingType#INVOICE} and {@link BillingType#CREDIT} are taken into account.
      * 
      * @param usePaidDate use "paid date" (<code>true</code>) or use "document date" (<code>false</code>)
      * @param startDate the start of the date range to retrieve (or <code>null</code>)
@@ -617,6 +632,11 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      */
 	public List<Document> findPaidDocumentsInRange(boolean usePaidDate, Date startDate,
 			Date endDate) {
+		return findPaidOrUnpaidDocumentsInRange(usePaidDate, startDate, endDate, true);
+	}
+	
+	private List<Document> findPaidOrUnpaidDocumentsInRange(boolean usePaidDate, Date startDate,
+			Date endDate, boolean paidFlag) {
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 	    CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
 	    Root<Document> root = criteria.from(getEntityClass());
@@ -625,7 +645,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 				cb.or(
 						cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
 						cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
-					  )
+					  ),
+				cb.equal(root.get(Document_.paid), paidFlag)
 		);
 	    
 	    // take the paydate OR the document date into account
@@ -638,9 +659,10 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    		);
 	    }
 		CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(
-				cb.asc(
-						root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
+				cb.asc(root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
 	    TypedQuery<Document> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
+	
+	
 }

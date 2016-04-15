@@ -21,9 +21,9 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
-import com.sebulli.fakturama.model.AbstractVoucher;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.Expenditure_;
+import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VoucherCategory;
 
 @Creatable
@@ -87,6 +87,21 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 			resultList.add(accountEntry);
 		}
 		return resultList;
+	}
+	
+	/**
+	 * Finds all undeleted {@link Expenditure}s sorted by {@link ItemAccountType} and date.
+	 * @return List of {@link Expenditure}s, sorted by account and voucher date
+	 */
+	public List<Expenditure> findAllExpendituresSorted() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Expenditure> criteria = cb.createQuery(getEntityClass());
+        Root<Expenditure> root = criteria.from(getEntityClass());
+        CriteriaQuery<Expenditure> cq = criteria.where(cb.not(root.get(Expenditure_.deleted)))
+        		.orderBy(cb.asc(root.get(Expenditure_.account)), cb.asc(root.get(Expenditure_.voucherDate)));
+        TypedQuery<Expenditure> query = getEntityManager().createQuery(cq);
+        return query.getResultList();
+		
 	}
 
 	/**

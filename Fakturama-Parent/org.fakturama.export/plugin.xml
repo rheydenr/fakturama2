@@ -25,7 +25,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.export.salesandvouchers"
-            class="org.fakturama.export.wizard.sales.ExportWizard"
+            class="org.fakturama.export.wizard.sales.SalesExportWizard"
             icon="icons/16/sales.png"
             id="com.sebulli.fakturama.export.sales.exportWizard"
             name="%wizard.export.sales.name">

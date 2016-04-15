@@ -15,13 +15,14 @@
 package com.sebulli.fakturama.dto;
 
 
+import java.util.Optional;
+
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -50,13 +51,14 @@ public class VatSummarySetManager {
 	 */
 	public void add(Document document, Double scaleFactor) {
 		int parentSign =DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
-		CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+		CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
 		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-		new DocumentSummaryCalculator().calculate(vatSummarySet, document.getItems(), document.getShippingValue() * parentSign,
+		new DocumentSummaryCalculator().calculate(vatSummarySet, document.getItems(), 
+				Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping().getShippingVat(),
-				document.getShippingAutoVat(), document.getItemsRebate(), document.getNoVatReference(),
+				document.getShippingAutoVat(), Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), document.getNoVatReference(),
  			        scaleFactor, document.getNetGross(), deposit);
 	}
 	

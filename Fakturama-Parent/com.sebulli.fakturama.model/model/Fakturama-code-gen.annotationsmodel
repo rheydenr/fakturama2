@@ -448,11 +448,11 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/paidValue"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="The amount of what is paid (relevant for partial payment)." name="payedValue" getter="getPaidValue" defaultValue="null" setter="setPaidValue" validJavaMemberName="paidValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="The amount of what is paid (relevant for partial payment)." name="payedValue" getter="getPaidValue" defaultValue="null" setter="setPaidValue" validJavaMemberName="paidValue" featureMapQualifiedClassName="" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/payDate"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="the date when the invoice (or dunning or whatever) is completely payed." name="payDate" getter="getPayDate" defaultValue="null" setter="setPayDate" validJavaMemberName="payDate" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The date when the invoice (or dunning or whatever) is completely paid." name="payDate" getter="getPayDate" defaultValue="null" setter="setPayDate" validJavaMemberName="payDate" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/payment"/>
@@ -480,6 +480,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/shippingValue"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" defaultValue="java.lang.Double.valueOf(0.0)"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/transactionId"/>
@@ -535,7 +536,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/netGross"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Information about rounding of document prices. The following values are valid: &lt;ul>&lt;li>0 &amp;hellip; no rounding&lt;/li>&lt;li>1 &amp;hellip; The prices are rounded, that the net values are full cent values.&lt;/li>&lt;li>2 &amp;hellip; The prices are rounded, that the gross values are full cent values.&lt;/li>&lt;/ul>" defaultValue="java.lang.Integer.valueOf(0)" getter="getNetGross" setter="setNetGross" validJavaMemberName="netGross" featureMapQualifiedClassName="" useList="false"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Information about rounding of document prices. The following values are valid: &lt;ul>&lt;li>0 &amp;hellip; no rounding&lt;/li>&lt;li>1 &amp;hellip; The prices are rounded, that the net values are full cent values.&lt;/li>&lt;li>2 &amp;hellip; The prices are rounded, that the gross values are full cent values.&lt;/li>&lt;/ul>" getter="getNetGross" defaultValue="java.lang.Integer.valueOf(0)" setter="setNetGross" validJavaMemberName="netGross" featureMapQualifiedClassName="" useList="false"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Document/sourceDocument"/>
@@ -1088,7 +1089,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Shipping/shippingValue"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="shippingValue" getter="getShippingValue" defaultValue="null" setter="setShippingValue" validJavaMemberName="shippingValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.26/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="shippingValue" getter="getShippingValue" defaultValue="java.lang.Double.valueOf(0.0)" setter="setShippingValue" validJavaMemberName="shippingValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.26/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Shipping/shippingVat"/>
