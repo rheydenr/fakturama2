@@ -39,7 +39,7 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  * Create the first (and only) page of the sales export wizard. This page is
  * used to select the start and end date.
  */
-public class ExportOptionPage extends WizardPage {
+public class ProductBuyersExportOptionPage extends WizardPage {
 	
 	public static final String WIZARD_SORT_BY_QUANTITY = "WIZARD_SORT_BY_QUANTITY";
 
@@ -60,13 +60,22 @@ public class ExportOptionPage extends WizardPage {
 	/**
 	 * Constructor Create the page and set title and message.
 	 */
-	public ExportOptionPage(String title, String label) {
+	public ProductBuyersExportOptionPage(String title, String label) {
 		super("ExportOptionPage");
 		//T: Title of the Sales Export Wizard Page 1
 		setTitle(title);
 		setMessage(label );
 	}
 	
+	/**
+	 * Default constructor. Used only for injection. <br /> 
+	 * WARNING: Use <b>only</b> with injection since some
+	 * initial values are set in initialize method.
+	 */
+	public ProductBuyersExportOptionPage() {
+		super("ExportOptionPage");
+	}
+
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));

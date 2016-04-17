@@ -27,12 +27,10 @@ import org.eclipse.jface.wizard.Wizard;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
-import org.fakturama.export.wizard.sales.SalesExportOptionPage;
 import org.fakturama.wizards.IExportWizard;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.resources.ITemplateResourceManager;
 
 
 /**
@@ -40,7 +38,7 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  * 
  * @author Gerd Bartelt
  */
-public class ExportWizard extends Wizard implements IExportWizard {
+public class ProductBuyersExportWizard extends Wizard implements IExportWizard {
 
 	@Inject
 	@Translation
@@ -51,14 +49,11 @@ public class ExportWizard extends Wizard implements IExportWizard {
 	protected ExportMessages exportMessages;
 
 	@Inject
-	private ITemplateResourceManager resourceManager;
-
-	@Inject
 	private IEclipseContext ctx;
-
+	
 	// The first (and only) page of this wizard
 	private ExportWizardPageStartEndDate page1;
-	private ExportOptionPage page2;
+	private ProductBuyersExportOptionPage page2;
 
 	/**
 	 * Constructor Adds the first page to the wizard
@@ -77,9 +72,8 @@ public class ExportWizard extends Wizard implements IExportWizard {
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, Boolean.FALSE);
 		page1 = ContextInjectionFactory.make(ExportWizardPageStartEndDate.class, ctx);
 
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportAccountsTableListentriesTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportProductandbuyersTitle);
-		page2 = ContextInjectionFactory.make(ExportOptionPage.class, ctx);
+		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportAccountsTableListentriesTitle);
+		page2 = ContextInjectionFactory.make(ProductBuyersExportOptionPage.class, ctx);
 
 		addPage(page1);
 		addPage(page2);
@@ -97,8 +91,8 @@ public class ExportWizard extends Wizard implements IExportWizard {
 		ctx.set(Constants.PARAM_START_DATE, page1.getStartDate());
 		ctx.set(Constants.PARAM_END_DATE, page1.getEndDate());
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, page1.getDoNotUseTimePeriod());
-		ctx.set(ExportOptionPage.WIZARD_SORT_BY_QUANTITY, page2.getSortByQuantity());
-		Exporter exporter = ContextInjectionFactory.make(Exporter.class, ctx);
+		ctx.set(ProductBuyersExportOptionPage.WIZARD_SORT_BY_QUANTITY, page2.getSortByQuantity());
+		ProductBuyersExporter exporter = ContextInjectionFactory.make(ProductBuyersExporter.class, ctx);
 		return exporter.export();
 	}
 }

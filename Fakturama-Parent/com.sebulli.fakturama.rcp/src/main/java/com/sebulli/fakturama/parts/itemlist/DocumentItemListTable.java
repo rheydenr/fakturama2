@@ -775,6 +775,14 @@ private Menu createContextMenu(NatTable natTable) {
 //                tmpList.stream().forEach(dto -> dto.getDocumentItem().setPosNr(3));
                 getDocumentItemsListData().clear();
                 getDocumentItemsListData().addAll(tmpList);
+                
+                // Recalculate the total sum of the document if necessary
+                // do it via the messaging system and send a message to DocumentEditor
+                Map<String, Object> event = new HashMap<>();
+                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+                event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
+                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+                
         } else {
             log.debug("no rows selected!");
         }

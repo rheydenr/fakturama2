@@ -52,7 +52,7 @@ import com.sebulli.fakturama.model.DocumentItem;
  * 
  * @author Gerd Bartelt
  */
-public class Exporter extends OOCalcExporter {
+public class ProductBuyersExporter extends OOCalcExporter {
 
 	@Inject
 	@Translation
@@ -201,7 +201,7 @@ public class Exporter extends OOCalcExporter {
 			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
 		}
 		doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
-		this.sortByQuantity = (boolean) ctx.get(ExportOptionPage.WIZARD_SORT_BY_QUANTITY);
+		this.sortByQuantity = (boolean) ctx.get(ProductBuyersExportOptionPage.WIZARD_SORT_BY_QUANTITY);
 	}
 
 	/**
@@ -321,4 +321,8 @@ public class Exporter extends OOCalcExporter {
 		return true;
 	}
 
+	@Override
+	protected String getOutputFileName() {
+		return "ProductBuyers";
+	}
 }
