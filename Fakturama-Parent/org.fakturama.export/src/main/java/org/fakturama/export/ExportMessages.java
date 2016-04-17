@@ -54,7 +54,7 @@ public class ExportMessages {
 	public String wizardExportOutputPeriod;
 	public String wizardExportOutputStartdate;
 	public String wizardExportOutputEnddate;
-	public String Exporter223;
+	public String wizardExportProductandbuyersTableTitle;
 	public String wizardExportVouchersSummary;
 	public String wizardExportBuyersTabletitle;
 	public String wizardExportExpendituresTitle;

@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -342,7 +343,7 @@ public class MigrationManager {
 			progressMonitorDialog.run(true, true, op);
 		}
 		catch (InvocationTargetException e) {
-			log.error("Fehler: ", e.getMessage());
+			log.error("Error: ", e.getMessage());
 		}
 		catch (InterruptedException e) {
 			// handle cancellation
@@ -352,13 +353,13 @@ public class MigrationManager {
 		    eclipsePrefs.flush();
 			log.info(msg.startMigrationEnd);
 		}
+        migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
         String tmpStr = String.format("* %s %s", StringUtils.rightPad("End:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         migLogUser.info(StringUtils.rightPad(tmpStr, MAX_LOGENTRY_WIDTH-1) + "*");
+        migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
         
         // kindly close all handlers (otherwise some file fragments could remain).
-        for (Handler handler : migLogUser.getHandlers()) {
-            handler.close();
-        }
+        Arrays.stream(migLogUser.getHandlers()).forEach(handler -> handler.close());
 	}
 	
 
@@ -613,17 +614,24 @@ public class MigrationManager {
 //					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
 				} else {
 					// use the previous filled Contact hashmap
-					Contact contact = contactDAO.findById(newContacts.get(oldDocument.getAddressid()));
-					if(contact != null) {
-					    // delivery documents are slightly different...
-					    if(document.getBillingType() == BillingType.DELIVERY) {
-	                        document.setBillingContact(contact.getAlternateContacts());
-	                        document.setDeliveryContact(contact);
-					    } else {
-	                        document.setBillingContact(contact);
-	                        document.setDeliveryContact(contact.getAlternateContacts());
-					    }
-					}
+					Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
+//					if (newContactIdDerivedFromOld == null) {
+//						migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
+//						OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
+//						
+//					} else {
+						Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
+						if(contact != null) {
+						    // delivery documents are slightly different...
+						    if(document.getBillingType() == BillingType.DELIVERY) {
+		                        document.setBillingContact(contact.getAlternateContacts());
+		                        document.setDeliveryContact(contact);
+						    } else {
+		                        document.setBillingContact(contact);
+		                        document.setDeliveryContact(contact.getAlternateContacts());
+						    }
+						}
+//					}
 				}
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
 				document.setBillingType(billingType);
@@ -736,7 +744,6 @@ public class MigrationManager {
 			catch (FakturamaStoringException e) {
 				log.error("error while migrating Document. (old) ID=" + oldDocument.getId());
 			}
-
 		}
 		subProgressMonitor.done();
 	}
@@ -851,6 +858,9 @@ public class MigrationManager {
     //				contact.getAlternateContacts().add(deliveryContact);
                     contact.setAlternateContacts(deliveryContact);
 				}
+				/*
+				 * This is crucial, since there could be (undeleted) documents which have references to deleted contacts!
+				 */
 				contact.setDeleted(oldContact.isDeleted());
 				contact.setDiscount(oldContact.getDiscount());
 				contact.setEmail(oldContact.getEmail());
@@ -1468,10 +1478,11 @@ public class MigrationManager {
                 }
                 
                 //convert the values
-				convertedValueList = new ArrayList<Integer>();
+				convertedValueList = new ArrayList<>();
 				convertedMaxSize = 0;
                 for(int i = 0; i < valueListSize; i++) {
-					convertedValue = 100/(totalSize/valueList.get(i));
+					int colWidth = valueList.get(i) == 0 ? 1 : valueList.get(i);
+					convertedValue = 100/(totalSize/colWidth);
                 	convertedMaxSize += convertedValue;
                 	convertedValueList.add(convertedValue);
                 }

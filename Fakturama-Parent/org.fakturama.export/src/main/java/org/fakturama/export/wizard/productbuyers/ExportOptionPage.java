@@ -12,8 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package org.fakturama.export.wizard.sales;
-
+package org.fakturama.export.wizard.productbuyers;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -39,13 +38,11 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
 /**
  * Create the first (and only) page of the sales export wizard. This page is
  * used to select the start and end date.
- * 
- * @author Gerd Bartelt
  */
-public class SalesExportOptionPage extends WizardPage {
+public class ExportOptionPage extends WizardPage {
 	
-	public static final String SHOW_ZERO_VAT_COL = "show_zero_vat_column";
-	
+	public static final String WIZARD_SORT_BY_QUANTITY = "WIZARD_SORT_BY_QUANTITY";
+
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
@@ -57,25 +54,17 @@ public class SalesExportOptionPage extends WizardPage {
 	private ITemplateResourceManager resourceManager;
 
 	//Control elements
-	private Button buttonShowZeroVatColumn;
+	private Button buttonQ;
+	private Button buttonV;
 	
 	/**
 	 * Constructor Create the page and set title and message.
 	 */
-	public SalesExportOptionPage(String title, String label) {
+	public ExportOptionPage(String title, String label) {
 		super("ExportOptionPage");
 		//T: Title of the Sales Export Wizard Page 1
 		setTitle(title);
 		setMessage(label );
-	}
-	
-	/**
-	 * Default constructor. Used only for injection. <br /> 
-	 * WARNING: Use <b>only</b> with injection since some
-	 * initial values are set in initialize method.
-	 */
-	public SalesExportOptionPage() {
-		super("ExportOptionPage");
 	}
 	
 	@PostConstruct
@@ -83,7 +72,7 @@ public class SalesExportOptionPage extends WizardPage {
 		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));
 		setMessage((String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION));
 	}
-	
+
 	/**
 	 * Creates the top level control for this dialog page under the given parent
 	 * composite.
@@ -100,7 +89,7 @@ public class SalesExportOptionPage extends WizardPage {
 		setControl(top);
 
 		// Preview image
-		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_SALES);
+		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_PRODUCT_BUYERS); 
 		Label preview = new Label(top, SWT.BORDER);
 		preview.setText(exportMessages.wizardCommonPreviewLabel);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
@@ -110,36 +99,31 @@ public class SalesExportOptionPage extends WizardPage {
 		catch (Exception e) {
 			log.error(e, "Icon not found");
 		}
-		
+
 		// Create the label with the help text
 		Label labelDescription = new Label(top, SWT.NONE);
 		
 		//T: Export Sales Wizard Page 1 - Long description.
-		labelDescription.setText(exportMessages.wizardExportAccountsTableListentriesTitle);
+		labelDescription.setText(exportMessages.wizardExportOptionSorting);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
 
 		// Radio buttons for sort order
-		buttonShowZeroVatColumn = new Button (top, SWT.CHECK);
-		//T: Export Wizard page, xgettext:no-c-format
-		buttonShowZeroVatColumn.setText(exportMessages.wizardExportOptionZerotax);
+		buttonQ = new Button (top, SWT.RADIO);
+		buttonQ.setText (exportMessages.wizardExportOptionSortingQuantity);
+		buttonV = new Button (top, SWT.RADIO);
+		buttonV.setText (exportMessages.wizardExportOptionSortingVolume);
+
+		// Default: Sort by volume
+		buttonV.setSelection (true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.wizard.WizardPage#canFlipToNextPage()
-	 */
-	@Override
-	public boolean canFlipToNextPage() {
-		return false;
-	}
-	
 	/**
-	 * Return whether columns with 0% VAT should be displayed
+	 * Return whether the data should be sorted by quantity or by volume
 	 * 
 	 * @return 
-	 * 		True, if they should be displayed
+	 * 		True, if the data should be sorted by quantity
 	 */
-	public boolean getShowZeroVatColumn() {
-		return buttonShowZeroVatColumn.getSelection();
+	public boolean getSortByQuantity() {
+		return buttonQ.getSelection();
 	}
-
 }

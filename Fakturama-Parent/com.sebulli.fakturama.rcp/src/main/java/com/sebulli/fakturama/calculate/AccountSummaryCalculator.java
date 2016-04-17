@@ -15,7 +15,6 @@
 package com.sebulli.fakturama.calculate;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
-import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dto.AccountEntry;
@@ -53,7 +51,7 @@ public class AccountSummaryCalculator {
     @Inject
     private DocumentsDAO documentsDAO;
 
-	HashMap<String,Integer> paymentIds = new HashMap<String,Integer>();  
+	HashMap<String,Integer> paymentIds = new HashMap<>();  
 	
 	// Set with all accounts
 	private SortedSet<VoucherCategory> accounts; 
@@ -65,14 +63,8 @@ public class AccountSummaryCalculator {
 	 * Constructor
 	 */
 	public AccountSummaryCalculator() {
-		accounts = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
-            @Override
-            public int compare(VoucherCategory cat1, VoucherCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+		accounts = new TreeSet<>((cat1, cat2) -> cat1.getName().compareTo(cat2.getName()));
 		accountEntries = new ArrayList<>() ;
-
 	}
 	
 	/**

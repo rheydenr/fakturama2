@@ -440,15 +440,12 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		    @Override
 		    public void listChanged(ListEvent<T> listChanges) {
 		        // TODO alternative: use UISynchronize
-		        internalTreeViewer.getControl().getDisplay().asyncExec(new Runnable() {
-                    
-                    @Override
-                    public void run() {
+		        internalTreeViewer.getControl().getDisplay().asyncExec(() -> {
                         if(!internalTreeViewer.getControl().getDisplay().isDisposed()) {
                             internalTreeViewer.refresh();
                         }
                     }
-                });
+                );
 		    }
         });
 

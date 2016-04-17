@@ -70,7 +70,6 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -398,7 +397,13 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new ProductMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
+    	String rootNode = ""; 
+		String[] splittedString = filter.split("/");
+		if(splittedString.length > 1) {
+			rootNode = splittedString[1];
+		}
+    	// ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()
+        treeFilteredIssues.setMatcher(new ProductMatcher(filter, treeObjectType, rootNode));
 
         //Refresh is done automagically...
     }

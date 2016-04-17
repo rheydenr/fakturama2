@@ -66,13 +66,12 @@ public class OldEntitiesDAO {
 	 * @return List<Contact>
 	 */
 	public List<OldContacts> findAllContacts() {
-		// Use only the undeleted entries
-		return em.createQuery("select c from OldContacts c where c.deleted = false", OldContacts.class)
+		return em.createQuery("select c from OldContacts c", OldContacts.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
 	public Long countAllContacts() {
-		return em.createQuery("select count(c) from OldContacts c where c.deleted = false", Long.class)
+		return em.createQuery("select count(c) from OldContacts c", Long.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 
@@ -92,7 +91,7 @@ public class OldEntitiesDAO {
 	 * @return list of all categories
 	 */
 	public List<String> findAllContactCategories() {
-		List<String> result = em.createQuery("select distinct c.category from OldContacts c where c.deleted = false and c.category <> ''", String.class)
+		List<String> result = em.createQuery("select distinct c.category from OldContacts c where c.category <> ''", String.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 		return result;
 	}
@@ -128,23 +127,23 @@ public class OldEntitiesDAO {
 	
 	/* * * * * * * * * * * * * * * * * * [Shippings] * * * * * * * * * * * * * * * * * * * * * */ 
 	
-	public Long countAllShippings() {// where s.deleted = false
+	public Long countAllShippings() {
 		return em.createQuery("select count(s) from OldShippings s", Long.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
-	public List<OldShippings> findAllShippings() { // where s.deleted = false
+	public List<OldShippings> findAllShippings() {
 		return em.createQuery("select s from OldShippings s", OldShippings.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
     /**
-     * Finds all Shipping categories from non-deleted old Shipping entries. They are in the form of "/root/cat1/cat2".
+     * Finds all Shipping categories from old Shipping entries. They are in the form of "/root/cat1/cat2".
      * 
      * @return List of Strings with all old Shipping categories
      */
 	public List<String> findAllShippingCategories() {
-		return em.createQuery("select distinct s.category from OldShippings s where s.deleted = false and s.category <> ''", String.class)
+		return em.createQuery("select distinct s.category from OldShippings s where s.category <> ''", String.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
 	
@@ -153,12 +152,12 @@ public class OldEntitiesDAO {
 	}
 	/* * * * * * * * * * * * * * * * * * [VATs] * * * * * * * * * * * * * * * * * * * * * */ 
 
-	public Long countAllVats() {// where v.deleted = false
+	public Long countAllVats() {
 		return em.createQuery("select count(v) from OldVats v", Long.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
-	public List<OldVats> findAllVats() {// where v.deleted = false
+	public List<OldVats> findAllVats() {
 		return em.createQuery("select v from OldVats v", OldVats.class)
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
 	}
@@ -357,20 +356,20 @@ public class OldEntitiesDAO {
 	/* * * * * * * * * * * * * * * * * * [Products section] * * * * * * * * * * * * * * * * * * * * * */
 	
 	public Long countAllProducts() {
-		return em.createQuery("select count(p) from OldProducts p where p.deleted = false", Long.class).getSingleResult();
+		return em.createQuery("select count(p) from OldProducts p", Long.class).getSingleResult();
 	}
 	
 	public List<OldProducts> findAllProducts() {
-		return em.createQuery("select p from OldProducts p where p.deleted = false", OldProducts.class).getResultList();
+		return em.createQuery("select p from OldProducts p", OldProducts.class).getResultList();
 	}
 	
     /**
-     * Finds all Product categories from non-deleted old Product entries. They are in the form of "/root/cat1/cat2".
+     * Finds all Product categories from old Product entries. They are in the form of "/root/cat1/cat2".
      * 
      * @return List of Strings with all old Product categories
      */
 	public List<String> findAllProductCategories() {
-		return em.createQuery("select distinct p.category from OldProducts p where p.deleted = false and p.category <> ''", String.class).getResultList();
+		return em.createQuery("select distinct p.category from OldProducts p where p.category <> ''", String.class).getResultList();
 	}
 
 }
