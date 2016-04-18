@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="376">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="377">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.4.0.v20150903-1804"/>
@@ -31,19 +31,6 @@
 <unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.9.0.v20150601-0402"/>
 <unit id="org.eclipse.emf.databinding.feature.group" version="1.4.0.v20150601-0402"/>
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_lt.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.5.0.v20151128060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20151128060001"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.13.1/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.h2.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -120,6 +107,20 @@
 <unit id="org.testng.eclipse.maven.feature.feature.group" version="6.9.11.201604020423"/>
 <unit id="org.testng.eclipse.feature.group" version="6.9.11.201604020423"/>
 <repository location="http://beust.com/eclipse"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_lt.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20151128060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.5.0.v20151128060001"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.13.1/mars"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
