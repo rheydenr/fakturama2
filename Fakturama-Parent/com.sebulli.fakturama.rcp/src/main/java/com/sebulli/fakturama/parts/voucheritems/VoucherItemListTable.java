@@ -74,24 +74,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.javamoney.moneta.Money;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.Matchers;
-
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
-import com.sebulli.fakturama.model.ExpenditureItem_;
+import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.AbstractVoucher_;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeDisplayConverter;
@@ -104,6 +99,11 @@ import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.Matchers;
 
 /**
  *
@@ -119,7 +119,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     // ID of this view
     public static final String ID = "fakturama.document.voucherItemTable";
     
-    private Expenditure expenditure;
+    private AbstractVoucher expenditure;
     private EventList<VoucherItemDTO> voucherItemsListData;
     private List<IEntity> markedForDeletion = new ArrayList<>();
 
@@ -155,7 +155,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
      * @param useGross 
      * @return
      */
-    public Control createPartControl(Composite parent, Expenditure expenditure, boolean useGross,
+    public Control createPartControl(Composite parent, AbstractVoucher expenditure, boolean useGross,
             int netgross) {
         log.info("create VoucherItem list part");
         this.expenditure = expenditure;
@@ -191,7 +191,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         propertyNamesList.put(columnIndex++, VoucherItemListDescriptor.TOTAL);
         List<VoucherItemListDescriptor> tmpList2 = new ArrayList<>(propertyNamesList.values());
         String[] propertyNames = tmpList2.stream().map(VoucherItemListDescriptor::getPropertyName).collect(Collectors.toList()).toArray(new String[]{});
-        final IColumnPropertyAccessor<ExpenditureItem> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
+        final IColumnPropertyAccessor<VoucherItem> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<>(propertyNames);
         // Add derived column
         final IColumnPropertyAccessor<VoucherItemDTO> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<VoucherItemDTO>() {
 
@@ -204,27 +204,27 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                 switch (descriptor) {
 //                case POSITION:
                 case ACCOUNTTYPE:
-                    retval = (ItemAccountType) columnPropertyAccessor.getDataValue(rowObject.getExpenditureItem(), columnIndex);
+                    retval = (ItemAccountType) columnPropertyAccessor.getDataValue(rowObject.getVoucherItem(), columnIndex);
                     break;
                 case DISCOUNT:
                 case TEXT:
-                    retval = columnPropertyAccessor.getDataValue(rowObject.getExpenditureItem(), columnIndex);
+                    retval = columnPropertyAccessor.getDataValue(rowObject.getVoucherItem(), columnIndex);
                     break;
                 case VAT:
-                    retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getExpenditureItem(), columnIndex);
+                    retval = (VAT) columnPropertyAccessor.getDataValue(rowObject.getVoucherItem(), columnIndex);
                     break;
                 case TOTAL:
                     retval = DataUtils.getInstance().CalculateGrossFromNet(
-                    		Money.of(rowObject.getExpenditureItem().getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
-                    		rowObject.getExpenditureItem().getVat().getTaxValue());
+                    		Money.of(rowObject.getVoucherItem().getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
+                    		rowObject.getVoucherItem().getVat().getTaxValue());
                     break;
                 case PRICE:
                     if (useGross) { // "$VoucherItemGrossPrice"
                         // Fill the cell with the total gross value of the item
-                        retval = rowObject.getExpenditureItem().getPrice()/*.getTotalGrossRounded()*/;
+                        retval = rowObject.getVoucherItem().getPrice()/*.getTotalGrossRounded()*/;
                     } else { 
                         // Fill the cell with the total net value of the item
-                        retval = rowObject.getExpenditureItem().getPrice()/*.getTotalNetRounded()*/;
+                        retval = rowObject.getVoucherItem().getPrice()/*.getTotalNetRounded()*/;
                     }
                     break;
                 default:
@@ -243,20 +243,20 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                 boolean calculate = true;
                 switch (descriptor) {
                 case TEXT:
-                    rowObject.getExpenditureItem().setName((String) newValue);
+                    rowObject.getVoucherItem().setName((String) newValue);
                     calculate = false; // no recalculation needed
                     break;
                 case VAT:
                     // Set the VAT
                     VAT vat = (VAT) newValue; //columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     if (vat != null) {
-                        rowObject.getExpenditureItem().setVat(vat);
+                        rowObject.getVoucherItem().setVat(vat);
                     }
                     break;
                 case ACCOUNTTYPE:
                     ItemAccountType accountType = (ItemAccountType) newValue;
                     if(accountType != null) {
-                        rowObject.getExpenditureItem().setAccountType(accountType);
+                        rowObject.getVoucherItem().setAccountType(accountType);
                     }
                     calculate = false; // no recalculation needed
                     break;
@@ -279,11 +279,11 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     // because only net values are stored.
                     if (useGross) {
                         MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        Price newPrice = new Price(amount, rowObject.getExpenditureItem().getVat().getTaxValue(), false, true);
-                        rowObject.getExpenditureItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
+                        Price newPrice = new Price(amount, rowObject.getVoucherItem().getVat().getTaxValue(), false, true);
+                        rowObject.getVoucherItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
                     } else {
                         MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        rowObject.getExpenditureItem().setPrice(amount.getNumber().doubleValue());
+                        rowObject.getVoucherItem().setPrice(amount.getNumber().doubleValue());
                     }
                     break;
                 default:
@@ -310,13 +310,13 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         IRowIdAccessor<VoucherItemDTO> rowIdAccessor = new IRowIdAccessor<VoucherItemDTO>() {
             @Override
             public Serializable getRowId(VoucherItemDTO rowObject) {
-                return rowObject.getExpenditureItem().getPosNr();
+                return rowObject.getVoucherItem().getPosNr();
             }
         };
 
         //build the grid layer
         // as long as there's no row header we leave the last param at "false"
-        gridListLayer = new EntityGridListLayer<>(getExpenditureItemsListData(), propertyNames, derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, false);
+        gridListLayer = new EntityGridListLayer<>(getVoucherItemsListData(), propertyNames, derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, false);
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
 //        FilterRowDataLayer<ExpenditureItem> filterDataLayer = new FilterRowDataLayer<>(filterStrategy, columnHeaderLayer, columnHeaderDataProvider, configRegistry);
         
@@ -460,14 +460,14 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
         List<VoucherItemDTO> wrappedItems = new ArrayList<>();
-        for (ExpenditureItem item : expenditure.getItems()) {
+        for (VoucherItem item : expenditure.getItems()) {
             if(!item.getDeleted()) {
                 wrappedItems.add(new VoucherItemDTO(item));
             }
         }
 //        wrappedItems.sort(Comparator.comparing((VoucherItemDTO d) -> d.getExpenditureItem().getPosNr()));
         voucherItemsListData = new FilterList<VoucherItemDTO>(GlazedLists.eventList(wrappedItems), 
-                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "expenditureItem." + ExpenditureItem_.deleted.getName(), Boolean.FALSE));
+                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + AbstractVoucher_.deleted.getName(), Boolean.FALSE));
         markedForDeletion.clear();
         
         renumberItems();
@@ -511,7 +511,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     /**
      * @return the documentItemsListData
      */
-    public EventList<VoucherItemDTO> getExpenditureItemsListData() {
+    public EventList<VoucherItemDTO> getVoucherItemsListData() {
         return voucherItemsListData;
     }
 
@@ -557,10 +557,10 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         
         int no = 1;
         for (VoucherItemDTO documentItemDTO : voucherItemsListData) {
-            if(documentItemDTO.getExpenditureItem().getDeleted()) {
+            if(documentItemDTO.getVoucherItem().getDeleted()) {
                 continue;
             }
-            documentItemDTO.getExpenditureItem().setPosNr(no++);
+            documentItemDTO.getVoucherItem().setPosNr(no++);
         }
     }
 
@@ -717,16 +717,16 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         if(selectionLayer.getFullySelectedRowPositions().length > 0) { 
             VoucherItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
             // only persisted objects have to set to deleted, others can be ignored
-            if(objToDelete.getExpenditureItem().getId() > 0) {
-                objToDelete.getExpenditureItem().setDeleted(Boolean.TRUE);
-                markedForDeletion.add(objToDelete.getExpenditureItem());
+            if(objToDelete.getVoucherItem().getId() > 0) {
+                objToDelete.getVoucherItem().setDeleted(Boolean.TRUE);
+                markedForDeletion.add(objToDelete.getVoucherItem());
             }
             selectionLayer.clear();
-            List<VoucherItemDTO> tmpList = getExpenditureItemsListData().stream()
+            List<VoucherItemDTO> tmpList = getVoucherItemsListData().stream()
                     .filter(d -> d != objToDelete)
                     .collect(Collectors.toList());
-                getExpenditureItemsListData().clear();
-                getExpenditureItemsListData().addAll(tmpList);
+                getVoucherItemsListData().clear();
+                getVoucherItemsListData().addAll(tmpList);
                 renumberItems();
                 notifyChangeListener(true);
         } else {
@@ -753,7 +753,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
      *            The new item
      */
     public void addNewItem(VoucherItemDTO newItem) {
-        getExpenditureItemsListData().add(newItem);
+        getVoucherItemsListData().add(newItem);
         notifyChangeListener(false);
     }
 }

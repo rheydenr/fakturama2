@@ -25,11 +25,8 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.dto.VoucherSummary;
-import com.sebulli.fakturama.model.AbstractVoucherItem;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.ItemAccountType;
-import com.sebulli.fakturama.model.ReceiptVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
 
 /**
  *
@@ -42,7 +39,7 @@ public class VoucherSummaryCalculator {
 	/**
 	 * Recalculate the voucher total values
 	 */
-    public VoucherSummary calculate(List<AbstractVoucherItem> items, MonetaryAmount paid, MonetaryAmount total, boolean discounted) {
+    public VoucherSummary calculate(List<VoucherItem> items, MonetaryAmount paid, MonetaryAmount total, boolean discounted) {
     	return calculate(null, items, false, paid, total, discounted);
     }
     
@@ -57,7 +54,7 @@ public class VoucherSummaryCalculator {
      *            If true, the category is also used for the vat summary as a
      *            description
      */
-    public VoucherSummary calculate(VatSummarySet globalVoucherSummarySet, List<AbstractVoucherItem> items, boolean useCategory, 
+    public VoucherSummary calculate(VatSummarySet globalVoucherSummarySet, List<VoucherItem> items, boolean useCategory, 
             MonetaryAmount paid, MonetaryAmount total, boolean discounted) {
         VoucherSummary retval = new VoucherSummary();
         Double vatPercent;
@@ -86,7 +83,7 @@ public class VoucherSummaryCalculator {
 //        resetValues();
 
         // Use all non-deleted items
-        for (AbstractVoucherItem item : items) {
+        for (VoucherItem item : items) {
 
             // Get the data from each item
             vatDescription = item.getVat().getDescription();
@@ -104,11 +101,7 @@ public class VoucherSummaryCalculator {
             VatSummaryItem voucherSummaryItem;
             if (useCategory) {
             	ItemAccountType accountType = null;
-            	if(item instanceof ExpenditureItem) {
-            		accountType = ((ExpenditureItem)item).getAccountType();
-            	} else {
-            		accountType = ((ReceiptVoucherItem)item).getAccountType();
-            	}
+        		accountType = item.getAccountType();
                 // Add the VAT summary item to the ... 
                 voucherSummaryItem = new VatSummaryItem(vatDescription, vatPercent, price.getTotalNet(), itemVat,
                         accountType);

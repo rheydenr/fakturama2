@@ -21,12 +21,12 @@ import javax.inject.Inject;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.AbstractVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.ReceiptVoucherItem;
 import com.sebulli.fakturama.model.VoucherCategory;
 
+@Deprecated
 public class ReceiptVoucherEditor/* extends VoucherEditor<ReceiptVoucher>*/ {
 	
 	// Editor's ID

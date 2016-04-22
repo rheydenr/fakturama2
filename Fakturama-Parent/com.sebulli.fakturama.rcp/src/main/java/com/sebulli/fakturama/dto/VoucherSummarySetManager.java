@@ -24,7 +24,7 @@ import org.javamoney.moneta.Money;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.AbstractVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.ReceiptVoucher;
 
@@ -60,7 +60,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
 		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
         CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-        List<AbstractVoucherItem> items = new ArrayList<>(voucher.getItems());
+        List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items, useCategory,
 				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}
@@ -71,7 +71,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
 		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
 		CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-		List<AbstractVoucherItem> items = new ArrayList<>(voucher.getItems());
+		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items, useCategory,
 				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}
@@ -92,7 +92,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
         VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
         CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-		List<AbstractVoucherItem> items = new ArrayList<>(voucher.getItems());
+		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
 		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}
@@ -113,7 +113,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
 		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
 		CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-		List<AbstractVoucherItem> items = new ArrayList<>(voucher.getItems());
+		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
 				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}

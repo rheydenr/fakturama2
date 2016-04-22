@@ -74,10 +74,10 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.AbstractVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
+import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.model.AbstractVoucher_;
 import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.Expenditure_;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -88,7 +88,7 @@ import com.sebulli.fakturama.parts.voucheritems.VoucherItemListTable;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 import com.sebulli.fakturama.resources.core.Icon;
 
-public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends VoucherEditor<Expenditure>*/ {
+public class ExpenditureVoucherEditor extends VoucherEditor<Expenditure> {
 	
 	public static final String PART_ID = "TEMP_ID";
 
@@ -164,6 +164,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 
     protected Label labelPaidValue;
 
+	private VoucherType voucherType;
+
 //	public ExpenditureVoucherEditor () {
 //		super();
 //		tableViewID = ViewExpenditureVoucherTable.ID;
@@ -204,17 +206,17 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         }
 
         // Set all the items
-        List<ExpenditureItem> items = itemListTable.getExpenditureItemsListData()
+        List<VoucherItem> items = itemListTable.getVoucherItemsListData()
             .stream()
-            .map(dto -> dto.getExpenditureItem())
-            .sorted(Comparator.comparing(ExpenditureItem::getId))
+            .map(dto -> dto.getVoucherItem())
+            .sorted(Comparator.comparing(VoucherItem::getId))
             .collect(Collectors.toList());
         voucher.setItems(new ArrayList<>(items));
         
         // delete removed items
         for (IEntity expenditureItem : itemListTable.getMarkedForDeletion()) {
             try {
-                voucherItemsDAO.save((ExpenditureItem)expenditureItem);
+                voucherItemsDAO.save((VoucherItem)expenditureItem);
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -296,14 +298,18 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_EXPENDITURE.getIconURI());
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-        
+
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             Long objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
             this.voucher = expendituresDAO.findById(objId);
         }
-        
+        String tmpVoucherType = (String) part.getProperties().get(CallEditor.PARAM_VOUCHERTYPE);
+        if(tmpVoucherType != null) {
+        	voucherType = VoucherType.getByName(tmpVoucherType);
+        }
+      
         // test if the editor is opened to create a new data set. This is,
         // if there is no input set.
         newVoucher = (voucher == null);
@@ -551,7 +557,7 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 	 * @return
 	 * 		All voucher items
 	 */
-	protected List<ExpenditureItem> getVoucherItems() {
+	protected List<VoucherItem> getVoucherItems() {
 		return ((Expenditure)voucher).getItems();
 	}
 	
@@ -636,6 +642,7 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 	 */
 	public Expenditure createNewVoucher () {
 		Expenditure newExpenditure = modelFactory.createExpenditure();
+		newExpenditure.setVoucherType(voucherType);
 		newExpenditure.setPaidValue(Double.valueOf(0.0));
 		newExpenditure.setTotalValue(Double.valueOf(0.0));
         return newExpenditure;
@@ -647,8 +654,8 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
 	 * @return
 	 * 	Array with all voucher items
 	 */
-	public ExpenditureItem createNewVoucherItems () {
-		return modelFactory.createExpenditureItem();
+	public VoucherItem createNewVoucherItems () {
+		return modelFactory.createVoucherItem();
 	}
 
 //	/**
@@ -724,11 +731,11 @@ public class ExpenditureVoucherEditor extends Editor<Expenditure>  /*extends Vou
         
         VoucherSummaryCalculator voucherSummaryCalculator = ContextInjectionFactory.make(VoucherSummaryCalculator.class, context);
         // unwrap VoucherItemDTOs at first
-        List<AbstractVoucherItem> docItems = new ArrayList<>();
+        List<VoucherItem> docItems = new ArrayList<>();
         if(itemListTable != null) {
             // don't use Lambdas because the List isn't initialized yet.
-            for (VoucherItemDTO item : itemListTable.getExpenditureItemsListData()) {
-                docItems.add(item.getExpenditureItem());
+            for (VoucherItemDTO item : itemListTable.getVoucherItemsListData()) {
+                docItems.add(item.getVoucherItem());
             }
         } else {
             docItems.addAll(voucher.getItems());

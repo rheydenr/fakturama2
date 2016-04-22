@@ -24,7 +24,6 @@
 			<persistence:class>com.sebulli.fakturama.model.Proforma</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.DocumentItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Expenditure</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.ExpenditureItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemAccountType</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemListTypeCategory</persistence:class>
@@ -33,7 +32,6 @@
 			<persistence:class>com.sebulli.fakturama.model.ProductCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductOptions</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ReceiptVoucher</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.ReceiptVoucherItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Role</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Shipping</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ShippingCategory</persistence:class>
@@ -45,7 +43,7 @@
 			<persistence:class>com.sebulli.fakturama.model.UserProperty</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VAT</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.AbstractVoucher</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.AbstractVoucherItem</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.VoucherItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
 			<persistence:class>com.sebulli.fakturama.model.WebshopStateMapping</persistence:class> 
 			

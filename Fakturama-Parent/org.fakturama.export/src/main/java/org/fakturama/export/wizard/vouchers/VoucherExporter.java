@@ -40,11 +40,9 @@ import com.sebulli.fakturama.dto.VoucherSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.AbstractVoucherItem;
 import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.ReceiptVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
 
 
 /**
@@ -249,7 +247,7 @@ public class VoucherExporter extends OOCalcExporter {
 		for (AbstractVoucher voucher : vouchers) {
 
 			if (isInTimeIntervall(voucher)) {
-				List<AbstractVoucherItem> items = new ArrayList<>();
+				List<VoucherItem> items = new ArrayList<>();
 				if(voucher instanceof Expenditure) {
 					items.addAll(((Expenditure)voucher).getItems());
 				} else {
@@ -257,7 +255,7 @@ public class VoucherExporter extends OOCalcExporter {
 				}
 				
 				int voucherItemIndex = 0;
-				for (AbstractVoucherItem voucherItem : items) {
+				for (VoucherItem voucherItem : items) {
 
 					// Now analyze voucher by voucher
 					VoucherSummarySetManager vatSummarySetOneVoucher = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
@@ -286,11 +284,7 @@ public class VoucherExporter extends OOCalcExporter {
 
 					col = 5;
 					setCellText(row, col++, voucherItem.getName());
-					if(voucherItem instanceof ExpenditureItem) {
-						setCellText(row, col++, ((ExpenditureItem) voucherItem).getAccountType().getName());
-					} else {
-						setCellText(row, col++, ((ReceiptVoucherItem) voucherItem).getAccountType().getName());
-					}
+					setCellText(row, col++, voucherItem.getAccountType().getName());
 
 					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
 

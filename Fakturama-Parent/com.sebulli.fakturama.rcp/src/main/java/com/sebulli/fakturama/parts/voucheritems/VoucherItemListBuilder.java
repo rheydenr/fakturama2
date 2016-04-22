@@ -28,11 +28,12 @@ import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherItem;
+import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -133,16 +134,16 @@ public class VoucherItemListBuilder {
         int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
         // Use the standard VAT value
         VAT defaultVat = vatsDao.findById(defaultVatId);
-        ExpenditureItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat);
-        Optional<VoucherItemDTO> maxPosItem = itemListTable.getExpenditureItemsListData().stream().max(
+        VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat);
+        Optional<VoucherItemDTO> maxPosItem = itemListTable.getVoucherItemsListData().stream().max(
                 new Comparator<VoucherItemDTO>() {
             @Override
             public int compare(VoucherItemDTO o1, VoucherItemDTO o2) {
-                return o1.getExpenditureItem().getPosNr().compareTo(o2.getExpenditureItem().getPosNr());
+                return o1.getVoucherItem().getPosNr().compareTo(o2.getVoucherItem().getPosNr());
             }
         });
         
-        Integer newPosNr = maxPosItem.isPresent() ? maxPosItem.get().getExpenditureItem().getPosNr() + Integer.valueOf(1) : Integer.valueOf(1);
+        Integer newPosNr = maxPosItem.isPresent() ? maxPosItem.get().getVoucherItem().getPosNr() + Integer.valueOf(1) : Integer.valueOf(1);
         item.setPosNr(newPosNr);
         VoucherItemDTO newItem = new VoucherItemDTO(item);
         itemListTable.addNewItem(newItem);
@@ -162,8 +163,9 @@ public class VoucherItemListBuilder {
      * @return
      *  The created item
      */
-    public ExpenditureItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
-        ExpenditureItem expenditureItem = modelFactory.createExpenditureItem();
+    public VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
+    	VoucherItem expenditureItem = modelFactory.createVoucherItem();
+    	expenditureItem.setItemVoucherType(VoucherType.EXPENDITURE);
         expenditureItem.setName(name);
         expenditureItem.setPrice(price);
         expenditureItem.setVat(vat);
@@ -179,7 +181,7 @@ public class VoucherItemListBuilder {
    *  The created item
    */
     //   @Override
-       protected ExpenditureItem createNewVoucherItem(ExpenditureItem item) {
+       protected VoucherItem createNewVoucherItem(VoucherItem item) {
            return null;
        }
 

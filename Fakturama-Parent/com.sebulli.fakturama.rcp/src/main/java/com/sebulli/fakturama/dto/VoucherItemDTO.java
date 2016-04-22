@@ -16,82 +16,79 @@ package com.sebulli.fakturama.dto;
 
 import java.util.Date;
 
-import com.sebulli.fakturama.model.ExpenditureItem;
-import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.model.VoucherItem;
 
 /**
- * Container object for {@link ExpenditureItem}s
+ * Container object for link VoucherItems
  */
-public class VoucherItemDTO implements IEntity {
+public class VoucherItemDTO extends VoucherItem {
     
-    private ExpenditureItem expenditureItem;
+    private VoucherItem voucherItem;
     
     /**
      * @param expenditureItem
      */
-    public VoucherItemDTO(ExpenditureItem expenditureItem) {
-        this.setExpenditureItem(expenditureItem);
+    public VoucherItemDTO(VoucherItem expenditureItem) {
+        this.setVoucherItem(expenditureItem);
     }
     
     /**
      * @return the expenditureItem
      */
-    public ExpenditureItem getExpenditureItem() {
-        return expenditureItem;
+    public VoucherItem getVoucherItem() {
+        return voucherItem;
     }
 
     /**
      * @param expenditureItem the expenditureItem to set
      */
-    public void setExpenditureItem(ExpenditureItem expenditureItem) {
-        this.expenditureItem = expenditureItem;
+    public void setVoucherItem(VoucherItem expenditureItem) {
+        this.voucherItem = expenditureItem;
     }
-
-
 
     @Override
     public String getName() {
-        return expenditureItem.getName();
+        return voucherItem.getName();
     }
 
     @Override
     public void setName(String newName) {
-        expenditureItem.setName(newName);
+        voucherItem.setName(newName);
     }
 
     @Override
     public Date getDateAdded() {
-        return expenditureItem.getDateAdded();
+        return voucherItem.getDateAdded();
     }
 
     @Override
     public void setDateAdded(Date newDateAdded) {
-        expenditureItem.setDateAdded(newDateAdded);
+        voucherItem.setDateAdded(newDateAdded);
     }
 
     @Override
     public String getModifiedBy() {
-        return expenditureItem.getModifiedBy();
+        return voucherItem.getModifiedBy();
     }
 
     @Override
     public void setModifiedBy(String newModifiedBy) {
-        expenditureItem.setModifiedBy(newModifiedBy);
+        voucherItem.setModifiedBy(newModifiedBy);
     }
 
     @Override
     public Date getModified() {
-        return expenditureItem.getModified();
+        return voucherItem.getModified();
     }
 
     @Override
     public void setModified(Date newModified) {
-        expenditureItem.setModified(newModified);
+        voucherItem.setModified(newModified);
     }
 
     @Override
     public long getId() {
-        return expenditureItem.getId();
+        return voucherItem.getId();
     }
 
     @Override
@@ -101,36 +98,11 @@ public class VoucherItemDTO implements IEntity {
 
     @Override
     public Boolean getDeleted() {
-        return expenditureItem.getDeleted();
+        return voucherItem.getDeleted();
     }
 
     @Override
     public void setDeleted(Boolean newDeleted) {
-        expenditureItem.setDeleted(newDeleted);
+        voucherItem.setDeleted(newDeleted);
     }
-
-	@Override
-	public Date getValidFrom() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setValidFrom(Date newValidFrom) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Date getValidTo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setValidTo(Date newValidTo) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

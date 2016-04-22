@@ -10,10 +10,10 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.sebulli.fakturama.model.AbstractVoucherItem;
+import com.sebulli.fakturama.model.VoucherItem;
 
 @Creatable
-public class VoucherItemsDAO extends AbstractDAO<AbstractVoucherItem> {
+public class VoucherItemsDAO extends AbstractDAO<VoucherItem> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -26,8 +26,8 @@ public class VoucherItemsDAO extends AbstractDAO<AbstractVoucherItem> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
-    protected Class<AbstractVoucherItem> getEntityClass() {
-    	return AbstractVoucherItem.class;
+    protected Class<VoucherItem> getEntityClass() {
+    	return VoucherItem.class;
     }
         
 //    /**

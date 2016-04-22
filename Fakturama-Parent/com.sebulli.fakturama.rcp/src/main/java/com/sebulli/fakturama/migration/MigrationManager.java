@@ -108,7 +108,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ExpenditureItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Invoice;
@@ -118,7 +117,6 @@ import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.ReceiptVoucherItem;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
@@ -129,6 +127,8 @@ import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherItem;
+import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 import com.sebulli.fakturama.oldmodel.OldDocuments;
 import com.sebulli.fakturama.oldmodel.OldExpenditureitems;
@@ -396,7 +396,7 @@ public class MigrationManager {
             migLogUser.info(" ");
         }
         catch (SecurityException | IOException e) {
-            log.error(e, "error creating migration user info file.");
+            log.error(e, "error creating migration user info file. Message: " + e.getMessage());
         }
     }
 
@@ -452,7 +452,7 @@ public class MigrationManager {
 	        migLogUser.info(String.format("End converting %s%n", msg.getMessageFromKey(tableinfo.getMessageKey())));
 		}
 		catch (RuntimeException rex) {
-			log.error(rex, "error while migrating "+tableinfo.name()+"; Reason: " + rex.getMessage());
+			log.error(rex, "error while migrating "+tableinfo.name()+"; Message: " + rex.getMessage());
 		}
 	}
 
@@ -724,7 +724,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | NumberFormatException e) {
-				log.error("error while migrating Document. (old) ID=" + oldDocument.getId());
+				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
 			}
 		}
 		// second pass...
@@ -742,7 +742,7 @@ public class MigrationManager {
 				}
 			}
 			catch (FakturamaStoringException e) {
-				log.error("error while migrating Document. (old) ID=" + oldDocument.getId());
+				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -885,7 +885,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | RuntimeException e) {
-				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Reason: " + e.getMessage());
+				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -975,6 +975,7 @@ public class MigrationManager {
 		for (OldReceiptvouchers oldReceiptvoucher : oldDao.findAllReceiptvouchers()) {
 			try {
 				ReceiptVoucher receiptVoucher = modelFactory.createReceiptVoucher();
+				receiptVoucher.setVoucherType(VoucherType.RECEIPTVOUCHER);
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getCategory()) && receiptVoucherAccounts.containsKey(oldReceiptvoucher.getCategory())) {
 					//receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
 					receiptVoucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldReceiptvoucher.getCategory(), true));
@@ -992,15 +993,15 @@ public class MigrationManager {
 					String[] itemRefs = oldReceiptvoucher.getItems().split(",");
 					for (String itemRef : itemRefs) {
 						OldReceiptvoucheritems oldReceiptvoucherItem = oldDao.findReceiptvoucherItem(itemRef);
-						ReceiptVoucherItem item = modelFactory.createReceiptVoucherItem();
+						VoucherItem item = modelFactory.createVoucherItem();
+						item.setItemVoucherType(VoucherType.RECEIPTVOUCHER);
 						item.setAccountType(itemAccountTypes.get(oldReceiptvoucherItem.getCategory()));
 						item.setName(oldReceiptvoucherItem.getName());
 						item.setPrice(oldReceiptvoucherItem.getPrice());
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
 						item.setVat(newVat);
 						item.setValidFrom(new Date());
-//						receiptVoucher.addToItems(item);
-						receiptVoucher.getItems().add(item);
+						receiptVoucher.addToItems(item);
 					}
 				}
 				receiptVoucher.setName(oldReceiptvoucher.getName());
@@ -1030,6 +1031,7 @@ public class MigrationManager {
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
 			try {
 				Expenditure expenditure = modelFactory.createExpenditure();
+				expenditure.setVoucherType(VoucherType.EXPENDITURE);
 				if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
 					expenditure.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
 				}
@@ -1048,7 +1050,8 @@ public class MigrationManager {
 					String[] itemRefs = oldExpenditure.getItems().split(",");
 					for (String itemRef : itemRefs) {
 						OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
-						ExpenditureItem item = modelFactory.createExpenditureItem();
+						VoucherItem item = modelFactory.createVoucherItem();
+						item.setItemVoucherType(VoucherType.EXPENDITURE);
 						item.setAccountType(itemAccountTypes.get(oldExpenditureItem.getCategory()));
 						item.setDeleted(oldExpenditureItem.isDeleted());
 						item.setName(oldExpenditureItem.getName());
@@ -1066,7 +1069,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
-				migLogUser.info("!!! error while migrating Expenditure. (old) ID=" + oldExpenditure.getId());
+				migLogUser.info("!!! error while migrating Expenditure. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
             }
 		}
 		subProgressMonitor.done();
@@ -1105,8 +1108,9 @@ public class MigrationManager {
 		    // "refresh" cat (if it is new and didn't have any id it could else
 		    // be saved again and again and again... (with every new itemAccountType)
 		    if(cat.getId() == 0) cat = itemAccountType.getCategory();
+		    
             } catch (FakturamaStoringException e) {
-                log.error(e);
+				migLogUser.info("!!! error while migrating ItemAccountTypes. (old) ID=" + oldVoucherItemCategory.getId() + "; Message: " + e.getMessage());
             }
         }
 		return itemAccountTypes;
@@ -1151,7 +1155,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
-				migLogUser.info("!!! error while migrating Payment. (old) ID=" + oldPayment.getId());
+				migLogUser.info("!!! error while migrating Payment. (old) ID=" + oldPayment.getId() + "; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -1187,7 +1191,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
-				migLogUser.info("!!! error while migrating Text. (old) ID=" + oldTexts.getId());
+				migLogUser.info("!!! error while migrating Text. (old) ID=" + oldTexts.getId() + "; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -1224,7 +1228,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
-			    migLogUser.info("!!! error while migrating VAT. (old) ID=" + oldVat.getId()+"; Reason: " + e.getMessage());
+			    migLogUser.info("!!! error while migrating VAT. (old) ID=" + oldVat.getId() + "; Message: " + e.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -1265,7 +1269,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
-				migLogUser.info("!!! error while migrating Shipping. (old) ID=" + oldShipping.getId());
+				migLogUser.info("!!! error while migrating Shipping. (old) ID=" + oldShipping.getId() + "; Message: " + e.getMessage());
 			}
 		}
         subProgressMonitor.setTaskName("");
@@ -1364,7 +1368,7 @@ public class MigrationManager {
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException sqlex) {
-				migLogUser.info("!!! error while migrating UserProperty. (old) ID=" + oldProperty.getId());
+				migLogUser.info("!!! error while migrating UserProperty. (old) ID=" + oldProperty.getId() + "; Message: " + sqlex.getMessage());
 			}
 		}
 		subProgressMonitor.done();
@@ -1504,7 +1508,7 @@ public class MigrationManager {
 
         }
         catch (IOException e1) {
-            log.error(e1, "Error while writing ColumnWidthPreferences to " + propertiesFile.getFileName());
+            log.error(e1, "Error while writing ColumnWidthPreferences to " + propertiesFile.getFileName() + "; Message: " + e1.getMessage());
         }
     }
 	

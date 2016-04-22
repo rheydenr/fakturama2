@@ -43,6 +43,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -109,6 +110,8 @@ public class CallEditor {
      * If a caller wants to force to create a new document.
      */
 	public static final String PARAM_FORCE_NEW = "org.fakturama.rcp.forcenew";
+
+	public static final String PARAM_VOUCHERTYPE = "org.fakturama.rcp.vouchertype";
 
     @Inject
     @Translation
@@ -227,11 +230,13 @@ public class CallEditor {
 			case ExpenditureVoucherListTable.ID:
                 myPart.setLabel(msg.commandExpenditurevouchersName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ExpenditureVoucherEditor.class.getName());
+                myPart.getProperties().put(PARAM_VOUCHERTYPE, VoucherType.EXPENDITURE.getName());
                 break;
 			case ReceiptVoucherEditor.ID:
 			case ReceiptVoucherListTable.ID:
                 myPart.setLabel(msg.commandReceiptvouchersName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ReceiptVoucherEditor.class.getName());
+                myPart.getProperties().put(PARAM_VOUCHERTYPE, VoucherType.RECEIPTVOUCHER.getName());
                 break;
 			case ListEditor.ID:
 			case ItemAccountTypeListTable.ID:
