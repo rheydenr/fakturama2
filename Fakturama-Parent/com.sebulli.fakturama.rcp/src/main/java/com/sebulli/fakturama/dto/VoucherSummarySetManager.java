@@ -25,8 +25,7 @@ import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.VoucherItem;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ReceiptVoucher;
+import com.sebulli.fakturama.model.Voucher;
 
 
 /**
@@ -54,7 +53,7 @@ public class VoucherSummarySetManager {
 	 *            If true, the category is also used for the vat summary as a
 	 *            description
 	 */
-	public void add(Expenditure voucher, boolean useCategory) {
+	public void add(Voucher voucher, boolean useCategory) {
 
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
@@ -64,17 +63,6 @@ public class VoucherSummarySetManager {
 		summary.calculate(voucherSummarySet, items, useCategory,
 				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}
-	
-	public void add(ReceiptVoucher voucher, boolean useCategory) {
-		
-		// Create a new summary object and start the calculation.
-		// This will add all the entries to the VatSummarySet
-		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
-		CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
-		summary.calculate(voucherSummarySet, items, useCategory,
-				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
-	}
 
 	/**
 	 * Add a voucher to the voucherSummarySet
@@ -86,7 +74,7 @@ public class VoucherSummarySetManager {
 	 *            description
 	 * @itemNr index of one item
 	 */
-	public void add(Expenditure voucher, boolean useCategory, int itemNr) {
+	public void add(Voucher voucher, boolean useCategory, int itemNr) {
 
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
@@ -95,27 +83,6 @@ public class VoucherSummarySetManager {
 		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
 		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
-	}
-	
-	/**
-	 * Add a voucher to the voucherSummarySet
-	 * 
-	 * @param document
-	 *            Document to add
-	 * @param useCategory
-	 *            If true, the category is also used for the vat summary as a
-	 *            description
-	 * @itemNr index of one item
-	 */
-	public void add(ReceiptVoucher voucher, boolean useCategory, int itemNr) {
-		
-		// Create a new summary object and start the calculation.
-		// This will add all the entries to the VatSummarySet
-		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
-		CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
-		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
-		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
-				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
 	}
 
 	/**

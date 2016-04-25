@@ -429,9 +429,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 Map<String, Object> params = new HashMap<>();
                 params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                 params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
-                if(selectedObject instanceof Document) {
-                    params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
-                }
+                params.putAll(getAdditionalParameters());
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
             }
@@ -439,6 +437,17 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     }
 
     /**
+     * If an Editor needs additional parameters to work you can set them here. This method 
+     * is empty per default and can be overwritten.
+     * 
+     * @param params the params HashMap
+     */
+	protected Map<String, Object> getAdditionalParameters() {
+		// this method was intentionally left blank ;-) 
+		return new HashMap<>();
+	}
+
+	/**
      * Returns the actually marked rows in a table. Can be overwritten.
      * 
      * @return selected rows in a list table

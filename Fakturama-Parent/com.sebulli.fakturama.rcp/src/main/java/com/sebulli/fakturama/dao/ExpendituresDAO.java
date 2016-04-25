@@ -21,13 +21,14 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.Expenditure_;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherType;
 
 @Creatable
-public class ExpendituresDAO extends AbstractDAO<Expenditure> {
+public class ExpendituresDAO extends AbstractDAO<Voucher> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -40,10 +41,33 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
-    protected Class<Expenditure> getEntityClass() {
-    	return Expenditure.class;
+    protected Class<Voucher> getEntityClass() {
+    	return Voucher.class;
+    }
+    
+    public List<Voucher> findAll() {
+        return findAll(false);
     }
  
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.dao.AbstractDAO#findAll()
+     */
+    @Override
+	public List<Voucher> findAll(boolean forceRead) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+		Root<Voucher> root = criteria.from(getEntityClass());
+		TypedQuery<Voucher> query = getEntityManager().createQuery(
+				criteria.where(cb.and(
+								cb.not(root.get(Voucher_.deleted)),
+								cb.equal(root.get(Voucher_.voucherType), VoucherType.EXPENDITURE)))
+				);
+        if(forceRead) {
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        }
+		return query.getResultList();
+	}
+    
 	/**
 	 * Finds Vouchers having a given account. An account is a {@link VoucherCategory}.
 	 * 
@@ -55,34 +79,35 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 	}
 		
 	/**
-	 * Finds Vouchers having a given account. An account is a {@link VoucherCategory}. 
-	 * The Vouchers can be filtered for a certain date range.
+	 * Finds {@link Voucher}s having a given account. An account is a {@link VoucherCategory}. 
+	 * The {@link Voucher}s can be filtered for a certain date range.
 	 * 
 	 * @param account which account should be used for filtering
 	 * @param startDate Date for filtering (can be <code>null</code>)
 	 * @param endDate Date for filtering (can be <code>null</code>)
-	 * @return List of {@link AccountEntry}s, sorted by Voucher date
+	 * @return List of {@link AccountEntry}s, sorted by {@link Voucher}'s date
 	 */
 	public List<AccountEntry> findAccountedExpenditures(VoucherCategory account, Date startDate, Date endDate) {
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-	    CriteriaQuery<Expenditure> criteria = cb.createQuery(getEntityClass());
-	    Root<Expenditure> root = criteria.from(getEntityClass());
+	    CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+	    Root<Voucher> root = criteria.from(getEntityClass());
 	    Predicate predicate = cb.and(
-				cb.not(root.get(Expenditure_.deleted)),
-				cb.equal(root.get(Expenditure_.account), account)
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.account), account),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.EXPENDITURE)
 		);
 	    if(startDate != null && endDate != null) {
 	    	// if startDate is after endDate we switch the two dates silently
 	    	predicate = cb.and(predicate,
-	    			cb.between(root.get(Expenditure_.voucherDate), startDate.before(endDate) ? startDate : endDate, 
+	    			cb.between(root.get(Voucher_.voucherDate), startDate.before(endDate) ? startDate : endDate, 
 	    					endDate.after(startDate) ? endDate : startDate)
 	    		);
 	    }
-		CriteriaQuery<Expenditure> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Expenditure_.voucherDate)));
-	    TypedQuery<Expenditure> query = getEntityManager().createQuery(cq);
-		List<Expenditure> documentList = query.getResultList();
+		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
+	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
+		List<Voucher> documentList = query.getResultList();
 		List<AccountEntry> resultList = new ArrayList<>();
-		for (Expenditure document : documentList) {
+		for (Voucher document : documentList) {
 			AccountEntry accountEntry = new AccountEntry(document, AccountEntry.EXPENDITURE_SIGN);
 			resultList.add(accountEntry);
 		}
@@ -90,16 +115,20 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 	}
 	
 	/**
-	 * Finds all undeleted {@link Expenditure}s sorted by {@link ItemAccountType} and date.
-	 * @return List of {@link Expenditure}s, sorted by account and voucher date
+	 * Finds all undeleted {@link Voucher}s sorted by {@link ItemAccountType} and date.
+	 * @return List of {@link Voucher}s, sorted by account and voucher date
 	 */
-	public List<Expenditure> findAllExpendituresSorted() {
+	public List<Voucher> findAllExpendituresSorted() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Expenditure> criteria = cb.createQuery(getEntityClass());
-        Root<Expenditure> root = criteria.from(getEntityClass());
-        CriteriaQuery<Expenditure> cq = criteria.where(cb.not(root.get(Expenditure_.deleted)))
-        		.orderBy(cb.asc(root.get(Expenditure_.account)), cb.asc(root.get(Expenditure_.voucherDate)));
-        TypedQuery<Expenditure> query = getEntityManager().createQuery(cq);
+        CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+        Root<Voucher> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.and(
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.EXPENDITURE)
+		);
+        CriteriaQuery<Voucher> cq = criteria.where(predicate)
+        		.orderBy(cb.asc(root.get(Voucher_.account)), cb.asc(root.get(Voucher_.voucherDate)));
+        TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
         return query.getResultList();
 		
 	}
@@ -112,35 +141,38 @@ public class ExpendituresDAO extends AbstractDAO<Expenditure> {
 	 * @param endDate end of date range
 	 * @return List of Vouchers
 	 */
-	public List<Expenditure> findVouchersInDateRange(GregorianCalendar startDate, GregorianCalendar endDate) {
+	public List<Voucher> findVouchersInDateRange(GregorianCalendar startDate, GregorianCalendar endDate) {
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-	    CriteriaQuery<Expenditure> criteria = cb.createQuery(getEntityClass());
-	    Root<Expenditure> root = criteria.from(getEntityClass());
-	    Predicate predicate = cb.not(root.get(Expenditure_.deleted));
+	    CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+	    Root<Voucher> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.and(
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.EXPENDITURE)
+		);
 	    if(startDate != null && endDate != null) {
 	    	// if startDate is after endDate we switch the two dates silently
 	    	predicate = cb.and(predicate,
-	    			cb.between(root.get(Expenditure_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
+	    			cb.between(root.get(Voucher_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
 	    					endDate.after(startDate) ? endDate.getTime() : startDate.getTime())
 	    		);
 	    }
-		CriteriaQuery<Expenditure> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Expenditure_.voucherDate)));
-	    TypedQuery<Expenditure> query = getEntityManager().createQuery(cq);
+		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
+	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
   
     /**
-    * Gets the all visible properties of this Expenditure object.
+    * Gets the all visible properties of this Voucher object.
     * 
-    * @return String[] of visible Expenditure properties
+    * @return String[] of visible Voucher properties
     */
     public String[] getVisibleProperties() {
-       return new String[] { Expenditure_.doNotBook.getName(), 
-               Expenditure_.voucherDate.getName(), 
-               Expenditure_.voucherNumber.getName(), 
-               Expenditure_.documentNumber.getName(),
-               Expenditure_.name.getName(), 
-               Expenditure_.paidValue.getName() 
+       return new String[] { Voucher_.doNotBook.getName(), 
+               Voucher_.voucherDate.getName(), 
+               Voucher_.voucherNumber.getName(), 
+               Voucher_.documentNumber.getName(),
+               Voucher_.name.getName(), 
+               Voucher_.paidValue.getName() 
                };
     }
 

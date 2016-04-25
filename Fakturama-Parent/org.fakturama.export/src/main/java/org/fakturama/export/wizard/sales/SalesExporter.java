@@ -125,7 +125,7 @@ public class SalesExporter extends OOCalcExporter {
 		
 		
 		// Get all undeleted expenditures
-//		List<Expenditure> expenditures = expendituresDAO.findAllExpendituresSorted();
+//		List<Voucher> expenditures = expendituresDAO.findAllExpendituresSorted();
 
 		// Count the columns that contain a VAT and net value 
 		int columnsWithVatHeading = 0;

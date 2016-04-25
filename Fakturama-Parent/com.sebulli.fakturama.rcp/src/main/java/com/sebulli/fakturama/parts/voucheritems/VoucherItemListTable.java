@@ -80,8 +80,8 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.AbstractVoucher_;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VAT;
@@ -119,7 +119,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     // ID of this view
     public static final String ID = "fakturama.document.voucherItemTable";
     
-    private AbstractVoucher expenditure;
+    private Voucher Voucher;
     private EventList<VoucherItemDTO> voucherItemsListData;
     private List<IEntity> markedForDeletion = new ArrayList<>();
 
@@ -155,10 +155,10 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
      * @param useGross 
      * @return
      */
-    public Control createPartControl(Composite parent, AbstractVoucher expenditure, boolean useGross,
+    public Control createPartControl(Composite parent, Voucher Voucher, boolean useGross,
             int netgross) {
         log.info("create VoucherItem list part");
-        this.expenditure = expenditure;
+        this.Voucher = Voucher;
         this.useGross = useGross;
         
         this.top = super.createPartControl(parent, VoucherItemDTO.class, false, ID);
@@ -460,14 +460,14 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
         List<VoucherItemDTO> wrappedItems = new ArrayList<>();
-        for (VoucherItem item : expenditure.getItems()) {
+        for (VoucherItem item : Voucher.getItems()) {
             if(!item.getDeleted()) {
                 wrappedItems.add(new VoucherItemDTO(item));
             }
         }
 //        wrappedItems.sort(Comparator.comparing((VoucherItemDTO d) -> d.getExpenditureItem().getPosNr()));
         voucherItemsListData = new FilterList<VoucherItemDTO>(GlazedLists.eventList(wrappedItems), 
-                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + AbstractVoucher_.deleted.getName(), Boolean.FALSE));
+                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + Voucher_.deleted.getName(), Boolean.FALSE));
         markedForDeletion.clear();
         
         renumberItems();

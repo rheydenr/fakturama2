@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.osgi.dto.DTO;
 
-import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.Document;
 
 /**
@@ -48,7 +48,7 @@ public class AccountEntry extends DTO {
 	 * Constructor Creates an account entry from a voucher
 	 * 
 	 */
-	public AccountEntry(AbstractVoucher voucher, short sign) {
+	public AccountEntry(Voucher voucher, short sign) {
 		this(voucher.getVoucherDate(), voucher.getName(),
 				voucher.getVoucherNumber() +  "  " + voucher.getDocumentNumber(),
 				voucher.getPaidValue() * sign);

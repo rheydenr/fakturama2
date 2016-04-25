@@ -241,9 +241,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
-                    if(selectedObject instanceof Document) {
-                        params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
-                    }
+                    params.putAll(getAdditionalParameters());
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
                 }
@@ -256,6 +254,16 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         hookDoubleClickCommand(nattable, gridLayer, null);
     }
 
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#getAdditionalParameters()
+     */
+    @Override
+    protected Map<String, Object> getAdditionalParameters() {
+    	Map<String, Object> params = new HashMap<>();
+        params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
+        return params;
+    }
+    
     @Override
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 

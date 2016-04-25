@@ -45,7 +45,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 
@@ -218,7 +218,7 @@ public class OOCalcExporter {
 	 *            The uni data set that is tested
 	 * @return <code>true</code> if the uni data set should be exported
 	 */
-	protected boolean isInTimeIntervall(AbstractVoucher uds) {
+	protected boolean isInTimeIntervall(Voucher uds) {
 		return isInTimeIntervall(uds.getVoucherDate());
 	}
 

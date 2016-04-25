@@ -48,8 +48,8 @@ import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.ReceiptVoucher_;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.parts.VatEditor;
@@ -75,7 +75,7 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
  * @author Gerd Bartelt
  * 
  */
-public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVoucher, VoucherCategory>{
+public class ReceiptVoucherListTable extends AbstractViewDataTable<Voucher, VoucherCategory>{
 	
 	// ID of this view
 	public static final String ID = "fakturama.views.receiptVoucherTable";
@@ -91,16 +91,16 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;
 
-    private EventList<ReceiptVoucher> receiptVoucherListData;
+    private EventList<Voucher> receiptVoucherListData;
     private EventList<VoucherCategory> categories;
 
-    private EntityGridListLayer<ReceiptVoucher> gridListLayer;
+    private EntityGridListLayer<Voucher> gridListLayer;
 
     private MPart listTablePart;
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-    protected FilterList<ReceiptVoucher> treeFilteredIssues;
+    protected FilterList<Voucher> treeFilteredIssues;
 
     /**
      * Creates the SWT controls for this workbench part.
@@ -111,7 +111,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create ReceiptVoucher list part");
         this.listTablePart = listTablePart;
-        super.createPartControl(parent, ReceiptVoucher.class, true, ID);
+        super.createPartControl(parent, Voucher.class, true, ID);
         // Listen to double clicks
         hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);
@@ -154,13 +154,13 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         natTable.configure();
     }
 
-    private IColumnPropertyAccessor<ReceiptVoucher> createColumnPropertyAccessor(String[] propertyNames) {
-        final IColumnPropertyAccessor<ReceiptVoucher> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<ReceiptVoucher>(propertyNames);
+    private IColumnPropertyAccessor<Voucher> createColumnPropertyAccessor(String[] propertyNames) {
+        final IColumnPropertyAccessor<Voucher> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Voucher>(propertyNames);
         
         // Add derived 'default' column
-        final IColumnPropertyAccessor<ReceiptVoucher> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<ReceiptVoucher>() {
+        final IColumnPropertyAccessor<Voucher> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Voucher>() {
 
-            public Object getDataValue(ReceiptVoucher rowObject, int columnIndex) {
+            public Object getDataValue(Voucher rowObject, int columnIndex) {
                 ReceiptvoucherListDescriptor descriptor = ReceiptvoucherListDescriptor.getDescriptorFromColumn(columnIndex);
                 switch (descriptor) {
                     // alternative: return rowObject.getFirstName();
@@ -169,7 +169,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
                 }
             }
 
-            public void setDataValue(ReceiptVoucher rowObject, int columnIndex, Object newValue) {
+            public void setDataValue(Voucher rowObject, int columnIndex, Object newValue) {
                 throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
@@ -196,7 +196,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         // get the visible properties to show in list view
         String[] propertyNames = receiptVouchersDAO.getVisibleProperties();
 
-        final IColumnPropertyAccessor<ReceiptVoucher> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
+        final IColumnPropertyAccessor<Voucher> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
         /*
         // Mark the columns that are used by the search function.
@@ -206,16 +206,16 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
         searchColumns[2] = "documentnr";
         searchColumns[3] = "date";
  */
-        final MatcherEditor<ReceiptVoucher> textMatcherEditor = new TextWidgetMatcherEditor<ReceiptVoucher>(searchText, 
-                GlazedLists.textFilterator(ReceiptVoucher.class, ReceiptVoucher_.name.getName(), ReceiptVoucher_.voucherNumber.getName(),
-                        ReceiptVoucher_.voucherDate.getName(), ReceiptVoucher_.documentNumber.getName()));
+        final MatcherEditor<Voucher> textMatcherEditor = new TextWidgetMatcherEditor<Voucher>(searchText, 
+                GlazedLists.textFilterator(Voucher.class, Voucher_.name.getName(), Voucher_.voucherNumber.getName(),
+                        Voucher_.voucherDate.getName(), Voucher_.documentNumber.getName()));
         
         // Filtered list for Search text field filter
-        final FilterList<ReceiptVoucher> textFilteredIssues = new FilterList<ReceiptVoucher>(receiptVoucherListData, textMatcherEditor);
+        final FilterList<Voucher> textFilteredIssues = new FilterList<Voucher>(receiptVoucherListData, textMatcherEditor);
 
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<ReceiptVoucher>(textFilteredIssues);
+        treeFilteredIssues = new FilterList<Voucher>(textFilteredIssues);
        
         gridListLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         
@@ -247,7 +247,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
     /**
      * @return the gridLayer
      */
-    protected EntityGridListLayer<ReceiptVoucher> getGridLayer() {
+    protected EntityGridListLayer<Voucher> getGridLayer() {
         return gridListLayer;
     }
 
@@ -265,7 +265,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
     
     /**
      * Handle an incoming refresh command. This could be initiated by an editor 
-     * which has just saved a new element (document, ReceiptVoucher, payment etc). Here we ONLY
+     * which has just saved a new element (document, Voucher, payment etc). Here we ONLY
      * listen to "VatEditor" events.<br />
      * The tree of {@link VoucherCategory}s is updated because we use a GlazedList for
      * the source of the tree. The tree has a listener to the GlazedLists object (<code>categories</code> in this case) which will
@@ -336,7 +336,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<ReceiptVouche
     }
 
     @Override
-    protected AbstractDAO<ReceiptVoucher> getEntityDAO() {
+    protected AbstractDAO<Voucher> getEntityDAO() {
         return receiptVouchersDAO;
     }
 }

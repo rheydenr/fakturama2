@@ -107,7 +107,7 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.Expenditure;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Invoice;
@@ -116,7 +116,6 @@ import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
-import com.sebulli.fakturama.model.ReceiptVoucher;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
@@ -974,7 +973,7 @@ public class MigrationManager {
 
 		for (OldReceiptvouchers oldReceiptvoucher : oldDao.findAllReceiptvouchers()) {
 			try {
-				ReceiptVoucher receiptVoucher = modelFactory.createReceiptVoucher();
+				Voucher receiptVoucher = modelFactory.createVoucher();
 				receiptVoucher.setVoucherType(VoucherType.RECEIPTVOUCHER);
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getCategory()) && receiptVoucherAccounts.containsKey(oldReceiptvoucher.getCategory())) {
 					//receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
@@ -1030,22 +1029,22 @@ public class MigrationManager {
         
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
 			try {
-				Expenditure expenditure = modelFactory.createExpenditure();
-				expenditure.setVoucherType(VoucherType.EXPENDITURE);
+				Voucher Voucher = modelFactory.createVoucher();
+				Voucher.setVoucherType(VoucherType.EXPENDITURE);
 				if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
-					expenditure.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
+					Voucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
 				}
-				expenditure.setDeleted(oldExpenditure.isDeleted());
-				expenditure.setDiscounted(oldExpenditure.isDiscounted());
-				expenditure.setDocumentNumber(oldExpenditure.getDocumentnr());
-				expenditure.setDoNotBook(oldExpenditure.isDonotbook());
-				expenditure.setValidFrom(new Date());
+				Voucher.setDeleted(oldExpenditure.isDeleted());
+				Voucher.setDiscounted(oldExpenditure.isDiscounted());
+				Voucher.setDocumentNumber(oldExpenditure.getDocumentnr());
+				Voucher.setDoNotBook(oldExpenditure.isDonotbook());
+				Voucher.setValidFrom(new Date());
 				if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
 				    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
-					expenditure.setVoucherDate(expenditureDate);
+					Voucher.setVoucherDate(expenditureDate);
 				}
-				expenditure.setVoucherNumber(oldExpenditure.getNr());
-				// each Expenditure has its own items
+				Voucher.setVoucherNumber(oldExpenditure.getNr());
+				// each Voucher has its own items
 				if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
 					String[] itemRefs = oldExpenditure.getItems().split(",");
 					for (String itemRef : itemRefs) {
@@ -1059,17 +1058,17 @@ public class MigrationManager {
 						item.setValidFrom(new Date());
 						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
 						item.setVat(newVat);
-						expenditure.addToItems(item);
+						Voucher.addToItems(item);
 					}
 				}
-				expenditure.setName(oldExpenditure.getName());
-				expenditure.setPaidValue(oldExpenditure.getPaid());
-				expenditure.setTotalValue(oldExpenditure.getTotal());
-				expendituresDAO.save(expenditure, true);
+				Voucher.setName(oldExpenditure.getName());
+				Voucher.setPaidValue(oldExpenditure.getPaid());
+				Voucher.setTotalValue(oldExpenditure.getTotal());
+				expendituresDAO.save(Voucher, true);
 				subProgressMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
-				migLogUser.info("!!! error while migrating Expenditure. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
+				migLogUser.info("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
             }
 		}
 		subProgressMonitor.done();

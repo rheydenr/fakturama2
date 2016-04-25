@@ -1,7 +1,6 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -22,15 +21,13 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
-import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.Expenditure_;
-import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.ReceiptVoucher_;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.model.Voucher_;
 
 @Creatable
-public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
+public class ReceiptVouchersDAO extends AbstractDAO<Voucher> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -43,49 +40,73 @@ public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
-    protected Class<ReceiptVoucher> getEntityClass() {
-    	return ReceiptVoucher.class;
+    protected Class<Voucher> getEntityClass() {
+    	return Voucher.class;
+    }
+    
+    public List<Voucher> findAll() {
+        return findAll(false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.dao.AbstractDAO#findAll()
+     */
+    @Override
+    public List<Voucher> findAll(boolean forceRead) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+		Root<Voucher> root = criteria.from(getEntityClass());
+		TypedQuery<Voucher> query = getEntityManager().createQuery(
+				criteria.where(cb.and(
+								cb.not(root.get(Voucher_.deleted)),
+								cb.equal(root.get(Voucher_.voucherType), VoucherType.RECEIPTVOUCHER)))
+				);
+        if(forceRead) {
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        }
+		return query.getResultList();
     }
 
 	/**
-	 * Finds Vouchers having a given account. An account is a {@link VoucherCategory}.
+	 * Finds {@link Voucher}s having a given account. An account is a {@link VoucherCategory}.
 	 * 
 	 * @param account which account should be used for filtering
-	 * @return List of {@link AccountEntry}s, sorted by Voucher date
+	 * @return List of {@link AccountEntry}s, sorted by {@link Voucher} date
 	 */
 	public List<AccountEntry> findAccountedReceiptVouchers(VoucherCategory account) {
 		return findAccountedReceiptVouchers(account, null, null);
 	}
 		
 	/**
-	 * Finds Vouchers having a given account. An account is a {@link VoucherCategory}. 
-	 * The Vouchers can be filtered for a certain date range.
+	 * Finds {@link Voucher}s having a given account. An account is a {@link VoucherCategory}. 
+	 * The {@link Voucher}s can be filtered for a certain date range.
 	 * 
 	 * @param account which account should be used for filtering
 	 * @param startDate Date for filtering (can be <code>null</code>)
 	 * @param endDate Date for filtering (can be <code>null</code>)
-	 * @return List of {@link AccountEntry}s, sorted by Voucher date
+	 * @return List of {@link AccountEntry}s, sorted by {@link Voucher} date
 	 */
 	public List<AccountEntry> findAccountedReceiptVouchers(VoucherCategory account, Date startDate, Date endDate) {
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-	    CriteriaQuery<ReceiptVoucher> criteria = cb.createQuery(getEntityClass());
-	    Root<ReceiptVoucher> root = criteria.from(getEntityClass());
+	    CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+	    Root<Voucher> root = criteria.from(getEntityClass());
 	    Predicate predicate = cb.and(
-				cb.not(root.get(ReceiptVoucher_.deleted)),
-				cb.equal(root.get(ReceiptVoucher_.account), account)
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.account), account),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.RECEIPTVOUCHER)
 		);
 	    if(startDate != null && endDate != null) {
 	    	// if startDate is after endDate we switch the two dates silently
 	    	predicate = cb.and(predicate,
-	    			cb.between(root.get(ReceiptVoucher_.voucherDate), startDate.before(endDate) ? startDate : endDate, 
+	    			cb.between(root.get(Voucher_.voucherDate), startDate.before(endDate) ? startDate : endDate, 
 	    					endDate.after(startDate) ? endDate : startDate)
 	    		);
 	    }
-		CriteriaQuery<ReceiptVoucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(ReceiptVoucher_.voucherDate)));
-	    TypedQuery<ReceiptVoucher> query = getEntityManager().createQuery(cq);
-		List<ReceiptVoucher> documentList = query.getResultList();
+		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
+	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
+		List<Voucher> documentList = query.getResultList();
 		List<AccountEntry> resultList = new ArrayList<>();
-		for (ReceiptVoucher document : documentList) {
+		for (Voucher document : documentList) {
 			AccountEntry accountEntry = new AccountEntry(document, AccountEntry.RECEIPTVOUCHER_SIGN);
 			resultList.add(accountEntry);
 		}
@@ -93,17 +114,17 @@ public class ReceiptVouchersDAO extends AbstractDAO<ReceiptVoucher> {
 	}
 
 /**
-* Gets the all visible properties of this ReceiptVoucher object.
+* Gets the all visible properties of this {@link Voucher} object.
 * 
-* @return String[] of visible ReceiptVoucher properties
+* @return String[] of visible {@link Voucher} properties
 */
 public String[] getVisibleProperties() {
-   return new String[] { ReceiptVoucher_.doNotBook.getName(), 
-           ReceiptVoucher_.voucherDate.getName(), 
-           ReceiptVoucher_.voucherNumber.getName(), 
-           ReceiptVoucher_.documentNumber.getName(),
-           ReceiptVoucher_.name.getName(), 
-           ReceiptVoucher_.paidValue.getName() 
+   return new String[] { Voucher_.doNotBook.getName(), 
+           Voucher_.voucherDate.getName(), 
+           Voucher_.voucherNumber.getName(), 
+           Voucher_.documentNumber.getName(),
+           Voucher_.name.getName(), 
+           Voucher_.paidValue.getName() 
            };
 }
 
@@ -128,21 +149,24 @@ public String[] getVisibleProperties() {
 		this.em = em;
 	}
 
-	public List<ReceiptVoucher> findVouchersInDateRange(GregorianCalendar startDate,
+	public List<Voucher> findVouchersInDateRange(GregorianCalendar startDate,
 			GregorianCalendar endDate) {
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-	    CriteriaQuery<ReceiptVoucher> criteria = cb.createQuery(getEntityClass());
-	    Root<ReceiptVoucher> root = criteria.from(getEntityClass());
-	    Predicate predicate = cb.not(root.get(ReceiptVoucher_.deleted));
+	    CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+	    Root<Voucher> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.and(
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.RECEIPTVOUCHER)
+		);
 	    if(startDate != null && endDate != null) {
 	    	// if startDate is after endDate we switch the two dates silently
 	    	predicate = cb.and(predicate,
-	    			cb.between(root.get(ReceiptVoucher_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
+	    			cb.between(root.get(Voucher_.voucherDate), startDate.before(endDate) ? startDate.getTime() : endDate.getTime(), 
 	    					endDate.after(startDate) ? endDate.getTime() : startDate.getTime())
 	    		);
 	    }
-		CriteriaQuery<ReceiptVoucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(ReceiptVoucher_.voucherDate)));
-	    TypedQuery<ReceiptVoucher> query = getEntityManager().createQuery(cq);
+		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
+	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
 }

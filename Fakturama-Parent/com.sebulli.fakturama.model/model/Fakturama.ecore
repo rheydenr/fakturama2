@@ -159,8 +159,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="Delivery" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Confirmation" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Proforma" eSuperTypes="#//Document"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Expenditure" eSuperTypes="#//AbstractVoucher"/>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractVoucher" abstract="true" eSuperTypes="#//IEntity">
+  <eClassifiers xsi:type="ecore:EClass" name="Voucher" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//VoucherCategory"
         containment="true"/>
@@ -265,7 +264,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sequenceNumber" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ProductCategory" eSuperTypes="#//AbstractCategory"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ReceiptVoucher" eSuperTypes="#//AbstractVoucher"/>
   <eClassifiers xsi:type="ecore:EClass" name="Shipping" eSuperTypes="#//IDescribableEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="autoVat" eType="#//ShippingVatType"/>

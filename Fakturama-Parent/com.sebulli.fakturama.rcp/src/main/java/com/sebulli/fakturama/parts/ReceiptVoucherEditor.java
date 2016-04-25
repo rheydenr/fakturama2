@@ -14,26 +14,24 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import com.sebulli.fakturama.dao.AbstractDAO;
-import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
-import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.VoucherItem;
-import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.model.ReceiptVoucher;
-import com.sebulli.fakturama.model.VoucherCategory;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+
+import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.VoucherType;
 
 @Deprecated
-public class ReceiptVoucherEditor/* extends VoucherEditor<ReceiptVoucher>*/ {
+public class ReceiptVoucherEditor extends VoucherEditor {
 	
 	// Editor's ID
 	public static final String ID = "com.sebulli.fakturama.editors.receiptvoucherEditor";
     
-    public static final String EDITOR_ID = "ReceiptVoucher";
-
+    public static final String EDITOR_ID = "Voucher";
+    
+    @Inject
+    protected ReceiptVouchersDAO receiptVouchersDAO;
 
 //	
 //	public ReceiptVoucherEditor () {
@@ -56,7 +54,7 @@ public class ReceiptVoucherEditor/* extends VoucherEditor<ReceiptVoucher>*/ {
 //	 * 		All voucher items
 //	 */
 //	protected List<ReceiptVoucherItem> getVoucherItems() {
-//		return ((ReceiptVoucher)voucher).getItems();
+//		return ((Voucher)voucher).getItems();
 //	}
 //
 //	protected VoucherCategory getLastUsedCategory() {
@@ -97,111 +95,46 @@ public class ReceiptVoucherEditor/* extends VoucherEditor<ReceiptVoucher>*/ {
 ////	public DataSetVoucher addVoucher(DataSetVoucher voucher) {
 ////		return Data.INSTANCE.getReceiptVouchers().addNewDataSet((DataSetReceiptVoucher) voucher);
 ////	}
-////
-////	/**
-////	 * Updates a voucher item
-////	 * 
-////	 * @param item
-////	 * 		The voucher item to update
-////	 */
-////	public void updateVoucherItem(DataSetVoucherItem item) {
-////		Data.INSTANCE.getReceiptVoucherItems().updateDataSet((DataSetReceiptVoucherItem) item);
-////	}
-////
-////	/**
-////	 * Updates a voucher
-////	 * 
-////	 * @param voucher
-////	 * 		The voucher to update
-////	 */
-////	public void updateVoucher(DataSetVoucher voucher) {
-////		Data.INSTANCE.getReceiptVouchers().updateDataSet((DataSetReceiptVoucher) voucher);
-////	}
-//	
-//	/**
-//	 * Creates a new voucher item 
-//     *
-//	 * @param name
-//	 * 	Data to create the item
-//	 * @param category
-//	 * 	Data to create the item
-//	 * @param price
-//	 * 	Data to create the item
-//	 * @param vatId
-//	 * 	Data to create the item
-//	 * @return
-//	 * 	The created item
-//	 */
-//	public ReceiptVoucherItem createNewVoucherItem(String name, String category, Double price, int vatId) {
-////	    modelFactory.//
-//		return null;// new DataSetReceiptVoucherItem(name, category,price, vatId);
-//	}
-//	
-//	/**
-//	 * Creates a new voucher item by a parent item
-//	 * 
-//	 * @param item
-//	 * 	The parent item
-//	 * @return
-//	 * 	The created item
-//	 */
-//	public ReceiptVoucherItem createNewVoucherItem (ReceiptVoucherItem item) {
-//		return null; //new ReceiptVoucherItem(item); 
-//	}
-//
-//
-//	@Override
-//	protected AbstractVoucher createNewVoucher() {
-//	    return null;//modelFactory.cr;
-//	}
-//	
-////
-////	/**
-////	 * Creates a new array for voucher items
-////	 * 
-////	 * @return
-////	 * 	Array with all voucher items
-////	 */
-////	public DataSetArray<?> createNewVoucherItems () {
-////		return new DataSetArray<DataSetReceiptVoucherItem>();
-////	}
-//
-////	/**
-////	 * Gets the temporary voucher items
-////	 * 
-////	 * @return
-////	 * 	The temporary items
-////	 */
-////	public DataSetArray<?> getMyVoucherItems() {
-////		return voucherItems;
-////	}
-////
-////	/**
-////	 * Creates the SWT controls for this workbench part
-////	 * 
-////	 * @param the
-////	 *            parent control
-////	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-////	 */
-////	@SuppressWarnings("unchecked")
-////	public void createPartControl(Composite parent) {
-////		super.createPartControl(parent, ContextHelpConstants.VOUCHER_EDITOR);
-////		// Fill the table with the items
-////		tableViewerItems.setInput((DataSetArray<DataSetReceiptVoucherItem>) getMyVoucherItems());
-////	}
-//
-//    @Override
-//    protected AbstractDAO getModelRepository() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
-//    @Override
-//    protected Class getModelClass() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
+    
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.parts.VoucherEditor#getEditorTitle()
+     */
+    @Override
+    protected String getEditorTitle() {
+    	return msg.receiptvoucherEditorTitle;
+    }
+
+	/**
+	 * @return
+	 */
+	protected String getCustomerSupplierString() {
+		return msg.receiptvoucherFieldCustomer;
+	}
+
+    /* (non-Javadoc)
+     * @see com.sebulli.fakturama.parts.VoucherEditor#getVoucherType()
+     */
+    @Override
+    protected VoucherType getVoucherType() {
+    	return VoucherType.RECEIPTVOUCHER;
+    }
+
+
+    @Override
+    protected ReceiptVouchersDAO getModelRepository() {
+        return receiptVouchersDAO;
+    }
+    
+    @Override
+    protected MDirtyable getMDirtyablePart() {
+        return part;
+    }
+
+    @Override
+    protected Class<Voucher> getModelClass() {
+        return Voucher.class;
+    }
+
 //    @Override
 //    protected IEntity createNewVoucherItem(IEntity item) {
 //        // TODO Auto-generated method stub

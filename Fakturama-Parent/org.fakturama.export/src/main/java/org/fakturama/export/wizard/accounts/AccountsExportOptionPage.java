@@ -116,7 +116,7 @@ public class AccountsExportOptionPage extends WizardPage {
 					if (me.getNextPage() instanceof AccountSettingsPage) {
 						
 						// Get the next page, the account setting page
-						AccountSettingsPage asp = (AccountSettingsPage)(me.getNextPage());
+						AccountSettingsPage asp = (AccountSettingsPage)me.getNextPage();
 						
 						// Set account start date and value
 						asp.setAccountStartValues(getSelectedAccount());

@@ -3,15 +3,15 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 import ca.odell.glazedlists.matchers.Matcher;
 
 import com.sebulli.fakturama.converter.CommonConverter;
-import com.sebulli.fakturama.model.AbstractVoucher;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 /**
- * {@link Matcher} class for filtering the Expenditure list entries. The {@link VoucherMatcher} checks if
+ * {@link Matcher} class for filtering the Voucher list entries. The {@link VoucherMatcher} checks if
  * an item has the selected category (selected from tree viewer).
  *
  */
-final class VoucherMatcher implements Matcher<AbstractVoucher> {
+final class VoucherMatcher implements Matcher<Voucher> {
 	final String voucherCategoryName;
 	final boolean isRootNode;
     private final String rootNodeName;
@@ -30,7 +30,7 @@ final class VoucherMatcher implements Matcher<AbstractVoucher> {
 	}
 
 	@Override
-	public boolean matches(AbstractVoucher item) {
+	public boolean matches(Voucher item) {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getAccount(), rootNodeName);

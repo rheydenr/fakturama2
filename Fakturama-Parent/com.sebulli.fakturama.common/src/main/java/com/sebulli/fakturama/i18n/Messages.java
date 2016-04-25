@@ -687,7 +687,7 @@ public class Messages {
 	public String productDataGross;
 	public String productDataNet;
 	public String productFieldItemno;
-	public String Receiptvouchereditor642;
+	public String receiptvoucherEditorTitle;
 	public String receiptvoucherFieldBook;
 	public String receiptvoucherFieldCustomer;
 	public String receiptvoucherFieldVoucher;

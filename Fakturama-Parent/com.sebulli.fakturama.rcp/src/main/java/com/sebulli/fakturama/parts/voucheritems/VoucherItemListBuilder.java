@@ -10,8 +10,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -21,16 +19,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Expenditure;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.VoucherType;
@@ -47,18 +44,9 @@ public class VoucherItemListBuilder {
     @Inject
     @Translation
     protected Messages msg;
-
-    @Inject
-    private EModelService modelService;
-
-    @Inject
-    private MApplication application;
     
     @Inject
     private VatsDAO vatsDao;
-    
-    @Inject
-    private ItemAccountTypeDAO category;
     
     @Inject
     private IEclipseContext context;
@@ -68,7 +56,7 @@ public class VoucherItemListBuilder {
     protected IEclipsePreferences preferences;
 
     private Composite parent;
-    private Expenditure expenditure;
+    private Voucher Voucher;
 
     private VoucherCategory voucherCategory;
     private boolean useGross;
@@ -107,7 +95,7 @@ public class VoucherItemListBuilder {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
         
         itemListTable = ContextInjectionFactory.make(VoucherItemListTable.class, context);
-        Control tableComposite = itemListTable.createPartControl(parent, expenditure, useGross, netgross);
+        Control tableComposite = itemListTable.createPartControl(parent, Voucher, useGross, netgross);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
         addButton.addMouseListener(new MouseAdapter() {
 
@@ -201,9 +189,9 @@ public class VoucherItemListBuilder {
         return this;
     }
 
-    public VoucherItemListBuilder withVoucher(Expenditure expenditure) {
-        this.expenditure = expenditure;
-        this.voucherCategory = expenditure.getAccount();
+    public VoucherItemListBuilder withVoucher(Voucher Voucher) {
+        this.Voucher = Voucher;
+        this.voucherCategory = Voucher.getAccount();
         return this;
     }
 

@@ -161,7 +161,9 @@ public class AccountSettingsPage extends WizardPage {
 	 */
 	public GregorianCalendar getDate() {
 		GregorianCalendar retval = new GregorianCalendar();
-		retval.setTime(dtDate.getSelection());
+		if(dtDate.getSelection() != null) {
+			retval.setTime(dtDate.getSelection());
+		}
 		return retval;
 	}
 
@@ -214,7 +216,7 @@ public class AccountSettingsPage extends WizardPage {
 			return false;
 
 		// Get the first page with the start and end date
-		ExportWizardPageStartEndDate startPage = (ExportWizardPageStartEndDate)(this.getPreviousPage().getPreviousPage());
+		ExportWizardPageStartEndDate startPage = (ExportWizardPageStartEndDate)this.getPreviousPage().getPreviousPage();
 		
 		if (startPage.getDoNotUseTimePeriod())
 			return true;

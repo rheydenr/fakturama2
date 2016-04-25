@@ -14,7 +14,7 @@
  
 package com.sebulli.fakturama.views.datatable.vouchers;
 
-import com.sebulli.fakturama.model.AbstractVoucher_;
+import com.sebulli.fakturama.model.Voucher_;
 
 /**
  * Enum for describing a Voucher list. This contains the name of the displayed values, the position of
@@ -23,12 +23,12 @@ import com.sebulli.fakturama.model.AbstractVoucher_;
  */
 public enum ExpenditureListDescriptor {
     
-    DONOTBOOK(AbstractVoucher_.doNotBook.getName(), null, 0, 20),
-    DATE(AbstractVoucher_.voucherDate.getName(), "common.field.date", 1, 80),
-    VOUCHER(AbstractVoucher_.voucherNumber.getName(), "receiptvoucher.field.voucher", 2, 100),
-    DOCUMENT(AbstractVoucher_.documentNumber.getName(), "partdesc.docview", 3, 150),
-    SUPPLIER(AbstractVoucher_.name.getName(), "expenditurevoucher.field.supplier", 4, 200),
-    TOTAL(AbstractVoucher_.totalValue.getName(), "common.field.total", 5, 80)
+    DONOTBOOK(Voucher_.doNotBook.getName(), null, 0, 20),
+    DATE(Voucher_.voucherDate.getName(), "common.field.date", 1, 80),
+    VOUCHER(Voucher_.voucherNumber.getName(), "receiptvoucher.field.voucher", 2, 100),
+    DOCUMENT(Voucher_.documentNumber.getName(), "partdesc.docview", 3, 150),
+    SUPPLIER(Voucher_.name.getName(), "expenditurevoucher.field.supplier", 4, 200),
+    TOTAL(Voucher_.totalValue.getName(), "common.field.total", 5, 80)
     ;
 
     private String propertyName, messageKey;

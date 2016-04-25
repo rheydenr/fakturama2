@@ -34,8 +34,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.Expenditure_;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VATCategory_;
 import com.sebulli.fakturama.model.VoucherCategory;
 
@@ -181,10 +181,10 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
 
     public VoucherCategory getLastUsedCategoryForExpenditure() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Expenditure> cq = cb.createQuery(Expenditure.class);
-        Root<Expenditure> rootEntity = cq.from(Expenditure.class);
-        cq.select(rootEntity).orderBy(cb.desc(rootEntity.get(Expenditure_.dateAdded.getName())));
-        List<Expenditure> singleResult = getEntityManager().createQuery(cq).getResultList();
+        CriteriaQuery<Voucher> cq = cb.createQuery(Voucher.class);
+        Root<Voucher> rootEntity = cq.from(Voucher.class);
+        cq.select(rootEntity).orderBy(cb.desc(rootEntity.get(Voucher_.dateAdded.getName())));
+        List<Voucher> singleResult = getEntityManager().createQuery(cq).getResultList();
         return singleResult != null && !singleResult.isEmpty() ? singleResult.get(0).getAccount() : null;
     }
     

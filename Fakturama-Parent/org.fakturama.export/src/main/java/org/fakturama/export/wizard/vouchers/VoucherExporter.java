@@ -39,9 +39,9 @@ import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.dto.VoucherSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.AbstractVoucher;
-import com.sebulli.fakturama.model.Expenditure;
-import com.sebulli.fakturama.model.ReceiptVoucher;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherItem;
 
 
@@ -106,7 +106,7 @@ public class VoucherExporter extends OOCalcExporter {
 	public boolean export(String title, int type) {
 		
 		String customerSupplier = "";
-		List<AbstractVoucher> vouchers = new ArrayList<>();
+		List<Voucher> vouchers = new ArrayList<>();
 		
 		switch (type) {
 		case SUPPLIER:
@@ -244,14 +244,14 @@ public class VoucherExporter extends OOCalcExporter {
 
 		// Second run.
 		// Export the voucher data
-		for (AbstractVoucher voucher : vouchers) {
+		for (Voucher voucher : vouchers) {
 
 			if (isInTimeIntervall(voucher)) {
 				List<VoucherItem> items = new ArrayList<>();
-				if(voucher instanceof Expenditure) {
-					items.addAll(((Expenditure)voucher).getItems());
+				if(voucher instanceof Voucher) {
+					items.addAll(((Voucher)voucher).getItems());
 				} else {
-					items.addAll(((ReceiptVoucher)voucher).getItems());
+					items.addAll(((Voucher)voucher).getItems());
 				}
 				
 				int voucherItemIndex = 0;
@@ -265,10 +265,10 @@ public class VoucherExporter extends OOCalcExporter {
 //					voucher.calculate();
 
 					// Add the voucher to the VAT summary
-					if(voucher instanceof Expenditure) {
-						vatSummarySetOneVoucher.add((Expenditure) voucher, false, voucherItemIndex);
+					if(voucher instanceof Voucher) {
+						vatSummarySetOneVoucher.add((Voucher) voucher, false, voucherItemIndex);
 					} else {
-						vatSummarySetOneVoucher.add((ReceiptVoucher)voucher, false, voucherItemIndex);
+						vatSummarySetOneVoucher.add((Voucher)voucher, false, voucherItemIndex);
 					}
 					
 					// Fill the row with the voucher data
@@ -437,20 +437,20 @@ public class VoucherExporter extends OOCalcExporter {
 	 * @param vouchers
 	 * @param useCategories
 	 */
-	private VoucherSummarySetManager createSummarySet(List<AbstractVoucher> vouchers,
+	private VoucherSummarySetManager createSummarySet(List<Voucher> vouchers,
 			boolean useCategories) {
 		// Create a voucher summary set manager that collects all voucher VAT
 		// values of all vouchers
 		VoucherSummarySetManager voucherSummarySetAllVouchers = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
 
-		for (AbstractVoucher voucher : vouchers) {
+		for (Voucher voucher : vouchers) {
 
 			if (isInTimeIntervall(voucher)) {
 				
-				if(voucher instanceof Expenditure) {
-					voucherSummarySetAllVouchers.add((Expenditure) voucher, useCategories);
+				if(voucher instanceof Voucher) {
+					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
 				} else {
-					voucherSummarySetAllVouchers.add((ReceiptVoucher) voucher, useCategories);
+					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
 				}
 			}
 		}

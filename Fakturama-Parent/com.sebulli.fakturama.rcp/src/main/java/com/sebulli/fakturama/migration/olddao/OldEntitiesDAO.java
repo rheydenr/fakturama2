@@ -308,7 +308,7 @@ public class OldEntitiesDAO {
 	}
 
 	/**
-	 * Finds an expenditure item per reference number.
+	 * Finds an Voucher item per reference number.
 	 * 
 	 * @param itemRef
 	 * @return {@link OldExpenditureitems}
@@ -333,7 +333,7 @@ public class OldEntitiesDAO {
 
 	/**
 	 * Finds all voucher item categories. These are located in the old LIST table, therefore
-	 * we select the values from there and not from Receipt/Expenditure value tables. The 
+	 * we select the values from there and not from Receipt/Voucher value tables. The 
 	 * category is 'billing_accounts' because only these entries are used for item accounts.
 	 * 
 	 * @return List of distinct accounts for voucher items
