@@ -436,7 +436,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	}
 	
 	/**
-	 * @return
+	 * Gets the model repository.
+	 *
+	 * @return the model repository
 	 */
 	protected abstract AbstractDAO<Voucher> getModelRepository();
 

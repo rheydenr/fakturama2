@@ -169,11 +169,23 @@ public class VoucherItemListBuilder {
        }
 
 
+    /**
+     * Sets the parent container.
+     *
+     * @param parent the parent
+     * @return the voucher item list builder
+     */
     public VoucherItemListBuilder withParent(Composite parent) {
         this.parent = parent;
         return this;
     }
 
+    /**
+     * Use gross or net
+     *
+     * @param useGross use gross
+     * @return the voucher item list builder
+     */
     public VoucherItemListBuilder withUseGross(boolean useGross) {
         this.useGross = useGross;
         return this;
