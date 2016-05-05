@@ -116,7 +116,8 @@ public class DataUtils {
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
-//                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 5)                    // scale wird nur verwendet, wenn kein Pattern angegeben ist
+	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))                    
                         .set(currencyCheckboxEnabled ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
                     Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
@@ -134,9 +135,9 @@ public class DataUtils {
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
-                .set("cashRounding",cashRounding)
+                .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))
+                .set("cashRounding", cashRounding)
                 .build());
-        
     }
     
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
@@ -475,6 +476,8 @@ public class DataUtils {
                 AmountFormatQueryBuilder.of(locale)
                         .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
+                        		Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
                 .build());
         return format.format(amount.with(mro));

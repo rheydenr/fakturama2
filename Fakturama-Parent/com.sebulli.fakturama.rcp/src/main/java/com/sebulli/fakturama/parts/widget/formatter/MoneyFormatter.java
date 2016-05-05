@@ -18,22 +18,35 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  *
  */
 public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
+	
+    @Inject @Optional
+    @Preference 
+    protected IEclipsePreferences preferences;
     
     public MoneyFormatter() {
         super();
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
+        if(preferences != null) {
+        	format.setMinimumFractionDigits(preferences.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2));
+        }
         setPatterns(((DecimalFormat) NumberFormat.getNumberInstance()).toPattern(), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
     }
     

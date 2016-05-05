@@ -39,6 +39,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Combo;
@@ -64,22 +65,19 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
-    
-//  @Inject
-//  private IPreferenceStore preferences;
 
     private ComboFieldEditor currencyLocaleCombo;
     private StringFieldEditor example;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private BooleanFieldEditor useCurrencySymbolCheckbox;
+    private IntegerFieldEditor decimalPlaces;
 
 	/**
 	 * Constructor
 	 */
 	public GeneralPreferencePage() {
 		super(GRID);
-
 	}
 
 	/**
@@ -132,6 +130,10 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         
         thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
         addField(thousandsSeparatorCheckbox);
+        
+        decimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_DECIMALPLACES, msg.preferencesGeneralDecimalplaces, getFieldEditorParent());
+        decimalPlaces.setValidRange(0, 5);
+        addField(decimalPlaces);
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
@@ -211,6 +213,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 
             NumberFormat form = NumberFormat.getCurrencyInstance(locale);
             form.setGroupingUsed(useThousandsSeparator);
+            form.setMinimumFractionDigits(decimalPlaces != null ? decimalPlaces.getIntValue() : 2);
             retval = form.format(myNumber);
             
             if (locale.getCountry().equals("CH")) {
@@ -257,6 +260,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_LOCALE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, write);
 	}
     
@@ -287,6 +291,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
         node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
+        node.setDefault(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true);
 	}

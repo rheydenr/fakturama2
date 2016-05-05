@@ -20,6 +20,9 @@ import javax.money.format.MonetaryParseException;
 
 import org.javamoney.moneta.format.CurrencyStyle;
 
+import com.sebulli.fakturama.common.Activator;
+import com.sebulli.fakturama.misc.Constants;
+
 public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
 
 
@@ -218,6 +221,8 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
             if(amountFormatContext.getBoolean(KEY_USE_GROUPING) != null) {
                 currencyFormatInstance.setGroupingUsed(amountFormatContext.getBoolean(KEY_USE_GROUPING));
             }
+//            int decimalPlaces = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2); 
+            currencyFormatInstance.setMinimumFractionDigits(amountFormatContext.getInt(FakturamaMonetaryAmountFormat.KEY_SCALE));
             pattern = currencyFormatInstance.toPattern();
         }
         if (pattern.indexOf(CURRENCY_SIGN) < 0) {
