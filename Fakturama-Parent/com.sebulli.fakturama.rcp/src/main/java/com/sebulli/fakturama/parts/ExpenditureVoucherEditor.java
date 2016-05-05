@@ -41,29 +41,6 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 	protected String getCustomerSupplierString() {
 		return msg.expenditurevoucherFieldSupplier;
 	}
-
-//
-//	/**
-//	 * Get all vouchers
-//	 * 
-//	 * @return
-//	 * 	All vouchers
-//	 */
-//	public DataSetArray<?> getVouchers() {
-//		return Data.INSTANCE.getExpenditureVouchers();
-//	}
-//	
-//	/**
-//	 * Add a voucher item to the list of all voucher items
-//	 * 
-//	 * @param item
-//	 * 	The new item to add
-//	 * @return
-//	 *  A Reference to the added item
-//	 */
-//	public DataSetVoucherItem addVoucherItem(DataSetVoucherItem item) {
-//		return Data.INSTANCE.getExpenditureVoucherItems().addNewDataSet((DataSetExpenditureVoucherItem) item);
-//	}
 	
 	/**
 	 * @return
@@ -87,37 +64,11 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 		return EDITOR_ID;
 	}
 
-//	/**
-//	 * Gets the temporary voucher items
-//	 * 
-//	 * @return
-//	 * 	The temporary items
-//	 */
-//	public DataSetArray<?> getMyVoucherItems() {
-//		return voucherItems;
-//	}
-//
-//	/**
-//	 * Creates the SWT controls for this workbench part
-//	 * 
-//	 * @param the
-//	 *            parent control
-//	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public void createPartControl(Composite parent) {
-//		super.createPartControl(parent, ContextHelpConstants.VOUCHER_EDITOR);
-//		// Fill the table with the items
-//		tableViewerItems.setInput((DataSetArray<DataSetExpenditureVoucherItem>) getMyVoucherItems());
-//	}
-    
-
     @Override
     protected ExpendituresDAO getModelRepository() {
         return expendituresDAO;
     }
 	
-    
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;
@@ -127,5 +78,4 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
     protected Class<Voucher> getModelClass() {
         return Voucher.class;
     }
-
 }

@@ -116,7 +116,7 @@ public class VoucherItemListBuilder {
     }
     
     /**
-     * Adds an empty voucher item
+     * Add a voucher item to the list of all voucher items.
      */
     private void addNewItem() {
         int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
@@ -138,18 +138,13 @@ public class VoucherItemListBuilder {
     }
     
     /**
-     * Creates a new voucher item 
+     * Creates a new voucher item.
      *
-     * @param name
-     *  Data to create the item
-     * @param category
-     *  Data to create the item
-     * @param price
-     *  Data to create the item
-     * @param vatId
-     *  Data to create the item
-     * @return
-     *  The created item
+     * @param name the name
+     * @param category the category
+     * @param price the price
+     * @param vat the vat
+     * @return the voucher item
      */
     private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
     	VoucherItem expenditureItem = modelFactory.createVoucherItem();

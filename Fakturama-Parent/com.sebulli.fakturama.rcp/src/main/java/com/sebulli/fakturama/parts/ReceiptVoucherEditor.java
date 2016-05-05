@@ -22,7 +22,7 @@ import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherType;
 
-@Deprecated
+//@Deprecated
 public class ReceiptVoucherEditor extends VoucherEditor {
 	
 	// Editor's ID
@@ -33,68 +33,10 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     @Inject
     protected ReceiptVouchersDAO receiptVouchersDAO;
 
-//	
-//	public ReceiptVoucherEditor () {
-//		super();
-//		tableViewID = ViewReceiptVoucherTable.ID;
-//		editorID = "voucher";
-//
-//		//T: Title of the voucher editor
-//		titleText = _("Receipt Voucher");
-//		
-//		// Text of the name property
-//		customerSupplier = 	DataSetReceiptVoucher.CUSTOMERSUPPLIER;
-//
-//	}
-//	
-//	/**
-//	 * Get all items from the voucher
-//	 * 
-//	 * @return
-//	 * 		All voucher items
-//	 */
-//	protected List<ReceiptVoucherItem> getVoucherItems() {
-//		return ((Voucher)voucher).getItems();
-//	}
-//
 //	protected VoucherCategory getLastUsedCategory() {
 //	    return voucherCategoriesDAO.getLastUsedCategoryForReceiptvoucher();
 //	}
 //	
-////	/**
-////	 * Get all vouchers
-////	 * 
-////	 * @return
-////	 * 	All vouchers
-////	 */
-////	public DataSetArray<?> getVouchers() {
-////		return Data.INSTANCE.getReceiptVouchers();
-////	}
-////	
-////	/**
-////	 * Add a voucher item to the list of all voucher items
-////	 * 
-////	 * @param item
-////	 * 	The new item to add
-////	 * @return
-////	 *  A Reference to the added item
-////	 */
-////	public DataSetVoucherItem addVoucherItem(DataSetVoucherItem item) {
-////		return Data.INSTANCE.getReceiptVoucherItems().addNewDataSet(
-////				new DataSetReceiptVoucherItem((DataSetReceiptVoucherItem) item));
-////	}
-////	
-////	/**
-////	 * Add a voucher to the list of all vouchers
-////	 * 
-////	 * @param voucher
-////	 * 	The new voucher to add
-////	 * @return
-////	 *  A Reference to the added voucher
-////	 */
-////	public DataSetVoucher addVoucher(DataSetVoucher voucher) {
-////		return Data.INSTANCE.getReceiptVouchers().addNewDataSet((DataSetReceiptVoucher) voucher);
-////	}
     
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.parts.VoucherEditor#getEditorTitle()
@@ -140,11 +82,4 @@ public class ReceiptVoucherEditor extends VoucherEditor {
 		return EDITOR_ID;
 	}
 
-//    @Override
-//    protected IEntity createNewVoucherItem(IEntity item) {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-	
-	
 }
