@@ -73,7 +73,7 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
         // Create a new voucher ID, if this is a new voucher
         if (newVoucher) {
             try {
-                voucher = expendituresDAO.save(voucher);
+                voucher = getModelRepository().save(voucher);
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }

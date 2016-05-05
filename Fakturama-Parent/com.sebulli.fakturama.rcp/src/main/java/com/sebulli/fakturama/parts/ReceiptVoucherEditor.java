@@ -26,9 +26,9 @@ import com.sebulli.fakturama.model.VoucherType;
 public class ReceiptVoucherEditor extends VoucherEditor {
 	
 	// Editor's ID
-	public static final String ID = "com.sebulli.fakturama.editors.receiptvoucherEditor";
+	public static final String ID = "com.sebulli.fakturama.editors.receiptVoucherEditor";
     
-    public static final String EDITOR_ID = "Voucher";
+    public static final String EDITOR_ID = "ReceiptVoucherEditor";
     
     @Inject
     protected ReceiptVouchersDAO receiptVouchersDAO;

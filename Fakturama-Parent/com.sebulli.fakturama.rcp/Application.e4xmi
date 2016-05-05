@@ -387,7 +387,9 @@
           <parameters xmi:id="_TxXT0M22EeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.rcp.parameter.56" name="com.sebulli.fakturama.editors.category" value="PROFORMA"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_c5QuwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.sep02.id"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Y_eZwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.product.id" label="%command.new.product.name" iconURI="icon://COMMAND_PRODUCT" command="_MFWfwEy7EeOA3qmx22wNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Y_eZwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.product.id" label="%command.new.product.name" iconURI="icon://COMMAND_PRODUCT" command="_MFWfwEy7EeOA3qmx22wNtw">
+          <parameters xmi:id="_IGIOwBL6EeaDa4Z7Flgikg" elementId="com.sebulli.fakturama.rcp.parameter.76" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.productEditor"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ZWvqQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.contact.id" label="%main.menu.new.contact.name" iconURI="icon://COMMAND_CONTACT" mnemonics="K" command="_c8eN4Ey7EeOA3qmx22wNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ZoNNsEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.payment.id" label="%main.menu.new.payment" iconURI="icon://COMMAND_PAYMENT" mnemonics="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_Lc-YIIAMEeShutWH80SHMA" elementId="com.sebulli.fakturama.rcp.parameter.8" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.paymentEditor"/>
