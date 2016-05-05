@@ -151,7 +151,7 @@ public class VoucherItemListBuilder {
      * @return
      *  The created item
      */
-    public VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
+    private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
     	VoucherItem expenditureItem = modelFactory.createVoucherItem();
     	expenditureItem.setItemVoucherType(VoucherType.EXPENDITURE);
         expenditureItem.setName(name);

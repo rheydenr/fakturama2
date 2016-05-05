@@ -134,6 +134,11 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     protected Class<Voucher> getModelClass() {
         return Voucher.class;
     }
+    
+	@Override
+	protected String getEditorId() {
+		return EDITOR_ID;
+	}
 
 //    @Override
 //    protected IEntity createNewVoucherItem(IEntity item) {

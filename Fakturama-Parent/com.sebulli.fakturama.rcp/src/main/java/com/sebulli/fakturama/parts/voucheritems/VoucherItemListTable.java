@@ -89,6 +89,7 @@ import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
+import com.sebulli.fakturama.parts.VoucherEditor;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeDisplayConverter;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeValueComboProvider;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
@@ -741,9 +742,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // Recalculate the total sum of the document if necessary
         // do it via the messaging system and send a message to ExpenditureVoucherEditor
         Map<String, Object> event = new HashMap<>();
-        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getProperties().get(ExpenditureVoucherEditor.PART_ID));
+        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getProperties().get(VoucherEditor.PART_ID));
         event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
-        evtBroker.post(ExpenditureVoucherEditor.EDITOR_ID + "/itemChanged", event);
+        evtBroker.post(VoucherEditor.EDITOR_ID + "/itemChanged", event);
     }
 
     /**
