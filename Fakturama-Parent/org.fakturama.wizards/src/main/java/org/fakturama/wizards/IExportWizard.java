@@ -24,4 +24,13 @@ package org.fakturama.wizards;
  * @see org.eclipse.jface.wizard.IWizard
  */
 public interface IExportWizard extends IWorkbenchWizard {
+
+	/**
+	 * Returns the output file name. Can be overwritten.
+	 *
+	 * @return the output file name
+	 */
+	default public String getOutputFileName() {
+		return "DEFAULT";
+	}
 }

@@ -156,7 +156,7 @@ public class WizardCollectionElement extends AdaptableList implements
         Object[] wizards = getWizards();
         for (int i = 0; i < wizards.length; ++i) {
         	IE4WizardDescriptor currentWizard = (IE4WizardDescriptor) wizards[i];
-            if (currentWizard.getName().equals(searchId)) {
+            if (currentWizard.getId().equals(searchId)) {
 				return currentWizard;
 			}
         }

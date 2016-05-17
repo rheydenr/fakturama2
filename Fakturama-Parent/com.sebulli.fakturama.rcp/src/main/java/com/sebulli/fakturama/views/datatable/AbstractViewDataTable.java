@@ -300,7 +300,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	abstract protected NatTable createListTable(Composite searchAndTableComposite);
 	
 	/**
-	 * Gets a unique identifier for the implementing table (for using in conjunction with storing preferences)
+	 * Gets a unique identifier for the implementing table (for using in conjunction with storing preferences).
 	 *  
 	 * @return unique identifier
 	 */

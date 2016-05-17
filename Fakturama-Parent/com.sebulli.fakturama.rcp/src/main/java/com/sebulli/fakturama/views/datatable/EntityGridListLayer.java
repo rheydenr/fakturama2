@@ -67,12 +67,6 @@ public class EntityGridListLayer<T extends IEntity> {
         IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider(), withRowHeader);
         DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
         ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-        
-        setViewportLayer(new ViewportLayer(bodyLayerStack.getSelectionLayer()));
-        // as the selection mouse bindings are registered for the region label
-        // GridRegion.BODY we need to set that region label to the viewport so
-        // the selection via mouse is working correctly
-        getViewportLayer().setRegionName(GridRegion.BODY);
 
         // 4. build the corner layer
         IDataProvider cornerDataProvider;
@@ -97,6 +91,12 @@ public class EntityGridListLayer<T extends IEntity> {
         // 5. build the grid layer
         gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
         gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer));
+        
+        setViewportLayer(new ViewportLayer(bodyLayerStack.getSelectionLayer()));
+        // as the selection mouse bindings are registered for the region label
+        // GridRegion.BODY we need to set that region label to the viewport so
+        // the selection via mouse is working correctly
+        getViewportLayer().setRegionName(GridRegion.BODY);
     }
     
     public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 

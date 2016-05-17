@@ -1464,7 +1464,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Container for the document number and the date
 		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).minSize(550, SWT.DEFAULT).grab(true, false).applyTo(nrDateNetGrossComposite);
 
 		// The document number is the document name
 		txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
@@ -1512,7 +1512,7 @@ public class DocumentEditor extends Editor<Document> {
 		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
 		comboNetGross.setInput(netGrossContent);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(50, 0).hint(120, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(30, 0).minSize(80, SWT.DEFAULT).hint(120, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
 		
 		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
 
@@ -1717,7 +1717,7 @@ public class DocumentEditor extends Editor<Document> {
 		//T: Label Group box to create a new document based on this one.
 		copyGroup.setText(msg.editorDocumentCreateduplicate);
 		GridLayoutFactory.fillDefaults().applyTo(copyGroup);
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.BOTTOM).span(1, 2).grab(true, false).applyTo(copyGroup);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.BOTTOM).span(1, 2).minSize(250, SWT.DEFAULT).grab(true, false).applyTo(copyGroup);
 
 		// Toolbar
         createCopyToolbar(copyGroup);

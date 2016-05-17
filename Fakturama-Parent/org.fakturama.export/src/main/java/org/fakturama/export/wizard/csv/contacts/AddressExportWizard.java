@@ -97,6 +97,7 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeCsv + " (*.csv)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
+		fileDialog.setFileName(getOutputFileName());
 		String selectedFile = fileDialog.open();
 		if (selectedFile != null) {
 			AddressExport exporter = ContextInjectionFactory.make(AddressExport.class, ctx);
@@ -110,5 +111,13 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 		}
 		else 
 			return false;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.fakturama.wizards.IExportWizard#getOutputFileName()
+	 */
+	@Override
+	public String getOutputFileName() {
+		return "AddressExportCSV.csv";
 	}
 }
