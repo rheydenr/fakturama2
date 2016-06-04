@@ -274,6 +274,7 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM = "DOCUMENT_USE_DISCOUNT_EACH_ITEM";
+	public static final String PREFERENCES_DOCUMENT_USE_VESTINGPERIOD = "DOCUMENT_USE_VESTINGPERIOD";
 
     /**
      * 
@@ -505,4 +506,17 @@ public class Constants {
 	 * 
 	 */
 	public static final String PREFERENCES_EXPORTSALES_PAIDDATE = "EXPORTSALES_PAIDDATE";
+
+	/** The Constant CONTEXT_VATVALUE. */
+	public static final String CONTEXT_VATVALUE = "vatvalue";
+
+	/** The Constant CONTEXT_NETVALUE. */
+	public static final String CONTEXT_NETVALUE = "netvalue";
+
+	/** The Constant CONTEXT_STYLE. */
+	public static final String CONTEXT_STYLE = "style";
+
+	/** The Constant CONTEXT_CANVAS. */
+	public static final String CONTEXT_CANVAS = "canvas";
+
 }

@@ -40,8 +40,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
+import org.fakturama.wizards.IFakturamaWizardService;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.misc.DataUtils;
@@ -89,8 +89,8 @@ public class AccountSettingsPage extends WizardPage {
 	
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));
-		setMessage((String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION));
+		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
+		setMessage((String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION));
 	}
 
 	/**

@@ -1,0 +1,4 @@
+instructions.configure=\
+  addRepository(name:Fakturama Update Site (Releases),type:0,location:http${#58}//www.fakturama.info/release/update2);\
+  addRepository(name:Fakturama Update Site (Releases),type:1,location:http${#58}//www.fakturama.info/release/update2);
+  

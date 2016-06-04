@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.fakturama.wizards.importWizards">
+      <category
+            id="com.sebulli.fakturama.importWizards.csv"
+            name="CSV import">
+      </category>
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="com.sebulli.fakturama.importer.csv.expenditures.ImportWizard"
+            icon="icons/16/expenditure_voucher_16.png"
+            id="com.sebulli.fakturama.importer.csv.expenditures.importWizard"
+            name="%wizard.import.csv.expenditures.name">
+         <description>
+            %wizard.import.csv.expenditures.description
+         </description>
+      </wizard>
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="com.sebulli.fakturama.importer.csv.products.ImportWizard"
+            icon="icons/16/product_16.png"
+            id="com.sebulli.fakturama.importer.csv.products.importWizard"
+            name="%wizard.import.csv.products.name">
+         <description>
+            %wizard.import.csv.products.description
+         </description>
+      </wizard>
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="org.fakturama.imp.wizard.csv.contacts.ContactsCsvImportWizard"
+            icon="icons/16/contact_16.png"
+            id="com.sebulli.fakturama.importer.csv.contacts.importWizard"
+            name="%wizard.import.csv.contacts.name">
+         <description>
+            %wizard.import.csv.contacts.description
+         </description>
+      </wizard>
+   </extension>
+</plugin>

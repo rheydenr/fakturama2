@@ -14,8 +14,10 @@
 
 package com.sebulli.fakturama.parts.widget;
 
+import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -23,6 +25,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
@@ -31,7 +34,6 @@ import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
  * interacts with a NetText control, that contains the net value. If the value
  * of this control is changes, also the corresponding net control is modified.
  * 
- * @author Gerd Bartelt
  */
 public class GrossText {
 
@@ -46,23 +48,8 @@ public class GrossText {
 
 	// The text control 
 	private FormattedText grossText;
-
-	/**
-	 * Constructor that creates the text widget and connects it with the
-	 * corresponding net widget.
-	 * 
-	 * @param editor
-	 *            The editor that contains this widget.
-	 * @param parent
-	 *            The parent control.
-	 * @param style
-	 *            Style of the text widget
-	 * @param net
-	 *            The net value
-	 * @param vat
-	 *            The vat value ( factor )
-	 */
-	public GrossText(Composite parent, int style, MonetaryAmount net, Double vat) {
+	
+	private GrossText(Composite parent, int style, MonetaryAmount net, Double vat, IEclipseContext context) {
 
 		// Set the local variables
 		this.netValue = net;
@@ -95,7 +82,34 @@ public class GrossText {
 				}
 			}
 		});
+	}
+	
+	@Inject
+	public GrossText(IEclipseContext context) {
+		this((Composite)context.get(Constants.CONTEXT_CANVAS), 
+				(Integer)context.get(Constants.CONTEXT_STYLE), 
+				(MonetaryAmount)context.get(Constants.CONTEXT_NETVALUE), 
+				(Double)context.get(Constants.CONTEXT_VATVALUE), context);
+	}
+	
 
+	/**
+	 * Constructor that creates the text widget and connects it with the
+	 * corresponding net widget.
+	 * 
+	 * @param editor
+	 *            The editor that contains this widget.
+	 * @param parent
+	 *            The parent control.
+	 * @param style
+	 *            Style of the text widget
+	 * @param net
+	 *            The net value
+	 * @param vat
+	 *            The vat value ( factor )
+	 */
+	public GrossText(Composite parent, int style, MonetaryAmount net, Double vat) {
+		this(parent, style, net, vat, null);
 	}
 
 	/**

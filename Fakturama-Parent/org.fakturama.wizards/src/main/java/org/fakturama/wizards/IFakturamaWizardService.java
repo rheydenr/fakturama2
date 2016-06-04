@@ -19,10 +19,14 @@ import java.util.List;
 import org.eclipse.jface.wizard.IWizardNode;
 
 /**
- * Service interface for exporter services.
+ * Service interface for exporter and importer services.
  *
  */
 public interface IFakturamaWizardService {
+
+	String WIZARD_TITLE = "title";
+	String WIZARD_DESCRIPTION = "description";
+	String WIZARD_PREVIEW_IMAGE = "previewimage";
 
 	/**
 	 * Retrieve a {@link List} of {@link IWizardNode}s which this service offers.

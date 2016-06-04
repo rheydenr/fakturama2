@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.EmptyWizardPage;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
@@ -78,8 +78,8 @@ public class ProductBuyersExportOptionPage extends WizardPage {
 
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));
-		setMessage((String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION));
+		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
+		setMessage((String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION));
 	}
 
 	/**

@@ -7,6 +7,11 @@ Bundle-ClassPath: .
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: OSGI-INF/l10n/bundle
+Export-Package: com.sebulli.fakturama.calculate,
+ com.sebulli.fakturama.dao,
+ com.sebulli.fakturama.dto,
+ com.sebulli.fakturama.parts.widget.formatter,
+ org.fakturama.export.handler
 Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.model;bundle-version="2.0.0",
@@ -48,7 +53,14 @@ Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.eclipse.draw2d;bundle-version="3.10.1",
  org.eclipse.nebula.widgets.treemapper;bundle-version="0.1.0",
  org.eclipse.e4.ui.dialogs,
- org.fakturama.wizards;bundle-version="1.0.0"
+ org.fakturama.wizards;bundle-version="1.0.0",
+ org.eclipse.equinox.p2.core;bundle-version="2.4.0",
+ org.eclipse.equinox.p2.engine;bundle-version="2.4.0",
+ org.eclipse.equinox.p2.metadata.repository;bundle-version="1.2.200",
+ org.eclipse.equinox.p2.operations;bundle-version="2.4.100"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/parcelservice.xml
 Import-Package: javax.inject;version="1.0.0",
  org.apache.commons.io,
  org.eclipse.core.commands,
@@ -98,11 +110,3 @@ Import-Package: javax.inject;version="1.0.0",
  org.osgi.service.prefs;version="1.1.1",
  org.osgi.util.tracker;version="1.5.1",
  org.osgi.util.xml;version="1.0.1"
-Service-Component: OSGI-INF/parcelservice.xml
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: com.sebulli.fakturama.calculate,
- com.sebulli.fakturama.dao,
- com.sebulli.fakturama.dto,
- com.sebulli.fakturama.parts.widget.formatter,
- org.fakturama.export.handler

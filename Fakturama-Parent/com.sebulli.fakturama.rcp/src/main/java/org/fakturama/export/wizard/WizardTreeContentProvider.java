@@ -45,26 +45,26 @@ public class WizardTreeContentProvider implements ITreeContentProvider {
             for (int i = 0; i < childWizards.length; i++) {
                 handleChild(childWizards[i], list);
             }
-
-            // flatten lists with only one category
-            if (list.size() == 1
-                    && list.get(0) instanceof WizardCollectionElement) {
-                return getChildren(list.get(0));
-            }
+//
+//            // flatten lists with only one category
+//            if (list.size() == 1
+//                    && list.get(0) instanceof WizardCollectionElement) {
+//                return getChildren(list.get(0));
+//            }
 
             return list.toArray();
         } else if (parentElement instanceof AdaptableList) {
             AdaptableList aList = (AdaptableList) parentElement;
             Object[] children = aList.getChildren();
-            ArrayList list = new ArrayList(children.length);
+            List list = new ArrayList(children.length);
             for (int i = 0; i < children.length; i++) {
                 handleChild(children[i], list);
             }
-            // if there is only one category, return it's children directly (flatten list)
-            if (list.size() == 1
-            		&& list.get(0) instanceof WizardCollectionElement) {
-                return getChildren(list.get(0));
-            }
+//            // if there is only one category, return it's children directly (flatten list)
+//            if (list.size() == 1
+//            		&& list.get(0) instanceof WizardCollectionElement) {
+//                return getChildren(list.get(0));
+//            }
                 
             return list.toArray();
         } else {

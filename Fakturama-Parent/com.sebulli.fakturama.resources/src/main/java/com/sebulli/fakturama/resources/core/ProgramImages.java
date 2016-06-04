@@ -14,7 +14,7 @@ public enum ProgramImages {
 	// preview pictures for exporters
 	EXPORT_CONTACTS_CSV("/icons/preview/contacts_csv.png"),
 	EXPORT_CONTACTS("/icons/preview/contacts.png"),
-	EXPORT_CONTACTS2("/icons/preview/contacts2.png"),
+	IMPORT_CONTACTS2("/icons/preview/contacts2.png"),
 	EXPORT_CONTACTS_VCF("/icons/preview/export_vcf_contacts.png"),
 	EXPORT_EXPENDITURES("/icons/preview/export_expenditures.png"),
 	EXPORT_PRODUCT_BUYERS("/icons/preview/export_product_buyers.png"),

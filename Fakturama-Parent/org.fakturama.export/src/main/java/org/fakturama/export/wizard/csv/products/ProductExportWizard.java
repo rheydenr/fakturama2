@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.wizards.IExportWizard;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -77,9 +78,9 @@ public class ProductExportWizard extends Wizard implements IExportWizard {
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
 		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_PRODUCTS_CSV);
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportProductsAllproductsTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportCsvProductsTitle);
-		ctx.set(EmptyWizardPage.WIZARD_PREVIEW_IMAGE, previewImage);
+		ctx.set(IFakturamaWizardService.WIZARD_TITLE, exportMessages.wizardExportProductsAllproductsTitle);
+		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportCsvProductsTitle);
+		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);
 	}

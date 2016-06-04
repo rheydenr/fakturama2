@@ -33,13 +33,8 @@ public class ExportWizardRegistry extends AbstractExtensionWizardRegistry {
 	/**
 	 * ID within ApplicationModel.e4xmi
 	 */
-	public static final String REGISTRY_ADDON_ID = "fakturama.addon.wizardregistry";
+	public static final String REGISTRY_ADDON_ID = "fakturama.addon.wizardregistry.export";
 	public static final String REGISTRY_READER_ADDON_ID = REGISTRY_ADDON_ID + ".reader";
-
-	/**
-	 * The name of the export wizard extension point.
-	 */
-	public static final String PLUGINPOINT_EXPORT_WIZARDS = "exportWizards";
 
 	@Inject
 	private IExtensionRegistry registry;
@@ -63,7 +58,7 @@ public class ExportWizardRegistry extends AbstractExtensionWizardRegistry {
 					a -> a.getElementId().equals(REGISTRY_READER_ADDON_ID)).findFirst().get();
 			wizardsRegistryReader = (WizardsRegistryReader) addon.getObject();
 			wizardsRegistryReader.setPlugin(getPlugin());
-			wizardsRegistryReader.setPluginPoint(PLUGINPOINT_EXPORT_WIZARDS);
+			wizardsRegistryReader.setPluginPoint(getExtensionPoint());
 		}
 	}
 

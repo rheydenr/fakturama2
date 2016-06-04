@@ -24,6 +24,7 @@ import javax.money.MonetaryAmount;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
@@ -38,16 +39,22 @@ import com.sebulli.fakturama.misc.DataUtils;
 public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
 	
     @Inject @Optional
-    @Preference 
-    protected IEclipsePreferences preferences;
+    protected IPreferenceStore defaultValuePrefs;
     
     public MoneyFormatter() {
+    	this(null);
+    }
+    
+    @Inject
+    public MoneyFormatter(IPreferenceStore defaultValuePrefs) {
         super();
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
-        if(preferences != null) {
-        	format.setMinimumFractionDigits(preferences.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2));
+        DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance();
+        if(defaultValuePrefs != null) {
+        	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
+        	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
         }
-        setPatterns(((DecimalFormat) NumberFormat.getNumberInstance()).toPattern(), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+        setPatterns(editFormat.toPattern(), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
     }
     
     @Override

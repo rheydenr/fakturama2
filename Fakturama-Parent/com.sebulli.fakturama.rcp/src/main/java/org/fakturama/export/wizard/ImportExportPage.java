@@ -50,13 +50,10 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      */
     private TreeViewer treeViewer;
     
-//    @Inject
-//    private IEclipseContext ctx;
-    
 	/**
 	 * Class to create a control that shows a categorized tree of wizard types.
 	 */
-	protected class CategorizedWizardSelectionTree {
+	public class CategorizedWizardSelectionTree {
 		private final static int SIZING_LISTS_HEIGHT = 200;
 		
 		private IE4WizardCategory wizardCategories;
@@ -69,7 +66,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 		 * @param categories root wizard category for the wizard type
 		 * @param msg message describing what the user should choose from the tree.
 		 */
-		protected CategorizedWizardSelectionTree(IE4WizardCategory categories, String msg){
+		public CategorizedWizardSelectionTree(IE4WizardCategory categories, String msg){
 			this.wizardCategories = categories;
 			this.message = msg;
 		}
@@ -81,7 +78,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 		 * @param parent Composite on which the tree viewer is to be created
 		 * @return Composite with all widgets
 		 */
-		protected Composite createControl(Composite parent){
+		public Composite createControl(Composite parent){
 	        Font font = parent.getFont();
 
 	        // create composite for page.
@@ -150,7 +147,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 		 * 
 		 * @return the categorized tree viewer
 		 */
-		protected TreeViewer getViewer(){
+		public TreeViewer getViewer(){
 			return viewer;
 		}
 
@@ -298,13 +295,13 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
         return new AbstractWorkbenchWizardNode(this, element) {
             public IWorkbenchWizard createWizard() throws CoreException {
             	String className = ((WorkbenchWizardElement)wizardElement).getConfigurationElement().getAttribute(IWorkbenchRegistryConstants.ATT_CLASS);
-            	return getExportService().createWizard(className);
+            	return getImportExportService().createWizard(className);
                 //return wizardElement.createWizard();
             }
         };
     }
 	
-	public abstract IFakturamaWizardService getExportService();
+	public abstract IFakturamaWizardService getImportExportService();
     
     /**
      * Uses the dialog store to restore widget values to the values that they

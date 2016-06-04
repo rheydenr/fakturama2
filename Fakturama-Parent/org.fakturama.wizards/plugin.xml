@@ -2,5 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="exportWizards" name="org.eclipse.export" schema="schema/exportWizards.exsd"/>
+   <extension-point id="importWizards" name="org.eclipse.import" schema="schema/importWizards.exsd"/>
 
 </plugin>

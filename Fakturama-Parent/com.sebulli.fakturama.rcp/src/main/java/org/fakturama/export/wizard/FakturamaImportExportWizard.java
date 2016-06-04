@@ -18,14 +18,20 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.Wizard;
+import org.fakturama.imp.wizard.ImportPage;
+import org.fakturama.wizards.IFakturamaWizardService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -55,27 +61,50 @@ public class FakturamaImportExportWizard extends Wizard {
 
 	@Inject
 	protected IEclipseContext ctx;
-
+	
+	private IEclipseContext staticContext;
+	
     @Inject
     @Translation
     protected Messages msg;
 
-	private ExportPage importExportPage;
+	private ImportExportPage importExportPage;
     
     @PostConstruct
     public void init(IExtensionRegistry registry) {
+    	String filter = "";
     	page = (String) ctx.get(WIZARD_MODE);
+    	staticContext = EclipseContextFactory.create();
+    	
     	registerMessages();
-        
+    	
         ImageDescriptor wizardBannerImage = null;
         if (IMPORT.equals(page)){
+        	filter = "(component.name=myImporter)";
         	wizardBannerImage = Icon.IMPORT_WIZ.getImageDescriptor(IconSize.WizardHeaderIconSize);
-        	setWindowTitle(msg.wizardExportCommonTitle);
-        }
-        else if (EXPORT.equals(page)){
+        	setWindowTitle(msg.wizardImportCommonTitle);
+        } else if (EXPORT.equals(page)){
+        	filter = "(component.name=myExporter)";
         	wizardBannerImage = Icon.EXPORT_WIZ.getImageDescriptor(IconSize.WizardHeaderIconSize);
         	setWindowTitle(msg.wizardExportCommonTitle);
         }
+        
+        /*
+         * Since we have more than one IFakturamaWizardService (import and export at least) we have to distinguish
+         * between them by name. Otherwise the ContextInjectionFactory (later on) takes the first fitting service reference,
+         * which must not be correct. Therefore, we're looking for the correct service depending on page type and put it into 
+         * a static context. This context can be used later on to inject the correct service into the wizard. 
+         */
+    	try {
+    		ServiceReference<IFakturamaWizardService>[] serviceReferences = (ServiceReference<IFakturamaWizardService>[]) Activator.getContext().getServiceReferences(IFakturamaWizardService.class.getName(), filter);
+    		if(serviceReferences.length > 0) {
+    			IFakturamaWizardService service = Activator.getContext().getService(serviceReferences[0]);
+    			staticContext.set(IFakturamaWizardService.class, service);
+    		}
+		} catch (InvalidSyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         if (wizardBannerImage != null) {
 			setDefaultPageImageDescriptor(wizardBannerImage);
 		}
@@ -98,10 +127,11 @@ public class FakturamaImportExportWizard extends Wizard {
 
     @Override
     public void addPages() {
+    	IEclipseContext staticCtx = EclipseContextFactory.create();
     	if (page.equals(IMPORT)) {
-//	    	importExportPage = ContextInjectionFactory.make(ImportPage.class, ctx);
+	    	importExportPage = ContextInjectionFactory.make(ImportPage.class, ctx, staticCtx);
 		} else if (page.equals(EXPORT)) {
-	    	importExportPage = ContextInjectionFactory.make(ExportPage.class, ctx);
+	    	importExportPage = ContextInjectionFactory.make(ExportPage.class, ctx, staticCtx);
 		}
         if (importExportPage != null) {
 			addPage(importExportPage);

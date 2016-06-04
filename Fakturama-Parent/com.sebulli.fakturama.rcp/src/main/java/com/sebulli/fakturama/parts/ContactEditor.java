@@ -284,7 +284,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		}
 		part.setLabel(nameWithCompany);
 
-//		// Refresh the table view of all contacts
+		// Refresh the table view of all contacts
         evtBroker.post(getEditorID(), "update");
 
 //      if the editor was called from DialogEditor we have to 

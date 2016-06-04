@@ -29,7 +29,7 @@ public class ExportPage extends ImportExportPage {
 	private static final String STORE_EXPANDED_EXPORT_CATEGORIES = DIALOG_SETTING_SECTION_NAME
 		+ "STORE_EXPANDED_EXPORT_CATEGORIES";	//$NON-NLS-1$
 
-	CategorizedWizardSelectionTree exportTree;
+	private CategorizedWizardSelectionTree exportTree;
 
 	/**
 	 * The export service is injected by OSGi container. It resides in a bundle
@@ -88,7 +88,7 @@ public class ExportPage extends ImportExportPage {
 	}
 	
 	private IWizardRegistry getExportWizardRegistry() {
-		if(exportWizardRegistry == null) {
+		if(exportWizardRegistry == null) {			
 			MAddon addon = application.getAddons().stream().filter(
 					a -> a.getElementId().equals(ExportWizardRegistry.REGISTRY_ADDON_ID)).findFirst().get();
 			exportWizardRegistry = (ExportWizardRegistry) addon.getObject();
@@ -99,7 +99,7 @@ public class ExportPage extends ImportExportPage {
 	/**
 	 * @return the exportService
 	 */
-	public IFakturamaWizardService getExportService() {
+	public IFakturamaWizardService getImportExportService() {
 		return exportService;
 	}
 

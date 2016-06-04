@@ -80,19 +80,20 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, msg.preferencesDocumentCopymsgfield, getFieldEditorParent()));
 		//T: Preference page "Document" - Label "Copy the description in product selection dialog."
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, msg.preferencesDocumentCopydescfield, getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, msg.preferencesDocumentDisplaypreview, getFieldEditorParent()));
-		//T: Preference page "Document" 
 //		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, msg.preferencesDocumentUsepos, getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, msg.preferencesDocumentUsediscountsingle, getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, msg.preferencesDocumentUsediscountall, getFieldEditorParent()));
-		//T: Preference page "Document" 
+
+		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, msg.preferencesDocumentUsevestingperiod, 
+				3, new String[][] { 
+					{ msg.preferencesDocumentUsevestingperiodNone, "0" },
+					{ msg.preferencesDocumentUsevestingperiodOnlystart, "1" },
+				    { msg.preferencesDocumentUsevestingperiodPeriod, "2" } },
+				getFieldEditorParent()));
+
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, msg.preferencesDocumentShowitemsprices, getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, msg.preferencesDocumentAdddelnotenumber, getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, msg.preferencesDocumentShowcustomerstat, getFieldEditorParent()));
 		//T: Preference page "Document" - How to compare the address to generate the customer statistics
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, msg.preferencesDocumentLabelCompare, 2, new String[][] { 
@@ -101,12 +102,9 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 					//T: Preference page "Document" - How to compare the address to generate the customer statistics
 					{ msg.preferencesDocumentAlsoaddress, "1" } },
 				getFieldEditorParent()));
-		//T: Preference page "Document" 
 		addField(new ComboFieldEditor(Constants.PREFERENCES_DOCUMENT_MESSAGES, msg.preferencesDocumentNumberofremarkfields, new String[][] { { "1", "1" }, { "2", "2" }, { "3", "3" }
 			 }, getFieldEditorParent()));
-		//T: Preference page "Document"
 		addField(new StringFieldEditor(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow, getFieldEditorParent()));
-		//T: Preference page "Document"
 		addField(new StringFieldEditor(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow, getFieldEditorParent()));
 	}
 
@@ -132,6 +130,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, write);
@@ -164,13 +163,14 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, true);
+		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, "0");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, "1");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_MESSAGES, "1");
 		node.setDefault(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow);
-		node.setDefault(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);node.setDefault("rhe_huhu", "tst!");
+		node.setDefault(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);
 	}
 
 }

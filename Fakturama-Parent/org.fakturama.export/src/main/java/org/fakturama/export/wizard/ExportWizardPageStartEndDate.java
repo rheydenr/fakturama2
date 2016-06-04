@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 /**
  * Create the first (and only) page of the sales export wizard. This page is
@@ -92,9 +93,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	 */
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));
+		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
 		setMessage(exportMessages.wizardExportDateselectTitle);
-		this.label = (String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION);
+		this.label = (String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION);
 		this.doNotUseTimePeriod = (Boolean) ctx.get(WIZARD_DATESELECT_DONTUSETIMEPERIOD);
 		this.singlePage = Optional.ofNullable((Boolean)ctx.get(WIZARD_SINGLEPAGE)).orElse(Boolean.FALSE);
 	}

@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.log.ILogger;
 
@@ -49,10 +50,6 @@ public class EmptyWizardPage extends WizardPage {
 	
 	private Image previewImage = null;
 
-	public static final String WIZARD_TITLE = "title";
-	public static final String WIZARD_DESCRIPTION = "description";
-	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
-	
 	public EmptyWizardPage() {
 		super(WIZARD_PAGE_NAME);
 	}
@@ -74,10 +71,10 @@ public class EmptyWizardPage extends WizardPage {
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		//T: Title of the Sales Export Wizard Page 1
-		setTitle((String) ctx.get(WIZARD_TITLE));
+		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
 		//T: Text of the Sales Export Wizard Page 1
-		setMessage((String) ctx.get(WIZARD_DESCRIPTION));
-		this.previewImage = (Image) ctx.get(WIZARD_PREVIEW_IMAGE);
+		setMessage((String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION));
+		this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
 	}
 
 	/**

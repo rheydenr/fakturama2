@@ -94,6 +94,7 @@ public class Messages {
 	public String commonButtonSavechanges;
 	public String commonButtonSavechangesquestion;
 	public String commonButtonSetdefault;
+	public String commonErrorClosefile;
 	public String commonFieldAccount;
 	public String commonFieldAccountholder;
 	public String commonFieldAccountTooltip;
@@ -285,6 +286,8 @@ public class Messages {
 	public String editorDocumentSelecttemplateTooltip;
 	public String editorDocumentTotalgross;
 	public String editorDocumentTotalnet;
+	public String editorDocumentFieldVestingend;
+	public String editorDocumentFieldVestingstart;
 	public String editorDocumentWarningDifferentaddress;
 	public String editorDocumentWarningDifferentdeliveryaddress;
 	public String editorDocumentZerovatTooltip;
@@ -380,26 +383,6 @@ public class Messages {
 	public String wizardExportCommonDescription;
 	public String wizardExportCommonHeadline;
 	public String wizardExportCommonTitle;
-	public String Importer130;
-	public String Importer131;
-	public String Importer132;
-	public String Importer133;
-	public String Importer134;
-	public String Importer135;
-	public String Importer136;
-	public String Importer137;
-	public String Importer138;
-	public String Importer140;
-	public String Importer141;
-	public String Importer142;
-	public String Importer143;
-	public String Importer144;
-	public String Importer145;
-	public String Importer146;
-	public String Importoptionpage123;
-	public String Importoptionpage124;
-	public String Importoptionpage125;
-	public String Importprogressdialog147;
 	public String importWebshopActionError;
 	public String importWebshopActionLabel;
 	public String importWebshopDataCashondelivery;
@@ -424,11 +407,6 @@ public class Messages {
 	public String importWebshopInfoSuccess;
 	public String importWebshopInfoTotalsum;
 	public String importWebshopInfoWebshopno;
-	public String Importwizard126;
-	public String Importwizard127;
-	public String Importwizard128;
-	public String Importwizard129;
-	public String Importwizard139;
 	public String Installaction94;
 	public String introRoot;
 	public String mainMenuData;
@@ -578,6 +556,10 @@ public class Messages {
 	public String preferencesDocumentUsediscountsingle;
 	public String preferencesDocumentUsenetgross;
 	public String preferencesDocumentUsepos;
+	public String preferencesDocumentUsevestingperiod;
+	public String preferencesDocumentUsevestingperiodNone;
+	public String preferencesDocumentUsevestingperiodOnlystart;
+	public String preferencesDocumentUsevestingperiodPeriod;
 	public String preferencesExport;
 	public String preferencesExportUsepaydate;
 	public String preferencesGeneral;
@@ -749,7 +731,7 @@ public class Messages {
 	public String topictreeAllDocumentsTooltip;
 	public String topictreeLabelThistransaction;
 	public String topictreeTransaction;
-	public String Updateaction111;
+	public String commandAppUpdate;
 	public String viewErrorlogLabel;
 	public String viewErrorlogName;
 	public String voucherDialogBookConfirmHeader;
@@ -772,12 +754,15 @@ public class Messages {
 	public String voucherFieldWithdiscountName;
 	public String voucherFieldWithdiscountTooltip;
 	public String widgetNovatproviderWithvatLabel;
+	public String wizardImportCommonTitle;	
+	public String wizardImportCommonFilterlabel;	
 	public String wizardImportCsvContactsDescription;
 	public String wizardImportCsvContactsName;
 	public String wizardImportCsvExpendituresDescription;
 	public String wizardImportCsvExpendituresName;
 	public String wizardImportCsvProductsDescription;
 	public String wizardImportCsvProductsName;
+	public String wizardCommonTitleSelectsource;
 
 	public String getPurchaseTaxString() {
 		// T: Name of the tax that is raised when goods are purchased

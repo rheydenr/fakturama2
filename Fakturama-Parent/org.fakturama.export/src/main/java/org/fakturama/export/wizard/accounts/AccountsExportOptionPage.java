@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.EmptyWizardPage;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.calculate.AccountSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
@@ -76,8 +76,8 @@ public class AccountsExportOptionPage extends WizardPage {
 	
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		setTitle((String) ctx.get(EmptyWizardPage.WIZARD_TITLE));
-		setMessage((String) ctx.get(EmptyWizardPage.WIZARD_DESCRIPTION));
+		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
+		setMessage((String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION));
 		me = this;
 	}
 

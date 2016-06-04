@@ -14,15 +14,20 @@
 
 package com.sebulli.fakturama.parts.widget;
 
+import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
@@ -45,21 +50,16 @@ public class NetText {
 
 	// The corresponding text control that contains the gross value
 	private FormattedText grossText;
-
-	/**
-	 * Constructor that creates the text widget and connects it with the
-	 * corresponding net widget.
-	 * 
-	 * @param parent
-	 *            The parent control.
-	 * @param style
-	 *            Style of the text widget
-	 * @param net
-	 *            The net value
-	 * @param vat
-	 *            The vat value ( factor )
-	 */
-	public NetText(Composite parent, int style, MonetaryAmount net, Double vat) {
+	
+	@Inject
+	public NetText(IEclipseContext context) {
+		this((Composite)context.get(Constants.CONTEXT_CANVAS), 
+				(Integer)context.get(Constants.CONTEXT_STYLE), 
+				(MonetaryAmount)context.get(Constants.CONTEXT_NETVALUE), 
+				(Double)context.get(Constants.CONTEXT_VATVALUE), context);
+	}
+	
+	private NetText(Composite parent, int style, MonetaryAmount net, Double vat, IEclipseContext context) {
 
 		// Set the local variables
 		this.netValue = net;
@@ -67,7 +67,13 @@ public class NetText {
 
 		// Create the text widget
 		this.netText = new FormattedText(parent, style);
-		this.netText.setFormatter(new MoneyFormatter());
+		ITextFormatter formatter;
+		if(context != null) {
+			formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
+		} else {
+			formatter = new MoneyFormatter(null);
+		}
+		this.netText.setFormatter(formatter);
 		netText.setValue(netValue);
 
 //		// Set the text of the NetText, based on the GrossText's value.
@@ -92,6 +98,24 @@ public class NetText {
 		    }
 		});
 
+	}
+
+
+	/**
+	 * Constructor that creates the text widget and connects it with the
+	 * corresponding net widget.
+	 * 
+	 * @param parent
+	 *            The parent control.
+	 * @param style
+	 *            Style of the text widget
+	 * @param net
+	 *            The net value
+	 * @param vat
+	 *            The vat value ( factor )
+	 */
+	public NetText(Composite parent, int style, MonetaryAmount net, Double vat) {
+		this(parent, style, net, vat, null);
 	}
 
 	/**

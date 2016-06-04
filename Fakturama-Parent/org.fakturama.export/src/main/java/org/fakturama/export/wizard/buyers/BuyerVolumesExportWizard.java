@@ -25,9 +25,9 @@ import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.wizards.IExportWizard;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -65,8 +65,8 @@ public class BuyerVolumesExportWizard extends Wizard implements IExportWizard {
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
 
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportBuyersTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportBuyersLongdescription);
+		ctx.set(IFakturamaWizardService.WIZARD_TITLE, exportMessages.wizardExportBuyersTitle);
+		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportBuyersLongdescription);
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, Boolean.FALSE);
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_SINGLEPAGE, Boolean.TRUE);
 		page1 = ContextInjectionFactory.make(ExportWizardPageStartEndDate.class, ctx);

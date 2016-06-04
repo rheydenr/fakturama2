@@ -16,6 +16,7 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -56,13 +56,13 @@ import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -113,6 +113,7 @@ import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.ProductUtil;
@@ -177,6 +178,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private static final String PICTURE_CELL_LABEL = "Picture_Cell_LABEL";
     private static final String TEXT_CELL_LABEL = "Text_Cell_LABEL";
     private static final String DECIMAL_CELL_LABEL = "Decimal_Cell_LABEL";
+    private static final String DATE_CELL_LABEL = "Date_Cell_LABEL";
     private static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
     private static final String DESCRIPTION_CELL_LABEL = "Description_Cell_LABEL";
     private static final String POSITIONNUMBER_CELL_LABEL = "Positionnumber_Cell_LABEL";
@@ -243,6 +245,40 @@ private Menu createContextMenu(NatTable natTable) {
     return retval;
 }
 
+
+///* (non-Javadoc)
+//	 * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#createMenuManager()
+//	 */
+//	@Override
+//	protected void createMenuManager() {
+//		super.createMenuManager();
+//
+//        // get the menu registered by EMenuService
+//        final Menu e4Menu = natTable.getMenu();
+//
+//        // remove the menu reference from NatTable instance
+//        natTable.setMenu(null);
+//
+//        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+//
+//            @Override
+//            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+//                // add NatTable menu items
+//                // and register the DisposeListener
+//                new PopupMenuBuilder(natTable, e4Menu)
+//                        .withInspectLabelsMenuItem()
+//                        .build();
+//
+//                // register the UI binding
+//                uiBindingRegistry.registerMouseDownBinding(
+//                        new MouseEventMatcher(
+//                                SWT.NONE,
+//                                GridRegion.BODY,
+//                                MouseEventMatcher.RIGHT_BUTTON),
+//                        new PopupMenuAction(e4Menu));
+//            }
+//        });
+//	}
     
 /*
  * Move an item up or down
@@ -278,6 +314,14 @@ private Menu createContextMenu(NatTable natTable) {
         
         if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
+        }        
+
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATESTART);
+         }        
+        
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATEEND);
         }        
         
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
@@ -315,7 +359,7 @@ private Menu createContextMenu(NatTable natTable) {
                 } else {
                 	descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 }
-                switch (descriptor) {
+				switch (descriptor) {
                 case POSITION:
 //                    retval = eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS) ? rowObject.getDocumentItem().getPosNr() : -1.0;
                 	// we ALWAYS use a position number!
@@ -329,6 +373,13 @@ private Menu createContextMenu(NatTable natTable) {
                 case DESCRIPTION:
                 case DISCOUNT:
                     retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                    break;
+                case VESTINGDATESTART:
+                case VESTINGDATEEND:
+                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                	if(retval == null) {
+                		retval = Calendar.getInstance().getTime();
+                	}
                     break;
                 case PICTURE:
                     // we have to build the picture path
@@ -530,7 +581,9 @@ private Menu createContextMenu(NatTable natTable) {
         
         // set default percentage width 
         tableDataLayer.setColumnPercentageSizing(true);
-//        tableDataLayer.setColumnPercentageSizing(position, percentageSizing);
+        propertyNamesList.forEach(
+                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
+                		colIndex, descriptor.getDefaultWidth()));
         
         // Custom selection configuration
         selectionLayer = gridListLayer.getSelectionLayer();
@@ -541,10 +594,7 @@ private Menu createContextMenu(NatTable natTable) {
         
         //add a listener to the selection provider, in an Eclipse application you would do this
         //e.g. getSite().getPage().addSelectionListener()
-        selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
-            
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
+        selectionProvider.addSelectionChangedListener((SelectionChangedEvent event) -> {
 //                log.debug("Selection changed:");
                 
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -552,8 +602,7 @@ private Menu createContextMenu(NatTable natTable) {
                 List<DocumentItemDTO> selectedElements = selection.toList();
                 selectionService.setSelection(selectedElements);
             }
-            
-        });
+        );
          
         // add some edit configuration
         gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
@@ -574,24 +623,18 @@ private Menu createContextMenu(NatTable natTable) {
         
         // "normal" columns are always editable
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DESCRIPTION, DESCRIPTION_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VESTINGDATESTART, DATE_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VESTINGDATEEND, DATE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.ITEMNUMBER, TEXT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.NAME, TEXT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUANTITY, DECIMAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUNIT, TEXT_CELL_LABEL);
 
-        final NatTable natTable = new NatTable(tableComposite /*, 
-                SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER,
-                // FIXME: Doesn't work! 
-                gridListLayer.getViewportLayer()*/, 
-                gridListLayer.getGridLayer(), false);
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
         
         // if a re-ordering of rows occurs we have to renumber the items
-        gridListLayer.getBodyLayerStack().getRowReorderLayer().addLayerListener(new ILayerListener() {
-            
-            @Override
-            public void handleLayerEvent(ILayerEvent event) {
+        gridListLayer.getBodyLayerStack().getRowReorderLayer().addLayerListener((ILayerEvent event) -> {
                 if (event instanceof RowReorderEvent) {
                     RowReorderEvent evt = (RowReorderEvent) event;
                     evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
@@ -603,7 +646,12 @@ private Menu createContextMenu(NatTable natTable) {
                     getContainer().setDirty(true);
                 }
             }
-        });
+        );
+        final NatTable natTable = new NatTable(tableComposite /*, 
+                SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER,
+                // FIXME: Doesn't work! 
+                gridListLayer.getViewportLayer()*/, 
+                gridListLayer.getGridLayer(), false);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
@@ -730,7 +778,11 @@ private Menu createContextMenu(NatTable natTable) {
     
     @Override
     public String getTableId() {
-        return ID;
+    	/*
+    	 * Since different document types have different value columns we have to 
+    	 * distinguish between them.
+    	 */
+        return ID + documentType.getKey();
     }
 
     @Override
@@ -901,6 +953,21 @@ private Menu createContextMenu(NatTable natTable) {
             registerDescriptionColumn(configRegistry, styleLeftAligned);
             registerVATColumn(configRegistry, styleRightAligned); 
             registerOptionalColumn(configRegistry);
+            
+            // for date cells (e.g., vesting period)
+            DateCellEditor dateCellEditor = new DateCellEditor(true);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITOR, 
+                    dateCellEditor, 
+                    DisplayMode.NORMAL, DATE_CELL_LABEL);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DateDisplayConverter(),
+                    DisplayMode.NORMAL, DATE_CELL_LABEL);
+            configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE, 
+                    IEditableRule.ALWAYS_EDITABLE, 
+                    DisplayMode.EDIT, DATE_CELL_LABEL);
 
             // for discount values
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,

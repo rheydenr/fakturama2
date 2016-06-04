@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.EmptyWizardPage;
 import org.fakturama.wizards.IExportWizard;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -73,9 +74,9 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
 		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS_VCF);
-		ctx.set(EmptyWizardPage.WIZARD_TITLE, exportMessages.wizardExportVcfContactsTitle);
-		ctx.set(EmptyWizardPage.WIZARD_DESCRIPTION, exportMessages.wizardExportVcfContactsDescription);
-		ctx.set(EmptyWizardPage.WIZARD_PREVIEW_IMAGE, previewImage);
+		ctx.set(IFakturamaWizardService.WIZARD_TITLE, exportMessages.wizardExportVcfContactsTitle);
+		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportVcfContactsDescription);
+		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
 		page1 = ContextInjectionFactory.make(EmptyWizardPage.class, ctx);
 		addPage(page1);
 	}
