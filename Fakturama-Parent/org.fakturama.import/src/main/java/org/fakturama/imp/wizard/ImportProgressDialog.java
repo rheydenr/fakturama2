@@ -2,6 +2,7 @@ package org.fakturama.imp.wizard;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -34,7 +35,8 @@ public class ImportProgressDialog extends Dialog {
 	 * 
 	 * @param parentShell
 	 */
-	public ImportProgressDialog(Shell parentShell) {
+	@Inject
+	public ImportProgressDialog(@Active Shell parentShell) {
 		super(parentShell);
 	}
 	

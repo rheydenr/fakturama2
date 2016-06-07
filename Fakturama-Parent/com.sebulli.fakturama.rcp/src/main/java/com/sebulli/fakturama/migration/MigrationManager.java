@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.regex.Matcher;
@@ -54,7 +53,6 @@ import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 //import org.eclipse.core.runtime.Path;
@@ -92,8 +90,6 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.handlers.ReorganizeDocuments;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
@@ -107,12 +103,12 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
+import com.sebulli.fakturama.model.ItemType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
@@ -125,6 +121,7 @@ import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.VoucherType;
@@ -761,6 +758,7 @@ public class MigrationManager {
 			item.setPosNr(Integer.valueOf(i+1));
 			item.setDescription(oldItem.getDescription());
 			item.setDeleted(oldItem.isDeleted());
+			item.setItemType(ItemType.POSITION);
 			item.setItemRebate(oldItem.getDiscount());
 			item.setItemNumber(oldItem.getItemnr());
 			item.setName(oldItem.getName());
@@ -854,6 +852,7 @@ public class MigrationManager {
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 				if(!isAddressEqualToDeliveryAdress(oldContact)) {
     				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
+    				deliveryContact.setBirthday(getSaveParsedDate(oldContact.getDeliveryBirthday()));
     //				contact.getAlternateContacts().add(deliveryContact);
                     contact.setAlternateContacts(deliveryContact);
 				}
@@ -1047,6 +1046,7 @@ public class MigrationManager {
 				// each Voucher has its own items
 				if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
 					String[] itemRefs = oldExpenditure.getItems().split(",");
+					int pos = 1;
 					for (String itemRef : itemRefs) {
 						OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
 						VoucherItem item = modelFactory.createVoucherItem();
@@ -1055,7 +1055,7 @@ public class MigrationManager {
 						item.setDeleted(oldExpenditureItem.isDeleted());
 						item.setName(oldExpenditureItem.getName());
 						item.setPrice(oldExpenditureItem.getPrice());
-						item.setValidFrom(new Date());
+						item.setPosNr(pos++);
 						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
 						item.setVat(newVat);
 						Voucher.addToItems(item);

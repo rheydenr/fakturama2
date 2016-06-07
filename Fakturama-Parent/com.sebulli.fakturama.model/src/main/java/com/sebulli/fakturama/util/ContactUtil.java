@@ -164,7 +164,7 @@ public class ContactUtil {
         // Test all strings
         for (int i = 0;i < 4 ; i++) {
             if (getGenderString(i,false).equalsIgnoreCase(s)) return i;
-            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+//            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
         }
         // Default = "---"
         return 0;

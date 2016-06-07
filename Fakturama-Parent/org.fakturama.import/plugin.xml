@@ -9,7 +9,7 @@
       </category>
       <wizard
             category="com.sebulli.fakturama.importWizards.csv"
-            class="com.sebulli.fakturama.importer.csv.expenditures.ImportWizard"
+            class="org.fakturama.imp.wizard.csv.expenditures.ExpendituresCsvImportWizard"
             icon="icons/16/expenditure_voucher_16.png"
             id="com.sebulli.fakturama.importer.csv.expenditures.importWizard"
             name="%wizard.import.csv.expenditures.name">

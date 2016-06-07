@@ -1,9 +1,7 @@
-package com.sebulli.fakturama.wizards.internal.dialog;
+package org.fakturama.wizards.internal.dialogs;
 
 import org.eclipse.e4.ui.dialogs.filteredtree.PatternFilter;
 import org.eclipse.jface.viewers.Viewer;
-import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
-import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 
 /**
  * A class that handles filtering wizard node items based on a supplied matching

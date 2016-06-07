@@ -267,26 +267,40 @@ em.joinTransaction();
      * @throws FakturamaStoringException 
      */
     public T findOrCreate(T object) throws FakturamaStoringException {
+    	return findOrCreate(object, false);
+    }
+    
+    /**
+     * <P>Find or create an Entity based on given Entity. This method is used e.g.
+     * for web shop import where a new contact is only created if it doesn't exist. 
+     * </P><P>
+     * This method is analogous to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
+     * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)} which has to
+     * be overridden by sub classes.
+     * @param contact Entity to test
+     * @param checkOnly if <code>true</code>, no new entity is created
+     * @return found or newly created Entity
+     * @throws FakturamaStoringException 
+     */
+    public T findOrCreate(T object, boolean checkOnly) throws FakturamaStoringException {
         T retval = null;
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
         Root<T> root = query.from(getEntityClass());
         Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
         CriteriaQuery<T> select = query.select(root);
-        for (Predicate predicate : restrictions) {
-            select = select.where(predicate);
-        }
+        select.where(restrictions.toArray(new Predicate[]{}));
 
         List<T> resultList = getEntityManager().createQuery(select).getResultList();
-        if (resultList.isEmpty()) {
+        if (!checkOnly && resultList.isEmpty()) {
         	((IEntity)object).setValidFrom(new Date());
             retval = save(object);
-        }
-        else {
+        } else if(!resultList.isEmpty()){
             retval = resultList.get(0);
         }
         return retval;
     }
+    
   
     /**
      * Restrictions for {@link AbstractDAO#findOrCreate} method. Has to be overridden by sub classes.

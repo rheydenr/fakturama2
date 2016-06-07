@@ -265,8 +265,8 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="null" setter="setCategories" validJavaMemberName="categories" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinTable>
-            <joinColumn name="FK_CATEGORY"/>
-            <inverseJoinColumn name="FK_CONTACT"/>
+            <joinColumn name="FK_CONTACT"/>
+            <inverseJoinColumn name="FK_CATEGORY"/>
           </joinTable>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>

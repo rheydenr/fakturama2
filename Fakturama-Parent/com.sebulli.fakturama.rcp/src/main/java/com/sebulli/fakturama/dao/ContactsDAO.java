@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
@@ -42,7 +43,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         if (em != null && em.isOpen()) {
             em.close();
         }
-    }
+    }  
     
     @Override
     protected Set<Predicate> getRestrictions(Contact object, CriteriaBuilder cb, Root<Contact> root) {

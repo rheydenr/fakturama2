@@ -17,6 +17,9 @@ public class EntityListener {
         if(document.getDateAdded() == null) {
             document.setDateAdded(Date.from(Instant.now()));
         }
+        if(document.getValidFrom() == null) {
+            document.setValidFrom(Date.from(Instant.now()));
+        }
 //        document.setModifiedBy((String) EntityListener.currentUser.get());
         document.setModifiedBy(currentUser);
     }

@@ -39,6 +39,7 @@ import org.fakturama.wizards.IImportWizard;
 
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
+import com.sebulli.fakturama.util.ContactUtil;
 
 /**
  * A wizard to import tables in CSV file format
@@ -112,10 +113,12 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
 			// Import the selected file
 			if (!selectedFile.isEmpty()) {
 
+				ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
+				ctx.set(ContactUtil.class, contactUtil);
 				ContactsCsvImporter csvImporter = ContextInjectionFactory.make(ContactsCsvImporter.class, ctx);
 				csvImporter.importCSV(selectedFile, false,optionPage.getUpdateExisting(), optionPage.getUpdateWithEmptyValues());
 
-				ImportProgressDialog dialog = new ImportProgressDialog(this.getShell());
+				ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 				dialog.setStatusText(csvImporter.getResult());
 
 				// Refresh the table view of all contacts

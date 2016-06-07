@@ -15,18 +15,43 @@
 package org.fakturama.imp.wizard.csv.expenditures;
 
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.FileDialog;
+import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportProgressDialog;
+import org.fakturama.wizards.IImportWizard;
 
 /**
  * A wizard to import tables in CSV file format
- * 
- * @author Gerd Bartelt
  */
-public class ImportWizard extends Wizard implements IImportWizard {
+public class ExpendituresCsvImportWizard extends Wizard implements IImportWizard {
+	
+	@Inject
+	@Translation
+	protected ImportMessages importMessages;
+    
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+	
+	@Inject
+	private IEclipseContext ctx;
 
 	// The wizard pages
 	ImportOptionPage optionPage;
@@ -34,14 +59,15 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	// The selected file to import
 	String selectedFile = "";
 
-	/**
-	 * Constructor
-	 * 
-	 * Creates a new wizard with one page
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
 	 */
-	public ImportWizard() {
-		//T: Title of the CSV Import wizard
-		setWindowTitle(_("Import CSV"));
+	@PostConstruct
+	@Override
+	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
+		setWindowTitle(importMessages.wizardImportCsv);
 		setNeedsProgressMonitor(true);
 	}
 
@@ -52,63 +78,44 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
 	 */
 	public boolean performFinish() {
-		FileDialog fileDialog = new FileDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		// The selected file to import
+		String selectedFile = "";
+		FileDialog fileDialog = new FileDialog(this.getShell());
 		//fileDialog.setFilterPath("/");
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 
 		// Start at the user's home
-		String userLocation;
-		userLocation = Platform.getUserLocation().getURL().getPath();
-		
-		fileDialog.setFilterPath(userLocation);
+		Path path = Paths.get(System.getProperty("user.home"));
+		fileDialog.setFilterPath(path.toString());
 		
 		//T: CSV Import File Dialog Title
-		fileDialog.setText(_("Select file to import"));
+		fileDialog.setText(importMessages.wizardImportDialogSelectfile);
 
 		//T: CSV Import File Filter
-		fileDialog.setFilterNames(new String[] { _("Table as CSV")+ " (*.csv)" });
+		fileDialog.setFilterNames(new String[] { importMessages.wizardImportCsvInfo+ " (*.csv)" });
 		selectedFile = fileDialog.open();
 		if (selectedFile != null) {
 
 			// Import the selected file
 			if (!selectedFile.isEmpty()) {
 
-				Importer csvImporter = new Importer();
+				ExpendituresCsvImporter csvImporter = ContextInjectionFactory.make(ExpendituresCsvImporter.class, ctx);
 				csvImporter.importCSV(selectedFile, false);
 
 				ImportProgressDialog dialog= new ImportProgressDialog(this.getShell());
 				dialog.setStatusText(csvImporter.getResult());
 
 				// Find the expenditure table view
-				ViewDataSetTable view = (ViewDataSetTable) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-						.findView(ViewExpenditureVoucherTable.ID);
-
 				// Refresh it
-				if (view != null)
-					view.refresh();
+		        evtBroker.post("VoucherEditor", "update");
 
 				// Find the VAT table view
-				view = (ViewDataSetTable) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(ViewVatTable.ID);
-
 				// Refresh it
-				if (view != null)
-					view.refresh();
+		        evtBroker.post("VATEditor", "update");
 				
 				return (dialog.open() == ImportProgressDialog.OK);
-
 			}
 		}
-
 		return false;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		performFinish();
-	}
-
 }

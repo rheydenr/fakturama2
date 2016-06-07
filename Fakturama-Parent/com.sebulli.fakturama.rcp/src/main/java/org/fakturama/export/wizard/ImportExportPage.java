@@ -29,12 +29,11 @@ import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWorkbenchWizard;
 import org.fakturama.wizards.internal.dialogs.DialogUtil;
 import org.fakturama.wizards.internal.dialogs.WizardActivityFilter;
+import org.fakturama.wizards.internal.dialogs.WizardPatternFilter;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardSelectionPage;
 import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
 import org.fakturama.wizards.model.AdaptableList;
-
-import com.sebulli.fakturama.wizards.internal.dialog.WizardPatternFilter;
 
 /**
  * Abstract wizard page class from which an import or export wizard can be chosen.

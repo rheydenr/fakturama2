@@ -36,14 +36,11 @@ public class ImportMessages {
 	public String wizardImportErrorFirstline;
 	public String wizardImportErrorNodatafound;
 	public String wizardImportErrorOpenfile;
-	public String wizardImportInfoAlreadyimported;
+	public String wizardImportErrorAlreadyimported;
 	public String wizardImportInfoContactsimported;
 	public String wizardImportInfoContactsupdated;
-	public String wizardImportInfoDataset;
-	public String wizardImportInfoFrom;
 	public String wizardImportInfoProductsimported;
 	public String wizardImportInfoProductsupdated;
-	public String wizardImportInfoStopped;
 	public String wizardImportInfoVouchersimported;
 	public String wizardImportOptionsEmptyupdate;
 	public String wizardImportOptionsSet;
