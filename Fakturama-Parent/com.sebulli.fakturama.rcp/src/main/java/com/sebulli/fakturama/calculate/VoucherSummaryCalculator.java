@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.calculate;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
@@ -40,8 +41,8 @@ public class VoucherSummaryCalculator {
     private Logger log;
     
     public VoucherSummary calculate(Voucher voucher) {
-    	MonetaryAmount paidValue = Money.of(voucher.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
-    	MonetaryAmount totalValue = Money.of(voucher.getTotalValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
+    	MonetaryAmount paidValue = Money.of(Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
+    	MonetaryAmount totalValue = Money.of(Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
     	return calculate(voucher.getItems(), paidValue, totalValue, voucher.getDiscounted());
     }
     
@@ -75,7 +76,7 @@ public class VoucherSummaryCalculator {
         Double paidFactor = Double.valueOf(1.0);
         
         // Total value must not be 0, if paid value is != 0
-        if  ((total.isZero()) && (!paid.isZero())) {
+        if  (total.isZero() && !paid.isZero()) {
             log.error("Voucher Summary: Total value is 0, but paid value != 0");
         }
         

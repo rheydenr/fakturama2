@@ -117,7 +117,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	protected Text textDocumentNr;
 	protected FormattedText textPaidValue;
 	protected FormattedText textTotalValue;
-	protected MonetaryAmount paidValue;
+	protected MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 	protected MonetaryAmount totalValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 	protected Button bPaidWithDiscount;
 	protected Button bBook;
@@ -324,7 +324,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        labelPaidValue.setVisible(bPaidWithDiscount.getSelection());
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPaidValue);
 	
-	        paidValue = Money.of(voucher.getPaidValue(), currencyUnit);
+	        paidValue = Money.of(java.util.Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textPaidValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
 	        textPaidValue.setFormatter(new MoneyFormatter());
@@ -341,7 +341,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        labelTotalValue.setToolTipText(msg.voucherFieldTotalvalueTooltip);
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTotalValue);
 	
-	        totalValue = Money.of(voucher.getTotalValue(), currencyUnit);
+	        totalValue = Money.of(java.util.Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textTotalValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
 	        textTotalValue.setFormatter(new MoneyFormatter());

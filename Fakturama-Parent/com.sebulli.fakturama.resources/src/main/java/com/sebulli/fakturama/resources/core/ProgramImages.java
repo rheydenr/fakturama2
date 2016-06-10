@@ -21,7 +21,7 @@ public enum ProgramImages {
 	EXPORT_SALES("/icons/preview/export_sales.png"),
 	EXPORT_PRODUCTS("/icons/preview/products.png"),
 	EXPORT_PRODUCTS_CSV("/icons/preview/products_csv.png"),
-	EXPORT_PRODUCTS2("/icons/preview/products2.png"),
+	IMPORT_PRODUCTS2("/icons/preview/products2.png"),
 
 	;
 	

@@ -979,6 +979,10 @@
         <eAttribute href="Fakturama.ecore#//Product/gtin"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The GTIN (Global Trade Item Number) is a worldwide valid article identification number."/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Product/costPrice"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The price for which this product was bought. Always as net price."/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//ProductCategory"/>

@@ -3,7 +3,9 @@ package com.sebulli.fakturama.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -14,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
@@ -21,11 +24,12 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.dto.AccountEntry;
-import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.VoucherCategory_;
 import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.model.Voucher_;
 
 @Creatable
 public class ExpendituresDAO extends AbstractDAO<Voucher> {
@@ -43,6 +47,25 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 
     protected Class<Voucher> getEntityClass() {
     	return Voucher.class;
+    }
+    
+    /**
+     * The following attributes are compared: name, category, date, nr, documentnr.
+     * 
+     * @see com.sebulli.fakturama.dao.AbstractDAO#getRestrictions(java.lang.Object, javax.persistence.criteria.CriteriaBuilder, javax.persistence.criteria.Root)
+     */
+    @Override
+    protected Set<Predicate> getRestrictions(Voucher object, CriteriaBuilder criteriaBuilder, Root<Voucher> root) {
+    	Set<Predicate> restrictions = new HashSet<>();
+    	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.name), StringUtils.defaultString(object.getName())));
+    	if(object.getAccount() != null) {
+	    	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.account).get(VoucherCategory_.name), 
+	    			 object.getAccount().getName()));
+    	}
+    	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.voucherDate), object.getVoucherDate()));
+    	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.documentNumber), StringUtils.defaultString(object.getDocumentNumber())));
+    	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.voucherNumber), StringUtils.defaultString(object.getVoucherNumber())));
+    	return restrictions;
     }
     
     public List<Voucher> findAll() {

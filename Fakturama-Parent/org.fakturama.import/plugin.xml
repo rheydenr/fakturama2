@@ -19,7 +19,7 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.importWizards.csv"
-            class="com.sebulli.fakturama.importer.csv.products.ImportWizard"
+            class="org.fakturama.imp.wizard.csv.products.ProductsCsvImportWizard"
             icon="icons/16/product_16.png"
             id="com.sebulli.fakturama.importer.csv.products.importWizard"
             name="%wizard.import.csv.products.name">

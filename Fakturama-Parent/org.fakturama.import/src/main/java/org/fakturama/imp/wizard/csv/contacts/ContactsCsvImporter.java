@@ -24,7 +24,6 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -272,10 +271,9 @@ public class ContactsCsvImporter {
 					} else if (updateExisting) {
 						// Update data
 						updatedContacts ++;
-						
-						// Update the modified contact data
-						contactsDAO.update(testContact);
 					}
+					// Update the modified contact data
+					contactsDAO.update(testContact);
 				}
 			}
 			
