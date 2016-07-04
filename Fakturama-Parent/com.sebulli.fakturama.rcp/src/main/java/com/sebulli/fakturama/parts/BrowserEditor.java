@@ -19,7 +19,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -47,13 +49,13 @@ import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.parcelservice.ParcelServiceFormFiller;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
 /**
  * Web Browser Editor
  * 
- * @author Gerd Bartelt
  */
 public class BrowserEditor {
 	public static final String ID = "com.sebulli.fakturama.editors.browserEditor";
@@ -68,6 +70,10 @@ public class BrowserEditor {
 
     @Inject
     private Logger log;
+    
+    @Inject
+    private IEclipseContext ctx;
+    
     private MPart part;
 
     private String url;
@@ -271,9 +277,6 @@ public class BrowserEditor {
 			color.dispose();
 		}
 		
-		
-		
-
 		// Create a new web browser control
 		try {
 			int browserStyle = SWT.NONE;
@@ -369,7 +372,6 @@ public class BrowserEditor {
 			log.error(e, "Error opening browser");
 			return;
 		}
-
 	}
 	
 	/**
@@ -408,7 +410,8 @@ public class BrowserEditor {
 	 * Fills all form elements with its names and creates a template file.
 	 */
 	public void testParcelServiceForm() {
-	//	ParcelServiceFormFiller.testParcelServiceForm(browser);  
+		ParcelServiceFormFiller parcelServiceFormFiller = ContextInjectionFactory.make(ParcelServiceFormFiller.class, ctx);
+		parcelServiceFormFiller.testParcelServiceForm(browser);  
 	}
 
 	/**
@@ -419,12 +422,5 @@ public class BrowserEditor {
 			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
 		}
 		return preferences;
-	}
-
-	/**
-	 * @param preferences the preferences to set
-	 */
-	private void setPreferences(IPreferenceStore preferences) {
-		this.preferences = preferences;
 	}
 }

@@ -424,6 +424,7 @@ public class Messages {
 	public String mainMenuExtraCalculator;
 	public String mainMenuExtraCalculatorTooltip;
 	public String mainMenuExtraReorganize;
+	public String mainMenuExtraSyncmobile;
 	public String mainMenuFile;
 	public String mainMenuFileClose;
 	public String mainMenuFileCloseall;
@@ -472,7 +473,7 @@ public class Messages {
 	public String mainMenuWindow;
 	public String officePathInvalid;
 	public String officePathName;
-	public String Openparcelserviceaction110;
+	public String commandParcelserviceWarning;
 	public String pageBrowser;
 	public String pageColumnwidth;
 	public String pageColumnwidthcontacts;
@@ -511,10 +512,8 @@ public class Messages {
 	public String pageWebshop;
 	public String pageWebshopauthorization;
 	public String pageWebshopsettings;
-	public String Parcelserviceformfiller648;
-	public String Parcelserviceformfiller649;
-	public String Parcelserviceformfiller650;
-	public String parcelServiceName;
+	public String parcelserviceFormfillerDialogTitle;
+	public String parcelserviceFormfillerDialogMessage;
 	public String partdescDocview;
 	public String pathsDocumentsName;
 	public String preferencesBrowserShowaddressbar;

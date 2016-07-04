@@ -51,7 +51,7 @@ public class OpenListViewsHandler {
 	        log.debug("part is already created!");
     		partService.showPart(listViewPart,
     				PartState.VISIBLE);
-	    } else {
+	    } else if(listViewPart != null){
 	        listViewPart.setVisible(true);
 	        // otherwise no content is rendered :-(
 	        listViewPart.setToBeRendered(true);

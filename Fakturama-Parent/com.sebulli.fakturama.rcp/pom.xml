@@ -14,7 +14,7 @@
 	<name>com.sebulli.fakturama.rcp</name>
 	<url>http://www.fakturama.info</url>
 
-	<build>
+	<build><pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -72,7 +72,7 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
+		</plugins></pluginManagement>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

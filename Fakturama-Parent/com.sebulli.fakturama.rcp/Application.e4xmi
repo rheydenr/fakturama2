@@ -18,11 +18,9 @@
               <children xsi:type="basic:PartStack" xmi:id="_RmPTqetOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detailpanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="17000" selectedElement="_RmPTqutOEeKo5Ms1QUgPTw">
                 <tags>NoAutoCollapse</tags>
                 <tags>documentWindow</tags>
-                <children xsi:type="basic:Part" xmi:id="_bjXPkMWqEeSbcZY_cifi_g" elementId="com.sebulli.fakturama.rcp.part.samplePart" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.SamplePart" label="Sample Part" closeable="true"/>
                 <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="%command.browser.open.startpage" closeable="true">
                   <tags>documentWindow</tags>
                 </children>
-                <children xsi:type="basic:Part" xmi:id="_VNkLUN45EeSSLqz2GM7Nnw" elementId="com.sebulli.fakturama.debugview" toBeRendered="false" visible="false" contributionURI="bundleclass://org.eclipse.e4.tools.context.spy/org.eclipse.e4.tools.context.spy.ContextSpyPart" label="Context Spy" closeable="true"/>
               </children>
               <children xsi:type="basic:PartStack" xmi:id="_XhoUAOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.calculatorpanel" visible="false" containerData="6500" selectedElement="_Y1hk0OtOEeKo5Ms1QUgPTw">
                 <children xsi:type="basic:Part" xmi:id="_Y1hk0OtOEeKo5Ms1QUgPTw" elementId="part:com.sebulli.fakturama.views.calculator" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.Calculator" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" tooltip="" closeable="true"/>
@@ -413,10 +411,11 @@
           <parameters xmi:id="_R7U-0PBeEeSE6viOnMbMyQ" elementId="com.sebulli.fakturama.rcp.parameter.66" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptVoucherEditor"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_cirawEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.sep01.id"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_cSH2QEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.parcelservice.id" label="%command.parcelservice.name" iconURI="icon://COMMAND_PARCEL" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_cSH2QEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.parcelservice.id" label="%command.parcelservice.name" iconURI="icon://COMMAND_PARCEL" tooltip="%command.parcelservice.tooltip" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_RCrwcPo9EeKmVtv93KLoRw" elementId="menu:main.menu.extra.id" label="%main.menu.extra">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="menu:main.menu.organize_documents.id" label="%main.menu.extra.reorganize" iconURI="icon://COMMAND_REORGANIZE" command="_uB33QIZSEeWRb8xKRQdEJg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_6DEs4DAHEeadQNc3uX9jkA" elementId="menu:main.menu.extras.syncmobile" label="%main.menu.extra.syncmobile" command="_keAzgDAIEeadQNc3uX9jkA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_jPhn4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.window.id" label="%main.menu.window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_0iJK8EgWEeOrp6PdA0AQig" elementId="menu:main.menu.calculator.id" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" command="_-UipAEy_EeOA3qmx22wNtw"/>
@@ -429,6 +428,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" elementId="about" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.help.about" iconURI="icon://COMMAND_APP" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
       </children>
     </mainMenu>
+    <windows xsi:type="basic:TrimmedWindow" xmi:id="_LYIXYDAMEeadQNc3uX9jkA" elementId="window:org.fakturama.syncmobile" toBeRendered="false" visible="false" label="%main.menu.extra.syncmobile" x="200" y="100" width="500" height="200">
+      <children xsi:type="basic:Part" xmi:id="_De11ADAOEeadQNc3uX9jkA" elementId="part:org.fakturama.syncmobile.main" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.SyncMobileDialog" label="Sync main part"/>
+    </windows>
     <trimBars xmi:id="_6zLE0EvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar">
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar.control" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>
@@ -468,6 +470,8 @@
   <handlers xmi:id="_wQ-7EK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.handler.document.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkDocumentAsPaidHandler" command="_EcW7AEEUEeSEOrX6Mzhm6Q"/>
   <handlers xmi:id="_pMZsoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.handler.order.markas" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.MarkOrderAsActionHandler" command="_bFPksLPZEeS-Jtapb6hhEg"/>
   <handlers xmi:id="_CfeC4O3vEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.handler.documents.removeref" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.RemoveInvoiceReferenceHandler" command="_3Wx3MO3uEeScLKnTyMNVVA"/>
+  <handlers xmi:id="_w7HNYDAIEeadQNc3uX9jkA" elementId="com.sebulli.fakturama.rcp.handler.syncmobile" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SyncMobileHandler" command="_keAzgDAIEeadQNc3uX9jkA"/>
+  <handlers xmi:id="_591t8DAPEeadQNc3uX9jkA" elementId="handler:org.fakturama.parcelservice" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenParcelServiceHandler" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -570,7 +574,7 @@
   <commands xmi:id="_octaQEvnEeOlALHF9EqnUg" elementId="command.new.deliverynote" commandName="%toolbar.new.deliverynote.name" description="%main.menu.new.deliverynote" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_rT4_YEy7EeOA3qmx22wNtw" elementId="command.new.expenditurevoucher" commandName="%toolbar.new.expenditurevoucher.name" description="%command.new.expenditurevoucher.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_9niOgEy-EeOA3qmx22wNtw" elementId="command.new.receiptvoucher" commandName="%toolbar.new.receiptvoucher.name" description="%command.new.receiptvoucher.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
-  <commands xmi:id="_UP9z8Ey_EeOA3qmx22wNtw" elementId="com.sebulli.fakturama.command.openParcelService" commandName="%command.open.parcel.name" description="%command.parcelservice.tooltip"/>
+  <commands xmi:id="_UP9z8Ey_EeOA3qmx22wNtw" elementId="com.sebulli.fakturama.command.openParcelService" commandName="%command.open.parcel.name" description="%command.parcelservice.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_qPSyAEy_EeOA3qmx22wNtw" elementId="com.sebulli.fakturama.command.openBrowserEditor" commandName="%command.browser.command" description="%command.browser.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_LI4CYMExEeSyj41D59qmtg" elementId="com.sebulli.fakturama.command.browser.url" name="URL to load"/>
     <parameters xmi:id="_NpmdQMEyEeSyj41D59qmtg" elementId="com.sebulli.fakturama.command.browser.useprojecturl" name="useFakturamaProjectURL"/>
@@ -597,6 +601,7 @@
     <parameters xmi:id="_C4kMwIZoEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.command.documents.reorganize.silent" name="run silently"/>
   </commands>
   <commands xmi:id="_spNTACBUEea-4Y0BjcPDPA" elementId="com.sebulli.fakturama.rcp.command.update" commandName="%command.app.update" description="Searches for updates" category="_ck9sUCTREeS9z6SQNducwg"/>
+  <commands xmi:id="_keAzgDAIEeadQNc3uX9jkA" elementId="com.sebulli.fakturama.rcp.command.syncmobile" commandName="%main.menu.extra.syncmobile" description="Synchronize with your mobile device" category="_ck9sUCTREeS9z6SQNducwg"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

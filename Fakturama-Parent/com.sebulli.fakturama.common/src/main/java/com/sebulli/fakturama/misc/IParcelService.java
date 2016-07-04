@@ -13,6 +13,8 @@
 
 package com.sebulli.fakturama.misc;
 
+import java.util.Properties;
+
 /**
  * @author rheydenr
  *
@@ -20,5 +22,17 @@ package com.sebulli.fakturama.misc;
 public interface IParcelService {
 
     public abstract String getRelativeTemplatePath();
+
+	String getName();
+
+	String getUrl();
+
+	int size();
+
+	void setActive(int i);
+
+	String getName(int i);
+
+	Properties getProperties();
 
 }

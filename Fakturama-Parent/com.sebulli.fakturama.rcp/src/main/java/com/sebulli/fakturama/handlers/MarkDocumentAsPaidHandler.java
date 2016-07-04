@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.inject.Inject;

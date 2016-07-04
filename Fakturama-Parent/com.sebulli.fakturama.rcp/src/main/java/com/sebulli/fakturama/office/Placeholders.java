@@ -975,28 +975,28 @@ public class Placeholders {
 	 * @return
 	 * 	String array with all placeholders
 	 */
-	String[] getPlaceholders() {
+	protected String[] getPlaceholders() {
 		return placeholders;
 	}
 	
-//	/**
-//	 * Test, if the name is in the list of all placeholders
-//	 * 
-//	 * @param testPlaceholder
-//	 * 		The placeholder to test
-//	 * @return
-//	 * 		TRUE, if the placeholder is in the list
-//	 */
-//	private boolean isPlaceholder (String testPlaceholder) {
-//		
-//		String placeholderName = extractPlaceholderName(testPlaceholder);
-//		
-//		// Test all placeholders
-//		for (String placeholder : placeholders) {
-//			if (placeholderName.equals(placeholder))
-//				return true;
-//		}
-//		return false;
-//	}
+	/**
+	 * Test, if the name is in the list of all placeholders
+	 * 
+	 * @param testPlaceholder
+	 * 		The placeholder to test
+	 * @return
+	 * 		TRUE, if the placeholder is in the list
+	 */
+	public boolean isPlaceholder(String testPlaceholder) {
+		
+		String placeholderName = extractPlaceholderName(testPlaceholder);
+		
+		// Test all placeholders
+		for (String placeholder : placeholders) {
+			if (placeholderName.equals(placeholder))
+				return true;
+		}
+		return false;
+	}
 }
 

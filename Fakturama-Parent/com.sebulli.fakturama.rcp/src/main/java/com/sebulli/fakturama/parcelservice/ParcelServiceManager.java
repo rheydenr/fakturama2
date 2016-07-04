@@ -47,7 +47,7 @@ public class ParcelServiceManager implements IParcelService {
     
     @Inject
     @Translation
-    protected Messages msg;
+    private Messages msg;
 
     @Inject
     @Preference
@@ -58,6 +58,14 @@ public class ParcelServiceManager implements IParcelService {
 	
 	// The active parcel service
 	private int active = -1;
+	
+	public void setMsg(Messages msg) {
+		this.msg = msg;
+	}
+	
+	public void setPrefs(IEclipsePreferences pref) {
+		this.eclipsePrefs = pref;
+	}
 	
 	/**
 	 * Loads all the parcel service lists from a specified path
@@ -82,12 +90,11 @@ public class ParcelServiceManager implements IParcelService {
             newDirectoryStream.forEach(file -> {
 			
     			// It's used as a parcel service file, if it ends with a *.txt
-    		    if(file.endsWith(".txt")) {
+    		    if(file.toString().endsWith(".txt")) {
     
     					// Load the file into a properties object
     					Properties properties = new Properties();
-    					try(BufferedInputStream stream = new BufferedInputStream(Files.newInputStream(file.getFileName()))) {
-                            Files.newInputStream(file.getFileName());
+    					try(BufferedInputStream stream = new BufferedInputStream(Files.newInputStream(file))) {
     						Reader in = new InputStreamReader(stream, "UTF8");
     						properties.load(in);
     
@@ -130,7 +137,7 @@ public class ParcelServiceManager implements IParcelService {
 	 */
 	@Override
     public String getRelativeTemplatePath () {
-		return msg.configWorkspaceTemplatesName + "/" + msg.parcelServiceName + "/";
+		return msg.configWorkspaceTemplatesName + "/" + msg.commandParcelserviceName + "/";
 	}
 	
 	/**
@@ -139,6 +146,7 @@ public class ParcelServiceManager implements IParcelService {
 	 * @return
 	 * 	The number of properties entries
 	 */
+	@Override
 	public int size() {
 		return propertiesList.size();
 	}
@@ -151,6 +159,7 @@ public class ParcelServiceManager implements IParcelService {
 	 * @return
 	 * 		The name of the parcel service
 	 */
+	@Override
 	public String getName(int i) {
 		return propertiesList.get(i).getProperty("name");
 	}
@@ -161,6 +170,7 @@ public class ParcelServiceManager implements IParcelService {
 	 * @return
 	 * 		The name of the active parcel service
 	 */
+	@Override
 	public String getName() {
 		return propertiesList.get(active).getProperty("name");
 	}
@@ -183,6 +193,7 @@ public class ParcelServiceManager implements IParcelService {
 	 * @return
 	 * 		The URL of the active parcel service
 	 */
+	@Override
 	public String getUrl() {
 		return propertiesList.get(active).getProperty("url");
 	}
@@ -193,8 +204,9 @@ public class ParcelServiceManager implements IParcelService {
 	 * @param i
 	 * 		Number of the properties object
 	 */
+	@Override
 	public void setActive (int i) {
-		if ( (i< propertiesList.size()) && (i>=0))
+		if ( i< propertiesList.size() && i>=0)
 			active = i;
 	}
 	
@@ -204,6 +216,7 @@ public class ParcelServiceManager implements IParcelService {
 	 * @return
 	 * 		The active properties object
 	 */
+	@Override
 	public Properties getProperties () {
 		return propertiesList.get(active);
 	}

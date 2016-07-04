@@ -32,6 +32,7 @@ import org.fakturama.imp.ImportMessages;
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
@@ -41,6 +42,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.Voucher;
@@ -73,6 +75,9 @@ public class ExpendituresCsvImporter {
     
     @Inject
     private VatCategoriesDAO vatCategoriesDAO;
+    
+    @Inject
+    private ItemAccountTypeDAO itemAccountTypeDAO;
     
     @Inject
     private VatsDAO vatsDAO;
@@ -126,7 +131,10 @@ public class ExpendituresCsvImporter {
 				newVat.setName(msg.getPurchaseTaxString());
 				newVat.setDescription(msg.getPurchaseTaxString());
 				newVat.setTaxValue(Double.valueOf(0.0));
-					vatCategory = vatCategoriesDAO.save(vatCategory);
+				vatCategory = modelFactory.createVATCategory();
+				vatCategory.setName(msg.getPurchaseTaxString());
+				newVat.setCategory(vatCategory);
+				newVat = vatsDAO.save(newVat);
 			}
 		} catch (FakturamaStoringException e) {
 			log.error("can't save new VAT");
@@ -144,33 +152,12 @@ public class ExpendituresCsvImporter {
 		int lineNr = 0;
 
 		String[] columns;
-
-		CSVReader csvr = null;
 	
 		// Open the existing file
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-			 BufferedReader in = new BufferedReader(isr)) {
-			
-			csvr = new CSVReader(in, ';');
-		}
-		catch (UnsupportedEncodingException e) {
-			log.error(e, "Unsupported UTF-8 encoding");
-			result += NL + "Unsupported UTF-8 encoding";
-			return;
-		}
-		catch (FileNotFoundException e) {
-			//T: Error message
-			result += NL + importMessages.wizardImportErrorFilenotfound;
-			return;
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-			return;
-		}
+			 BufferedReader in = new BufferedReader(isr);
+			 CSVReader csvr = new CSVReader(in, ';');	) {
 
-		// Read the first line
-		try {
-			
 			// Read next CSV line
 			columns = csvr.readNext();
 			
@@ -179,25 +166,9 @@ public class ExpendituresCsvImporter {
 				result += NL + importMessages.wizardImportErrorFirstline;
 				return;
 			}
-		}
-		catch (IOException e1) {
-			//T: Error message
-			result += NL + importMessages.wizardImportErrorFirstline;
-			return;
-		} finally {
-			try {
-				if (csvr != null) {
-					csvr.close();
-				}
-			}
-			catch (IOException e) {
-				result += NL + msg.commonErrorClosefile;
-			}
-		}
 
 		// Read the existing file and store it in a buffer
 		// with a fix size. Only the newest lines are kept.
-		try {
 
 			// Store the last expenditure. This is used to import
 			// 2 lines with 2 expenditure items but only one expenditure.
@@ -223,7 +194,7 @@ public class ExpendituresCsvImporter {
 					}
 				}
 
-				// Test, if all columns are used
+				// Test if all columns are used
 				if ((prop.size() > 0) && (prop.size() != requiredHeaders.length)) {
 					for (int i = 0; i < requiredHeaders.length; i++) {
 						if (!prop.containsKey(requiredHeaders[i]))
@@ -232,15 +203,17 @@ public class ExpendituresCsvImporter {
 							+ MessageFormat.format(importMessages.wizardImportErrorNodatafound, Integer.toString(lineNr) 
 						    + "\"" + requiredHeaders[i] + "\""); 
 					}
-				}
-				else {
-
+				} else {
 					// Date is a must.
 					if (!prop.getProperty("date").isEmpty()) {
 
 						// Fill the expenditure data set
 						expenditure.setName(prop.getProperty("name"));
 						VoucherCategory account = voucherCategoriesDAO.findByName(prop.getProperty("category"));
+						if(account == null) {
+							account = modelFactory.createVoucherCategory();
+							account.setName(prop.getProperty("category"));
+						}
 						expenditure.setAccount(account);
 						expenditure.setVoucherDate(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date")).getTime());
 						expenditure.setVoucherNumber(prop.getProperty("nr"));
@@ -249,8 +222,9 @@ public class ExpendituresCsvImporter {
 						// Test, if the last line was the same expenditure
 						boolean repeatedExpenditure = false;
 
-						if (lastExpenditure != null && lastExpenditure.isSameAs(expenditure))
+						if (lastExpenditure != null && lastExpenditure.isSameAs(expenditure)) {
 							repeatedExpenditure = true;
+						}
 
 						// If the data set is already existing, stop the CSV import
 						if (!repeatedExpenditure) {
@@ -265,9 +239,12 @@ public class ExpendituresCsvImporter {
 
 						// Fill the expenditure item with data
 						expenditureItem.setName(prop.getProperty("item name"));
-						// TODO get itemaccounttype
-//						VoucherCategory newAccountType = voucherCategoriesDAO.findByName(prop.getProperty("item category"));
-//						expenditureItem.setAccountType(newAccountType);
+						ItemAccountType newAccountType = itemAccountTypeDAO.findByName(prop.getProperty("item category"));
+						if(newAccountType == null) {
+							newAccountType = modelFactory.createItemAccountType();
+							newAccountType.setName(prop.getProperty("item category"));
+						}
+						expenditureItem.setAccountType(newAccountType);
 						expenditureItem.setPrice(DataUtils.getInstance().StringToDouble(prop.getProperty("item price")));
 
 						String vatName = prop.getProperty("item vat");
@@ -277,7 +254,6 @@ public class ExpendituresCsvImporter {
 						vat.setTaxValue(vatValue);
 						vat.setName(vatName);
 						vat.setDescription(vatName);
-						
 						vat.setCategory(vatCategory);
 						vat = vatsDAO.findOrCreate(vat);
 						expenditureItem.setVat(vat);
@@ -320,23 +296,23 @@ public class ExpendituresCsvImporter {
 			result += NL + Integer.toString(importedExpenditures) + " " + importMessages.wizardImportInfoVouchersimported;
 
 		}
-		catch (IOException e) {
+		catch (UnsupportedEncodingException e) {
+			log.error(e, "Unsupported UTF-8 encoding");
+			result += NL + "Unsupported UTF-8 encoding";
+			return;
+		}
+		catch (FileNotFoundException e) {
 			//T: Error message
-			result += NL + importMessages.wizardImportErrorOpenfile;
+			result += NL + importMessages.wizardImportErrorFilenotfound;
+			return;
+		}
+		catch (IOException e1) {
+			//T: Error message
+			result += NL + importMessages.wizardImportErrorFirstline;
+			return;
 		} catch (FakturamaStoringException e) {
 			log.error("can't save or update imported expenditure");
 		}
-		finally {
-			try {
-				if (csvr != null) {
-					csvr.close();
-				}
-			}
-			catch (IOException e) {
-				result += NL + msg.commonErrorClosefile;
-			}
-		}
-
 	}
 
 	public String getResult() {

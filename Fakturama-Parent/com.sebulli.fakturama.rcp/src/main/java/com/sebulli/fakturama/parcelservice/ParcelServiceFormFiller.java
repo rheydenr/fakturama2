@@ -15,9 +15,12 @@
 package com.sebulli.fakturama.parcelservice;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Properties;
 
@@ -28,23 +31,34 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.browser.Browser;
 
+import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IParcelService;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.office.Placeholders;
 
 /**
  * Fills the form of the parcel service
  * 
- * @author Gerd Bartelt
- *
  */
 public class ParcelServiceFormFiller {
 
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
-    
+
+    @Inject
+    @Translation
+    private Messages msg;
+
     @Inject
     private IEclipseContext context;
 	
@@ -57,8 +71,7 @@ public class ParcelServiceFormFiller {
 	// True, if form was filled
 	private boolean filled;
 	
-	private ParcelServiceManager parcelServiceManager;
-
+	private IParcelService parcelServiceManager;
 	
 	/**
 	 * (Post-)Constructor
@@ -79,13 +92,7 @@ public class ParcelServiceFormFiller {
 	 */
 	private void fillFormField (String fieldName, String pvalue) {
 		
-		if (fieldName == null)
-			return;
-
-		if (pvalue == null)
-			return;
-		
-		if (fieldName.isEmpty())
+		if (fieldName == null || pvalue == null || fieldName.isEmpty())
 			return;
 		
 		//System.out.println("fill: " + fieldName + " with: "+ pvalue);
@@ -142,8 +149,6 @@ public class ParcelServiceFormFiller {
 	 * 		TRUE, if it exists.
 	 */
 	private boolean formFieldExists (String fieldName) {
-		
-		
 		if (allFields == null) {
 			// Script that counts the fields with this name
 			String script = "" +
@@ -166,44 +171,33 @@ public class ParcelServiceFormFiller {
 		}
 		
 		return allFields.contains(":" + fieldName + ":");
-		
 	}
 	
 	/**
-	 * Tests, whether a form field exists
-	 * 
-	 * @param fieldName
-	 * 		The name of the field to test
-	 * @return
-	 * 		TRUE, if it exists.
-	 */
-
-	
-	
-	/**
 	 * Fills the form of the parcel service with the address data
+	 * @param part 
 	 */
-	public void fillForm(Browser browser,/* IEditorInput editorInput,*/ boolean forceFill) {
+	public void fillForm(Browser browser, MPart part, boolean forceFill) {
 		this.browser = browser;
 
-//		Properties inputProperties = ((ParcelServiceBrowserEditorInput)editorInput).getProperties();
-//		DataSetDocument document =((ParcelServiceBrowserEditorInput)editorInput).getDocument();
+		Properties inputProperties = ((IParcelService)part.getContext().get(IParcelService.class)).getProperties();
+		Document document = (Document) part.getTransientData().get("DOCUMENT");
 		Properties p = new Properties();
 		
 		// Switch key and value
-//		for (Map.Entry<Object, Object> propItem : inputProperties.entrySet())
-//		{
-//		    String key = (String) propItem.getKey();
-//
-//		    String value = (String) propItem.getValue();
-//			if ((!key.equalsIgnoreCase("url")) && (!key.equalsIgnoreCase("url")) && (!value.isEmpty()) ) {
-//				p.put(value, key);
-//			}
-//		}
+		for (Map.Entry<Object, Object> propItem : inputProperties.entrySet())
+		{
+		    String key = (String) propItem.getKey();
+
+		    String value = (String) propItem.getValue();
+			if (!key.equalsIgnoreCase("url") && !value.isEmpty() ) {
+				p.put(value, key);
+			}
+		}
 		
 		// Fill the fields
 		// At least this fields must exist in the website's form
-		if (( ( formFieldExists(p.getProperty("DELIVERY.ADDRESS.NAME")) ||
+		if ((formFieldExists(p.getProperty("DELIVERY.ADDRESS.NAME")) ||
 			   formFieldExists(p.getProperty("DELIVERY.ADDRESS.LASTNAME")) ||
 			   formFieldExists(p.getProperty("DELIVERY.ADDRESS.COMPANY")) ||
 			   formFieldExists(p.getProperty("YOURCOMPANY.COMPANY")) ||
@@ -211,32 +205,33 @@ public class ParcelServiceFormFiller {
 			   formFieldExists(p.getProperty("YOURCOMPANY.OWNER.FIRSTNAME")) ||
 			   formFieldExists(p.getProperty("YOURCOMPANY.OWNER.LASTNAME")) ||
 			   formFieldExists(p.getProperty("ADDRESS.NAME")) ||
-			   formFieldExists(p.getProperty("ADDRESS.LASTNAME"))   )&&
-				!filled ) || forceFill){
+			   formFieldExists(p.getProperty("ADDRESS.LASTNAME"))) &&
+				!filled || forceFill){
 			filled = true;
 
 			// get all entries
-//			for (Map.Entry<Object, Object> propItem : inputProperties.entrySet())
-//			{
-//			    String key = (String) propItem.getKey();
-//			    String value = ((String) propItem.getValue()).trim();
-//
-//			    if ((!key.equalsIgnoreCase("url")) && (!key.equalsIgnoreCase("url")) && (!value.isEmpty()) ) {
-//
-//			    	// It is a placeholder
-//			    	if (Placeholders.isPlaceholder(value)) {
-//						fillFormField(key, Placeholders.getDocumentInfo(document, value));
-//			    	}
-//			    	// It is a constant String
-//			    	else if (value.startsWith("\"") && value.endsWith("\"")) {
-//
-//			    		// Remove trailing and leading ""
-//			    		value = value.substring(1, value.length()-1);
-//			    		fillFormField(key, value);
-//			    		
-//			    	}
-//				}
-//			}
+			Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+			DocumentSummary documentSummary = new DocumentSummaryCalculator().calculate(document);
+			
+			for (Map.Entry<Object, Object> propItem : inputProperties.entrySet()) {
+			    String key = (String) propItem.getKey();
+			    String value = ((String) propItem.getValue()).trim();
+
+			    if (!key.equalsIgnoreCase("url") && !value.isEmpty() ) {
+
+			    	// It is a placeholder
+			    	if (placeholders.isPlaceholder(value)) {
+						fillFormField(key, placeholders.getDocumentInfo(document, documentSummary, value));
+			    	}
+			    	// It is a constant String
+			    	else if (value.startsWith("\"") && value.endsWith("\"")) {
+
+			    		// Remove trailing and leading ""
+			    		value = value.substring(1, value.length()-1);
+			    		fillFormField(key, value);
+			    	}
+				}
+			}
 		}
 	}
 	
@@ -246,8 +241,9 @@ public class ParcelServiceFormFiller {
 	 * 		Title of the website
 	 * @return
 	 * 		The file name
+	 * @throws IOException 
 	 */
-	private String getParcelServiceFileName(String title) {
+	private String getParcelServiceFileName(String title) throws IOException {
 		// Get the directory of the workspace
 		String filename = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
 
@@ -256,17 +252,16 @@ public class ParcelServiceFormFiller {
 			return "";
 
 		// Do not save  parcel service files, if workspace is not created
-		File directory = new File(filename);
-		if (!directory.exists())
+		Path directory = Paths.get(filename);
+		if (Files.notExists(directory))
 			return "";
 
 		// Create a sub folder "ParcelService", if it does not exist yet.
-		filename += "/" + parcelServiceManager.getRelativeTemplatePath();
-		directory = new File(filename);
-		if (!directory.exists())
-			directory.mkdirs();
+		directory = Paths.get(filename, parcelServiceManager.getRelativeTemplatePath());
+		if (Files.notExists(directory))
+			Files.createDirectories(directory);
 
-		if (new File(filename + title+".txt").exists()) {
+		if (Files.exists(Paths.get(filename, title+".txt"))) {
 			// Add date and time, if file exists
 			title+= "_"+DataUtils.getInstance().DateAndTimeOfNowAsISO8601String();
 			title = title.replaceAll(":", "");
@@ -288,8 +283,7 @@ public class ParcelServiceFormFiller {
 	 */
 	public void testParcelServiceForm(Browser browser) {
 		// Script that counts the fields with this name
-		String script = "" +
-			"function getAllFields() {" +
+		String script = "function getAllFields() {" +
 			"  var s = ':';"+
 			"  documentForms = document.getElementsByTagName('form');" +
 			"  for (var i = 0; i < documentForms.length; i++) {" +
@@ -325,20 +319,22 @@ public class ParcelServiceFormFiller {
 				String title = (String)browser.evaluate("return document.title;");
 				
 				// Generate a file name
-				String filename = getParcelServiceFileName(title);
+				String filename;
+				try {
+					filename = getParcelServiceFileName(title);
+				} catch (IOException e1) {
+					filename = System.getenv("TEMP");
+				}
 
 				// Create a new parcel service template file
-				File file = new File(filename);
-				try {
-					
-					// Create a new file
-					file.createNewFile();
-					BufferedWriter bos = new BufferedWriter(new FileWriter(file, true));
+				Path file = Paths.get(filename);
+				// Create a new file
+				try (
+					BufferedWriter bos = new BufferedWriter(Files.newBufferedWriter(file, StandardOpenOption.CREATE));) {
 					
 					// Add name and URL
 					String NL = System.lineSeparator();
-					String s = "";
-					s += "# Name and URL of the parcel service:" + NL;
+					String s = "# Name and URL of the parcel service:" + NL;
 					s += "name = "+ title + NL;  
 					s += "url  = "+ (String)browser.evaluate("return document.URL.split('?')[0];") + NL + NL;
 					s += "# Fields:"+ NL;
@@ -367,7 +363,7 @@ public class ParcelServiceFormFiller {
 					// A an additional help text
 					s = NL+ NL+ NL+ NL + 
 						"# If you have created a template file for a new parcel service," + NL +
-						"# it would be nice to share it with other users on fakturama.sebulli.com" + NL +
+						"# it would be nice to share it with other users on www.fakturama.info" + NL +
 						"# " + NL +
 						"# Syntax:" + NL +
 						"# field = PLACE.HOLDER" + NL +
@@ -399,21 +395,15 @@ public class ParcelServiceFormFiller {
 					bos.write(s);
 					bos.close();
 					
-//					// Show a dialog
-//					Workspace.showMessageBox(SWT.OK, 
-//							//T: Message box title
-//							_("File created"),
-//							//T: Message box text
-//							_("A new parcel service template:\n") + filename + "\n" + 
-//							//T: Message box text
-//							_("was created"));
-					
+					// Show a dialog
+					MessageDialog.openInformation(browser.getShell(), 
+						//T: Message box title
+						msg.parcelserviceFormfillerDialogTitle,
+						//T: Message box text
+						MessageFormat.format(msg.parcelserviceFormfillerDialogMessage, filename));
 
 				} catch (IOException e) {
 				}
 			}
-			
 	}
-
-
 }
