@@ -67,7 +67,6 @@ import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.preferences.PreferencesInDatabase;
-import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.TemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 
@@ -87,7 +86,7 @@ public class LifecycleManager {
 
 	@Inject
     private IEclipseContext context;
-    
+
     @Inject
     private ILogger log;
 
@@ -98,9 +97,6 @@ public class LifecycleManager {
     @Inject
     @Translation
     protected Messages msg;
-    
-    @Inject
-    protected ITemplateResourceManager resourceManager;
 
 	private IDialogSettings dialogSettings;
 

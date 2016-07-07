@@ -138,11 +138,11 @@ public class ConfigurationManager {
         			// ... or, better, at least we inform the user
         			log.warn("The requested workspace folder is invalid. Please select "
         			        + "a new one from the Fakturama menu (File - select workspace...)."
-        			        + "The option is for now ignored.");
+        			        + "The option is ignored for now.");
                 }
             }
         } catch (ParseException e1) {
-            log.error(e1, "Fehler beim Aufruf des Programms.");
+            log.error(e1, "Error launching program.");
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Fakturama", options);
             //  ExitHandler!

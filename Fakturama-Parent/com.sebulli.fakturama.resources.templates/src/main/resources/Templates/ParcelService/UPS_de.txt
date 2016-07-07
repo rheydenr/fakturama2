@@ -1,0 +1,69 @@
+# Name and URL of the parcel service:
+name = UPS
+# Da liegt das Formular
+url = https://www.ups.com/uis/create?loc=de_DE
+
+# Fields:
+#Herkunftsort dieser Sendung - Unternehmen oder Name:
+shipFromAddress.name = YOURCOMPANY.COMPANY
+#Herkunftsort dieser Sendung - Kontaktname:
+shipFromAddress.contactName = YOURCOMPANY.OWNER
+#Herkunftsort dieser Sendung - Adresse, Zeile 1:
+shipFromAddress.street = YOURCOMPANY.STREET
+#Herkunftsort dieser Sendung - Postleitzahl:
+shipFromAddress.postalCode = YOURCOMPANY.ZIP
+#Herkunftsort dieser Sendung - Stadt:
+shipFromAddress.city = YOURCOMPANY.CITY
+#Herkunftsort dieser Sendung - Telefonnummer:
+shipFromAddress.telephone = YOURCOMPANY.PHONE.POST
+#Herkunftsort dieser Sendung - Email:
+shipFromAddress.email = YOURCOMPANY.EMAIL
+
+#Bestimmungsort dieser Sendung - Unternehmen oder Name:
+consigneeAddress.name = DELIVERY.ADDRESS.NAME
+#Bestimmungsort dieser Sendung - Adresse, Zeile 1:
+consigneeAddress.street = DELIVERY.ADDRESS.STREET
+#Bestimmungsort dieser Sendung - Postleitzahl:
+consigneeAddress.postalCode = DELIVERY.ADDRESS.ZIP
+#Bestimmungsort dieser Sendung - Stadt:
+consigneeAddress.city = DELIVERY.ADDRESS.CITY
+#Bestimmungsort dieser Sendung - E-Mail:
+consigneeAddress.email = ADDRESS.EMAIL
+
+#Referenz-Nr. 1
+shipmentBean.reference.value#1 = DOCUMENT.NAME
+#Referenz-Nr. 1
+shipmentBean.reference.value#2 = ADDRESS.NR
+
+
+
+# If you have created a template file for a new parcel service,
+# it yould be nice to share it with other users on fakturama.sebulli.com
+#
+# Syntax:
+# field = PLACE.HOLDER
+#
+# Some of the most significant placeholders are:
+#
+# YOURCOMPANY.COMPANY
+# YOURCOMPANY.OWNER
+# YOURCOMPANY.OWNER.FIRSTNAME
+# YOURCOMPANY.OWNER.LASTNAME
+# YOURCOMPANY.STREET
+# YOURCOMPANY.STREETNAME
+# YOURCOMPANY.STREETNO
+# YOURCOMPANY.ZIP
+# YOURCOMPANY.CITY
+#
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.NAME
+# DELIVERY.ADDRESS.FIRSTNAME
+# DELIVERY.ADDRESS.LASTNAME
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.STREET
+# DELIVERY.ADDRESS.STREETNAME
+# DELIVERY.ADDRESS.STREETNO
+# DELIVERY.ADDRESS.ZIP
+# DELIVERY.ADDRESS.CITY
+#
+# Read the manual for all placeholders.
