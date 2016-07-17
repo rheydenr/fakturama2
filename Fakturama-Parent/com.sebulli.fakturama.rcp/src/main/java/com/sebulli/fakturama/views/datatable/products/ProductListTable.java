@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -64,6 +65,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -116,6 +118,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Product> treeFilteredIssues;
+
+	private ProductMatcher currentFilter;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -354,8 +358,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
     @Override
     protected TopicTreeViewer<ProductCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
         topicTreeViewer = new TopicTreeViewer<ProductCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(productCategoriesDAO.findAll());
@@ -380,11 +382,14 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ProductEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(productListData, GlazedLists.eventList(productsDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(productCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(productListData, GlazedLists.eventList(productsDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(productCategoriesDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**
@@ -402,8 +407,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 		if(splittedString.length > 1) {
 			rootNode = splittedString[1];
 		}
-    	// ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()
-        treeFilteredIssues.setMatcher(new ProductMatcher(filter, treeObjectType, rootNode));
+    	currentFilter = new ProductMatcher(filter, treeObjectType, rootNode);
+		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
     }

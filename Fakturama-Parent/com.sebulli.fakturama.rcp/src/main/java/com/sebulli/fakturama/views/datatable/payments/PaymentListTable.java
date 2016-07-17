@@ -17,6 +17,7 @@ package com.sebulli.fakturama.views.datatable.payments;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -65,6 +66,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -129,6 +131,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Payment> treeFilteredIssues;
+
+	private PaymentMatcher currentFilter;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -297,8 +301,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
 
     @Override
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
         topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(accountDAO.findAll());
@@ -332,25 +334,15 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(accountDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
-//
-//    /**
-//     * Set the category filter
-//     * 
-//     * @param filter
-//     *            The new filter string
-//     * 
-//     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
-//     *             instead
-//     */
-//    public void setCategoryFilter(String filter) {
-//        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
-//    }
 
     /**
      * Set the category filter with a given {@link TreeObjectType}.
@@ -362,8 +354,8 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
 
-        // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new PaymentMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        currentFilter = new PaymentMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName());
+		treeFilteredIssues.setMatcher(currentFilter);
         //   contentProvider.setTreeObject(treeObject);
 
         //Refresh is done automagically...

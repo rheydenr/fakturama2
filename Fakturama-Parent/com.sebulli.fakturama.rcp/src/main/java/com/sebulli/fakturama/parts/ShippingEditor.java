@@ -182,7 +182,7 @@ public class ShippingEditor extends Editor<Shipping> {
         part.setLabel(editorShipping.getName());
         
 		// Refresh the table view of all Shippings (this also refreshes the tree of categories)
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
@@ -614,7 +614,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // Refresh the table view of all Shippings. This is necessary because if you change an entity
         // and don't save it, the list view gets updated (with the unsaved entity!). This call updates the
         // list view from database.
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         editorShipping = null;
         top = null;
     }

@@ -118,7 +118,7 @@ public class ListEditor extends Editor<ItemAccountType> {
         part.setLabel(editorListEntry.getName());
 
         // Refresh the table view of all ItemAccountTypes (this also refreshes the tree of categories)
-        evtBroker.post(ListEditor.class.getSimpleName(), "update");
+        evtBroker.post(ListEditor.class.getSimpleName(), Editor.UPDATE_EVENT);
 
         // reset dirty flag
         getMDirtyablePart().setDirty(false);

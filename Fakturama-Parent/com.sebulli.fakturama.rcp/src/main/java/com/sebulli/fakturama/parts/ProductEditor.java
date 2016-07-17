@@ -269,7 +269,7 @@ public class ProductEditor extends Editor<Product> {
 		this.part.setLabel(editorProduct.getName());
 
 		// Refresh the table view of all contacts
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);

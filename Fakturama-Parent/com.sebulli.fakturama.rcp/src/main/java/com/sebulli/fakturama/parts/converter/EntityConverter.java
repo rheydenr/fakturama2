@@ -38,7 +38,7 @@ public class EntityConverter<T extends IEntity> extends Converter {
     @Override
     public Object convert(Object fromObject) {
         String result = null;
-        if(type.equals(getFromType())) {
+        if(type.equals(getFromType()) && fromObject != null) {
             if(fromObject instanceof IDescribableEntity) {
                 result = ((IDescribableEntity)fromObject).getDescription();
             } else {

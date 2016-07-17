@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -78,6 +79,11 @@ public abstract class Editor<T extends IEntity> {
      * Indicates if a widget is in "calculating" state, i.e. if modification occurs and dirty state has to be set.
      */
 	protected static final String CALCULATING_STATE = "calculating";
+	
+	/**
+	 * Token for the update event.
+	 */
+	public static final String UPDATE_EVENT = "update";
 
     @Inject
     protected IPreferenceStore defaultValuePrefs;
@@ -480,9 +486,9 @@ public abstract class Editor<T extends IEntity> {
 	
     protected void bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue model = nameProperty.observe(target);
+        IObservableValue<T> model = nameProperty.observe(target);
 
-        IObservableValue uiWidget;
+        IObservableValue<T> uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
@@ -491,6 +497,8 @@ public abstract class Editor<T extends IEntity> {
             uiWidget = WidgetProperties.selection().observe(source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
+        } else if(source instanceof Spinner) {
+        	uiWidget = WidgetProperties.selection().observe(source);
         } else {
 //            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
             uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
@@ -555,8 +563,8 @@ public abstract class Editor<T extends IEntity> {
     protected void bindModelValue(T target, FormattedText source, String property, int limit) {
         source.getControl().setTextLimit(limit);
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue model = nameProperty.observe(target);
-        IObservableValue uiWidget = new FormattedTextObservableValue(source, SWT.FocusOut);
+        IObservableValue<T> model = nameProperty.observe(target);
+        IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
         ctx.bindValue(uiWidget, model);
 
         source.getControl().addModifyListener(new ModifyListener() {
@@ -577,8 +585,8 @@ public abstract class Editor<T extends IEntity> {
 
     protected void bindModelValue(T target, ComboViewer source, String property) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue model = nameProperty.observe(target);
-        IObservableValue uiWidget = ViewersObservables
+        IObservableValue<T> model = nameProperty.observe(target);
+        IObservableValue<T> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
         ctx.bindValue(uiWidget, model);
         

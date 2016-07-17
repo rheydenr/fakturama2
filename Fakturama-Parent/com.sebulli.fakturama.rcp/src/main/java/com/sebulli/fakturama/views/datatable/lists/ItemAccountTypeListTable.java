@@ -15,6 +15,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -61,6 +62,7 @@ import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ListEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -102,6 +104,8 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<ItemAccountType> treeFilteredIssues;
+
+	private ItemAccountTypeMatcher currentFilter;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -247,8 +251,6 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
 
     @Override
     protected TopicTreeViewer<ItemListTypeCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
 //    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
         List<ItemListTypeCategory> categoryList = itemListTypeCategoriesDAO.findAll();
@@ -281,11 +283,14 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ListEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(itemAccountTypeData, GlazedLists.eventList(itemAccountTypeDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(itemListTypeCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(itemAccountTypeData, GlazedLists.eventList(itemAccountTypeDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(itemListTypeCategoriesDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**
@@ -297,8 +302,8 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new ItemAccountTypeMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        currentFilter = new ItemAccountTypeMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName());
+		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
     }

@@ -45,6 +45,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.CreditorEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
@@ -260,9 +261,9 @@ public class CallEditor {
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DebitorEditor.class.getName());
                 myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
                 break;
-            case "Creditor":
+            case CreditorEditor.ID:
                 myPart.setLabel(msg.pageContacts);
-                myPart.setContributionURI(BASE_CONTRIBUTION_URI + ContactEditor.class.getName());
+                myPart.setContributionURI(BASE_CONTRIBUTION_URI + CreditorEditor.class.getName());
                 myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
                 break;
             case DocumentsListTable.ID:

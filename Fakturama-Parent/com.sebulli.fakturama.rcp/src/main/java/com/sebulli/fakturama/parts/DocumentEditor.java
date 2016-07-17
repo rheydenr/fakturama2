@@ -124,6 +124,7 @@ import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.parts.converter.Double2SpinnerUpdateStrategy;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
@@ -274,7 +275,7 @@ public class DocumentEditor extends Editor<Document> {
 	private MonetaryAmount deposit = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private MonetaryAmount finalPayment = FastMoney.MIN_VALUE;
 	private int dunningLevel = Integer.valueOf(0);
-	private int duedays;
+//	private int duedays;
 	private String billingAddress = "";
 	private String deliveryAddress = "";
 //	private DocumentEditor thisDocumentEditor;
@@ -454,7 +455,8 @@ public class DocumentEditor extends Editor<Document> {
 			* But wait... the Id of the old entry and the new entry have to be the same.
 			* Else it could be a newly selected contact from the contact list.
 			*/
-			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()) {
+			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
+			|| addressModified && addressId.getCustomerNumber() == null) {
 			    addressId = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
 			    address.setManualAddress(txtAddress.getText());
@@ -549,14 +551,14 @@ public class DocumentEditor extends Editor<Document> {
                     paymentText = document.getPayment().getUnpaidText();
                 }
             }
-			document.setDueDays(duedays);
+//			document.setDueDays(duedays);
 			document.getAdditionalInfo().setPaymentText(paymentText);
 		}
 		// If this document contains no payment widgets, but..
 		else {
 			// the customer changed and so there is a new payment. Set it.
 			if (!newPaymentDescription.isEmpty() && document.getPayment() != null) {
-			    document.setDueDays(duedays);
+//			    document.setDueDays(duedays);
 			    document.setPaid(Boolean.FALSE);
 			    document.setPaidValue(Double.valueOf(0.0));
 
@@ -566,6 +568,8 @@ public class DocumentEditor extends Editor<Document> {
                 }
 			}
 		}
+		
+		document.setTotalValue(total.getNumber().doubleValue());
 		
 		// Set the dunning level
 		if(documentType == DocumentType.DUNNING) {
@@ -655,7 +659,7 @@ public class DocumentEditor extends Editor<Document> {
 		setCopyGroupEnabled(true);
 		
         // Refresh the table view of all documents
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
@@ -815,7 +819,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// These variables contain settings that are not in
 		// visible SWT widgets.
-		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
+//		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
 		addressId = document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
@@ -1041,9 +1045,6 @@ public class DocumentEditor extends Editor<Document> {
         } else {
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
-        
-        // update useGross in itemsList
-        itemListTable.refresh();  // done below
 		
 		// Use the customers settings instead, if they are set
 		if (addressId != null && address_changed) {
@@ -1201,7 +1202,7 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays = new Spinner(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 			spDueDays.setMinimum(0);
 			spDueDays.setMaximum(365);
-			spDueDays.setSelection(duedays);
+//			spDueDays.setSelection(duedays);
 			spDueDays.setIncrement(1);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
@@ -1213,11 +1214,17 @@ public class DocumentEditor extends Editor<Document> {
 				public void widgetSelected(SelectionEvent e) {
 				    Calendar calendar = Calendar.getInstance();
 				    calendar.setTime(dtDate.getSelection());
-					duedays = spDueDays.getSelection();
-					calendar.add(Calendar.DAY_OF_MONTH, duedays );
+//					duedays = spDueDays.getSelection();
+					calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
 					dtIssueDate.setSelection(calendar.getTime());
+					getMDirtyablePart().setDirty(true);
 				}
 			});
+			
+			// value is set by dueDays variable, not directly by binding
+			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
+					new UpdateValueStrategy(),
+					new Double2SpinnerUpdateStrategy());
 
 			// Create the issue date label
 			Label issueDateLabel = new Label(paidDataContainer, SWT.NONE);
@@ -1245,7 +1252,7 @@ public class DocumentEditor extends Editor<Document> {
 					long difference = calendarIssue.getTime() - calendarDocument.getTime();
 					// Calculate from milliseconds to days
 					int days = (int) (difference / (1000 * 60 * 60 * 24));
-					duedays = days;
+//					duedays = days;
 					spDueDays.setSelection(days);
 				}
 			});
@@ -1404,13 +1411,13 @@ public class DocumentEditor extends Editor<Document> {
 //		Payment payment = paymentsDAO.findById(dataSetPayment);
 
 		// Get the due days and description of this payment
-		duedays = payment.getNetDays();
+//		duedays = payment.getNetDays();
 //		newPayment = dataSetPayment;
 		newPaymentDescription = payment.getDescription();
 
 		if (spDueDays !=null ) {
 			if (!spDueDays.isDisposed()) {
-				spDueDays.setSelection(duedays);
+				spDueDays.setSelection(payment.getNetDays().intValue());
 				updateIssueDate();
 			}
 		}
@@ -1455,23 +1462,36 @@ public class DocumentEditor extends Editor<Document> {
 		// Document number label
 		Label labelName = new Label(top, SWT.NONE);
 
-		//T: Document Editor - Label Document Number
-		labelName.setText(msg.commonFieldNumber);
-		labelName.setToolTipText(msg.editorDocumentRefnumberTooltip);
-
+		// for letters the "No." label has to be changed, see FAK-437
+		if(documentType == DocumentType.LETTER) {
+			//T: Letter Editor - Label Document Subject
+			labelName.setText(msg.editorDocumentLetterSubject);
+			labelName.setToolTipText(msg.editorDocumentLetterSubjectTooltip);
+		} else {
+			//T: Document Editor - Label Document Number
+			labelName.setText(msg.commonFieldNumber);
+			labelName.setToolTipText(msg.editorDocumentRefnumberTooltip);
+		}
+		
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
-
+		
 		// Container for the document number and the date
 		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).minSize(550, SWT.DEFAULT).grab(true, false).applyTo(nrDateNetGrossComposite);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
 
 		// The document number is the document name
-		txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
+		// but for letters it is the subject, see above
+		if(documentType == DocumentType.LETTER) {
+			txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
+			txtName.setSize(400, SWT.DEFAULT);
+		} else {
+			txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
+		}
 		txtName.setToolTipText(labelName.getToolTipText());
 
-		bindModelValue(document, txtName, Document_.name.getName(), 32);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
+		bindModelValue(document, txtName, Document_.name.getName(), 80);
+		GridDataFactory.swtDefaults().minSize(250, SWT.DEFAULT).grab(true, false).applyTo(txtName);
         
 		// Document date
 		//T: Document Editor
@@ -1493,7 +1513,7 @@ public class DocumentEditor extends Editor<Document> {
 			    updateIssueDate();
 			}
 		});
-		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(dtDate);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
 		
 		// Set the dtDate widget to the documents date
 		bindModelValue(document, dtDate, Document_.documentDate.getName());

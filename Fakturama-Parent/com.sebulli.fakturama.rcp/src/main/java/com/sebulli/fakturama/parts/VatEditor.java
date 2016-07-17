@@ -150,7 +150,7 @@ public class VatEditor extends Editor<VAT> {
         part.setLabel(editorVat.getName());
         
 		// Refresh the table view of all VATs (this also refreshes the tree of categories)
-        evtBroker.post(VatEditor.class.getSimpleName(), "update");
+        evtBroker.post(VatEditor.class.getSimpleName(), Editor.UPDATE_EVENT);
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);

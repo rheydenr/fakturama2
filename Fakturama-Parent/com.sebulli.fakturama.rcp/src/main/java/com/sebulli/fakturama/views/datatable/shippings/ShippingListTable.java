@@ -13,6 +13,7 @@ package com.sebulli.fakturama.views.datatable.shippings;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -68,6 +69,7 @@ import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
@@ -286,8 +288,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     @Override
     protected TopicTreeViewer<ShippingCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
         topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
@@ -321,11 +321,13 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(ShippingEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(shippingCategoriesDAO.findAll(true)), false);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**

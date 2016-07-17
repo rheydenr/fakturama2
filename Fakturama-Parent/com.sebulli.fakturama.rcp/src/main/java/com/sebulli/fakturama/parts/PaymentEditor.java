@@ -35,7 +35,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
-import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
+import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -153,7 +153,7 @@ public class PaymentEditor extends Editor<Payment> {
         part.setLabel(payment.getName());
 
 		// Refresh the table view of all payments
-        evtBroker.post(EDITOR_ID, "update");
+        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
@@ -281,7 +281,7 @@ public class PaymentEditor extends Editor<Payment> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDiscountDays);
 		textDiscountDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
-		textDiscountDays.setFormatter(new NumberFormatter());
+		textDiscountDays.setFormatter(new IntegerFormatter());
 		textDiscountDays.getControl().setToolTipText(labelDiscountDays.getToolTipText());
         bindModelValue(payment, textDiscountDays, Payment_.discountDays.getName(), 8);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountDays.getControl());
@@ -294,7 +294,7 @@ public class PaymentEditor extends Editor<Payment> {
 		labelNetDays.setToolTipText(msg.editorPaymentNetdaysTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNetDays);
 		textNetDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
-		textNetDays.setFormatter(new NumberFormatter());
+		textNetDays.setFormatter(new IntegerFormatter());
 		textNetDays.getControl().setToolTipText(labelNetDays.getToolTipText());
         bindModelValue(payment, textNetDays, Payment_.netDays.getName(), 8);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textNetDays.getControl());

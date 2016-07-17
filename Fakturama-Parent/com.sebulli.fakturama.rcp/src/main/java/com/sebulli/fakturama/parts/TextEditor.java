@@ -144,7 +144,7 @@ public class TextEditor extends Editor<TextModule> {
 		part.setLabel(editorText.getName());
 
 		// Refresh the table view of all texts
-        evtBroker.post(TextEditor.class.getSimpleName(), "update");
+        evtBroker.post(TextEditor.class.getSimpleName(), Editor.UPDATE_EVENT);
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);

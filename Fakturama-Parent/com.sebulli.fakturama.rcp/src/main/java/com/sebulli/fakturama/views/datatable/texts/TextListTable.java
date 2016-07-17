@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -63,6 +64,7 @@ import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.TextModule_;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -283,8 +285,6 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
      */
     @Override
     protected TopicTreeViewer<TextCategory> createCategoryTreeViewer(Composite top) {
-    	context.set("useDocumentAndContactFilter", false);
-    	context.set("useAll", true);
         topicTreeViewer = new TopicTreeViewer<TextCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<TextCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(textCategoriesDAO.findAll());
@@ -313,11 +313,13 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
 
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(TextEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(textListData, GlazedLists.eventList(textsDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(textCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(textListData, GlazedLists.eventList(textsDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(textCategoriesDAO.findAll(true)), false);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
     
     private void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<TextModule> gridLayer, String commandId) {

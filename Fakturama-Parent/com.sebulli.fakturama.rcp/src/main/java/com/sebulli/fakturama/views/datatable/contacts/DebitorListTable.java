@@ -5,6 +5,7 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 
@@ -45,11 +46,13 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(contactListData, getListData(true), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, "update")) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(contactListData, getListData(true), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     protected String getPopupId() {

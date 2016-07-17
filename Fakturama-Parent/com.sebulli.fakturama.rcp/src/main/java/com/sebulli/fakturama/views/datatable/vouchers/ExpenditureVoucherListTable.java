@@ -18,6 +18,7 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -50,6 +51,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -100,6 +102,8 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Voucher> treeFilteredIssues;
+
+	private VoucherMatcher currentFilter = null;
 
 	/**
 	 * Creates the SWT controls for this workbench part.
@@ -262,8 +266,6 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
         topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
         categories = GlazedLists.eventList(voucherCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
-        // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.
-        // Eins von beiden muß es doch geben, oder?
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
         return topicTreeViewer;
     }
@@ -282,11 +284,14 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ExpenditureVoucherEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(expenditureListData, GlazedLists.eventList(expendituresDAO.findAll(true)), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(voucherCategoriesDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(expenditureListData, GlazedLists.eventList(expendituresDAO.findAll(true)), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(voucherCategoriesDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**
@@ -298,8 +303,8 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new VoucherMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        currentFilter = new VoucherMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName());
+		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
     }

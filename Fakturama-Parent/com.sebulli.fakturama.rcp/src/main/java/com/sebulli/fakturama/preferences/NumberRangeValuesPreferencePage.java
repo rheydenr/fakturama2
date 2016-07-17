@@ -80,8 +80,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
     /**
      * 
      */
-    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_NR = "NUMBERRANGE_DEBITOR_NR";
-    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_NR = "NUMBERRANGE_CREDITOR_NR";
+    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_NR = "NUMBERRANGE_DEBITOREDITOR_NR";
+    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_NR = "NUMBERRANGE_CREDITOREDITOR_NR";
 
     @Inject
     @Translation

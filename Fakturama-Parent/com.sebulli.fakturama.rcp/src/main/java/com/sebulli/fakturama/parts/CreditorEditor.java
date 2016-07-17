@@ -17,44 +17,48 @@ package com.sebulli.fakturama.parts;
 import javax.inject.Inject;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
-import com.sebulli.fakturama.dao.DebitorsDAO;
-import com.sebulli.fakturama.model.Debitor;
+import com.sebulli.fakturama.dao.CreditorsDAO;
+import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  *
  */
-public class DebitorEditor extends ContactEditor<Debitor> {
+public class CreditorEditor extends ContactEditor<Creditor> {
 
-	public static final String ID = "com.sebulli.fakturama.editors.debitorEditor";
-	public static final String EDITOR_ID = "DebitorEditor";
+	public static final String ID = "com.sebulli.fakturama.editors.creditorEditor";
+	public static final String EDITOR_ID = "CreditorEditor";
 
 	@Inject
-	private DebitorsDAO contactDAO;
+	private CreditorsDAO contactDAO;
 
 	@Override
-	protected Class<Debitor> getModelClass() {
-		return Debitor.class;
+	protected Class<Creditor> getModelClass() {
+		return Creditor.class;
 	}
 
 	@Override
-	protected AbstractDAO<Debitor> getContactsDao() {
+	protected AbstractDAO<Creditor> getContactsDao() {
 		return contactDAO;
 	}
 
 	@Override
-	protected Debitor createNewContact(FakturamaModelFactory modelFactory) {
-		return modelFactory.createDebitor();
-	}
-	
-	protected String getEditorIconURI() {
-		return Icon.COMMAND_CONTACT.getIconURI();
+	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
+		return modelFactory.createCreditor();
 	}
 
 	@Override
 	protected String getEditorID() {
-		return DebitorEditor.EDITOR_ID;
+		return CreditorEditor.EDITOR_ID;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sebulli.fakturama.parts.ContactEditor#getEditorIconURI()
+	 */
+	@Override
+	protected String getEditorIconURI() {
+		return Icon.COMMAND_VENDOR.getIconURI();
 	}
 
 }

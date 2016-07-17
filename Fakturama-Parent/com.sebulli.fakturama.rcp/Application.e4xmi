@@ -115,7 +115,7 @@
                 </menus>
                 <toolbar xmi:id="_sAlE4Hs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.rcp.toolbar.1">
                   <children xsi:type="menu:HandledToolItem" xmi:id="_vvjRAHs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.creditor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
-                    <parameters xmi:id="_DqBXAH_9EeShutWH80SHMA" elementId="com.sebulli.fakturama.rcp.parameter.4" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.contactEditor"/>
+                    <parameters xmi:id="_DqBXAH_9EeShutWH80SHMA" elementId="com.sebulli.fakturama.rcp.parameter.4" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.creditorEditor"/>
                   </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_DvuawHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.contact.delete" accessibilityPhrase="DEL" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>

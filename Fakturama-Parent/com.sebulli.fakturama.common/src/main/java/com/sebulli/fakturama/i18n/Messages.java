@@ -708,8 +708,8 @@ public class Messages {
 	public String todoIs_invalid;
 	public String todoNew_document;
 	public String todoSave_changes;
-	public String todoSubject;
-	public String todoThe_subject_of_this_;
+	public String editorDocumentLetterSubject;
+	public String editorDocumentLetterSubjectTooltip;
 	public String toolbarNewConfirmationName;
 	public String toolbarNewConfirmationNameLong;
 	public String toolbarNewContactName;

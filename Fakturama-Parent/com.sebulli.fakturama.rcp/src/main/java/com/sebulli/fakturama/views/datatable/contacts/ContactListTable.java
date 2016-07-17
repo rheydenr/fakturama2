@@ -103,6 +103,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<T> treeFilteredIssues;
 
+	private ContactMatcher currentFilter;
+
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Contact list part");
@@ -323,9 +325,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     protected TopicTreeViewer<ContactCategory> createCategoryTreeViewer(Composite top) {
-//    	context.set("useDocumentAndContactFilter", false);
-//    	context.set("useAll", true);
-//    	context.set(Composite.class, top);
         topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(contactCategoriesDAO.findAll());
@@ -340,6 +339,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
         GlazedLists.replaceAll(contactListData, getListData(true), false);
         GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
+        treeFilteredIssues.setMatcher(currentFilter);
         sync.syncExec(() -> top.setRedraw(true));
     }
 
@@ -370,7 +370,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        treeFilteredIssues.setMatcher(new ContactMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        currentFilter = new ContactMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName());
+		treeFilteredIssues.setMatcher(currentFilter);
     }
 
     /* (non-Javadoc)

@@ -53,7 +53,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -65,7 +64,6 @@ import org.eclipse.swt.widgets.Text;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
-import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -76,7 +74,6 @@ import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
-import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
@@ -214,6 +211,16 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		 * - date_added (constant)
 		 */
 
+		// at first, check the category for a new entry
+        // (the user could have written a new one into the combo field)
+        String testCat = comboCategory.getText();
+        // if there's no category we can skip this step
+        if(StringUtils.isNotBlank(testCat)) {
+            ContactCategory contactCategory = contactCategoriesDAO.getCategory(testCat, true);
+            // parentCategory now has the last found Category
+            editorContact.setCategories(contactCategory);
+        }
+
 	    // check for a new contact
 		if (newContact) {
 
@@ -285,7 +292,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		part.setLabel(nameWithCompany);
 
 		// Refresh the table view of all contacts
-        evtBroker.post(getEditorID(), "update");
+        evtBroker.post(getEditorID(), Editor.UPDATE_EVENT);
 
 //      if the editor was called from DialogEditor we have to 
 //      return the new contact
@@ -324,7 +331,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
-        this.part.setIconURI(Icon.COMMAND_CONTACT.getIconURI());
+        this.part.setIconURI(getEditorIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
@@ -336,16 +343,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// if there is no input set.
 		newContact = (editorContact == null);
 
-		// If new ..
+		// If new ... 
 		if (newContact) {
             String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
 
-			// Create a new data set
-//            if(category.contentEquals(Creditor.class.getName())) {
-                editorContact = createNewContact(modelFactory);
-//            } else {
-//                editorContact = modelFactory.createDebitor();
-//            }
+			// Create a new data set and set some defaults
+            editorContact = createNewContact(modelFactory);
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			part.setLabel(msg.mainMenuNewContactName);
 
@@ -353,6 +356,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			long paymentId = preferences.getLong(Constants.DEFAULT_PAYMENT);
 			Payment defaultPayment = paymentsDao.findById(paymentId);
 			editorContact.setPayment(defaultPayment);
+			editorContact.setReliability(ReliabilityType.NONE);
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -367,6 +371,19 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		createPartControl(parent);
 	}
 
+	/**
+	 * Gets the editor icon uri.
+	 *
+	 * @return the editor icon uri
+	 */
+	protected abstract String getEditorIconURI();
+
+	/**
+	 * Creates the new contact.
+	 *
+	 * @param modelFactory the model factory
+	 * @return the contact
+	 */
 	protected abstract C createNewContact(FakturamaModelFactory modelFactory2);
 
 	/**
@@ -691,22 +708,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
 		if (useLastNameFirst) {
-			//T: Format of the name in an address
 			labelDeliveryName.setText(msg.editorContactFieldLastnamefirstnameName);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(labelDeliveryName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryFirstname);
-		}
-		else {
-			//T: Format of the name in an address
+		} else {
 			labelDeliveryName.setText(msg.editorContactFieldFirstnamelastnameName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-
 		}
+		txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
+		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
+		txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
+
 		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
 
@@ -1015,8 +1025,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         });
 		
 		// If the value is -1, use 0 instead
-		if (editorContact.getUseNetGross()== null || editorContact.getUseNetGross()<0) {
-		    editorContact.setUseNetGross((short)0);
+		if (editorContact.getUseNetGross() == null || editorContact.getUseNetGross() < 0) {
+			editorContact.setUseNetGross((short) 0);
 		}
 
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());

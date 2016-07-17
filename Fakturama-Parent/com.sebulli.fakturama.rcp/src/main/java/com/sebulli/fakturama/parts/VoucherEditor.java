@@ -547,6 +547,16 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	        // Always set the editor's data set to "undeleted"
 	        voucher.setDeleted(false);
+
+	        // at first, check the category for a new entry
+            // (the user could have written a new one into the combo field)
+            String testCat = comboCategory.getText();
+            // if there's no category we can skip this step
+            if(StringUtils.isNotBlank(testCat)) {
+                VoucherCategory account = voucherCategoriesDAO.getOrCreateCategory(testCat, true);
+                // parentCategory now has the last found Category
+                voucher.setAccount(account);
+            }
 	        
 	        // Create a new voucher ID, if this is a new voucher
 	        if (newVoucher) {
@@ -630,7 +640,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	      this.part.setLabel(voucher.getName());
 	
 	      // Refresh the table view of all vouchers
-	      evtBroker.post(getEditorId(), "update");
+	      evtBroker.post(getEditorId(), Editor.UPDATE_EVENT);
 	      
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);

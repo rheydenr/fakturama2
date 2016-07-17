@@ -85,6 +85,7 @@ import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -150,6 +151,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Inject
     protected MessageRegistry registry;
+
+	private DocumentMatcher currentFilter;
     
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -461,7 +464,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
-    	
         Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	topicTreeViewer = null;
@@ -489,10 +491,14 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(DocumentEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
-        sync.syncExec(() -> top.setRedraw(true));
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
+	        // the tree is static, so here we don't have to update it (only re-read the filter)
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**
@@ -537,10 +543,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 }
             }
  
-        // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new DocumentMatcher(filter, 
-                treeObjectType,
-                msg));
+        currentFilter = new DocumentMatcher(filter, 
+			        treeObjectType,
+			        msg);
+		treeFilteredIssues.setMatcher(currentFilter);
 //        filterLabel.setToolTipText("ouch!");
         }
 
