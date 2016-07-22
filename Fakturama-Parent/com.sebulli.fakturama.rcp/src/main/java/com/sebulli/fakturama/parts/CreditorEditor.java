@@ -16,6 +16,8 @@ package com.sebulli.fakturama.parts;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
 import com.sebulli.fakturama.model.Creditor;
@@ -61,4 +63,11 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 		return Icon.COMMAND_VENDOR.getIconURI();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sebulli.fakturama.parts.ContactEditor#setPartLabelForNewContact(org.eclipse.e4.ui.model.application.ui.basic.MPart)
+	 */
+	@Override
+	protected void setPartLabelForNewContact(MPart part) {
+		part.setLabel(msg.commandNewCreditorName);
+	}
 }

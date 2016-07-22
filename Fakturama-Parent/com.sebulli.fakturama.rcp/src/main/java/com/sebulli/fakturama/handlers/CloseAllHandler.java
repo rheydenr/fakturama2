@@ -24,6 +24,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
+import com.sebulli.fakturama.misc.Constants;
+
 /**
  *
  */
@@ -39,7 +41,7 @@ public class CloseAllHandler {
     public boolean canExecute(
             MApplication application,
             final EModelService modelService) {
-        MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, application);
         return !documentPartStack.getChildren().isEmpty(); // you can close a window if there are open detail views
     }
 
@@ -47,11 +49,11 @@ public class CloseAllHandler {
     public void execute(MApplication application, final EModelService modelService, final EPartService partService) throws InvocationTargetException,
             InterruptedException {
         // at first find the PartStack "detailpanel"
-        MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, application);
         while(!documentPartStack.getChildren().isEmpty()) {
             MPart activePart = (MPart) documentPartStack.getSelectedElement();
             // ask before closing
-            if (activePart != null) {
+            if (activePart != null && activePart.getContext() != null && activePart.getTags().contains("documentWindow")) {
                 // the parts are removed when they are hidden
                 if (activePart.isDirty() && partService.savePart(activePart, true)) {
                     partService.hidePart(activePart, true);
@@ -59,7 +61,7 @@ public class CloseAllHandler {
                     partService.hidePart(activePart, true);
                 }
             }
-            partService.requestActivation();
+//            partService.requestActivation();
         }
     }
 }

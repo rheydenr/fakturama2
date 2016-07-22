@@ -32,6 +32,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.descriptor.basic.MPartDescriptor;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -124,6 +125,9 @@ public class CallEditor {
 	@Inject
 	private EPartService partService;
 	
+	@Inject
+	private EModelService modelService;
+	
     @Inject
     private IEventBroker evtBroker;
 
@@ -139,8 +143,8 @@ public class CallEditor {
             @Optional @Named(PARAM_DUPLICATE) String duplicate,
             @Optional @Named(PARAM_CALLING_DOC) String callingDoc,
             @Optional @Named(PARAM_FORCE_NEW) String pForceNew,
-            final MApplication application,
-            final EModelService modelService) throws ExecutionException {
+            final MApplication application
+            ) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
             boolean forceNew = BooleanUtils.toBoolean(pForceNew);
@@ -161,7 +165,6 @@ public class CallEditor {
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);
 			partService.showPart(editorPart, PartState.ACTIVATE);
-//			editorPart.a
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 //	
@@ -204,9 +207,11 @@ public class CallEditor {
 		
 		// if not found (or should create a duplicate) then we create a new one from a part descriptor
 		if (myPart == null) {
+			MPartDescriptor partDescriptor = modelService.getPartDescriptor(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart.setElementId(type);
 			myPart.setVisible(true);
+			myPart.getTags().add(partDescriptor.getCategory());
 
 			myPart.getProperties().putAll(params);
 			stack.getChildren().add(myPart);

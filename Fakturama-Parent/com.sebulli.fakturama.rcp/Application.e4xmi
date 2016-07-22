@@ -18,7 +18,7 @@
               <children xsi:type="basic:PartStack" xmi:id="_RmPTqetOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.detailpanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="17000" selectedElement="_RmPTqutOEeKo5Ms1QUgPTw">
                 <tags>NoAutoCollapse</tags>
                 <tags>documentWindow</tags>
-                <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="%command.browser.open.startpage" closeable="true">
+                <children xsi:type="basic:Part" xmi:id="_RmPTqutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.editors.browserEditor" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.BrowserEditor" label="%command.browser.open.startpage">
                   <tags>documentWindow</tags>
                 </children>
               </children>

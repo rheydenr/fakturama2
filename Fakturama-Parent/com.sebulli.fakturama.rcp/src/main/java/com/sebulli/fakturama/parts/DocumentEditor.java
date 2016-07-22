@@ -974,10 +974,15 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Do the calculation
+		// if - for what reason ever - the shipping has no value, I've decided to set it to default shipping.
+		if(shipping == null) {
+			shipping = lookupDefaultShippingValue();
+		}
         documentSummary = documentSummaryCalculator.calculate(null, docItems,
                 document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
-                shipping.getShippingVat(), document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), discount,
-                document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+                document.getShipping() != null ? document.getShipping().getShippingVat() : shipping.getShippingVat(), 
+                document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
+                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
 
 		// Get the total result
 		total = documentSummary.getTotalGross();

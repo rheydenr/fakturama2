@@ -21,11 +21,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -34,12 +37,17 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
+import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -126,12 +134,32 @@ public class LifecycleManager {
                 }
             };
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
+            
+//            // register event handler for saving and closing editors before shutdown
+//            eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
+//                new EventHandler() {
+//                        @Override
+//                        public void handleEvent(Event event) {
+//                        	// formerly known as Workbench.busyClose()
+//                        	closeAndSaveEditors(context);
+////                        	eventBroker.unsubscribe(eventHandler)
+//                        }
+//
+//                });            
+            
         } else {
             // if db connection is not set, it is a certain sign that the application 
             // is started the first time
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
         }
     }
+
+    private final void closeAndSaveEditors(IEclipseContext context2) {
+    	EHandlerService handlerService = context.get(EHandlerService.class);
+    	ECommandService commandService = context.get(ECommandService.class);
+    	ParameterizedCommand command = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
+    	handlerService.executeHandler(command);
+	}
 
     /**
      * Some steps to do before workbench is showing.
@@ -262,8 +290,12 @@ public class LifecycleManager {
 	}
 
 	@PreDestroy
-    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
+    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation,
+    		EPartService partService) {
 
+		// close all open editors
+//		partService.getDirtyParts().forEach((MPart part) -> part.save());
+		
         //Closes all OpenOffice documents 
  //       OfficeManager.INSTANCE.closeAll();
         if (context.get(PreferencesInDatabase.class) != null) {
@@ -346,6 +378,19 @@ public class LifecycleManager {
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)
         appContext.applicationRunning();
+    }
+    
+    @ProcessRemovals
+    public void createOneEditor(EModelService modelService, MApplication app) {
+        // if no editor is opened we create a Start Browser part
+        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, app);
+//        if(documentPartStack.getChildren().isEmpty()) {
+//        	EHandlerService handlerService = context.get(EHandlerService.class);
+//        	ECommandService commandService = context.get(ECommandService.class);
+//        	ParameterizedCommand command = commandService.createCommand("com.sebulli.fakturama.command.openBrowserEditor", null);
+//        	handlerService.executeHandler(command);
+//        }
+    	
     }
 
     /**

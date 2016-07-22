@@ -87,7 +87,6 @@ import com.sebulli.fakturama.parts.widget.contentprovider.StringHashMapContentPr
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
-import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
@@ -350,13 +349,16 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			// Create a new data set and set some defaults
             editorContact = createNewContact(modelFactory);
 			//T: Contact Editor Title of the editor if the data set is a new one.
-			part.setLabel(msg.mainMenuNewContactName);
+			setPartLabelForNewContact(part);
 
 			// Set the payment to the standard value
 			long paymentId = preferences.getLong(Constants.DEFAULT_PAYMENT);
 			Payment defaultPayment = paymentsDao.findById(paymentId);
 			editorContact.setPayment(defaultPayment);
 			editorContact.setReliability(ReliabilityType.NONE);
+			
+			// country is determined by locale
+			editorContact.getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -370,6 +372,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		createPartControl(parent);
 	}
+
+	/**
+	 * Sets the label for a new contact (which is either a debtor or a creditor).
+	 * @param part2
+	 */
+	protected abstract void setPartLabelForNewContact(MPart part2);
 
 	/**
 	 * Gets the editor icon uri.

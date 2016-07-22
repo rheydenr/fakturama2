@@ -519,4 +519,7 @@ public class Constants {
 	/** The Constant CONTEXT_CANVAS. */
 	public static final String CONTEXT_CANVAS = "canvas";
 
+	/** The Constant DETAILPANEL_ID. */
+	public static final String DETAILPANEL_ID = "com.sebulli.fakturama.rcp.detailpanel";
+
 }
