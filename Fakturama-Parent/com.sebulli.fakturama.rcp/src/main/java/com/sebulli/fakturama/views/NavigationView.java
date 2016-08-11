@@ -51,6 +51,7 @@ import com.sebulli.fakturama.handlers.OpenListViewsHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -161,7 +162,7 @@ public class NavigationView {
         addAction(group3, Icon.COMMAND_PRODUCT, "command.new.product", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_PRODUCT*/, parameters);
         
         parameters = new HashMap<>();
-        parameters.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
+        parameters.put(CallEditor.PARAM_EDITOR_TYPE, DebitorEditor.ID);
         addAction(group3, Icon.COMMAND_CONTACT, "main.menu.new.contact", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_CONTACT*/, parameters);
 
         // Create the 4th expand bar "export"

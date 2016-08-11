@@ -149,6 +149,8 @@ public class CallEditor {
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
             boolean forceNew = BooleanUtils.toBoolean(pForceNew);
             
+            System.out.println("INFO: "  + objId);
+            
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
             	partService.getParts().forEach(part -> { if(part.getTags().contains("removeOnHide")) {partService.hidePart(part);}});
@@ -165,6 +167,9 @@ public class CallEditor {
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);
 			partService.showPart(editorPart, PartState.ACTIVATE);
+			
+			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
+			editorPart.getContext().remove(PARAM_OBJ_ID);
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 //	

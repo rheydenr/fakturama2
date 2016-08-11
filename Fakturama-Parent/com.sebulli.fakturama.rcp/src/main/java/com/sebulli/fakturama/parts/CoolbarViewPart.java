@@ -179,7 +179,8 @@ public class CoolbarViewPart {
                 preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params);    
 
         params = new HashMap<>();
-        params.put(CallEditor.PARAM_EDITOR_TYPE, ContactEditor.ID);
+//        params.put(CallEditor.PARAM_EDITOR_TYPE, DebitorEditor.ID);
+//        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
