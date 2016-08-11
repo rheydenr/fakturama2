@@ -440,12 +440,9 @@ public abstract class Editor<T extends IEntity> {
 		// Get the next number
 		if (m.find()) {
 			
-			// Exit, if the value is to short
-			if (value.length() < m.start())
-				return ERROR_NOT_NEXT_ID;
-
-			// Exit, if the value is to short
-			if ((value.length() - format.length() + m.end()) <= m.start() )
+			// Exit, if the value is too short
+			if (value.length() < m.start() 
+					|| (value.length() - format.length() + m.end()) <= m.start() )
 				return ERROR_NOT_NEXT_ID;
 
 			// Extract the number string
@@ -487,7 +484,7 @@ public abstract class Editor<T extends IEntity> {
     protected void bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
-
+        
         IObservableValue<T> uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.

@@ -41,6 +41,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -103,7 +104,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	public static final String EDITOR_ID = "ContactEditor";
 
 	/** This UniDataSet represents the editor's input */ 
-	private C editorContact;
+	protected C editorContact;
 
 	// SWT widgets of the editor
     private Composite top;
@@ -344,10 +345,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// If new ... 
 		if (newContact) {
-            String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
+//            String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
 
 			// Create a new data set and set some defaults
             editorContact = createNewContact(modelFactory);
+            
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			setPartLabelForNewContact(part);
 
@@ -405,8 +407,39 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //			copyAddressToDeliveryAdress();
 			editorContact.setAlternateContacts(null);
 		} else {
-			editorContact.setAlternateContacts(modelFactory.createDebitor());
+			editorContact.setAlternateContacts(createNewContact(modelFactory));
+			
+			// country is determined by locale
+			editorContact.getAlternateContacts().getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());
+			rebindEditor();
 		}
+	}
+
+	/**
+	 * Rebinds all delivery fields from editor to the (newly) additional contact. This is
+	 * necessary because binding works only on objects. If you try to bind an editor field
+	 * to a (nested) property of a non-existent object nothing happens.
+	 * <br />
+	 * Example: <br />
+	 * <ul><li>Create an object, say, new Debitor()
+	 * <li>bind a field to alternateContacts.name
+	 * <li>enter a value in this field
+	 * <li>result: nothing is transported to the model
+	 * </ul>
+	 * Therefore we have to rebind the bindings.
+	 */
+	private void rebindEditor() {
+		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() + "." + Contact_.gender.getName());
+		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
+
+		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
+		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
+		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
+		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
+		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
 	}
 
 	/**
@@ -545,7 +578,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtNr);
 
-		// Check button: delivery address equals address
+		// Check button: delivery address equals billing address
 		bDelAddrEquAddr = new Button(tabAddress, SWT.CHECK);
 		//T: Label in the contact editor
 		bDelAddrEquAddr.setText(msg.editorContactFieldDeliveryaddressequalsName);
@@ -553,7 +586,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bDelAddrEquAddr.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				deliveryAddressIsEqual(bDelAddrEquAddr.getSelection());
-//				checkDirty();
+				comboDeliveryCountry.refresh();
 			}
 		});
 
@@ -688,7 +721,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Controls in the group "Delivery"
 
-		// Delivery gender and titel's label
+		// Delivery gender and title's label
 		Label labelDeliveryTitle = new Label((useGender || useTitle) ? deliveryGroup : invisible, SWT.NONE);
 		if (useGender)
 			labelDeliveryTitle.setText(msg.commonFieldGender);
@@ -704,12 +737,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
         comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
-		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() +"." +Contact_.gender.getName());
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
 		
 		// Delivery Title
 		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
 
 		// Delivery first and last name
@@ -717,16 +748,17 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
 		if (useLastNameFirst) {
 			labelDeliveryName.setText(msg.editorContactFieldLastnamefirstnameName);
+			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
+			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
+			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
 		} else {
 			labelDeliveryName.setText(msg.editorContactFieldFirstnamelastnameName);
+			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
+			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
+			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
 		}
-		txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-		txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-
-		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
 
 		// Delivery company
 		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
@@ -734,7 +766,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelDeliveryCompany.setText(msg.commonFieldCompany);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
 		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
 		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
 
 		// Delivery street
@@ -743,7 +774,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelDeliveryStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
 		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
 		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
 
@@ -753,10 +783,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelDeliveryCity.setText(msg.editorContactFieldZipcityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
 		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
 		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
 
 		// Delivery country
@@ -770,7 +798,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
         comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
-		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday
@@ -786,7 +813,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		dtDeliveryBirthday.setFormat(CDT.DATE_MEDIUM);
 		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
 		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
-		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
 
 		// Controls in the tab "Bank"
 
@@ -1061,6 +1087,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	}
 
     /**
+     * Gets the delivery contact. This is the additional contact if the billing address differs from delivery address.
+     *
+     * @return the delivery contact
+     */
+	abstract protected C getDeliveryContact();
+
+	/**
      * creates the combo box for the VAT category
      * @param tabMisc 
      */
@@ -1102,7 +1135,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     }
 
 	/**
-	 * Test, if there is a document with the same number
+	 * Test, if there is a contact with the same number
 	 * 
 	 * @return TRUE, if one with the same number is found
 	 */

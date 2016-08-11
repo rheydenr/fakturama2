@@ -51,7 +51,7 @@ public class CreditorListTable extends ContactListTable<Creditor> {
      */
     @Override
     protected String getEditorId() {
-        return ContactEditor.ID;
+        return CreditorEditor.ID;
     }
     
     @Inject @Optional

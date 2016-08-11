@@ -66,4 +66,9 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewDebtorName);
 	}
+	
+	@Override
+	protected Debitor getDeliveryContact() {
+		return (Debitor) editorContact.getAlternateContacts();
+	}
 }
