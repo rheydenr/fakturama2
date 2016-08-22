@@ -710,7 +710,7 @@ public class MigrationManager {
                         invoiceRelevantDocuments.put(oldDocument.getId(), document);
                     } else {
                         if(!(document instanceof Invoice)) {
-                            migLogUser.info("!!! the document no. " + document.getName() + " is of type " + document.getBillingType() +
+                            migLogUser.warning("!!! the document no. " + document.getName() + " is of type " + document.getBillingType() +
                                     " and has itself as invoice reference. This doesn't fit!");
                         } else {
                             invoiceDocuments.put(oldDocument.getId(), (Invoice) document);

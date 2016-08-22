@@ -44,6 +44,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
+import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -63,6 +64,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
@@ -101,6 +103,9 @@ public class LifecycleManager {
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IDbUpdateService dbUpdateService;
 
     @Inject
     @Translation
@@ -119,6 +124,7 @@ public class LifecycleManager {
         // at first we check if we have to migrate an older version
         // check if the db connection is set
         if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
+        	dbUpdateService.updateDatabase(); // TODO what if this fails???
             dbInitJob = new Job("initDb") {
     
                 @Override
@@ -135,7 +141,7 @@ public class LifecycleManager {
             };
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
             
-//            // register event handler for saving and closing editors before shutdown
+            // register event handler for saving and closing editors before shutdown
 //            eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
 //                new EventHandler() {
 //                        @Override
@@ -154,7 +160,8 @@ public class LifecycleManager {
         }
     }
 
-    private final void closeAndSaveEditors(IEclipseContext context2) {
+    @PreSave
+    public final void closeAndSaveEditors(IEclipseContext context2) {
     	EHandlerService handlerService = context.get(EHandlerService.class);
     	ECommandService commandService = context.get(ECommandService.class);
     	ParameterizedCommand command = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
@@ -379,19 +386,6 @@ public class LifecycleManager {
         // TODO check if we could call it twice (one call is before Migrationmanager)
         appContext.applicationRunning();
     }
-    
-    @ProcessRemovals
-    public void createOneEditor(EModelService modelService, MApplication app) {
-        // if no editor is opened we create a Start Browser part
-        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, app);
-//        if(documentPartStack.getChildren().isEmpty()) {
-//        	EHandlerService handlerService = context.get(EHandlerService.class);
-//        	ECommandService commandService = context.get(ECommandService.class);
-//        	ParameterizedCommand command = commandService.createCommand("com.sebulli.fakturama.command.openBrowserEditor", null);
-//        	handlerService.executeHandler(command);
-//        }
-    	
-    }
 
     /**
      * Because we don't have a complete workbench at this stage, the
@@ -427,7 +421,20 @@ public class LifecycleManager {
 		return dialogSettings;
 	}
 		
-	
+    
+    @ProcessRemovals
+    public void createOneEditor(EModelService modelService, MApplication app) {
+        // if no editor is opened we create a Start Browser part
+        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, app);
+//        if(documentPartStack.getChildren().isEmpty()) {
+//        	EHandlerService handlerService = context.get(EHandlerService.class);
+//        	ECommandService commandService = context.get(ECommandService.class);
+//        	ParameterizedCommand command = commandService.createCommand("com.sebulli.fakturama.command.openBrowserEditor", null);
+//        	handlerService.executeHandler(command);
+//        }
+    	
+    }
+
 
     /**
      * Loads the dialog settings for this plug-in.

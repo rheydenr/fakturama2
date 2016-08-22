@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="391">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="392">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -30,27 +30,6 @@
 <unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.9.0.v20150601-0402"/>
 <unit id="org.eclipse.emf.databinding.feature.group" version="1.4.0.v20150601-0402"/>
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
-<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
-<unit id="org.apache.xmlbeans" version="2.3.0.v201405241900"/>
-<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<unit id="org.dom4j" version="1.6.1.v201312101416"/>
-<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20151221205849/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.h2.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -132,6 +111,28 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.0.v20160725-3d1f402"/>
 <repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
+<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
+<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
+<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+<unit id="org.dom4j" version="1.6.1.v201312101416"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
+<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

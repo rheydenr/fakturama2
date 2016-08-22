@@ -50,8 +50,7 @@
 		<persistence:exclude-unlisted-classes>true</persistence:exclude-unlisted-classes>
 		<persistence:properties>
 			<!-- update database automagically ;-)  -->
-			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
-			<!-- <property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> -->
+			<!-- persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" / -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
 			<!--  if you want to show the generated SQL commands and their parameter substitution -->

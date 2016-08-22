@@ -17,10 +17,15 @@ Require-Bundle: javax.persistence;bundle-version="[2.0.0,3.0.0)",
  org.eclipse.emf.ecore;bundle-version="2.10.0",
  org.eclipse.equinox.preferences,
  org.eclipse.emf.texo;bundle-version="0.9.0",
- org.javamoney.osgi;bundle-version="1.0.1"
+ org.javamoney.osgi;bundle-version="1.0.1",
+ org.yaml.snakeyaml;bundle-version="1.14.0",
+ osgi.enterprise;bundle-version="4.2.0",
+ org.eclipse.osgi;bundle-version="3.11.0"
 Meta-Persistence: META-INF/persistence.xml
+Service-Component: OSGI-INF/dbupdateservice.xml
 Export-Package: com.sebulli.fakturama.converter,
  com.sebulli.fakturama.dbconnector,
+ com.sebulli.fakturama.dbservice,
  com.sebulli.fakturama.dto,
  com.sebulli.fakturama.model,
  com.sebulli.fakturama.oldmodel,
@@ -31,3 +36,5 @@ Import-Package: org.apache.commons.lang3,
  org.eclipse.jface.preference,
  org.osgi.framework;version="1.8.0"
 Bundle-Vendor: Fakturama.org
+Bundle-ClassPath: .,
+ lib/liquibase.jar
