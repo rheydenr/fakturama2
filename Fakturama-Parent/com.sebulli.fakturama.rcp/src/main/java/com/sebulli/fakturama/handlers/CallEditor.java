@@ -153,7 +153,7 @@ public class CallEditor {
             
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
-            	partService.getParts().forEach(part -> { if(part.getTags().contains("removeOnHide")) {partService.hidePart(part);}});
+            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
             }
 
             Map<String, String> params = new HashMap<>();

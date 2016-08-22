@@ -1,7 +1,6 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;

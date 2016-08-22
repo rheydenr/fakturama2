@@ -15,11 +15,13 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.services.contributions.IContributionFactory;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MHandler;
 import org.eclipse.e4.ui.model.application.commands.MHandlerContainer;
 import org.eclipse.e4.ui.model.application.ui.MContext;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -30,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 /**
  * Process the additions and removals of handlers on the model
@@ -37,6 +40,7 @@ import org.osgi.service.event.Event;
 public class HandlerProcessingAddon {
 	private MApplication application;
 	private EModelService modelService;
+        private EventHandler testHandler;
 	
 	/**
 	 * Do initial check of handlers and their context upon creation
@@ -45,7 +49,8 @@ public class HandlerProcessingAddon {
 	 * @param modelService
 	 */
 	@PostConstruct
-	public void postConstruct(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent, MApplication application, EModelService modelService) {
+	public void postConstruct(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent, MApplication application, 
+			EModelService modelService, IEventBroker eventBroker) {
 		this.application = application;
 		this.modelService = modelService;
 		
@@ -64,6 +69,21 @@ public class HandlerProcessingAddon {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+		testHandler = new EventHandler() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Object part = event.getProperty(UIEvents.EventTags.ELEMENT);
+				boolean tbr =(Boolean) event.getProperty(UIEvents.EventTags.NEW_VALUE);
+				if (part instanceof MPart){
+					System.out.println("Part "+((MPart)part).getElementId()+" is "+(!tbr?"NOT":"")+" visible");
+				}
+			}
+		};
+		eventBroker.subscribe(UIEvents.UIElement.TOPIC_TOBERENDERED, testHandler);
+    	
+
         
 	}
 

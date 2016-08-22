@@ -15,12 +15,15 @@
 package com.sebulli.fakturama.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
@@ -50,16 +53,22 @@ public class CloseAllHandler {
             InterruptedException {
         // at first find the PartStack "detailpanel"
         MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, application);
-        while(!documentPartStack.getChildren().isEmpty()) {
-            MPart activePart = (MPart) documentPartStack.getSelectedElement();
+        List<MStackElement> stackElements = documentPartStack.getChildren().stream().filter(
+        		elem -> !elem.getElementId().equals("com.sebulli.fakturama.editors.browserEditor")
+        		      && elem.getTags().contains("documentWindow")).collect(Collectors.toList());
+        
+        for (MStackElement stackElement : stackElements) {
+        	MPart activePart = (MPart)stackElement;
             // ask before closing
-            if (activePart != null && activePart.getContext() != null && activePart.getTags().contains("documentWindow")) {
+            if (activePart.getContext() != null) {
                 // the parts are removed when they are hidden
                 if (activePart.isDirty() && partService.savePart(activePart, true)) {
                     partService.hidePart(activePart, true);
                 } else {
                     partService.hidePart(activePart, true);
                 }
+//            } else {
+//                partService.hidePart(activePart, true);
             }
 //            partService.requestActivation();
         }

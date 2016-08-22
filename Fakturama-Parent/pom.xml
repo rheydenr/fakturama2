@@ -6,7 +6,7 @@
 	<version>2.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>0.25.0</tycho.version>
+		<tycho.version>0.26.0</tycho.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<encoding>UTF-8</encoding>
@@ -104,4 +104,6 @@
 	<scm>
 		<url>https://bitbucket.org/fakturamadev/fakturama-2</url>
 	</scm>
+	<description>The program is for creating invoices, delivery papers, order documents and such stuff. Furthermore, you can connect to your webshop and administer your web shop orders. And you can create labels for various parcel services online.
+</description>
 </project>
