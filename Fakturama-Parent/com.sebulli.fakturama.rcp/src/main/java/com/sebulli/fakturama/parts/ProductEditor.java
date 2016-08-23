@@ -233,7 +233,6 @@ public class ProductEditor extends Editor<Product> {
 //				Object obj = MethodUtils.invokeExactMethod(editorProduct, methodName);
 //				methodName = String.format("setPrice%d", i+1);
 //				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice);
-				// blocks are set via databinding
 			}
 		
 		// if not all 5 scales are set we set the remaining prices to the last scaled price
@@ -473,8 +472,8 @@ public class ProductEditor extends Editor<Product> {
 		// Get a reference to the display
 		display = parent.getDisplay();
 
-		// Some of this editos's control elements can be hidden.
-		// Get the these settings from the preference store
+		// Some of these editor's control elements can be hidden.
+		// Get these settings from the preference store
 		useItemNr = defaultValuePrefs.getBoolean("PRODUCT_USE_ITEMNR");
 		useDescription = defaultValuePrefs.getBoolean("PRODUCT_USE_DESCRIPTION");
 		scaledPrices = defaultValuePrefs.getInt("PRODUCT_SCALED_PRICES");
@@ -693,13 +692,13 @@ public class ProductEditor extends Editor<Product> {
 			}
 		}
 
-//		// Set the tab order
-//		if (scaledPrices >= 2)
-//			setTabOrder(textDescription, textBlock[0]);
-//		else if (useNet)
-//			setTabOrder(textDescription, netText[0].getNetText());
-//		else
-//			setTabOrder(textDescription, grossText[0].getGrossText());
+		// Set the tab order
+		if (scaledPrices >= 2)
+			setTabOrder(textDescription, textBlock[0]);
+		else if (useNet)
+			setTabOrder(textDescription, netText[0].getNetText().getControl());
+		else
+			setTabOrder(textDescription, grossText[0].getGrossText().getControl());
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);

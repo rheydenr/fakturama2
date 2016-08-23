@@ -21,6 +21,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -54,7 +55,13 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
         	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
         }
-        setPatterns(editFormat.toPattern(), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+        String editFormatPattern = "##,###,##0.00";
+        if(editFormat.getMaximumFractionDigits() > 2) {
+        	editFormatPattern += StringUtils.right("0", editFormat.getMaximumFractionDigits() - 2);
+        }
+//        editFormat.setMaximumIntegerDigits(7);
+        setPatterns(editFormatPattern/*editFormat.toPattern()*/, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+//        setFixedLengths(false, true);
     }
     
     @Override
@@ -74,18 +81,18 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         }
         return val;
     }
-    
-    @Override
-    public String getDisplayString() {
-        Double value = (Double) getValue();
-        String retval = "";
-        if(value != null) {
-            retval = DataUtils.getInstance().doubleToFormattedPrice(value);
-        } else {
-            retval = super.getDisplayString();
-        }
-        return retval;
-    }
+//    
+//    @Override
+//    public String getDisplayString() {
+//        Double value = (Double) getValue();
+//        String retval = "";
+//        if(value != null) {
+//            retval = DataUtils.getInstance().doubleToFormattedPrice(value);
+//        } else {
+//            retval = super.getDisplayString();
+//        }
+//        return retval;
+//    }
 
     /**
      * Sets the patterns and initializes the technical attributes used to manage

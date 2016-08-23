@@ -90,7 +90,7 @@ public class NetText {
 		netText.getControl().addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 if (netText.getControl().isFocusControl()) {  
-                    DataUtils.getInstance().CalculateGrossFromNet(netText.getControl(), grossText.getControl(), vatValue, netValue);
+                    DataUtils.getInstance().CalculateGrossFromNet(netText, grossText, vatValue, netValue);
                     netValue = Money.of((Double)netText.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
                 } else {
                     netText.getControl().notifyListeners(SWT.FocusOut, null);

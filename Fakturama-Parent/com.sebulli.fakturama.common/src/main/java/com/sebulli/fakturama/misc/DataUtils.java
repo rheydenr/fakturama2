@@ -42,6 +42,7 @@ import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
@@ -541,21 +542,21 @@ public class DataUtils {
      * value from a SWT text field and write the result into a gross SWT text
      * field
      * 
-     * @param net
+     * @param netText
      *            SWT text field. This value is used as net value.
-     * @param gross
+     * @param grossText
      *            SWT text field. This filed is modified.
      * @param vat
      *            Vat as double
      * @param netValue
      *            Net value as UniData. This is modified with the net value.
      */
-    public void CalculateGrossFromNet(Text net, Text gross, Double vat, MonetaryAmount netValue) {
+    public void CalculateGrossFromNet(FormattedText netText, FormattedText grossText, Double vat, MonetaryAmount netValue) {
     	MonetaryAmount s = null;
 
         // If there is a net SWT text field specified, its value is used
-        if (net != null) {
-            s = CalculateGrossFromNet(Money.of(StringToDouble(net.getText()), getDefaultCurrencyUnit()), vat);
+        if (netText != null) {
+            s = CalculateGrossFromNet(Money.of((Double)netText.getValue(), getDefaultCurrencyUnit()), vat);
             // In the other case, the UniData netvalue is used
         }
         else {
@@ -563,9 +564,9 @@ public class DataUtils {
         }
 
         // Fill the SWT text field "gross" with the result
-        if (gross != null)
-            if (!gross.isFocusControl())
-                gross.setText(formatCurrency(s));
+        if (grossText != null)
+            if (!grossText.getControl().isFocusControl())
+                grossText.setValue(s);
     }
 
     /**
