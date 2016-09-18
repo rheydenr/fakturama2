@@ -22,14 +22,11 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -57,7 +54,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         }
         String editFormatPattern = "##,###,##0.00";
         if(editFormat.getMaximumFractionDigits() > 2) {
-        	editFormatPattern += StringUtils.right("0", editFormat.getMaximumFractionDigits() - 2);
+        	editFormatPattern += StringUtils.repeat("0", editFormat.getMaximumFractionDigits()-2);
         }
 //        editFormat.setMaximumIntegerDigits(7);
         setPatterns(editFormatPattern/*editFormat.toPattern()*/, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
@@ -81,18 +78,6 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         }
         return val;
     }
-//    
-//    @Override
-//    public String getDisplayString() {
-//        Double value = (Double) getValue();
-//        String retval = "";
-//        if(value != null) {
-//            retval = DataUtils.getInstance().doubleToFormattedPrice(value);
-//        } else {
-//            retval = super.getDisplayString();
-//        }
-//        return retval;
-//    }
 
     /**
      * Sets the patterns and initializes the technical attributes used to manage

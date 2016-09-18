@@ -394,8 +394,8 @@ private Menu createContextMenu(NatTable natTable) {
                 	retval = rowObject.getDocumentItem().getPicture();
                     break;
                 case VAT:
-                    retval = noVatReference != null ? noVatReference 
-                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                    retval = /*noVatReference != null ? noVatReference 
+                    		: */(VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case UNITPRICE:
                 	MonetaryAmount amount;

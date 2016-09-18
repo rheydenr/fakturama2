@@ -101,6 +101,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Office" 
 		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathpdf, getFieldEditorParent()));
 
+		addField(new StringFieldEditor(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeAdditionalformatandpathpdf, getFieldEditorParent()));
 		
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, msg.preferencesOfficeStartnewthread, getFieldEditorParent()));
@@ -126,6 +127,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, write);
 	}
 	
     @Synchronize
@@ -145,6 +147,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, "ODT+PDF");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");
+		node.setDefault(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, "");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, true);
 		
 		// Set the default value

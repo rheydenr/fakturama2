@@ -768,6 +768,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
 		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
 
+//		// Delivery district
+//		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
+//		//T: Label in the contact editor
+//		labelDeliveryStreet.setText(msg.commonField);
+//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
+//		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
+//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
+//		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
+//		
 		// Delivery street
 		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
 		//T: Label in the contact editor

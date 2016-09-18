@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -82,7 +83,7 @@ public class CreateOODocumentHandler {
     private IPreferenceStore preferences;
 
     @Inject
-    private Logger log;
+    private ILogger log;
 
     private List<Path> templates = new ArrayList<>();
     private DocumentEditor documentEditor;
@@ -196,7 +197,7 @@ public class CreateOODocumentHandler {
 			} else if (templates.size() == 1) {
 				// Save the document and open the exporter
 				documentEditor.doSave(null);
-				openOODocument(documentEditor.getDocument(), templates.get(0).getFileName(), shell);
+				openOODocument(documentEditor.getDocument(), templates.get(0), shell);
 				// documentEditor.markAsPrinted();
 			} else {
 				// Show an information dialog if no template was found

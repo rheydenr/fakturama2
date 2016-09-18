@@ -66,23 +66,23 @@ import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.office.FileOrganizer.PathOption;
+import com.sebulli.fakturama.office.FileOrganizer.TargetFormat;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
- * This class opens an OpenOffice Writer template  and replaces all the
+ * This class fills an OpenOffice template and replaces all the
  * placeholders with the document data.
  */
 public class OfficeDocument {
 
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
-
-	/** The UniDataSet contact of the document */
-	//	private DataSetContact contact;
 
 	/** A list of properties that represents the placeholders of the
 	 OpenOffice Writer template */
@@ -95,7 +95,7 @@ public class OfficeDocument {
     protected IEclipseContext context;
 
     @Inject
-    private Logger log;
+    private ILogger log;
 
     @Inject
     @Translation
@@ -143,11 +143,10 @@ public class OfficeDocument {
 			// generate one by the data, but open the existing one.
 			if (testOpenAsExisting(document, template) && !forceRecreation) {
 				openExisting = true;
-				template = fo.getDocumentPath(
-						FileOrganizer.WITH_FILENAME,
-						FileOrganizer.WITH_EXTENSION,
-						FileOrganizer.ODT,
-						document);
+	    		Set<PathOption> pathOptions = new HashSet<>();
+	            pathOptions.add(PathOption.WITH_FILENAME);
+	            pathOptions.add(PathOption.WITH_EXTENSION);
+				template = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 			}
 
 			// Stop here and do not fill the document's placeholders, if it's an existing document
@@ -198,7 +197,7 @@ public class OfficeDocument {
 	            if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
 	            switch (placeholderNode.getNodeType()) {
 	            case NORMAL_NODE:
-//	              // Replace all other placeholders
+	              // Replace all other placeholders
 	                  replaceText(placeholderNode);
 	                break;
 	            case TABLE_NODE:
@@ -256,6 +255,7 @@ public class OfficeDocument {
 		}
 		catch (Exception e) {
 		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
+//		    throw new Fak
 		}
 	}
 
@@ -266,77 +266,39 @@ public class OfficeDocument {
      *            The document
      */
 	private boolean saveOODocument(TextDocument textdoc) {
+		Set<PathOption> pathOptions = new HashSet<>();
+		pathOptions.add(PathOption.WITH_FILENAME);
+		pathOptions.add(PathOption.WITH_EXTENSION);
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator("Fakturama application");
         textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
 
-        Path documentPath = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.ODT,
-        		document);
+		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
 
             // Create the directories, if they don't exist.
-            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.ODT, document);
-            if (Files.notExists(directory)) {
-                try {
-                    Files.createDirectories(directory);
-                } catch (IOException e) {
-                	log.error(e, "could not create output directory: " + directory.toString());
-                }
-            }
+            createOutputDirectory(TargetFormat.ODT);
 
             try (OutputStream fs = Files.newOutputStream(documentPath);) {
 
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
+                // TODO perhaps we should open the filled document in Openoffice (if wanted)
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice Document");
             }
         }
 
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
-
-            // Create the directories, if they don't exist.
-            Path directory = fo.getDocumentPath(FileOrganizer.NO_FILENAME, FileOrganizer.NO_EXTENSION, FileOrganizer.PDF, document);
-                if (Files.notExists(directory)) {
-                    try {
-                        Files.createDirectories(directory);
-                    } catch (IOException e) {
-                    	log.error(e, "could not create output directory: " + directory.toString());
-                    }
-                }
-
-            try {
-
-                // Save the document
-                OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
-                Path ooPath = ooStarter.getCheckedOOPath();
-                if(ooPath != null) {
-                    // FIXME How to create a PDF/A1 document?
-					String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
-                            //program%sswriter File.separator, 
-                            ooPath.toString(), 
-                            directory.toAbsolutePath(), // this is the PDF path
-                            documentPath.toAbsolutePath());
-                    //				PDFFilter pdfFilter = new PDFFilter();
-                    //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-                    
-                    // TODO error handling!!!
-                Runtime.getRuntime().exec(sysCall);
-                    
-                    // now, if the file name templates are different, we have to rename the pdf
-                    Path pdfFilename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
-                    Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.odt$", ".pdf"));
-                    if (!Files.exists(pdfFilename) && Files.exists(tmpPdf)) {
-						Files.move(tmpPdf, pdfFilename);
-                    }
-                wasSaved = true;
-                }
-            } catch (Exception e) {
-                log.error(e, "Error saving the OpenOffice Document");
-            }
+        	wasSaved = createPdf(documentPath, TargetFormat.PDF);
         }
+        
+        // copy the PDF to the additional directory
+        if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
+        	wasSaved = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
+        }        
 
         // Mark the document as printed, if it was saved as ODT or PDF
         if (wasSaved) {
@@ -349,7 +311,7 @@ public class OfficeDocument {
             }
 
             // Update the document entry "pdfpath"
-            Path filename = fo.getDocumentPath(FileOrganizer.WITH_FILENAME, FileOrganizer.WITH_EXTENSION, FileOrganizer.PDF, document);
+            Path filename = fo.getDocumentPath(pathOptions, TargetFormat.PDF, document);
             if (Files.exists(filename)) {
                 document.setPdfPath(filename.toString());
             }
@@ -360,8 +322,6 @@ public class OfficeDocument {
                 log.error(e);
             }
 
-            // Refresh the document view
-
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
         }
@@ -369,7 +329,80 @@ public class OfficeDocument {
         return wasSaved;
     }
 
+	/**
+	 * Creates the PDF.
+	 *
+	 * @param documentPath the path to the ODT document (which will be converted)
+	 * @param targetFormat 
+	 * @return <code>true</code> if the creation was successful
+	 */
+	private boolean createPdf(Path documentPath, TargetFormat targetFormat) {
+        boolean wasSaved = false;
+
+		// Create the directories, if they don't exist.
+		createOutputDirectory(targetFormat);
+		Path directory = fo.getDocumentPath(Collections.emptySet(), targetFormat, document);
+
+		try {
+
+		    // Save the document
+		    OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
+		    Path ooPath = ooStarter.getCheckedOOPath();
+		    if(ooPath != null) {
+		        // FIXME How to create a PDF/A1 document?
+				String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
+		                //program%sswriter File.separator, 
+		                ooPath.toString(), 
+		                directory.toAbsolutePath(), // this is the PDF path
+		                documentPath.toAbsolutePath());
+		        //				PDFFilter pdfFilter = new PDFFilter();
+		        //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+		        
+		        // TODO error handling!!!
+				Runtime.getRuntime().exec(sysCall);
+		        
+		        // now, if the file name templates are different, we have to rename the pdf
+	    		Set<PathOption> pathOptions = new HashSet<>();
+	            pathOptions.add(PathOption.WITH_FILENAME);
+	            pathOptions.add(PathOption.WITH_EXTENSION);
+				Path pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
+		        Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.odt$", ".pdf"));
+		        if (!Files.exists(pdfFilename) && Files.exists(tmpPdf)) {
+					Files.move(tmpPdf, pdfFilename);
+		        }
+		        wasSaved = true;
+		    }
+		} catch (IOException e) {
+		    log.error(e, "Error saving the PDF document");
+		}
+		return wasSaved;
+	}
+
+	/**
+	 * Creates the output directory, if necessary.
+	 *
+	 * @param targetFormat the target document format
+	 */
+	private void createOutputDirectory(TargetFormat targetFormat) {
+		Set<PathOption> pathOptions = Collections.emptySet();
+		Path directory = fo.getDocumentPath(pathOptions, targetFormat, document);
+		if (Files.notExists(directory)) {
+		    try {
+		        Files.createDirectories(directory);
+		    } catch (IOException e) {
+		    	log.error(e, "could not create output directory: " + directory.toString());
+		    }
+		}
+	}
+
 	
+	/**
+	 * Fill vat table with data.
+	 *
+	 * @param vatSummarySetManager the vat summary set manager
+	 * @param pTable the p table
+	 * @param pRowTemplate the p row template
+	 */
 	private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager,Table pTable, Row pRowTemplate) {
         // Get all items
         int cellCount = pRowTemplate.getCellCount();

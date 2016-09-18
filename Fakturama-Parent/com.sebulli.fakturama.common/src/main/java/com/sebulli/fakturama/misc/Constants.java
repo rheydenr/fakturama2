@@ -471,6 +471,9 @@ public class Constants {
      */
     public static final String PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT = "OPENOFFICE_PDF_PATH_FORMAT";
 
+	/** The Constant PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT. */
+	public static final String PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT = "OPENOFFICE_ADDITIONAL_PDF_PATH_FORMAT";
+
     /**
      * 
      */

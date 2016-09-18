@@ -28,6 +28,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.views.ErrorView;
 
 /**
  *
@@ -51,7 +52,17 @@ public class CloseAllHandler {
     @Execute
     public void execute(MApplication application, final EModelService modelService, final EPartService partService) throws InvocationTargetException,
             InterruptedException {
-        // at first find the PartStack "detailpanel"
+        
+        // close error view
+        try {
+			MPart errorPart = (MPart) modelService.find(ErrorView.ID, application);
+			if(errorPart != null) {
+				partService.hidePart(errorPart, true);
+			}
+		} catch (IllegalStateException e) {
+			// hide
+		}        
+      // at first find the PartStack "detailpanel"
         MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, application);
         List<MStackElement> stackElements = documentPartStack.getChildren().stream().filter(
         		elem -> !elem.getElementId().equals("com.sebulli.fakturama.editors.browserEditor")

@@ -21,7 +21,9 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,12 +57,55 @@ public class FileOrganizer {
 
 	@Inject
 	protected DocumentsDAO documentsDAO;
+	
+	enum PathOption {
+		WITH_FILENAME,
+		WITH_EXTENSION,
+	}
+	
+	enum TargetFormat {
+		PDF("pdf", "PDF"), 
+		ODT("odt", "ODT"), 
+		ADDITIONAL_PDF("pdf", "ADDITIONAL_PDF");
+		
+		String extension, prefId;
 
+		/**
+		 * @param extension
+		 * @param prefId
+		 */
+		private TargetFormat(String extension, String prefId) {
+			this.extension = extension;
+			this.prefId = prefId;
+		}
+
+		/**
+		 * @return the extension
+		 */
+		public final String getExtension() {
+			return extension;
+		}
+
+		/**
+		 * @return the prefId
+		 */
+		public final String getPrefId() {
+			return prefId;
+		}
+		
+	}
+
+	@Deprecated
 	final public static boolean WITH_FILENAME = true;
+	@Deprecated
 	final public static boolean NO_FILENAME = false;
+	@Deprecated
 	final public static boolean WITH_EXTENSION = true;
+	@Deprecated
 	final public static boolean NO_EXTENSION = false;
+	@Deprecated
 	final public static boolean PDF = true;
+	@Deprecated
 	final public static boolean ODT = false;
 
 	// Counts the documents and show the progress in the status bar
@@ -94,35 +139,53 @@ public class FileOrganizer {
 	 * Generates the document file name from the document and the placeholder
 	 * string in the preference page
 	 * 
-	 * @param inclFilename
-	 *            <code>true</code> if the filename should also be returned
-	 * @param inclExtension
-	 *            <code>true</code> if the extension should also be returned
-	 * @param isPDF
-	 *            <code>true</code> if it is a PDF File
+	 * @param pathOptions {@link PathOption}s to use
+	 * 
+	 * @param targetFormat the {@link TargetFormat}
+	 * 
+	 * @param document
+	 *            The document
+	 * @return The filename
+	 * 
+	 * @deprecated use {@link FileOrganizer#getRelativeDocumentPath(PathOption[], TargetFormat, Document)}
+	 */
+	public String getRelativeDocumentPath(boolean inclFilename, boolean inclExtension, boolean isPDF,
+			Document document) {
+		Set<PathOption> pathOptions = new HashSet<>();
+		TargetFormat targetFormat;
+		if(inclFilename) pathOptions.add(PathOption.WITH_FILENAME);
+		if(inclExtension) pathOptions.add(PathOption.WITH_EXTENSION);
+		if(isPDF) targetFormat = TargetFormat.PDF;
+			else targetFormat = TargetFormat.ODT;
+		return getRelativeDocumentPath(pathOptions, targetFormat, document);
+		
+	}
+
+	/**
+	 * Generates the document file name from the document and the placeholder
+	 * string in the preference page
+	 * 
+	 * @param pathOptions {@link PathOption}s to use
+	 * @param targetFormat the {@link TargetFormat}
+	 * 
 	 * @param document
 	 *            The document
 	 * @return The filename
 	 */
-	public String getRelativeDocumentPath(boolean inclFilename, boolean inclExtension, boolean isPDF,
-			Document document) {
-
+	public String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
 		String path = "";
 		String filename = "";
-
-		String odtpdf = isPDF ? "pdf" : "odt";
 
 		// T: Subdirectory of the OpenOffice documents
 		String savePath = msg.pathsDocumentsName + "/";
 		String fileNamePlaceholder;
-		fileNamePlaceholder = preferences.getString("OPENOFFICE_" + odtpdf.toUpperCase() + "_PATH_FORMAT");
+		fileNamePlaceholder = preferences.getString("OPENOFFICE_" + targetFormat.getPrefId() + "_PATH_FORMAT");
 
 		// Replace all backslashes
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
 
 		// Remove the extension
-		if (fileNamePlaceholder.toLowerCase().endsWith("." + odtpdf)
-				|| fileNamePlaceholder.toLowerCase().endsWith(".pdf"))
+		if (fileNamePlaceholder.toLowerCase().endsWith("." + targetFormat.getExtension().toLowerCase()))
 			fileNamePlaceholder = fileNamePlaceholder.substring(0, fileNamePlaceholder.length() - 4);
 
 		// Replace the placeholders
@@ -194,12 +257,12 @@ public class FileOrganizer {
 		savePath += path + "/";
 
 		// Use the document name as filename
-		if (inclFilename)
+		if (pathOptions.contains(PathOption.WITH_FILENAME))
 			savePath += filename;
 
 		// Use the document name as filename
-		if (inclExtension) {
-			savePath += "." + odtpdf;
+		if (pathOptions.contains(PathOption.WITH_EXTENSION)) {
+			savePath += "." + targetFormat;
 		}
 
 		return savePath;
@@ -210,18 +273,39 @@ public class FileOrganizer {
 	 * Returns the filename (with path) of the Office document including the
 	 * workspace path
 	 * 
+	 * @param pathOptions {@link PathOption}s to use
+	 * @param targetFormat the {@link TargetFormat}
+	 * @return the filename
+	 */
+	public Path getDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
+		String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+		return Paths.get(workspace, getRelativeDocumentPath(pathOptions, targetFormat, document));
+	}
+	
+	/**
+	 * Returns the filename (with path) of the Office document including the
+	 * workspace path
+	 * 
 	 * @param inclFilename
-	 *            <code>true</code> if also the filename should be used
+	 *            <code>true</code> if the filename should also be returned
 	 * @param inclExtension
-	 *            <code>true</code> if also the extension should be used
-	 * @param PDF
-	 *            <code>true</code> if it's the PDF filename
-	 * @return The filename
+	 *            <code>true</code> if the extension should also be returned
+	 * @param isPDF
+	 *            <code>true</code> if it is a PDF File
+	 * @return the filename
+	 * @Deprecated use {@link FileOrganizer#getDocumentPath(Set, TargetFormat, Document)}
 	 */
 	public Path getDocumentPath(boolean inclFilename, boolean inclExtension, boolean isPDF, Document document) {
 		String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		return Paths.get(workspace, getRelativeDocumentPath(inclFilename, inclExtension, isPDF, document));
+		Set<PathOption> pathOptions = new HashSet<>();
+		TargetFormat targetFormat;
+		if(inclFilename) pathOptions.add(PathOption.WITH_FILENAME);
+		if(inclExtension) pathOptions.add(PathOption.WITH_EXTENSION);
+		if(isPDF) targetFormat = TargetFormat.PDF;
+			else targetFormat = TargetFormat.ODT;
+		return Paths.get(workspace, getRelativeDocumentPath(pathOptions, targetFormat, document));
 	}
+	
 
 	/**
 	 * Move a file and create the directories, if they do not exist

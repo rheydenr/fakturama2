@@ -17,8 +17,10 @@ package com.sebulli.fakturama.parts.widget;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -57,7 +59,13 @@ public class GrossText {
 
 		// Create the text widget
 		this.grossText = new FormattedText(parent, style);
-		this.grossText.setFormatter(new MoneyFormatter());
+		ITextFormatter formatter;
+		if(context != null) {
+			formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
+		} else {
+			formatter = new MoneyFormatter(null);
+		}
+		this.grossText.setFormatter(formatter);
 		grossText.setValue(netValue.multiply(1 + vat));
 
 		// Set the text of the GrossText, based on the NetText's value.

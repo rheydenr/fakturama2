@@ -615,6 +615,7 @@ public class Messages {
 	public String preferencesOfficeFolder;
 	public String preferencesOfficeFormatandpathodt;
 	public String preferencesOfficeFormatandpathpdf;
+	public String preferencesOfficeAdditionalformatandpathpdf;
 	public String preferencesOfficeOdtpdfLabel;
 	public String preferencesOfficeOnlyodtLabel;
 	public String preferencesOfficeOnlypdfLabel;
