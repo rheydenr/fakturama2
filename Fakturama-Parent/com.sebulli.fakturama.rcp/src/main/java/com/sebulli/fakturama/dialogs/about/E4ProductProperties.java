@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * A class that converts the strings returned by
@@ -54,22 +55,11 @@ public class E4ProductProperties extends E4BrandingProperties implements
         URL location = FileLocator.find(definingBundle, new Path(
                 ABOUT_MAPPINGS), null);
         PropertyResourceBundle bundle = null;
-        InputStream is;
         if (location != null) {
-            is = null;
-            try {
-                is = location.openStream();
+            try (InputStream is = location.openStream();) {
                 bundle = new PropertyResourceBundle(is);
             } catch (IOException e) {
                 bundle = null;
-            } finally {
-                try {
-                    if (is != null) {
-						is.close();
-					}
-                } catch (IOException e) {
-                    // do nothing if we fail to close
-                }
             }
         }
 
@@ -300,6 +290,11 @@ public class E4ProductProperties extends E4BrandingProperties implements
      */
     public static ImageDescriptor[] getWindowImages(IProduct product) {
         String property = product.getProperty(WINDOW_IMAGES);
+
+        // for compatibility with pre-3.0 plugins that may still use WINDOW_IMAGE
+        if (property == null) {
+			property = product.getProperty(WINDOW_IMAGE);
+		}
 
         return getImages(property, product.getDefiningBundle());
     }

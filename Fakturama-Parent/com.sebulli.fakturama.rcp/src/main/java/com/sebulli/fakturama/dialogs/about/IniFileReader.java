@@ -1,7 +1,8 @@
 package com.sebulli.fakturama.dialogs.about;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.MessageFormat; // Can't use ICU, possible launch problem?
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -11,11 +12,13 @@ import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.StringTokenizer;
 
-import javax.swing.plaf.ButtonUI;
-
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 
 import com.sebulli.fakturama.Activator;
 

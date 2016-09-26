@@ -9,7 +9,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  * @author G527032
  *
  */
-public class E4AboutEntry extends AboutData {
+public class E4AboutEntry extends E4AboutData {
 	
 	ImageDescriptor image;
 	String aboutText;

@@ -160,7 +160,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		Composite area = (Composite) super.createDialogArea(parent);
 		Composite container = new Composite(area, SWT.NONE);
 	    container.setLayout(new GridLayout(3, false));
-	    setTitleImage(Icon.ABOUT_ICON.getImage(IconSize.AppIconSize));
+	    setTitleImage(Icon.APP_ABOUT_ICON.getImage(IconSize.AppIconSize));
 	 	setTitle(msg.startFirstTitle);
 	    // 1st row
 		setMessage(msg.startFirstSelectWorkdirVerbose, IMessageProvider.INFORMATION);

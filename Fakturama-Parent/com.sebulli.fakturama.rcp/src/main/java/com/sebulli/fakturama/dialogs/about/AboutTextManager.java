@@ -33,7 +33,7 @@ public class AboutTextManager {
      * @return
      */
     public static AboutItem scan(String s) {
-        List<Integer[]> linkRanges = new ArrayList<>();
+        List<int[]> linkRanges = new ArrayList<>();
         List<String> links = new ArrayList<>();
 
         // slightly modified version of jface url detection
@@ -78,7 +78,7 @@ public class AboutTextManager {
 					urlLength= endOffset - urlOffset;
 			}
 
-			linkRanges.add(new Integer[] { urlOffset, urlLength });
+			linkRanges.add(new int[] { urlOffset, urlLength });
 			links.add(s.substring(urlOffset, urlOffset+urlLength));
 
 			urlSeparatorOffset= s.indexOf("://", urlOffset+urlLength+1); //$NON-NLS-1$
@@ -338,6 +338,11 @@ public class AboutTextManager {
     private void setLinkRanges(int[][] linkRanges) {
         Color fg = JFaceColors.getHyperlinkText(styledText.getShell()
                 .getDisplay());
+        if(fg == null) {
+        	// TODO use CSS styling!
+        	// fall back
+			fg = new Color(styledText.getShell().getDisplay(), 0, 0, 128);
+        }
         for (int i = 0; i < linkRanges.length; i++) {
             StyleRange r = new StyleRange(linkRanges[i][0], linkRanges[i][1],
                     fg, null);

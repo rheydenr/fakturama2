@@ -4,7 +4,7 @@
 <product name="com.sebulli.fakturama.rcp" uid="Fakturama" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="app/about.png"/>
+      <image path="icon://APP_ABOUT_ICON"/>
       <text>
          %about.text
       </text>

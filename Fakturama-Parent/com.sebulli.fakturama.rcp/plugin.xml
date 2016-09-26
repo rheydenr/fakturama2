@@ -12,12 +12,8 @@
                value="false">
          </property>
          <property
-               name="applicationCSS"
-               value="platform:/plugin/com.sebulli.fakturama.rcp/css/default.css">
-         </property>
-         <property
                name="appName"
-               value="Fakturama">
+               value="com.sebulli.fakturama.rcp">
          </property>
          <property
                name="startupForegroundColor"
@@ -32,24 +28,24 @@
                value="5,359,515,15">
          </property>
          <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
-         </property>
-         <property
                name="lifeCycleURI"
                value="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.LifecycleManager">
          </property>
          <property
                name="windowImages"
-               value="platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_16.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_32.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_48.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_64.png,platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/app_128.png">
+               value="app/app_16.png,app/app_32.png,app/app_48.png,app/app_64.png,app/app_128.png,app/app_256.png">
          </property>
          <property
                name="aboutImage"
-               value="platform:/plugin/com.sebulli.fakturama.resources.icons/icons/app/about.png">
+               value="icon://APP_ABOUT_ICON">
          </property>
          <property
                name="aboutText"
                value="%about.text">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>

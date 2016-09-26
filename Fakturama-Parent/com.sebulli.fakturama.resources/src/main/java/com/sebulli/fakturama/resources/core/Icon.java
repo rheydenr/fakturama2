@@ -199,7 +199,7 @@ public enum Icon {
 	NEW_WIZ,
 	WORKSET,
 	
-	ABOUT_ICON;	
+	APP_ABOUT_ICON;	
 	// @formatter:on
 
 	private Icon() {

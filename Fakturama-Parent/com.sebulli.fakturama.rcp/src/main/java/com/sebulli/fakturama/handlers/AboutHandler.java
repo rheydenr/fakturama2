@@ -10,26 +10,28 @@
  *******************************************************************************/
 package com.sebulli.fakturama.handlers;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.dialogs.about.E4AboutDialog;
+import com.sebulli.fakturama.ui.E4ApplicationInfo;
+import com.sebulli.fakturama.ui.IE4ApplicationInfo;
 
 public class AboutHandler {
-	
-	@Inject
-	private EPartService partService;
 
 	@Execute
 	public void execute(Shell shell, IEclipseContext context) {
-		// doesn't work :-(
-//		partService.showPart("com.sebulli.fakturama.rcp.part.0", PartState.ACTIVATE);
+		
+		// formerly done in org.eclipse.ui.internal.WorkbenchPlugin#getProductInfo
+		// the (formerly) first call to this was in org.eclipse.ui.internal.Workbench:
+		// (while creating the workbench window)
+		//       String applicationName = WorkbenchPlugin.getDefault().getAppName();
+		
+		IE4ApplicationInfo applicationInfo = ContextInjectionFactory.make(E4ApplicationInfo.class, context);
+		
+		context.set(IE4ApplicationInfo.class, applicationInfo);
 		E4AboutDialog dlg = ContextInjectionFactory.make(E4AboutDialog.class, context);
 		dlg.open();
 	}

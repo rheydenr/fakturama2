@@ -63,6 +63,22 @@ public interface IE4ProductConstants {
     public static final String PREFERENCE_CUSTOMIZATION = "preferenceCustomization"; //$NON-NLS-1$
 
     /**
+     * An image to be used as the window icon for this product (16x16).
+     * Products designed to run "headless" typically would not have such an image.
+     * <p>
+     * The value is either a fully qualified valid URL or a path relative
+     * to the product's defining bundle.
+     * </p>
+     * <p>
+     * If the <code>WINDOW_IMAGES</code> property is given, then it supercedes
+     * this one.
+     * </p>
+     * @deprecated use WINDOW_IMAGES instead (see recommendations there)
+     */
+    @Deprecated
+	public static final String WINDOW_IMAGE = "windowImage"; //$NON-NLS-1$
+
+    /**
      * An array of one or more images to be used for this product.  The
      * expectation is that the array will contain the same image rendered
      * at different sizes (16x16 and 32x32).

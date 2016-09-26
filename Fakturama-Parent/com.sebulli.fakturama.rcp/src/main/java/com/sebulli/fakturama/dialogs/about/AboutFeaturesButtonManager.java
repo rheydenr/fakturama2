@@ -11,7 +11,7 @@ import java.util.Map;
  * image identity.
  */
 public class AboutFeaturesButtonManager {
-    private Map<Key, List<AboutBundleGroupData>> providerMap = new HashMap<>();
+    private Map providerMap = new HashMap();
 
     private static class Key {
         public String providerName;
@@ -48,7 +48,7 @@ public class AboutFeaturesButtonManager {
      * @return true if a button should be added (i.e., the argument has an image
      *         and it does not already have a button)
      */
-    public boolean add(AboutBundleGroupData info) {
+    public boolean add(E4AboutBundleGroupData info) {
         // no button for features without an image
         Long crc = info.getFeatureImageCrc();
         if (crc == null) {
@@ -58,13 +58,13 @@ public class AboutFeaturesButtonManager {
         String providerName = info.getProviderName();
         Key key = new Key(providerName, crc);
 
-        List<AboutBundleGroupData> infoList = (List) providerMap.get(key);
+        List infoList = (List) providerMap.get(key);
         if (infoList != null) {
             infoList.add(info);
             return false;
         }
 
-        infoList = new ArrayList<>();
+        infoList = new ArrayList();
         infoList.add(info);
         providerMap.put(key, infoList);
         return true;
@@ -74,11 +74,11 @@ public class AboutFeaturesButtonManager {
      * Return an array of all bundle groups that share the argument's provider and
      * image.  Returns an empty array if there isn't any related information.
      */
-    public AboutBundleGroupData[] getRelatedInfos(AboutBundleGroupData info) {
+    public E4AboutBundleGroupData[] getRelatedInfos(E4AboutBundleGroupData info) {
         // if there's no image, then there won't be a button
         Long crc = info.getFeatureImageCrc();
         if (crc == null) {
-			return new AboutBundleGroupData[0];
+			return new E4AboutBundleGroupData[0];
 		}
 
         String providerName = info.getProviderName();
@@ -86,10 +86,10 @@ public class AboutFeaturesButtonManager {
 
         List infoList = (List) providerMap.get(key);
         if (infoList == null) {
-			return new AboutBundleGroupData[0];
+			return new E4AboutBundleGroupData[0];
 		}
 
-        return (AboutBundleGroupData[]) infoList
-                .toArray(new AboutBundleGroupData[0]);
+        return (E4AboutBundleGroupData[]) infoList
+                .toArray(new E4AboutBundleGroupData[0]);
     }
 }

@@ -42,6 +42,9 @@ public class IconURLConnection extends URLConnection {
 				// ... except it starts with ICON_, because then it's a toolbar icon
 				size = IconSize.ToolbarIconSize;
 			}
+			if(iconName.startsWith("APP_")) {
+				size = IconSize.AppIconSize;				
+			}
 			InputStream is = selectedIcon
 					.getImageAsInputStream(size);
 			return is;

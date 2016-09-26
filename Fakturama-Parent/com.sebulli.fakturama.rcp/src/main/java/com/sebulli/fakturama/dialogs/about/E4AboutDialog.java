@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dialogs.about;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -8,13 +7,13 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
-import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceColors;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -38,30 +37,33 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.resources.core.Icon;
-import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.ui.IE4ApplicationInfo;
 
 /**
  * Displays information about the product.
  */
 public class E4AboutDialog extends TrayDialog {
-	
+	private final static int TEXT_MARGIN = 5;
+
 //	@Inject
 //	private IProductPreferencesService productPreferencesService;
 	
-    @Inject
-    @Translation
-    protected Messages msg;
+//	@Inject
+//	private IBundleGroupProvider bundleGroupProvider;
+
+	@Inject
+	@Translation
+	protected Messages msg;
 	
+	protected IE4ApplicationInfo applicationInfo;
+
     private final static int MAX_IMAGE_WIDTH_FOR_TEXT = 250;
 
     private final static int DETAILS_ID = IDialogConstants.CLIENT_ID + 1;
 
     private String productName;
 
-    private IProduct product;
-
-    private AboutBundleGroupData[] bundleGroupInfos;
+    private E4AboutBundleGroupData[] bundleGroupInfos;
 
     private ArrayList<Image> images = new ArrayList<Image>();
 
@@ -70,36 +72,34 @@ public class E4AboutDialog extends TrayDialog {
     private StyledText text;
 
     private AboutTextManager aboutTextManager;
-
+    private AboutItem item;
+    
     /**
      * Create an instance of the AboutDialog for the given window.
      * @param parentShell The parent of the dialog.
      */
     @Inject
-    public E4AboutDialog(Shell parentShell) {
+    public E4AboutDialog(Shell parentShell, IE4ApplicationInfo applicationInfo) {
         super(parentShell);
-
-        product = Platform.getProduct();
-        if (product != null) {
-			productName = product.getProperty("appName");
-		}
+        this.applicationInfo = applicationInfo;
+		productName = applicationInfo.getProductName();
         if (productName == null) {
-			productName = ""; // WorkbenchMessages.AboutDialog_defaultProductName;
+			productName = msg.helpAboutdialogDefaultproductname; // WorkbenchMessages.AboutDialog_defaultProductName;
 		}
 
         // create a descriptive object for each BundleGroup
         IBundleGroupProvider[] providers = Platform.getBundleGroupProviders();
-		LinkedList<AboutBundleGroupData> groups = new LinkedList<AboutBundleGroupData>();
+		LinkedList<E4AboutBundleGroupData> groups = new LinkedList<E4AboutBundleGroupData>();
         if (providers != null) {
 			for (IBundleGroupProvider provider : providers) {
                 IBundleGroup[] bundleGroups = provider.getBundleGroups();
                 for (IBundleGroup bundleGroup : bundleGroups) {
-					groups.add(new AboutBundleGroupData(bundleGroup));
+					groups.add(new E4AboutBundleGroupData(bundleGroup));
 				}
             }
 		}
         bundleGroupInfos = groups
-                .toArray(new AboutBundleGroupData[0]);
+                .toArray(new E4AboutBundleGroupData[0]);
     }
 
     @Override
@@ -136,8 +136,7 @@ public class E4AboutDialog extends TrayDialog {
     @Override
 	protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setImage(Icon.COMMAND_APP.getImage(IconSize.DefaultIconSize));
-        newShell.setText(MessageFormat.format(msg.dialogAboutTitle, productName));
+        newShell.setText(NLS.bind("About {0}",productName )); // WorkbenchMessages.AboutDialog_shellTitle
 //        PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell,
 //				IWorkbenchHelpContextIds.ABOUT_DIALOG);
     }
@@ -154,7 +153,7 @@ public class E4AboutDialog extends TrayDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
         parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-//        createButton(parent, DETAILS_ID, "&Installation Details" /*"WorkbenchMessages.AboutDialog_DetailsButton"*/, false);
+        createButton(parent, DETAILS_ID, "&Installation Details" /*"WorkbenchMessages.AboutDialog_DetailsButton"*/, false);
 
         Label l = new Label(parent, SWT.NONE);
         l.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -166,40 +165,16 @@ public class E4AboutDialog extends TrayDialog {
                 IDialogConstants.OK_LABEL, true);
         b.setFocus();
     }
-    
-////	@SuppressWarnings("restriction")
-//	private ProductFileAdvice createProductAdvice() {
-//		 String id;
-//		 Version version;
-//		 String name;
-//		 IProductDescriptor productDescriptor;
-//		try {
-//			URL entry = Activator.getContext().getBundle().getResource("/de.rhe.e4test.product");
-//			productDescriptor = new E4ProductFile(entry);
-//		id = productDescriptor.getId();
-//		version = Version.parseVersion(productDescriptor.getVersion());
-//		name = productDescriptor.getProductName();
-//		if (name == null || name.length() == 0) // If the name is not defined, use the ID
-//			name = product.getId();
-//
-//			return new ProductFileAdvice(productDescriptor, "mpf!");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
 
     @Override
 	protected Control createDialogArea(Composite parent) {
          // brand the about box if there is product info
         Image aboutImage = null;
-        AboutItem item = null;
-        if (product != null) {
+        item = null;
+        if (applicationInfo != null) {
 //        	ProductFileAdvice adv = createProductAdvice();
         	
-            ImageDescriptor imageDescriptor = E4ProductProperties
-                    .getAboutImage(product);
+            ImageDescriptor imageDescriptor = applicationInfo.getAboutImage();
             if (imageDescriptor != null) {
 				aboutImage = imageDescriptor.createImage();
 			}
@@ -207,7 +182,7 @@ public class E4AboutDialog extends TrayDialog {
             // if the about image is small enough, then show the text
             if (aboutImage == null
                     || aboutImage.getBounds().width <= MAX_IMAGE_WIDTH_FOR_TEXT) {
-                String aboutText = E4ProductProperties.getAboutText(product);
+                String aboutText = applicationInfo.getAboutText();
                 if (aboutText != null) {
 					item = AboutTextManager.scan(aboutText);
 				}
@@ -315,26 +290,7 @@ public class E4AboutDialog extends TrayDialog {
     		textComposite.setLayout(layout);
 
     		text = new StyledText(textComposite, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
-
-    		// Don't set caret to 'null' as this causes https://bugs.eclipse.org/293263.
-//    		text.setCaret(null);
-
-            text.setFont(parent.getFont());
-            text.setText(item.getText());
-            text.setCursor(null);
-            text.setBackground(background);
-            text.setForeground(foreground);
-
-            aboutTextManager = new AboutTextManager(text);
-            aboutTextManager.setItem(item);
-
-//            createTextMenu();
-
-    		GridData gd = new GridData();
-    		gd.verticalAlignment = GridData.BEGINNING;
-    		gd.horizontalAlignment = GridData.FILL;
-    		gd.grabExcessHorizontalSpace = true;
-    		text.setLayoutData(gd);
+    		configureText(topContainer);
 
     		// Adjust the scrollbar increments
     		scroller.getHorizontalBar().setIncrement(20);
@@ -399,12 +355,38 @@ public class E4AboutDialog extends TrayDialog {
         return workArea;
     }
 
-//    /**
-//	 * Create the context menu for the text widget.
-//	 *
-//	 * @since 3.4
-//	 */
-//	private void createTextMenu() {
+	void configureText(final Composite parent) {
+		// Don't set caret to 'null' as this causes
+		// https://bugs.eclipse.org/293263.
+		// text.setCaret(null);
+		Color background = JFaceColors.getBannerBackground(parent.getDisplay());
+		Color foreground = JFaceColors.getBannerForeground(parent.getDisplay());
+
+		text.setFont(parent.getFont());
+		text.setText(item.getText());
+		text.setCursor(null);
+		text.setBackground(background);
+		text.setForeground(foreground);
+		text.setMargins(TEXT_MARGIN, TEXT_MARGIN, TEXT_MARGIN, 0);
+
+		aboutTextManager = new AboutTextManager(text);
+		aboutTextManager.setItem(item);
+
+		createTextMenu();
+
+		GridData gd = new GridData();
+		gd.verticalAlignment = GridData.BEGINNING;
+		gd.horizontalAlignment = GridData.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		text.setLayoutData(gd);
+	}
+
+    /**
+	 * Create the context menu for the text widget.
+	 *
+	 * @since 3.4
+	 */
+	private void createTextMenu() {
 //		final MenuManager textManager = new MenuManager();
 //		textManager.add(new CommandContributionItem(
 //				new CommandContributionItemParameter(PlatformUI
@@ -422,8 +404,8 @@ public class E4AboutDialog extends TrayDialog {
 //				textManager.dispose();
 //			}
 //		});
-//
-//	}
+
+	}
 
 	private void createFeatureImageButtonRow(Composite parent) {
         Composite featureContainer = new Composite(parent, SWT.NONE);
@@ -434,13 +416,13 @@ public class E4AboutDialog extends TrayDialog {
         data.horizontalAlignment = GridData.FILL;
         featureContainer.setLayoutData(data);
 
-        for (AboutBundleGroupData bundleGroupInfo : bundleGroupInfos) {
+        for (E4AboutBundleGroupData bundleGroupInfo : bundleGroupInfos) {
 			createFeatureButton(featureContainer, bundleGroupInfo);
 		}
     }
 
     private Button createFeatureButton(Composite parent,
-            final AboutBundleGroupData info) {
+            final E4AboutBundleGroupData info) {
         if (!buttonManager.add(info)) {
 			return null;
 		}
@@ -464,10 +446,10 @@ public class E4AboutDialog extends TrayDialog {
         button.addSelectionListener(new SelectionAdapter() {
             @Override
 			public void widgetSelected(SelectionEvent event) {
-//                AboutBundleGroupData[] groupInfos = buttonManager
-//                        .getRelatedInfos(info);
-//                AboutBundleGroupData selection = (AboutBundleGroupData) event.widget
-//                        .getData();
+                E4AboutBundleGroupData[] groupInfos = buttonManager
+                        .getRelatedInfos(info);
+                E4AboutBundleGroupData selection = (E4AboutBundleGroupData) event.widget
+                        .getData();
 
 //                AboutFeaturesDialog d = new AboutFeaturesDialog(getShell(),
 //                        productName, groupInfos, selection);
