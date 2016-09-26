@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="392">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="393">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -109,10 +109,6 @@
 <repository location="http://beust.com/eclipse"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.0.v20160725-3d1f402"/>
-<repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
 <unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
@@ -133,6 +129,10 @@
 <unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
 <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.0.v20160913-86621f8"/>
+<repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

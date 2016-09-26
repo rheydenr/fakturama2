@@ -55,8 +55,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubMonitor;
 //import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -328,9 +328,8 @@ public class MigrationManager {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask(msg.startMigrationBegin, orderedTasks.length);
 					for (OldTableinfo tableinfo : orderedTasks) {
-						monitor.setTaskName(String.format("%s %s", msg.startMigrationConvert, msg.getMessageFromKey(tableinfo.getMessageKey())));
 						checkCancel(monitor);
-						runMigration(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), tableinfo);
+						runMigration(monitor, tableinfo);
 //						monitor.worked(1);
 					}
 					monitor.done();
@@ -399,22 +398,24 @@ public class MigrationManager {
     /**
 	 * This method switches to the migration methods.
 	 * 
-	 * @param subProgressMonitor {@link SubProgressMonitor}
+	 * @param progressMonitor {@link SubMonitor}
 	 * @param tableinfo tableinfo which table has to be migrated
 	 * @throws InterruptedException
 	 */
-	private void runMigration(SubProgressMonitor subProgressMonitor, OldTableinfo tableinfo) throws InterruptedException {
+	private void runMigration(IProgressMonitor progressMonitor, OldTableinfo tableinfo) throws InterruptedException {
 	    migLogUser.info(String.format("Start converting %s (%s)", msg.getMessageFromKey(tableinfo.getMessageKey()), tableinfo.name()));
+        SubMonitor subMonitor = SubMonitor.convert(progressMonitor, 
+        		String.format("%s %s", msg.startMigrationConvert, msg.getMessageFromKey(tableinfo.getMessageKey())), 100);
 		try {
 			switch (tableinfo) {
 			case Properties:
-				runMigratePropertiesSubTask(subProgressMonitor);
+				runMigratePropertiesSubTask(subMonitor);
 				break;
 			case Shippings:
-				runMigrateShippingsSubTask(subProgressMonitor);
+				runMigrateShippingsSubTask(subMonitor);
 				break;
 			case Vats:
-				runMigrateVatsSubTask(subProgressMonitor);
+				runMigrateVatsSubTask(subMonitor);
 				break;
 			case Lists:
 				// Country Codes are no user definable data; they will be read
@@ -422,25 +423,25 @@ public class MigrationManager {
 		        itemAccountTypes = buildItemAccountTypeMap();
 				break;
 			case Texts:
-				runMigrateTextsSubTask(subProgressMonitor);
+				runMigrateTextsSubTask(subMonitor);
 				break;
 			case Contacts:
-				runMigrateContactsSubTask(subProgressMonitor);
+				runMigrateContactsSubTask(subMonitor);
 				break;
 			case Documents:
-				runMigrateDocumentsSubTask(subProgressMonitor);
+				runMigrateDocumentsSubTask(subMonitor);
 				break;
 			case Payments:
-				runMigratePaymentsSubTask(subProgressMonitor);
+				runMigratePaymentsSubTask(subMonitor);
 				break;
 			case Products:
-				runMigrateProductsSubTask(subProgressMonitor);
+				runMigrateProductsSubTask(subMonitor);
 				break;
 			case Expenditures:
-				runMigrateExpendituresSubTask(subProgressMonitor);
+				runMigrateExpendituresSubTask(subMonitor);
 				break;
 			case Receiptvouchers:
-				runMigrateReceiptvouchersSubTask(subProgressMonitor);
+				runMigrateReceiptvouchersSubTask(subMonitor);
 				break;
 			default:
 				break;
@@ -449,15 +450,18 @@ public class MigrationManager {
 		}
 		catch (RuntimeException rex) {
 			log.error(rex, "error while migrating "+tableinfo.name()+"; Message: " + rex.getMessage());
+		} finally {
+			SubMonitor.done(progressMonitor);
 		}
 	}
 
 
-	private void runMigrateProductsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateProductsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllProducts();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-        subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		for (OldProducts oldProduct : oldDao.findAllProducts()) {
@@ -501,13 +505,13 @@ public class MigrationManager {
 				
 				product = productsDAO.save(product, true);
 				newProducts.put(oldProduct.getId(), product.getId());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
 				log.error("error while migrating Product. (old) ID=" + oldProduct.getId() + "; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
+		subMonitor.done();
 	}
 
 
@@ -530,16 +534,17 @@ public class MigrationManager {
 		}
 	}
 
-	private void runMigrateDocumentsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateDocumentsSubTask(SubMonitor subMonitor) {
+		Document document;
 		Long countOfEntitiesInTable = oldDao.countAllDocuments();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-        subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
 		Map<Integer, Invoice> invoiceDocuments = new HashMap<>();
 		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
 			try {
-				Document document;
 				BillingType billingType = BillingType.get(oldDocument.getCategory());
                 switch (billingType) {
                 case INVOICE:
@@ -717,7 +722,7 @@ public class MigrationManager {
                         }
                     }
                 }
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | NumberFormatException e) {
 				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
@@ -729,7 +734,7 @@ public class MigrationManager {
 		for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
 			try {
 				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
-				Document document = invoiceRelevantDocuments.get(oldDocument.getId());
+				document = invoiceRelevantDocuments.get(oldDocument.getId());
 				// now find the corresponding NEW document
 				Invoice relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
 				if (relatedDocument != null) {
@@ -741,7 +746,6 @@ public class MigrationManager {
 				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
 
@@ -794,7 +798,6 @@ public class MigrationManager {
 	}
 
 	private byte[] createImageFromFile(String picturename) {
-
 		if(picturename.isEmpty()) return null;
 		
 		byte[] buffer = null;
@@ -818,11 +821,12 @@ public class MigrationManager {
 		return buffer;
 	}
 
-	private void runMigrateContactsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateContactsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllContacts();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 		CategoryBuilder<ContactCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ContactCategory> contactCategories = catBuilder.buildCategoryMap(oldDao.findAllContactCategories(), ContactCategory.class);
@@ -880,13 +884,12 @@ public class MigrationManager {
 				
 				// store it for further using (only ID for memory saving)
 				newContacts.put(oldContact.getId(), contact.getId());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | RuntimeException e) {
 				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
     /**
@@ -961,11 +964,12 @@ public class MigrationManager {
 		return retval;
 	}
 
-	private void runMigrateReceiptvouchersSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateReceiptvouchersSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllReceiptvouchers();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 
         CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
         Map<String, VoucherCategory> receiptVoucherAccounts = catBuilder.buildCategoryMap(oldDao.findAllReceiptvoucherCategories(), VoucherCategory.class);
@@ -1007,23 +1011,25 @@ public class MigrationManager {
 				receiptVoucher.setTotalValue(oldReceiptvoucher.getTotal());
 				receiptVoucher.setValidFrom(new Date());
 				receiptVouchersDAO.save(receiptVoucher, true);
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
 				migLogUser.info("!!! error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
+		subMonitor.done();
 	}
 
-	private void runMigrateExpendituresSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateExpendituresSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllExpenditures();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 
-        CategoryBuilder<VoucherCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);//new CategoryBuilder<>(log); 
+        @SuppressWarnings("unchecked")
+		CategoryBuilder<VoucherCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
         Map<String, VoucherCategory> expenditureAccounts = catBuilder.buildCategoryMap(oldDao.findAllExpenditureVoucherCategories(), VoucherCategory.class);
         
 		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
@@ -1065,13 +1071,12 @@ public class MigrationManager {
 				Voucher.setPaidValue(oldExpenditure.getPaid());
 				Voucher.setTotalValue(oldExpenditure.getTotal());
 				expendituresDAO.save(Voucher, true);
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
 				migLogUser.info("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
             }
 		}
-		subProgressMonitor.done();
 	}
 
 	/**
@@ -1119,13 +1124,14 @@ public class MigrationManager {
     /**
      * Migration of the Payments table (DataSetPayment). The created objects will be stored in a {@link Map} for later use (only the IDs).
      * 
-     * @param subProgressMonitor the {@link SubProgressMonitor}
+     * @param subMonitor the {@link SubMonitor}
      */
-	private void runMigratePaymentsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigratePaymentsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllPayments();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 		// Hint: Payments have the same(!) categories as Vouchers
 		CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
@@ -1151,26 +1157,26 @@ public class MigrationManager {
 				}
 				payment = paymentsDAO.save(payment, true);
 				newPayments.put(oldPayment.getId(), payment.getId());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Payment. (old) ID=" + oldPayment.getId() + "; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
 
 	/**
 	 * Migration of the Texts table (DataSetText)
 	 * 
-	 * @param subProgressMonitor the {@link SubProgressMonitor}
+	 * @param subMonitor the {@link SubMonitor}
 	 */
-	private void runMigrateTextsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateTextsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllTexts();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 		CategoryBuilder<TextCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, TextCategory> textCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllTextCategories(), TextCategory.class);
@@ -1187,25 +1193,26 @@ public class MigrationManager {
 					text.setCategories(textCategoriesMap.get(oldTexts.getCategory()));
 				}
 				textDAO.save(text, true);
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Text. (old) ID=" + oldTexts.getId() + "; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
 	/**
 	 * Migration of the VATs table (DataSetVAT). The created objects will be stored in a {@link Map} for later use (only the IDs).
 	 * 
-	 * @param subProgressMonitor the {@link SubProgressMonitor}
+	 * @param subMonitor the {@link SubMonitor}
 	 */
-	private void runMigrateVatsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateVatsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllVats();
 		migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
+
 		CategoryBuilder<VATCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, VATCategory> vatCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllVatCategories(), VATCategory.class);
 		for (OldVats oldVat : oldDao.findAllVats()) {
@@ -1224,25 +1231,25 @@ public class MigrationManager {
 				vat = vatsDAO.save(vat, true);
 				// use a HashMap as a simple cache
 				newVats.put(oldVat.getId(), vat.getId());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
 			    migLogUser.info("!!! error while migrating VAT. (old) ID=" + oldVat.getId() + "; Message: " + e.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
 	/**
 	 * Migration of the Shipping table (DataSetShipping). The created objects will be stored in a {@link Map} for later use (only the IDs).
 	 * 
-	 * @param subProgressMonitor the {@link SubProgressMonitor}
+	 * @param subMonitor the {@link SubMonitor}
 	 */
-	private void runMigrateShippingsSubTask(SubProgressMonitor subProgressMonitor) {
+	private void runMigrateShippingsSubTask(SubMonitor subMonitor) {
 		Long countOfEntitiesInTable = oldDao.countAllShippings();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 		CategoryBuilder<ShippingCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ShippingCategory> shippingCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllShippingCategories(), ShippingCategory.class);
@@ -1265,29 +1272,28 @@ public class MigrationManager {
 				shipping.setShippingVat(newVat);
 				shipping = shippingsDAO.save(shipping, true);
 				newShippings.put(oldShipping.getId(), shipping.getId());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException e) {
 				migLogUser.info("!!! error while migrating Shipping. (old) ID=" + oldShipping.getId() + "; Message: " + e.getMessage());
 			}
 		}
-        subProgressMonitor.setTaskName("");
-		subProgressMonitor.done();
 	}
 
 	/**
 	 * Migration of the Properties table. Sets the properties in EclipsePreferences.
 	 * 
-	 * @param subProgressMonitor
+	 * @param subMonitor
 	 * @param countOfEntitiesInTable
 	 * @throws InterruptedException
 	 * @throws
 	 */
-	private void runMigratePropertiesSubTask(SubProgressMonitor subProgressMonitor) throws InterruptedException {
+	private void runMigratePropertiesSubTask(SubMonitor subMonitor) throws InterruptedException {
 		Long countOfEntitiesInTable = oldDao.countAllProperties();
         migLogUser.info(String.format("Number of entities: %d", countOfEntitiesInTable));
-		subProgressMonitor.beginTask(msg.startMigrationWorking, countOfEntitiesInTable.intValue());
-		subProgressMonitor.subTask(String.format(" %d %s", countOfEntitiesInTable, msg.startMigration));
+
+        subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
+        subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 
 	    createColumnWidthPreferences();
 	    String currentUser = System.getProperty("user.name", "(unknown)");
@@ -1364,13 +1370,12 @@ public class MigrationManager {
                 
                 // save the preference in preference store
 				eclipsePrefs.put(prop.getName(), prop.getValue());
-				subProgressMonitor.worked(1);
+				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException sqlex) {
 				migLogUser.info("!!! error while migrating UserProperty. (old) ID=" + oldProperty.getId() + "; Message: " + sqlex.getMessage());
 			}
 		}
-		subProgressMonitor.done();
 	}
 
 
