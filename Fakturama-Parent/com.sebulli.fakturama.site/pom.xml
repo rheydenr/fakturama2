@@ -60,7 +60,7 @@
 					</formats>
            <products>
               <product>
-                <id>Fakturama</id>
+                <id>Fakturama.ID</id>
                 <rootFolders>
                   <!-- for MacOSX, make sure you use a folder ending with .app , see bug 463670 -->
                   <macosx>Fakturama.app</macosx>

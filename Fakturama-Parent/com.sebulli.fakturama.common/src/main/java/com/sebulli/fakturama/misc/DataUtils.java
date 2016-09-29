@@ -415,8 +415,12 @@ public class DataUtils {
      * @return Converted value as string
      */
     public String DoubleToFormatedPercent(Double d) {
-        NumberFormat percentageFormat = NumberFormat.getPercentInstance();
-        return percentageFormat.format(d);
+		String retval = "";
+		if (d != null) {
+			NumberFormat percentageFormat = NumberFormat.getPercentInstance();
+			retval = percentageFormat.format(d);
+		}
+		return retval;
     }
 
     /**
@@ -959,7 +963,7 @@ public class DataUtils {
      *      The converted string
      */
     public String convertCRLF2LF(String s){
-        s = s.replaceAll("\\r\\n", "\n");
+        s = StringUtils.defaultString(s).replaceAll("\\r\\n", "\n");
         return s;
     }
     

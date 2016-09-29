@@ -604,7 +604,7 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.DESCRIPTION")) {
 			value = item.getDescription();
 			// Remove pre linebreak if description is empty to avoid empty lines
-			if( value.isEmpty() ) {
+			if( StringUtils.defaultString(value).isEmpty() ) {
 				placeholderDisplayText = placeholderDisplayText.replaceFirst("\n<ITEM.DESCRIPTION>", "<ITEM.DESCRIPTION>");
 			}
 		}
