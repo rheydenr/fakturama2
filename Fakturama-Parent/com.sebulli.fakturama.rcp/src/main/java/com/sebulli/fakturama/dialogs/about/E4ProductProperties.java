@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProduct;
@@ -245,11 +247,12 @@ public class E4ProductProperties extends E4BrandingProperties implements
 			return property;
 		}
         String[] tempMappings = getMappings(product.getDefiningBundle());
-                /*
+        /*
     	 * Check if the mapping value is a system property, specified
     	 * by '$' at the beginning and end of the string.  If so, update
     	 * the mappings array with the system property value.
     	 */
+        Pattern p = Pattern.compile(".*" + Pattern.quote("${buildNumber}") + ".*", Pattern.DOTALL);
         for (int i=0; i<tempMappings.length; i++) {
         	String nextString = tempMappings[i];
         	int length = nextString.length();
@@ -259,8 +262,13 @@ public class E4ProductProperties extends E4BrandingProperties implements
         		// If system property is not set, insert an empty String
         		tempMappings[i] = System.getProperty(systemPropertyKey, ""); //$NON-NLS-1$;
         	}
+        	
+			Matcher m = p.matcher(nextString);
+			if(m.matches()) {
+				tempMappings[i] = product.getDefiningBundle().getVersion().toString();
+			}
         }
-
+        
 		return MessageFormat.format(property, (Object[]) tempMappings);
     }
 

@@ -1,7 +1,9 @@
 package com.sebulli.fakturama.dialogs.about;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -9,11 +11,11 @@ import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceColors;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -50,6 +52,12 @@ public class E4AboutDialog extends TrayDialog {
 	
 //	@Inject
 //	private IBundleGroupProvider bundleGroupProvider;
+	
+	@Inject
+	protected EMenuService menuService;
+	
+//	@Inject
+//	protected MMenuFactory mf;
 
 	@Inject
 	@Translation
@@ -65,7 +73,7 @@ public class E4AboutDialog extends TrayDialog {
 
     private E4AboutBundleGroupData[] bundleGroupInfos;
 
-    private ArrayList<Image> images = new ArrayList<Image>();
+    private List<Image> images = new ArrayList<Image>();
 
     private AboutFeaturesButtonManager buttonManager = new AboutFeaturesButtonManager();
 
@@ -136,7 +144,7 @@ public class E4AboutDialog extends TrayDialog {
     @Override
 	protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(NLS.bind("About {0}",productName )); // WorkbenchMessages.AboutDialog_shellTitle
+        newShell.setText(MessageFormat.format(msg.helpAboutdialogShelltitle, productName));
 //        PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell,
 //				IWorkbenchHelpContextIds.ABOUT_DIALOG);
     }
@@ -153,7 +161,7 @@ public class E4AboutDialog extends TrayDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
         parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        createButton(parent, DETAILS_ID, "&Installation Details" /*"WorkbenchMessages.AboutDialog_DetailsButton"*/, false);
+        createButton(parent, DETAILS_ID, msg.helpAboutdialogDetailsbutton, false);
 
         Label l = new Label(parent, SWT.NONE);
         l.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -387,6 +395,9 @@ public class E4AboutDialog extends TrayDialog {
 	 * @since 3.4
 	 */
 	private void createTextMenu() {
+//		MPopupMenu popupMenu = mf.createPopupMenu();
+//		popupMenu.
+//		menuService.registerContextMenu(parent, menuId);
 //		final MenuManager textManager = new MenuManager();
 //		textManager.add(new CommandContributionItem(
 //				new CommandContributionItemParameter(PlatformUI

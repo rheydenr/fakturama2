@@ -1,5 +1,8 @@
 package com.sebulli.fakturama.ui;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -84,7 +87,7 @@ public class E4ProductInfo {
 			if (appVersion == null) {
 				// if we can't find a useful product bundle, try and return
 				// the org.eclipse.ui version (approx of the workbench)
-				Bundle bundle = Platform.getBundle("org.eclipse.ui"); //$NON-NLS-1$
+				Bundle bundle = Platform.getBundle("org.eclipse.e4.ui.workbench"); //$NON-NLS-1$
 				appVersion = bundle == null ? Version.emptyVersion : bundle.getVersion();
 			}
 		}

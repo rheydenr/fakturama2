@@ -3,6 +3,7 @@ package com.sebulli.fakturama.dialogs.about;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Path;
@@ -79,7 +80,7 @@ public abstract class E4BrandingProperties {
 		}
 
         StringTokenizer tokens = new StringTokenizer(value, ","); //$NON-NLS-1$
-        ArrayList array = new ArrayList(10);
+        List<URL> array = new ArrayList<>(10);
         while (tokens.hasMoreTokens()) {
 			array.add(getUrl(tokens.nextToken().trim(), definingBundle));
 		}
