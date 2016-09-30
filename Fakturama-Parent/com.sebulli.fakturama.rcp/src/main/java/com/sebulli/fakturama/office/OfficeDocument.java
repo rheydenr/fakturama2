@@ -268,6 +268,7 @@ public class OfficeDocument {
      *            The document
      */
 	private boolean saveOODocument(TextDocument textdoc) {
+		Path generatedPdf = null;
 		Set<PathOption> pathOptions = new HashSet<>();
 		pathOptions.add(PathOption.WITH_FILENAME);
 		pathOptions.add(PathOption.WITH_EXTENSION);
@@ -294,12 +295,12 @@ public class OfficeDocument {
         }
 
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
-        	wasSaved = createPdf(documentPath, TargetFormat.PDF);
+        	generatedPdf = createPdf(documentPath, TargetFormat.PDF);
         	
             // open the pdf if needed
-        	if(wasSaved && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+        	if(generatedPdf != null && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
         		try {
-					Desktop.getDesktop().open(documentPath.toFile());
+					Desktop.getDesktop().open(generatedPdf.toFile());
 				} catch (IOException e) {
 	                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
 				}
@@ -308,7 +309,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	wasSaved = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
+        	generatedPdf = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
         }
         
 
@@ -348,8 +349,8 @@ public class OfficeDocument {
 	 * @param targetFormat 
 	 * @return <code>true</code> if the creation was successful
 	 */
-	private boolean createPdf(Path documentPath, TargetFormat targetFormat) {
-        boolean wasSaved = false;
+	private Path createPdf(Path documentPath, TargetFormat targetFormat) {
+		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
 		createOutputDirectory(targetFormat);
@@ -377,17 +378,16 @@ public class OfficeDocument {
 	    		Set<PathOption> pathOptions = new HashSet<>();
 	            pathOptions.add(PathOption.WITH_FILENAME);
 	            pathOptions.add(PathOption.WITH_EXTENSION);
-				Path pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
+				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 		        Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.odt$", ".pdf"));
 		        if (!Files.exists(pdfFilename) && Files.exists(tmpPdf)) {
 					Files.move(tmpPdf, pdfFilename);
 		        }
-		        wasSaved = true;
 		    }
 		} catch (IOException e) {
 		    log.error(e, "Error saving the PDF document");
 		}
-		return wasSaved;
+		return pdfFilename;
 	}
 
 	/**
