@@ -525,4 +525,6 @@ public class Constants {
 	/** The Constant DETAILPANEL_ID. */
 	public static final String DETAILPANEL_ID = "com.sebulli.fakturama.rcp.detailpanel";
 
+	public static final String PREFERENCES_OPENPDF = "OPENPDF";
+
 }

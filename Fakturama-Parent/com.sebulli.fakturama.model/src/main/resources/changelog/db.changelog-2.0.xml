@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
     <changeSet author="rheydenr (generated)" id="1471725654953-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ADDRESS">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="CITY" type="VARCHAR(255)"/>
@@ -22,7 +22,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-2" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_BANKACCOUNT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="ACCOUNTHOLDER" type="VARCHAR(255)"/>
@@ -41,7 +41,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-3" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CATEGORY">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="CATEGORYNAME" type="VARCHAR(31)"/>
@@ -57,7 +57,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-4" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CEFACTCODE">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="ABBREVIATION_DE" type="VARCHAR(255)"/>
@@ -83,7 +83,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-6" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CONTACT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" type="BIGINT" startWith="1">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DTYPE" type="VARCHAR(31)"/>
@@ -146,7 +146,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-10" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DOCUMENT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DTYPE" type="VARCHAR(31)"/>
@@ -207,7 +207,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-12" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DOCUMENTITEM">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -247,7 +247,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-14" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_INDIVIDUALDOCUMENTINFO">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -279,7 +279,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-16" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ITEMACCOUNTTYPE">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -316,7 +316,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-20" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PAYMENT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="CODE" type="VARCHAR(255)"/>
@@ -339,7 +339,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-21" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PRODUCT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="BLOCK1" type="INT"/>
@@ -385,7 +385,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-23" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PRODUCTOPTIONS">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="ATTRIBUTEVALUE" type="VARCHAR(255)"/>
@@ -409,7 +409,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-25" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ROLE">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -423,7 +423,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-26" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_SHIPPING">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="AUTOVAT" type="VARCHAR(255)"/>
@@ -443,7 +443,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-27" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_TENANT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -457,7 +457,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-28" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_TEXTMODULE">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -473,7 +473,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-29" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_USER">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -500,7 +500,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-31" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_USERPROPERTY">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -516,7 +516,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-32" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VAT">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -533,7 +533,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-33" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VOUCHERITEMS">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -553,7 +553,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-34" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VOUCHERS">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -576,7 +576,7 @@
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-35" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_WEBSHOPSTATEMAPPING">
-            <column autoIncrement="true" name="ID" type="BIGINT">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
@@ -592,44 +592,45 @@
         </createTable>
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-36" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addPrimaryKey columnNames="CONFIRMATION_PARENT_ID" constraintName="PRIMARY" tableName="FKT_CONFIRMATION"/>
+        <addPrimaryKey columnNames="CONFIRMATION_PARENT_ID" constraintName="PRIMARY_FKT_CONFIRMATION" tableName="FKT_CONFIRMATION"/>
     </changeSet>
-    <!--  changeSet author="rheydenr (generated)" id="1471725654953-37" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addPrimaryKey columnNames="FK_CONTACT, FK_CATEGORY" constraintName="PRIMARY" tableName="FKT_CONTACT_CATEGORIES"/>
-    </changeSet -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-38" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="CREDIT_PARENT_ID" constraintName="PRIMARY" tableName="FKT_CREDIT"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-39" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="DELIVERY_PARENT_ID" constraintName="PRIMARY" tableName="FKT_DELIVERY"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-40" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="FK_DOCUMENT, FK_ITEM" constraintName="PRIMARY" tableName="FKT_DOCUMENT_ITEMS"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-41" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="DUNNING_PARENT_ID" constraintName="PRIMARY" tableName="FKT_DUNNING"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-42" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="INVOICE_PARENT_ID" constraintName="PRIMARY" tableName="FKT_INVOICE"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-43" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="LETTER_PARENT_ID" constraintName="PRIMARY" tableName="FKT_LETTER"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-44" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="OFFER_PARENT_ID" constraintName="PRIMARY" tableName="FKT_OFFER"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-45" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="ORDER_PARENT_ID" constraintName="PRIMARY" tableName="FKT_ORDER"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-46" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="PRODUCT_ATTRIBUTES, ATTRIBUTES_PRODUCTOPTIONS" constraintName="PRIMARY" tableName="FKT_PRODUCT_ATTRIBUTES"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-47" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="PROFORMA_PARENT_ID" constraintName="PRIMARY" tableName="FKT_PROFORMA"/> -->
-<!--     </changeSet> -->
-<!--     <changeSet author="rheydenr (generated)" id="1471725654953-48" objectQuotingStrategy="QUOTE_ALL_OBJECTS"> -->
-<!--         <addPrimaryKey columnNames="USER_ROLES, ROLES_ROLE" constraintName="PRIMARY" tableName="FKT_USER_ROLES"/> -->
-<!--     </changeSet> -->
+    <!--  renamed the PRIMARY constraintName because otherwise HSQLDB throws an error -->
+    <changeSet author="rheydenr (generated)" id="1471725654953-37" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="FK_CONTACT, FK_CATEGORY" constraintName="PRIMARY_FKT_CONTACT_CATEGORIES" tableName="FKT_CONTACT_CATEGORIES"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-38" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="CREDIT_PARENT_ID" constraintName="PRIMARY_FKT_CREDIT" tableName="FKT_CREDIT"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-39" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="DELIVERY_PARENT_ID" constraintName="PRIMARY_FKT_DELIVERY" tableName="FKT_DELIVERY"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-40" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="FK_DOCUMENT, FK_ITEM" constraintName="PRIMARY_FKT_DOCUMENT_ITEMS" tableName="FKT_DOCUMENT_ITEMS"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-41" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="DUNNING_PARENT_ID" constraintName="PRIMARY_FKT_DUNNING" tableName="FKT_DUNNING"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-42" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="INVOICE_PARENT_ID" constraintName="PRIMARY_FKT_INVOICE" tableName="FKT_INVOICE"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-43" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="LETTER_PARENT_ID" constraintName="PRIMARY_FKT_LETTER" tableName="FKT_LETTER"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-44" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="OFFER_PARENT_ID" constraintName="PRIMARY_FKT_OFFER" tableName="FKT_OFFER"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-45" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="ORDER_PARENT_ID" constraintName="PRIMARY_FKT_ORDER" tableName="FKT_ORDER"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-46" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="PRODUCT_ATTRIBUTES, ATTRIBUTES_PRODUCTOPTIONS" constraintName="PRIMARY_FKT_PRODUCT_ATTRIBUTES" tableName="FKT_PRODUCT_ATTRIBUTES"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-47" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="PROFORMA_PARENT_ID" constraintName="PRIMARY_FKT_PROFORMA" tableName="FKT_PROFORMA"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1471725654953-48" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="USER_ROLES, ROLES_ROLE" constraintName="PRIMARY_FKT_USER_ROLES" tableName="FKT_USER_ROLES"/>
+    </changeSet>
     <changeSet author="rheydenr (generated)" id="1471725654953-49" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FKT_PRODUCT_ATTRIBUTES_ATTRIBUTES_PRODUCTOPTIONS" tableName="FKT_PRODUCT_ATTRIBUTES">
             <column name="ATTRIBUTES_PRODUCTOPTIONS"/>

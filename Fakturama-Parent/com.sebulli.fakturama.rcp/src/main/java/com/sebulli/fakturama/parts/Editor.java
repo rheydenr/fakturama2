@@ -390,6 +390,11 @@ public abstract class Editor<T extends IEntity> {
 		// Store the date of now to a property
 		LocalDate now = LocalDate.now();
 		defaultValuePrefs.setValue("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
+		try {
+			((IPersistentPreferenceStore)defaultValuePrefs).save();
+        } catch (IOException e1) {
+            log.error(e1, "Error while flushing default value preferences.");
+        }
 	}
 	
 	

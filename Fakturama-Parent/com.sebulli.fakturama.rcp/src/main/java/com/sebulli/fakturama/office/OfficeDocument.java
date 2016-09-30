@@ -14,12 +14,14 @@
 
 package com.sebulli.fakturama.office;
 
+import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -287,18 +289,28 @@ public class OfficeDocument {
                 wasSaved = true;
                 // TODO perhaps we should open the filled document in Openoffice (if wanted)
             } catch (Exception e) {
-                log.error(e, "Error saving the OpenOffice Document");
+                log.error(e, "Error saving the OpenOffice document");
             }
         }
 
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
         	wasSaved = createPdf(documentPath, TargetFormat.PDF);
+        	
+            // open the pdf if needed
+        	if(wasSaved && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+        		try {
+					Desktop.getDesktop().open(documentPath.toFile());
+				} catch (IOException e) {
+	                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
+				}
+        	}
         }
         
         // copy the PDF to the additional directory
         if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
         	wasSaved = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
-        }        
+        }
+        
 
         // Mark the document as printed, if it was saved as ODT or PDF
         if (wasSaved) {

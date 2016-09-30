@@ -25,10 +25,12 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -157,7 +159,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
-        this.listTablePart = listTablePart;
+        this.listTablePart = listTablePart;//((E4Workbench)context.get(IWorkbench.class)).isRestart();
         // This is for text only!!!
         ParameterType parameterType = cmdMan.getParameterType("myParam");
     	AbstractParameterValueConverter parameterTypeConverter = new LongParameterValueConverter();

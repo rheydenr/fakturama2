@@ -3,7 +3,8 @@
       id="com.sebulli.fakturama.feature"
       label="Fakturama Core Feature"
       version="2.0.0.qualifier"
-      provider-name="Fakturama.org">
+      provider-name="Fakturama.org"
+      plugin="com.sebulli.fakturama.rcp">
 
    <description url="http://www.fakturama.info">
       Fakturama - Free Invoicing Software
@@ -141,7 +142,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
          id="org.hsqldb.jdbc"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="com.sebulli.fakturama.common"
@@ -210,7 +212,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
          id="com.mysql.jdbc"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="com.sebulli.fakturama.resources.templates"

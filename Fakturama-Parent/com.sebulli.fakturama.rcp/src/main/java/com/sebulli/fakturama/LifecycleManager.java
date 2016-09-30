@@ -277,6 +277,10 @@ public class LifecycleManager {
 				
 				int i = 0; // column index
 				CEFACTCode cEFACTCode = modelFactory.createCEFACTCode();
+				
+				// TEST ONLY (HSQLDB claims about updates of id field :-(
+//				cEFACTCode.setId(r*(-1));
+				
 				cEFACTCode.setTarget(row.getCell(i++).getStringCellValue());
 				cEFACTCode.setCode(row.getCell(i++).getStringCellValue());
 				cEFACTCode.setName(getNullSafeCellValue(row.getCell(i++)));

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.resources.core;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -137,7 +138,12 @@ public class TemplateResourceManager implements ITemplateResourceManager {
      */
     private void resourceCopy(String resource, final Path targetFile) {
         // Create the input stream from the resource file "Templates/Invoice/Document.ott"
-        try(InputStream in = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource(resource).openStream()) {
+        URL fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource(resource);
+        if(fileResource == null) {
+        	// if running inside Eclipse IDE we have to change the source path silently
+        	fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource("/bin/"+resource);
+        }
+		try(InputStream in = fileResource.openStream()) {
             // Create the destination folder if it doesn't exists
             if (!Files.isDirectory(targetFile.getParent())) {
                 Files.createDirectories(targetFile.getParent());

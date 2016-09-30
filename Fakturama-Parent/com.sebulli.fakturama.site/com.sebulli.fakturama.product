@@ -261,6 +261,17 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.babel.nls_eclipse_de" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_es" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_fr" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_hu" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_it" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_pl" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ro" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.6.0.v20160813060001"/>
    </features>
 
    <configurations>

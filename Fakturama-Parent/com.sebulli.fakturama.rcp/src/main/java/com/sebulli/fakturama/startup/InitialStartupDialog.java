@@ -149,6 +149,16 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			log.error(e);
 		}
 	}
+	
+	/* (non-Javadoc)
+		 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
+		 */
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText(msg.startFirstTitle);
+			newShell.setImage(Icon.COMMAND_APP.getImage(IconSize.DefaultIconSize));
+		}
 
 	/**
 	 * Create contents of the dialog.
@@ -162,6 +172,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	    container.setLayout(new GridLayout(3, false));
 	    setTitleImage(Icon.APP_ABOUT_ICON.getImage(IconSize.AppIconSize));
 	 	setTitle(msg.startFirstTitle);
+	 	
 	    // 1st row
 		setMessage(msg.startFirstSelectWorkdirVerbose, IMessageProvider.INFORMATION);
 		
@@ -192,6 +203,14 @@ public class InitialStartupDialog extends TitleAreaDialog {
                     String directory = ((Text)e.getSource()).getText();
                     dirChecker.checkPreviousVersion(directory);
                 }
+            }
+            
+            /* (non-Javadoc)
+             * @see org.eclipse.swt.events.FocusAdapter#focusGained(org.eclipse.swt.events.FocusEvent)
+             */
+            @Override
+            public void focusGained(FocusEvent e) {
+            	txtOldWorkdir.setSelection(0, txtOldWorkdir.getText().length());
             }
         });
 		

@@ -53,6 +53,16 @@
 			<!-- persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" / -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
+			<persistence:property name="eclipselink.weaving" value="false"/>
+<!-- <persistence:property name="eclipselink.weaving.changetracking" value="true"/> -->
+<!-- <persistence:property name="eclipselink.weaving.lazy" value="true"/> -->
+<!-- <persistence:property name="eclipselink.weaving.eager" value="true"/> -->
+<!-- <persistence:property name="eclipselink.weaving.fetchgroups" value="true"/> -->
+<!-- <persistence:property name="eclipselink.weaving.internal" value="false"/> -->
+			
+			<!--  define which primary key components values are considered invalid. -->
+<!-- 			<persistence:property name="eclipselink.id-validation" value="NULL"/> -->
+			
 			<!--  if you want to show the generated SQL commands and their parameter substitution -->
 			<!--  persistence:property name="eclipselink.logging.level.sql" value="FINE"/> -->
 			<!--  persistence:property name="eclipselink.logging.parameters" value="true"/> -->
