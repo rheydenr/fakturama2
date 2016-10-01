@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,7 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -379,8 +381,9 @@ public class OfficeDocument {
 	            pathOptions.add(PathOption.WITH_FILENAME);
 	            pathOptions.add(PathOption.WITH_EXTENSION);
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
-		        Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.odt$", ".pdf"));
-		        if (!Files.exists(pdfFilename) && Files.exists(tmpPdf)) {
+		        Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.ODT$", ".PDF"));
+		        
+		        if (/*!Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
 					Files.move(tmpPdf, pdfFilename);
 		        }
 		    }
@@ -581,7 +584,9 @@ public class OfficeDocument {
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
-			value = DataUtils.getInstance().DoubleToFormatedQuantity(item.getQuantity());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			numberInstance.setMaximumFractionDigits(10);
+			value = numberInstance.format(item.getQuantity());
 		}
 
 		// The position

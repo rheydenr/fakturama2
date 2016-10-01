@@ -336,6 +336,10 @@ public class DataUtils {
     public Double round(Double d) {
         return (Math.round((d + EPSILON) * 100.0)) / 100.0;
     }
+    
+    private String doubleToFormattedValue(Double d, boolean twoDecimals) {
+    	return doubleToFormattedValue(d, twoDecimals ? 2 : -1);
+    }
 
     /**
      * Convert a double to a formatted string value. If the value has parts of a
@@ -347,28 +351,27 @@ public class DataUtils {
      *            <code>true</code>, if the value is displayed in the format 0.00
      * @return Converted value as String
      */
-    private String doubleToFormattedValue(Double d, boolean twoDecimals) {
+    private String doubleToFormattedValue(Double d, int scale) {
 
         // Calculate the floor cent value.
         // for negative values, use the ceil
         Double floorValue;
+        double factor = Math.pow(10, scale);
         if (d >= 0)
-            floorValue = Math.floor(d * 100.0 + EPSILON) / 100.0;
+            floorValue = Math.floor(d * factor + EPSILON) / factor;
         else
-            floorValue = Math.ceil(d * 100.0 - EPSILON) / 100.0;
+            floorValue = Math.ceil(d * factor - EPSILON) / factor;
 
         // Format as "0.00"
         NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setGroupingUsed(useThousandsSeparator);
-        if(twoDecimals) {
-            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.00");
-        } else {
-            numberFormat = new DecimalFormat((useThousandsSeparator ? ",##" : "") + "0.##");
-        }
+        ;
+        numberFormat = new DecimalFormat((useThousandsSeparator ? ",##." : ".") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
         String s = numberFormat.format(floorValue);
 
         // Are there parts of a cent ? Add ".."
-        if (Math.abs(d - floorValue) > 0.0002) {
+        double epsilon = 2*Math.pow(10, -1*(scale+2));
+        if (Math.abs(d - floorValue) > epsilon) {
             s += "..";
         }
         return s;
@@ -433,6 +436,10 @@ public class DataUtils {
      */
     public String DoubleToFormatedQuantity(Double d) {
         return doubleToFormattedValue(d, false);
+    }
+    
+    public String doubleToFormattedQuantity(Double d, int scale) {
+        return doubleToFormattedValue(d, scale);
     }
 
     /**

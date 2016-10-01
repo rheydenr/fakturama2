@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.parts.itemlist;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -104,6 +105,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -933,6 +935,11 @@ private Menu createContextMenu(NatTable natTable) {
             TextCellEditor textCellEditor = new TextCellEditor();
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			numberInstance.setMaximumFractionDigits(10);
+			DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
+			doubleDisplayConverter.setNumberFormat(numberInstance);
+
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
                     textCellEditor, 
@@ -941,9 +948,9 @@ private Menu createContextMenu(NatTable natTable) {
                     EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
                     DisplayMode.EDIT, DECIMAL_CELL_LABEL);
-            configRegistry.registerConfigAttribute( 
+			configRegistry.registerConfigAttribute( 
                     CellConfigAttributes.DISPLAY_CONVERTER, 
-                    new DefaultDoubleDisplayConverter(), 
+                    doubleDisplayConverter, 
                     DisplayMode.EDIT, DECIMAL_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
