@@ -1,5 +1,5 @@
 0=Fakturama
-1=2.0.0
+1=${releaseName}
 2=2016
 3=Gerd Bartelt\n\
 Oliver Groth\n\
@@ -10,4 +10,4 @@ Pierre Backes\n\
 Ander Baraja\n\
 Christoph Kieffer\n\
 Monika Viste\n
-5=${buildNumber}
+5=${buildId}

@@ -287,8 +287,6 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
         return natTable;
     }
     

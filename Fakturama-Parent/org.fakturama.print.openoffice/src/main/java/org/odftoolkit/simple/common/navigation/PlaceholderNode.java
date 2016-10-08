@@ -6,14 +6,20 @@ package org.odftoolkit.simple.common.navigation;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
+import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
+import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
+import org.odftoolkit.odfdom.dom.element.draw.DrawTextBoxElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
 import org.odftoolkit.odfdom.dom.element.text.TextSpanElement;
 import org.odftoolkit.odfdom.pkg.OdfElement;
 import org.odftoolkit.odfdom.pkg.OdfFileDom;
+import org.odftoolkit.odfdom.type.Length;
+import org.odftoolkit.odfdom.type.Length.Unit;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
+import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Span;
 import org.w3c.dom.Node;
 
@@ -132,15 +138,8 @@ public class PlaceholderNode extends Selection {
         parentNode.replaceChild(span.getOdfElement(), getNode());
         return span;
     }
-
-	/**
-	 * Replaces the placeholder with an image.
-	 *
-	 * @param uri
-	 *            URI for the image
-	 * @return the replaced Node
-	 */
-	public Node replaceWith(URI uri) {
+    
+	public Node replaceWith(URI uri, Integer width, Integer height) {
 	    // find paragraph
 		TextParagraphElementBase paragraphElement = (TextParagraphElementBase) findParentNode(
 		        TextPElement.ELEMENT_NAME.getQName(), getNode());
@@ -149,39 +148,14 @@ public class PlaceholderNode extends Selection {
 		// replace image from URI
         Image img = sel.replaceWithImage(uri);
         
+        // if scaling is needed
+        if(width != null) {
+        	img.getFrame().getDrawFrameElement().setSvgWidthAttribute(Length.mapToUnit(String.valueOf(width) + "px", Unit.CENTIMETER));
+        }
         
-        
-        // ****** Here are some former tries...
-		// we have to create a Frame which contains the image
-		// at first we look up to the containing paragraph
-//		Paragraph par = Paragraph.getInstanceof(paragraphElement);
-//		paragraphElement.getNextSibling();
-//		paragraphElement.getParentNode();
-//		Image image = Image.newImage(par, uri);
-//		image.setName("this image");
-//		try {
-//			image.setHyperlink(new URI("http://odftoolkit.org"));
-//		} catch (URISyntaxException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-//		DrawTextBoxElement dbe = new DrawTextBoxElement((OdfFileDom) getNode().getOwnerDocument());
-//		((TextDocument) par.getOwnerDocument()).appendSection("");
-		// Paragraph.newParagraph(sect.)
-//		par.getDrawControlContainerElement().appendChild(dbe);
-
-//		getNode().getParentNode().insertBefore(dbe, getNode());
-//		Textbox tb = Textbox.getInstanceof(dbe);
-//		// Textbox tb = Textbox.newTextbox(par);
-//		// par.addTextbox();
-//		Image img = Image.newImage(tb, uri);
-//		tb.setImage(uri);
-//		sel.replaceWithImage(img);
-//		sel.replaceWithImage(image);
-        // *** END of Tries ***
-        
-        
+        if(height != null) {
+        	img.getFrame().getDrawFrameElement().setSvgHeightAttribute(Length.mapToUnit(String.valueOf(height) + "px", Unit.CENTIMETER));
+        }
         
         /* cleanup:
          * The image was inserted inside the Placeholder tags. Therefore it wouldn't be visible if you
@@ -209,6 +183,17 @@ public class PlaceholderNode extends Selection {
             parentNode = currentNode.getParentNode();
         }
 		return parentNode;
+	}
+
+	/**
+	 * Replaces the placeholder with an image.
+	 *
+	 * @param uri
+	 *            URI for the image
+	 * @return the replaced Node
+	 */
+	public Node replaceWith(URI uri) {
+		return replaceWith(uri, null, null);
 	}
 
 	/**

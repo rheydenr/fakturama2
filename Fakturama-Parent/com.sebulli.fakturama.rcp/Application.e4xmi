@@ -475,7 +475,7 @@
   <handlers xmi:id="_CfeC4O3vEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.handler.documents.removeref" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.RemoveInvoiceReferenceHandler" command="_3Wx3MO3uEeScLKnTyMNVVA"/>
   <handlers xmi:id="_w7HNYDAIEeadQNc3uX9jkA" elementId="com.sebulli.fakturama.rcp.handler.syncmobile" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SyncMobileHandler" command="_keAzgDAIEeadQNc3uX9jkA"/>
   <handlers xmi:id="_591t8DAPEeadQNc3uX9jkA" elementId="handler:org.fakturama.parcelservice" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenParcelServiceHandler" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
-  <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
+  <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.bindingtable.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9" command="_A9gvoDtXEeOcltwCzP-ZbQ">
@@ -488,6 +488,7 @@
   </bindingTables>
   <bindingTables xmi:id="_smR5cGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingtable.viewlist" bindingContext="_c7LSgGFOEeShb_NtiSSU9w">
     <bindings xmi:id="_x7JsYGFOEeShb_NtiSSU9w" elementId="fakturama.keybinding.listview.deleteentry" keySequence="M1+D" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+    <bindings xmi:id="_BhO3wIsyEearmL9tZwWAEQ" elementId="fakturama.keybinding.listview.moveup" keySequence="ALT+3" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
   </bindingTables>
   <rootContext xmi:id="_RmPTy-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Dialog and Windows">
     <children xmi:id="_RmPTzOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.contexts.window" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" name="In Windows"/>
@@ -498,8 +499,8 @@
     <tags>removeOnHide</tags>
     <handlers xmi:id="_mmElQOhrEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.handler.move.down" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem" command="_y4hyMOhnEeSelNaW6sEw-A"/>
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="%command.documents.move.up.name" iconURI="icon://COMMAND_UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_XlcO0IZEEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.documentitemlist.move.down" label="%command.documents.move.down.name" iconURI="icon://COMMAND_DOWN" command="_y4hyMOhnEeSelNaW6sEw-A"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="%command.documents.move.up.name" iconURI="icon://COMMAND_UP" mnemonics="ALT+UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_XlcO0IZEEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.documentitemlist.move.down" label="%command.documents.move.down.name" iconURI="icon://COMMAND_DOWN" mnemonics="ALT+DOWN" command="_y4hyMOhnEeSelNaW6sEw-A"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_5-b7sIWpEeWfCoLoCa3btA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
     </menus>
   </descriptors>

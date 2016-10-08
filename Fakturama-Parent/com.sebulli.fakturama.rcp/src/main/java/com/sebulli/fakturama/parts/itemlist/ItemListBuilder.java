@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -125,13 +127,9 @@ public class ItemListBuilder {
 			    SelectProductDialog dlg = ContextInjectionFactory.make(SelectProductDialog.class, context);
 			    dlg.open();
 
-//                // handling of adding a new list item is done via event handling in DocumentEditor
-//			    // (setting via dlg.getResult() would get too complicated, since we have to hold
-//			    // a reference to the calling editor)
-//			    Collection<Product> result = dlg.getResult();
-//			    if(result != null) {
-//			    	container.addItemsToItemList(result);
-//			    }
+                // handling of adding a new list item is done via event handling in DocumentEditor
+			    // (setting via dlg.getResult() would get too complicated, since we have to hold
+			    // a reference to the calling editor)
             }
         });
 
@@ -161,6 +159,9 @@ public class ItemListBuilder {
 //                    dialog.setVisible(true);
 //                    dialog.setOnTop(true);
 //                    modelService.bringToTop(dialog);
+                    
+                    // set document dirty
+                    container.setDirty(true);
 
                     // handling of adding a new list item is done via event handling in DocumentEditor
                 }

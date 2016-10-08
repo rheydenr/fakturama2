@@ -24,6 +24,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -145,11 +146,11 @@ public class MarkOrderAsActionHandler {
                 {
                     for (DocumentItem item : items) {
                         Product id = item.getProduct();
-                        Double quantity_order = item.getQuantity();
+                        Double quantityOrder = item.getQuantity();
                         Product product = productsDAO.findById(id);
-                        Double quantity_stock = product.getQuantity();
-                        product.setQuantity(quantity_stock - quantity_order);
-                        if (quantity_stock - quantity_order <= 0) {
+                        Double quantityStock = product.getQuantity();
+                        product.setQuantity(quantityStock - quantityOrder);
+                        if (quantityStock - quantityOrder <= 0) {
                             String name = product.getName();
                             String cat = product.getCategories()/*.get(0)*/.getName();
                             MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
@@ -162,11 +163,11 @@ public class MarkOrderAsActionHandler {
                     // TODO DO THIS IN DAO!!!
                     for (DocumentItem item : items) {
                         Product id = item.getProduct();
-                        Double quantity_order = item.getQuantity();
+                        Double quantityOrder = item.getQuantity();
 
                         Product product = productsDAO.findById(id);
-                        Double quantity_stock = product.getQuantity();
-                        product.setQuantity(quantity_stock + quantity_order);
+                        Double quantityStock = product.getQuantity();
+                        product.setQuantity(quantityStock + quantityOrder);
                         productsDAO.update(product);
                     }
                 }
@@ -179,7 +180,7 @@ public class MarkOrderAsActionHandler {
                 documentsDAO.update(document);
 
                 // Change the state also in the webshop
-                if (!document.getWebshopId().isEmpty() && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
+                if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
 
                     // Start a new web shop import manager in a
                     // progress Monitor Dialog

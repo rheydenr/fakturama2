@@ -227,6 +227,8 @@ public class SpecialCellValueProvider {
                     }
                 case ORDER:
                     OrderState progress = OrderState.findByProgressValue(Optional.ofNullable(rowObject.getProgress()));
+                    
+                    // TODO create more order statuses
                     switch (progress) {
                     case NONE:
                     case PENDING:

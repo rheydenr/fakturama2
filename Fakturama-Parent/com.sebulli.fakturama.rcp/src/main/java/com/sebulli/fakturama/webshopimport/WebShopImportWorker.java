@@ -52,6 +52,7 @@ import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
@@ -65,6 +66,7 @@ import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -443,7 +445,6 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	dataSetDocument.setBillingType(BillingType.ORDER); // DocumentType.ORDER
         
         	// Set name, web shop order id and date
-        	// order_status = order.getStatus();
         	// currency = order.getCurrency();
         	dataSetDocument.setName(webshopId);
         	dataSetDocument.setWebshopId(webshopId);
@@ -711,8 +712,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             	dataSetDocument.setPayment(payment);
     		}
         
-        	// Set the progress of an imported order to 10%
-        	dataSetDocument.setProgress(10);
+        	// Set the progress of an imported order to "pending"
+        	WebshopStateMapping mappedStatus = webShopImportManager.getWebshopStateMappingDAO().findByName(order.getStatus());
+        	if(mappedStatus != null) {
+        		dataSetDocument.setProgress(OrderState.valueOf(mappedStatus.getOrderState()).getState());
+        	} else {
+        		dataSetDocument.setProgress(OrderState.PENDING.getState());
+        	}
         
         	// Set the document data
 //        	dataSetDocument.setOrderDate(Date.from(instant)); // TODO which date is meant?

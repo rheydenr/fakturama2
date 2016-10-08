@@ -16,8 +16,12 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
@@ -31,9 +35,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 
 /**
@@ -49,6 +55,9 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
 
     @Inject
     protected IEventBroker evtBroker;
+    
+    @Inject
+    protected ESelectionService selectionService;
 
     private EntityGridListLayer<? extends IEntity> gridListLayer;
     
@@ -56,6 +65,7 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
      * 
      */
     public MoveEntryDownMenuItem() {
+        // default constructor is only for ContextInjectionFactory
     }
 
     /**
@@ -64,11 +74,17 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
     public MoveEntryDownMenuItem(EntityGridListLayer<? extends IEntity> gridListLayer) {
         this.gridListLayer = gridListLayer;
     }
-
+    
+    @Execute
+    public void moveRowDown(@Active MPart activePart) {
+        @SuppressWarnings("rawtypes")
+		AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
+        NatTable natTable = currentListtable.getNatTable();
+    }
 
     @Override
     public void addMenuItem(NatTable natTable, Menu popupMenu) {
-        MenuItem moveRowDown = new MenuItem(popupMenu, SWT.PUSH);
+        final MenuItem moveRowDown = new MenuItem(popupMenu, SWT.PUSH);
         moveRowDown.setText(msg.commandDocumentsMoveDownName);
         //  //T: Tool Tip Text
         //  setToolTipText(_("Move down the selected entry"));
@@ -76,7 +92,7 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
         //            moveRowUp.setID(???);
         moveRowDown.setImage(Icon.COMMAND_DOWN.getImage(IconSize.DefaultIconSize));
         moveRowDown.setEnabled(true);
-        moveRowDown.setAccelerator(SWT.F3); // doesn't work at the moment 
+        moveRowDown.setAccelerator(SWT.MOD1 | SWT.F7); // doesn't work at the moment 
 
         moveRowDown.addSelectionListener(new SelectionAdapter() {
 
@@ -88,11 +104,15 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
                 NatEventData natEventData = MenuItemProviders.getNatEventData(e);
                 // Get the position of the selected element
                 NatTable natTable = natEventData.getNatTable();
-                int pos = natEventData.getRowPosition() - 1;  // count without header row
+                int pos = natEventData.getRowPosition();  // count without header row
                 // Do not move one single item
                 if (natTable.getRowCount() > 2 && pos < natTable.getRowCount()) {  // the header row has to be added for this calculation!
-                    ILayerCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos + 1);
+                	// yes, +2 is ok!
+                	// see https://www.eclipse.org/forums/index.php/t/1081741/
+                    ILayerCommand cmd = new RowReorderCommand(natTable, pos, pos + 2);
                     natTable.doCommand(cmd);
+                } else {
+                	moveRowDown.setEnabled(false);
                 }
 
                 // old code:

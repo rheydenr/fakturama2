@@ -175,6 +175,8 @@ public class Messages {
 	public String dialogOrderstatusTitle;
 	public String dialogPrintooDocumentalreadycreated;
 	public String dialogPrintooNotemplate;
+	public String dialogPrintooSuccessful;
+	public String dialogPrintooCantprint;
 	public String dialogProductPicturePreview;
 	public String dialogSelectaddressTitle;
 	public String dialogSelectaddressTooltip;
@@ -504,6 +506,7 @@ public class Messages {
 	public String mainMenuNew;
 	public String mainMenuNewConfirmation;
 	public String mainMenuNewContactName;
+	public String mainMenuNewContactTooltip;
 	public String mainMenuNewCredit;
 	public String mainMenuNewDeliverynote;
 	public String mainMenuNewDunning;

@@ -34,12 +34,15 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.action.ContributionItem;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -87,7 +90,9 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
@@ -226,61 +231,34 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         return top;
     }
 
-/**
- * Create the default context menu 
- */
-private Menu createContextMenu(NatTable natTable) {
-//    // Add up/down and delete actions
-//    menuManager.add(new MoveEntryUpAction());
-//    menuManager.add(new MoveEntryDownAction());
-//    menuManager.add(new DeleteDataSetAction());
-    // add NatTable menu items
-    // and register the DisposeListener
-    MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
-    moveEntryUpHandler.setGridListLayer(gridListLayer);
-    MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
-    moveEntryDownHandler.setGridListLayer(gridListLayer);
-    Menu retval = new PopupMenuBuilder(natTable)
-        .withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
-        .withMenuItemProvider(CommandIds.CMD_MOVE_DOWN, moveEntryDownHandler)
-        .build();
-    return retval;
-}
+	/**
+	 * Create the default context menu
+	 */
+	private Menu createContextMenu() {
+		// // Add up/down and delete actions
+		// menuManager.add(new MoveEntryUpAction());
+		// menuManager.add(new MoveEntryDownAction());
+		// menuManager.add(new DeleteDataSetAction());
+		
+		// add NatTable menu items
+		MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
+		moveEntryUpHandler.setGridListLayer(gridListLayer);
+		
+		MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
+		moveEntryDownHandler.setGridListLayer(gridListLayer);
+		
+//		DeleteHandler deleteHandler = ContextInjectionFactory.make(DeleteHandler.class, context);
+		MenuManager menuManager = new MenuManager();
+		Menu retval = new PopupMenuBuilder(natTable, menuManager)
+				.withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
+				.withMenuItemProvider(CommandIds.CMD_MOVE_DOWN, moveEntryDownHandler)
+//				.withMenuItemProvider(CommandIds.CMD_DELETE_DATASET, deleteHandler)
+				.build();
+		
+		getGridLayer().getSelectionLayer().getSelectedRowPositions();
 
-
-///* (non-Javadoc)
-//	 * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#createMenuManager()
-//	 */
-//	@Override
-//	protected void createMenuManager() {
-//		super.createMenuManager();
-//
-//        // get the menu registered by EMenuService
-//        final Menu e4Menu = natTable.getMenu();
-//
-//        // remove the menu reference from NatTable instance
-//        natTable.setMenu(null);
-//
-//        natTable.addConfiguration(new AbstractUiBindingConfiguration() {
-//
-//            @Override
-//            public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
-//                // add NatTable menu items
-//                // and register the DisposeListener
-//                new PopupMenuBuilder(natTable, e4Menu)
-//                        .withInspectLabelsMenuItem()
-//                        .build();
-//
-//                // register the UI binding
-//                uiBindingRegistry.registerMouseDownBinding(
-//                        new MouseEventMatcher(
-//                                SWT.NONE,
-//                                GridRegion.BODY,
-//                                MouseEventMatcher.RIGHT_BUTTON),
-//                        new PopupMenuAction(e4Menu));
-//            }
-//        });
-//	}
+		return retval;
+	}
     
 /*
  * Move an item up or down
@@ -675,18 +653,35 @@ private Menu createContextMenu(NatTable natTable) {
         return natTable;
     }
 
-//    @Override
-//    protected void createDefaultContextMenu() {
-//        super.createDefaultContextMenu();
-//
-//        final Menu e4Menu = createContextMenu(natTable);
-//
-//        // remove the menu reference from NatTable instance
-//        natTable.setMenu(null);
-//        natTable.getUiBindingRegistry().registerMouseDownBinding(new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
-//                new PopupMenuAction(e4Menu));
-//
-//    }
+	@Override
+	protected void createDefaultContextMenu() {
+
+		natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+			private final Menu bodyMenu = createContextMenu();
+
+			@Override
+			public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+				uiBindingRegistry.registerFirstMouseDownBinding(
+						new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+						new PopupMenuAction(this.bodyMenu) {
+					@Override
+					public void run(NatTable natTable, MouseEvent event) {
+						int columnPosition = natTable.getColumnPositionByX(event.x);
+						int rowPosition = natTable.getRowPositionByY(event.y);
+
+						if (!getGridLayer().getSelectionLayer().isRowPositionFullySelected(rowPosition)) {
+							natTable.doCommand(
+									new SelectRowsCommand(natTable, columnPosition, rowPosition, false, false));
+						}
+
+						super.run(natTable, event);
+					}
+				});
+			}
+
+		});
+	}
 
     /**
      * @param reverseMap
@@ -714,7 +709,6 @@ private Menu createContextMenu(NatTable natTable) {
         natTable.addConfiguration(new SingleClickSortConfiguration());
         natTable.addConfiguration(new DocumentItemTableConfiguration());
         natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
-//        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
@@ -959,7 +953,12 @@ private Menu createContextMenu(NatTable natTable) {
             
             registerDescriptionColumn(configRegistry, styleLeftAligned);
             registerVATColumn(configRegistry, styleRightAligned); 
+            
             registerOptionalColumn(configRegistry);
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.CELL_STYLE,
+                    styleCentered,      
+                    DisplayMode.NORMAL, OPTIONAL_CELL_LABEL); 
             
             // for date cells (e.g., vesting period)
             DateCellEditor dateCellEditor = new DateCellEditor(true);
@@ -1150,12 +1149,16 @@ private Menu createContextMenu(NatTable natTable) {
 		private void registerOptionalColumn(IConfigRegistry configRegistry) {
 			// for optional values
             configRegistry.registerConfigAttribute(
+                    EditConfigAttributes.CELL_EDITABLE_RULE, 
+                    IEditableRule.ALWAYS_EDITABLE, 
+                    DisplayMode.EDIT, OPTIONAL_CELL_LABEL);			
+            configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
                     new CheckBoxCellEditor(), 
                     DisplayMode.EDIT, OPTIONAL_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER, 
-                    new CheckBoxPainter(Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize), GUIHelper.getImage("arrow_down")), 
+                    new CheckBoxPainter(Icon.COMMAND_CHECKED.getImage(IconSize.DefaultIconSize), Icon.COMMAND_UNCHECKED.getImage(IconSize.DefaultIconSize)), 
                     DisplayMode.NORMAL, OPTIONAL_CELL_LABEL);  
             //using a CheckBoxCellEditor also needs a Boolean conversion to work correctly
             configRegistry.registerConfigAttribute(
@@ -1225,7 +1228,7 @@ private Menu createContextMenu(NatTable natTable) {
 
     @Override
     protected EntityGridListLayer<DocumentItemDTO> getGridLayer() {
-        throw new UnsupportedOperationException("Wrong call for a GridLayer.");
+        return gridListLayer;
     }
 
     @Override

@@ -14,6 +14,7 @@
 package com.sebulli.fakturama.handlers;
 
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,8 +52,8 @@ public class MarkDocumentAsPaidHandler {
     @Translation
     private Messages msg;
 
-        @Inject
-        private ILogger log;
+    @Inject
+    private ILogger log;
 
     @Inject
     @Preference
@@ -99,7 +100,7 @@ public class MarkDocumentAsPaidHandler {
         if (selectedObjects != null) {
             // TODO DO THIS IN DAO!!!
             for (int i = 0; i < selectedObjects.length; i++) {
-                // If we had a selection let change the state
+                // If we had a selection let's change the state
                 Document document = selectedObjects[i];
                 DocumentType docType = DocumentType.findByKey(document.getBillingType().getValue());
                 // Do it only if it is allowed to mark this kind of document as paid.
@@ -108,6 +109,7 @@ public class MarkDocumentAsPaidHandler {
                     try {
                         document = documentsDAO.findById(document.getId(), true);
                         document.setPaid(StringUtils.equals(status, "PAID"));
+                        document.setPayDate(Calendar.getInstance().getTime());
 
                         // also in the database
                         documentsDAO.update(document);

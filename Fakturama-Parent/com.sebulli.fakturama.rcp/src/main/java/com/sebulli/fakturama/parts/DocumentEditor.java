@@ -64,6 +64,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -81,6 +82,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -116,6 +118,7 @@ import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
+import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Payment;
@@ -139,6 +142,7 @@ import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.products.ProductListTable;
@@ -182,9 +186,6 @@ public class DocumentEditor extends Editor<Document> {
     
 //    @Inject
 //    private EHelpService helpService;
-//    
-//    @Inject
-//    private MApplication application;
 
     @Inject
     private IEclipseContext context;
@@ -385,8 +386,8 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			}
 		}
-//
-//		// Exit save if there is a document with the same number
+
+		// Exit save if there is a document with the same number
 		// already checked in saveAllowed()
 //		if (thereIsOneWithSameNumber()) {
 //			return;
@@ -600,12 +601,14 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		importedDeliveryNotes.clear();
 		
-		List<DocumentItem> items = itemListTable.getDocumentItemsListData()
-		    .stream()
-		    .map(dto -> dto.getDocumentItem())
-		    .sorted(Comparator.comparing(DocumentItem::getPosNr))
-		    .collect(Collectors.toList());
-		document.setItems(new ArrayList<>(items));
+		if(itemListTable != null) {
+			List<DocumentItem> items = itemListTable.getDocumentItemsListData()
+			    .stream()
+			    .map(dto -> dto.getDocumentItem())
+			    .sorted(Comparator.comparing(DocumentItem::getPosNr))
+			    .collect(Collectors.toList());
+			document.setItems(new ArrayList<>(items));
+		}
 
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
@@ -750,6 +753,9 @@ public class DocumentEditor extends Editor<Document> {
 				} else {
 					dunningLevel = 1;
 				}
+				// set the paid date to null because it's not paid
+				// (this is in the unlikely case if one creates a dunning from a paid invoice)
+				document.setPayDate(null);
 			}
 
 			// If it's a credit or a dunning, set it to unpaid
@@ -978,11 +984,25 @@ public class DocumentEditor extends Editor<Document> {
 		if(shipping == null) {
 			shipping = lookupDefaultShippingValue();
 		}
-        documentSummary = documentSummaryCalculator.calculate(null, docItems,
-                document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
-                document.getShipping() != null ? document.getShipping().getShippingVat() : shipping.getShippingVat(), 
-                document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
-                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+		
+//        documentSummary = documentSummaryCalculator.calculate(null, docItems,
+//                document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
+//                document.getShipping() != null ? document.getShipping().getShippingVat() : shipping.getShippingVat(), 
+//                document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
+//                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+        if(document.getShipping() != null) {
+			documentSummary = documentSummaryCalculator.calculate(null, docItems,
+	                document.getShipping().getShippingValue(),
+	                document.getShipping().getShippingVat(), 
+	                document.getShipping().getAutoVat(), 
+	                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+        } else {
+    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
+                    document.getShippingValue()/* * sign*/,
+                    shipping.getShippingVat(), 
+                    document.getShippingAutoVat(), 
+                    discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+        }
 
 		// Get the total result
 		total = documentSummary.getTotalGross();
@@ -2303,7 +2323,7 @@ public class DocumentEditor extends Editor<Document> {
             comboViewerShipping.setInput(allShippings);
     
             // Get the documents'shipping values.
-            shipping = document.getShipping();
+//            shipping = document.getShipping();
     //			shippingVat = document.getShipping().getShippingVat();
     //			shippingAutoVat = document.getShippingAutoVat();
     //			shippingVatDescription = shippingVat.getDescription();
@@ -2325,18 +2345,30 @@ public class DocumentEditor extends Editor<Document> {
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
     
             // Recalculate, if the discount field looses the focus.
+            /*
+             * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
+             * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
+             */
+            Listener[] originFocusOutListener = shippingValue.getControl().getListeners(SWT.FocusOut);
+            for (Listener listener2 : originFocusOutListener) {
+            	shippingValue.getControl().removeListener(SWT.FocusOut, listener2);
+			}
             shippingValue.getControl().addFocusListener(new FocusAdapter() {
     
             	public void focusLost(FocusEvent e) {
             		changeShippingValue();
             	}
             });
+            for (Listener listener : originFocusOutListener) {
+            	shippingValue.getControl().addListener(SWT.FocusOut, listener);
+			}
     
             // Recalculate, if the shipping is modified
             shippingValue.getControl().addKeyListener(new KeyAdapter() {
             	public void keyPressed(KeyEvent e) {
-            		if (e.keyCode == 13) {
+            		if (e.keyCode == SWT.KEYPAD_CR || e.keyCode == 13) {
             			changeShippingValue();
+            			shippingValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
             		}
             	}
             });
@@ -2480,6 +2512,7 @@ public class DocumentEditor extends Editor<Document> {
                 return; 
             }
             
+            boolean isChanged = true;
             String topic = StringUtils.defaultString(event.getTopic());
             String subTopic = "";
             String[] topicName = topic.split("/");
@@ -2570,7 +2603,7 @@ public class DocumentEditor extends Editor<Document> {
             default:
                 break;
             }
-            getMDirtyablePart().setDirty(true);
+            setDirty(true);
         }
     }
 
@@ -2690,6 +2723,9 @@ public class DocumentEditor extends Editor<Document> {
 		return !thereIsOneWithSameNumber();
 	}
 
+	public AbstractViewDataTable<DocumentItemDTO, DummyStringCategory> getItemsList() {
+		return itemListTable;
+	}
     
 	@Override
 	protected String getEditorID() {

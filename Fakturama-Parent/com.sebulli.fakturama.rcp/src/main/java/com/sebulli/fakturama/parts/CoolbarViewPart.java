@@ -18,7 +18,6 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -62,9 +61,6 @@ public class CoolbarViewPart {
 	@Inject
 	private EHandlerService handlerService;
 	
-	@Inject
-	private EPartService partService;
-
     @Inject
     private IPreferenceStore preferences;
 	
@@ -91,6 +87,8 @@ public class CoolbarViewPart {
 	 * is in the tool bar and in the menu, 2 actions have to be defined: one
 	 * with a 16x16 pixel icon for the menu and one with 32x32 pixel in the tool
 	 * bar.
+	 *
+	 * @param parent the parent
 	 */
 	@PostConstruct
 	public void createControls(Composite parent) {
@@ -211,6 +209,12 @@ public class CoolbarViewPart {
 		finishToolbar(coolbar1, toolBar4);	
 	}
 
+    /**
+     * Creates the command params.
+     *
+     * @param docType the doc type
+     * @return the map< string, object>
+     */
     private Map<String, Object> createCommandParams(DocumentType docType) {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
@@ -220,6 +224,11 @@ public class CoolbarViewPart {
         return params;
     }
 
+    /**
+     * Handle dialog selection.
+     *
+     * @param event the event
+     */
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogSelection(@UIEventTopic("EditorPart/updateCoolBar") Event event) {
@@ -239,7 +248,7 @@ public class CoolbarViewPart {
 	}
 
 	/**
-	 * 
+	 * Update coolbar.
 	 */
 	private void updateCoolbar() {
 		for (ToolBar toolBar : coolBarsByKey) {

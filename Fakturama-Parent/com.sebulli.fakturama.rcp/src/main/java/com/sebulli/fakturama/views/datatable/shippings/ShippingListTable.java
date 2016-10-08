@@ -231,8 +231,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        postConfigureNatTable(natTable);
         return natTable;
     }
     

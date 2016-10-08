@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnProperty
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayerListener;
@@ -123,7 +124,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Inject
     private IEclipseContext context;
-
+    
     private EventList<Document> documentListData;
     private EventList<DummyStringCategory> categories;
     
@@ -313,6 +314,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 }
             }
         });
+        
+        E4SelectionListener<Document> esl = new E4SelectionListener<>(selectionService, gridLayer.getSelectionLayer(), gridLayer.getBodyDataProvider());
+        gridLayer.getSelectionLayer().addLayerListener(esl);
 
         /*
          * Set the background color for this table. Could only set here, because otherwise 

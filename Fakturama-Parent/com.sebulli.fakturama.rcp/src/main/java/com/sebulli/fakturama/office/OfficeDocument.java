@@ -15,6 +15,8 @@
 package com.sebulli.fakturama.office;
 
 import java.awt.Desktop;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,13 +42,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.odftoolkit.odfdom.doc.OdfImageDocument;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -246,11 +248,11 @@ public class OfficeDocument {
 	        
 //			// Save the document
 			if(saveOODocument(textdoc)) {
-			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "Fäddich!");
+			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
 			    
 			    // TODO open Doc in OO if necessary
 			} else {
-                MessageDialog.openError(shell, msg.viewErrorlogName, "is nich!");
+                MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
 			}
 //
 //			// Print and close the OpenOffice document
@@ -280,7 +282,7 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
-        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("ODT")) {
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
             createOutputDirectory(TargetFormat.ODT);
@@ -296,7 +298,7 @@ public class OfficeDocument {
             }
         }
 
-        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains("PDF")) {
+        if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId())) {
         	generatedPdf = createPdf(documentPath, TargetFormat.PDF);
         	
             // open the pdf if needed
@@ -736,10 +738,9 @@ public class OfficeDocument {
 				// Read the image a first time to get width and height
 				try {
 					ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());
-					Image image = new Image(shell.getDisplay(), imgStream);
-//					BufferedImage image = ImageIO.read(imagePath.toFile());
-//					pictureHeight = image.getHeight();
-//					pictureWidth = image.getWidth();
+					BufferedImage image = ImageIO.read(imgStream);
+					pictureHeight = image.getHeight();
+					pictureWidth = image.getWidth();
 
 					// Calculate the ratio of the original image
 					if (pictureHeight > 0) {
@@ -761,6 +762,32 @@ public class OfficeDocument {
 					}
 					
 					// Generate the image
+					
+					/*
+					 * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
+					 * we have to convert it to a temporary image and insert that into the document.
+					 */
+					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage");
+					
+					// FIXME Scaling doesn't work! :-(
+					// Therefore we "scale" the image manually by setting width and height inside result document
+					
+//					java.awt.Image scaledInstance = image.getScaledInstance(pixelWidth, pixelHeight, 0);
+//					BufferedImage bi = new BufferedImage(scaledInstance.getWidth(null),
+//							scaledInstance.getHeight(null),
+//							BufferedImage.TYPE_4BYTE_ABGR);
+//
+//			        Graphics2D grph = (Graphics2D) bi.getGraphics();
+//			        grph.scale(pictureRatio, pictureRatio);
+//
+//			        // everything drawn with grph from now on will get scaled.
+//			        grph.drawImage(image, 0, 0, null);
+//			        grph.dispose();
+					// ============================================
+
+					ImageIO.write(image, "jpg", workDir.toFile());
+					
+					// with NoaLibre:
 //					GraphicInfo graphicInfo = null;
 //					graphicInfo = new GraphicInfo(new FileInputStream(imagePath),
 //						    pixelWidth,
@@ -776,9 +803,11 @@ public class OfficeDocument {
 //					textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
 
 					// replace the placeholder
-					return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
+					cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
+					return null; 
 				}
-				catch (Exception e) {
+				catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 			

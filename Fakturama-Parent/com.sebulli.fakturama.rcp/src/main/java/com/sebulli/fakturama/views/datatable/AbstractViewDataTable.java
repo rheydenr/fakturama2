@@ -169,24 +169,21 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         topicTreeViewer = createCategoryTreeViewer(top); 
 //		GridDataFactory.swtDefaults().hint(10, -1).applyTo(topicTreeViewer.getTree());
 
+        Composite searchAndTableComposite = top;
         if(useFilter) {
         // Create the composite that contains the search field and the table
-            Composite searchAndTableComposite = createSearchAndTableComposite(top);
-            natTable = createListTable(searchAndTableComposite);
-        } else {
-            natTable = createListTable(top);
+			searchAndTableComposite = createSearchAndTableComposite(top);
+//        } else {
+//            natTable = createListTable(top);
         }
+        natTable = createListTable(searchAndTableComposite);
         
         addCustomStyling(natTable);
-        
-        // call hook for post configure steps, if any
-        postConfigureNatTable(natTable);
         
        // if(useFilter) {
             createDefaultContextMenu();
         //}
         
-        onStart(natTable);
         natTable.addDisposeListener(new DisposeListener() {
             
             @Override
@@ -194,6 +191,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 onStop(natTable);
             }
         });
+        
+        // call hook for post configure steps, if any
+        postConfigureNatTable(natTable);
+
+        onStart(natTable);  // as late as possible! Otherwise sorting doesn't work! (don't ask why!)
 
 		// Workaround
 		// At startup the browser editor is the active part of the workbench.
@@ -276,8 +278,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
             properties.load(propertiesInputStream);
             natTable.saveState(getTableId(), properties);
             
-            // removing superfluous entries (i.e., count of rows, sorting)
-            final Iterator mapIter = properties.keySet().iterator();
+            // removing superfluous entries (i.e., count of rows)
+            final Iterator<Object> mapIter = properties.keySet().iterator();
             String[] prefixes = new String[]{
             		getTableId() + "." + GridRegion.BODY + RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
             		getTableId() + "." + GridRegion.COLUMN_HEADER + SortStatePersistor.PERSISTENCE_KEY_SORTING_STATE,

@@ -79,6 +79,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.core.TemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
+import com.sebulli.fakturama.startup.ISplashService;
 
 /**
  * The LifecycleManager controls the start and the end of an application.
@@ -118,8 +119,27 @@ public class LifecycleManager {
     private Job dbInitJob;
 
     @PostContextCreate
-    public void checksBeforeStartup(final IEventBroker eventBroker) {
-//        IApplicationContext appContext = context.get(IApplicationContext.class);  
+    public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
+//        IApplicationContext appContext = context.get(IApplicationContext.class);
+    	
+    	// Splash Service doesn't work at the moment... :-(
+    	
+//    	splashService.setSplashPluginId(Activator.PLUGIN_ID);
+//    	splashService.open();
+//    	splashService.setMessage("Starting Application ...");
+    	
+//    	// The should be a better way to close the Splash
+//    	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=376821
+//    	eventBroker.subscribe(UIEvents.UILifeCycle.ACTIVATE, new EventHandler() {
+//    		@Override
+//    		public void handleEvent(Event event) {
+//    			splashService.close();
+//    			eventBroker.unsubscribe(this);
+//    		}
+//    	});    	
+    	
+    	
+    	
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set

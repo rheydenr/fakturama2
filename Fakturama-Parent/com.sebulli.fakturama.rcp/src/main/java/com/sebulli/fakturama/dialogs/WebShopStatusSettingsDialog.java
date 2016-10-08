@@ -707,4 +707,11 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sebulli.fakturama.webshopimport.IWebshopConnection#getWebshopStateMappingDAO()
+	 */
+	public WebshopStateMappingDAO getWebshopStateMappingDAO() {
+		return null;
+	}
+
 }

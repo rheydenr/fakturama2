@@ -17,9 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
@@ -28,6 +26,7 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
  */
 public class WebShopStatusImport extends AbstractWebshopImporter implements IRunnableWithProgress {
 IWebshopConnection webshopManager;
+
 	public WebShopStatusImport(IWebshopConnection webshopManager) {
 		super(webshopManager.getPreferences(), webshopManager.getMsg());
 		this.webshopManager = webshopManager;
@@ -38,7 +37,7 @@ IWebshopConnection webshopManager;
         localMonitor = pMonitor;
 		Webshopexport webshopexport = null;
 
-        // Check empty URL
+        // Check empty URL   http://shop.fakturama.info/admin/fakturama2_connector.php
         if (address.isEmpty()) {
             //T: Status message importing data from web shop
         	webshopManager.setRunResult(msg.importWebshopErrorUrlnotset);
@@ -59,18 +58,24 @@ IWebshopConnection webshopManager;
         // the shop
 	        URLConnection conn = createConnection(address, useAuthorization, authorizationUser, authorizationPassword);
 	        if(conn != null) {
+	        	((HttpURLConnection)conn).setRequestMethod( "POST" );
+	            String postString = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" +URLEncoder.encode(password, "UTF-8")
+	            				  + "&action=status";
+                //this.webShopImportManager.log.debug("POST-String: " + postString);
+	            conn.setRequestProperty( "Content-Type",
+                        "application/x-www-form-urlencoded" );
+	            conn.setRequestProperty( "Content-Length", String.valueOf(postString.length()) );
+	        	
 	        	OutputStream outputStream = conn.getOutputStream();
 	            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 	            setProgress(20);
-	            String postString = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" +URLEncoder.encode(password, "UTF-8") ;
-	            String actionString = "&action=get_statusvalues";
-	            postString += actionString;
-                //this.webShopImportManager.log.debug("POST-String: " + postString);
+
                 writer.write(postString);
                 writer.flush();
                 writer.close();
 
             }
+	        
             setProgress(30);
             // Start a connection in an extra thread
             InterruptConnection interruptConnection = new InterruptConnection(conn);

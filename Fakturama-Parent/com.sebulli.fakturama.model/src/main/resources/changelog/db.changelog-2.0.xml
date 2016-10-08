@@ -465,7 +465,7 @@
             <column name="MODIFIED" type="date"/>
             <column name="MODIFIEDBY" type="VARCHAR(255)"/>
             <column name="NAME" type="VARCHAR(255)"/>
-            <column name="T_TEXT" type="VARCHAR(255)"/>
+            <column name="T_TEXT" type="LONGTEXT"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
             <column name="TEXTMODULE_CATEGORIES" type="BIGINT"/>

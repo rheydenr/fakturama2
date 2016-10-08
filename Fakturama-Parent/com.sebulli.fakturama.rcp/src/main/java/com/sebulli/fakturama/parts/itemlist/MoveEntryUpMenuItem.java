@@ -14,13 +14,11 @@
 package com.sebulli.fakturama.parts.itemlist;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.reorder.command.RowReorderCommand;
@@ -62,29 +60,6 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
         this.gridListLayer = gridListLayer;
     }
     
-//    @CanExecute
-    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION)
-                            @Optional Object selection) {
-    	return (selection!=null/* && selection instanceof MyObject*/);
-    }
-    
-    @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION)
-    @Optional Object selection) {
-        if(selection != null) {
-            NatEventData natEventData = MenuItemProviders.getNatEventData((SelectionEvent) selection);
-            // Get the position of the selected element
-            NatTable natTable = natEventData.getNatTable();
-            int pos = natEventData.getRowPosition() - 1;  // count without header row
-            // Do not move one single item
-            if (natTable.getRowCount() > 2 && pos > 0) {  // the header row has to be added for this calculation!
-                ILayerCommand cmd = new RowReorderCommand(gridListLayer.getBodyLayerStack().getRowReorderLayer(), pos, pos - 1);
-                natTable.doCommand(cmd);
-                natTable.refresh();
-            }
-        }
-    }
-    
     @Override
     public void addMenuItem(NatTable natTable, Menu popupMenu) {
         MenuItem moveRowUp = new MenuItem(popupMenu, SWT.PUSH);
@@ -95,7 +70,7 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
         //            moveRowUp.setID(???);
         moveRowUp.setImage(Icon.COMMAND_UP.getImage(IconSize.DefaultIconSize));
         moveRowUp.setEnabled(true);
-        moveRowUp.setAccelerator(SWT.ALT + SWT.ARROW_UP); // doesn't work at the moment 
+//        moveRowUp.setAccelerator(SWT.ALT + SWT.ARROW_UP); // doesn't work at the moment 
 
         moveRowUp.addSelectionListener(new SelectionAdapter() {
 

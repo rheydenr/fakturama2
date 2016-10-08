@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -222,10 +223,14 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 case NO:
                 case FIRSTNAME:
                 case LASTNAME:
-                case COMPANY:
                 case ZIP:
                 case CITY:
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                case COMPANY:
+                	String value = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                	if(value != null) {
+                		return StringUtils.substringBefore(value, StringUtils.CR);
+                	}
                 default:
                     break;
                 }
@@ -289,9 +294,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-
-        // Register your custom cell painter, cell style, against the label applied to the cell.
-        //      addImageTextToColumn(configRegistry, natTable, gridLayer.getBodyDataProvider());
+        
         return natTable;
     }
 

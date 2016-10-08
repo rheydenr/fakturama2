@@ -117,7 +117,8 @@ public class CreateOODocumentHandler {
     //	}
     
     @CanExecute
-    public boolean canExecute(@Optional @Active MPart activePart) {
+    public boolean canExecute(EPartService partService) {
+    	MPart activePart = partService.getActivePart();
         return activePart != null && activePart.getElementId().contentEquals(DocumentEditor.ID);
     }
 
@@ -146,8 +147,9 @@ public class CreateOODocumentHandler {
 	 * saved before exporting it.
 	 */
 	@Execute
-	public void run(Shell shell, @Active MPart activePart) throws InvocationTargetException, InterruptedException {
+	public void run(Shell shell, EPartService partService) throws InvocationTargetException, InterruptedException {
 		Path template;
+    	MPart activePart = partService.getActivePart();
 		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
 			// Search in the folder "Templates" and also in the folder with the
 			// localized name

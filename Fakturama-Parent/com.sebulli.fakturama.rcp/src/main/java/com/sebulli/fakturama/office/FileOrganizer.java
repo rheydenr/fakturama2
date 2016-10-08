@@ -64,15 +64,17 @@ public class FileOrganizer {
 	}
 	
 	enum TargetFormat {
-		PDF("pdf", "PDF"), 
-		ODT("odt", "ODT"), 
-		ADDITIONAL_PDF("pdf", "ADDITIONAL_PDF");
+		PDF(".pdf", "PDF"), 
+		ODT(".odt", "ODT"), 
+		ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF");
 		
 		String extension, prefId;
 
 		/**
-		 * @param extension
-		 * @param prefId
+		 * The Constructor.
+		 *
+		 * @param extension the extension
+		 * @param prefId the pref id
 		 */
 		private TargetFormat(String extension, String prefId) {
 			this.extension = extension;
@@ -80,6 +82,7 @@ public class FileOrganizer {
 		}
 
 		/**
+		 * The extension for this {@link TargetFormat} with leading dot and in lower case.
 		 * @return the extension
 		 */
 		public final String getExtension() {
@@ -87,6 +90,8 @@ public class FileOrganizer {
 		}
 
 		/**
+		 * Gets the preference id (used for preferences queries).
+		 *
 		 * @return the prefId
 		 */
 		public final String getPrefId() {
@@ -185,7 +190,7 @@ public class FileOrganizer {
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
 
 		// Remove the extension
-		if (fileNamePlaceholder.toLowerCase().endsWith("." + targetFormat.getExtension().toLowerCase()))
+		if (fileNamePlaceholder.toLowerCase().endsWith(targetFormat.getExtension()))
 			fileNamePlaceholder = fileNamePlaceholder.substring(0, fileNamePlaceholder.length() - 4);
 
 		// Replace the placeholders
