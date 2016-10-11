@@ -505,12 +505,29 @@ public class DataUtils {
                 Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
 
+    /**
+     * Formats a number as currency.
+     *
+     * @param myNumber the number to format
+     * @param locale the locale
+     * @param useCurrencySymbol the use currency symbol
+     * @param cashRounding the cash rounding
+     * @param useSeparator the use separator
+     * @return the formatted string
+     */
     public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
         return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
     }
     
+    /**
+     * Formats a number as currency.
+     *
+     * @param myNumber the number to format
+     * @param locale the locale
+     * @return the formatted string
+     */
     public String formatCurrency(double myNumber, Locale locale) {
         return formatCurrency(myNumber, locale, 
                 Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true), 
@@ -645,6 +662,13 @@ public class DataUtils {
 
     }
     
+    /**
+     * Calculate net from gross as double.
+     *
+     * @param gross the gross
+     * @param vat the vat
+     * @return the double
+     */
     public Double calculateNetFromGrossAsDouble(Double gross, Double vat) {
         Double s = NumberUtils.DOUBLE_ZERO;
 
@@ -795,6 +819,12 @@ public class DataUtils {
         return dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
     
+    /**
+     * Gets the formatted localized date.
+     *
+     * @param date the date
+     * @return the formatted localized date
+     */
     public String getFormattedLocalizedDate(Date date) {
         if(date != null) {
             LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());

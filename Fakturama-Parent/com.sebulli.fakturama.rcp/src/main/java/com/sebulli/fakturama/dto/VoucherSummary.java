@@ -19,9 +19,6 @@ import javax.money.MonetaryAmount;
 
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.misc.DataUtils;
-
 /**
  * Calculates the tax, gross and sum of one document. This is the central
  * calculation used by the document editors and the export functions.
@@ -39,9 +36,10 @@ public class VoucherSummary {
 
 	/**
 	 * Default constructor. Resets all value to 0.
+	 * @param currencyUnit 
 	 */
-	public VoucherSummary() {
-        currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+	public VoucherSummary(CurrencyUnit currencyUnit) {
+        this.currencyCode = currencyUnit;
 		resetValues();
 	}
 
