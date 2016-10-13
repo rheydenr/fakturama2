@@ -631,7 +631,6 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			// Add this product to the list of items
     			DocumentItem item = fakturamaModelFactory.createDocumentItem();
     			item.setPosNr(itemIndex++);
-    			//(Double.valueOf(itemQuantity), product, itemDiscountDouble);
     			/*
     			 * per default some other values are set from product
         this(-1, product.getStringValueByKey("name"), product.getIntValueByKey("id"), product.getStringValueByKey("itemnr"), false, "", -1, false, quantity,

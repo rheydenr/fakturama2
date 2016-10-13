@@ -17,7 +17,9 @@ package com.sebulli.fakturama.parts.itemlist;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -713,6 +714,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         
+        selectionLayer.getSelectionModel().setMultipleSelectionAllowed(true);
+        
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
@@ -813,24 +816,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
     @Override
     public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) { 
-            DocumentItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-                List<DocumentItemDTO> tmpList = getDocumentItemsListData().stream()
-                        .filter(d -> d != objToDelete)
-                        .collect(Collectors.toList());
-                // TODO RENUMBER!!!!
-//                IntSupplier i = ()-> Integer.MAX_VALUE;
-//                tmpList.stream().forEach(dto -> dto.getDocumentItem().setPosNr(3));
-                getDocumentItemsListData().clear();
-                getDocumentItemsListData().addAll(tmpList);
-                
+    	@SuppressWarnings("unchecked")
+		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection();
+        if(selectedEntries.size() > 0) {
+        	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
+            if(isRemoved) {
+            	renumberItems();
                 // Recalculate the total sum of the document if necessary
                 // do it via the messaging system and send a message to DocumentEditor
                 Map<String, Object> event = new HashMap<>();
                 event.put(DocumentEditor.DOCUMENT_ID, document.getName());
                 event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
                 evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
-                
+            }
         } else {
             log.debug("no rows selected!");
         }

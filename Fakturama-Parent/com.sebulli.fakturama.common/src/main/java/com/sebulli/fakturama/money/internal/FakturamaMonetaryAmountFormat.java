@@ -20,9 +20,6 @@ import javax.money.format.MonetaryParseException;
 
 import org.javamoney.moneta.format.CurrencyStyle;
 
-import com.sebulli.fakturama.common.Activator;
-import com.sebulli.fakturama.misc.Constants;
-
 public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
 
 

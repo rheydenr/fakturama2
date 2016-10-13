@@ -19,9 +19,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
-import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
-import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
@@ -31,10 +29,6 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.selection.EditTraversalStrategy;
-import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
-import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
@@ -136,7 +130,7 @@ public class EntityGridListLayer<T extends IEntity> {
         return gridLayer;
     }
 
-    public GlazedListsDataProvider<T> getBodyDataProvider() {
+    public ListDataProvider<T> getBodyDataProvider() {
         return bodyLayerStack.getBodyDataProvider();
     }
 

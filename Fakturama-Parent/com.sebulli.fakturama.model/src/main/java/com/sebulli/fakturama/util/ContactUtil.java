@@ -471,6 +471,7 @@ public class ContactUtil {
 		}
 		// Replace the placeholders
 		formatString = replaceAllWithSpace(formatString, "\\{company\\}", contact.getCompany());
+		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact));
 		formatString = replaceAllWithSpace(formatString, "\\{title\\}", contact.getTitle());
 		formatString = replaceAllWithSpace(formatString, "\\{firstname\\}", contact.getFirstName());
 		formatString = replaceAllWithSpace(formatString, "\\{lastname\\}", contact.getName());
