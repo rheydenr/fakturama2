@@ -628,6 +628,8 @@ public class Messages {
 	public String preferencesGeneralCurrencyExample;
 	public String preferencesGeneralCurrencyLocale;
 	public String preferencesGeneralCurrencyUsesymbol;
+	public String preferencesGeneralCurrencyUseisocode;
+	public String preferencesGeneralCurrencyUsenothing;
 	public String preferencesGeneralThousandseparator;
 	public String preferencesGeneralDecimalplaces;
 	public String preferencesNumberrangeFormatConfirmationoLabel;
