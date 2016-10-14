@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.Collator;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -40,6 +42,7 @@ import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Combo;
@@ -50,6 +53,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.ContextHelpConstants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 /**
  * Preference page for the document settings. The preferences are written to the Fakturama common preferences store
@@ -70,7 +74,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private StringFieldEditor example;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
-    private BooleanFieldEditor useCurrencySymbolCheckbox;
+    private RadioGroupFieldEditor useCurrencySymbolCheckbox;
     private IntegerFieldEditor decimalPlaces;
 
 	/**
@@ -125,7 +129,13 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         }
         addField(cashCheckbox);
 
-        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, getFieldEditorParent());
+//        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, getFieldEditorParent());
+
+        useCurrencySymbolCheckbox = new RadioGroupFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, 3, new String[][] { 
+			{ msg.preferencesGeneralCurrencyUsesymbol, CurrencySettingEnum.SYMBOL.name() },
+			{ msg.preferencesGeneralCurrencyUseisocode, CurrencySettingEnum.CODE.name() },
+			{ msg.preferencesGeneralCurrencyUsenothing, CurrencySettingEnum.NONE.name() } },
+			getFieldEditorParent());
         addField(useCurrencySymbolCheckbox);
         
         thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
@@ -146,30 +156,57 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 */
     @Override
     public void propertyChange(PropertyChangeEvent event) {
+        Method privateStringMethod, privateValueMethod;
+        Field privateValueField;
         super.propertyChange(event);
+        
+        /*
+         * The current value of the radiogroup can't only read from attribute "value", but this attribute is private and 
+         * has no getter. This forced me to use another ugly hack... Please, excuse me...
+         */
+        String value = "SYMBOL"; // only as a precaution
+        try {
+        	privateValueField = RadioGroupFieldEditor.class.getDeclaredField("value");
+        	privateValueField.setAccessible(true);
+			value = (String) privateValueField.get(useCurrencySymbolCheckbox);
+        }
+        catch (SecurityException | IllegalAccessException 
+                | IllegalArgumentException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        
+        CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(value);
         if (event.getSource() instanceof ComboFieldEditor) {
             String newValue = (String) event.getNewValue();
-            String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue());
+            String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue(), currencySetting);
             example.setStringValue(exampleFormat);
         } else if(event.getSource() instanceof BooleanFieldEditor
                 && (((BooleanFieldEditor)event.getSource()).getPreferenceName()
                     .equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)
                     ||((BooleanFieldEditor)event.getSource()).getPreferenceName()
-                    .equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR)
-                    ||((BooleanFieldEditor)event.getSource()).getPreferenceName()
-                    .equals(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))
+                    .equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR))
+                || event.getSource() instanceof RadioGroupFieldEditor
+                    &&((RadioGroupFieldEditor)event.getSource()).getPreferenceName()
+                    .equals(Constants.PREFERENCES_CURRENCY_USE_SYMBOL)
                 ) {
             boolean useThousandsSeparator = thousandsSeparatorCheckbox.getBooleanValue();
             boolean useCashRounding = cashCheckbox.getBooleanValue();
-            String preferenceName = ((BooleanFieldEditor)event.getSource()).getPreferenceName();
+            
+            String preferenceName;
+            if(event.getSource() instanceof BooleanFieldEditor) {
+				preferenceName = ((BooleanFieldEditor)event.getSource()).getPreferenceName();
+            } else {
+            	preferenceName = ((RadioGroupFieldEditor)event.getSource()).getPreferenceName();
+            	currencySetting = CurrencySettingEnum.valueOf((String) event.getNewValue());
+            }
             if (preferenceName.equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)) {
                 useCashRounding = (Boolean) event.getNewValue();
             }
             if (preferenceName.equals(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR)) {
                 useThousandsSeparator = (Boolean) event.getNewValue();
             }
+            
             // WHO HAS MADE THE getComboBoxControl() METHOD PRIVATE??? WHY???
-            Method privateStringMethod, privateValueMethod;
             try {
                 privateStringMethod = ComboFieldEditor.class.
                         getDeclaredMethod("getComboBoxControl", Composite.class);
@@ -180,9 +217,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                         getDeclaredMethod("getValueForName", String.class);
                 privateValueMethod.setAccessible(true);
                 String localeString = returnValue.getText();
-                String value = (String)privateValueMethod.invoke(currencyLocaleCombo, localeString);
+                value = (String)privateValueMethod.invoke(currencyLocaleCombo, localeString);
                 
-                String exampleFormat = calculateExampleCurrencyFormatString(value, useThousandsSeparator, useCashRounding);
+                String exampleFormat = calculateExampleCurrencyFormatString(value, useThousandsSeparator, useCashRounding, currencySetting);
                 example.setStringValue(exampleFormat);
             }
             catch (NoSuchMethodException | SecurityException | IllegalAccessException 
@@ -195,13 +232,14 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     /**
      * Calculates an example string which contains a formatted currency amount
      * based on given locale string ("language/COUNTRY").
+     * @param currencySetting 
      * 
      * @param locale
      *            locale string
      * @return formatted example value
      */
     private String calculateExampleCurrencyFormatString(String localeString, 
-            boolean useThousandsSeparator, boolean currencyCheckboxEnabled) {
+            boolean useThousandsSeparator, boolean useCashRounding, CurrencySettingEnum currencySetting) {
         double myNumber = -1234.56864;
         String retval = "";
         Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
@@ -211,30 +249,35 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             String s2 = matcher.group(2);
             Locale locale = new Locale(s, s2);
 
-            NumberFormat form = NumberFormat.getCurrencyInstance(locale);
-            form.setGroupingUsed(useThousandsSeparator);
-            form.setMinimumFractionDigits(decimalPlaces != null ? decimalPlaces.getIntValue() : 2);
-            retval = form.format(myNumber);
+//            NumberFormat form;
+//            if(currencySetting == CurrencySettingEnum.NONE) {
+//            	form = NumberFormat.getNumberInstance();
+//            } else {
+//            	form = NumberFormat.getCurrencyInstance(locale);
+//            }
+//            form.setGroupingUsed(useThousandsSeparator);
+//            form.setMinimumFractionDigits(decimalPlaces != null ? decimalPlaces.getIntValue() : 2);
+//            retval = form.format(myNumber);
             
             if (locale.getCountry().equals("CH")) {
                 if(cashCheckbox != null) {
                     cashCheckbox.setEnabled(true, getFieldEditorParent());
                 }
-             //   if(currencyCheckboxEnabled) {
+             //   if(useCashRounding) {
                     /* 
                      * Can't work directly with JavaMoney classes (ServiceProviders) since
                      * they already loaded by DataUtils and therefore the classloader gets
                      * confused.
                      */
                     retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
-                            useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true,
-                                    cashCheckbox != null ?  cashCheckbox.getBooleanValue() : true,
+                    				currencySetting,
+                                    cashCheckbox != null ? cashCheckbox.getBooleanValue() : true,
                                             useThousandsSeparator);
               //  }
             } else {
                 retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
-                        useCurrencySymbolCheckbox != null ? useCurrencySymbolCheckbox.getBooleanValue() : true,
-                                cashCheckbox != null ?  cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
+                				currencySetting,
+                                cashCheckbox != null ? cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
                 if(cashCheckbox != null) {
                     cashCheckbox.setEnabled(false, getFieldEditorParent());
                 }
@@ -286,14 +329,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		//Set the default currency locale from current locale
 		Locale defaultLocale = LocaleUtil.getInstance().getCurrencyLocale();
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
-        String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
-                true, false);
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
-        node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
         node.setDefault(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
-        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true);
+        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
+		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));
+        String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
+                true, false, currencySetting);
+        node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
 	}
 
 	/**

@@ -29,17 +29,19 @@ import javax.money.format.MonetaryParseException;
 
 import org.javamoney.moneta.format.CurrencyStyle;
 
+import com.sebulli.fakturama.money.CurrencySettingEnum;
+
 /**
  * Implements a {@link FormatToken} that adds a localizable {@link String}, read
  * by key from a {@link ResourceBundle}.
  *
- * @author Anatole Tresch
+ * @author Anatole Tresch, Ralf Heydenreich
  */
 final class CurrencyToken implements FormatToken {
     /**
      * The style defining, how the currency should be localized.
      */
-    private CurrencyStyle style = CurrencyStyle.CODE;
+    private CurrencySettingEnum style = CurrencySettingEnum.CODE;
     /**
      * The target locale.
      */
@@ -52,7 +54,7 @@ final class CurrencyToken implements FormatToken {
      *               {@code null}.
      * @param locale The target locale, not {@code null}.
      */
-    public CurrencyToken(CurrencyStyle style, Locale locale) {
+    public CurrencyToken(CurrencySettingEnum style, Locale locale) {
         Objects.requireNonNull(locale, "Locale null");
         this.locale = locale;
         if (Objects.nonNull(style)) {
@@ -66,7 +68,7 @@ final class CurrencyToken implements FormatToken {
      * @param style the {@link CurrencyStyle}, not {@code null}.
      * @return this token instance, for chaining.
      */
-    public CurrencyToken setCurrencyStyle(CurrencyStyle style) {
+    public CurrencyToken setCurrencyStyle(CurrencySettingEnum style) {
         Objects.requireNonNull(style, "CurrencyStyle null");
         this.style = style;
         return this;
@@ -77,7 +79,7 @@ final class CurrencyToken implements FormatToken {
      *
      * @return the current {@link CurrencyStyle}, never {@code null}.
      */
-    public CurrencyStyle getCurrencyStyle() {
+    public CurrencySettingEnum getCurrencyStyle() {
         return this.style;
     }
 
@@ -97,6 +99,8 @@ final class CurrencyToken implements FormatToken {
                 return getCurrencyName(amount.getCurrency());
             case SYMBOL:
                 return getCurrencySymbol(amount.getCurrency());
+            case NONE:
+            	return "";
             default:
             case CODE:
                 return amount.getCurrency().getCurrencyCode();

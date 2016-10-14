@@ -125,6 +125,7 @@ import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.money.CurrencySettingEnum;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 import com.sebulli.fakturama.oldmodel.OldDocuments;
 import com.sebulli.fakturama.oldmodel.OldExpenditureitems;
@@ -1336,7 +1337,7 @@ public class MigrationManager {
        			    
        			    // try to interpret the currency symbol
            			if(StringUtils.length(propValue) == 1) {
-           			    propUseSymbol.setValue(Boolean.TRUE.toString());
+           			    propUseSymbol.setValue(CurrencySettingEnum.SYMBOL.name());
                         Currency jdkCurrency = Currency.getInstance(currencyLocale);
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
@@ -1352,7 +1353,7 @@ public class MigrationManager {
            		        }
            			}
                     retval = DataUtils.getInstance().formatCurrency(exampleNumber, currencyLocale, 
-                            Boolean.parseBoolean(propUseSymbol.getValue()), false, false);
+                            CurrencySettingEnum.valueOf(propUseSymbol.getValue()), false, false);
                     UserProperty propFormatExample = modelFactory.createUserProperty();
                     propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
                     propFormatExample.setUser(currentUser);

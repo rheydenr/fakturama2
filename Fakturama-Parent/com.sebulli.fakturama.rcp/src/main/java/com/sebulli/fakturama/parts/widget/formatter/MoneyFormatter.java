@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 /**
  *
@@ -47,17 +48,16 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
     public MoneyFormatter(IPreferenceStore defaultValuePrefs) {
         super();
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
-        DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance();
+        DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(LocaleUtil.getInstance().getCurrencyLocale());
         if(defaultValuePrefs != null) {
         	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
         	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
         }
-        String editFormatPattern = "##,###,##0.00";
+        String editFormatPattern = editFormat.toPattern();
         if(editFormat.getMaximumFractionDigits() > 2) {
-        	editFormatPattern += StringUtils.repeat("0", editFormat.getMaximumFractionDigits()-2);
+        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
         }
-//        editFormat.setMaximumIntegerDigits(7);
-        setPatterns(editFormatPattern/*editFormat.toPattern()*/, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+        setPatterns(editFormatPattern, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
 //        setFixedLengths(false, true);
     }
     
@@ -77,6 +77,14 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
             val = new Double(val.doubleValue());
         }
         return val;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.nebula.widgets.formattedtext.NumberFormatter#getDisplayString()
+     */
+    @Override
+    public String getDisplayString() {
+    	return DataUtils.getInstance().doubleToFormattedPrice((Double) getValue());
     }
 
     /**

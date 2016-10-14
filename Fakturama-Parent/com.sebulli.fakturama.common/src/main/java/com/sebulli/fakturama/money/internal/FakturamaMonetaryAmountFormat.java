@@ -20,6 +20,8 @@ import javax.money.format.MonetaryParseException;
 
 import org.javamoney.moneta.format.CurrencyStyle;
 
+import com.sebulli.fakturama.money.CurrencySettingEnum;
+
 public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
 
 
@@ -72,11 +74,11 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
             String p2 = pattern.substring(index + 1);
             if (isLiteralPattern(p1, style)) {
                 tokens.add(new LiteralToken(p1));
-                tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style.
+                tokens.add(new CurrencyToken(style.get(CurrencySettingEnum.class), style.
                         get(Locale.class)));
             } else {
                 tokens.add(new AmountNumberToken(style, p1));
-                tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style.get(Locale.class)));
+                tokens.add(new CurrencyToken(style.get(CurrencySettingEnum.class), style.get(Locale.class)));
             }
             if (!p2.isEmpty()) {
                 if (isLiteralPattern(p2, style)) {
@@ -86,7 +88,7 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
                 }
             }
         } else if (index == 0) { // currency placement before
-            tokens.add(new CurrencyToken(style.get(CurrencyStyle.class), style
+            tokens.add(new CurrencyToken(style.get(CurrencySettingEnum.class), style
                     .get(Locale.class)));
             tokens.add(new AmountNumberToken(style, pattern.substring(1)));
         } else { // no currency
@@ -214,7 +216,13 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         this.negativeTokens = new ArrayList<>();
         String pattern = amountFormatContext.getText(KEY_PATTERN);
         if (pattern == null) {
-            DecimalFormat currencyFormatInstance = (DecimalFormat) DecimalFormat.getCurrencyInstance(amountFormatContext.getLocale());
+        	DecimalFormat currencyFormatInstance;
+        	if(amountFormatContext.get(CurrencySettingEnum.class) != null && amountFormatContext.get(CurrencySettingEnum.class) == CurrencySettingEnum.NONE) {
+        		// without any currency symbol we have a normal decimal value to format
+        		currencyFormatInstance = (DecimalFormat) DecimalFormat.getNumberInstance(amountFormatContext.getLocale());
+        	} else {
+        		currencyFormatInstance = (DecimalFormat) DecimalFormat.getCurrencyInstance(amountFormatContext.getLocale());
+        	}
             if(amountFormatContext.getBoolean(KEY_USE_GROUPING) != null) {
                 currencyFormatInstance.setGroupingUsed(amountFormatContext.getBoolean(KEY_USE_GROUPING));
             }

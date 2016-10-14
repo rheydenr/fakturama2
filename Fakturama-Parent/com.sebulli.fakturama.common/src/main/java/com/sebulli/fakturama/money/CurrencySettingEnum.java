@@ -33,5 +33,8 @@ public enum CurrencySettingEnum {
 	/**
 	 * use currency ISO code
 	 */
-	ISOCODE
+	CODE,
+	
+	// these are from JavaMoney CurrencyStyle
+	NAME,NUMERIC_CODE
 }
