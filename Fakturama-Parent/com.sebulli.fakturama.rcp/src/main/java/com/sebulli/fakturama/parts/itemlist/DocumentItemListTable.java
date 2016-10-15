@@ -17,7 +17,6 @@ package com.sebulli.fakturama.parts.itemlist;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
@@ -49,6 +48,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
+import org.eclipse.nebula.widgets.nattable.coordinate.PositionCoordinate;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
@@ -57,6 +57,8 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.action.KeyEditAction;
+import org.eclipse.nebula.widgets.nattable.edit.command.EditUtils;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
@@ -68,6 +70,7 @@ import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.LabelStack;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
@@ -90,8 +93,10 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.action.IKeyAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
+import org.eclipse.nebula.widgets.nattable.ui.matcher.KeyEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -100,6 +105,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowActi
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -612,7 +618,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUNIT, TEXT_CELL_LABEL);
 
         // Register label accumulator
-        gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
+        gridListLayer.getBodyDataLayer().setConfigLabelAccumulator(columnLabelAccumulator);
         
         // if a re-ordering of rows occurs we have to renumber the items
         gridListLayer.getBodyLayerStack().getRowReorderLayer().addLayerListener((ILayerEvent event) -> {
@@ -639,14 +645,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // register a MoveCellSelectionCommandHandler with
         // TABLE_CYCLE_TRAVERSAL_STRATEGY for horizontal traversal
         // and AXIS_CYCLE_TRAVERSAL_STRATEGY for vertical traversal
-        // NOTE:
-        // You could achieve the same by registering a command handler
-        // with TABLE_CYCLE_TRAVERSAL_STRATEGY and registering
-        // MoveSelectionActions with a customized ITraversalStrategy, e.g.
-        // AXIS_CYCLE_TRAVERSAL_STRATEGY
-        
-        // FIXME: Doesn't work!
-        gridListLayer.getViewportLayer().registerCommandHandler(
+        gridListLayer.getBodyLayerStack().getViewportLayer().registerCommandHandler(
                 new MoveCellSelectionCommandHandler(gridListLayer.getSelectionLayer(),
                         new EditTraversalStrategy(ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, natTable),
                         new EditTraversalStrategy(ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, natTable)));
@@ -708,8 +707,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // enable sorting on single click on the column header
         natTable.addConfiguration(new SingleClickSortConfiguration());
-        natTable.addConfiguration(new DocumentItemTableConfiguration());
         natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
+        natTable.addConfiguration(new DocumentItemTableConfiguration());
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
@@ -719,7 +718,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
-
                 new IMouseAction() {
 
                     ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
@@ -912,6 +910,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
                     DisplayMode.EDIT, DESCRIPTION_CELL_LABEL);
+            
             // configure to open the adjacent editor after commit
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.OPEN_ADJACENT_EDITOR,
@@ -924,7 +923,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, POSITIONNUMBER_CELL_LABEL); 
             
             // for number values (e.g., quantity)
-            TextCellEditor textCellEditor = new TextCellEditor();
+            TextCellEditor textCellEditor = new TextCellEditor(true, true);
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
 			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
@@ -1092,8 +1091,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 			// description column
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
-                    new MultiLineTextCellEditor(false),
-                    DisplayMode.NORMAL, 
+                    new MultiLineTextCellEditor(true),
+                    DisplayMode.EDIT, 
                     DESCRIPTION_CELL_LABEL);
             // configure the multi line text editor to always open in a
             // subdialog
@@ -1121,13 +1120,13 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_ICON, display.getSystemImage(SWT.ICON_INFORMATION));
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_RESIZABLE, Boolean.TRUE);
             
+            // calculate the dialog position in relation to main window (doesn't work if main window is moved)
             Point size = new Point(400, 300);
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_SIZE, size);
-            int screenWidth = display.getBounds().width;
-            int screenHeight = display.getBounds().height;
+            Rectangle bounds = natTable.getShell().getBounds();
             Point location = new Point(
-                    (screenWidth / (2 * display.getMonitors().length)) - (size.x / 2),
-                    (screenHeight / 2) - (size.y / 2));
+            		bounds.x + (bounds.width / 2  - size.x / 2),
+            		bounds.y + (bounds.height / 2 - size.y / 2));
             editDialogSettings.put(ICellEditDialog.DIALOG_SHELL_LOCATION, location);
             
             // add custom message
