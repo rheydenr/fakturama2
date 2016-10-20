@@ -456,6 +456,7 @@ public class DocumentEditor extends Editor<Document> {
 			* But wait... the Id of the old entry and the new entry have to be the same.
 			* Else it could be a newly selected contact from the contact list.
 			*/
+			// TODO check FAK-276 if it is working! 
 			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
 			|| addressModified && addressId.getCustomerNumber() == null) {
 			    addressId = modelFactory.createDebitor();

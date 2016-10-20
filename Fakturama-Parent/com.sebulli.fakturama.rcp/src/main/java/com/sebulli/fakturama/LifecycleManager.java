@@ -144,11 +144,11 @@ public class LifecycleManager {
         // at first we check if we have to migrate an older version
         // check if the db connection is set
         if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
-        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
-        	if(!dbupdate) {
-        		log.error(null, "could'nt create or update database!");
-        		System.exit(1);
-        	}
+//        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+//        	if(!dbupdate) {
+//        		log.error(null, "could'nt create or update database!");
+//        		System.exit(1);
+//        	}
             dbInitJob = new Job("initDb") {
     
                 @Override

@@ -319,7 +319,7 @@ public class ContactUtil {
 								addressCity = line.length() > 5 ? line.substring(matcher.end()+1).trim() : "";
 								
 							}
-							cityFound = true;
+							cityFound = addressCity.length() > 0;
 							countryFound = true;
 						}
 					}

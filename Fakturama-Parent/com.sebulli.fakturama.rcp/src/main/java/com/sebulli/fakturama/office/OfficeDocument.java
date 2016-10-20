@@ -655,7 +655,7 @@ public class OfficeDocument {
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVat());
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
 		}
 
 		// Get the item gross value

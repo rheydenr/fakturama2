@@ -111,6 +111,7 @@ import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.model.ItemType;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.model.ProductBlockPrice;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.model.Shipping;
@@ -468,6 +469,11 @@ public class MigrationManager {
 		for (OldProducts oldProduct : oldDao.findAllProducts()) {
 			try {
 				Product product = modelFactory.createProduct();
+				addPriceBlock(product, oldProduct.getBlock1(), roundValue(oldProduct.getPrice1()));
+				addPriceBlock(product, oldProduct.getBlock2(), roundValue(oldProduct.getPrice2()));
+				addPriceBlock(product, oldProduct.getBlock3(), roundValue(oldProduct.getPrice3()));
+				addPriceBlock(product, oldProduct.getBlock4(), roundValue(oldProduct.getPrice4()));
+				addPriceBlock(product, oldProduct.getBlock5(), roundValue(oldProduct.getPrice5()));
 				product.setBlock1(oldProduct.getBlock1());
 				product.setBlock2(oldProduct.getBlock2());
 				product.setBlock3(oldProduct.getBlock3());
@@ -515,6 +521,21 @@ public class MigrationManager {
 		subMonitor.done();
 	}
 
+
+	/**
+	 * Add a new price block o the new product. Copy from old product if not <code>null</code>.
+	 * 
+	 * @param product the new Product
+	 * @param block1 the block which should be created.
+	 */
+	private void addPriceBlock(Product product, int block, double price) {
+		if(block != 0) {
+			ProductBlockPrice blockPrice = modelFactory.createProductBlockPrice();
+			blockPrice.setBlock(block);
+			blockPrice.setPrice(price);
+			product.getBlockPrices().add(blockPrice);
+		}
+	}
 
 	/**
 	 * Handles the copying of the product pictures

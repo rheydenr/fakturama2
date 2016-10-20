@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -712,7 +713,7 @@ public class Placeholders {
             LocalDateTime newDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
             return newDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
         }
-		if (key.equals("PAYMENT.PAID")) return document.getPaid().toString();
+		if (key.equals("PAYMENT.PAID")) return BooleanUtils.toStringTrueFalse(document.getPaid());
 		
 		String key2;
 		String addressField;
@@ -937,7 +938,7 @@ public class Placeholders {
 		String retval = "";
 		Integer bankAccountLength = accountNumber.length();			
 		// Only set placeholder if bank account exists
-		if( bankAccountLength > 0 ) {				
+		if( bankAccountLength > 3 ) {				
 			// Show only the last 3 digits
 			Integer bankAccountCensoredLength = bankAccountLength - 3;
 			String censoredDigits = "";				
@@ -945,6 +946,8 @@ public class Placeholders {
 				censoredDigits += "*";
 			}				
 			retval = censoredDigits + accountNumber.substring( bankAccountCensoredLength );
+		} else {
+			retval = "***";
 		}
 		return retval;
 	}

@@ -218,27 +218,27 @@ public class Constants {
     /**
      * Use cash rounding (Switzerland only). This is for rounding to full 0.05 SFr.
      */
-    public static final String PREFERENCES_CURRENCY_USE_CASHROUNDING = "PREFERENCES_CURRENCY_USE_CASHROUNDING";
+    public static final String PREFERENCES_CURRENCY_USE_CASHROUNDING = "CURRENCY_USE_CASHROUNDING";
 
     /**
      * This preference is read-only and only used for an example string (formatting of a currency amount)
      */
-    public static final String PREFERENCE_CURRENCY_FORMAT_EXAMPLE = "PREFERENCE_CURRENCY_FORMAT_EXAMPLE";
+    public static final String PREFERENCE_CURRENCY_FORMAT_EXAMPLE = "CURRENCY_FORMAT_EXAMPLE";
 
     /**
      * Use currency symbol or ISO code (3-letter-code)
      */
-    public static final String PREFERENCES_CURRENCY_USE_SYMBOL = "PREFERENCE_CURRENCY_USE_SYMBOL";
+    public static final String PREFERENCES_CURRENCY_USE_SYMBOL = "CURRENCY_USE_SYMBOL";
 
     /**
      * 
      */
-    public static final String PREFERENCES_FINALPAYMENT_TEXT = "FINALPAYMENT_TEXT";
+    public static final String PREFERENCES_FINALPAYMENT_TEXT = "DOCUMENT_FINALPAYMENT_TEXT";
 
     /**
      * 
      */
-    public static final String PREFERENCES_DEPOSIT_TEXT = "DEPOSIT_TEXT";
+    public static final String PREFERENCES_DEPOSIT_TEXT = "DOCUMENT_DEPOSIT_TEXT";
 
     /**
      * 

@@ -62,6 +62,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -555,6 +556,9 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textGtin);
 
+		// for correct tab-order (see FAK-465)
+		Control nextWidget = null;
+
 		// Product description
 		Label labelDescription = new Label(useDescription ? productDescGroup : invisible, SWT.NONE);
 		labelDescription.setText(msg.commonFieldDescription);
@@ -574,7 +578,12 @@ public class ProductEditor extends Editor<Product> {
 		labelQuantityUnit.setText(msg.editorProductFieldQuantityunitName);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantityUnit);
-		textQuantityUnit = new Text(useQuantityUnit ? productDescGroup : invisible, SWT.BORDER);
+		if(useQuantityUnit) {
+			textQuantityUnit = new Text(productDescGroup, SWT.BORDER);
+			nextWidget = textQuantityUnit;
+		} else {
+			textQuantityUnit = new Text(invisible, SWT.BORDER);
+		}
 		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantityUnit);
 
@@ -657,6 +666,9 @@ public class ProductEditor extends Editor<Product> {
 					});
 //					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
+					if(i == 0 && nextWidget == null) { // only for the first iteration
+						nextWidget = netText[i].getGrossText().getControl();
+					}
 				}
 
 				// Create the gross columns
@@ -676,6 +688,9 @@ public class ProductEditor extends Editor<Product> {
 //						bindModelValue(editorProduct, grossText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT)
 							.applyTo(grossText[i].getGrossText().getControl());
+					if(i == 0 && nextWidget == null) { // only for the first iteration
+						nextWidget = grossText[i].getGrossText().getControl();
+					}
 				}
 
 				// If a net and gross column was created, link both together,
@@ -683,8 +698,9 @@ public class ProductEditor extends Editor<Product> {
 				if (useNet && useGross) {
 					netText[i].setGrossText(grossText[i].getGrossText());
 					grossText[i].setNetText(netText[i].getNetText());
-//					if(i == 0 && nextWidget == null) { // only for the first iteration
-//						nextWidget = grossText[i].getGrossText();
+					if(i == 0 && nextWidget == null) { // only for the first iteration
+						nextWidget = grossText[i].getGrossText().getControl();
+					}
 				}
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				// TODO Auto-generated catch block
@@ -693,12 +709,13 @@ public class ProductEditor extends Editor<Product> {
 		}
 
 		// Set the tab order
-		if (scaledPrices >= 2)
-			setTabOrder(textDescription, textBlock[0]);
-		else if (useNet)
-			setTabOrder(textDescription, netText[0].getNetText().getControl());
-		else
-			setTabOrder(textDescription, grossText[0].getGrossText().getControl());
+//		if (scaledPrices >= 2)
+//			setTabOrder(textDescription, textBlock[0]);
+//		else if (useNet)
+//			setTabOrder(textDescription, netText[0].getNetText().getControl());
+//		else
+//			setTabOrder(textDescription, grossText[0].getGrossText().getControl());
+		setTabOrder(textDescription, nextWidget);
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);
@@ -781,7 +798,12 @@ public class ProductEditor extends Editor<Product> {
 		labelQuantity.setText(msg.commonFieldQuantity);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
-		textQuantity = new FormattedText(useQuantity ? productDescGroup : invisible, SWT.BORDER);
+		if(useQuantity) {
+			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
+			nextWidget = textQuantityUnit;
+		} else {
+			textQuantity = new FormattedText(invisible, SWT.BORDER);
+		}
 		textQuantity.setFormatter(new DoubleFormatter());
 		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
