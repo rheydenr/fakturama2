@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
@@ -97,5 +98,45 @@ public class ContactsDAO extends AbstractDAO<Contact> {
     public String[] getVisibleProperties() {
         return new String[] { Contact_.customerNumber.getName(), Contact_.firstName.getName(), Contact_.name.getName(),
                 Contact_.company.getName(), Contact_.address.getName() + "." +Address_.zip.getName(), Contact_.address.getName() + "." +Address_.city.getName()};
-    }	
+    }
+
+	/**
+	 * Checks if a {@link Contact} with the same values exists.
+	 * 
+	 * @param name
+	 * @param firstName
+	 * @param street
+	 * @return
+	 */
+	public boolean existsContactWithSameValues(String name, String firstName, String street) {
+		Set<Predicate> restrictions = new HashSet<>();
+    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
+        Root<Contact> root = query.from(getEntityClass());
+        restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
+        restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
+        restrictions.add(cb.equal(root.get(Contact_.address.getName() + "." +Address_.street.getName()), StringUtils.defaultString(street)));
+        CriteriaQuery<Contact> select = query.select(root);
+        select.where(restrictions.toArray(new Predicate[]{}));
+        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
+		return !resultList.isEmpty();
+	}
+
+	/**
+	 * Checks if a {@link Contact} with the same number exists.
+	 * 
+	 * @param contactNumber 
+	 * @return
+	 */
+	public boolean existsContactWithSameNumber(String contactNumber) {
+		Set<Predicate> restrictions = new HashSet<>();
+    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
+        Root<Contact> root = query.from(getEntityClass());
+        restrictions.add(cb.equal(root.get(Contact_.customerNumber), StringUtils.defaultString(contactNumber)));
+        CriteriaQuery<Contact> select = query.select(root);
+        select.where(restrictions.toArray(new Predicate[]{}));
+        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
+		return !resultList.isEmpty();
+	}	
 }

@@ -35,18 +35,22 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -166,6 +170,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private boolean useLastNameFirst;
 	private boolean useCompany;
 	private boolean useCountry;
+	
+	/**
+	 * If the "duplicate contact" warning ist shown we won't show 'em again 'til
+	 * we change a value in street, name or firstname.
+	 */
+	private boolean isDuplicateWarningShown = false;
 
 	// defines, if the contact is newly created
 	private boolean newContact;
@@ -210,6 +220,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		 * - id (constant)
 		 * - date_added (constant)
 		 */
+		
+		// check if the same number was used.
+		thereIsOneWithSameNumber();
 
 		// at first, check the category for a new entry
         // (the user could have written a new one into the combo field)
@@ -647,6 +660,44 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		}
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
+		
+		txtFirstname.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
+		txtFirstname.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(!((Text)e.getSource()).getText().equals(editorContact.getFirstName())) {
+					isDuplicateWarningShown = false;
+				}
+			}
+		});
+		
+		txtName.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
+		txtName.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(!((Text)e.getSource()).getText().equals(editorContact.getName())) {
+					isDuplicateWarningShown = false;
+				}
+			}
+		});
 
 		// Company
 		Label labelCompany = new Label(useCompany ? addressGroup : invisible, SWT.NONE);
@@ -1142,28 +1193,44 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         bindModelValue(editorContact, comboCategory, Contact_.categories.getName(), target2CatModel, catModel2Target);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
     }
+	
+	/**
+	 * Checks if the currently entered name and street is already stored.
+	 * 
+	 * @return <code>true</code> if a contact with the same name and street was found
+	 */
+	private void checkDuplicateContact() {
+		// check only if name, firstname and street aren't empty
+		if(isDuplicateWarningShown  
+			|| "".equals(txtName.getText())
+			|| "".equals(txtFirstname.getText())
+			|| "".equals(txtStreet.getText())) return;
+		
+		// Search the list for an existing data set with the specified value
+		if(contactDAO.existsContactWithSameValues(txtName.getText()
+				, txtFirstname.getText()
+				, txtStreet.getText())) {
+				isDuplicateWarningShown = true;
+				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
+						msg.editorContactWarningDuplicateStreet + " " + txtNr.getText() );
+		}
+
+		// nothing found
+	}
 
 	/**
 	 * Test, if there is a contact with the same number
 	 * 
 	 * @return TRUE, if one with the same number is found
 	 */
-	public boolean thereIsOneWithSameNumber() {
+	private boolean thereIsOneWithSameNumber() {
 
-//		// Cancel, if there is already a document with the same ID
-//		if (Data.INSTANCE.getDocuments().isExistingDataSet(contact, "nr", txtNr.getText())) {
-//			// Display an error message
-//			MessageBox messageBox = new MessageBox(parent.getShell(), SWT.ICON_ERROR | SWT.OK);
-//
-//			//T: Title of the dialog that appears if the item/product number is not valid.
-//			messageBox.setText(msg("Error in customer ID"));
-//
-//			//T: Text of the dialog that appears if the customer number is not valid.
-//			messageBox.setMessage(msg("There is already a customer with the number:") + " " + txtNr.getText());
-//			messageBox.open();
-//
-//			return true;
-//		}
+		// Cancel, if there is already a document with the same ID
+		if (contactDAO.existsContactWithSameNumber(txtNr.getText())) {
+			// Display an error message
+			MessageDialog.openError(top.getShell(), msg.dialogMessageboxTitleError, msg.editorContactErrorCustomerid + " " + txtNr.getText());
+			return true;
+		}
 
 		return false;
 	}
@@ -1182,14 +1249,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //	}
 //	
 
-@Override
-protected MDirtyable getMDirtyablePart() {
-	return part;
-}
-
-@Override
-protected String getEditorID() {
-    return EDITOR_ID;
-}
+	@Override
+	protected MDirtyable getMDirtyablePart() {
+		return part;
+	}
+	
+	@Override
+	protected String getEditorID() {
+	    return EDITOR_ID;
+	}
 }
 

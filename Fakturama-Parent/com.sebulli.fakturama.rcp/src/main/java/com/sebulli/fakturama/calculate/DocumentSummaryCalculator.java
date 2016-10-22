@@ -108,6 +108,9 @@ public class DocumentSummaryCalculator {
 			// Add the total net value of this item to the sum of net items
 			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNet()));
 
+			// Sums the total amount of item quantities. 
+			retval.setTotalQuantity(retval.getTotalQuantity() + item.getQuantity());
+
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
 				vatDescription = noVatReference.getDescription();

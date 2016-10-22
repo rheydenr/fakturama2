@@ -114,7 +114,9 @@ public class Placeholders {
 			"DOCUMENT.ITEMS.GROSS",
 			"DOCUMENT.ITEMS.NET",
 			"DOCUMENT.ITEMS.COUNT",
+			"DOCUMENT.TOTAL.QUANTITY",
 			"DOCUMENT.TOTAL.NET",
+			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.TOTAL.VAT",
 			"DOCUMENT.TOTAL.GROSS",
 			"DOCUMENT.DEPOSIT.DEPOSIT",
@@ -642,9 +644,12 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.ORDER.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getOrderDate());
 		if (key.equals("DOCUMENT.ITEMS.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsGross());
 		if (key.equals("DOCUMENT.ITEMS.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet());
+		// FAK-432
+		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
 		if (key.equals("DOCUMENT.TOTAL.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalNet());
 		if (key.equals("DOCUMENT.TOTAL.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalVat());
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross());
+		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
 		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return DataUtils.getInstance().formatCurrency(documentSummary.getDeposit());

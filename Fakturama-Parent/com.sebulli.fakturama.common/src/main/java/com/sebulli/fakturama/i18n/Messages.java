@@ -142,6 +142,11 @@ public class Messages {
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
+	
+	
+	public String editorContactWarningDuplicate;
+	public String editorContactWarningDuplicateStreet;
+	
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
 	public String dataDefaultContactFormatSalutation;

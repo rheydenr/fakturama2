@@ -64,7 +64,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -521,7 +520,10 @@ public class DocumentEditor extends Editor<Document> {
                 //				document.setPayDate(dtPaidDate.getSelection());   // done by databinding
                 //				document.setPaidValue(paidValue.getNumber().doubleValue());   // done by databinding
                 deposit = Money.of(Double.valueOf(0.0), currencyUnit);
-                if (document.getPaidValue() < total.getNumber().doubleValue()) {
+				// check if the paid value is only a deposit or the whole invoice amount
+				// not: a discount could decrease the invoice amount!
+				
+				if(isInvoiceDeposited()){
                     deposit = Money.of(document.getPaidValue(), currencyUnit);
                     document.setDeposit(Boolean.TRUE);
                     document.setPaid(Boolean.FALSE);
@@ -670,6 +672,17 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	/**
+	 * Checks if the given paid amount is only adeposit. Cares of the discount.
+	 * 
+     * @return <code>true</code> if it's only a deposit
+     */
+    private boolean isInvoiceDeposited() {
+    	// see FAK-485
+    	double discount = 1 - document.getPayment().getDiscountValue();
+    	return document.getPaidValue() < Math.round(total.multiply(discount * 100).getNumber().doubleValue())/100.0;
+    }
+
+	/**
 	 * Updates all {@link Dunning}s which are related to the current invoice.
 	 */
 	private void updateDunnings() {
@@ -789,6 +802,7 @@ public class DocumentEditor extends Editor<Document> {
                 document.setPayment(payment);
 //				document.setStringValueByKey("paymentdescription", Data.INSTANCE.getPayments().getDatasetById(paymentId).getStringValueByKey("description"));
 				document.setDueDays(payment.getNetDays());
+				
 				document.setOrderDate(today);
 				document.setServiceDate(today);
 			}
@@ -796,6 +810,11 @@ public class DocumentEditor extends Editor<Document> {
 				payment = document.getPayment();
 				shipping = document.getShipping();
 				total = Money.of(document.getTotalValue(), currencyUnit);
+				
+				if(documentType == DocumentType.DUNNING) {
+					document.setOrderDate(parentDoc.getOrderDate()); // see FAK-490
+					document.setServiceDate(parentDoc.getServiceDate());  // see FAK-472
+				}
 			}
 			
 			// set some dates

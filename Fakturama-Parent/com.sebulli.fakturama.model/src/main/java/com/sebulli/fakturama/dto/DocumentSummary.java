@@ -58,6 +58,7 @@ hier klingt vor allem das interessant:
 	private MonetaryAmount totalNet;
 	private MonetaryAmount totalVat;
 	private MonetaryAmount totalGross;
+	private double   	   totalQuantity;
 
 	// discount values
 	private MonetaryAmount discountNet;
@@ -290,5 +291,19 @@ hier klingt vor allem das interessant:
 	 */
 	public void setFinalPayment(MonetaryAmount finalPayment) {
 		this.finalPayment = finalPayment;
+	}
+
+	/**
+	 * @return the totalQuantity
+	 */
+	public double getTotalQuantity() {
+		return totalQuantity;
+	}
+
+	/**
+	 * @param totalQuantity the totalQuantity to set
+	 */
+	public void setTotalQuantity(double totalQuantity) {
+		this.totalQuantity = totalQuantity;
 	} 
 }
