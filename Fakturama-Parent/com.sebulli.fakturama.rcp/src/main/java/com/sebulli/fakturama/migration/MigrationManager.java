@@ -72,6 +72,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -79,7 +80,6 @@ import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
-import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
@@ -196,7 +196,7 @@ public class MigrationManager {
 	private PaymentsDAO paymentsDAO;
     
     @Inject
-	private ProductsDAO productsDAO;
+	private AbstractDAO<Product> productsDAO;
     
     @Inject
 	private ProductCategoriesDAO productCategoriesDAO;
@@ -348,7 +348,7 @@ public class MigrationManager {
 		}
 		finally {
 		    eclipsePrefs.flush();
-			log.info(msg.startMigrationEnd);
+		    log.info(msg.startMigrationEnd);
 		}
         migLogUser.info(StringUtils.repeat('*',  MAX_LOGENTRY_WIDTH));
         String tmpStr = String.format("* %s %s", StringUtils.rightPad("End:", 20), LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));

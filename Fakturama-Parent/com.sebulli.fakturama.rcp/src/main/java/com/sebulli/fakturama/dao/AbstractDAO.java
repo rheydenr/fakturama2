@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -178,15 +179,15 @@ em.joinTransaction();
     
     public List<T> findAll(boolean forceRead) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
-        Root<T> root = criteria.from(getEntityClass());
-        CriteriaQuery<T> cq = criteria.where(cb.not(root.<Boolean> get("deleted")));
-        TypedQuery<T> query = getEntityManager().createQuery(cq);
+        CriteriaQuery<T> query = cb.createQuery(getEntityClass());
+        Root<T> root = query.from(getEntityClass());
+        query.where(cb.not(root.<Boolean> get("deleted")));
+        TypedQuery<T> q = getEntityManager().createQuery(query);
         if(forceRead) {
-            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
 //            query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
         }
-        return query.getResultList();
+        return q.getResultList();
     }
 
     /**
@@ -380,5 +381,22 @@ em.joinTransaction();
 	 */
 	public final ILogger getLog() {
 		return log;
+	}
+
+	/**
+	 * Tests if an other entity with the same name exists.
+	 * 
+	 * @param entity the entity to test
+	 * @return 
+	 */
+	public boolean existsOther(T entity) {
+	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	    CriteriaQuery<T> query = cb.createQuery(getEntityClass());
+	    Root<T> root = query.from(getEntityClass());
+//	    CriteriaQuery<T> cq = query.where(
+//	            cb.and(cb.notEqual(root.<Long>get("id"), entity.getId()),
+//	                   cb.equal(root.<String>get("name"), entity.getName())));
+//	    return !getEntityManager().createQuery(cq).getResultList().isEmpty();
+	    return false;
 	}
 }

@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Creditor;
@@ -33,7 +34,7 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
+//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
@@ -92,7 +93,7 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
                 );
         TypedQuery<Creditor> query = getEntityManager().createQuery(cq);
         if(forceRead) {
-            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
         }
         return query.getResultList();
     }

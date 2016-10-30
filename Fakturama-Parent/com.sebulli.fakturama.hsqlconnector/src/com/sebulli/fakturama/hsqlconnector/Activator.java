@@ -5,11 +5,12 @@ import java.util.Hashtable;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
 
 public class Activator implements BundleActivator {
 
-	private HsqlConnectionProvider service;
+	private IActivateDbServer service;
 	
 	/*
 	 * (non-Javadoc)

@@ -80,8 +80,8 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Contact" - Label format of the name
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_CONTACT_NAME_FORMAT, msg.preferencesContactNameformat, 2, 
-		        new String[][] { { msg.preferencesContactFirstlastname, "0" },
-				{ msg.preferencesContactLastfirstname, "1" } }, getFieldEditorParent()));
+		        new String[][] { { msg.preferencesContactFirstlastname, Integer.toString(Constants.CONTACT_FORMAT_FIRSTNAME_LASTNAME) },
+				{ msg.preferencesContactLastfirstname, Integer.toString(Constants.CONTACT_FORMAT_LASTNAME_FIRSTNAME)  } }, getFieldEditorParent()));
 
 		//T: Preference page "Contact" - Label checkbox "Use company field"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_COMPANY, msg.preferencesContactUsecompany, getFieldEditorParent()));

@@ -70,6 +70,7 @@ import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -903,7 +904,7 @@ public class ProductEditor extends Editor<Product> {
 	 * 
 	 * @return TRUE, if one with the same number is found
 	 */
-	public boolean thereIsOneWithSameNumber() {
+	private boolean thereIsOneWithSameNumber() {
 
 		// Cancel, if there is already a document with the same ID
 		if (productsDAO.existsOther(editorProduct)) {

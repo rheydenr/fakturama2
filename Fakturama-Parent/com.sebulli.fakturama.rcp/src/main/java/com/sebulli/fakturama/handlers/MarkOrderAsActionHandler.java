@@ -35,14 +35,19 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
@@ -55,6 +60,9 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.webshopimport.WebShopImportManager;
@@ -88,19 +96,35 @@ public class MarkOrderAsActionHandler {
 
     @Inject
     private EHandlerService handlerService;
+    
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
     public static final String PARAM_STATUS = "com.sebulli.fakturama.command.order.markas.progress";
     public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
 
     @CanExecute
-    public boolean canExecute(@Active MPart activePart) {
+    public boolean canExecute(@Active MPart activePart, EPartService partService) {
         boolean retval = false;
+        Document[] selectedObjects = null;
+        
+        MDirtyable dirtyable ;
+        if (partService != null) {
+            dirtyable = partService.getActivePart();
+        }        
+        
         if (activePart.getElementId().contentEquals(DocumentsListTable.ID)) {
             @SuppressWarnings("rawtypes")
             AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-            Document[] selectedObjects = (Document[]) currentListtable.getSelectedObjects();
-            retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType() == BillingType.ORDER);
+			selectedObjects = (Document[]) currentListtable.getSelectedObjects();
+        } else if(activePart.getElementId().contentEquals(DocumentEditor.ID)) {
+        	DocumentEditor editor = (DocumentEditor)activePart.getObject();
+        	selectedObjects = new Document[]{editor.getDocument()};
         }
+        retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType() == BillingType.ORDER);
         return retval;
     }
 
@@ -135,6 +159,8 @@ public class MarkOrderAsActionHandler {
     }
 
     public void markOrderAs(Shell parent, Document document, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
+    	boolean needUpdate = false;  // if an update of views is needed
+    	
         // Do it only, if it is an order.
         if (document.getBillingType() == BillingType.ORDER) {
             try {
@@ -145,30 +171,35 @@ public class MarkOrderAsActionHandler {
                 if (progress == OrderState.SHIPPED && progress_old != OrderState.SHIPPED) // mark as shipped - take from stock
                 {
                     for (DocumentItem item : items) {
-                        Product id = item.getProduct();
-                        Double quantityOrder = item.getQuantity();
-                        Product product = productsDAO.findById(id);
-                        Double quantityStock = product.getQuantity();
-                        product.setQuantity(quantityStock - quantityOrder);
-                        if (quantityStock - quantityOrder <= 0) {
-                            String name = product.getName();
-                            String cat = product.getCategories()/*.get(0)*/.getName();
-                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
-                        }
-                        productsDAO.update(product);
+                    	Product product = item.getProduct();
+                    	// only process if item is based on a real product
+                    	if(product != null) {
+	                        Double quantityOrder = item.getQuantity();
+	                        Double quantityStock = product.getQuantity();
+	                        product.setQuantity(quantityStock - quantityOrder);
+	                        if (product.getQuantity() <= 0) {
+	                            String name = product.getName();
+	                            String cat = product.getCategories()/*.get(0)*/.getName();
+	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
+	                        }
+	                        productsDAO.update(product);
+	                        needUpdate = true;
+                    	}
                     }
                 }
                 else if (progress_old == OrderState.SHIPPED && progress != OrderState.SHIPPED) // mark as processing or lower - add to stock
                 {
                     // TODO DO THIS IN DAO!!!
                     for (DocumentItem item : items) {
-                        Product id = item.getProduct();
-                        Double quantityOrder = item.getQuantity();
-
-                        Product product = productsDAO.findById(id);
-                        Double quantityStock = product.getQuantity();
-                        product.setQuantity(quantityStock + quantityOrder);
-                        productsDAO.update(product);
+                    	Product product = item.getProduct();
+                    	// only process if item is based on a real product
+                    	if(product != null) {
+	                        Double quantityOrder = item.getQuantity();
+	                        Double quantityStock = product.getQuantity();
+	                        product.setQuantity(quantityStock + quantityOrder);
+	                        productsDAO.update(product);
+	                        needUpdate = true;
+                    	}
                     }
                 }
                 // end patch
@@ -178,6 +209,7 @@ public class MarkOrderAsActionHandler {
 
                 // also in the database
                 documentsDAO.update(document);
+                evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 
                 // Change the state also in the webshop
                 if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
@@ -192,7 +224,7 @@ public class MarkOrderAsActionHandler {
                     // It will update the state in the web shop the next time
                     // when we synchronize with the shop.
                     Map<String, Object> parameters = new HashMap<>();
-                    parameters.put(WebShopImportManager.PARAM_IS_GET_PRODUCTS, "FALSE");
+                    parameters.put(WebShopImportManager.PARAM_IS_GET_PRODUCTS, Boolean.FALSE.toString());
                     ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT, parameters);
                     /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
                     //                  webShopImportManager.prepareChangeState();
@@ -210,6 +242,11 @@ public class MarkOrderAsActionHandler {
                     //                  }
 
                 }
+                
+                if (needUpdate) {
+                    // Refresh the table view of all documents
+                    evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+                }
             }
             catch (FakturamaStoringException e) {
                 log.error(e);
@@ -226,9 +263,15 @@ public class MarkOrderAsActionHandler {
 
         OrderState progress = OrderState.NONE;
         progress = OrderState.valueOf(status);
-        @SuppressWarnings("rawtypes")
-        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-        Document[] uds = (Document[]) currentListtable.getSelectedObjects();
+        Document[] uds;
+        if(activePart.getObject() instanceof DocumentsListTable) {
+	        @SuppressWarnings("rawtypes")
+	        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
+	        uds = (Document[]) currentListtable.getSelectedObjects();
+        } else {
+        	Document doc = ((DocumentEditor)activePart.getObject()).getDocument();
+			uds = new Document[]{doc};
+        }
         for (int i = 0; i < uds.length; i++) {
             Document document = uds[i];
             // Get the document

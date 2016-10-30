@@ -61,7 +61,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
 
     @Override
     protected EventList<Debitor> getListData(boolean forceRead) {
-        return GlazedLists.eventList(debitorDAO.findAll(forceRead));
+        return GlazedLists.eventList(debitorDAO.findForListView());
     }
 
     @Override

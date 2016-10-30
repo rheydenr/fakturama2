@@ -78,7 +78,6 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
-import com.sebulli.fakturama.office.FileOrganizer.TargetFormat;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
@@ -313,7 +312,8 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	generatedPdf = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
+        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), generatedPdf.toString());
+//        	generatedPdf = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
         }
         
 

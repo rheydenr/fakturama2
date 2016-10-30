@@ -138,17 +138,16 @@ public class LifecycleManager {
 //    		}
 //    	});    	
     	
-    	
-    	
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
         if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
-//        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
-//        	if(!dbupdate) {
-//        		log.error(null, "could'nt create or update database!");
-//        		System.exit(1);
-//        	}
+        	
+        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+        	if(!dbupdate) {
+        		log.error(null, "couldn't create or update database!");
+        		System.exit(1);
+        	}
             dbInitJob = new Job("initDb") {
     
                 @Override
@@ -184,7 +183,7 @@ public class LifecycleManager {
         }
     }
 
-    @PreSave
+	@PreSave
     public final void closeAndSaveEditors(IEclipseContext context2) {
     	EHandlerService handlerService = context.get(EHandlerService.class);
     	ECommandService commandService = context.get(ECommandService.class);

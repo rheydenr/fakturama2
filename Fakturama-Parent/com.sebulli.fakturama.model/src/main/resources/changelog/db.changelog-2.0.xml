@@ -934,4 +934,44 @@
     <changeSet author="rheydenr (generated)" id="1471725654953-127" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_VOUCHERS" constraintName="FK_FKT_VOUCHERS_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
+    
+    <!-- 2016-10-23 -->
+    <changeSet author="rheydenr (generated)" id="1477248992742-01" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="FKT_PRODUCT_BLOCKPRICES">
+            <column name="PRODUCT_BLOCKPRICES" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOCKPRICES_PRODUCTBLOCKPRICE" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1477248992742-02" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createTable tableName="FKT_PRODUCTBLOCKPRICE">
+            <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="BLOCK" type="INT"/>
+            <column name="DATEADDED" type="date"/>
+            <column defaultValueNumeric="0" name="DELETED" type="BIT"/>
+            <column name="MODIFIED" type="date"/>
+            <column name="MODIFIEDBY" type="VARCHAR(255)"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="PRICE" type="DOUBLE"/>
+            <column name="VALIDFROM" type="date"/>
+            <column name="VALIDTO" type="date"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1477248992742-03" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addPrimaryKey columnNames="PRODUCT_BLOCKPRICES, BLOCKPRICES_PRODUCTBLOCKPRICE" constraintName="PRIMARY" tableName="FKT_PRODUCT_BLOCKPRICES"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1477248992742-04" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FKTPRODUCTBLOCKPRICESBLOCKPRICES_PRODUCTBLOCKPRICE" tableName="FKT_PRODUCT_BLOCKPRICES">
+            <column name="BLOCKPRICES_PRODUCTBLOCKPRICE"/>
+        </createIndex>
+    </changeSet>
+       <changeSet author="rheydenr (generated)" id="1477248992742-05" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="BLOCKPRICES_PRODUCTBLOCKPRICE" baseTableName="FKT_PRODUCT_BLOCKPRICES" constraintName="FKTPRODUCTBLOCKPRICESBLOCKPRICES_PRODUCTBLOCKPRICE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCTBLOCKPRICE"/>
+    </changeSet>
+   
 </databaseChangeLog>

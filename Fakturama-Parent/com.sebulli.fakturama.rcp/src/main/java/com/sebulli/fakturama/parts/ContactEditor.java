@@ -15,6 +15,7 @@
 package com.sebulli.fakturama.parts;
 
 
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -220,9 +221,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		 * - id (constant)
 		 * - date_added (constant)
 		 */
-		
-		// check if the same number was used.
-		thereIsOneWithSameNumber();
 
 		// at first, check the category for a new entry
         // (the user could have written a new one into the combo field)
@@ -233,6 +231,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
             // parentCategory now has the last found Category
             editorContact.setCategories(contactCategory);
         }
+		
+		// check if the same number was used.
+		if(thereIsOneWithSameNumber()) {
+			// Save is only allowed, if there is no contact with the same number
+			return;
+		}
 
 	    // check for a new contact
 		if (newContact) {
@@ -627,7 +631,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
 
 		// Gender
-		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER);
+		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboGender.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboGender.setInput(genderList);
 		comboGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
@@ -715,6 +719,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
 		txtStreet = new Text(addressGroup, SWT.BORDER);
+		txtStreet.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
 		bindModelValue(editorContact, txtStreet, Contact_.address.getName() + "." + Address_.street.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
 		setTabOrder(txtCompany, txtStreet);
@@ -1207,12 +1220,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			|| "".equals(txtStreet.getText())) return;
 		
 		// Search the list for an existing data set with the specified value
-		if(contactDAO.existsContactWithSameValues(txtName.getText()
+		Contact testContact = contactDAO.checkContactWithSameValues(txtName.getText()
 				, txtFirstname.getText()
-				, txtStreet.getText())) {
+				, txtStreet.getText());
+		if(testContact != null) {
 				isDuplicateWarningShown = true;
 				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
-						msg.editorContactWarningDuplicateStreet + " " + txtNr.getText() );
+						MessageFormat.format(msg.editorContactWarningDuplicateStreet, 
+								testContact.getFirstName(), testContact.getName(), testContact.getAddress().getStreet()));
 		}
 
 		// nothing found
@@ -1224,30 +1239,21 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * @return TRUE, if one with the same number is found
 	 */
 	private boolean thereIsOneWithSameNumber() {
-
+		isDuplicateWarningShown = true;  // so the other check isn't executed
 		// Cancel, if there is already a document with the same ID
-		if (contactDAO.existsContactWithSameNumber(txtNr.getText())) {
+		Contact testContact = contactDAO.getContactWithSameNumber(txtNr.getText());
+		if (testContact != null && testContact.getId() != editorContact.getId()) {
+			int contactFormat = preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT);
 			// Display an error message
-			MessageDialog.openError(top.getShell(), msg.dialogMessageboxTitleError, msg.editorContactErrorCustomerid + " " + txtNr.getText());
+			MessageDialog.openError(top.getShell(), msg.dialogMessageboxTitleError, 
+					MessageFormat.format(msg.editorContactErrorCustomernumber, txtNr.getText(), 
+							(contactFormat == Constants.CONTACT_FORMAT_FIRSTNAME_LASTNAME ? testContact.getFirstName() : testContact.getName() + ","),
+							(contactFormat == Constants.CONTACT_FORMAT_FIRSTNAME_LASTNAME ? testContact.getName() : testContact.getFirstName())));
 			return true;
 		}
 
 		return false;
 	}
-//
-//	/**
-//	 * Returns, if save is allowed
-//	 * 
-//	 * @return TRUE, if save is allowed
-//	 * 
-//	 * @see com.sebulli.fakturama.editors.Editor#saveAllowed()
-//	 */
-//	@Override
-//	protected boolean saveAllowed() {
-//		// Save is allowed, if there is no product with the same number
-//		return !thereIsOneWithSameNumber();
-//	}
-//	
 
 	@Override
 	protected MDirtyable getMDirtyablePart() {

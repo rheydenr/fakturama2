@@ -388,9 +388,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Exit save if there is a document with the same number
 		// already checked in saveAllowed()
-//		if (thereIsOneWithSameNumber()) {
-//			return;
-//		}
+		if (thereIsOneWithSameNumber()) {
+			return;
+		}
 
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
@@ -666,6 +666,9 @@ public class DocumentEditor extends Editor<Document> {
 		
         // Refresh the table view of all documents
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
+        if(BooleanUtils.toBoolean(document.getDeposit())) {
+        	createDepositWarningIcon();
+        }
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
@@ -976,12 +979,17 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		// Get the sign of this document ( + or -)
-//		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
 		// Get the discount value from the control element
 		Double discount = Double.valueOf(0.0);
 		if (itemsDiscount != null) {
-			discount = (Double) itemsDiscount.getValue();
+	        // Convert it to negative values
+	        Double rebate = (Double)itemsDiscount.getValue();
+			if (rebate > 0) {
+				rebate *= -1;
+				itemsDiscount.setValue(rebate);
+	        }
 		}
 		
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
@@ -1218,11 +1226,7 @@ public class DocumentEditor extends Editor<Document> {
 		} else if (isDeposit) {
 			createDepositContainer(clickedByUser);
 			
-			// Add the attention sign if its a deposit
-			warningDepositIcon = new Label(paidDataContainer, SWT.NONE);
-			warningDepositIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
-			warningDepositText = new Label(paidDataContainer, SWT.NONE);
-			warningDepositText.setText(msg.editorDocumentFieldDeposit);
+			createDepositWarningIcon();
 		}
 		// The container is created with the widgets that are shown
 		// if the invoice is not paid.
@@ -1311,13 +1315,25 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	/**
+	 * 
+	 */
+	private void createDepositWarningIcon() {
+		if(!paidDataContainer.isDisposed()) { // if the editor is about to close...
+			// Add the attention sign if its a deposit
+			warningDepositIcon = new Label(paidDataContainer, SWT.NONE);
+			warningDepositIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
+			warningDepositText = new Label(paidDataContainer, SWT.NONE);
+			warningDepositText.setText(msg.editorDocumentFieldDeposit);
+		}
+	}
+
+	/**
 	 * @param clickedByUser
 	 */
 	private void createDepositContainer(boolean clickedByUser) {
 		// Create the widget for the date, when the invoice was paid
 		Label paidDateLabel = new Label(paidDataContainer, SWT.NONE);
 		paidDateLabel.setText(msg.editorDocumentPaidat);
-		//T: Tool Tip Text
 		paidDateLabel.setToolTipText(msg.editorDocumentDateofpayment);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidDateLabel);
@@ -1328,30 +1344,29 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(dtPaidDate);
 
 		// Set the paid date to the documents "paydate" parameter
-		dtPaidDate.setSelection(document.getPayDate());
-
 		bindModelValue(document, dtPaidDate, Document_.payDate.getName());
 
 		// Create the widget for the value
 		Label paidValueLabel = new Label(paidDataContainer, SWT.NONE);
 		
-		//T: Label in the document editor
 		paidValueLabel.setText(msg.commonFieldValue);
 		paidValueLabel.setToolTipText(msg.editorDocumentPaidvalue);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidValueLabel);
-
-		// If it's the first time that this document is marked as paid
-		// (if the value is 0.0), then also set the date to "today"
-		if ((document.getPaidValue() == null || document.getPaidValue() == 0) && clickedByUser) {
-		    document.setPaidValue(total.getNumber().doubleValue());
-			dtPaidDate.setSelection(Calendar.getInstance().getTime());
-		}
 		FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
-//		txtPayValue.setValue(paidValue);
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
+
+		// If it's the first time that this document is marked as paid
+		// (if the value is 0.0), then also set the date to "today"
+		if ((document.getPaidValue() == null || document.getPaidValue() == 0) && clickedByUser) {
+			txtPayValue.setValue(total.getNumber().doubleValue());
+			dtPaidDate.setSelection(Calendar.getInstance().getTime());
+			
+			// FIXME This is only because the CDateTime widget doesn't fire an event on setSelection
+			document.setPayDate(dtPaidDate.getSelection());
+		}
 	}
 	
     /**
@@ -1419,6 +1434,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
+        	document.setItemsRebate(contact.getDiscount());
         }
 		// Check, if the payment is valid
 		Payment paymentid = contact.getPayment();
@@ -2273,6 +2289,7 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.setFormatter(new PercentFormatter());
             	itemsDiscount.setValue(document.getItemsRebate());
             	itemsDiscount.getControl().setToolTipText(discountLabel.getToolTipText());
+            	bindModelValue(document, itemsDiscount, Document_.itemsRebate.getName(), 5);
             	GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsDiscount.getControl());
     
             	// Set the tab order
@@ -2282,7 +2299,6 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
             			calculate();
-    //						itemsDiscount.setText(DataUtils.DoubleToFormatedPercent(DataUtils.StringToDoubleDiscount(itemsDiscount.getValue())));
     
             		}
             	});
@@ -2291,7 +2307,6 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addKeyListener(new KeyAdapter() {
             		public void keyPressed(KeyEvent e) {
             			if (e.keyCode == 13) {
-    //							itemsDiscount.getValue();
             				calculate();
             			}
             		}
@@ -2328,6 +2343,8 @@ public class DocumentEditor extends Editor<Document> {
             		if (!structuredSelection.isEmpty()) {
             			// Get first selected element.
             			shipping = (Shipping) structuredSelection.getFirstElement();
+            			clearManualShipping(document);
+            			document.setShipping(shipping);
     
             			// Update the shipping VAT
     //						shippingVat = shipping.getShippingVat();
@@ -2336,6 +2353,15 @@ public class DocumentEditor extends Editor<Document> {
             			calculate();
             		}
             	}
+
+				private void clearManualShipping(Document document) {
+					document.getAdditionalInfo().setShippingAutoVat(null);
+					document.getAdditionalInfo().setShippingDescription(null);
+					document.getAdditionalInfo().setShippingName(null);
+					document.getAdditionalInfo().setShippingValue(null);
+					document.getAdditionalInfo().setShippingVatDescription(null);
+					document.getAdditionalInfo().setShippingVatValue(null);
+				}
             });
     
             // Fill the shipping combo with the shipping values.
@@ -2687,6 +2713,11 @@ public class DocumentEditor extends Editor<Document> {
         item.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+            	// at first try to save if document wasn't saved
+            	if(getMDirtyablePart().isDirty()) {
+            		doSave(null);
+            	}
+            	
                 params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
                 ParameterizedCommand pCmdCopy = cmdService.createCommand(commandId, params);
                 if (handlerService.canExecute(pCmdCopy)) {

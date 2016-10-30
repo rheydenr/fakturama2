@@ -14,10 +14,13 @@
 
 package com.sebulli.fakturama.misc;
 
+import java.awt.Desktop;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.eclipse.core.internal.registry.osgi.OSGIUtils;
 import org.eclipse.swt.SWT;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * These are the OS-dependent settings.
@@ -94,7 +97,7 @@ public class OSDependent {
 			return getProgramFolder() + "libreoffice";
 
 		if (isWin())
-			return getProgramFolder() + "LibreOffice.org 4";
+			return getProgramFolder() + "LibreOffice.org 5";
 
 		return "";
 

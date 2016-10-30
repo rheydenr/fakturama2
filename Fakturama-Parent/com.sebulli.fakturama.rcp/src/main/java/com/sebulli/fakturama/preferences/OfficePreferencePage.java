@@ -30,6 +30,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OSDependent;
+import com.sebulli.fakturama.office.TargetFormat;
 
 /**
  * Preference page for the Office settings
@@ -89,11 +90,11 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, msg.preferencesOfficeExportasLabel, 3, new String[][] { 
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
-				{ msg.preferencesOfficeOdtpdfOnlyodt, "ODT" },
+				{ msg.preferencesOfficeOdtpdfOnlyodt, TargetFormat.ODT.getPrefId() },
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
-				{ msg.preferencesOfficeOdtpdfOnlypdf, "PDF" },
+				{ msg.preferencesOfficeOdtpdfOnlypdf, TargetFormat.PDF.getPrefId() },
 				//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
-				{ msg.preferencesOfficeOdtpdfBoth, "ODT+PDF" } },
+				{ msg.preferencesOfficeOdtpdfBoth, TargetFormat.ODT.getPrefId() + "+" + TargetFormat.PDF.getPrefId()} },
 				getFieldEditorParent()));
 
 		//T: Preference page "Office" 
@@ -101,7 +102,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Office" 
 		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathPdf, getFieldEditorParent()));
 
-		addField(new StringFieldEditor(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathAdditionalpdf, getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathAdditionalpdf, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENPDF, msg.preferencesOfficeExportasOpenaction, getFieldEditorParent()));
 		
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"
@@ -146,7 +147,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, "ODT+PDF");
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, TargetFormat.ODT.getPrefId() + "+" + TargetFormat.PDF.getPrefId());
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, "ODT/{yyyy}/{doctype}/{docname}_{address}.odt");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "PDF/{yyyy}/{doctype}/{docname}_{address}.pdf");
 		node.setDefault(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, "");

@@ -225,7 +225,7 @@ public class Price {
 		// If the discount is -30% (-0.3), the discount factor is 0.7
 		// Only discount values in the range -100% to -0% are allowed
 		Double discountFactor = (1 + this.discount);
-		if ((discountFactor > Double.valueOf(1.0)) || (discountFactor <= Double.valueOf(0.0))) {
+		if ((discountFactor > Double.valueOf(1.0)) || (discountFactor < Double.valueOf(0.0))) {
 // TODO			Logger.logError("Discount value out of range: " + String.valueOf(this.discount));
 			discountFactor = Double.valueOf(1.0);
 		}

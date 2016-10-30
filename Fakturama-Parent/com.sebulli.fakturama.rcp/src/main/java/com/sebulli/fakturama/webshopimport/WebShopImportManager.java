@@ -18,9 +18,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -45,6 +49,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -59,6 +64,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
@@ -78,6 +84,11 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 public class WebShopImportManager implements IWebshopConnection {
 	
     /**
+	 * 
+	 */
+	private static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
+
+	/**
      * Prepare the web shop import to request products and orders or to change
      * the state of an order.
      */
@@ -233,7 +244,9 @@ public class WebShopImportManager implements IWebshopConnection {
 		if (getOrderstosynchronize().isEmpty())
 			return;
 
-		try (Writer writer = new FileWriter(getGeneralWorkspace() + "/orders2sync.txt")) {
+		Path orders2sync = Paths.get(getGeneralWorkspace(), FILENAME_ORDERS2SYNC);
+
+		try (Writer writer = Files.newBufferedWriter(orders2sync)) {
 			getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
 		}
 		catch (IOException e) {
@@ -288,7 +301,8 @@ public class WebShopImportManager implements IWebshopConnection {
     @Override
 	public void readOrdersToSynchronize() {
         setOrderstosynchronize(new Properties());
-        try (Reader reader = new FileReader(getGeneralWorkspace() + "/orders2sync.txt")) {
+        Path orders2sync = Paths.get(getGeneralWorkspace(), FILENAME_ORDERS2SYNC);
+        try (InputStream reader = Files.newInputStream(orders2sync)) {
             getOrderstosynchronize().load(reader);
         } catch (FileNotFoundException fnex) {
             //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");

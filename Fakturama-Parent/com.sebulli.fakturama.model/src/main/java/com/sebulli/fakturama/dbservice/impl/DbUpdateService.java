@@ -27,6 +27,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.prefs.Preferences;
 
 import com.sebulli.fakturama.common.Activator;
+import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 
 import liquibase.Contexts;
@@ -52,6 +53,8 @@ public class DbUpdateService implements IDbUpdateService {
 	@Override
 	public boolean updateDatabase() {
 		boolean retval = true;
+		// get the preferences for this application from common plugin
+		this.eclipsePrefs = Activator.getPreferences();
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		try (java.sql.Connection connection = openConnection(context);) {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
@@ -68,12 +71,12 @@ public class DbUpdateService implements IDbUpdateService {
 	 * @param context 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private Connection openConnection(BundleContext context) {
 		Connection conn = null;
-		// get the preferences for this application from common plugin
-		this.eclipsePrefs = Activator.getPreferences();
 		try {
-			ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "")+")");
+			ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(
+					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "")+")");
 			ServiceReference<DataSourceFactory> serviceReference;
 			if(allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
@@ -85,7 +88,21 @@ public class DbUpdateService implements IDbUpdateService {
 		    prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
 		    prop.put(DataSourceFactory.JDBC_USER, eclipsePrefs.get(PersistenceUnitProperties.JDBC_USER, "fakturama"));
 		    prop.put(DataSourceFactory.JDBC_PASSWORD, eclipsePrefs.get(PersistenceUnitProperties.JDBC_PASSWORD, "fakturama"));
-		    			
+	    	
+			String dataSource = (String)prop.get(DataSourceFactory.JDBC_URL);
+			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
+				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
+				if(allServiceReferences.length > 0) {
+					ServiceReference<IActivateDbServer> serviceDbRef;
+					serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
+					prop.put("hsqlfiledb", eclipsePrefs.get("hsqlfiledb", ""));
+					Properties activateProps= context.getService(serviceDbRef).activateServer(prop);
+					eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL, String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
+					prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
+					eclipsePrefs.put("hsqlfiledb", (String) activateProps.get("hsqlfiledb"));
+				}
+			}
+
 			conn = context.getService(serviceReference).createDataSource(prop).getConnection();
 		} catch (SQLException ex) {
 		    // handle any errors
@@ -98,5 +115,4 @@ public class DbUpdateService implements IDbUpdateService {
 		}
 		return conn;
 	}
-
 }

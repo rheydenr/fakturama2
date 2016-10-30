@@ -8,9 +8,13 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -20,6 +24,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
@@ -34,7 +39,7 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
+//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
@@ -74,28 +79,38 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         return findAll(false);
     }
     
+    public List<Debitor> findForListView() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
+        Root<Debitor> debitor = query.from(getEntityClass());
+        query.select(debitor).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
+        TypedQuery<Debitor> q = getEntityManager().createQuery(query);
+        q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+        return q.getResultList();
+    }
+    
     @Override
     public List<Debitor> findAll(boolean forceRead) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Debitor> criteria = cb.createQuery(getEntityClass());
-        Root<Debitor> root = criteria.from(getEntityClass());
+        CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
+        Root<Debitor> root = query.from(getEntityClass());
         /*
          * Since referenced contacts are stored as own data set we have to
          * test for NULL customer number. If customer number is NULL we have
          * an alternate contact which belongs to a "legal" contact and thus we 
          * don't have to show them up.
          */
-        CriteriaQuery<Debitor> cq = criteria.where(
+        query.where(
                 cb.and(
                         cb.not(root.get(Debitor_.deleted)),
                         cb.isNotNull(root.get(Debitor_.customerNumber))
                         )
                 );
-        TypedQuery<Debitor> query = getEntityManager().createQuery(cq);
+        TypedQuery<Debitor> q = getEntityManager().createQuery(query);
         if(forceRead) {
-            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
         }
-        return query.getResultList();
+        return q.getResultList();
     }
 
     /**

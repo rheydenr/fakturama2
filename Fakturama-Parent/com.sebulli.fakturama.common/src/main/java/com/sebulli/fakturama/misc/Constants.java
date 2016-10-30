@@ -346,10 +346,11 @@ public class Constants {
      */
     public static final String PREFERENCES_CONTACT_USE_COMPANY = "CONTACT_USE_COMPANY";
 
-    /**
-     * 
-     */
+    /** The Constant PREFERENCES_CONTACT_NAME_FORMAT. */
     public static final String PREFERENCES_CONTACT_NAME_FORMAT = "CONTACT_NAME_FORMAT";
+    
+    public static final int CONTACT_FORMAT_FIRSTNAME_LASTNAME = 0;
+    public static final int CONTACT_FORMAT_LASTNAME_FIRSTNAME = 1;
 
     /**
      * 

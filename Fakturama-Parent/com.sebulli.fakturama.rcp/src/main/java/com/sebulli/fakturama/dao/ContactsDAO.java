@@ -34,7 +34,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
+//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
             @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
     private EntityManager em;
 
@@ -108,18 +108,22 @@ public class ContactsDAO extends AbstractDAO<Contact> {
 	 * @param street
 	 * @return
 	 */
-	public boolean existsContactWithSameValues(String name, String firstName, String street) {
+	public Contact checkContactWithSameValues(String name, String firstName, String street) {
 		Set<Predicate> restrictions = new HashSet<>();
+		Contact retval = null;
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
         Root<Contact> root = query.from(getEntityClass());
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
-        restrictions.add(cb.equal(root.get(Contact_.address.getName() + "." +Address_.street.getName()), StringUtils.defaultString(street)));
+        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
         CriteriaQuery<Contact> select = query.select(root);
         select.where(restrictions.toArray(new Predicate[]{}));
         List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
-		return !resultList.isEmpty();
+        if(!resultList.isEmpty()) {
+        	retval = resultList.get(0);
+        }
+		return retval;
 	}
 
 	/**
@@ -128,15 +132,18 @@ public class ContactsDAO extends AbstractDAO<Contact> {
 	 * @param contactNumber 
 	 * @return
 	 */
-	public boolean existsContactWithSameNumber(String contactNumber) {
+	public Contact getContactWithSameNumber(String contactNumber) {
 		Set<Predicate> restrictions = new HashSet<>();
+		Contact retval = null;
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
         Root<Contact> root = query.from(getEntityClass());
         restrictions.add(cb.equal(root.get(Contact_.customerNumber), StringUtils.defaultString(contactNumber)));
-        CriteriaQuery<Contact> select = query.select(root);
-        select.where(restrictions.toArray(new Predicate[]{}));
-        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
-		return !resultList.isEmpty();
+        CriteriaQuery<Contact> q = query.select(root).where(restrictions.toArray(new Predicate[]{}));
+        List<Contact> resultList = getEntityManager().createQuery(q).getResultList();
+        if(!resultList.isEmpty()) {
+        	retval = resultList.get(0);
+        }
+		return retval;
 	}	
 }

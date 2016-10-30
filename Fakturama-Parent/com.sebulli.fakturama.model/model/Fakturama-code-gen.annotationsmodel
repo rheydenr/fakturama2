@@ -268,13 +268,14 @@
             <joinColumn name="FK_CONTACT"/>
             <inverseJoinColumn name="FK_CATEGORY"/>
           </joinTable>
+          <manyToOne/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/address"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_ADDRESS" nullable="true"/>
-          <manyToOne fetch="EAGER">
+          <manyToOne>
             <cascade>
               <cascadePersist/>
               <cascadeMerge/>
@@ -287,7 +288,16 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/alternateContacts"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" description="" documentation="The alternate address(es) of this contact. There could be more than one entry per contact. At the moment there's only one contact possible!!!" name="deliveryContact" getter="getAlternateContacts" defaultValue="null" setter="setAlternateContacts" validJavaMemberName="alternateContacts" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="false"/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="" nullable="true"/>
+          <manyToOne>
+            <cascade>
+              <cascadePersist/>
+              <cascadeMerge/>
+              <cascadeRefresh/>
+            </cascade>
+          </manyToOne>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/discount"/>
@@ -354,6 +364,7 @@
         <eReference href="Fakturama.ecore#//Contact/bankAccount"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_BANKACCOUNT"/>
+          <manyToOne/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>

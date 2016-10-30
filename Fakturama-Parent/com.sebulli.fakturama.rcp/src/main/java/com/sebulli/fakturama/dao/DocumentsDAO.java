@@ -115,7 +115,7 @@ public List<Document> findAll(boolean forceRead) {
     CriteriaQuery<Document> cq = criteria.where(cb.not(root.get(Document_.deleted)));
     TypedQuery<Document> query = getEntityManager().createQuery(cq);
     if(forceRead) {
-        query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
         query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
     }
     return query.getResultList();
@@ -534,22 +534,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         Root<Document> root = criteria.from(Document.class);
         criteria.set(Document_.transactionId, mainDocument.getTransactionId()).where(root.get(Document_.id).in(importedDeliveryNotes));
         executeCriteria(criteria);
-    }
-
-    /**
-     * Tests if an other entity with the same name exists.
-     * 
-     * @param document the {@link Document} to test
-     * @return 
-     */
-    public boolean existsOther(Document document) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
-        Root<Document> root = criteria.from(Document.class);
-        CriteriaQuery<Document> cq = criteria.where(
-                cb.and(cb.notEqual(root.<Long>get(Document_.id), document.getId()),
-                       cb.equal(root.<String>get(Document_.name), document.getName())));
-        return !getEntityManager().createQuery(cq).getResultList().isEmpty();
     }
 
     /**

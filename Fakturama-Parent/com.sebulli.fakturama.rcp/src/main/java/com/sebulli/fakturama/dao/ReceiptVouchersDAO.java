@@ -22,6 +22,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.model.Voucher;
@@ -85,7 +86,7 @@ public class ReceiptVouchersDAO extends AbstractDAO<Voucher> {
 								cb.equal(root.get(Voucher_.voucherType), VoucherType.RECEIPTVOUCHER)))
 				);
         if(forceRead) {
-            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
         }
 		return query.getResultList();
     }

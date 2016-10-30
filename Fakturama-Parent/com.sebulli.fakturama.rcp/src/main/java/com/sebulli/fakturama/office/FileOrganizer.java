@@ -63,43 +63,6 @@ public class FileOrganizer {
 		WITH_EXTENSION,
 	}
 	
-	enum TargetFormat {
-		PDF(".pdf", "PDF"), 
-		ODT(".odt", "ODT"), 
-		ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF");
-		
-		String extension, prefId;
-
-		/**
-		 * The Constructor.
-		 *
-		 * @param extension the extension
-		 * @param prefId the pref id
-		 */
-		private TargetFormat(String extension, String prefId) {
-			this.extension = extension;
-			this.prefId = prefId;
-		}
-
-		/**
-		 * The extension for this {@link TargetFormat} with leading dot and in lower case.
-		 * @return the extension
-		 */
-		public final String getExtension() {
-			return extension;
-		}
-
-		/**
-		 * Gets the preference id (used for preferences queries).
-		 *
-		 * @return the prefId
-		 */
-		public final String getPrefId() {
-			return prefId;
-		}
-		
-	}
-
 	@Deprecated
 	final public static boolean WITH_FILENAME = true;
 	@Deprecated

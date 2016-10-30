@@ -25,12 +25,10 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -508,19 +506,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     }
 
     /**
-     * Set the category filter
-     * 
-     * @param filter
-     *            The new filter string
-     * 
-     * @deprecated use {@link #setCategoryFilter(String, TreeObjectType)}
-     *             instead
-     */
-    public void setCategoryFilter(String filter) {
-        setCategoryFilter(filter, TreeObjectType.DEFAULT_NODE);
-    }
-
-    /**
      * Set the category filter with a given {@link TreeObjectType}.
      * 
      * @param filter
@@ -606,9 +591,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         listTablePart.getMenus()
                 .stream()
                 .filter(menu -> menu.getElementId().contentEquals(POPUP_ID))
-                .forEach(
-                        popupMenu -> popupMenu.getChildren().stream().filter(entry -> entry.getTags().contains("orderActive"))
-                                .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.ORDER
+                .forEach(popupMenu -> popupMenu.getChildren().stream()
+                		.filter(entry -> entry.getTags().contains("orderActive"))
+                        .forEach(foundEntry -> foundEntry.setVisible(documentType == DocumentType.ORDER
                                 || selectedObjectType == BillingType.ORDER)));
         listTablePart.getMenus()
                 .stream()
