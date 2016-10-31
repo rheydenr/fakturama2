@@ -57,7 +57,7 @@ public class VatSummarySetManager {
 		// This will add all the entries to the VatSummarySet
 		new DocumentSummaryCalculator().calculate(vatSummarySet, document.getItems(), 
 				Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
-				document.getShipping().getShippingVat(),
+				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
 				document.getShippingAutoVat(), Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), document.getNoVatReference(),
  			        scaleFactor, document.getNetGross(), deposit);
 	}

@@ -1027,7 +1027,7 @@ public class DocumentEditor extends Editor<Document> {
         } else {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
                     document.getShippingValue()/* * sign*/,
-                    shipping.getShippingVat(), 
+                    null, 
                     document.getShippingAutoVat(), 
                     discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         }
@@ -2369,7 +2369,7 @@ public class DocumentEditor extends Editor<Document> {
             comboViewerShipping.setInput(allShippings);
     
             // Get the documents'shipping values.
-//            shipping = document.getShipping();
+    //        shipping = document.getShipping();
     //			shippingVat = document.getShipping().getShippingVat();
     //			shippingAutoVat = document.getShippingAutoVat();
     //			shippingVatDescription = shippingVat.getDescription();

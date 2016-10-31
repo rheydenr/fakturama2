@@ -15,6 +15,7 @@ package com.sebulli.fakturama.handlers;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,6 +30,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -58,6 +60,9 @@ public class MarkDocumentAsPaidHandler {
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     private DocumentsDAO documentsDAO;
@@ -91,23 +96,21 @@ public class MarkDocumentAsPaidHandler {
      */
     @Execute
     public void handleMarkDocument(@Optional @Named(PARAM_INVOICEID) String objId, 
-            @Named(PARAM_STATUS) String status, @Active MPart activePart, 
+            @Named(PARAM_STATUS) String status, 
             IEventBroker evtBroker) {
 
-        @SuppressWarnings("rawtypes")
-        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-        Document[] selectedObjects = (Document[]) currentListtable.getSelectedObjects();
+    	@SuppressWarnings("unchecked")
+		List<Document> selectedObjects = (List<Document>)selectionService.getSelection();
         if (selectedObjects != null) {
             // TODO DO THIS IN DAO!!!
-            for (int i = 0; i < selectedObjects.length; i++) {
+            for (Document document : selectedObjects) {
                 // If we had a selection let's change the state
-                Document document = selectedObjects[i];
                 DocumentType docType = DocumentType.findByKey(document.getBillingType().getValue());
                 // Do it only if it is allowed to mark this kind of document as paid.
                 if (docType.canBePaid()) {
                     // change the state
                     try {
-                        document = documentsDAO.findById(document.getId(), true);
+                        document = documentsDAO.findById(document.getId(), true);  // otherwise the document isn't updated :-(
                         document.setPaid(StringUtils.equals(status, "PAID"));
                         document.setPayDate(Calendar.getInstance().getTime());
 
@@ -115,12 +118,12 @@ public class MarkDocumentAsPaidHandler {
                         documentsDAO.update(document);
                         
                         // Refresh the corresponding table view
-                        evtBroker.post(DocumentEditor.EDITOR_ID, "update");
                     } catch (FakturamaStoringException e) {
                         log.error(e);
                     }
                 }
             }
+            evtBroker.post(DocumentEditor.EDITOR_ID, "update");
         }
     }
 }

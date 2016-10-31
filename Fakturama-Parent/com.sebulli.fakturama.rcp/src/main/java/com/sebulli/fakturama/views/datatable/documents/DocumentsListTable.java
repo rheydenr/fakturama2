@@ -313,6 +313,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
             }
         });
         
+        gridLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+        
         E4SelectionListener<Document> esl = new E4SelectionListener<>(selectionService, gridLayer.getSelectionLayer(), gridLayer.getBodyDataProvider());
         gridLayer.getSelectionLayer().addLayerListener(esl);
 

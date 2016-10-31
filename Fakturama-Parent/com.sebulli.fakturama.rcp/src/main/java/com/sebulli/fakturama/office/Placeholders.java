@@ -683,8 +683,8 @@ public class Placeholders {
 		if (key.equals("SHIPPING.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingVat());
 		if (key.equals("SHIPPING.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingGross());
 //		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
-		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping().getDescription();
-		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping().getShippingVat().getDescription();
+		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : "";
+		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();
 
 

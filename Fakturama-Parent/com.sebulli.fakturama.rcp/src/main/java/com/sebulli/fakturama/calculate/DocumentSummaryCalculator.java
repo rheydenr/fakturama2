@@ -44,8 +44,10 @@ public class DocumentSummaryCalculator {
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
         MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
-        return calculate(null, dataSetDocument.getItems(), Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(Double.valueOf(0.0)), dataSetDocument.getShipping().getShippingVat(), 
-                dataSetDocument.getShipping().getAutoVat(), Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(Double.valueOf(0.0)), noVatReference, 
+        return calculate(null, dataSetDocument.getItems(), Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(Double.valueOf(0.0)), 
+        		dataSetDocument.getShipping() != null ? dataSetDocument.getShipping().getShippingVat() : null, 
+                dataSetDocument.getShipping() != null ? dataSetDocument.getShipping().getAutoVat() : null, 
+                Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(Double.valueOf(0.0)), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
     
@@ -243,12 +245,12 @@ public class DocumentSummaryCalculator {
 
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
-		Double shippingVatPercent = shippingVat.getTaxValue();
-		String shippingVatDescription = shippingVat.getDescription();
+		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : 0.0;
+		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : "";
 
 		// If shippingAutoVat is not fix, the shipping vat is 
 		// an average value of the vats of the items.
-		if (!shippingAutoVat.isSHIPPINGVATFIX()) {
+		if (shippingAutoVat != null && !shippingAutoVat.isSHIPPINGVATFIX()) {
 
 			// If the shipping is set as gross value, calculate the net value.
 			// Use the average vat of all the items.

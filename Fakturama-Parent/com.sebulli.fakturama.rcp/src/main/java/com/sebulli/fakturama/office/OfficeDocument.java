@@ -312,8 +312,16 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), generatedPdf.toString());
-//        	generatedPdf = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
+        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), generatedPdf.getFileName().toString());
+			try {
+				if (Files.notExists(documentPath.getParent())) {
+					Files.createDirectories(documentPath.getParent());
+				}
+				Files.copy(generatedPdf, documentPath);
+			} catch (IOException e) {
+				log.error(e);
+			}
+			//        	generatedPdf = createPdf(documentPath, TargetFormat.ADDITIONAL_PDF);
         }
         
 

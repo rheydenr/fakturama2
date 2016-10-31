@@ -426,8 +426,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		} else {
 			editorContact.setAlternateContacts(createNewContact(modelFactory));
 			
-			// country is determined by locale
-			editorContact.getAlternateContacts().getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());
+			// country is determined by origin address or by locale
+			editorContact.getAlternateContacts().getAddress().setCountryCode(
+					editorContact.getAddress() != null 
+						? editorContact.getAddress().getCountryCode() 
+						: LocaleUtil.getInstance().getDefaultLocale().getCountry()); 
 			rebindEditor();
 		}
 	}
@@ -752,7 +755,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
 
-		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER);
+		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
 		comboCountry.setInput(countryNames);
@@ -797,7 +800,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
 
 		// Delivery Gender
-		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER);
+		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
         comboDeliveryGender.setInput(genderList);
         comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
@@ -866,7 +869,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelDeliveryCountry.setText(msg.commonFieldCountry);
 		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
-		comboDeliveryCountry = new ComboViewer(useCountry ? deliveryGroup : invisible, SWT.BORDER);
+		comboDeliveryCountry = new ComboViewer(useCountry ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
@@ -886,6 +889,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		dtDeliveryBirthday.setFormat(CDT.DATE_MEDIUM);
 		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
 		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
+		if(editorContact.getAlternateContacts() != null) {
+			rebindEditor();
+		}
 
 		// Controls in the tab "Bank"
 
