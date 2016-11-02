@@ -878,7 +878,7 @@ public class Placeholders {
      * @param percent
      * @return
      */
-    private String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
+    public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
 	    String paymenttext = document.getPayment().getPaidText();
 	    paymenttext = paymenttext.replace("<PAID.VALUE>", DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()));
 	    paymenttext = paymenttext.replace("<PAID.DATE>", DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));

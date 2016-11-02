@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_hQWO0J_AEea9BuI3yqpJ7A">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9tzG4J_AEea9BuI3yqpJ7A" featurename="children" parentElementId="menu:main.menu.extra.id" positionInList="last">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_Dmcf0J_CEea9BuI3yqpJ7A" elementId="menu:org.fakturama.exporter.zugferd.handledmenuitem.zf" label="%zugferd.export.command.title" command="_JEyX0J_CEea9BuI3yqpJ7A"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_n875AKB4Eea64snEycdazA" featurename="commands" parentElementId="org.eclipse.e4.ide.application">
+    <elements xsi:type="commands:Command" xmi:id="_JEyX0J_CEea9BuI3yqpJ7A" elementId="org.fakturama.exporter.zugferd.command.zfcmd" commandName="%zugferd.export.command.title"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6m0lQKB4Eea64snEycdazA" featurename="handlers" parentElementId="org.eclipse.e4.ide.application">
+    <elements xsi:type="commands:Handler" xmi:id="_L7W8UJ_CEea9BuI3yqpJ7A" elementId="org.fakturama.exporter.zugferd.handler.0" contributionURI="bundleclass://org.fakturama.exporter.zugferd/org.fakturama.export.zugferd.ZugferdExporter" command="_JEyX0J_CEea9BuI3yqpJ7A"/>
+  </fragments>
+</fragment:ModelFragments>

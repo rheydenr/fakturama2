@@ -992,7 +992,6 @@ public class DocumentEditor extends Editor<Document> {
 	        }
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
 		// unwrap DocumentItemDTOs at first
 		List<DocumentItem> docItems = new ArrayList<>();
 		if(itemListTable != null) {
@@ -1013,6 +1012,7 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
 //        documentSummary = documentSummaryCalculator.calculate(null, docItems,
 //                document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
 //                document.getShipping() != null ? document.getShipping().getShippingVat() : shipping.getShippingVat(), 

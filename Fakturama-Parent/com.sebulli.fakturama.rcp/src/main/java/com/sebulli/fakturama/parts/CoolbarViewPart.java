@@ -345,7 +345,6 @@ public class CoolbarViewPart {
 			log.error(e1, "Fehler!");
 		}
 		item.addSelectionListener(new SelectionAdapter() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (handlerService.canExecute(pCmd)) {

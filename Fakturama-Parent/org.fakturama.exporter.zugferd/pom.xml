@@ -1,0 +1,114 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.fakturama.export.zugferd</groupId>
+  <artifactId>pdfa3manager</artifactId>
+  <version>0.4-SNAPSHOT</version>
+  <description>This module manages the PDF/A3 conversion for ZUGFeRD. It includes the combining of an ZUGFeRD-invoice.xml file and a PDF/A-1 document into a PDF/A-3 document. Furthermore, it includes an extractor which can extract the  ZUGFeRD-invoice.xml from a valid PDF/A-3 document.</description>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      
+<!-- generate schema file for entities
+     generate JAXB classes for entities -->
+
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.9.0</version>
+                <configuration>
+                    <extension>true</extension>
+                    <forceRegenerate>false</forceRegenerate>
+                    <args>
+                        <arg>-Xfluent-api</arg>
+                        <arg>-Xannotate</arg>
+                        <arg>-npa</arg>
+                    </args>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics</artifactId>
+                            <version>0.6.5</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics-annotate</artifactId>
+                            <version>0.6.5</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>net.java.dev.jaxb2-commons</groupId>
+                            <artifactId>jaxb-fluent-api</artifactId>
+                            <version>2.1.8</version>
+                        </plugin>
+                    </plugins>
+                    <verbose>true</verbose>
+                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
+                    <!-- xjb doesn't work :-(  --> <bindingDirectory>src/main/resources</bindingDirectory>
+                    <generateDirectory>src-gen/main/java</generateDirectory>
+                    <encoding>UTF-8</encoding>
+                    <generatePackage>org.fakturama.export.zugferd.modelgen</generatePackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!-- alternative
+           <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                
+                    <extension>true</extension>
+                    <forceRegenerate>false</forceRegenerate>
+                  
+                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
+                    <schemaFiles>ZUGFeRD_1p0.xsd</schemaFiles>
+                    <outputDirectory>src-gen/main/java</outputDirectory>
+                    <bindingDirectory>src/main/resources</bindingDirectory>
+                    <packageName>com.sebulli.fakturama.zugferd.modelgen</packageName>
+                </configuration>
+            </plugin>
+ -->
+    </plugins>
+  </build>
+   <!-- To use the report goals in your POM or parent POM -->
+  <reporting>
+    <plugins>
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>3.0.4-SNAPSHOT</version>
+      </plugin>
+    </plugins>
+  </reporting>
+  
+  <name>ZUGFeRD PDF/A-3-Manager</name>
+</project>

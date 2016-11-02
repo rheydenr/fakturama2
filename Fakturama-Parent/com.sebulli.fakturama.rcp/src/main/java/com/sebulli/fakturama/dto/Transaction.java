@@ -16,7 +16,6 @@ package com.sebulli.fakturama.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
