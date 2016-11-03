@@ -90,6 +90,7 @@ import com.sebulli.fakturama.parts.widget.FakturamaPictureControl;
 import com.sebulli.fakturama.parts.widget.GrossText;
 import com.sebulli.fakturama.parts.widget.NetText;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -146,6 +147,7 @@ public class ProductEditor extends Editor<Product> {
 	private Combo comboVat;
 	private FormattedText textWeight;
 	private FormattedText textQuantity;
+	private FormattedText costPrice;
 	private Text textQuantityUnit;
 	private ComboViewer comboViewer;
 	private Combo comboCategory;
@@ -158,9 +160,9 @@ public class ProductEditor extends Editor<Product> {
 	private NetText[] netText = new NetText[NUMBER_OF_PRICES];
 	private GrossText[] grossText = new GrossText[NUMBER_OF_PRICES];
 	private MonetaryAmount[] net;
-	MonetaryAmount defaultPrice = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
-//	Double defaultPrice = Double.valueOf(0.0);
+	private MonetaryAmount defaultPrice = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
 	private int scaledPrices;
+	
 
 	// These flags are set by the preference settings.
 	// They define if elements of the editor are displayed or not.
@@ -611,7 +613,7 @@ public class ProductEditor extends Editor<Product> {
 
 		// If there is a net and gross column, and 2 columns for the quantity
 		// there are 2 cells in the top left corner, that are empty
-		if ((scaledPrices >= 2) && useNet && useGross) {
+		if (scaledPrices >= 2 && useNet && useGross) {
 			new Label(pricetable, SWT.NONE);
 			new Label(pricetable, SWT.NONE);
 		}
@@ -710,13 +712,17 @@ public class ProductEditor extends Editor<Product> {
 		}
 
 		// Set the tab order
-//		if (scaledPrices >= 2)
-//			setTabOrder(textDescription, textBlock[0]);
-//		else if (useNet)
-//			setTabOrder(textDescription, netText[0].getNetText().getControl());
-//		else
-//			setTabOrder(textDescription, grossText[0].getGrossText().getControl());
 		setTabOrder(textDescription, nextWidget);
+		
+		// cost price (ALWAYS a net price!
+		Label labelCostPrice = new Label(productDescGroup, SWT.NONE);
+		labelCostPrice.setText(msg.editorProductFieldCostprice);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCostPrice);
+		costPrice = new FormattedText(productDescGroup, SWT.BORDER);
+		costPrice.setFormatter(new MoneyFormatter());
+		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);

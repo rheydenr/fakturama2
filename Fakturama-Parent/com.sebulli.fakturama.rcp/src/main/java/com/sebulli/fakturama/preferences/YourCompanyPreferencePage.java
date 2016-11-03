@@ -108,14 +108,6 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, msg.pageCompanyCreditorid, getFieldEditorParent()));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-	    return msg.pageCompany;
-	}
-
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 

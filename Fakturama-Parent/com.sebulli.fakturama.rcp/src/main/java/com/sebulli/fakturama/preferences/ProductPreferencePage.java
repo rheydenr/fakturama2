@@ -94,14 +94,6 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		//T: Preference page "Product" - Label "Use product picture"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_PICTURE, msg.preferencesProductUsepicture, getFieldEditorParent()));
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-	    return msg.preferencesProduct;
-	}
 	
 	/**
 	 * Write or read the preference settings to or from the data base

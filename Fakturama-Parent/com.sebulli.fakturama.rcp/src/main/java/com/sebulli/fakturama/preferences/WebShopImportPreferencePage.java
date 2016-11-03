@@ -119,15 +119,6 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 	
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-	    return msg.preferencesWebshop;
-	}
-
-
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 

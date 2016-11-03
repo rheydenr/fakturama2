@@ -64,14 +64,6 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, msg.preferencesExportUsepaydate, getFieldEditorParent()));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-	    return msg.preferencesExport;
-	}
-
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 

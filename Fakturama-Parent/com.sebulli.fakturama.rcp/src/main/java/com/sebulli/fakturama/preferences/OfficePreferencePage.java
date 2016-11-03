@@ -108,14 +108,6 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, msg.preferencesOfficeStartnewthread, getFieldEditorParent()));
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-	 */
-	@Override
-	public String getDescription() {
-	    return msg.preferencesOffice;
-	}
 	
 	/**
 	 * Write or read the preference settings to or from the data base

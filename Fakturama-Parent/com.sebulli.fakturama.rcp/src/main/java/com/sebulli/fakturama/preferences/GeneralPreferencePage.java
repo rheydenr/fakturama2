@@ -285,11 +285,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         }
         return retval;
     }
-
-	@Override
-	public String getDescription() {
-	    return msg.preferencesGeneral;
-	}
 	
 	/**
 	 * Write or read the preference settings to or from the data base

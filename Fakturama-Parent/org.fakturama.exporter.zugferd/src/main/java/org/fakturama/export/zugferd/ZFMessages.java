@@ -11,7 +11,7 @@
  * Contributors:
  *     The Fakturama Team - initial API and implementation
  */
- 
+
 package org.fakturama.export.zugferd;
 
 import org.eclipse.e4.core.services.nls.Message;
@@ -32,4 +32,9 @@ public class ZFMessages {
 	public String zugferdExportWarningChooseinvoice;
 	public String zugferdExportWarningOverwrite;
 	public String zugferdExportLabelRebate;
+
+	public String zugferdPreferencesFilelocation;
+	public String zugferdPreferencesProfile;
+	public String zugferdPreferencesTitle;
+	public String zugferdPreferencesVersion;
 }

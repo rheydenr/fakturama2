@@ -326,6 +326,7 @@ public class Messages {
 	public String editorProductFieldGrosspriceName;
 	public String editorProductFieldGtin;
 	public String editorProductFieldPriceName;
+	public String editorProductFieldCostprice;;
 	public String editorProductFieldQuantityunitName;
 	public String editorProductFieldQuantityunitNameShort;
 	public String editorProductLabelFrom;

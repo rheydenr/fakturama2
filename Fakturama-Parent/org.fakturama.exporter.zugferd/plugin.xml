@@ -9,4 +9,19 @@
             uri="zf-fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            class="org.fakturama.export.zugferd.ZugferdPreferences"
+            id="org.fakturama.exporter.zugferd.page1"
+            name="%zugferd.preferences.title">
+      </page>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
+      <preferenceStoreProvider
+            class="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider"
+            pluginId="org.fakturama.exporter.zugferd.preferenceStoreProvider1">
+      </preferenceStoreProvider>
+   </extension>
 </plugin>

@@ -91,15 +91,6 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 
 	}
 
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.dialogs.DialogPage#getDescription()
-     */
-    @Override
-    public String getDescription() {
-        return msg.preferencesContact;
-    }
-
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 
