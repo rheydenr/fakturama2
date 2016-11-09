@@ -66,21 +66,27 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
     }
 
     /**
-     * @return the em
+     * @return the {@link EntityManager}
      */
     protected EntityManager getEntityManager() {
         return em;
     }
 
     /**
-     * @param em
-     *            the em to set
+     * @param em {@link EntityManager}
+     *            the {@link EntityManager} to set
      */
     protected void setEntityManager(EntityManager em) {
         this.em = em;
         this.em.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
     }
     
+    /**
+     * Finds the value of an user specific property.
+     * 
+     * @param name property
+     * @return value of that property
+     */
     public String findPropertyValue(String name) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
