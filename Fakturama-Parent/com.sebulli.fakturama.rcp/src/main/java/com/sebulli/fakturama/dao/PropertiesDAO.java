@@ -1,5 +1,7 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.List;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -15,7 +17,10 @@ import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.model.UserProperty;
+import com.sebulli.fakturama.model.UserProperty_;
 import com.sebulli.fakturama.oldmodel.OldProperties;
 
 @Creatable
@@ -74,6 +79,16 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
     protected void setEntityManager(EntityManager em) {
         this.em = em;
         this.em.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
+    }
+    
+    public String findPropertyValue(String name) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
+        Root<UserProperty> root = criteria.from(UserProperty.class);
+        criteria.where(cb.equal(root.get(UserProperty_.name), name));
+        UserProperty result = getEntityManager().createQuery(criteria).getSingleResult();
+        return result.getValue();
+
     }
 
     /**

@@ -141,10 +141,10 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	}
 	
 	/**
-	 * Write or read the preference settings to or from the data base
+	 * Write or read the preference settings to or from the database
 	 * 
 	 * @param write
-	 *            TRUE: Write to the data base
+	 *            TRUE: Write to the database
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
 
@@ -199,7 +199,6 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	    
 		for (String editorId : documentTypes) {
             node.setDefault("last_setnextnr_date_" + editorId.toLowerCase(), "2000-01-01");
-//            node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_FORMAT", "NO_DEFAULT_VALUE");
             node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_NR", 1);
         }
 	}

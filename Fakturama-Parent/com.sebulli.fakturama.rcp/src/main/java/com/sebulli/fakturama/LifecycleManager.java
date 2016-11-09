@@ -262,13 +262,13 @@ public class LifecycleManager {
 		} catch (BackingStoreException e) {
 			log.error(e);
 		}
-//        preferencesInDatabase.loadPreferencesFromDatabase();
         context.set(IPreferenceStore.class, defaultValuesNode);
         context.getParent().set(IPreferenceStore.class, defaultValuesNode);
         // the DefaultPreferences gets initialized through the calling extension point (which is defined in META-INF).
         // here we have to restore the preference values from database
         PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
         context.set(PreferencesInDatabase.class, preferencesInDatabase);
+        preferencesInDatabase.loadPreferencesFromDatabase();
     }
     
     /**

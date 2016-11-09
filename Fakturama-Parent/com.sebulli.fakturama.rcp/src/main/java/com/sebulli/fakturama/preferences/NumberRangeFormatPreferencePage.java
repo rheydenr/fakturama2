@@ -191,8 +191,7 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
 		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_FORMAT, msg.preferencesNumberrangeFormatConfirmationoValue);
 		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
 		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_FORMAT, msg.preferencesNumberrangeFormatDunningnoValue);
-		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Dunning" with {6nr} for a 6 digits number
+		//T: Preference page "Number Range Format" - Default value: Abbreviation for "Proforma" with {6nr} for a 6 digits number
 		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_FORMAT, msg.preferencesNumberrangeFormatProformanoValue);
-		
 	}
 }

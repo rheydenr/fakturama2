@@ -33,6 +33,7 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -83,6 +84,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -794,17 +796,17 @@ public class DocumentEditor extends Editor<Document> {
 				netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 				
 				document.setShipping(shipping);
-//				document.setDoubleValueByKey("shippingvat", shippingVat);
-//				document.setStringValueByKey("shippingdescription", stdShipping.getStringValueByKey("description"));
-				document.setShippingAutoVat(shipping.getAutoVat());
-//				document.setStringValueByKey("shippingvatdescription", shippingVatDescription);
+				if(shipping != null) {
+					document.setShippingAutoVat(shipping.getAutoVat());
+				}
 				
 				// Default payment
 				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
                 payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
-//				document.setStringValueByKey("paymentdescription", Data.INSTANCE.getPayments().getDatasetById(paymentId).getStringValueByKey("description"));
-				document.setDueDays(payment.getNetDays());
+                if(payment != null) {
+                	document.setDueDays(payment.getNetDays());
+                }
 				
 				document.setOrderDate(today);
 				document.setServiceDate(today);
@@ -1101,17 +1103,15 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Use the customers settings instead, if they are set
 		if (addressId != null && address_changed) {
-			
-			if (addressId.getUseNetGross() == 1) {
+			// useNetGross can be null (from database!)
+			if (addressId.getUseNetGross() != null && addressId.getUseNetGross() == 1) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-				comboNetGross.getCombo().select(netgross);
-			}
-			if (addressId.getUseNetGross() == 2) {
+			} else if (addressId.getUseNetGross() == null || addressId.getUseNetGross() == 2) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
-				comboNetGross.getCombo().select(netgross);
 			}
+			comboNetGross.getCombo().select(netgross);
 		}
 
 		// Show a warning if the customer uses a different setting for net or gross
@@ -1507,7 +1507,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1000, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -1539,7 +1539,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Container for the document number and the date
 		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
+		GridDataFactory.fillDefaults().minSize(540, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
 
 		// The document number is the document name
 		// but for letters it is the subject, see above
@@ -1552,7 +1552,7 @@ public class DocumentEditor extends Editor<Document> {
 		txtName.setToolTipText(labelName.getToolTipText());
 
 		bindModelValue(document, txtName, Document_.name.getName(), 80);
-		GridDataFactory.swtDefaults().minSize(250, SWT.DEFAULT).grab(true, false).applyTo(txtName);
+		GridDataFactory.swtDefaults().minSize(200, SWT.DEFAULT).grab(true, false).applyTo(txtName);
         
 		// Document date
 		//T: Document Editor
@@ -1561,7 +1561,7 @@ public class DocumentEditor extends Editor<Document> {
 		labelDate.setText(msg.commonFieldDate);
 		labelDate.setToolTipText(msg.editorDocumentDateTooltip);
 		
-		GridDataFactory.swtDefaults().indent(20, 0).align(SWT.END, SWT.CENTER).applyTo(labelDate);
+		GridDataFactory.swtDefaults().indent(15, 0).align(SWT.END, SWT.CENTER).applyTo(labelDate);
 
 		// Document date
 		dtDate = new CDateTime(nrDateNetGrossComposite, CDT.BORDER | CDT.DROP_DOWN);
@@ -1593,7 +1593,7 @@ public class DocumentEditor extends Editor<Document> {
 		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
 		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
 		comboNetGross.setInput(netGrossContent);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(30, 0).minSize(80, SWT.DEFAULT).hint(120, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(20, 0).minSize(80, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
 		
 		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
 
@@ -1646,7 +1646,7 @@ public class DocumentEditor extends Editor<Document> {
 		txtCustomerRef = new Text(top, SWT.BORDER); 
 		txtCustomerRef.setToolTipText(labelCustomerRef.getToolTipText());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
-	 	GridDataFactory.fillDefaults().hint(400, SWT.DEFAULT).applyTo(txtCustomerRef);
+	 	GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(txtCustomerRef);
 				
 		// The extra settings composite contains additional fields like
 		// the no-Vat widget or a reference to the invoice
@@ -1736,7 +1736,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNoVat);
 
 		// combo list with all 0% VATs
-		comboViewerNoVat = new ComboViewer(documentType.hasPrice() ? xtraSettingsComposite : invisible, SWT.BORDER);
+		comboViewerNoVat = new ComboViewer(documentType.hasPrice() ? xtraSettingsComposite : invisible, SWT.BORDER  | SWT.READ_ONLY);
 		comboViewerNoVat.getCombo().setToolTipText(labelNoVat.getToolTipText());
 		comboViewerNoVat.setContentProvider(new EntityComboProvider());
 		comboViewerNoVat.setLabelProvider(new EntityLabelProvider());
@@ -1792,14 +1792,17 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
+//		Composite groupComposite = new Composite(top, SWT.BORDER);
+//		GridLayoutFactory.fillDefaults().margins(10, 10).applyTo(groupComposite);
+//		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(groupComposite);
 		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.
 		copyGroup.setText(msg.editorDocumentCreateduplicate);
 		GridLayoutFactory.fillDefaults().applyTo(copyGroup);
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.BOTTOM).span(1, 2).minSize(250, SWT.DEFAULT).grab(true, false).applyTo(copyGroup);
-
+		GridDataFactory.fillDefaults().span(1, 2).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(copyGroup);
+		
 		// Toolbar
         createCopyToolbar(copyGroup);
         if(document.getId() == 0) {
@@ -1877,7 +1880,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Composite that contains the address and the warning icon
 		addressAndIconComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(addressAndIconComposite);
-		GridDataFactory.fillDefaults().minSize(180, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
+		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
 
 		// The address field
 		txtAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
@@ -2059,9 +2062,9 @@ public class DocumentEditor extends Editor<Document> {
 		} else {  // document *has* a price
 
 			if (documentType.canBePaid()) {
-				GridDataFactory.fillDefaults().span(2, 1).hint(100, noOfMessageFields*65).grab(true, false).applyTo(messageFieldsComposite);
+				GridDataFactory.fillDefaults().span(2, 1).hint(50, noOfMessageFields*65).grab(true, false).applyTo(messageFieldsComposite);
 			} else {
-				GridDataFactory.fillDefaults().span(2, 1).hint(100, noOfMessageFields*65).grab(true, true).applyTo(messageFieldsComposite);
+				GridDataFactory.fillDefaults().span(2, 1).hint(50, noOfMessageFields*65).grab(true, true).applyTo(messageFieldsComposite);
 			}
 			
 			// Create a column for the documents subtotal, shipping and total
@@ -2211,7 +2214,7 @@ public class DocumentEditor extends Editor<Document> {
         });
 
         // Combo to select the payment
-        comboPayment = new Combo(paidContainer, SWT.BORDER);
+        comboPayment = new Combo(paidContainer, SWT.BORDER | SWT.READ_ONLY);
         comboViewerPayment = new ComboViewer(comboPayment);
         comboViewerPayment.setContentProvider(new EntityComboProvider());
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
@@ -2257,7 +2260,7 @@ public class DocumentEditor extends Editor<Document> {
      */
     private void createTotalComposite(boolean hasPrice) {
         Composite totalComposite = new Composite(top, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(totalComposite);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(totalComposite);
         GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).span(1, 2).applyTo(totalComposite);
 
         if(hasPrice) {
@@ -2326,7 +2329,7 @@ public class DocumentEditor extends Editor<Document> {
             shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
     
             // Shipping combo
-            comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER);
+            comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
             comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
             comboViewerShipping.setContentProvider(new EntityComboProvider());
             comboViewerShipping.setLabelProvider(new EntityLabelProvider());
@@ -2692,6 +2695,10 @@ public class DocumentEditor extends Editor<Document> {
         // Get the ID of the standard entity from preferences
         stdID = defaultValuePrefs.getLong(Constants.DEFAULT_SHIPPING);
         retval = shippingsDAO.findById(stdID);
+        if(retval == null) {
+	        // Panic! Something went extremely wrong! Show an error dialog.
+	        MessageDialog.openError(this.part.getContext().get(Shell.class), msg.dialogMessageboxTitleError, MessageFormat.format(msg.editorDocumentDialogNodefaultvalue, msg.commandShippingsName));
+        }
         return retval;
     }
 

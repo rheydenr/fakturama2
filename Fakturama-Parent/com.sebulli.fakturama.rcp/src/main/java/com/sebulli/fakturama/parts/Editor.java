@@ -64,10 +64,13 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.PropertiesDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.model.UserProperty;
 
 /**
  * Parent class for all editors
@@ -88,6 +91,9 @@ public abstract class Editor<T extends IEntity> {
     @Inject
     protected IPreferenceStore defaultValuePrefs;
 
+    @Inject
+    protected PropertiesDAO propertiesDao;
+    
 	@Inject
 	@Translation
 	protected Messages msg;
@@ -310,12 +316,14 @@ public abstract class Editor<T extends IEntity> {
 		int yyyy = now.getYear();
 		int mm = now.getMonthValue();
 		int dd = now.getDayOfMonth();
-		String lastSetNextNrDate = defaultValuePrefs.getString("last_setnextnr_date_" + getEditorID().toLowerCase());
 
 		int last_yyyy = 0; 
 		int last_mm = 0; 
 		int last_dd = 0; 
 
+//		String lastSetNextNrDate = defaultValuePrefs.getString("last_setnextnr_date_" + getEditorID().toLowerCase());
+		String lastSetNextNrDate = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
+		
         // Get the year, month and date of a string like "2011-12-24"
         if (lastSetNextNrDate.length() == 10) {
             LocalDate localDate = LocalDate.parse(lastSetNextNrDate);
@@ -326,26 +334,24 @@ public abstract class Editor<T extends IEntity> {
 		
 		// Get the last (it's the next free) document number from the preferences
 		format = defaultValuePrefs.getString(prefStrFormat);
-		nr = defaultValuePrefs.getInt(prefStrNr);
+//		nr = defaultValuePrefs.getInt(prefStrNr);
+		String nextNumberString = propertiesDao.findPropertyValue(prefStrNr);
+		nr = Integer.parseInt(nextNumberString);
 
 		// Check, whether the date string is a new one
 		boolean startNewCounting = false;
-		if (format.contains("{yyyy}") || format.contains("{yy}"))
-			if (yyyy != last_yyyy)
-				startNewCounting = true;
-		if (format.contains("{mm}"))
-			if (mm != last_mm)
-				startNewCounting = true;
-		if (format.contains("{dd}"))
-			if (dd != last_dd)
-				startNewCounting = true;
+		if ((format.contains("{yyyy}") || format.contains("{yy}")) && yyyy != last_yyyy)
+			startNewCounting = true;
+		if (format.contains("{mm}") && mm != last_mm)
+			startNewCounting = true;
+		if (format.contains("{dd}") && dd != last_dd)
+			startNewCounting = true;
 		
 		// Reset the counter
 		if (startNewCounting) {
 			nr = 1;
 			setNextNumber(prefStrNr, nr); 
 		}
-			
 		
 		// Replace the date information
 		format = format.replace("{yyyy}", String.format("%04d", yyyy));
@@ -356,7 +362,6 @@ public abstract class Editor<T extends IEntity> {
 		format = format.replace("{YY}", String.format("%04d", yyyy).substring(2, 4));
 		format = format.replace("{MM}", String.format("%02d", mm));
 		format = format.replace("{DD}", String.format("%02d", dd));
-		
 		
 		// Find the placeholder for a decimal number with n digits
 		// with the format "{Xnr}", "X" is the number of digits.
@@ -385,14 +390,21 @@ public abstract class Editor<T extends IEntity> {
 	}
 
 	protected void setNextNumber(String prefStrNr, int nr) {
-		defaultValuePrefs.setValue(prefStrNr, nr);
+//		defaultValuePrefs.setValue(prefStrNr, nr);
 
 		// Store the date of now to a property
 		LocalDate now = LocalDate.now();
-		defaultValuePrefs.setValue("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
 		try {
-			((IPersistentPreferenceStore)defaultValuePrefs).save();
-        } catch (IOException e1) {
+//			defaultValuePrefs.setValue("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
+//			((IPersistentPreferenceStore)defaultValuePrefs).save();
+			UserProperty nextNumber = propertiesDao.findByName(prefStrNr);
+			nextNumber.setValue(Integer.toString(nr));
+			
+			UserProperty lastSetNextNrDate = propertiesDao.findByName("last_setnextnr_date_" + getEditorID().toLowerCase());
+			lastSetNextNrDate.setValue(now.format(DateTimeFormatter.ISO_DATE));
+			propertiesDao.save(lastSetNextNrDate);
+			propertiesDao.save(nextNumber);
+        } catch (FakturamaStoringException e1) {
             log.error(e1, "Error while flushing default value preferences.");
         }
 	}
@@ -420,7 +432,8 @@ public abstract class Editor<T extends IEntity> {
 
 		// Get the next document number from the preferences, increased by one.
 		format = defaultValuePrefs.getString(prefStrFormat);
-		nextnr = defaultValuePrefs.getInt(prefStrNr) + 1;
+//		nextnr = defaultValuePrefs.getInt(prefStrNr) + 1;
+		nextnr = Integer.parseInt(propertiesDao.findPropertyValue(prefStrNr)) + 1;
 
 		// Exit, if format is empty
 		if (format.trim().isEmpty())
@@ -467,7 +480,7 @@ public abstract class Editor<T extends IEntity> {
 				}
 			}
 			catch (NumberFormatException e) {
-				//Logger.logError(e, "Document number invalid");
+				log.error(e, "Document number invalid");
 			}
 		}
 
@@ -668,9 +681,9 @@ public abstract class Editor<T extends IEntity> {
 	}
 
 	/**
-	 * Returns, if save is allowed
+	 * Returns if save is allowed
 	 * 
-	 * @return TRUE, if save is allowed
+	 * @return <code>true</code> if save is allowed
 	 */
 	@CanExecute
 	protected boolean saveAllowed() {
