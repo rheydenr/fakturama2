@@ -80,6 +80,7 @@ import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
+import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
@@ -196,7 +197,7 @@ public class MigrationManager {
 	private PaymentsDAO paymentsDAO;
     
     @Inject
-	private AbstractDAO<Product> productsDAO;
+	private ProductsDAO productsDAO;
     
     @Inject
 	private ProductCategoriesDAO productCategoriesDAO;
