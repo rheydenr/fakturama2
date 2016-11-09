@@ -5,13 +5,13 @@
       version="2.0.0.qualifier"
       provider-name="Fakturama.org">
 
-   <description url="http://www.fakturama.org/">
+   <description url="http://www.fakturama.info/">
       This module manages the PDF/A3 conversion for ZUGFeRD. It includes
 the combining of an ZUGFeRD-invoice.xml file and a PDF/A-1 document
 into a PDF/A-3 document.
    </description>
 
-   <copyright url="http://www.fakturama.org/">
+   <copyright url="http://www.fakturama.info/">
       Copyright (C) 2014 Gerd Bartelt, Ralf Heydenreich
    </copyright>
 
@@ -107,7 +107,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <url>
       <update label="Fakturama Update Site 2.0" url="http://www.fakturama.info/files/update2/"/>
-      <discovery label="Fakturama Project Web Site" url="http://www.fakturama.org/"/>
+      <discovery label="Fakturama Project Web Site" url="http://www.fakturama.info/"/>
    </url>
 
    <plugin
