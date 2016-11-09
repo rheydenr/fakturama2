@@ -17,7 +17,7 @@ SashForm {
   background-color: #c1d5ef;
 }
 
-/ * background uses a gradient * /
+/* background uses a gradient
 .MTrimBar {
   background-color: #e3efff #c1d5ef;
   color: white;
@@ -28,6 +28,10 @@ Shell {
   background-color: #e3efff #c1d5ef 60%;
 } */
 
+/*.MPart Combo {
+    background-color: #FFFFFF;
+    color: #BBBBBB;
+} */
 .headerSectionContainer {
 	background-color: gradient #575757 #101010 100%;
 }

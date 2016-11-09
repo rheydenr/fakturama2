@@ -338,7 +338,7 @@
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/useNetGross"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Does the contact use net or gross price values?" name="useNetGross" getter="getUseNetGross" defaultValue="null" setter="setUseNetGross" validJavaMemberName="useNetGross" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Does the contact use net (=1) or gross (=2) price values?" name="useNetGross" getter="getUseNetGross" defaultValue="1" setter="setUseNetGross" validJavaMemberName="useNetGross" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/vatNumber"/>

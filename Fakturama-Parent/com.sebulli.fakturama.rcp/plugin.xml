@@ -12,6 +12,10 @@
                value="false">
          </property>
          <property
+               name="applicationCSS"
+               value="platform:/plugin/com.sebulli.fakturama.rcp/css/default.css">
+         </property>
+         <property
                name="appName"
                value="Fakturama">
          </property>

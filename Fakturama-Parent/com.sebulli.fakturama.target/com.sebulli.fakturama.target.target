@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="396">
+<?pde version="3.8"?><target name="com.sebulli.fakturama.target" sequenceNumber="398">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -57,10 +57,6 @@
 <unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201603220642"/>
 <unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201603220642"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201606022133"/>
-<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.platform.feature.group" version="4.6.0.v20160606-1342"/>
@@ -132,6 +128,14 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.0.v20161019-1e8cf08"/>
 <repository location="http://download.eclipse.org/rt/eclipselink/nightly-updates"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.texo.feature.group" version="0.9.0.v201611071003"/>
+<repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.e4.tools.spies.feature.feature.group" version="0.17.0.v20161031-1622"/>
+<repository location="http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

@@ -146,7 +146,8 @@ public class Messages {
 	
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
-	
+	public String editorDocumentDialogNodefaultvalue;
+
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
 	public String dataDefaultContactFormatSalutation;
