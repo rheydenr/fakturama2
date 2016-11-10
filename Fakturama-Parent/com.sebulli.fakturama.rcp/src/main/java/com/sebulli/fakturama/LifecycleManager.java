@@ -330,18 +330,18 @@ public class LifecycleManager {
 		// close all open editors
 //		partService.getDirtyParts().forEach((MPart part) -> part.save());
 		
-        //Closes all OpenOffice documents 
- //       OfficeManager.INSTANCE.closeAll();
-        if (context.get(PreferencesInDatabase.class) != null) {
+        PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
+		if (preferencesInDatabase != null) {
         	// TODO at the moment this is EXTREMELY slow, therefore we have to comment out that
-//            context.get(PreferencesInDatabase.class).savePreferencesInDatabase();
-//            Data.INSTANCE.close();
+			log.debug("Storing preferences in database");
+            preferencesInDatabase.savePreferencesInDatabase();
 
             // TODO: Create a database backup
 //            BackupManager.createBackup();
         }
         
         if(dialogSettings != null) {
+        	log.debug("save dialog settings");
         	saveDialogSettings(instanceLocation);
         }
     }

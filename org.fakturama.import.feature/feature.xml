@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.fakturama.import.feature"
-      label="Feature"
-      version="2.0.0.qualifier">
+      label="Fakturama Exporter Feature"
+      version="2.0.0.qualifier"
+      provider-name="Fakturama.org">
 
    <description url="http://www.fakturama.info">
       Fakturama - Free Invoicing Software. Importers.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="http://www.fakturama.info">
+      Copyright (C) 2016 Fakturama.org
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
@@ -103,8 +104,22 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
+      <update label="Fakturama Update Site 2.0+" url="http://www.fakturama.info/release/update2/"/>
       <discovery label="Fakturama Project Web Site" url="http://www.fakturama.info"/>
    </url>
+
+   <requires>
+      <import plugin="javax.inject" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.equinox.ds" version="1.4.300" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.services"/>
+      <import plugin="org.eclipse.jface" version="3.11.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.contexts" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di" version="1.5.0" match="greaterOrEqual"/>
+      <import plugin="com.sebulli.fakturama.common" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="com.sebulli.fakturama.resources" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.ui.model.workbench"/>
+      <import plugin="org.eclipse.osgi"/>
+   </requires>
 
    <plugin
          id="org.fakturama.import"

@@ -17,6 +17,7 @@ package com.sebulli.fakturama.parts;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -322,8 +323,10 @@ public abstract class Editor<T extends IEntity> {
 		int last_dd = 0; 
 
 //		String lastSetNextNrDate = defaultValuePrefs.getString("last_setnextnr_date_" + getEditorID().toLowerCase());
-		String lastSetNextNrDate = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
-		
+//		String lastSetNextNrDate = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
+		Optional<String> propVal = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
+		String lastSetNextNrDate = propVal.orElse(DateTimeFormatter.ISO_DATE.format(now));
+				
         // Get the year, month and date of a string like "2011-12-24"
         if (lastSetNextNrDate.length() == 10) {
             LocalDate localDate = LocalDate.parse(lastSetNextNrDate);
@@ -335,7 +338,8 @@ public abstract class Editor<T extends IEntity> {
 		// Get the last (it's the next free) document number from the preferences
 		format = defaultValuePrefs.getString(prefStrFormat);
 //		nr = defaultValuePrefs.getInt(prefStrNr);
-		String nextNumberString = propertiesDao.findPropertyValue(prefStrNr);
+		propVal = propertiesDao.findPropertyValue(prefStrNr);
+		String nextNumberString = propVal.orElse("1");
 		nr = Integer.parseInt(nextNumberString);
 
 		// Check, whether the date string is a new one
@@ -432,8 +436,8 @@ public abstract class Editor<T extends IEntity> {
 
 		// Get the next document number from the preferences, increased by one.
 		format = defaultValuePrefs.getString(prefStrFormat);
-//		nextnr = defaultValuePrefs.getInt(prefStrNr) + 1;
-		nextnr = Integer.parseInt(propertiesDao.findPropertyValue(prefStrNr)) + 1;
+		Optional<String> propVal = propertiesDao.findPropertyValue(prefStrNr);
+		nextnr = Integer.parseInt(propVal.orElse("1")) + 1;
 
 		// Exit, if format is empty
 		if (format.trim().isEmpty())

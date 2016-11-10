@@ -1,10 +1,12 @@
 package com.sebulli.fakturama.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -87,14 +89,19 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
      * @param name property
      * @return value of that property
      */
-    public String findPropertyValue(String name) {
+    public Optional<String> findPropertyValue(String name) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
         Root<UserProperty> root = criteria.from(UserProperty.class);
         criteria.where(cb.equal(root.get(UserProperty_.name), name));
-        UserProperty result = getEntityManager().createQuery(criteria).getSingleResult();
-        return result.getValue();
-
+        Optional<String> retval = Optional.empty();
+		try {
+			UserProperty result = getEntityManager().createQuery(criteria).getSingleResult();
+			retval = Optional.ofNullable(result.getValue());
+		} catch (NoResultException e) {
+			// ignore, retval is an empty Optional
+		}
+        return retval;
     }
 
     /**
