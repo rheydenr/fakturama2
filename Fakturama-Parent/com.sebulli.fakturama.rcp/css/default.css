@@ -13,6 +13,10 @@ Text:focus {
   background-color: #FAF0A2;
 }
 
+Combo:focused {
+  background-color: #FAF0A2;
+}
+
 SashForm {
   background-color: #c1d5ef;
 }
@@ -32,6 +36,7 @@ Shell {
     background-color: #FFFFFF;
     color: #BBBBBB;
 } */
+
 .headerSectionContainer {
 	background-color: gradient #575757 #101010 100%;
 }
