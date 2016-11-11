@@ -20,7 +20,7 @@
 	    <module>com.sebulli.fakturama.model</module>
 	    <module>com.sebulli.fakturama.site</module>
 	    <module>com.sebulli.fakturama.feature</module>
-		<module>com.sebulli.fakturama.target</module>
+		<module>org.fakturama.target</module>
 	    <module>com.sebulli.fakturama.common</module>
 	    <module>com.sebulli.fakturama.hsqlconnector</module>
 	    <module>com.sebulli.fakturama.resources</module>
@@ -78,7 +78,7 @@
 					<target>
 						<artifact>
 							<groupId>${project.groupId}</groupId>
-							<artifactId>com.sebulli.fakturama.target</artifactId>
+							<artifactId>org.fakturama.target</artifactId>
 							<version>${project.version}</version>
 						</artifact>
 					</target>
