@@ -4,12 +4,10 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 import com.sebulli.fakturama.Activator;
-import com.sebulli.fakturama.misc.Constants;
 
 /**
  * The {@link FakturamaPreferenceStoreProvider} creates an

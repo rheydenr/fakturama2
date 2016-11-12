@@ -50,7 +50,7 @@ public class UnCefactCodeDAO extends AbstractDAO<CEFACTCode> {
 	 * @see com.sebulli.fakturama.dao.AbstractDAO#getEntityClass()
 	 */
 	@Override
-	protected Class getEntityClass() {
+	protected Class<CEFACTCode> getEntityClass() {
 		return CEFACTCode.class;
 	}
 

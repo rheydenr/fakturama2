@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -50,8 +49,8 @@ import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.parts.VatEditor;

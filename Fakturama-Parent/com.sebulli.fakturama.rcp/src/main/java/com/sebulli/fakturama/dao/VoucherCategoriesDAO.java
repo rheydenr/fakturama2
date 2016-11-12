@@ -14,7 +14,6 @@
  
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -34,10 +33,10 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VATCategory_;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.Voucher_;
 
 /**
  *

@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;

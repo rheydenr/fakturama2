@@ -8,13 +8,9 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -86,6 +82,9 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         query.select(debitor).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
         TypedQuery<Debitor> q = getEntityManager().createQuery(query);
         q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+//        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
+//        q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+        debitor.fetch(Debitor_.categories);
         return q.getResultList();
     }
     

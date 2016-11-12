@@ -50,7 +50,6 @@ import com.sebulli.fakturama.handlers.OpenContactsHandler;
 import com.sebulli.fakturama.handlers.OpenListViewsHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.resources.core.Icon;

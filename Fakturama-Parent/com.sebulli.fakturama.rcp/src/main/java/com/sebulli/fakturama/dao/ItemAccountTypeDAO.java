@@ -14,7 +14,6 @@
  
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +37,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
+import com.sebulli.fakturama.model.VATCategory;
 
 /**
  *

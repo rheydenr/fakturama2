@@ -9,19 +9,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
-
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.Creditor_;
-import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.CreditorEditor;
 import com.sebulli.fakturama.parts.Editor;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 /**
  * View with the table of all contacts

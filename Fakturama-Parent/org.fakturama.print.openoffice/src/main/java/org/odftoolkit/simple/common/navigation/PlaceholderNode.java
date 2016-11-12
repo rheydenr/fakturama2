@@ -6,9 +6,6 @@ package org.odftoolkit.simple.common.navigation;
 import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
-import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
-import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
-import org.odftoolkit.odfdom.dom.element.draw.DrawTextBoxElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -19,7 +16,6 @@ import org.odftoolkit.odfdom.type.Length;
 import org.odftoolkit.odfdom.type.Length.Unit;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
-import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Span;
 import org.w3c.dom.Node;
 

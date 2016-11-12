@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -46,7 +45,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
-import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;

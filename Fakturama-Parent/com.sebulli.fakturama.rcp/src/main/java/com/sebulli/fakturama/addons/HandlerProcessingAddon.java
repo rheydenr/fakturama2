@@ -2,14 +2,12 @@ package com.sebulli.fakturama.addons;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -25,11 +23,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -119,7 +114,7 @@ public class HandlerProcessingAddon {
 	public void handleHandlerEvent(
 			@Optional @EventTopic(UIEvents.HandlerContainer.TOPIC_HANDLERS) Event event) {
 		if (event == null)
-			return;
+			return; 
 		if ((event.getProperty(UIEvents.EventTags.ELEMENT) instanceof MHandlerContainer)
 				&& (event.getProperty(UIEvents.EventTags.ELEMENT) instanceof MContext)) {
 			MHandlerContainer handlerContainer = (MHandlerContainer) event

@@ -14,6 +14,11 @@ import org.eclipse.core.runtime.Status;
 public class E4PartInitException extends CoreException {
 
    /**
+     * 
+     */
+    private static final long serialVersionUID = 7314709608792332149L;
+
+/**
      * Creates a new exception with the given message.
      *
      * @param message the message

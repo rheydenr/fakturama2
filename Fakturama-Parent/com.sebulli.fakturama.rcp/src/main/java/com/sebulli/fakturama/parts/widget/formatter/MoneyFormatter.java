@@ -30,7 +30,6 @@ import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 /**
  *

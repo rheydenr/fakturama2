@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PreDestroy;
@@ -19,8 +18,6 @@ import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.model.Product;
-import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.UserProperty_;
 import com.sebulli.fakturama.oldmodel.OldProperties;

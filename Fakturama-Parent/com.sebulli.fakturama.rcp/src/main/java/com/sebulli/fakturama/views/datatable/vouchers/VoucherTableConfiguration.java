@@ -14,7 +14,6 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 
 class VoucherTableConfiguration extends AbstractRegistryConfiguration {

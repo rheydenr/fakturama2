@@ -21,7 +21,6 @@ import org.osgi.service.event.Event;
 // @PostConstruct will not work as workbench gets instantiated after the processing of the add-ons
 // hence this approach uses method injection
 
-@SuppressWarnings("restriction")
 public class WindowCloseListenerAddon {
 
 	@Inject

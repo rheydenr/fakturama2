@@ -40,8 +40,6 @@ import com.sebulli.fakturama.dto.VoucherSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherItem;
 
 

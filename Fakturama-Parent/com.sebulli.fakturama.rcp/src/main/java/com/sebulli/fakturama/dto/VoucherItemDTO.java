@@ -23,6 +23,10 @@ import com.sebulli.fakturama.model.VoucherItem;
  */
 public class VoucherItemDTO extends VoucherItem {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5800206738482783749L;
     private VoucherItem voucherItem;
     
     /**

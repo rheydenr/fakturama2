@@ -70,7 +70,6 @@ import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.converter.CommonConverter;
-import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;

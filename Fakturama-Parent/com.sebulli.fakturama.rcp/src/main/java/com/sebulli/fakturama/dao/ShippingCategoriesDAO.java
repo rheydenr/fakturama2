@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PreDestroy;

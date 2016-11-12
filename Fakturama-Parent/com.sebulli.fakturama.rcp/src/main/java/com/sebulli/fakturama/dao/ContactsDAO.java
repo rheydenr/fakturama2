@@ -24,7 +24,6 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.oldmodel.OldContacts;
 
-@SuppressWarnings("restriction")
 @Creatable
 public class ContactsDAO extends AbstractDAO<Contact> {
 

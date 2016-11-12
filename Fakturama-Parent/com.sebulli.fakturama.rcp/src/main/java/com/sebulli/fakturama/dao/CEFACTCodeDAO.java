@@ -41,7 +41,6 @@ import com.sebulli.fakturama.model.CEFACTCode_;
  *
  */
 
-@SuppressWarnings("restriction")
 @Creatable
 public class CEFACTCodeDAO extends AbstractDAO<CEFACTCode> {
 

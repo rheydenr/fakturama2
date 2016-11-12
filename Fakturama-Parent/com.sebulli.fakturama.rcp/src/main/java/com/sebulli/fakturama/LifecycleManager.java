@@ -37,8 +37,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -143,11 +141,14 @@ public class LifecycleManager {
         // check if the db connection is set
         if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
         	
-        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
-        	if(!dbupdate) {
-        		log.error(null, "couldn't create or update database!");
-        		System.exit(1);
-        	}
+        	// comment this if you want to generate or update the database with EclipseLink
+        	// (but don't forget to enable it in persistence.xml)
+//        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+//        	if(!dbupdate) {
+//        		log.error(null, "couldn't create or update database!");
+//        		System.exit(1);
+//        	}
+        	
             dbInitJob = new Job("initDb") {
     
                 @Override

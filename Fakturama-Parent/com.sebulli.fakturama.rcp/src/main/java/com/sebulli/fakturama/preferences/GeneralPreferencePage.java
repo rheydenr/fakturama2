@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
