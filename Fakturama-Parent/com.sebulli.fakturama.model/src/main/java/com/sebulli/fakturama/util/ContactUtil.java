@@ -632,7 +632,7 @@ public class ContactUtil {
 
 	private String replaceAllWithSpace(final String s, final String exp, final String replacement) {
 		String replacedString = StringUtils.isBlank(replacement) ? s.replaceAll(exp + " ", "") : s;
-		return replacedString.replaceAll(exp, Optional.ofNullable(replacement).orElse(""));
+		return replacedString.replaceAll(exp, Optional.ofNullable(Matcher.quoteReplacement(StringUtils.defaultString(replacement))).orElse(""));
 	}
 
     /**
