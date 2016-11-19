@@ -19,6 +19,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +44,8 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.javamoney.moneta.FastMoney;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -196,10 +200,10 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 
         		/* if we have larger documents we have to use SAX.         		*/
-//                // 2. create a new XML parser
-//                SAXParserFactory factory = SAXParserFactory.newInstance();
-//                factory.setNamespaceAware(true);
-//                XMLReader reader = factory.newSAXParser().getXMLReader();
+                // 2. create a new XML parser
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                factory.setNamespaceAware(true);
+                XMLReader reader = factory.newSAXParser().getXMLReader();
         		
 //        		// 2. Use JAXBContext instance to create the Unmarshaller.
         		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -219,24 +223,19 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 if (!filename.isEmpty()) {
     
                     // Create a sub folder "Log" if it does not exist yet.
-                    filename += "/Log/";
-                    Path directory = Paths.get(filename);
-                    if (!Files.isDirectory(directory)) {
-                        Files.createDirectories(directory);
+                    // Name of the log file
+                    // Create a File object
+                    logFile = Paths.get(filename, "Log", "WebShopImport.log");
+                    if (!Files.isDirectory(logFile.getParent())) {
+                        Files.createDirectories(logFile.getParent());
                     }
     
-                    // Name of the log file
-                    filename += "WebShopImport.log";
-    
-                    // Create a File object
-                    logFile = Paths.get(filename);
-    
                     // Create a new file
-                    Files.deleteIfExists(logFile);
-                    Files.createFile(logFile);
-    
+//                    Files.deleteIfExists(logFile);
+//                    Files.createFile(logFile);
+//    
                     // Create a buffered writer to write the imported data to the file system
-                    logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"));
+                    logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 }
                 
 				// 4. Get the instance of the required JAXB Root Class from the
@@ -245,14 +244,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         					.unmarshal(interruptConnection.getInputStream());
                 
 				// alternatively (for large responses)
-//                // prepare a Splitter
+                // prepare a Splitter
 //                Splitter splitter = new Splitter(jaxbContext);
-//
-//                // connect two components
+
+                // connect two components
 //                reader.setContentHandler(splitter);
-//                
-//                // note that XMLReader expects an URL, not a file name.
-//                // so we need conversion.
+                
+                // note that XMLReader expects an URL, not a file name.
+                // so we need conversion.
 //                reader.parse(new InputSource(interruptConnection.getInputStream()));
                 
         		setProgress(50);
@@ -391,7 +390,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
          */
         private void allOrdersAreInSync() {
         	webShopImportManager.setOrderstosynchronize(new Properties());
-        	Path f = Paths.get(generalWorkspace, "/orders2sync.txt");
+        	Path f = Paths.get(generalWorkspace, "orders2sync.txt");
         	try {
                 Files.deleteIfExists(f);
             }
@@ -490,7 +489,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today);
-            String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
+            String countryCode = LocaleUtil.getInstance("de").findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
@@ -802,7 +801,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
 
             // Convert the gross or net string to a money value
-            MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
+            MonetaryAmount priceNet = FastMoney.of(NumberUtils.DOUBLE_ZERO, currencyCode);
 
             // Use the net string, if it is set
             // => net string is *never* set! The connectors don't deliver it!

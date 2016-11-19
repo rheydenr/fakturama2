@@ -980,7 +980,7 @@ public class OfficeDocument {
     private boolean filesAreEqual(String fileName1, Path template) {
         
         // Test, if also the absolute path is equal
-        if (fileName1.equals(template))
+        if (fileName1.equals(template.toString()))
             return true;
         
         // If not, use the unlocalized folder names

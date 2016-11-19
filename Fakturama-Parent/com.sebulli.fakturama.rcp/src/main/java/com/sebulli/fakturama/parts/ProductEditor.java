@@ -37,7 +37,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -105,12 +104,6 @@ public class ProductEditor extends Editor<Product> {
 
     @Inject
     protected VatsDAO vatDao;
-    
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     protected ProductCategoriesDAO productCategoriesDAO;

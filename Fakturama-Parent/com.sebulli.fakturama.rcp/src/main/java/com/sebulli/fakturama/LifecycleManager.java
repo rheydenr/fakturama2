@@ -16,6 +16,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -139,15 +140,15 @@ public class LifecycleManager {
         log.debug("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
-        if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "") != "") {
+        if (StringUtils.isNoneEmpty(eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, ""))) {
         	
         	// comment this if you want to generate or update the database with EclipseLink
         	// (but don't forget to enable it in persistence.xml)
-//        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
-//        	if(!dbupdate) {
-//        		log.error(null, "couldn't create or update database!");
-//        		System.exit(1);
-//        	}
+        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+        	if(!dbupdate) {
+        		log.error(null, "couldn't create or update database!");
+        		System.exit(1);
+        	}
         	
             dbInitJob = new Job("initDb") {
     
@@ -254,7 +255,7 @@ public class LifecycleManager {
         }
         
         // init UN/CEFACT codes
-        if(unCefactCodeDAO.getCount() == Long.valueOf(0L)) {
+        if(Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
         	initializeCodes(unCefactCodeDAO, modelFactory);
         } 
         

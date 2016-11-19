@@ -268,14 +268,14 @@
             <joinColumn name="FK_CONTACT"/>
             <inverseJoinColumn name="FK_CATEGORY"/>
           </joinTable>
-          <manyToOne/>
+          <manyToOne fetch="LAZY"/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/address"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="FK_ADDRESS" nullable="true"/>
-          <manyToOne>
+          <manyToOne fetch="LAZY">
             <cascade>
               <cascadePersist/>
               <cascadeMerge/>
@@ -290,7 +290,7 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" description="" documentation="The alternate address(es) of this contact. There could be more than one entry per contact. At the moment there's only one contact possible!!!" name="deliveryContact" getter="getAlternateContacts" defaultValue="null" setter="setAlternateContacts" validJavaMemberName="alternateContacts" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <joinColumn name="" nullable="true"/>
-          <manyToOne>
+          <manyToOne fetch="LAZY">
             <cascade>
               <cascadePersist/>
               <cascadeMerge/>
@@ -450,6 +450,13 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/dueDays"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="dueDays" getter="getDueDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setDueDays" validJavaMemberName="dueDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//Document/documentContacts"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="Contacts related to this Document (billing contact, delivery contact etc.)" validJavaMemberName="" useList="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <oneToMany/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/itemsRebate"/>
@@ -1222,8 +1229,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//CEFACTCode"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="This Entity contains the UN/CEFACT values for measurement codes and others. Each entry consists of a target type (i.e., Shipping, VAT or so) and the according code information." serializable="true">
-        <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+        <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1252,8 +1259,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//WebshopStateMapping"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Mapping between order states of a web shop to the order states of the Fakturama application. Since we plan to assign multiple web shops we store a mapping with its webshop ID. This is for later use, at the moment we don't use it." serializable="true">
-        <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+        <classImplements>java.io.Serializable</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1282,6 +1289,10 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEEnum">
       <eEnum href="Fakturama.ecore#//VoucherType"/>
       <eEnumAnnotations xsi:type="modelannotations:EEnumModelGenAnnotation" documentation="The type enum for Vouchers. "/>
+    </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
+      <eClass href="Fakturama.ecore#//ContactWrapper"/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" serializable="true"/>
     </annotatedEClassifiers>
   </annotatedEPackages>
 </annotationsmodel:AnnotatedModel>

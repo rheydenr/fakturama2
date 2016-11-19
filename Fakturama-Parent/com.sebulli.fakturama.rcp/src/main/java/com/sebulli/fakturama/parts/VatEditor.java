@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -64,12 +63,6 @@ public class VatEditor extends Editor<VAT> {
 
     @Inject
     protected VatsDAO vatDao;
-    
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     protected VatCategoriesDAO vatCategoriesDAO;

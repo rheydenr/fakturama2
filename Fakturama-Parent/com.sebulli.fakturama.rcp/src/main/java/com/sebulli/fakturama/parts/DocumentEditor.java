@@ -983,10 +983,10 @@ public class DocumentEditor extends Editor<Document> {
 		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
 		// Get the discount value from the control element
-		Double discount = Double.valueOf(0.0);
+		Double rebate = Double.valueOf(0.0);
 		if (itemsDiscount != null) {
 	        // Convert it to negative values
-	        Double rebate = (Double)itemsDiscount.getValue();
+	        rebate = (Double)itemsDiscount.getValue();
 			if (rebate > 0) {
 				rebate *= -1;
 				itemsDiscount.setValue(rebate);
@@ -1024,13 +1024,13 @@ public class DocumentEditor extends Editor<Document> {
 	                document.getShipping().getShippingValue(),
 	                document.getShipping().getShippingVat(), 
 	                document.getShipping().getAutoVat(), 
-	                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         } else {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
                     document.getShippingValue()/* * sign*/,
                     null, 
                     document.getShippingAutoVat(), 
-                    discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         }
 
 		// Get the total result

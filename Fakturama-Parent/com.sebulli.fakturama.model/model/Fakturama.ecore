@@ -81,6 +81,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="ContactCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Document" abstract="true" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="additionalInfo" eType="#//IndividualDocumentInfo"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="addressFirstLine" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="billingType" eType="#//BillingType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="billingContact" eType="#//Contact"
@@ -90,6 +92,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deliveryContact" eType="#//Contact"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="documentContacts" upperBound="-1"
+        eType="#//ContactWrapper"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dueDays" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invoiceReference" eType="#//Invoice"/>
@@ -127,8 +131,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="transactionId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="additionalInfo" eType="#//IndividualDocumentInfo"
-        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DocumentItem" eSuperTypes="#//IEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
@@ -374,6 +376,15 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="VoucherType">
     <eLiterals name="RECEIPTVOUCHER"/>
-    <eLiterals name="EXPENDITURE"/>
+    <eLiterals name="EXPENDITURE" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ContactType">
+    <eLiterals name="BILLING"/>
+    <eLiterals name="DELIVERY" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ContactWrapper">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="contactType" eType="#//ContactType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contact" lowerBound="1"
+        eType="#//Contact"/>
   </eClassifiers>
 </ecore:EPackage>
