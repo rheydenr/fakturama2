@@ -161,7 +161,7 @@ public class E4AboutDialog extends TrayDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
         parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        createButton(parent, DETAILS_ID, msg.helpAboutdialogDetailsbutton, false);
+//        createButton(parent, DETAILS_ID, msg.helpAboutdialogDetailsbutton, false);
 
         Label l = new Label(parent, SWT.NONE);
         l.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
