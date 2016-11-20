@@ -193,6 +193,16 @@ public class ProductEditor extends Editor<Product> {
 		 * - date_added (not modified by editor)
 		 */
 
+        // at first, check the category for a new entry
+        // (the user could have written a new one into the combo field)
+        String testCat = comboCategory.getText();
+        // if there's no category we can skip this step
+        if(StringUtils.isNotBlank(testCat)) {
+            ProductCategory contactCategory = productCategoriesDAO.getCategory(testCat, true);
+            // parentCategory now has the last found Category
+            editorProduct.setCategories(contactCategory);
+        }
+
 		if (newProduct) {
 			// Check, if the item number is the next one
 			if (setNextNr(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
