@@ -309,8 +309,9 @@ public class OfficeDocument {
         }
         
         // copy the PDF to the additional directory
-        if (!preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), generatedPdf.getFileName().toString());
+        if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
+        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), 
+        	        generatedPdf.getFileName().toString());
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
@@ -654,9 +655,14 @@ public class OfficeDocument {
 			value = item.getItemVat().getDescription();
 		}
 
+		// Get the item's category
+		else if (key.equals("ITEM.UNIT.CATEGORY") && item.getProduct() != null) {
+			value = item.getProduct().getCategories().getName();
+		}
+		
 		// Get the item net value
 		else if (key.equals("ITEM.UNIT.NET")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitNetRounded());
+		    value = DataUtils.getInstance().formatCurrency(price.getUnitNetRounded());
 		}
 
 		// Get the item VAT
