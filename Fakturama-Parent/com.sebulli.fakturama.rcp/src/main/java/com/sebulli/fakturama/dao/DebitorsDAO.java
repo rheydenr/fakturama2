@@ -79,7 +79,7 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
         Root<Debitor> debitor = query.from(getEntityClass());
-        query.select(debitor).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
+        query.select(debitor).where(debitor.get(Debitor_.customerNumber).isNotNull()).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
         TypedQuery<Debitor> q = getEntityManager().createQuery(query);
         q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
 //        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
