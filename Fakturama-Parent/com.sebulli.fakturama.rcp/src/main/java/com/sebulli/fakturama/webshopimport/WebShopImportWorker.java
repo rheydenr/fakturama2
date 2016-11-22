@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
@@ -44,7 +46,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.javamoney.moneta.FastMoney;
-import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
@@ -203,7 +204,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 // 2. create a new XML parser
                 SAXParserFactory factory = SAXParserFactory.newInstance();
                 factory.setNamespaceAware(true);
-                XMLReader reader = factory.newSAXParser().getXMLReader();
+//                XMLReader reader = factory.newSAXParser().getXMLReader();
         		
 //        		// 2. Use JAXBContext instance to create the Unmarshaller.
         		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -373,7 +374,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	//T: Status message importing data from web shop
         	monitor.subTask(msg.importWebshopInfoImportorders);
         	setProgress(95);
-        	List<OrderType> orderList = webshopexport.getOrders().getOrder();
+        	List<OrderType> orderList = webshopexport.getOrders();
         	int orderListSize = orderList.size();
         	for (int orderIndex = 0; orderIndex < orderListSize; orderIndex++) {
         		OrderType order = orderList.get(orderIndex);
@@ -390,12 +391,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
          */
         private void allOrdersAreInSync() {
         	webShopImportManager.setOrderstosynchronize(new Properties());
-        	Path f = Paths.get(generalWorkspace, "orders2sync.txt");
+        	Path f = Paths.get(generalWorkspace, WebShopImportManager.FILENAME_ORDERS2SYNC);
         	try {
                 Files.deleteIfExists(f);
             }
             catch (IOException e) {
-                webShopImportManager.getLog().error(e, "can't delete orders2sync.txt");
+                webShopImportManager.getLog().error(e, "can't delete " +  WebShopImportManager.FILENAME_ORDERS2SYNC);
             }
         }
 
@@ -575,7 +576,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
     
     			// Calculate the net value of the price
-        		MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
+        		MonetaryAmount priceNet = FastMoney.of(NumberUtils.DOUBLE_ZERO, currencyCode);
 				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
 				priceNet = priceGross.divide(1 + vatPercent);
     
@@ -593,19 +594,27 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
 
     			// Use item model as item name, if name is empty
-    			if (itemType.getName().isEmpty() && !itemType.getModel().isEmpty()) {
+    			if (!itemType.getModel().isEmpty() && itemType.getName().isEmpty()) {
     				itemName = itemType.getModel();
     			}
     
     			// Import the product attributes
     			itemDescription = new StringBuffer();
+    			// store additional prices for attributes
+    			Float attrPrice = NumberUtils.FLOAT_ZERO;
+    			StringBuilder prefixSb = new StringBuilder();
     			for (AttributeType attribute : itemType.getAttribute()) {
     				// Get all attributes
 					if (itemDescription.length() > 0) {
 						itemDescription.append(", ");
 					}
-					itemDescription.append(attribute.getOption()).append(": ");
-					itemDescription.append(attribute.getValue());
+					itemDescription.append(attribute.getOption()).append(": ")
+					               .append(attribute.getValue());
+					
+					attrPrice += attribute.getPrice();
+					if(StringUtils.isNotBlank(attribute.getPrefix())) {
+					    prefixSb.append("ATTR_").append(attribute.getPrefix());
+					}
     			}
     
     			// Create a new product
@@ -639,13 +648,16 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			 */
     			item.setName(newOrExistingProduct.getName());
     			item.setItemNumber(newOrExistingProduct.getItemNumber());
-    			item.setDescription(newOrExistingProduct.getDescription());
+    			item.setDescription(newOrExistingProduct.getDescription() + prefixSb.toString());
     			item.setQuantity(Double.valueOf(itemType.getQuantity()));
     			item.setQuantityUnit(StringUtils.isBlank(itemType.getQunit()) ? newOrExistingProduct.getQuantityUnit() : itemType.getQunit());
     			item.setValidFrom(today);
     			item.setProduct(newOrExistingProduct);
     			item.setItemVat(vat);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));
+    			// add prices from attributes
+    			item.setPrice(item.getPrice() + attrPrice * item.getQuantity());
+    			
     			if(itemType.getDiscount() != null) {
 	    			double discount = new BigDecimal(itemType.getDiscount()).round(mathContext).doubleValue();
 	    			item.setItemRebate(discount);
@@ -723,9 +735,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	dataSetDocument.setDocumentDate(Date.from(instant));
         	dataSetDocument.setDateAdded(today);
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());
-    	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : 0.0);
-        	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
-        	dataSetDocument.setPaidValue(Double.valueOf(0.0));
+        	if(paymentType != null) {
+        	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : NumberUtils.DOUBLE_ZERO);
+            	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
+        	} else {
+                dataSetDocument.setItemsRebate(NumberUtils.DOUBLE_ZERO);
+                dataSetDocument.setTotalValue(NumberUtils.DOUBLE_ZERO);
+        	}
+        	dataSetDocument.setPaidValue(NumberUtils.DOUBLE_ZERO);
         	dataSetDocument.setPaid(Boolean.FALSE);
         
         	// There is no VAT used
@@ -745,11 +762,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 //        	dataSetDocument.calculate();
         	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode).calculate(dataSetDocument);
 			MonetaryAmount calcTotal = summary.getTotalGross();
-			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType.getTotal(), currencyCode); 
+			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode); 
         	// If there is a difference, show a warning.
         	if (!calcTotal.isEqualTo(totalFromWebshop)) {
         		//T: Error message importing data from web shop
         		//T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
+//        	    String error = MessageFormat.format(msg.importWebshopErrorTotalsum, webshopId, 
+//        	            DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
+//        	            DataUtils.getInstance().formatCurrency(calcTotal) );
         		String error = msg.toolbarNewOrderName + ":";
         		error += " " + webshopId + "\n";
         		error += msg.importWebshopInfoTotalsum;

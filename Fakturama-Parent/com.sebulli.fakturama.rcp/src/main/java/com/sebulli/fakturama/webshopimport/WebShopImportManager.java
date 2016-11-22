@@ -83,7 +83,7 @@ public class WebShopImportManager implements IWebshopConnection {
     /**
 	 * 
 	 */
-	private static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
+	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
 
 	/**
      * Prepare the web shop import to request products and orders or to change

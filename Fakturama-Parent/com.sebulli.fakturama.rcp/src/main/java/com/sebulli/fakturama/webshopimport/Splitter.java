@@ -211,11 +211,10 @@ public class Splitter extends XMLFilterImpl {
 	}
 
 	private void process(OrderType value) {
-		// TODO Auto-generated method stub
-		
+        System.out.println("this order will be shipped at " + value.getDate());
 	}
 
-	public void process(ProductType order) {
+	private void process(ProductType order) {
 		System.out.println(
 				String.format("current location: [%d:%d]", locator.getLineNumber(), locator.getColumnNumber()));
 		System.out.println("this order will be shipped to " + order.getCategory());

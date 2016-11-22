@@ -162,10 +162,10 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 					connectorVersion.setText(expenseObj.getVersion());
 					
 					// fill WebshopStateTreeMapper
-					if(expenseObj.getStatusList() == null) {
+					if(expenseObj.getStatus() == null) {
 						MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError, msg.preferencesWebshopSettingsStateError);
 					} else {
-						List<StatusType> statusList = expenseObj.getStatusList().getStatus();
+						List<StatusType> statusList = expenseObj.getStatus();
 						List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.size());
 						for (StatusType state : statusList) {
 							WebshopOrderState webshopOrderState = new WebshopOrderState(state.getId(), 
