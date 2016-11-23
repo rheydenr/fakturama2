@@ -673,7 +673,7 @@ public class ProductEditor extends Editor<Product> {
 //					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
-						nextWidget = netText[i].getGrossText().getControl();
+						nextWidget = netText[i].getNetText().getControl();
 					}
 				}
 
@@ -709,8 +709,7 @@ public class ProductEditor extends Editor<Product> {
 					}
 				}
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    log.error(e, "error while creating the ProductEditor part");
 			}
 		}
 

@@ -191,7 +191,7 @@ em.joinTransaction();
     }
 
     /**
-     * Finds a t with its name.
+     * Finds an entity with its name.
      * 
      * @param entityName the name of the entity
      * @return T

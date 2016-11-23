@@ -8,7 +8,8 @@
 				<xs:element name="webshop" type="fkt:WebshopType"/>
 				<xs:element name="complete_version" type="xs:string"/>
 				<xs:element maxOccurs="1" minOccurs="0" name="products" type="fkt:ProductsType"/>
-				<xs:element maxOccurs="unbounded" minOccurs="0" name="orders" type="fkt:OrderType"/> 
+				<xs:element name="orders" maxOccurs="1" minOccurs="0"
+						type="fkt:OrdersType" /> 
 				<xs:element minOccurs="0" name="error" type="xs:string"/>
 				<xs:element maxOccurs="unbounded" minOccurs="0" name="status" type="fkt:StatusType"/>
 			</xs:sequence>
@@ -27,6 +28,13 @@
 
 	<xs:element name="product" type="fkt:ProductType"/>
 	<xs:element name="order" type="fkt:OrderType"/>
+
+	<xs:complexType name="OrdersType">
+		<xs:sequence>
+			<xs:element ref="fkt:order" maxOccurs="unbounded"
+					minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
 
 	<xs:complexType name="OrderType">
 		<xs:sequence>

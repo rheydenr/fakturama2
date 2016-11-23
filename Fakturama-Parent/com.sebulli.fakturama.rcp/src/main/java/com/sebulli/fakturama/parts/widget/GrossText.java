@@ -80,9 +80,9 @@ public class GrossText {
 		// Set the text of the NetText, based on the GrossText's value
 		grossText.getControl().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if (grossText.getControl().isFocusControl()) {
+				if (grossText != null && grossText.getControl().isFocusControl()) {
 					netValue = DataUtils.getInstance().calculateNetFromGross(
-							grossText != null ? grossText.getControl() : null, 
+							grossText.getControl(), 
 							netText != null ? netText.getControl() : null, vatValue, netValue);
 					if(netText != null) {
 						netText.setValue(netValue);

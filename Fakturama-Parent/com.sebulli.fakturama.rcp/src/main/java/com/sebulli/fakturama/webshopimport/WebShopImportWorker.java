@@ -46,6 +46,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
 import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
@@ -374,7 +375,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	//T: Status message importing data from web shop
         	monitor.subTask(msg.importWebshopInfoImportorders);
         	setProgress(95);
-        	List<OrderType> orderList = webshopexport.getOrders();
+            List<OrderType> orderList = webshopexport.getOrders().getOrder();
         	int orderListSize = orderList.size();
         	for (int orderIndex = 0; orderIndex < orderListSize; orderIndex++) {
         		OrderType order = orderList.get(orderIndex);
@@ -576,9 +577,8 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
     
     			// Calculate the net value of the price
-        		MonetaryAmount priceNet = FastMoney.of(NumberUtils.DOUBLE_ZERO, currencyCode);
 				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
-				priceNet = priceGross.divide(1 + vatPercent);
+				MonetaryAmount priceNet = priceGross.divide(1 + vatPercent);
     
                 // Add the VAT value to the data base, if it is a new one
     			VAT vat = getOrCreateVAT(itemType.getVatname(), vatPercent);
@@ -656,7 +656,8 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			item.setItemVat(vat);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));
     			// add prices from attributes
-    			item.setPrice(item.getPrice() + attrPrice * item.getQuantity());
+    			// TODO cannot get option price from an item (it has no such field)
+//    			item.setPrice(item.getPrice() + attrPrice * item.getQuantity());
     			
     			if(itemType.getDiscount() != null) {
 	    			double discount = new BigDecimal(itemType.getDiscount()).round(mathContext).doubleValue();
@@ -755,14 +756,15 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	}
         	
         	// Update the data base with the new document data
-        	this.webShopImportManager.getDocumentsDAO().save(dataSetDocument);
+        	dataSetDocument = this.webShopImportManager.getDocumentsDAO().save(dataSetDocument);
         
         	// Re-calculate the document's total sum and check it.
         	// It must be the same total value as in the web shop
 //        	dataSetDocument.calculate();
         	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode).calculate(dataSetDocument);
 			MonetaryAmount calcTotal = summary.getTotalGross();
-			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode); 
+			MonetaryAmount totalFromWebshop = Money.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode);
+			totalFromWebshop = DataUtils.getInstance().getDefaultRounding().apply(totalFromWebshop);
         	// If there is a difference, show a warning.
         	if (!calcTotal.isEqualTo(totalFromWebshop)) {
         		//T: Error message importing data from web shop
@@ -931,28 +933,28 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             return null;
         }
 
-//        /**
-//         * Convert the payment method to a readable (and localized) text.
-//         * 
-//         * @param intext
-//         *            order status
-//         * @return payment method as readable (and localized) text
-//         */
-//        private String getPaymentMethodText(String intext) {
-//        	String paymentstatustext = intext;
-//        
-//        	if (intext.equalsIgnoreCase("cod"))
-//        		paymentstatustext = msg.importWebshopDataCashondelivery;
-//        	else if (intext.equalsIgnoreCase("prepayment"))
-//        		paymentstatustext = msg.importWebshopDataPrepayment;
-//        	else if (intext.equalsIgnoreCase("creditcard"))
-//        		paymentstatustext = msg.importWebshopDataCreditcard;
-//        	else if (intext.equalsIgnoreCase("check"))
-//        		paymentstatustext = msg.importWebshopDataCheque;
-//        
-//        	return paymentstatustext;
-//        
-//        }
+        /**
+         * Convert the payment method to a readable (and localized) text.
+         * 
+         * @param intext
+         *            order status
+         * @return payment method as readable (and localized) text
+         */
+        private String getPaymentMethodText(String intext) {
+        	String paymentstatustext = intext;
+        
+        	if (intext.equalsIgnoreCase("cod"))
+        		paymentstatustext = msg.importWebshopDataCashondelivery;
+        	else if (intext.equalsIgnoreCase("prepayment"))
+        		paymentstatustext = msg.importWebshopDataPrepayment;
+        	else if (intext.equalsIgnoreCase("creditcard"))
+        		paymentstatustext = msg.importWebshopDataCreditcard;
+        	else if (intext.equalsIgnoreCase("check"))
+        		paymentstatustext = msg.importWebshopDataCheque;
+        
+        	return paymentstatustext;
+        
+        }
         
 	/**
 	 * Debug input stream.
@@ -974,28 +976,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 	     */
     	private String getStringFromInputStream(InputStream is) {
 
-    		BufferedReader br = null;
-    		StringBuilder sb = new StringBuilder();
+            String line = "";
+            try {
 
-    		String line;
-    		try {
+                line = IOUtils.toString(is);
 
-    			br = new BufferedReader(new InputStreamReader(is));
-    			while ((line = br.readLine()) != null) {
-    				sb.append(line);
-    			}
-
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		} finally {
-    			if (br != null) {
-    				try {
-    					br.close();
-    				} catch (IOException e) {
-    					e.printStackTrace();
-    				}
-    			}
-    		}
-    		return sb.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return line;
     	}
 	 }
