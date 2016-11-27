@@ -14,7 +14,7 @@
 	<name>com.sebulli.fakturama.rcp</name>
 	<url>http://www.fakturama.info</url>
 
-	<build><pluginManagement>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -76,10 +76,25 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.12.3</version>
+                <version>0.13.1</version>
+                <executions>
+                    <execution><id>jaxb</id> <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals><configuration>
+                                            <forceRegenerate>true</forceRegenerate>
+                    <verbose>true</verbose>
+                    <schemaDirectory>src/main/resources</schemaDirectory>                    
+                    <generateDirectory>src-gen/main/java</generateDirectory>
+                    <encoding>UTF-8</encoding>
+                    <markGenerated>true</markGenerated>
+                    <locale>en</locale>
+                    <generatePackage>com.sebulli.fakturama.webshopimport.type</generatePackage>
+                        </configuration>
+                    </execution>
+                </executions>
                 <configuration>
                     <extension>true</extension>
-                    <forceRegenerate>false</forceRegenerate>
                     <args>
                         <arg>-Xfluent-api</arg>
                         <arg>-Xannotate</arg>
@@ -102,23 +117,9 @@
                             <version>2.1.8</version>
                         </plugin>
                     </plugins>
-                    <verbose>true</verbose>
-                    <schemaDirectory>src/main/resources</schemaDirectory>                    
-                    <generateDirectory>src-gen/main/java</generateDirectory>
-                    <encoding>UTF-8</encoding>
-                    <markGenerated>true</markGenerated>
-                    <locale>en</locale>
-                    <generatePackage>com.sebulli.fakturama.webshopimport.type</generatePackage>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
-		</plugins></pluginManagement>
+		</plugins>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
