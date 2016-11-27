@@ -480,7 +480,10 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			}
 			
 			// set explicit the customers data
-			contactItem.setCustomerNumber(contact.getId());
+			// only set the number if it's not empty
+			if(StringUtils.isNotBlank(contact.getId())) {
+			    contactItem.setCustomerNumber(contact.getId());
+			}
             contactItem.setFirstName(contact.getFirstname());
             contactItem.setName(contact.getLastname());
             contactItem.setCompany(contact.getCompany());
@@ -493,7 +496,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today);
-            String countryCode = LocaleUtil.getInstance("en").findCodeByDisplayCountry(contact.getCountry());
+            String countryCode = LocaleUtil.getInstance("de").findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
