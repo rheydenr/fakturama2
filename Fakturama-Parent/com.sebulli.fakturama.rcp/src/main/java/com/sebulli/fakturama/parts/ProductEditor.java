@@ -37,7 +37,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -75,6 +74,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Product;
@@ -105,12 +105,6 @@ public class ProductEditor extends Editor<Product> {
 
     @Inject
     protected VatsDAO vatDao;
-    
-    /**
-     * Event Broker for sending update events to the list table
-     */
-    @Inject
-    protected IEventBroker evtBroker;
 
     @Inject
     protected ProductCategoriesDAO productCategoriesDAO;
@@ -198,6 +192,16 @@ public class ProductEditor extends Editor<Product> {
 		 * - options (not yet implemented)
 		 * - date_added (not modified by editor)
 		 */
+
+        // at first, check the category for a new entry
+        // (the user could have written a new one into the combo field)
+        String testCat = comboCategory.getText();
+        // if there's no category we can skip this step
+        if(StringUtils.isNotBlank(testCat)) {
+            ProductCategory contactCategory = productCategoriesDAO.getCategory(testCat, true);
+            // parentCategory now has the last found Category
+            editorProduct.setCategories(contactCategory);
+        }
 
 		if (newProduct) {
 			// Check, if the item number is the next one
@@ -669,7 +673,7 @@ public class ProductEditor extends Editor<Product> {
 //					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
-						nextWidget = netText[i].getGrossText().getControl();
+						nextWidget = netText[i].getNetText().getControl();
 					}
 				}
 
@@ -705,8 +709,7 @@ public class ProductEditor extends Editor<Product> {
 					}
 				}
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    log.error(e, "error while creating the ProductEditor part");
 			}
 		}
 
@@ -810,7 +813,7 @@ public class ProductEditor extends Editor<Product> {
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
 		}
-		textQuantity.setFormatter(new DoubleFormatter());
+		textQuantity.setFormatter(new DoubleFormatter(LocaleUtil.getInstance().getDefaultLocale()));
 		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 

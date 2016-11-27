@@ -14,12 +14,12 @@
 
 package com.sebulli.fakturama.webshopimport;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -60,7 +60,9 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.ShippingEditor;
@@ -73,7 +75,7 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
  * file is created by a connector, which is individual for each shop system.
  * Look at Fakturama download page for further information. 
  * The WebshopImporter (which is started by this {@link WebShopImportManager}) creates the 
- * missing products, VATs and documents (orders in this case). 
+ * missing products, {@link VAT}s and {@link Document}s (orders in this case). 
  * 
  */
 public class WebShopImportManager implements IWebshopConnection {
@@ -81,7 +83,7 @@ public class WebShopImportManager implements IWebshopConnection {
     /**
 	 * 
 	 */
-	private static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
+	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
 
 	/**
      * Prepare the web shop import to request products and orders or to change
@@ -214,11 +216,11 @@ public class WebShopImportManager implements IWebshopConnection {
 
 		// Refresh the views -> fire some update events
 		// => the messages are handled by list views! 
-		evtBroker.post(ProductEditor.EDITOR_ID, "update");
-		evtBroker.post(ContactEditor.EDITOR_ID, "update");
-		evtBroker.post(PaymentEditor.EDITOR_ID, "update");
-		evtBroker.post(ShippingEditor.EDITOR_ID, "update");
-		evtBroker.post(VatEditor.EDITOR_ID, "update");
+		evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(ContactEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(PaymentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 
 		// After the web shop import, open the document view
 		// and set the focus to the new imported orders.
@@ -299,7 +301,7 @@ public class WebShopImportManager implements IWebshopConnection {
         Path orders2sync = Paths.get(getGeneralWorkspace(), FILENAME_ORDERS2SYNC);
         try (InputStream reader = Files.newInputStream(orders2sync)) {
             getOrderstosynchronize().load(reader);
-        } catch (FileNotFoundException fnex) {
+        } catch (NoSuchFileException fnex) {
             //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
         	// it's not really important...
         } catch (IOException e) {

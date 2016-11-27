@@ -46,16 +46,18 @@ public class OpenContactsHandler {
 	        final EPartService partService) {
 		// see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=372211
 	    MPart contactListPart = partService.findPart(editorType);
-        if(contactListPart != null && contactListPart.isVisible()) {
-            log.debug("part is already created!");
-            partService.showPart(contactListPart,
-                    PartState.VISIBLE);
-        } else {
-            contactListPart.setVisible(true);
-            // otherwise no content is rendered :-(
-            contactListPart.setToBeRendered(true);
-            partService.showPart(contactListPart,
-                    PartState.ACTIVATE);
+        if(contactListPart != null) {
+            if(contactListPart.isVisible()) {
+                log.debug("part is already created!");
+                partService.showPart(contactListPart,
+                        PartState.VISIBLE);
+            } else {
+                contactListPart.setVisible(true);
+                // otherwise no content is rendered :-(
+                contactListPart.setToBeRendered(true);
+                partService.showPart(contactListPart,
+                        PartState.ACTIVATE);
+            }
         }
 	}
 }

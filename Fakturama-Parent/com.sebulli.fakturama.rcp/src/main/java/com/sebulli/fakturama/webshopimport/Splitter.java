@@ -1,5 +1,12 @@
 package com.sebulli.fakturama.webshopimport;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -41,9 +48,11 @@ import java.util.Enumeration;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshallerHandler;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -51,17 +60,18 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.NamespaceSupport;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.webshopimport.type.OrderType;
 import com.sebulli.fakturama.webshopimport.type.ProductType;
 
 /**
  * This object implements XMLFilter and monitors the incoming SAX events. Once
- * it hits a purchaseOrder element, it creates a new unmarshaller and unmarshals
- * one purchase order.
+ * it hits a order element, it creates a new unmarshaller and unmarshals
+ * one order.
  * 
  * <p>
  * Once finished unmarshalling it, we will process it, then move on to the next
- * purchase order.
+ * order.
  */
 public class Splitter extends XMLFilterImpl {
 
@@ -89,11 +99,28 @@ public class Splitter extends XMLFilterImpl {
 	 * JAXB unmarshaller.
 	 */
 	private Locator locator;
+	protected IProgressMonitor localMonitor;
+	protected Messages msg;
+	
+	/**
+	 * Writer for creating a logfile.
+	 */
+	BufferedWriter logBuffer = null;
 
-	public Splitter(JAXBContext context) {
+	public Splitter(JAXBContext context, IProgressMonitor localMonitor, Path logFile) {
 		this.context = context;
+		this.localMonitor = localMonitor;
+		
+        // Create a buffered writer to write the imported data to the file system
+        try {
+            logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
+	
 	/**
 	 * We will create unmarshallers from this context.
 	 */
@@ -101,54 +128,71 @@ public class Splitter extends XMLFilterImpl {
 
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 
-		if (depth != 0) {
-			// we are in the middle of forwarding events.
-			// continue to do so.
-			depth++;
-			super.startElement(namespaceURI, localName, qName, atts);
-			return;
-		}
-
-//		if (namespaceURI.equals("") && localName.equals("purchaseOrder")) {
-		if (namespaceURI.equals("http://www.fakturama.org") 
-				&& (localName.equals("product")
-				 || localName.equals("order"))) {
-			// start a new unmarshaller
-			Unmarshaller unmarshaller;
-			try {
-				unmarshaller = context.createUnmarshaller();
-			} catch (JAXBException e) {
-				// there's no way to recover from this error.
-				// we will abort the processing.
-				throw new SAXException(e);
-			}
-			unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
-
-			// set it as the content handler so that it will receive
-			// SAX events from now on.
-			setContentHandler(unmarshallerHandler);
-
-			// fire SAX events to emulate the start of a new document.
-			unmarshallerHandler.startDocument();
-			unmarshallerHandler.setDocumentLocator(locator);
-			
-			Enumeration<String> e = namespaces.getPrefixes();
-			while (e.hasMoreElements()) {
-				String prefix = e.nextElement();
-				String uri = namespaces.getURI(prefix);
-
-				unmarshallerHandler.startPrefixMapping(prefix, uri);
-			}
-			String defaultURI = namespaces.getURI("");
-			if (defaultURI != null)
-				unmarshallerHandler.startPrefixMapping("", defaultURI);
-
-			super.startElement(namespaceURI, localName, qName, atts);
-
-			// count the depth of elements and we will know when to stop.
-			depth = 1;
-		}
+	    if (!localMonitor.isCanceled()) {
+    		if (depth != 0) {
+    			// we are in the middle of forwarding events.
+    			// continue to do so.
+    			depth++;
+    			super.startElement(namespaceURI, localName, qName, atts);
+    			return;
+    		}
+    
+    		if (namespaceURI.equals("http://www.fakturama.org") 
+    				&& (localName.equals("product")
+    				 || localName.equals("order"))) {
+    			// start a new unmarshaller
+    			Unmarshaller unmarshaller;
+    			try {
+    				unmarshaller = context.createUnmarshaller();
+    			} catch (JAXBException e) {
+    				// there's no way to recover from this error.
+    				// we will abort the processing.
+    				throw new SAXException(e);
+    			}
+    			unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
+    
+    			// set it as the content handler so that it will receive
+    			// SAX events from now on.
+    			setContentHandler(unmarshallerHandler);
+    
+    			// fire SAX events to emulate the start of a new document.
+    			unmarshallerHandler.startDocument();
+    			unmarshallerHandler.setDocumentLocator(locator);
+    			
+    			Enumeration<String> e = namespaces.getPrefixes();
+    			while (e.hasMoreElements()) {
+    				String prefix = e.nextElement();
+    				String uri = namespaces.getURI(prefix);
+    
+    				unmarshallerHandler.startPrefixMapping(prefix, uri);
+    			}
+    			String defaultURI = namespaces.getURI("");
+    			if (defaultURI != null)
+    				unmarshallerHandler.startPrefixMapping("", defaultURI);
+    
+    			super.startElement(namespaceURI, localName, qName, atts);
+    
+    			// count the depth of elements and we will know when to stop.
+    			depth = 1;
+    		}
+	    } else {
+	        throw new SAXException("import cancelled");
+	    }
 	}
+
+    private void logXml(Object jaxbElement) {
+        // Write the web shop log file
+        if (logBuffer != null) {
+            try {
+                Marshaller marshaller = context.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshaller.marshal(jaxbElement, logBuffer);
+            } catch (JAXBException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
 	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 
@@ -211,11 +255,10 @@ public class Splitter extends XMLFilterImpl {
 	}
 
 	private void process(OrderType value) {
-		// TODO Auto-generated method stub
-		
+        System.out.println("this order will be shipped at " + value.getDate());
 	}
 
-	public void process(ProductType order) {
+	private void process(ProductType order) {
 		System.out.println(
 				String.format("current location: [%d:%d]", locator.getLineNumber(), locator.getColumnNumber()));
 		System.out.println("this order will be shipped to " + order.getCategory());

@@ -102,6 +102,9 @@ public class DocumentTypeUtil {
         case CREDIT:
             document = modelFactory.createCredit();
             break;
+        case LETTER:
+            document = modelFactory.createLetter();
+            break;
         default:
             document = modelFactory.createOrder();
             break;

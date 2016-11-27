@@ -19,7 +19,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,11 +30,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +46,8 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
+import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -196,16 +202,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 
         		/* if we have larger documents we have to use SAX.         		*/
-//                // 2. create a new XML parser
+                // 2. create a new XML parser
 //                SAXParserFactory factory = SAXParserFactory.newInstance();
 //                factory.setNamespaceAware(true);
 //                XMLReader reader = factory.newSAXParser().getXMLReader();
         		
 //        		// 2. Use JAXBContext instance to create the Unmarshaller.
         		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-				// 3. Use the Unmarshaller to unmarshal the XML document to get
-				// an instance of JAXBElement.
     
                 //T: Status message importing data from web shop
                 localMonitor.subTask(msg.importWebshopInfoLoading);
@@ -219,40 +222,38 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 if (!filename.isEmpty()) {
     
                     // Create a sub folder "Log" if it does not exist yet.
-                    filename += "/Log/";
-                    Path directory = Paths.get(filename);
-                    if (!Files.isDirectory(directory)) {
-                        Files.createDirectories(directory);
+                    // Name of the log file
+                    // Create a File object
+                    logFile = Paths.get(filename, "Log", "WebShopImport.log");
+                    if (!Files.isDirectory(logFile.getParent())) {
+                        Files.createDirectories(logFile.getParent());
                     }
     
-                    // Name of the log file
-                    filename += "WebShopImport.log";
-    
-                    // Create a File object
-                    logFile = Paths.get(filename);
-    
                     // Create a new file
-                    Files.deleteIfExists(logFile);
-                    Files.createFile(logFile);
-    
+//                    Files.deleteIfExists(logFile);
+//                    Files.createFile(logFile);
+//    
                     // Create a buffered writer to write the imported data to the file system
-                    logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"));
+                    logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 }
                 
-				// 4. Get the instance of the required JAXB Root Class from the
-				// JAXBElement.
+                // 3. Use the Unmarshaller to unmarshal the XML document to get
+                // an instance of JAXBElement.
+                // 4. Get the instance of the required JAXB Root Class from the
+                // JAXBElement.
 				webshopexport = (Webshopexport) unmarshaller
         					.unmarshal(interruptConnection.getInputStream());
                 
 				// alternatively (for large responses)
-//                // prepare a Splitter
+                // prepare a Splitter
 //                Splitter splitter = new Splitter(jaxbContext);
-//
-//                // connect two components
+
+                // connect two components
 //                reader.setContentHandler(splitter);
-//                
-//                // note that XMLReader expects an URL, not a file name.
-//                // so we need conversion.
+                
+				// TODO surround with try-catch! This is the main part for reading the stream.
+                // note that XMLReader expects an URL, not a file name.
+                // so we need conversion.
 //                reader.parse(new InputSource(interruptConnection.getInputStream()));
                 
         		setProgress(50);
@@ -374,11 +375,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	//T: Status message importing data from web shop
         	monitor.subTask(msg.importWebshopInfoImportorders);
         	setProgress(95);
-        	List<OrderType> orderList = webshopexport.getOrders().getOrder();
+            List<OrderType> orderList = webshopexport.getOrders().getOrder();
         	int orderListSize = orderList.size();
+            ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, this.webShopImportManager.getContext());              
+            Date today = Date.from(Instant.now());
         	for (int orderIndex = 0; orderIndex < orderListSize; orderIndex++) {
         		OrderType order = orderList.get(orderIndex);
-        		createOrderFromXMLOrderNode(order, webshopexport.getWebshop().getLang());
+        		createOrderFromXMLOrderNode(order, webshopexport.getWebshop().getLang(), contactUtil, today);
         	}
         
         	// Save the new list of orders that are not in synch with the shop
@@ -391,12 +394,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
          */
         private void allOrdersAreInSync() {
         	webShopImportManager.setOrderstosynchronize(new Properties());
-        	Path f = Paths.get(generalWorkspace, "/orders2sync.txt");
+        	Path f = Paths.get(generalWorkspace, WebShopImportManager.FILENAME_ORDERS2SYNC);
         	try {
                 Files.deleteIfExists(f);
             }
             catch (IOException e) {
-                webShopImportManager.getLog().error(e, "can't delete orders2sync.txt");
+                webShopImportManager.getLog().error(e, "can't delete " +  WebShopImportManager.FILENAME_ORDERS2SYNC);
             }
         }
 
@@ -405,11 +408,11 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
          * 
          * @param order
          *            The node with the orders to import
+         * @param today 
+         * @param contactUtil 
          * @throws SQLException 
          */
-        private void createOrderFromXMLOrderNode(OrderType order, String lang) throws FakturamaStoringException {
-        	ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, this.webShopImportManager.getContext());   			
-            Date today = Date.from(Instant.now());
+        private void createOrderFromXMLOrderNode(OrderType order, String lang, ContactUtil contactUtil, Date today) throws FakturamaStoringException {
         	
     		// Order data
     		String webshopId;
@@ -490,7 +493,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today);
-            String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
+            String countryCode = LocaleUtil.getInstance("en").findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
@@ -566,7 +569,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
     
     			// If one item has a vat value, reset the noVat flag
-    			if (vatPercent > 0.0) {
+    			if (vatPercent.compareTo(NumberUtils.DOUBLE_ZERO) > 0) {
     				noVat = false;
     			} else {
     				// Use the vat name
@@ -576,9 +579,8 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
     
     			// Calculate the net value of the price
-        		MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
 				MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
-				priceNet = priceGross.divide(1 + vatPercent);
+				MonetaryAmount priceNet = priceGross.divide(1 + vatPercent);
     
                 // Add the VAT value to the data base, if it is a new one
     			VAT vat = getOrCreateVAT(itemType.getVatname(), vatPercent);
@@ -594,19 +596,28 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			}
 
     			// Use item model as item name, if name is empty
-    			if (itemType.getName().isEmpty() && !itemType.getModel().isEmpty()) {
+    			if (!itemType.getModel().isEmpty() && itemType.getName().isEmpty()) {
     				itemName = itemType.getModel();
     			}
     
     			// Import the product attributes
     			itemDescription = new StringBuffer();
+    			// store additional prices for attributes
+    			Float attrPrice = NumberUtils.FLOAT_ZERO;
+    			StringBuilder prefixSb = new StringBuilder();
     			for (AttributeType attribute : itemType.getAttribute()) {
     				// Get all attributes
 					if (itemDescription.length() > 0) {
 						itemDescription.append(", ");
 					}
-					itemDescription.append(attribute.getOption()).append(": ");
-					itemDescription.append(attribute.getValue());
+					itemDescription.append(attribute.getOption()).append(": ")
+					               .append(attribute.getValue());
+
+// TODO implement!
+//					attrPrice += attribute.getPrice();
+//					if(StringUtils.isNotBlank(attribute.getPrefix())) {
+//					    prefixSb.append("ATTR_").append(attribute.getPrefix()).append(";");
+//					}
     			}
     
     			// Create a new product
@@ -620,6 +631,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			product.setDescription(itemDescription.toString());
     			product.setPrice1(priceNet.getNumber().numberValue(Double.class));
     			product.setVat(vat);
+    			// ProductOptions?
     			product.setValidFrom(today);
     			//product.setProductId(itemType.getProductid());
     
@@ -640,13 +652,17 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			 */
     			item.setName(newOrExistingProduct.getName());
     			item.setItemNumber(newOrExistingProduct.getItemNumber());
-    			item.setDescription(newOrExistingProduct.getDescription());
+    			item.setDescription(newOrExistingProduct.getDescription() + prefixSb.toString());
     			item.setQuantity(Double.valueOf(itemType.getQuantity()));
     			item.setQuantityUnit(StringUtils.isBlank(itemType.getQunit()) ? newOrExistingProduct.getQuantityUnit() : itemType.getQunit());
     			item.setValidFrom(today);
     			item.setProduct(newOrExistingProduct);
     			item.setItemVat(vat);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));
+    			// add prices from attributes
+    			// TODO cannot get option price from an item (it has no such field)
+    			// item.setPrice(item.getPrice() + attrPrice * item.getQuantity());
+    			
     			if(itemType.getDiscount() != null) {
 	    			double discount = new BigDecimal(itemType.getDiscount()).round(mathContext).doubleValue();
 	    			item.setItemRebate(discount);
@@ -724,9 +740,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	dataSetDocument.setDocumentDate(Date.from(instant));
         	dataSetDocument.setDateAdded(today);
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());
-    	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : 0.0);
-        	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
-        	dataSetDocument.setPaidValue(Double.valueOf(0.0));
+        	if(paymentType != null) {
+        	    dataSetDocument.setItemsRebate(paymentType.getDiscount() != null ? paymentType.getDiscount().doubleValue() : NumberUtils.DOUBLE_ZERO);
+            	dataSetDocument.setTotalValue(paymentType.getTotal().doubleValue());
+        	} else {
+                dataSetDocument.setItemsRebate(NumberUtils.DOUBLE_ZERO);
+                dataSetDocument.setTotalValue(NumberUtils.DOUBLE_ZERO);
+        	}
+        	dataSetDocument.setPaidValue(NumberUtils.DOUBLE_ZERO);
         	dataSetDocument.setPaid(Boolean.FALSE);
         
         	// There is no VAT used
@@ -739,25 +760,22 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	}
         	
         	// Update the data base with the new document data
-        	this.webShopImportManager.getDocumentsDAO().save(dataSetDocument);
+        	dataSetDocument = this.webShopImportManager.getDocumentsDAO().save(dataSetDocument);
         
         	// Re-calculate the document's total sum and check it.
         	// It must be the same total value as in the web shop
 //        	dataSetDocument.calculate();
         	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode).calculate(dataSetDocument);
 			MonetaryAmount calcTotal = summary.getTotalGross();
-			MonetaryAmount totalFromWebshop = FastMoney.of(paymentType.getTotal(), currencyCode); 
+			MonetaryAmount totalFromWebshop = Money.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode);
+			totalFromWebshop = DataUtils.getInstance().getDefaultRounding().apply(totalFromWebshop);
         	// If there is a difference, show a warning.
         	if (!calcTotal.isEqualTo(totalFromWebshop)) {
         		//T: Error message importing data from web shop
         		//T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
-        		String error = msg.toolbarNewOrderName + ":";
-        		error += " " + webshopId + "\n";
-        		error += msg.importWebshopInfoTotalsum;
-        		error += "\n" + DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()) + "\n";
-        		error += msg.importWebshopErrorTotalsumincorrect;
-        		error += "\n" + DataUtils.getInstance().formatCurrency(calcTotal) + "\n";
-        		error += msg.importWebshopErrorTotalsumcheckit;
+        		String error = MessageFormat.format(msg.toolbarNewOrderName + ": " + webshopId + "\n"
+        		+ msg.importWebshopErrorTotalsumincorrect, DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
+        		DataUtils.getInstance().formatCurrency(calcTotal));
         		webShopImportManager.setRunResult(error);
         	}        
         }
@@ -802,7 +820,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             vatPercentDouble = Double.valueOf(product.getVatpercent()).doubleValue() / 100;
 
             // Convert the gross or net string to a money value
-            MonetaryAmount priceNet = FastMoney.of(0.0, currencyCode);
+            MonetaryAmount priceNet = FastMoney.of(NumberUtils.DOUBLE_ZERO, currencyCode);
 
             // Use the net string, if it is set
             // => net string is *never* set! The connectors don't deliver it!
@@ -912,28 +930,28 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             return null;
         }
 
-//        /**
-//         * Convert the payment method to a readable (and localized) text.
-//         * 
-//         * @param intext
-//         *            order status
-//         * @return payment method as readable (and localized) text
-//         */
-//        private String getPaymentMethodText(String intext) {
-//        	String paymentstatustext = intext;
-//        
-//        	if (intext.equalsIgnoreCase("cod"))
-//        		paymentstatustext = msg.importWebshopDataCashondelivery;
-//        	else if (intext.equalsIgnoreCase("prepayment"))
-//        		paymentstatustext = msg.importWebshopDataPrepayment;
-//        	else if (intext.equalsIgnoreCase("creditcard"))
-//        		paymentstatustext = msg.importWebshopDataCreditcard;
-//        	else if (intext.equalsIgnoreCase("check"))
-//        		paymentstatustext = msg.importWebshopDataCheque;
-//        
-//        	return paymentstatustext;
-//        
-//        }
+        /**
+         * Convert the payment method to a readable (and localized) text.
+         * 
+         * @param intext
+         *            order status
+         * @return payment method as readable (and localized) text
+         */
+        private String getPaymentMethodText(String intext) {
+        	String paymentstatustext = intext;
+        
+        	if (intext.equalsIgnoreCase("cod"))
+        		paymentstatustext = msg.importWebshopDataCashondelivery;
+        	else if (intext.equalsIgnoreCase("prepayment"))
+        		paymentstatustext = msg.importWebshopDataPrepayment;
+        	else if (intext.equalsIgnoreCase("creditcard"))
+        		paymentstatustext = msg.importWebshopDataCreditcard;
+        	else if (intext.equalsIgnoreCase("check"))
+        		paymentstatustext = msg.importWebshopDataCheque;
+        
+        	return paymentstatustext;
+        
+        }
         
 	/**
 	 * Debug input stream.
@@ -955,28 +973,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 	     */
     	private String getStringFromInputStream(InputStream is) {
 
-    		BufferedReader br = null;
-    		StringBuilder sb = new StringBuilder();
+            String line = "";
+            try {
 
-    		String line;
-    		try {
+                line = IOUtils.toString(is);
 
-    			br = new BufferedReader(new InputStreamReader(is));
-    			while ((line = br.readLine()) != null) {
-    				sb.append(line);
-    			}
-
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		} finally {
-    			if (br != null) {
-    				try {
-    					br.close();
-    				} catch (IOException e) {
-    					e.printStackTrace();
-    				}
-    			}
-    		}
-    		return sb.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return line;
     	}
 	 }

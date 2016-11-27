@@ -20,7 +20,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -55,7 +54,6 @@ import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
@@ -83,10 +81,6 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
  *
  */
 public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingCategory> {
-
-    @Inject
-    @Translation
-    protected Messages msg;
     
     @Inject
     protected IEclipseContext context;

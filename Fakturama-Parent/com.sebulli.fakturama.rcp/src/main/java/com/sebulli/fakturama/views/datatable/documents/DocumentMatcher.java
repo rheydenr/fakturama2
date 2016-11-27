@@ -121,8 +121,11 @@ public class DocumentMatcher implements Matcher<Document> {
                         break;
                     }
                     break;
-                    default:
-                        break;
+                case OFFER:
+                case LETTER:
+                    break;
+                default:
+                    break;
                 }
                 return category;
             }

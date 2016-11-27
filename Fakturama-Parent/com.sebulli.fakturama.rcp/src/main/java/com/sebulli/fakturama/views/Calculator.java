@@ -554,7 +554,7 @@ public class Calculator {
 			return tempString;
 		}
 		// Value is -0
-		if (tempString.equals(-0.0)) {
+		if (tempString.equals("-0.0")) {
 			tempString = "0";
 			return tempString;
 		}

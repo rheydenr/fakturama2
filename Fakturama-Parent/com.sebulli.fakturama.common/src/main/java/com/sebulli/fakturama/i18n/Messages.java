@@ -405,7 +405,6 @@ public class Messages {
 	public String importWebshopErrorCantread;
 	public String importWebshopErrorMalformedurl;
 	public String importWebshopErrorNodata;
-	public String importWebshopErrorTotalsumcheckit;
 	public String importWebshopErrorTotalsumincorrect;
 	public String importWebshopErrorUrlnotset;
 	public String importWebshopInfoConnected;
@@ -414,7 +413,6 @@ public class Messages {
 	public String importWebshopInfoLoading;
 	public String importWebshopInfoLoadingpicture;
 	public String importWebshopInfoSuccess;
-	public String importWebshopInfoTotalsum;
 	public String importWebshopInfoWebshopno;
 	public String Installaction94;
 	

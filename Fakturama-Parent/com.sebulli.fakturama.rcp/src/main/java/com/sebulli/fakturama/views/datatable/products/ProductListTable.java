@@ -382,7 +382,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ProductEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(productListData, GlazedLists.eventList(productsDAO.findAll(true)), false);

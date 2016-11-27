@@ -120,6 +120,8 @@ public abstract class Editor<T extends IEntity> {
 	protected static final int ERROR_NOT_NEXT_ID = 1;
     protected DataBindingContext ctx = new DataBindingContext();
 
+    private FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
+
 	protected abstract MDirtyable getMDirtyablePart();
 
 	/**
@@ -402,9 +404,18 @@ public abstract class Editor<T extends IEntity> {
 //			defaultValuePrefs.setValue("last_setnextnr_date_" + getEditorID().toLowerCase(), now.format(DateTimeFormatter.ISO_DATE));
 //			((IPersistentPreferenceStore)defaultValuePrefs).save();
 			UserProperty nextNumber = propertiesDao.findByName(prefStrNr);
+			if(nextNumber == null) {
+			    nextNumber = fakturamaModelFactory.createUserProperty();
+			    nextNumber.setName(prefStrNr);
+			}
 			nextNumber.setValue(Integer.toString(nr));
 			
-			UserProperty lastSetNextNrDate = propertiesDao.findByName("last_setnextnr_date_" + getEditorID().toLowerCase());
+			String entityName = "last_setnextnr_date_" + getEditorID().toLowerCase();
+            UserProperty lastSetNextNrDate = propertiesDao.findByName(entityName);
+            if(lastSetNextNrDate == null) {
+                lastSetNextNrDate = fakturamaModelFactory.createUserProperty();
+                lastSetNextNrDate.setName(entityName);
+            }
 			lastSetNextNrDate.setValue(now.format(DateTimeFormatter.ISO_DATE));
 			propertiesDao.save(lastSetNextNrDate);
 			propertiesDao.save(nextNumber);

@@ -53,7 +53,7 @@ final public class ContactMatcher implements Matcher<Contact> {
             String fullCategoryName;
 //            for (ContactCategory category : item.getCategories()) {
                 fullCategoryName = CommonConverter.getCategoryName(item.getCategories(), rootNodeName);
-                if(fullCategoryName.startsWith(contactCategoryName)) {
+                if(fullCategoryName.contentEquals(contactCategoryName)) {
                     found = true;
 //                    break;
                 }

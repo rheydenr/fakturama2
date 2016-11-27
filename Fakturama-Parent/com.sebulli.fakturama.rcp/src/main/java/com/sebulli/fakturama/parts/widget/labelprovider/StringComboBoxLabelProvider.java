@@ -56,7 +56,7 @@ public class StringComboBoxLabelProvider extends LabelProvider {
         if (element != null && element instanceof String) {
             retval = values.get(element);
         } else {
-            retval = values.get(LocaleUtil.getInstance().getDefaultLocale());
+            retval = values.get(LocaleUtil.getInstance().getDefaultLocale().getLanguage());
         }
         
         return retval;
