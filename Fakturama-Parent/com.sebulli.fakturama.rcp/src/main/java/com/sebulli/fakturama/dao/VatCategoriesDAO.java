@@ -134,6 +134,9 @@ public class VatCategoriesDAO extends AbstractDAO<VATCategory> {
         String category = "";
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
+            	if(StringUtils.isBlank(splittedCategories[i])) {
+            		continue;
+            	}
                 category += "/" + splittedCategories[i];
                 VATCategory searchCat = findVATCategoryByName(category);
                 if (searchCat == null) {
