@@ -65,6 +65,9 @@ public class ContactsDAO extends AbstractDAO<Contact> {
             // set to an undefined value so we get no result (then the contact is not found in the database)
             restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
         }
+        
+        // and, finally, filter all deleted contacts
+        restrictions.add(cb.equal(root.get(Contact_.deleted), Boolean.FALSE));
         return restrictions;
     }
 

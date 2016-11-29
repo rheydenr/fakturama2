@@ -49,7 +49,7 @@ public class LocaleUtil {
      * @return a {@link LocaleUtil} instance
      */
     public static LocaleUtil getInstance(String lang) {
-        if(instance == null) {
+        if(instance == null || !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
             instance = new LocaleUtil(lang);
         }
         return instance;

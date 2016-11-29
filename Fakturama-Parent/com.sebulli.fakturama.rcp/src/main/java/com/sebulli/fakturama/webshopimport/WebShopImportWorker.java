@@ -1,10 +1,8 @@
 package com.sebulli.fakturama.webshopimport;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -30,13 +28,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +43,6 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
-import org.xml.sax.XMLReader;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -73,6 +68,8 @@ import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.WebshopStateMapping;
+import com.sebulli.fakturama.parts.DebitorEditor;
+import com.sebulli.fakturama.parts.NumberProvider;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -287,18 +284,18 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                     if (StringUtils.isNotEmpty(webshopexport.getError()) ) {
                     	webShopImportManager.setRunResult(webshopexport.getError());
                     }
+    
+                    // Interpret the imported data (and load the product images)
+                    if (webShopImportManager.getRunResult().isEmpty()) {
+                        // If there is no error - interpret the data.
+                        interpretWebShopData(localMonitor, webshopexport);
+            
+                        // Store the time of now
+                        String now = DataUtils.getInstance().DateAsISO8601String();
+                        webShopImportManager.getPreferences().putValue("lastwebshopimport", now);
+                    }
                 }
                 // else cancel the download process
-    
-                // Interpret the imported data (and load the product images)
-                if (webShopImportManager.getRunResult().isEmpty()) {
-                    // If there is no error - interpret the data.
-                    interpretWebShopData(localMonitor, webshopexport);
-                }
-    
-                // Store the time of now
-                String now = DataUtils.getInstance().DateAsISO8601String();
-                webShopImportManager.getPreferences().putValue("lastwebshopimport", now);
                 
                 localMonitor.done();
             }
@@ -481,6 +478,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			
 			// set explicit the customers data
 			// only set the number if it's not empty
+			// Bug FAK-510
 			if(StringUtils.isNotBlank(contact.getId())) {
 			    contactItem.setCustomerNumber(contact.getId());
 			}
@@ -501,6 +499,15 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             
             contactItem.setAddress(address);
             contactItem = this.webShopImportManager.getContactsDAO().findOrCreate(contactItem);
+            // Attention: If the contact is new then we have to create a new number for it!
+            if(contactItem.getId() == 0) {
+                NumberProvider numberProvider = ContextInjectionFactory.make(NumberProvider.class, this.webShopImportManager.getContext());
+                numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
+                String nextNr = numberProvider.getNextNr();
+                contactItem.setCustomerNumber(nextNr);
+                contactItem = this.webShopImportManager.getContactsDAO().save(contactItem);
+                numberProvider.setNextNr(nextNr);
+            }
 //            contactItem.setSupplierNumber(contact.get); ==> is not transfered from connector!!!
 
             Address deliveryAddress = fakturamaModelFactory.createAddress();

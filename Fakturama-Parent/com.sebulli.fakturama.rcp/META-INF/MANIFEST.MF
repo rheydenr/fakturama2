@@ -12,6 +12,7 @@ Export-Package: com.sebulli.fakturama.calculate,
  com.sebulli.fakturama.dto,
  com.sebulli.fakturama.office,
  com.sebulli.fakturama.parts.widget.formatter,
+ com.sebulli.fakturama.preferences,
  org.fakturama.export.handler
 Require-Bundle: com.sebulli.fakturama.resources;bundle-version="2.0.0",
  com.sebulli.fakturama.common;bundle-version="2.0.0",

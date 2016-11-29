@@ -24,4 +24,10 @@
             pluginId="org.fakturama.exporter.zugferd.preferenceStoreProvider1">
       </preferenceStoreProvider>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.fakturama.export.zugferd.ZFDefaultValuesInitializer">
+      </initializer>
+   </extension>
 </plugin>

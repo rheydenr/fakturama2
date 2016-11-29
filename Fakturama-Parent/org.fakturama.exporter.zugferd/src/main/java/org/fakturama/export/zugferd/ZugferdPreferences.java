@@ -16,6 +16,7 @@ package org.fakturama.export.zugferd;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -24,10 +25,12 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 
+import com.sebulli.fakturama.preferences.IInitializablePreference;
+
 /**
  *
  */
-public class ZugferdPreferences extends FieldEditorPreferencePage {
+public class ZugferdPreferences extends FieldEditorPreferencePage implements IInitializablePreference {
 
 	@Inject
     @Translation
@@ -58,5 +61,16 @@ public class ZugferdPreferences extends FieldEditorPreferencePage {
 		addField(new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, new String[][] { { "BASIC", "BASIC" }, { "COMFORT", "COMFORT" }, { "EXTENDED", "EXTENDED" }
 		 }, getFieldEditorParent()));
 	}
+
+    @Override
+    public void setInitValues(IPreferenceStore node) {
+        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "1");
+        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
+    }
+
+    @Override
+    public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
+        // TODO implement!
+    }
 
 }
