@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.dao;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,8 +67,13 @@ public class ContactsDAO extends AbstractDAO<Contact> {
             restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
         }
         
-        // and, finally, filter all deleted contacts
-        restrictions.add(cb.equal(root.get(Contact_.deleted), Boolean.FALSE));
+        // and, finally, filter all deleted contacts (or contacts that are'nt valid anymore)
+        restrictions.add(cb.and(
+                cb.equal(root.get(Contact_.deleted), Boolean.FALSE),
+                cb.or(
+                    cb.isNull(root.get(Contact_.validTo)),
+                    cb.greaterThanOrEqualTo(root.get(Contact_.validTo), cb.currentDate())
+                    )));
         return restrictions;
     }
 

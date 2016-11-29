@@ -500,12 +500,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             contactItem.setAddress(address);
             contactItem = this.webShopImportManager.getContactsDAO().findOrCreate(contactItem);
             // Attention: If the contact is new then we have to create a new number for it!
-            if(contactItem.getId() == 0) {
+            if(StringUtils.isBlank(contactItem.getCustomerNumber())) {
                 NumberProvider numberProvider = ContextInjectionFactory.make(NumberProvider.class, this.webShopImportManager.getContext());
                 numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
                 String nextNr = numberProvider.getNextNr();
                 contactItem.setCustomerNumber(nextNr);
-                contactItem = this.webShopImportManager.getContactsDAO().save(contactItem);
+                contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
                 numberProvider.setNextNr(nextNr);
             }
 //            contactItem.setSupplierNumber(contact.get); ==> is not transfered from connector!!!
@@ -538,9 +538,8 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 deliveryContact.setValidFrom(Date.from(instant));
 
                 deliveryContact.setAddress(deliveryAddress);
-                deliveryContact = this.webShopImportManager.getContactsDAO().findOrCreate(deliveryContact);
-                //   contactItem.getDeliveryContacts().add(deliveryContact);
                 contactItem.setAlternateContacts(deliveryContact);
+                contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
             }
         
             dataSetDocument.setBillingContact(contactItem);
