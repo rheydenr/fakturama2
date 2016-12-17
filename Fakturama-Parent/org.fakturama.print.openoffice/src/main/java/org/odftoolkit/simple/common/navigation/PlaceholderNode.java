@@ -4,19 +4,18 @@
 package org.odftoolkit.simple.common.navigation;
 
 import java.net.URI;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
-import org.odftoolkit.odfdom.dom.element.text.TextSpanElement;
 import org.odftoolkit.odfdom.pkg.OdfElement;
-import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.odfdom.type.Length;
 import org.odftoolkit.odfdom.type.Length.Unit;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
-import org.odftoolkit.simple.text.Span;
 import org.w3c.dom.Node;
 
 /**
@@ -120,19 +119,38 @@ public class PlaceholderNode extends Selection {
 	}
 
 	/**
-	 * Replace the text content of this placeholder with a new string.
+	 * Replace the text content of this placeholder with a new string. If the string is a multiline string (with 
+	 * one or more line breaks), the string is split into multiple text nodes. This is, because a simple line-break element
+	 * doesn't create a hard line break (e.g., if you format the paragraph with "justify").  
 	 *
 	 * @param newText
 	 *            the replace text String
-	 * @return the replaced Node
+	 * @return the first replaced Node
 	 */
-    public org.odftoolkit.simple.Component replaceWith(String newText) {
-        OdfFileDom ownerDocument = (OdfFileDom) getNode().getOwnerDocument();
-        Span span = Span.getInstanceof(new TextSpanElement(ownerDocument));
-        span.appendTextContent(newText);
+    public Node replaceWith(String newText) {
         Node parentNode = getNode().getParentNode();
-        parentNode.replaceChild(span.getOdfElement(), getNode());
-        return span;
+        
+        // a list with all created nodes
+        // since we can't _append_ one node at another node we have to collect all the 
+        // nodes and replace the origin node after all nodes were created.  
+        LinkedList<Node> substitutes = new LinkedList<>();
+        
+        // make every line break a separate paragraph
+        StringTokenizer st = new StringTokenizer(newText, "\n");
+        while (st.hasMoreTokens()) {
+            String s = st.nextToken();
+            // create a "template node"
+            Node templateNode = parentNode.cloneNode(false);
+            templateNode.setTextContent(s);
+            substitutes.add(templateNode);
+        }
+        
+        // remove the origin "placeholder" node...
+        parentNode.removeChild(getNode());
+        // ...and put the collected nodes into parent container
+        substitutes.forEach(node -> parentNode.getParentNode().insertBefore(node, parentNode));
+        
+        return substitutes.isEmpty() ? null : substitutes.getFirst();
     }
     
 	public Node replaceWith(URI uri, Integer width, Integer height) {

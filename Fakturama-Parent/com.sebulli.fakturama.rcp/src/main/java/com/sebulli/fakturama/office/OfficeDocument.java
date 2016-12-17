@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
-import org.odftoolkit.simple.Component;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.common.navigation.PlaceholderNavigation;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode;
@@ -251,14 +250,14 @@ public class OfficeDocument {
 			} else {
                 MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
 			}
-//
-//			// Print and close the OpenOffice document
-//			/*
+
+			// Print and close the OpenOffice document
+			
 //			textDocument.getFrame().getDispatch(GlobalCommands.PRINT_DOCUMENT_DIRECT).dispatch();
 		}
 		catch (Exception e) {
 		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
-//		    throw new Fak
+// TODO		    throw new FakturamaStoringException(description, e);
 		}
 	}
 
@@ -374,7 +373,7 @@ public class OfficeDocument {
 		    Path ooPath = ooStarter.getCheckedOOPath();
 		    if(ooPath != null) {
 		        // FIXME How to create a PDF/A1 document?
-				String sysCall = String.format("%s -headless -convert-to pdf:writer_pdf_Export --outdir %s %s", 
+				String sysCall = String.format("\"%s\" -headless -convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"", 
 		                //program%sswriter File.separator, 
 		                ooPath.toString(), 
 		                directory.toAbsolutePath(), // this is the PDF path
@@ -382,7 +381,7 @@ public class OfficeDocument {
 		        //				PDFFilter pdfFilter = new PDFFilter();
 		        //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
 		        
-		        // TODO error handling!!!
+		        // TODO error handling!!! Potential security risk!
 				Runtime.getRuntime().exec(sysCall);
 		        
 		        // now, if the file name templates are different, we have to rename the pdf
@@ -482,7 +481,7 @@ public class OfficeDocument {
 	 *            The cell's text.
 	 * @return 
 	 */
-	private Component fillVatTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
+	private Node fillVatTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
         
         String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
         String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
@@ -581,7 +580,7 @@ public class OfficeDocument {
 	 *            The cell's placeholder.
 	 * @return 
 	 */
-	private org.odftoolkit.simple.Component fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
+	private Node fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
 
 		String value = "";
 		
@@ -924,7 +923,7 @@ public class OfficeDocument {
 			text = text.replaceAll(System.lineSeparator(), "\r");
 		}
 		// Replace the placeholder with the value of the property list.
-		log.debug("try to replace " + placeholderDisplayText + " with " + text);
+		log.debug(String.format("trying to replace %s with [%s]", placeholderDisplayText, text));
 		placeholder.replaceWith(text);
 	}
 	
