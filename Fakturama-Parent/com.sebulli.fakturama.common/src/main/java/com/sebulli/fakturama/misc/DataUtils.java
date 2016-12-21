@@ -120,7 +120,7 @@ public class DataUtils {
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))                    
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
                         .set(currencyCheckboxEnabled)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
                     Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
@@ -138,7 +138,7 @@ public class DataUtils {
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
-                .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))
+                .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                 .set("cashRounding", cashRounding)
                 .build());
     }
@@ -338,10 +338,6 @@ public class DataUtils {
     public Double round(Double d) {
         return (Math.round((d + EPSILON) * 100.0)) / 100.0;
     }
-    
-    private String doubleToFormattedValue(Double d, boolean twoDecimals) {
-    	return doubleToFormattedValue(d, twoDecimals ? 2 : -1);
-    }
 
     /**
      * Convert a double to a formatted string value. If the value has parts of a
@@ -367,7 +363,6 @@ public class DataUtils {
         // Format as "0.00"
         NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setGroupingUsed(useThousandsSeparator);
-        ;
         numberFormat = new DecimalFormat((useThousandsSeparator ? ",##." : ".") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
         String s = numberFormat.format(floorValue);
 
@@ -436,8 +431,9 @@ public class DataUtils {
      *            Value to convert to a quantity string.
      * @return Converted value as string
      */
-    public String DoubleToFormatedQuantity(Double d) {
-        return doubleToFormattedValue(d, false);
+    public String doubleToFormattedQuantity(Double d) {
+        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
+        return doubleToFormattedValue(d, scale);
     }
     
     public String doubleToFormattedQuantity(Double d, int scale) {
@@ -489,7 +485,7 @@ public class DataUtils {
 //                .set(CurrencySettingEnum.NONE)
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
                         .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-                        		Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))
+                        		Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
                 .build());
         return format.format(amount.with(mro));
@@ -503,7 +499,7 @@ public class DataUtils {
     			.set(useCurrencySymbol)
     			.setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
     			.set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-    					Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))
+    					Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
     			.set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
     			.build());
     	return format.format(amount.with(mro));
@@ -539,7 +535,7 @@ public class DataUtils {
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2))                    
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
                         .set(currencySetting)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
                     Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
