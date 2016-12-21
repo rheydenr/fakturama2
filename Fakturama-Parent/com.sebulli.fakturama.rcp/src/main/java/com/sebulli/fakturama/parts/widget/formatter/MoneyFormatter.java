@@ -49,8 +49,8 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
         DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(LocaleUtil.getInstance().getCurrencyLocale());
         if(defaultValuePrefs != null) {
-        	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
-        	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_DECIMALPLACES));
+        	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES));
+        	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES));
         }
         String editFormatPattern = editFormat.toPattern();
         if(editFormat.getMaximumFractionDigits() > 2) {

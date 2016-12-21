@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -471,14 +472,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			String shopCategory = webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY);
 			if(StringUtils.isNotEmpty(shopCategory)) {
     			ContactCategory contactCat = contactCatBuilder.buildCategoryFromString(shopCategory, ContactCategory.class);
-    			// later we have more than one category per contact
+    			// later on we have more than one category per contact
 //    			contactItem.addToCategories(contactCat);
                 contactItem.setCategories(contactCat);
 			}
 			
-			// set explicit the customers data
+			// set explicitly the customers data
 			// only set the number if it's not empty
-			// Bug FAK-510
+			// see Bug FAK-510
 			if(StringUtils.isNotBlank(contact.getId())) {
 			    contactItem.setCustomerNumber(contact.getId());
 			}
@@ -494,7 +495,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today);
-            String countryCode = LocaleUtil.getInstance("de").findCodeByDisplayCountry(contact.getCountry());
+            String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
@@ -508,7 +509,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
                 numberProvider.setNextNr(nextNr);
             }
-//            contactItem.setSupplierNumber(contact.get); ==> is not transfered from connector!!!
+//            contactItem.setSupplierNumber(contact.get???); ==> is not transferred from connector!!!
 
             Address deliveryAddress = fakturamaModelFactory.createAddress();
             deliveryAddress.setStreet(contact.getDeliveryStreet());
@@ -612,6 +613,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			// Import the product attributes
     			itemDescription = new StringBuffer();
     			// store additional prices for attributes
+    			/*
+    			 * Currently, there's no possibility for storing prices of attributes / optional features.
+    			 * Therefore we only can put the attribute string as description into a product.
+    			 * The price and the prefix are ignored, since I don't know where I have to store it.
+    			 * A model change is required.
+    			 */
     			Float attrPrice = NumberUtils.FLOAT_ZERO;
     			StringBuilder prefixSb = new StringBuilder();
     			for (AttributeType attribute : itemType.getAttribute()) {
@@ -631,7 +638,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     
     			// Create a new product
     			Product product = fakturamaModelFactory.createProduct();
-    			// itemName, itemModel, shopCategory + itemCategory, itemDescription, priceNet, vat, "", "", 1.0, productID, itemQUnit
+    			// OLD call: itemName, itemModel, shopCategory + itemCategory, itemDescription, priceNet, vat, "", "", 1.0, productID, itemQUnit
     			product.setName(itemName);
     			product.setItemNumber(itemModel);
                 ProductCategory productCategory = this.webShopImportManager.getProductCategoriesDAO().getCategory(shopCategory + itemType.getCategory(), true);
@@ -640,6 +647,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			product.setDescription(itemDescription.toString());
     			product.setPrice1(priceNet.getNumber().numberValue(Double.class));
     			product.setVat(vat);
+                // item.setTara?
     			// ProductOptions?
     			product.setValidFrom(today);
     			//product.setProductId(itemType.getProductid());
@@ -715,13 +723,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 dataSetDocument.setShipping(shipping);
                 dataSetDocument.setShippingAutoVat(ShippingVatType.SHIPPINGVATFIX);
                 dataSetDocument.setShippingValue(shippingGross);
-    			String s = this.webShopImportManager.getMsg().importWebshopInfoWebshopno + " ";
+    			String webShopNo = this.webShopImportManager.getMsg().importWebshopInfoWebshopno + " ";
     
     			// Use the order ID of the web shop as customer reference for
-    			// imports web shop orders
-    			s += StringUtils.leftPad(webshopId, 5, '0');
+    			// the import of web shop orders
+    			webShopNo += StringUtils.leftPad(webshopId, 5, '0');
     			//T: Text of the web shop reference
-    			dataSetDocument.setCustomerRef(s);
+    			dataSetDocument.setCustomerRef(webShopNo);
     		}
         
         	// Get the payment (s)
@@ -744,8 +752,9 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         		dataSetDocument.setProgress(OrderState.PENDING.getState());
         	}
         
-        	// Set the document data
-//        	dataSetDocument.setOrderDate(Date.from(instant)); // TODO which date is meant?
+        	// Set the document data.
+        	// since we import "Orders" the order date is set here
+        	dataSetDocument.setOrderDate(Date.from(calendarWebshopDate.toInstant(ZoneOffset.UTC))); 
         	dataSetDocument.setDocumentDate(Date.from(instant));
         	dataSetDocument.setDateAdded(today);
         	dataSetDocument.setMessage(StringUtils.defaultString(dataSetDocument.getMessage()) + comment.toString());

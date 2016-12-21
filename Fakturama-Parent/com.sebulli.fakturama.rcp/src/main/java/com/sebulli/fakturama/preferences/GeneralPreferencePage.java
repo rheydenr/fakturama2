@@ -74,7 +74,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
-    private IntegerFieldEditor decimalPlaces;
+    private IntegerFieldEditor decimalCurrencyPlaces, generalDecimalPlaces;
 
 	/**
 	 * Constructor
@@ -140,9 +140,13 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
         addField(thousandsSeparatorCheckbox);
         
-        decimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_DECIMALPLACES, msg.preferencesGeneralDecimalplaces, getFieldEditorParent());
-        decimalPlaces.setValidRange(0, 5);
-        addField(decimalPlaces);
+        decimalCurrencyPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, msg.preferencesGeneralCurrencyDecimalplaces, getFieldEditorParent());
+        decimalCurrencyPlaces.setValidRange(0, 5);
+        addField(decimalCurrencyPlaces);
+        
+        generalDecimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, msg.preferencesGeneralQuantityDecimalplaces, getFieldEditorParent());
+        generalDecimalPlaces.setValidRange(0, 5);     
+        addField(generalDecimalPlaces);
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
@@ -297,7 +301,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_LOCALE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
-        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_DECIMALPLACES, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, write);
 	}
     
@@ -325,7 +330,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
-        node.setDefault(Constants.PREFERENCES_GENERAL_DECIMALPLACES, 2);
+        node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2);
+        node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));

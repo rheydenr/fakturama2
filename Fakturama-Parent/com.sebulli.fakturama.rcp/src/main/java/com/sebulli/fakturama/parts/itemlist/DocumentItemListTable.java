@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -352,8 +353,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 	// we ALWAYS use a position number!
                     retval = rowObject.getDocumentItem().getPosNr();
                     break;
-                case OPTIONAL:
                 case QUANTITY:
+                    retval = DataUtils.getInstance().doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
+                    break;
+                case OPTIONAL:
                 case QUNIT:
                 case ITEMNUMBER:
                 case NAME:
@@ -525,6 +528,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                         MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                         rowObject.getDocumentItem().setPrice(amount.getNumber().doubleValue());
                     }
+                    break;
+                case VESTINGDATESTART:
+                    rowObject.getDocumentItem().setVestingPeriodStart((Date)newValue);
+                    break;
+                case VESTINGDATEEND:
+                    rowObject.getDocumentItem().setVestingPeriodEnd((Date)newValue);
                     break;
                 default:
                     break;
