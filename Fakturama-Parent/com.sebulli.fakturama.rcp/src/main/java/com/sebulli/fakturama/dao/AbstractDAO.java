@@ -289,8 +289,7 @@ em.joinTransaction();
         CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
         Root<T> root = query.from(getEntityClass());
         Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
-        CriteriaQuery<T> select = query.select(root);
-        select.where(restrictions.toArray(new Predicate[]{}));
+        CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[]{}));
 
         List<T> resultList = getEntityManager().createQuery(select).getResultList();
         if (!checkOnly && resultList.isEmpty()) {

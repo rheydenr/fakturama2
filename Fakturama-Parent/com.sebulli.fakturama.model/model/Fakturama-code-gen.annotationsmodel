@@ -451,13 +451,6 @@
         <eAttribute href="Fakturama.ecore#//Document/dueDays"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="dueDays" getter="getDueDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setDueDays" validJavaMemberName="dueDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="Fakturama.ecore#//Document/documentContacts"/>
-        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="Contacts related to this Document (billing contact, delivery contact etc.)" validJavaMemberName="" useList="false" generateBidirectionalAssociationSupport="true"/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
-          <oneToMany/>
-        </eReferenceAnnotations>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Document/itemsRebate"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="This attribute was formerly known as &quot;itemsdiscount&quot; but was changed because of ambiguity to cash discount." name="itemsRebate" getter="getItemsRebate" defaultValue="null" setter="setItemsRebate" validJavaMemberName="itemsRebate" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.10/@eClassAnnotations.0"/>

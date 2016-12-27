@@ -146,7 +146,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         
         generalDecimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, msg.preferencesGeneralQuantityDecimalplaces, getFieldEditorParent());
         generalDecimalPlaces.setValidRange(0, 5);     
-        addField(generalDecimalPlaces);
+        addField(generalDecimalPlaces); 
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {

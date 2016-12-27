@@ -50,7 +50,7 @@ public class ProductExporter {
 	 * @return
 	 * 			True, if the export was successful
 	 */
-	public boolean export(String filename) {
+	public String export(String filename) {
 
 		String NEW_LINE = System.lineSeparator();
 		SimpleDateFormat sdf = new SimpleDateFormat();
@@ -91,10 +91,10 @@ public class ProductExporter {
 		
 			// Get all undeleted products
 			List<Product> products = productsDao.findAll();
+			final DataUtils dataUtils = DataUtils.getInstance();
 			
 			// Export the product data
 			for (Product product : products) {
-				
 				
 				// Place the products information into the table
 				StringBuffer stringBuffer = new StringBuffer();
@@ -104,20 +104,20 @@ public class ProductExporter {
 				if(product.getCategories() != null) {
 					stringBuffer.append(ExporterHelper.inQuotes(product.getCategories().getName()));
 				}
-				stringBuffer.append(";")
+                stringBuffer.append(";")
 					.append(ExporterHelper.inQuotes(product.getDescription())).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getPrice1(),"0.000000")).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getPrice2(),"0.000000")).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getPrice3(),"0.000000")).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getPrice4(),"0.000000")).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getPrice5(),"0.000000")).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getPrice1(),"0.000000")).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getPrice2(),"0.000000")).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getPrice3(),"0.000000")).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getPrice4(),"0.000000")).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getPrice5(),"0.000000")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock1() != null ? product.getBlock1().toString() : "")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock2() != null ? product.getBlock2().toString() : "")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock3() != null ? product.getBlock3().toString() : "")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock4() != null ? product.getBlock4().toString() : "")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock5() != null ? product.getBlock5().toString() : "")).append(";");
 				if(product.getVat() != null) {
-					stringBuffer.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getVat().getTaxValue(),"0.00"));
+					stringBuffer.append(dataUtils.DoubleToDecimalFormatedValue(product.getVat().getTaxValue(),"0.00"));
 				}
 				stringBuffer.append(";");
 				if(product.getAttributes() != null && !product.getAttributes().isEmpty()) {
@@ -126,23 +126,23 @@ public class ProductExporter {
 					}
 				}
 				stringBuffer.append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getWeight(),"0.00")).append(";")
-					.append(product.getSellingUnit()).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getWeight(),"0.00")).append(";")
+					.append(product.getSellingUnit() == null ? "" : product.getSellingUnit()).append(";")
 					.append(ExporterHelper.inQuotes(sdf.format(product.getDateAdded()))).append(";")
 					//.append(ExporterHelper.inQuotes(product.getPictureName).append(";")
-					.append(DataUtils.getInstance().DoubleToDecimalFormatedValue(product.getQuantity(),"0.00")).append(";")
-					.append(product.getWebshopId()).append(";")
+					.append(dataUtils.DoubleToDecimalFormatedValue(product.getQuantity(),"0.00")).append(";")
+					.append(product.getWebshopId() == null ? "" : product.getWebshopId()).append(";")
 					.append(ExporterHelper.inQuotes(product.getQuantityUnit())).append(";")
 					.append(NEW_LINE);
 				bos.write(stringBuffer.toString());
-			}
+			}bos.flush();bos.close();
 		}
 		catch (IOException e) {
-			return false;
+			return e.getMessage();
 		}
 
-		// True = Export was successful
-		return true;
+		// empty retval = Export was successful
+		return "";
 	}
 
 }

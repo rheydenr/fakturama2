@@ -58,6 +58,7 @@ public class DbUpdateService implements IDbUpdateService {
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		try (java.sql.Connection connection = openConnection(context);) {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
 			liquibase.update(new Contexts(), new LabelExpression());

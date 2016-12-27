@@ -92,8 +92,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deliveryContact" eType="#//Contact"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deposit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="documentContacts" upperBound="-1"
-        eType="#//ContactWrapper"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dueDays" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invoiceReference" eType="#//Invoice"/>

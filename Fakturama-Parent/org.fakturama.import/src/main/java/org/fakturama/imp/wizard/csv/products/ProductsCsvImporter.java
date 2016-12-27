@@ -80,7 +80,7 @@ public class ProductsCsvImporter {
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3", "price4", "price5",
 			 "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit", 
-			 "date_added", "picturename", "quantity", "webshopid", "qunit" };
+			 "date_added", /*"picturename",*/ "quantity", "webshopid", "qunit" };
 
 	// The result string
 	String result = " ";
@@ -143,7 +143,7 @@ public class ProductsCsvImporter {
 				}
 
 		// Read the existing file and store it in a buffer
-		// with a fix size. Only the newest lines are kept.
+		// with a fixed size. Only the newest lines are kept.
 
 			// Read line by line
 			String[] cells;
@@ -173,38 +173,41 @@ public class ProductsCsvImporter {
 					product.setItemNumber(prop.getProperty("itemnr"));
 					product.setName(prop.getProperty("name"));
 					product.setWebshopId(StringUtils.isNumeric(prop.getProperty("webshopid")) ? Long.parseLong(prop.getProperty("webshopid")) : Long.valueOf(1));
-					Product testProd = productsDAO.findOrCreate(product);
+					if(updateExisting) {
+					    product = productsDAO.findOrCreate(product);
+					}
 					ProductCategory category = productCategoriesDAO.findByName(prop.getProperty("category"));
-					testProd.setCategories(category);
-					testProd.setDescription(prop.getProperty("description"));
-					testProd.setPrice1(DataUtils.getInstance().StringToDouble(prop.getProperty("price1")));
-					testProd.setPrice2(DataUtils.getInstance().StringToDouble(prop.getProperty("price2")));
-					testProd.setPrice3(DataUtils.getInstance().StringToDouble(prop.getProperty("price3")));
-					testProd.setPrice4(DataUtils.getInstance().StringToDouble(prop.getProperty("price4")));
-					testProd.setPrice5(DataUtils.getInstance().StringToDouble(prop.getProperty("price5")));
-					testProd.setBlock1(StringUtils.isNumeric(prop.getProperty("block1")) ? Integer.parseInt(prop.getProperty("block1")) : null);
-					testProd.setBlock2(StringUtils.isNumeric(prop.getProperty("block2")) ? Integer.parseInt(prop.getProperty("block2")) : null);
-					testProd.setBlock3(StringUtils.isNumeric(prop.getProperty("block3")) ? Integer.parseInt(prop.getProperty("block3")) : null);
-					testProd.setBlock4(StringUtils.isNumeric(prop.getProperty("block4")) ? Integer.parseInt(prop.getProperty("block4")) : null);
-					testProd.setBlock5(StringUtils.isNumeric(prop.getProperty("block5")) ? Integer.parseInt(prop.getProperty("block5")) : null);
+					product.setCategories(category);
+					product.setDescription(prop.getProperty("description"));
+					product.setPrice1(DataUtils.getInstance().StringToDouble(prop.getProperty("price1")));
+					product.setPrice2(DataUtils.getInstance().StringToDouble(prop.getProperty("price2")));
+					product.setPrice3(DataUtils.getInstance().StringToDouble(prop.getProperty("price3")));
+					product.setPrice4(DataUtils.getInstance().StringToDouble(prop.getProperty("price4")));
+					product.setPrice5(DataUtils.getInstance().StringToDouble(prop.getProperty("price5")));
+					product.setBlock1(StringUtils.isNumeric(prop.getProperty("block1")) ? Integer.parseInt(prop.getProperty("block1")) : null);
+					product.setBlock2(StringUtils.isNumeric(prop.getProperty("block2")) ? Integer.parseInt(prop.getProperty("block2")) : null);
+					product.setBlock3(StringUtils.isNumeric(prop.getProperty("block3")) ? Integer.parseInt(prop.getProperty("block3")) : null);
+					product.setBlock4(StringUtils.isNumeric(prop.getProperty("block4")) ? Integer.parseInt(prop.getProperty("block4")) : null);
+					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5")) ? Integer.parseInt(prop.getProperty("block5")) : null);
 
-					ProductOptions productOption = modelFactory.createProductOptions();
-					productOption.setAttributeValue(prop.getProperty("options"));
-					List<ProductOptions> productOptions = new ArrayList<>();
-					productOptions.add(productOption);
-					testProd.setAttributes(productOptions);
-					testProd.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
-					testProd.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
+// FIXME implement!
+//					ProductOptions productOption = modelFactory.createProductOptions();
+//					productOption.setAttributeValue(prop.getProperty("options"));
+//					List<ProductOptions> productOptions = new ArrayList<>();
+//					productOptions.add(productOption);
+//					product.setAttributes(productOptions);
+					product.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
+					product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
 
 					if (prop.getProperty("date_added").isEmpty()) {
-						testProd.setDateAdded(Calendar.getInstance().getTime());
+						product.setDateAdded(Calendar.getInstance().getTime());
 					} else {
-						testProd.setDateAdded(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						product.setModified(Calendar.getInstance().getTime());
 					}
 					
-//					testProd.setPictureName(prop.getProperty("picturename"));
-					testProd.setQuantity(DataUtils.getInstance().StringToDouble(prop.getProperty("quantity")));
-					testProd.setQuantityUnit(prop.getProperty("qunit"));
+//					product.setPictureName(prop.getProperty("picturename"));
+					product.setQuantity(DataUtils.getInstance().StringToDouble(prop.getProperty("quantity")));
+					product.setQuantityUnit(prop.getProperty("qunit"));
 
 					String vatName = prop.getProperty("item vat");
 
@@ -215,17 +218,17 @@ public class ProductsCsvImporter {
 					prodVat.setDescription(msg.getPurchaseTaxString());
 					prodVat = vatsDAO.findOrCreate(prodVat);
 					
-					testProd.setVat(prodVat);
+					product.setVat(prodVat);
 
 					// Add the product to the data base
-					if (testProd.getDateAdded().equals(Calendar.getInstance().getTime())) {
+					if (product.getDateAdded().equals(Calendar.getInstance().getTime())) {
 						importedProducts++;
 					} else if (updateExisting) {
 						// Update data
-						updatedProducts ++;
+						updatedProducts++;
 					}
 					// Update the modified product data
-					productsDAO.update(testProd);
+					productsDAO.update(product);
 				}
 			}
 
