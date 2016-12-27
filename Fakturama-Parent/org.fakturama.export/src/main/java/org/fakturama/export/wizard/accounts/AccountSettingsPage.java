@@ -122,7 +122,7 @@ public class AccountSettingsPage extends WizardPage {
 		// Start date
 		dtDate = new CDateTime(dateAndValue, CDT.BORDER | CDT.DROP_DOWN);
 		dtDate.setFormat(CDT.DATE_MEDIUM);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(dtDate);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtDate);
 
 		dtDate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -204,8 +204,15 @@ public class AccountSettingsPage extends WizardPage {
 			txtValue.setValue(value);
 		}
 	}
-
+	
 	/**
+     * @return the dtDate
+     */
+    public CDateTime getDtDate() {
+        return dtDate;
+    }
+
+    /**
 	 * Test, whether the page is complete
 	 */
 	@Override
@@ -223,6 +230,11 @@ public class AccountSettingsPage extends WizardPage {
 		
 		if (dtDate == null)
 			return false;
+		
+		if(startPage.getStartDate() != null && dtDate.getData() == null) {
+		    dtDate.setSelection(startPage.getStartDate().getTime());
+		    dtDate.setData("isSet");
+		}
 
 		// The date must be before the start date
 		boolean isAfterStartDate = getDate().after(startPage.getStartDate());

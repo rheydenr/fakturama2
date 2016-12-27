@@ -103,14 +103,15 @@ public class ProductExportWizard extends Wizard implements IExportWizard {
 		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeCsv + " (*.csv)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
+		fileDialog.setOverwrite(true);
 		String selectedFile = fileDialog.open();
 		if (selectedFile != null) {
 			ProductExporter exporter = ContextInjectionFactory.make(ProductExporter.class, ctx);
-			boolean result = exporter.export(selectedFile);
-			if(result) {
+			String result = exporter.export(selectedFile);
+			if(result.isEmpty()) {
 				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardExportCommonSuccess);
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, exportMessages.wizardExportCommonNosuccess);
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, exportMessages.wizardExportCommonNosuccess + "\n" + result);
 			}
 			return true;   // this closes the wizard dialog
 		}

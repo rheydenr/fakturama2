@@ -14,9 +14,6 @@
 
 package org.fakturama.export.wizard;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -45,9 +42,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Voucher;
 
 /**
  * The sales exporter. This class collects all the sales and fills a Calc table
@@ -437,16 +434,9 @@ public class OOCalcExporter {
 			do {
 				String fileName = createOutputFileDialog();
 				if (StringUtils.isNotBlank(fileName)) {
-					Path saveFileName = Paths.get(fileName);
-					if (Files.exists(saveFileName)) {
-						answer = MessageDialog.openQuestion(shell, msg.dialogMessageboxTitleWarning,
-								exportMessages.wizardCommonSaveFileexists);
-					}
-					if (answer) {
-						oOdocument.save(fileName);
-						MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo,
-								String.format(exportMessages.wizardCommonSaveInfo, fileName));
-					}
+					oOdocument.save(fileName);
+					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo,
+							String.format(exportMessages.wizardCommonSaveInfo, fileName));
 				}
 			} while(!answer);
 		} catch (Exception e) {
@@ -469,6 +459,7 @@ public class OOCalcExporter {
 		dialog.setFilterExtensions(filterExtensions);
 		dialog.setFilterPath(filterPath);
 		dialog.setFileName(getOutputFileName());
+		dialog.setOverwrite(true);
 		return dialog.open();
 	}
 
