@@ -66,24 +66,25 @@
 
 	<xs:complexType name="ContactType">
 		<xs:sequence>
-			<xs:element name="gender" type="xs:string"/>
-			<xs:element name="firstname" type="xs:string"/>
-			<xs:element name="lastname" type="xs:string"/>
-			<xs:element name="company" type="xs:string"/>
-			<xs:element name="street" type="xs:string"/>
-			<xs:element name="zip" type="xs:string"/>
-			<xs:element name="city" type="xs:string"/>
-			<xs:element name="country" type="xs:string"/>
-			<xs:element name="delivery_gender" type="xs:string"/>
-			<xs:element name="delivery_firstname" type="xs:string"/>
-			<xs:element name="delivery_lastname" type="xs:string"/>
-			<xs:element name="delivery_company" type="xs:string"/>
-			<xs:element name="delivery_street" type="xs:string"/>
-			<xs:element name="delivery_zip" type="xs:string"/>
-			<xs:element name="delivery_city" type="xs:string"/>
-			<xs:element name="delivery_country" type="xs:string"/>
-			<xs:element name="phone" type="xs:string"/>
-			<xs:element name="email" type="xs:string"/>
+			<xs:element name="gender" type="xs:string" />
+			<xs:element name="firstname" type="xs:string" />
+			<xs:element name="lastname" type="xs:string" />
+			<xs:element name="company" type="xs:string" />
+			<xs:element name="street" type="xs:string" />
+			<xs:element name="zip" type="xs:string" />
+			<xs:element name="city" type="xs:string" />
+			<xs:element name="country" type="xs:string" />
+			<xs:element name="delivery_gender" type="xs:string" />
+			<xs:element name="delivery_firstname" type="xs:string" />
+			<xs:element name="delivery_lastname" type="xs:string" />
+			<xs:element name="delivery_company" type="xs:string" />
+			<xs:element name="delivery_street" type="xs:string" />
+			<xs:element name="delivery_zip" type="xs:string" />
+			<xs:element name="delivery_city" type="xs:string" />
+			<xs:element name="delivery_country" type="xs:string" />
+			<xs:element name="phone" type="xs:string" />
+			<xs:element name="email" type="xs:string" />
+			<xs:element name="webshop_name" type="xs:string"></xs:element>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:string" use="optional"/>
 	</xs:complexType>

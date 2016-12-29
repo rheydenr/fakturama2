@@ -488,6 +488,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             contactItem.setCompany(contact.getCompany());
             contactItem.setPhone(contact.getPhone());
             contactItem.setEmail(contact.getEmail());
+            contactItem.setWebshopName(contact.getWebshopName());
 			contactItem.setValidFrom(today);
             
             Address address = fakturamaModelFactory.createAddress();

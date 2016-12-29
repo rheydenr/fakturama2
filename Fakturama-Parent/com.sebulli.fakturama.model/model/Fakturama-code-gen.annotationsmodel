@@ -353,6 +353,10 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="website" getter="getWebsite" defaultValue="null" setter="setWebsite" validJavaMemberName="website" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Contact/webshopName"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The name of the contact in a webshop."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/supplierNumber"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="supplierNumber" getter="getSupplierNumber" defaultValue="null" setter="setSupplierNumber" validJavaMemberName="supplierNumber" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.7/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>

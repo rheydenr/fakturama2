@@ -970,8 +970,15 @@
             <column name="BLOCKPRICES_PRODUCTBLOCKPRICE"/>
         </createIndex>
     </changeSet>
-       <changeSet author="rheydenr (generated)" id="1477248992742-05" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1477248992742-05" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="BLOCKPRICES_PRODUCTBLOCKPRICE" baseTableName="FKT_PRODUCT_BLOCKPRICES" constraintName="FKTPRODUCTBLOCKPRICESBLOCKPRICES_PRODUCTBLOCKPRICE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCTBLOCKPRICE"/>
+    </changeSet>
+    
+	<!-- 2016-12-28 -->    
+    <changeSet author="rheydenr" id="1477248992742-06" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	    <addColumn tableName="FKT_CONTACT">
+	        <column name="WEBSHOPNAME" type="VARCHAR(255)"/>
+	    </addColumn>
     </changeSet>
    
 </databaseChangeLog>

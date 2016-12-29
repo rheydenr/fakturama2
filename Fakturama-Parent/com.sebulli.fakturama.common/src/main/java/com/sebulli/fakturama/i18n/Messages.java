@@ -387,6 +387,7 @@ public class Messages {
 	public String exporterDataVolume;
 	public String exporterDataVoucher;
 	public String exporterDataWebsite;
+	public String exporterDataWebshopname;
 	public String exporterDataWeight;
 	public String wizardExportCommonFilterlabel;
 	public String wizardExportCommonDescription;

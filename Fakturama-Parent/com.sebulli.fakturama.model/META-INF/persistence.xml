@@ -50,7 +50,9 @@
 			<!--  persistence:class>com.sebulli.fakturama.model.LocalDateConverter</persistence:class -->
 		<persistence:exclude-unlisted-classes>true</persistence:exclude-unlisted-classes>
 		<persistence:properties>
+		
 			<!-- update database automagically ;-)  -->
+			<!-- enable this option if you want to skip liquibase usage -->
 			<!-- persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" / -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			

@@ -152,6 +152,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtSupplierNr;
 	private Text txtEmail;
 	private Text txtWebsite;
+	private Text txtWebshopName;
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
@@ -1028,6 +1029,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
+		
+		// WebShop name  
+		Label labelWebshopName = new Label(tabMisc, SWT.NONE);
+		labelWebshopName.setText(msg.exporterDataWebshopname);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebshopName);
+		txtWebshopName = new Text(tabMisc, SWT.BORDER);
+		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebshopName);
 
 		// Payment
 		Label labelPayment = new Label(tabMisc, SWT.NONE);
