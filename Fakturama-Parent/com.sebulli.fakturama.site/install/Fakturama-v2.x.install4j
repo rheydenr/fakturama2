@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0.4" transformSequenceNumber="5">
-  <directoryPresets config="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app" />
-  <application name="Fakturama" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.0-${compiler:sys.date}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
-    <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
+<install4j version="6.1.4" transformSequenceNumber="5">
+  <directoryPresets config="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/macosx/cocoa/x86_64/Fakturama.app/Contents/Resources" />
+  <application name="Fakturama" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.0-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
+    <languages skipLanguageSelection="true" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="de" customLocalizationFile="" />
       <additionalLanguages>
-        <language id="cs" customLocalizationFile="" />
         <language id="en" customLocalizationFile="" />
         <language id="fr" customLocalizationFile="" />
         <language id="hu" customLocalizationFile="" />
         <language id="it" customLocalizationFile="" />
+        <language id="pl" customLocalizationFile="" />
         <language id="ro" customLocalizationFile="" />
         <language id="ru" customLocalizationFile="" />
         <language id="es" customLocalizationFile="" />
+        <language id="tr" customLocalizationFile="" />
       </additionalLanguages>
     </languages>
     <searchSequence>
@@ -24,7 +25,7 @@
     <mergedProjects />
     <codeSigning macEnabled="false" macPkcs12File="" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
   </application>
-  <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes=".svn" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
+  <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes=".svn,.git" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets>
       <fileset name="Installer MacOS" id="32" customizedId="" />
       <fileset name="Installer Win 64bit" id="41" customizedId="" />
@@ -45,38 +46,38 @@
       <mountPoint id="56" root="55" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="22" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama/win32/win32/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="22" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/win32/win32/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="34" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama/macosx/cocoa/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="34" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/macosx/cocoa/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="43" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama/win32/win32/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="43" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/win32/win32/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="51" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama/linux/gtk/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="51" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/linux/gtk/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
       <dirEntry mountPoint="51" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/install/linux_32bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="56" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/install/linux_64bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="56" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/linux/gtk/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="56" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama/linux/gtk/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="56" file="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/install/linux_64bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="/usr/share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
     </entries>
     <components />
   </files>
   <launchers>
-    <launcher name="Fakturama.exe" id="25" customizedId="" external="true" excludeFromMenu="false" unixMode="755" menuName="" externalFile="Fakturama.exe" />
-    <launcher name="Fakturama" id="35" customizedId="" external="true" excludeFromMenu="false" unixMode="755" menuName="" externalFile="fakturama\Fakturama.app\Contents\MacOS\Fakturama" />
-    <launcher name="Fakturama.exe (win64)" id="44" customizedId="" external="true" excludeFromMenu="false" unixMode="755" menuName="" externalFile="Fakturama.exe" />
-    <launcher name="Fakturama (Linux 32bit)" id="52" customizedId="" external="true" excludeFromMenu="false" unixMode="755" menuName="" externalFile="Fakturama" />
-    <launcher name="Fakturama (Linux 64bit)" id="58" customizedId="" external="true" excludeFromMenu="false" unixMode="755" menuName="" externalFile="Fakturama" />
-    <launcher name="FakturamaMac" id="133" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="true" fileset="32" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
-      <executable name="FakturamaMac" type="1" iconSet="true" iconFile="" executableDir="Fakturama.app/Contents/MacOS" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+    <launcher name="Fakturama.exe (win32)" id="25" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
+    <launcher name="Fakturama" id="35" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.app\Contents\MacOS\Fakturama" />
+    <launcher name="Fakturama.exe (win64)" id="44" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
+    <launcher name="Fakturama (Linux 32bit)" id="52" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama" />
+    <launcher name="Fakturama (Linux 64bit)" id="58" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama" />
+    <launcher name="FakturamaMac" id="133" customizedId="" external="false" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" icnsFile="../../../User/GitHome/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/macosx/cocoa/x86_64/Fakturama.app/Contents/Resources/app.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="true" fileset="32" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="">
+      <executable name="FakturamaMac" type="1" iconSet="true" iconFile="" executableDir="Fakturama.app" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
@@ -85,11 +86,12 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="${installer:sys.pathlistSeparator}" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
-          <scanDirectory location="Fakturama.app/Contents/Eclipse" failOnError="false" />
+          <scanDirectory location="Fakturama.app/Contents/Eclipse/plugins" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories />
+        <vmOptions />
       </java>
       <includedFiles />
       <unextractableFiles />
@@ -108,7 +110,7 @@
   <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="" useAutoUpdateBaseUrl="false" autoUpdateBaseUrl="">
     <staticMembers script="" />
     <customCode />
-    <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
+    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="2.0" useMaxUpdatableVersion="false" maxUpdatableVersion="">
       <commentFiles />
       <customAttributes />
     </autoUpdate>
@@ -143,7 +145,7 @@
                 </void>
               </void>
               <void property="customWatermarkText">
-                <string>(c) 2016 Fakturama.org</string>
+                <string>(c) 2017 Fakturama.org</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
@@ -168,7 +170,17 @@
               <action name="" id="13" customizedId="" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" multiExec="false" failureStrategy="3" errorMessage="Can't install Fakturama.">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" />
+                    <object class="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction">
+                      <void property="obtainIfAdminMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalWin">
+                        <boolean>true</boolean>
+                      </void>
+                    </object>
                   </java>
                 </serializedBean>
                 <condition />
@@ -551,6 +563,7 @@
         <launcher id="44" />
         <launcher id="52" />
         <launcher id="58" />
+        <launcher id="133" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -643,7 +656,7 @@
         <content />
       </installerScript>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="119" customizedId="" mediaFileName="" installDir="/usr/share/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
+    <linuxRPM name="Linux RPM" id="119" customizedId="" mediaFileName="" installDir="/usr/share/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" os="linux" arch="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -679,7 +692,7 @@
         <content />
       </postUninstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_64Bit_${compiler:sys.version}" installDir="/usr/share/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_64Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -706,9 +719,7 @@
         <content />
       </preInstallScript>
       <postInstallScript mode="3" file="">
-        <content>chmod 755 /usr/share/${compiler:sys.fullName}/${compiler:sys.fullName}
-mv /usr/share/${compiler:sys.fullName}/applications/* /usr/share/applications
-mv /usr/share/${compiler:sys.fullName}/pixmaps/* /usr/share/pixmaps</content>
+        <content>chmod 755 /usr/share/fakturama2/${compiler:sys.fullName}</content>
       </postInstallScript>
       <preUninstallScript mode="1" file="">
         <content />
@@ -717,7 +728,7 @@ mv /usr/share/${compiler:sys.fullName}/pixmaps/* /usr/share/pixmaps</content>
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/opt/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
+    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/opt/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -791,8 +802,7 @@ mv /usr/share/${compiler:sys.fullName}/pixmaps/* /usr/share/pixmaps</content>
     </macos>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="24" />
-    <mediaSet refId="45" />
+    <mediaSet refId="120" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
