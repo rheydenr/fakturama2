@@ -625,6 +625,24 @@ public class OfficeDocument {
 			value = item.getQuantityUnit();
 		}
 
+		// Get the item weight
+		else if (key.equals("ITEM.WEIGHT")) {
+			value = item.getWeight() != null ? item.getWeight().toString() : "";
+		}
+		
+		// Get the item weight
+		else if (key.equals("ITEM.GTIN")) {
+			value = item.getGtin() != null ? item.getGtin().toString() : "";
+		}
+		
+		// vesting period
+		else if (key.equals("ITEM.VESTINGPERIOD.START")) {
+			value = item.getVestingPeriodStart() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
+		}
+		else if (key.equals("ITEM.VESTINGPERIOD.END")) {
+			value = item.getVestingPeriodEnd() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
+		}
+
 		// Get the item description
 		else if (key.equals("ITEM.DESCRIPTION")) {
 			value = item.getDescription();

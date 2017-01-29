@@ -169,13 +169,20 @@ public class ContactUtil {
         // Default = "---"
         return 0;
     }
+    
+	public String getAddressAsString(Contact contact) {
+		return getAddressAsString(contact, "\n");
+	}
 
     /**
-	 * Get the address
+	 * Get the address. Use a specified separator.
 	 *
+	 * @param contact the {@link Contact} to use
+	 * @param separator the separator
+	 * 
 	 * @return Complete address
 	 */
-	public String getAddressAsString(Contact contact) {
+	public String getAddressAsString(Contact contact, String separator) {
 		String addressFormat = "";
 		String address = "";
 		if(contact != null && (/*contact.getCustomerNumber() != null ||*/ contact.getAddress() != null)) {
@@ -206,7 +213,7 @@ public class ContactUtil {
         
         			if (formatedAddressLine.equals(addressFormatLine) || (!trimmedAddressLine.isEmpty())) {
         				if (!address.isEmpty())
-        					address += "\n";
+        					address += separator;
         			}
         
         			address += trimmedAddressLine;
@@ -217,6 +224,8 @@ public class ContactUtil {
 		// return the complete address
 		return address;
 	}
+	
+	
 	
 	public Address createAddressFromString(String address) {
 		Address retval = modelFactory.createAddress();

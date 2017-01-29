@@ -91,6 +91,7 @@ public class Placeholders {
 			"YOURCOMPANY.IBAN",
 			"YOURCOMPANY.BIC",
 			"YOURCOMPANY.CREDITORID",
+			
 			"DOCUMENT.DATE",
 			"DOCUMENT.ADDRESSES.EQUAL",
 			"DOCUMENT.ADDRESS",
@@ -123,6 +124,7 @@ public class Placeholders {
 			"DOCUMENT.DEPOSIT.FINALPAYMENT",
 			"DOCUMENT.DEPOSIT.DEP_TEXT",
 			"DOCUMENT.DEPOSIT.FINALPMT_TEXT",
+			"DOCUMENT.DUNNING.LEVEL",
 			"DOCUMENT.REFERENCE.OFFER",
 			"DOCUMENT.REFERENCE.ORDER",
 			"DOCUMENT.REFERENCE.CONFIRMATION",
@@ -132,10 +134,12 @@ public class Placeholders {
 			"DOCUMENT.REFERENCE.CREDIT",
 			"DOCUMENT.REFERENCE.DUNNING",
 			"DOCUMENT.REFERENCE.PROFORMA",
+			/* Hint: The "discounted" flag for Vouchers isn't persisted, so we can't 
+			 * create a placeholder for it. */
+			
 			"ITEMS.DISCOUNT.PERCENT",
 			"ITEMS.DISCOUNT.NET",
 			"ITEMS.DISCOUNT.GROSS",
-
 			"ITEMS.DISCOUNT.VALUE",
 			"ITEMS.DISCOUNT.NETVALUE",
 			"ITEMS.DISCOUNT.TARAVALUE",
@@ -148,7 +152,7 @@ public class Placeholders {
 			"SHIPPING.GROSS",
 			"SHIPPING.DESCRIPTION",
 			"SHIPPING.VAT.DESCRIPTION",
-			"DOCUMENT.DUNNING.LEVEL",
+			
 			"PAYMENT.TEXT",
 			"PAYMENT.DESCRIPTION",
 			"PAYMENT.PAID.VALUE",
@@ -156,6 +160,7 @@ public class Placeholders {
 			"PAYMENT.DUE.DAYS",
 			"PAYMENT.DUE.DATE",
 			"PAYMENT.PAID",
+			
 			"ADDRESS.FIRSTLINE",
 			"ADDRESS",
 			"ADDRESS.GENDER",
@@ -175,6 +180,32 @@ public class Placeholders {
 			"ADDRESS.COUNTRY",
 			"ADDRESS.COUNTRY.CODE2",
 			"ADDRESS.COUNTRY.CODE3",
+			
+			"ADDRESS.BANK.ACCOUNT.HOLDER",
+			"ADDRESS.BANK.ACCOUNT",
+			"ADDRESS.BANK.CODE",
+			"ADDRESS.BANK.NAME",
+			"ADDRESS.BANK.IBAN",
+			"ADDRESS.BANK.BIC",
+			"ADDRESS.DISCOUNT",
+			"ADDRESS.EMAIL",
+			"ADDRESS.FAX",
+			"ADDRESS.FAX.PRE",
+			"ADDRESS.FAX.POST",
+			"ADDRESS.GLN",
+			"ADDRESS.MANDATEREFERENCE",
+			"ADDRESS.MOBILE",
+			"ADDRESS.MOBILE.PRE",
+			"ADDRESS.MOBILE.POST",
+			"ADDRESS.NR",
+			"ADDRESS.NOTE",
+			"ADDRESS.PHONE",
+			"ADDRESS.PHONE.PRE",
+			"ADDRESS.PHONE.POST",
+			"ADDRESS.SUPPLIER.NUMBER",
+			"ADDRESS.VATNR",
+			"ADDRESS.WEBSITE",
+			
 			"DELIVERY.ADDRESS.FIRSTLINE",
 			"DELIVERY.ADDRESS",
 			"DELIVERY.ADDRESS.GENDER",
@@ -194,29 +225,14 @@ public class Placeholders {
 			"DELIVERY.ADDRESS.COUNTRY",
 			"DELIVERY.ADDRESS.COUNTRY.CODE2",
 			"DELIVERY.ADDRESS.COUNTRY.CODE3",
-			"ADDRESS.BANK.ACCOUNT.HOLDER",
-			"ADDRESS.BANK.ACCOUNT",
-			"ADDRESS.BANK.CODE",
-			"ADDRESS.BANK.NAME",
-			"ADDRESS.BANK.IBAN",
-			"ADDRESS.BANK.BIC",
-			"DEBITOR.MANDATREF",
-			"ADDRESS.NR",
-			"ADDRESS.PHONE",
-			"ADDRESS.PHONE.PRE",
-			"ADDRESS.PHONE.POST",
-			"ADDRESS.FAX",
-			"ADDRESS.FAX.PRE",
-			"ADDRESS.FAX.POST",
-			"ADDRESS.MOBILE",
-			"ADDRESS.MOBILE.PRE",
-			"ADDRESS.MOBILE.POST",
-			"ADDRESS.SUPPLIER.NUMBER",
-			"ADDRESS.EMAIL",
-			"ADDRESS.WEBSITE",
-			"ADDRESS.VATNR",
-			"ADDRESS.NOTE",
-			"ADDRESS.DISCOUNT"			
+			
+			"DEBITOR.MANDATREF"
+
+			/* only for completeness (not used / unnecessary placeholders)
+			 * - VOUCHER.DONTBOOK
+			 * - ADDRESS.RELIABILITY
+			 */
+			
 	};
 	
 	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(Locale.getDefault());
@@ -478,7 +494,7 @@ public class Placeholders {
 	 * 		The placeholder name without paramater
 	 */
 	private String extractPlaceholderName(String s) {
-		return s.split("\\$" , 2)[0];
+		return s.split("\\$", 2)[0];
 	}
 	
 	/**
@@ -789,6 +805,8 @@ public class Placeholders {
 			if (key.equals("ADDRESS.VATNR")) return contact.getVatNumber();
 			if (key.equals("ADDRESS.NOTE")) return contact.getNote();
 			if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(contact.getDiscount()).orElse(Double.valueOf(0)).toString();
+			if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString();
+			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
 			if(document.getDeliveryContact() != null) {
@@ -958,7 +976,12 @@ public class Placeholders {
 	}
 	
 	public static void main(String[] args) {
-	    Placeholders ph = new Placeholders();
+		
+	    Placeholders ph = new Placeholders();	    
+	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
+	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
+	    
+	    
 //	    System.out.println("mit null: " + censorAccountNumber(null));
 	    System.out.println("mit 12: " + ph.censorAccountNumber("12"));
 	    System.out.println("mit 123: " + ph.censorAccountNumber("123"));
