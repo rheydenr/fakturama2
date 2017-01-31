@@ -34,7 +34,9 @@ import com.sebulli.fakturama.model.ReliabilityType;
 @Singleton
 public class ContactUtil {
     
-    @Inject
+    public static final int MAX_SALUTATION_COUNT = 4;
+
+	@Inject
     @Translation
     protected Messages msg;
 
@@ -139,6 +141,7 @@ public class ContactUtil {
      * @return Gender as string
      */
     public String getGenderString(int i, boolean translate) {
+    	// TODO: Check why it is not an enum (why Integers are stored?)
         switch (i) {
         case 0:
             return "---";
@@ -148,6 +151,8 @@ public class ContactUtil {
             return msg.contactFieldMsName;
         case 3:
             return msg.commonFieldCompany;
+        case 4:
+        	return msg.contactFieldFamilyName;
         }
         return "";
     }
@@ -162,7 +167,7 @@ public class ContactUtil {
      */
     public int getGenderID(String s) {
         // Test all strings
-        for (int i = 0;i < 4 ; i++) {
+        for (int i = 0;i <= MAX_SALUTATION_COUNT ; i++) {
             if (getGenderString(i,false).equalsIgnoreCase(s)) return i;
 //            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
         }

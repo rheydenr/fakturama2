@@ -139,6 +139,7 @@ public class Messages {
 	public String contactFieldGln;
 	public String contactFieldMrName;
 	public String contactFieldMsName;
+	public String contactFieldFamilyName;
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;

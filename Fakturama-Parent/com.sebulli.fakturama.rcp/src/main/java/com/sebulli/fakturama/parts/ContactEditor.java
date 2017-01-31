@@ -502,7 +502,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
 		
 		Map<Integer, String> genderList = new HashMap<>();
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
 		    genderList.put(i, contactUtil.getGenderString(i));
 		} 
 
