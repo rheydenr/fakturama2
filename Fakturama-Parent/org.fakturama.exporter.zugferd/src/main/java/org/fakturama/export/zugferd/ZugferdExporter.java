@@ -47,11 +47,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.XmpParsingException;
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -118,6 +120,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
@@ -204,7 +207,7 @@ public class ZugferdExporter {
 	 * 
 	 */
 	@Execute
-    public Object execute(Shell shell, IEclipseContext context) {
+    public Object execute(Shell shell, IEclipseContext context, @Active MPart part) {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
 		d:\Programme\LibreOffice 5\share\registry\main.xcd
@@ -219,7 +222,7 @@ public class ZugferdExporter {
 		Idee: Vor dem Speichern den Wert umsetzen und am Schluß wieder zurücksetzen.
 		*/
 		this.shell = shell;
-		Document invoice = findSelectedInvoice();
+		Document invoice = findSelectedInvoice(part);
 		if(invoice != null) {
 			// 1. check if PDF file exists
 			// (neu erzeugte PDFs sind automatisch PDF/A-1
@@ -778,12 +781,12 @@ public class ZugferdExporter {
 				.withLineTotalAmount(createAmount(documentSummary.getItemsNet()))
 				.withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
 				.withAllowanceTotalAmount(createAmount(amount))
-				.withTaxBasisTotalAmount(createAmount(documentSummary.getTotalNet())
-			//	.withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
-			//	.withGrandTotalAmount(createAmount(documentSummary.getTotalGross()))
+				.withTaxBasisTotalAmount(createAmount(documentSummary.getTotalNet()))
+				.withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
+				.withGrandTotalAmount(createAmount(documentSummary.getTotalGross()))
 			//	.withTotalPrepaidAmount(createAmount(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit())))
 			//	.withDuePayableAmount(createAmount(documentSummary.getTotalGross().subtract(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit()))
-						)
+			//			)
 				;
 	    return retval;
     }
@@ -859,7 +862,7 @@ public class ZugferdExporter {
 		}
 		return factory.createTradeAllowanceChargeType()
 			.withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
-			.withActualAmount(createAmount(amount))
+			.withActualAmount(createAmount(amount, 4))
 //			.withBasisAmount(createAmount(summary.getItemsNet().asRoundedDouble(), true))
 			.withReason(createText(msg.zugferdExportLabelRebate))
 // TODO which VAT?			.withCategoryTradeTax(createTradeTax(item.getDoubleValueByKey("vatvalue")));
@@ -1167,9 +1170,14 @@ public class ZugferdExporter {
 //	    return findSelectedInvoice() != null;
 //	}
 	
-	private Document findSelectedInvoice() {
+	private Document findSelectedInvoice(MPart currentPart) {
 		Document retval = null;
-		if(selectionService != null && selectionService.getSelection() != null) {
+		
+		// at first we try to use an open editor
+		if(currentPart != null && currentPart.getElementId().equalsIgnoreCase("com.sebulli.fakturama.editors.documentEditor")) {
+			DocumentEditor editor = (DocumentEditor)currentPart.getObject();
+			retval = editor.getDocument();
+		} else if(selectionService != null && selectionService.getSelection() != null) {
 			List<Document> tmpList = (List<Document>) selectionService.getSelection();
 			retval = tmpList.get(0);
 		}
