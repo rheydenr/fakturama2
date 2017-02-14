@@ -54,12 +54,14 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	@Override
 	protected void createFieldEditors() {
 		addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
-		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
-			{ "1", "1" },
-			{ "2", "2" }},
-			getFieldEditorParent()));
-		addField(new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, new String[][] { { "BASIC", "BASIC" }, { "COMFORT", "COMFORT" }, { "EXTENDED", "EXTENDED" }
-		 }, getFieldEditorParent()));
+		
+		// TODO enable if necessary
+//		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
+//			{ "1", "1" },
+//			{ "2", "2" }},
+//			getFieldEditorParent()));
+//		addField(new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, new String[][] { { "BASIC", "BASIC" }, { "COMFORT", "COMFORT" }, { "EXTENDED", "EXTENDED" }
+//		 }, getFieldEditorParent()));
 	}
 
     @Override
