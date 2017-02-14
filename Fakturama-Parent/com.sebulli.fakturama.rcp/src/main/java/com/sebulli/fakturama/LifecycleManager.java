@@ -54,6 +54,8 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -121,35 +123,41 @@ public class LifecycleManager {
     public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
 //        IApplicationContext appContext = context.get(IApplicationContext.class);
     	
-    	// Splash Service doesn't work at the moment... :-(
+    	splashService.setSplashPluginId(Activator.PLUGIN_ID);
+    	splashService.setTotalWork(20);
+    	splashService.setTextColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+    	splashService.open();
+    	splashService.setMessage("Loading Application...");
     	
-//    	splashService.setSplashPluginId(Activator.PLUGIN_ID);
-//    	splashService.open();
-//    	splashService.setMessage("Starting Application ...");
-    	
-//    	// The should be a better way to close the Splash
-//    	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=376821
-//    	eventBroker.subscribe(UIEvents.UILifeCycle.ACTIVATE, new EventHandler() {
-//    		@Override
-//    		public void handleEvent(Event event) {
-//    			splashService.close();
-//    			eventBroker.unsubscribe(this);
-//    		}
-//    	});    	
-    	
-        log.debug("checks before startup");
+    	// There should be a better way to close the Splash
+    	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=376821
+    	eventBroker.subscribe(UIEvents.UILifeCycle.ACTIVATE, new EventHandler() {
+    		@Override
+    		public void handleEvent(Event event) {
+    			splashService.close();
+    			eventBroker.unsubscribe(this);
+    		}
+    	});    	
+    	    	
+//        splashService.setMessage("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
         if (StringUtils.isNoneEmpty(eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, ""))) {
         	
         	// comment this if you want to generate or update the database with EclipseLink
         	// (but don't forget to enable it in persistence.xml)
+
+        	splashService.setMessage("checking database...");
+        	
         	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
         	if(!dbupdate) {
         		log.error(null, "couldn't create or update database!");
         		System.exit(1);
         	}
         	
+        	splashService.worked(15);
+        	
+        	splashService.setMessage("initialize classes...");
             dbInitJob = new Job("initDb") {
     
                 @Override
@@ -165,6 +173,8 @@ public class LifecycleManager {
                 }
             };
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
+            
+        	splashService.worked(5);
             
             // register event handler for saving and closing editors before shutdown
 //            eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
@@ -196,9 +206,10 @@ public class LifecycleManager {
     /**
      * Some steps to do before workbench is showing.
      * If a new database was created, fill some data with initial values
+     * @param splashService 
      * @throws FakturamaStoringException 
      */
-    private void fillWithInitialData() throws FakturamaStoringException {
+    private void fillWithInitialData(ISplashService splashService) throws FakturamaStoringException {
         // wait some seconds until dbInitJob is finished.
         // else you get a NPE!!!
         try {
@@ -207,6 +218,9 @@ public class LifecycleManager {
         catch (InterruptedException e) {
             log.info("ready to go ahead and looking for default values in db.");
         }
+        
+    	splashService.worked(1);
+
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
         VatsDAO vatsDAO = context.get(VatsDAO.class);
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
@@ -215,6 +229,8 @@ public class LifecycleManager {
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+
+    	splashService.worked(1);
         
         // Set the default values to this entries
         if(eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0)) == 0L) {
@@ -227,6 +243,8 @@ public class LifecycleManager {
 	        eclipsePrefs.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
         
+    	splashService.worked(1);
+
         if (eclipsePrefs.getLong(Constants.DEFAULT_SHIPPING, Long.valueOf(0)) == 0L) {
 	        Shipping defaultShipping = modelFactory.createShipping();
 	        defaultShipping.setName(msg.dataDefaultShipping);
@@ -239,7 +257,9 @@ public class LifecycleManager {
             eclipsePrefs.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
 
-        if(eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
+    	splashService.worked(1);
+
+    	if(eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
 	        Payment defaultPayment = modelFactory.createPayment();
 	        defaultPayment.setName(msg.dataDefaultPayment);
 	        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
@@ -254,10 +274,12 @@ public class LifecycleManager {
             eclipsePrefs.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
         
-        // init UN/CEFACT codes
+    	splashService.worked(1);
+       // init UN/CEFACT codes
         if(Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
         	initializeCodes(unCefactCodeDAO, modelFactory);
         } 
+    	splashService.worked(1);
         
         try {
 			eclipsePrefs.flush();
@@ -271,6 +293,7 @@ public class LifecycleManager {
         PreferencesInDatabase preferencesInDatabase = ContextInjectionFactory.make(PreferencesInDatabase.class, context);
         context.set(PreferencesInDatabase.class, preferencesInDatabase);
         preferencesInDatabase.loadPreferencesFromDatabase();
+    	splashService.worked(1);
     }
     
     /**
@@ -383,10 +406,10 @@ public class LifecycleManager {
 
     @ProcessAdditions
     void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
-    		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
+    		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
         
     	// TODO put the Login Dialog in here
-
+    	
         ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkAndUpdateConfiguration();
@@ -399,7 +422,7 @@ public class LifecycleManager {
 
         } else {
 			try {
-				fillWithInitialData();
+				fillWithInitialData(splashService);
 			}
 			catch (FakturamaStoringException sqlex) {
 				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
@@ -410,6 +433,7 @@ public class LifecycleManager {
         mainMTrimmedWindow.setLabel("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
         
         initDialogSettings(instanceLocation);
+    	splashService.worked(2);
 
         // close the static splash screen
         // TODO check if we could call it twice (one call is before Migrationmanager)

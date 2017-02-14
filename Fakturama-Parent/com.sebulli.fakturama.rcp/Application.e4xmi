@@ -431,9 +431,6 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTtOtOEeKo5Ms1QUgPTw" elementId="about" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.help.about" iconURI="icon://COMMAND_APP" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
       </children>
     </mainMenu>
-    <windows xsi:type="basic:TrimmedWindow" xmi:id="_LYIXYDAMEeadQNc3uX9jkA" elementId="window:org.fakturama.syncmobile" toBeRendered="false" visible="false" label="%main.menu.extra.syncmobile" x="200" y="100" width="500" height="200">
-      <children xsi:type="basic:Part" xmi:id="_De11ADAOEeadQNc3uX9jkA" elementId="part:org.fakturama.syncmobile.main" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.SyncMobileDialog" label="Sync main part"/>
-    </windows>
     <trimBars xmi:id="_6zLE0EvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar">
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar.control" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>

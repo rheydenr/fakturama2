@@ -56,6 +56,9 @@ public class HandlerProcessingAddon {
         	};
         };
         try {
+        	// this prevents the ProgressMonitorDialog from opening
+        	// (since we have the progress already on splash screen)
+        	progressMonitorDialog.setOpenOnRun(false);
 			progressMonitorDialog.run(true, false, op);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
@@ -85,7 +88,7 @@ public class HandlerProcessingAddon {
 	protected void initialize(IProgressMonitor pMonitor) {
 		List<MHandlerContainer> findElements = modelService.findElements(application, null,
 				MHandlerContainer.class, null);
-		pMonitor.beginTask("initialize application", IProgressMonitor.UNKNOWN);
+//		pMonitor.beginTask("initialize application", IProgressMonitor.UNKNOWN);
 //		int i = 1;
 		for (MHandlerContainer mHandlerContainer : findElements) {
 //			pMonitor.worked(i++);

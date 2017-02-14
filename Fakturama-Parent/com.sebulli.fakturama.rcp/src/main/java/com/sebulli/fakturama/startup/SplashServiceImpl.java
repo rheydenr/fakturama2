@@ -13,6 +13,8 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -21,6 +23,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.log.ILogger;
@@ -31,6 +34,14 @@ public class SplashServiceImpl implements ISplashService {
 	private Shell splashShell = null;
 	private Label textLabel = null;
 	private String nextMessage = null;
+	private Rectangle textRect = null;
+	private Color textColor = null;
+	private Font textFont = null;
+	private Rectangle progressRect = null;
+	private int totalWork = 0;
+
+	private ProgressBar progressBar = null;
+	private int progress = 0;
 
     @Inject
     private ILogger logger;
@@ -46,7 +57,61 @@ public class SplashServiceImpl implements ISplashService {
 		Assert.isLegal(splashPath != null && !splashPath.equals(""));
 		this.splashPath = splashPath;
 	}
-	
+
+	@Override
+	public void setTextBounds(Rectangle rect) {
+		Assert.isLegal(rect != null);
+		this.textRect = rect;
+		if (textLabel != null)
+			textLabel.setBounds(rect);
+	}
+
+	@Override
+	public void setTextColor(Color color) {
+		Assert.isLegal(color != null);
+		this.textColor = color;
+		if (textLabel != null)
+			textLabel.setForeground(color);
+	}
+
+	@Override
+	public void setTextFont(Font font) {
+		Assert.isLegal(font != null);
+		this.textFont = font;
+		if (textLabel != null)
+			textLabel.setFont(font);
+	}
+
+	@Override
+	public void setProgressBarBounds(Rectangle rect) {
+		Assert.isLegal(rect != null);
+		this.progressRect = rect;
+		if (progressBar != null)
+			progressBar.setBounds(rect);
+	}
+
+	@Override
+	public void setTotalWork(int totalWork) {
+		this.totalWork = totalWork;
+		if (progressBar != null) {
+			progressBar.setMaximum(totalWork);
+		}
+	}
+
+	@Override
+	public void worked(int worked) {
+		if (progressBar != null && !progressBar.isDisposed()) {
+			progress += worked;
+			splashShell.getDisplay().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					progressBar.setSelection(progress);
+					splashShell.update();
+				}
+			});
+		}
+	}
+
 	@Override
 	public void open() {
 		if (pluginId == null)
@@ -64,22 +129,53 @@ public class SplashServiceImpl implements ISplashService {
 		Image image = createBackgroundImage(shell);
 		shell.setBackgroundImage(image);
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		Rectangle imageBounds = image.getBounds();
 		
-		final GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		layout.marginHeight = 40;
-		layout.marginWidth = 20;
-		layout.verticalSpacing = 6;
-		layout.horizontalSpacing = 6;
-		shell.setLayout(layout);
+//		final GridLayout layout = new GridLayout();
+//		layout.numColumns = 1;
+//		layout.marginHeight = 40;
+//		layout.marginWidth = 20;
+//		layout.verticalSpacing = 6;
+//		layout.horizontalSpacing = 6;
+//		shell.setLayout(layout);
 		
 		// TODO Set the postion and stlye of the text from outside to make the service reusable
 		textLabel = createTextLabel(shell);
-		
-		Rectangle imageBounds = image.getBounds();
+		if (textRect == null) {
+			textRect = new Rectangle(10, imageBounds.height - 50,
+					imageBounds.width - 40, 40);
+		}
+		textLabel.setBounds(textRect);
+
+		if (totalWork != 0) {
+			progressBar = createProgressBar(shell);
+			if (progressRect == null) {
+				progressRect = new Rectangle(0, imageBounds.height - 10
+						- progressBar.getBorderWidth(), imageBounds.width
+						- progressBar.getBorderWidth(), 10);
+			}
+			progressBar.setBounds(progressRect);
+		}
+
 		shell.setSize(imageBounds.width, imageBounds.height);
 		shell.setLocation(getMonitorCenter(shell));
 		return shell;
+	}
+
+	private ProgressBar createProgressBar(Shell shell) {
+		int style = SWT.BORDER | SWT.SMOOTH | SWT.HORIZONTAL;
+		if (totalWork < 0) {
+			// FIXME This does not work ... could be an issue with the UI thread
+			// being busy in the background, so the progress bar has no chance
+			// to update in indeterminate mode
+			style |= SWT.INDETERMINATE;
+		}
+		ProgressBar pb = new ProgressBar(shell, style);
+		if (totalWork > 0) {
+			pb.setMinimum(0);
+			pb.setMaximum(totalWork);
+		}
+		return pb;
 	}
 
 	private Image createBackgroundImage(Shell parent) {
@@ -112,16 +208,22 @@ public class SplashServiceImpl implements ISplashService {
 
 	private Label createTextLabel(Composite parent) {
 		Label label = new Label(parent, SWT.WRAP);
-		GridData gd = new GridData();
-		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.BOTTOM;
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-		label.setLayoutData(gd);
+//		GridData gd = new GridData();
+//		gd.horizontalAlignment = SWT.FILL;
+//		gd.verticalAlignment = SWT.BOTTOM;
+//		gd.grabExcessHorizontalSpace = true;
+//		gd.grabExcessVerticalSpace = true;
+//		label.setLayoutData(gd);
 		
-		label.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		label.setFont(parent.getDisplay().getSystemFont());
-		
+		if (textColor == null) {
+			textColor = parent.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		}
+		label.setForeground(textColor);
+		if (textFont == null) {
+			textFont = parent.getDisplay().getSystemFont();
+		}
+		label.setFont(textFont);
+
 		if (nextMessage != null) {
 			label.setText(nextMessage);
 		}
@@ -139,7 +241,9 @@ public class SplashServiceImpl implements ISplashService {
 
 	@Override
 	public void close() {
-		splashShell.close();
+		if(splashShell != null) {
+			splashShell.close();
+		}
 		splashShell = null;
 	}
 

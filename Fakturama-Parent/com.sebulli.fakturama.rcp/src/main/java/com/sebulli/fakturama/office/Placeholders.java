@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -49,6 +50,8 @@ import com.sebulli.fakturama.util.ContactUtil;
 
 
 public class Placeholders {
+	
+	public static final int COUNT_OF_LAST_SHOWN_DIGITS = 3; 
 	    
     @Inject
     @Translation
@@ -959,18 +962,16 @@ public class Placeholders {
 	 */
 	private String censorAccountNumber(String accountNumber) {
 		String retval = "";
-		Integer bankAccountLength = accountNumber.length();			
-		// Only set placeholder if bank account exists
-		if( bankAccountLength > 3 ) {				
-			// Show only the last 3 digits
-			Integer bankAccountCensoredLength = bankAccountLength - 3;
-			String censoredDigits = "";				
-			for( int i = 1; i <= bankAccountCensoredLength; i++ ) {
-				censoredDigits += "*";
-			}				
-			retval = censoredDigits + accountNumber.substring( bankAccountCensoredLength );
-		} else {
-			retval = "***";
+		if(accountNumber != null) {
+			Integer bankAccountLength = accountNumber.length();			
+			// Only set placeholder if bank account exists
+			if( bankAccountLength > COUNT_OF_LAST_SHOWN_DIGITS ) {				
+				// Show only the last COUNT_OF_LAST_SHOWN_DIGITS digits
+				Integer bankAccountCensoredLength = bankAccountLength - COUNT_OF_LAST_SHOWN_DIGITS;
+				retval = StringUtils.leftPad(accountNumber.substring(bankAccountCensoredLength), bankAccountCensoredLength, "*");
+			} else {
+				retval = "***";
+			}
 		}
 		return retval;
 	}
@@ -978,11 +979,13 @@ public class Placeholders {
 	public static void main(String[] args) {
 		
 	    Placeholders ph = new Placeholders();	    
-	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
-	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
+//	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
+//	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
 	    
+	    System.out.println("is 'DOCUMENT.ADDRESS' placeholder? " + ph.isPlaceholder("DOCUMENT.ADDRESS"));
+	    System.out.println("is 'NO.PLACEHOLDER' placeholder? " + ph.isPlaceholder("NO.PLACEHOLDER"));
 	    
-//	    System.out.println("mit null: " + censorAccountNumber(null));
+	    System.out.println("mit null: " + ph.censorAccountNumber(null));
 	    System.out.println("mit 12: " + ph.censorAccountNumber("12"));
 	    System.out.println("mit 123: " + ph.censorAccountNumber("123"));
 	    System.out.println("mit 123456789: " + ph.censorAccountNumber("123456789"));
@@ -1019,15 +1022,10 @@ public class Placeholders {
 	 * 		TRUE, if the placeholder is in the list
 	 */
 	public boolean isPlaceholder(String testPlaceholder) {
-		
 		String placeholderName = extractPlaceholderName(testPlaceholder);
 		
 		// Test all placeholders
-		for (String placeholder : placeholders) {
-			if (placeholderName.equals(placeholder))
-				return true;
-		}
-		return false;
+		return Arrays.stream(placeholders).anyMatch(p -> placeholderName.equals(p));
 	}
 }
 
