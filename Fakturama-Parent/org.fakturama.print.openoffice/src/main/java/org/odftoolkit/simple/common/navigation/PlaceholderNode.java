@@ -4,6 +4,7 @@
 package org.odftoolkit.simple.common.navigation;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -11,12 +12,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
+import org.odftoolkit.odfdom.dom.element.text.TextSpanElement;
 import org.odftoolkit.odfdom.pkg.OdfElement;
+import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.odfdom.type.Length;
 import org.odftoolkit.odfdom.type.Length.Unit;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
+import org.odftoolkit.simple.text.Span;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Container for a placeholder. With some additional information.
@@ -127,29 +132,109 @@ public class PlaceholderNode extends Selection {
 	 *            the replace text String
 	 * @return the first replaced Node
 	 */
-    public Node replaceWith(String newText) {
+    public Node replaceWith(String newText) {    	
         Node parentNode = getNode().getParentNode();
+        
+        // the simple case: if a placeholder sits in a node with only one child
+        // AND the new text has no line breaks then we can simply replace this 
+        // placeholder node with some text.
+        if(newText != null && !newText.contains("\n")) {
+        	Span s = Span.getInstanceof(new TextSpanElement((OdfFileDom) parentNode.getOwnerDocument()));
+        	s.setTextContent(newText);
+        	parentNode.replaceChild(s.getOdfElement(), getNode());
+        	return s.getOdfElement();
+        }
+        
+        // else, we have to tokenize the new text,
+        // clone the original node, put all the children _after_ the placeholder
+        // again in the clone and append a new text node for each new line on the cloned node.
+        // But wait - all reminding nodes _before_ the origin placeholder have to be retained, too.
+        // We do this in reversed order for simplicity.
+        // Sounds complicated, eh? But - yes, it is ;-).
         
         // a list with all created nodes
         // since we can't _append_ one node at another node we have to collect all the 
-        // nodes and replace the origin node after all nodes were created.  
+        // nodes and insert it after all nodes were created.  
         LinkedList<Node> substitutes = new LinkedList<>();
         
+        // create a copy of all children, if any
+        NodeList childNodes = parentNode.getChildNodes();
+        Node childNodesAfterPlaceholder = parentNode.cloneNode(false);
+        Node previousNode = null;
+        if(childNodes.getLength() > 1) {
+        	int currentPosition = childNodes.getLength()-1;
+        	
+        	// collect all nodes _after_ placeholder node, start at the end of tree
+    		// put all nodes into a clone of the origin parent node
+        	// giving them a new parent (this removes the nodes from origin parent)
+        	for (int i = currentPosition; i >= 0; i--) {
+        		if(childNodes.item(i).isSameNode(getNode())) {
+        			break;
+        		}
+        		if(previousNode == null) {
+        			previousNode = childNodesAfterPlaceholder.appendChild(childNodes.item(i)); 
+        		} else {
+        			previousNode = childNodesAfterPlaceholder.insertBefore(childNodes.item(i), previousNode);
+        		}
+			}
+        }
+        
         // make every line break a separate paragraph
-        StringTokenizer st = new StringTokenizer(newText, "\n");
+        StringTokenizer st = new StringTokenizer(StringUtils.defaultString(newText), "\n");
         while (st.hasMoreTokens()) {
             String s = st.nextToken();
-            // create a "template node"
+            // create a "template node" by cloning the original node
             Node templateNode = parentNode.cloneNode(false);
             templateNode.setTextContent(s);
             substitutes.add(templateNode);
         }
         
-        // remove the origin "placeholder" node...
-        parentNode.removeChild(getNode());
-        // ...and put the collected nodes into parent container
-        substitutes.forEach(node -> parentNode.getParentNode().insertBefore(node, parentNode));
+        // now lets assemble the nodes altogether.
+        /*
+         * BEFORE:
+         * 
+         *     O     parentNode
+         *    /|\ 
+         *  (O O O)
+         *       +-- childNodesAfterPlaceholder
+         *     +---- placeholder node
+         *  +------- (unnamed children from parentNode)
+         *  
+         * AFTER:
+         * 
+         *     O     parentNode (cloned)
+         *    /|\ 
+         * (O  | O)
+         *     | +-- childNodesAfterPlaceholder
+         *     O
+         *    /|\
+         *   O O O 
+         *     +---- substituted placeholder node
+         *  +------- (unnamed children from parentNode)
+         */
         
+        Node insertedNode = null;
+        
+        // at first insert the (old) childNodes which were _after_ the placeholder node (if not empty)
+        if(childNodesAfterPlaceholder.hasChildNodes()) {
+       		insertedNode = parentNode.getParentNode().insertBefore(childNodesAfterPlaceholder, parentNode.getNextSibling());
+        }
+        // ...put the collected nodes into parent container (before the origin parent node) ==> reversed order!
+        Iterator<Node> it = substitutes.descendingIterator();
+        while(it.hasNext()) {
+        	Node node = (Node)it.next();
+	        if(insertedNode == null) {
+	        	insertedNode = parentNode.getParentNode().insertBefore(node, parentNode.getNextSibling());
+	        } else {
+	        	insertedNode = parentNode.getParentNode().insertBefore(node, insertedNode);
+	        }
+        }
+        // ...then remove the origin "placeholder" node...
+        parentNode.removeChild(getNode());
+        if(!parentNode.hasChildNodes()) {
+        	// delete (old) parent node if it's now empty
+        	parentNode.getParentNode().removeChild(parentNode);
+        }
         return substitutes.isEmpty() ? null : substitutes.getFirst();
     }
     

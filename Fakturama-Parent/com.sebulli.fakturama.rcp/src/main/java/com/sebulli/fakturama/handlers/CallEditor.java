@@ -149,7 +149,7 @@ public class CallEditor {
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
             boolean forceNew = BooleanUtils.toBoolean(pForceNew);
             
-            System.out.println("INFO: "  + objId);
+//            System.out.println("INFO: "  + objId);
             
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
@@ -170,6 +170,7 @@ public class CallEditor {
 			
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
 			editorPart.getContext().remove(PARAM_OBJ_ID);
+			editorPart.getContext().remove(PARAM_DUPLICATE);
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 //	

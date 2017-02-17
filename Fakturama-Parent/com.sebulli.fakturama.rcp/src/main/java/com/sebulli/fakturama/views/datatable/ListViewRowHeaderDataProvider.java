@@ -31,7 +31,7 @@ public class ListViewRowHeaderDataProvider implements IDataProvider {
     @Override
     public Object getDataValue(int columnIndex, int rowIndex) {
         String retval = null;
-        if(withRowHeader) {
+        if(withRowHeader && bodyDataProvider.getRowCount() > 0) {
             // data Value is already the PosNo
         	// the "-1" is only a placeholder for the very first column (which has to 
         	// be the position number); this is converted in the IColumnPropertyAccessor

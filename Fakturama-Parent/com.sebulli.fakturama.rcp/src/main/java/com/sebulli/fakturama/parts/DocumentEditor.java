@@ -809,6 +809,8 @@ public class DocumentEditor extends Editor<Document> {
 				
 				document.setOrderDate(today);
 				document.setServiceDate(today);
+				
+				document.setNetGross(DocumentSummary.ROUND_NET_VALUES);
 			}
 			else {
 				payment = document.getPayment();
@@ -825,8 +827,6 @@ public class DocumentEditor extends Editor<Document> {
 			document.setDocumentDate(today);
 //			document.setPayDate(today);
 //			document.setPaid(Boolean.FALSE);
-			
-			document.setNetGross(DocumentSummary.ROUND_NET_VALUES);
 
 			// Get the next document number
 			document.setName(getNextNr());
@@ -2122,23 +2122,23 @@ public class DocumentEditor extends Editor<Document> {
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
 	                tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.CONFIRMATION));
-	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-	                tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-	                , createCommandParams(DocumentType.DELIVERY));
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
                     tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+            		tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+            		, createCommandParams(DocumentType.DELIVERY));
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
                     tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.PROFORMA));
 			break;
 		case CONFIRMATION:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-                    tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.DELIVERY));
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
                     tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.INVOICE));
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
+            		tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
+            		, createCommandParams(DocumentType.DELIVERY));
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
                     tooltipPrefix + msg.mainMenuNewProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.PROFORMA));
@@ -2155,6 +2155,7 @@ public class DocumentEditor extends Editor<Document> {
 	                , createCommandParams(DocumentType.DUNNING));
 			break;
 		case DELIVERY:
+		case PROFORMA:
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
                     tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
                     , createCommandParams(DocumentType.INVOICE));
@@ -2164,11 +2165,6 @@ public class DocumentEditor extends Editor<Document> {
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, action, 
 	                tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.DUNNING));
-			break;
-		case PROFORMA:
-            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-                    tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-                    , createCommandParams(DocumentType.INVOICE));
 			break;
 		default:
 			copyGroup.setVisible(false);

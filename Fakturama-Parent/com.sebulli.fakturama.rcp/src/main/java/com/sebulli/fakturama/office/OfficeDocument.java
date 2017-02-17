@@ -19,9 +19,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -42,6 +44,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -83,6 +86,8 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class OfficeDocument {
 
+	private static final int TIME_TO_WAIT_FOR_PROCESS = 3000;
+
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
 
@@ -111,6 +116,9 @@ public class OfficeDocument {
      */
     @Inject
     protected IEventBroker evtBroker;
+    
+ // get UISynchronize injected as field
+    @Inject UISynchronize sync;
 
 	/** Template name */
 	private Path template;	
@@ -315,7 +323,7 @@ public class OfficeDocument {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
 				}
-				Files.copy(generatedPdf, documentPath);
+				Files.copy(generatedPdf, documentPath, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				log.error(e);
 			}
@@ -371,32 +379,40 @@ public class OfficeDocument {
 		    // Save the document
 		    OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
 		    Path ooPath = ooStarter.getCheckedOOPath();
-		    if(ooPath != null) {
-		        // FIXME How to create a PDF/A1 document?
-				String sysCall = String.format("\"%s\" -headless -convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"", 
-		                //program%sswriter File.separator, 
-		                ooPath.toString(), 
-		                directory.toAbsolutePath(), // this is the PDF path
-		                documentPath.toAbsolutePath());
-		        //				PDFFilter pdfFilter = new PDFFilter();
-		        //				pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-		        
-		        // TODO error handling!!! Potential security risk!
-				Runtime.getRuntime().exec(sysCall);
-		        
-		        // now, if the file name templates are different, we have to rename the pdf
-	    		Set<PathOption> pathOptions = new HashSet<>();
-	            pathOptions.add(PathOption.WITH_FILENAME);
-	            pathOptions.add(PathOption.WITH_EXTENSION);
+			if (ooPath != null) {
+				// FIXME How to create a PDF/A1 document?
+				String sysCall = String.format(
+						"\"%s\" -headless -convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
+						// program%sswriter File.separator,
+						ooPath.toString(), directory.toAbsolutePath(), // this is the PDF path
+						documentPath.toAbsolutePath());
+				// PDFFilter pdfFilter = new PDFFilter();
+				// pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+
+				ProcessBuilder pb = new ProcessBuilder(sysCall);
+
+				Process p = pb.start();
+
+				p.waitFor();
+
+				// now, if the file name templates are different, we have to
+				// rename the pdf
+				Set<PathOption> pathOptions = new HashSet<>();
+				pathOptions.add(PathOption.WITH_FILENAME);
+				pathOptions.add(PathOption.WITH_EXTENSION);
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
-		        Path tmpPdf = Paths.get(directory.toString(), documentPath.getFileName().toString().replaceAll("\\.ODT$", ".PDF"));
-		        
-		        if (/*!Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
-					Files.move(tmpPdf, pdfFilename);
-		        }
-		    }
+				Path tmpPdf = Paths.get(directory.toString(),
+						documentPath.getFileName().toString().replaceAll("\\.ODT$", ".PDF"));
+
+				if (/* !Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
+					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
 		} catch (IOException e) {
-		    log.error(e, "Error saving the PDF document");
+		    log.error(e, "Error moving the PDF document");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return pdfFilename;
 	}

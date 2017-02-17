@@ -66,6 +66,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -718,6 +719,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         selectionLayer.getSelectionModel().setMultipleSelectionAllowed(true);
         
+        E4SelectionListener<DocumentItemDTO> esl = new E4SelectionListener<>(selectionService, selectionLayer, gridListLayer.getBodyDataProvider());
+        selectionLayer.addLayerListener(esl);
+
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
@@ -819,7 +823,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void removeSelectedEntry() {
     	@SuppressWarnings("unchecked")
 		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection();
-        if(selectedEntries.size() > 0) {
+        if(selectedEntries != null && selectedEntries.size() > 0) {
         	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
             if(isRemoved) {
             	renumberItems();

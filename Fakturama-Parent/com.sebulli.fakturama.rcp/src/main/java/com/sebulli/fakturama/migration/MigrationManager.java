@@ -1327,6 +1327,7 @@ public class MigrationManager {
 				String propValue = oldProperty.getValue();
 
 				// there are only three different default entries
+				// some other values have to be corrected
 				switch (oldProperty.getName()) {
                 case Constants.DEFAULT_VAT:
 				    // if we get a default entry property we have to synchronize this with the correct entry
@@ -1383,7 +1384,10 @@ public class MigrationManager {
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
                     propertiesDAO.save(propFormatExample, true);
                     eclipsePrefs.put(propFormatExample.getName(), propFormatExample.getValue());
-               	break;
+                    break;
+                case Constants.PREFERENCES_BROWSER_TYPE:
+                	propValue = "0";  // because setting the browser type makes a lot of trouble!
+                	break;
                 default:
                     break;
                 }

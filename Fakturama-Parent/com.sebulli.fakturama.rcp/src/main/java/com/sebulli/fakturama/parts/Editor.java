@@ -356,8 +356,8 @@ public abstract class Editor<T extends IEntity> {
 		// Reset the counter
 		if (startNewCounting) {
 			nr = 1;
-			setNextNumber(prefStrNr, nr); 
 		}
+		setNextNumber(prefStrNr, nr); 
 		
 		// Replace the date information
 		format = format.replace("{yyyy}", String.format("%04d", yyyy));

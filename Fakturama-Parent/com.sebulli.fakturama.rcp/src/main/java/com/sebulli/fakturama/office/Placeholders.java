@@ -47,6 +47,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.util.ContactUtil;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 
 public class Placeholders {
@@ -647,7 +648,7 @@ public class Placeholders {
 		}
 		
 		// Get information from the document
-		if (key.equals("DOCUMENT.TYPE")) return document.getBillingType().getName();
+		if (key.equals("DOCUMENT.TYPE")) return msg.getMessageFromKey(DocumentTypeUtil.findByBillingType(document.getBillingType()).getSingularKey());
 		if (key.equals("DOCUMENT.NAME")) return document.getName();
 		if (key.equals("DOCUMENT.CUSTOMERREF")) return document.getCustomerRef();
 		if (key.equals("DOCUMENT.CONSULTANT")) return document.getConsultant();

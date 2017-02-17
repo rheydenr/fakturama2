@@ -158,7 +158,7 @@ public class FileOrganizer {
 
 		// Replace the placeholders
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName());
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docref\\}", document.getCustomerRef());
+		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docref\\}", StringUtils.defaultString(document.getCustomerRef()));
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
 				DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))));
 

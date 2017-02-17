@@ -65,8 +65,11 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new StringFieldEditor(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL, msg.preferencesBrowserUrl, getFieldEditorParent()));
 		
 		//T: Preference page "Webbrowser" 
-		addField(new ComboFieldEditor(Constants.PREFERENCES_BROWSER_TYPE, msg.preferencesBrowserType, new String[][] { { "---", "0" }, { "WebKit", "1" }, { "Mozilla", "2" }
-			 }, getFieldEditorParent()));
+		// DEACTIVATED: makes trouble over and over again. If one wants to use a certain rendering engine
+		// he can get this with the command line switch -Dorg.eclipse.swt.browser.DefaultType=...
+		// see https://www.eclipse.org/swt/faq.php#howusemozilla
+//		addField(new ComboFieldEditor(Constants.PREFERENCES_BROWSER_TYPE, msg.preferencesBrowserType, new String[][] { { "---", "0" }, { "WebKit", "1" }, { "Mozilla", "2" }
+//			 }, getFieldEditorParent()));
 		
 		//T: Preference page "Webbrowser" 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_BROWSER_SHOW_URL_BAR, msg.preferencesBrowserShowaddressbar, getFieldEditorParent()));
