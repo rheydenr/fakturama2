@@ -57,6 +57,7 @@ public class Messages {
 	public String commandNavigationImport;
 	public String commandNavigationImportTooltip;
 	public String commandNavigationMisc;
+	public String commandNavigationMiscTooltip;
 	public String commandNewContactTooltip;
 	public String commandNewCreditorName;
 	public String commandNewCreditorTooltip;

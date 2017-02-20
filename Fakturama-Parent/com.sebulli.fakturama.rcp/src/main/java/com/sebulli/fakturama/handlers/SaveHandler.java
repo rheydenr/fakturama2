@@ -29,20 +29,9 @@ public class SaveHandler {
             MDirtyable dirtyable = partService.getActivePart();
             if (dirtyable == null) { return false; }
             return dirtyable.isDirty();
-            //return !partService.getDirtyParts().isEmpty();
         }
         return false;
     }
-
-    //	@CanExecute
-    //	public boolean canExecute(
-    //	        /*final EPartService partService,*/
-    //	        @Optional /*@Active*/ MDirtyable dirtyable) {
-    //		if (dirtyable == null) {
-    //			return false;
-    //		}
-    //		return dirtyable.isDirty();
-    //	}
 
     @Execute
     public void execute(IEclipseContext context, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, final EPartService partService)

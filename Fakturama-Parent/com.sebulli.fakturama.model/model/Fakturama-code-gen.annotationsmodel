@@ -1291,5 +1291,9 @@
       <eClass href="Fakturama.ecore#//ContactWrapper"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" serializable="true"/>
     </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEEnum">
+      <eEnum href="Fakturama.ecore#//ContactType"/>
+      <eEnumAnnotations xsi:type="modelannotations:EEnumModelGenAnnotation" documentation="The type of contact (i.e., if it is the invoice address, the delivery address or other)."/>
+    </annotatedEClassifiers>
   </annotatedEPackages>
 </annotationsmodel:AnnotatedModel>

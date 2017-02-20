@@ -418,7 +418,6 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_RCrwcPo9EeKmVtv93KLoRw" elementId="menu:main.menu.extra.id" label="%main.menu.extra">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="menu:main.menu.organize_documents.id" label="%main.menu.extra.reorganize" iconURI="icon://COMMAND_REORGANIZE" command="_uB33QIZSEeWRb8xKRQdEJg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_6DEs4DAHEeadQNc3uX9jkA" elementId="menu:main.menu.extras.syncmobile" label="%main.menu.extra.syncmobile" command="_keAzgDAIEeadQNc3uX9jkA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_jPhn4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.window.id" label="%main.menu.window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_0iJK8EgWEeOrp6PdA0AQig" elementId="menu:main.menu.calculator.id" label="%command.calculator.name" iconURI="icon://COMMAND_CALCULATOR" command="_-UipAEy_EeOA3qmx22wNtw"/>

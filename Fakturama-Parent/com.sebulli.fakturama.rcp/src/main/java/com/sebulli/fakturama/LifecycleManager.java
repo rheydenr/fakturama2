@@ -48,6 +48,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -67,6 +68,7 @@ import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.EditorSaveHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -177,16 +179,16 @@ public class LifecycleManager {
         	splashService.worked(5);
             
             // register event handler for saving and closing editors before shutdown
-//            eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
-//                new EventHandler() {
-//                        @Override
-//                        public void handleEvent(Event event) {
-//                        	// formerly known as Workbench.busyClose()
-//                        	closeAndSaveEditors(context);
-////                        	eventBroker.unsubscribe(eventHandler)
-//                        }
-//
-//                });            
+            eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
+                new EventHandler() {
+                        @Override
+                        public void handleEvent(Event event) {
+                        	// formerly known as Workbench.busyClose()
+                        	closeAndSaveEditors(context);
+//                        	eventBroker.unsubscribe(eventHandler)
+                        }
+
+                });            
             
         } else {
             // if db connection is not set, it is a certain sign that the application 
@@ -351,9 +353,6 @@ public class LifecycleManager {
 	@PreDestroy
     public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation,
     		EPartService partService) {
-
-		// close all open editors
-//		partService.getDirtyParts().forEach((MPart part) -> part.save());
 		
         PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
 		if (preferencesInDatabase != null) {
@@ -428,7 +427,7 @@ public class LifecycleManager {
 				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
 			}
         }
-    	
+    	                
         MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
         mainMTrimmedWindow.setLabel("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
         
@@ -465,7 +464,6 @@ public class LifecycleManager {
         }
     }
     
-    
 	private IDialogSettings initDialogSettings(Location instanceLocation) {
 		if(dialogSettings == null) {
 			dialogSettings = loadDialogSettings(instanceLocation);
@@ -479,6 +477,10 @@ public class LifecycleManager {
     public void createOneEditor(EModelService modelService, MApplication app) {
         // if no editor is opened we create a Start Browser part
         MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, app);
+		
+        // add another Savehandler
+        // FIXME doesn't  work at the moment. The WBWRenderer registers its own SaveHandler while creating the application window.
+		app.getContext().set(ISaveHandler.class, ContextInjectionFactory.make(EditorSaveHandler.class, app.getContext()));
 //        if(documentPartStack.getChildren().isEmpty()) {
 //        	EHandlerService handlerService = context.get(EHandlerService.class);
 //        	ECommandService commandService = context.get(ECommandService.class);

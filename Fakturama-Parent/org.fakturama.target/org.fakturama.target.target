@@ -126,11 +126,11 @@
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.14.0.v20161220-1446"/>
-<unit id="org.eclipse.e4.tools.preference.spy.feature.feature.group" version="0.1.0.v20160811-1516"/>
-<unit id="org.eclipse.e4.tools.spies.feature.feature.group" version="0.17.0.v20161220-1446"/>
-<unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.15.0.v20160916-1406"/>
-<unit id="org.eclipse.e4.tools.model.spy.feature.feature.group" version="0.1.0.v20160520-1109"/>
+<unit id="org.eclipse.e4.tools.css.spy.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.e4.tools.preference.spy.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.e4.tools.spies.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.e4.tools.event.spy.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.e4.tools.model.spy.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">

@@ -672,11 +672,11 @@ public class DocumentEditor extends Editor<Document> {
         }
         
         // reset dirty flag
-        getMDirtyablePart().setDirty(false);
+        setDirty(false);
 	}
 
 	/**
-	 * Checks if the given paid amount is only adeposit. Cares of the discount.
+	 * Checks if the given paid amount is only a deposit. Cares of the discount.
 	 * 
      * @return <code>true</code> if it's only a deposit
      */
@@ -750,7 +750,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
             document.setBillingType(billingType);
             // a new document is always dirty...
-            getMDirtyablePart().setDirty(true);
+            setDirty(true);
 
 			// Copy the entry "message", or reset it to ""
 			if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
@@ -1265,7 +1265,7 @@ public class DocumentEditor extends Editor<Document> {
 //					duedays = spDueDays.getSelection();
 					calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
 					dtIssueDate.setSelection(calendar.getTime());
-					getMDirtyablePart().setDirty(true);
+					setDirty(true);
 				}
 			});
 			
@@ -1355,6 +1355,21 @@ public class DocumentEditor extends Editor<Document> {
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
+		txtPayValue.getControl().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(isInvoiceDeposited()) {
+					createDepositWarningIcon();
+					// Resize the container
+					paidContainer.layout();
+					paidContainer.pack();
+				} else {
+					warningDepositIcon.setVisible(false);
+					warningDepositText.setVisible(false);
+					bPaid.setSelection(true);   // has no effect :-(
+				}
+			}
+		});
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
 
 		// If it's the first time that this document is marked as paid
@@ -1451,7 +1466,7 @@ public class DocumentEditor extends Editor<Document> {
 		addressAndIconComposite.layout(true);
 		updateUseGross(true);
 		
-		getMDirtyablePart().setDirty(false);
+		setDirty(false);
 	}
 	
 	/**
@@ -1775,7 +1790,7 @@ public class DocumentEditor extends Editor<Document> {
 					document.setNoVatReference(dataSetVat);
 					itemListTable.refresh();
 					
-					getMDirtyablePart().setDirty(true);
+					setDirty(true);
 
 					// recalculate the total sum
 					calculate();
@@ -1849,7 +1864,7 @@ public class DocumentEditor extends Editor<Document> {
 			    Collection<Contact> result = dlg.getResult();
 			    if(result != null) {
 			    	setAddress(result.iterator().next());
-			    	getMDirtyablePart().setDirty(true);
+			    	setDirty(true);
 			    }
 			}
 		});
@@ -1872,7 +1887,7 @@ public class DocumentEditor extends Editor<Document> {
                 handlerService.executeHandler(parameterizedCommand);
 			    
 			    document.getBillingContact().getAddress().setManualAddress(null);
-                getMDirtyablePart().setDirty(true);
+                setDirty(true);
 			}
 		});
 
@@ -1906,7 +1921,7 @@ public class DocumentEditor extends Editor<Document> {
 //		        if(!contactUtil.getAddressAsString(document.getBillingContact()).contentEquals(txtAddress.getText())) {
 //		            document.setManualAddress(txtAddress.getText());
 //		            document.setBillingContact(null);
-		            getMDirtyablePart().setDirty(true);
+		            setDirty(true);
 //		        }
             }
         });
@@ -2816,7 +2831,7 @@ public class DocumentEditor extends Editor<Document> {
             if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
                 calculate();
             }
-            getMDirtyablePart().setDirty(true);
+            setDirty(true);
         }
     }    
     

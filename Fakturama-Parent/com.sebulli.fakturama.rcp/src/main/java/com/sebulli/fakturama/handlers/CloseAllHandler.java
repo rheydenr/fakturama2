@@ -28,6 +28,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.parts.BrowserEditor;
 import com.sebulli.fakturama.views.ErrorView;
 
 /**
@@ -65,7 +66,7 @@ public class CloseAllHandler {
       // at first find the PartStack "detailpanel"
         MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, application);
         List<MStackElement> stackElements = documentPartStack.getChildren().stream().filter(
-        		elem -> !elem.getElementId().equals("com.sebulli.fakturama.editors.browserEditor")
+        		elem -> !elem.getElementId().equals(BrowserEditor.ID)
         		      && elem.getTags().contains("documentWindow")).collect(Collectors.toList());
         
         for (MStackElement stackElement : stackElements) {
@@ -78,10 +79,7 @@ public class CloseAllHandler {
                 } else {
                     partService.hidePart(activePart, true);
                 }
-//            } else {
-//                partService.hidePart(activePart, true);
             }
-//            partService.requestActivation();
         }
     }
 }

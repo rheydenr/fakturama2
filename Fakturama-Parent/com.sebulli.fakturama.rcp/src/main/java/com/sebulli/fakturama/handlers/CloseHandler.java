@@ -29,7 +29,9 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
  */
 public class CloseHandler {
     
-    /**
+    private static final String FAKTURAMA_DETAILPANEL = "com.sebulli.fakturama.rcp.detailpanel";
+
+	/**
      * Close the part safely if it isn't dirty. If so, you have to ask for saving before closing.
      * 
      * @param dirtyable
@@ -39,7 +41,7 @@ public class CloseHandler {
     public boolean canExecute(
             MApplication application,
             final EModelService modelService) {
-        MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+        MPartStack documentPartStack = (MPartStack) modelService.find(FAKTURAMA_DETAILPANEL, application);
         return !documentPartStack.getChildren().isEmpty(); // you can close a window if there are open detail views
     }
 
@@ -50,7 +52,7 @@ public class CloseHandler {
             final EPartService partService)
             throws InvocationTargetException, InterruptedException {
         // at first find the PartStack "detailpanel"
-        MPartStack documentPartStack = (MPartStack) modelService.find("com.sebulli.fakturama.rcp.detailpanel", application);
+        MPartStack documentPartStack = (MPartStack) modelService.find(FAKTURAMA_DETAILPANEL, application);
         MPart activePart = (MPart)documentPartStack.getSelectedElement();
         // ask before closing
         if(activePart != null) {

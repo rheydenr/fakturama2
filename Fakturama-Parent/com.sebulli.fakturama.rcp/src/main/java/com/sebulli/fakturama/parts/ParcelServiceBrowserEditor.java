@@ -17,15 +17,12 @@ package com.sebulli.fakturama.parts;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -40,7 +37,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.parcelservice.ParcelServiceFormFiller;
-import com.sebulli.fakturama.parcelservice.ParcelServiceManager;
 
 /**
  * Parcel Service Web Browser Editor
@@ -58,7 +54,6 @@ public class ParcelServiceBrowserEditor {
 	// SWT components of the editor
 	private Composite top;
 	private Browser browser;
-	private ParcelServiceBrowserEditor editor;
 	
 	@Inject
 	private IParcelService manager;
@@ -85,6 +80,7 @@ public class ParcelServiceBrowserEditor {
 	public void createPartControl(final Composite parent, @Active MPart page) {
 // Initialize the editor. Set the URL as part name
         this.part = (MPart) parent.getData("modelElement");
+        part.getTags().add("documentWindow");  // mark this part as a documentWindow. This tag is evaluated by CloseAllHandler.
 		parcelServiceFormFiller = ContextInjectionFactory.make(ParcelServiceFormFiller.class, ctx);
 		// Set the name
 		part.setLabel(manager.getName());

@@ -3,6 +3,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -17,6 +18,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
+
+import com.sebulli.fakturama.i18n.Messages;
 
 // @PostConstruct will not work as workbench gets instantiated after the processing of the add-ons
 // hence this approach uses method injection
@@ -35,6 +38,10 @@ public class WindowCloseListenerAddon {
 	@Inject
 	@Optional
 	IWorkbench workbench;
+	
+    @Inject
+    @Translation
+    protected Messages msg;
 	
 	// while initializing a class, all annotated methods are sequentially called
 	// therefore we need to annotate the following methods with @Optional as the
@@ -76,8 +83,8 @@ public class WindowCloseListenerAddon {
 				@Override
 				public boolean close(MWindow window) {
 					boolean close = true;
-					if (partService.getDirtyParts().size() > 0) {
-						close = MessageDialog.openConfirm(shell, "Unsaved data", "Really close?");
+					if (!partService.getDirtyParts().isEmpty()) {
+						close = MessageDialog.openQuestion(shell, msg.mainMenuFileExit, msg.mainMenuFileExitQuestion);
 					}
 					if (close) {
 						workbench.close();
@@ -104,7 +111,7 @@ public class WindowCloseListenerAddon {
 						}
 					}
 				});
-}
+			}
 		}
 	}
 }
