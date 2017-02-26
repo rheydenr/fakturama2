@@ -1343,6 +1343,9 @@ public class MigrationManager {
                     Payment newPayment = paymentsDAO.findById(newPayments.get(Integer.parseInt(propValue)));
                     propValue = Long.toString(newPayment.getId());
                     break;
+                case Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS:
+                	propValue = Integer.toString(Integer.parseInt(propValue)+1);
+                    break;
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
                     double exampleNumber = -1234.56864;
                     String retval = "";

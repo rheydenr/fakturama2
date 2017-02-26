@@ -754,7 +754,7 @@ public class ZugferdExporter {
 	 */
 	private String determineQuantityUnit(String userdefinedQuantityUnit) {
 		String isoUnit = "";
-		if(StringUtils.isNotBlank(userdefinedQuantityUnit))	{
+		if(StringUtils.isNotBlank(userdefinedQuantityUnit) && measureUnits!= null)	{
 			CEFACTCode code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
 			isoUnit = code.getCode();
 		}

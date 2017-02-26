@@ -792,7 +792,6 @@ public class DocumentEditor extends Editor<Document> {
 //				shippingVat = shipping.getShippingVat();
 //				shippingAutoVat = shipping.getAutoVat();
 //				shippingVatDescription = shipping.getDescription();
-				netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 				
 				document.setShipping(shipping);
 				if(shipping != null) {
@@ -809,8 +808,7 @@ public class DocumentEditor extends Editor<Document> {
 				
 				document.setOrderDate(today);
 				document.setServiceDate(today);
-				
-				document.setNetGross(DocumentSummary.ROUND_NET_VALUES);
+				document.setNetGross(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS));
 			}
 			else {
 				payment = document.getPayment();

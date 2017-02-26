@@ -55,6 +55,8 @@ import org.w3c.dom.Document;
  */
 public class ZugferdHelper {
 
+	private static final String XMP_SCHEMALOCATION = "/resources/ZUGFeRD_Extension-Schema-neu.xmp";
+
 	/**
 	 * Makes A PDF/A3a-compliant document from a PDF-A1 compliant document (on
 	 * the metadata level, this will not e.g. convert graphics to JPG-2000)
@@ -143,7 +145,7 @@ public class ZugferdHelper {
  * @throws XmpParsingException 
  */
 	private static void addZugferdXMP(XMPMetadata metadata, XMPSchema schema, ConformanceLevel level, Document doc) throws XmpParsingException {
-		InputStream zfExtensionIs = ZugferdHelper.class.getResourceAsStream("/src/main/resources/ZUGFeRD_Extension-Schema-neu.xmp");
+		InputStream zfExtensionIs = ZugferdHelper.class.getResourceAsStream(XMP_SCHEMALOCATION);
 		DomXmpParser builder = new DomXmpParser();
 		builder.setStrictParsing(true);
 		XMPMetadata defaultXmp = builder.parse(zfExtensionIs);

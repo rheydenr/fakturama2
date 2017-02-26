@@ -27,6 +27,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 
@@ -72,8 +73,8 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 
 		//T: Preference page "Document" - Label "Format (net or gross) of the price in the item list"
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, msg.preferencesDocumentUsenetgross, 2, new String[][] { 
-					{ msg.productDataNet, "0" },
-					{ msg.productDataGross, "1" } },
+					{ msg.productDataNet, Integer.toString(DocumentSummary.ROUND_NET_VALUES) },
+					{ msg.productDataGross, Integer.toString(DocumentSummary.ROUND_GROSS_VALUES) } },
 				getFieldEditorParent()));
 		
 		//T: Preference page "Document" - Label "Copy the content of the message field when creating a duplicate of the document."
@@ -156,7 +157,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, "1");
+		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS, DocumentSummary.ROUND_GROSS_VALUES);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, false);
 //		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, false);
