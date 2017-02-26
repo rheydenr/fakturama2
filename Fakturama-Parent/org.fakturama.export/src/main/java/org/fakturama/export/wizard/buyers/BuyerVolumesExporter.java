@@ -228,7 +228,7 @@ public class BuyerVolumesExporter extends OOCalcExporter {
 	
 	@Override
 	protected String getOutputFileName() {
-		return exportMessages.wizardExportBuyersTitle;
+		return exportMessages.wizardExportBuyersDefaultfilename;
 	}
 
 }

@@ -99,6 +99,7 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeVcard +" (*.vcf)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
+		fileDialog.setFileName(getOutputFileName());
 		String selectedFile = fileDialog.open();
 		boolean retval = false;
 		try {
@@ -114,4 +115,8 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 		return retval;
 	}
 
+	@Override
+	public String getOutputFileName() {
+		return exportMessages.wizardExportVcfContactsDefaultfilename;
+	}
 }

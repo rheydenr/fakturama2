@@ -216,7 +216,7 @@ public class AddressListExport extends OOCalcExporter {
 	
 	@Override
 	protected String getOutputFileName() {
-		return "AddressListExport.csv";
+		return exportMessages.wizardExportContactsAllcontactsDefaultfilename;
 	}
 
 }

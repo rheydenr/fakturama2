@@ -225,7 +225,7 @@ public class AccountsExporter extends OOCalcExporter {
 	
 	@Override
 	protected String getOutputFileName() {
-		return "AccountListExport";
+		return exportMessages.wizardExportAccountsDefaultfilename;
 	}
 
 }

@@ -632,8 +632,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    Predicate predicate = cb.and(
 				cb.not(root.get(Document_.deleted)),
 				cb.or(
-						cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
-						cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
+						cb.equal(root.get(Document_.billingType), BillingType.INVOICE/*),
+						cb.equal(root.get(Document_.billingType), BillingType.CREDIT*/)
 					  ),
 				cb.equal(root.get(Document_.paid), paidFlag)
 		);

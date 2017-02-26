@@ -120,6 +120,6 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 	 */
 	@Override
 	public String getOutputFileName() {
-		return "AddressExport.csv";
+		return exportMessages.wizardExportCsvContactsDefaultfilename;
 	}
 }

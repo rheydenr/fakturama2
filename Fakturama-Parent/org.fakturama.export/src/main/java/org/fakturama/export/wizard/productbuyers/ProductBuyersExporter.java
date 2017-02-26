@@ -323,6 +323,6 @@ public class ProductBuyersExporter extends OOCalcExporter {
 
 	@Override
 	protected String getOutputFileName() {
-		return "ProductBuyers";
+		return exportMessages.wizardExportProductandbuyersDefaultfilename;
 	}
 }

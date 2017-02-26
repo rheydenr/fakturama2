@@ -122,6 +122,6 @@ public class ProductExportWizard extends Wizard implements IExportWizard {
 	
 	@Override
 	public String getOutputFileName() {
-		return "ProductExport.csv";
+		return exportMessages.wizardExportCsvProductsDefaultfilename;
 	}
 }

@@ -395,6 +395,6 @@ public class SalesExporter extends OOCalcExporter {
 	
 	@Override
 	protected String getOutputFileName() {
-		return this.exportPaid ? "SalesListExport" : "UnpaidSalesListExport";
+		return this.exportPaid ? exportMessages.wizardExportSalesDefaultfilename : exportMessages.wizardExportSalesUnpaidDefaultfilename;
 	}
 }
