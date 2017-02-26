@@ -264,7 +264,7 @@ public class VoucherExporter extends OOCalcExporter {
 					VoucherSummarySetManager vatSummarySetOneVoucher = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
 					MonetaryAmount paidValue = Money.of(voucher.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
 					MonetaryAmount totalValue = Money.of(voucher.getTotalValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
-					VoucherSummary voucherSummaryValue = calc.calculate(items, paidValue, totalValue, voucher.getDiscounted());
+					VoucherSummary voucherSummaryValue = calc.calculate(items, paidValue, totalValue, BooleanUtils.toBoolean(voucher.getDiscounted()));
 //					voucher.calculate();
 
 					// Add the voucher to the VAT summary

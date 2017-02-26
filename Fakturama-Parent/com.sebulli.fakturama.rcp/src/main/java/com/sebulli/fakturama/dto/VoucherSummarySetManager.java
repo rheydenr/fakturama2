@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.money.CurrencyUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
@@ -61,7 +62,7 @@ public class VoucherSummarySetManager {
         CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
         List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items, useCategory,
-				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
+				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class VoucherSummarySetManager {
         CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
 		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
-		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), voucher.getDiscounted());
+		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
 	}
 
 	/**
