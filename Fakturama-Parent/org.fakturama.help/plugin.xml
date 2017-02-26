@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml"
+            primary="true">
+      </toc>
+      <toc
+            file="tocquickguide.xml">
+      </toc>
+      <toc
+            file="tocinstall.xml">
+      </toc>
+      <toc
+            file="tocapplication.xml">
+      </toc>
+      <toc
+            file="tocopenoffice.xml">
+      </toc>
+      <toc
+            file="tocwebshop.xml">
+      </toc>
+      <toc
+            file="tocworkspace.xml">
+      </toc>
+      <toc
+            file="tocimportexport.xml">
+      </toc>
+      <toc
+            file="tocpreferences.xml">
+      </toc>
+      <toc
+            file="toclicense.xml">
+      </toc>
+      <toc
+            file="tocparcelservice.xml">
+      </toc>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml"
+            plugin="com.sebulli.fakturama.help">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.help.index">
+      <index
+            file="index.xml">
+      </index>
+   </extension>
+
+</plugin>

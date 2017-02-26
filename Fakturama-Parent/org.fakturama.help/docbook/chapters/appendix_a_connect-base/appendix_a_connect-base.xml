@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<appendix xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" id="baseaccess" xml:lang="de">
+	<anchor xreflabel="" xml:id="baseaccess_main"/>
+			<title>Verbindung mit der Fakturama-Datenbank herstellen</title>
+			<anchor xreflabel="" xml:id="importexport_base_access"/>
+			<warning>
+			Durch diesen Datenbankzugriff könnten versehentlich Echtdaten direkt in der Fakturama-Datenbank verändert oder gelöscht werden. Die Datenbank muss vorher geeignet gesichert werden. Greifen Sie nicht direkt auf die Echtdaten im Arbeitsverzeichnis zu!</warning>
+		
+			<procedure>
+				<step>
+					<para> Die letzte Version von „hsqldb“ unter <link xl:href="http://hsqldb.org/">http://hsqldb.org/</link> - Downloads herunterladen.</para>
+				</step>
+				<step>
+					<para> Zip-Datei an einen geeigneten Ort dauerhaft entpacken. </para>
+				</step>
+				<step>
+					<para> In LibreOffice Base unter "Extras – Optionen... – Erweitert – Class-Pfad... - Archiv Hinzufügen" die Datei <filename>hsqldb.jar</filename> aus dem entpackten Verzeichnis hinzufügen.
+				
+				<informalfigure>
+					<mediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_0_aus Handbuch.jpg" format="JPG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_0_aus Handbuch.jpg" format="JPG" scalefit="1" width="100%"/>
+						</imageobject>
+					</mediaobject>
+				</informalfigure></para></step>
+				<step>
+					<para> LibreOffice Base neu starten.</para>
+				</step>
+				<step>
+					<para> Dialog des Datenbank-Assistenten erscheint.</para>
+				</step>
+				<step>
+					<para> Verbindung zu einer bestehenden Datenbank herstellen: JDBC
+				<informalfigure>
+					<mediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_1.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_1.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</mediaobject>
+					</informalfigure></para>
+				</step>
+				<step>
+					<para> weiter</para>
+				</step>
+				<step>
+					<para> Einträge:
+				<informalfigure>
+					<mediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_2.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_2.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</mediaobject>
+					</informalfigure></para>
+				</step>
+				<step>
+					<substeps>
+						<step>
+							<programlisting> jdbc:hsqldb:file:[Pfad zum Fakturama-Arbeitsverzeichnis, z.B C:\Daten\Arbeitsverzeichnis]\Database\Database</programlisting>
+						</step>
+						<step>
+							<para> JDBC-Treiberklasse: org.hsqldb.jdbc.JDBCDriver</para>
+						</step>
+						<step>
+							<para> weiter</para>
+						</step>
+					</substeps>
+				</step>
+				<step>
+					<para> Benutzername ist nicht erforderlich.</para>
+				</step>
+				<step>
+					<para> weiter</para>
+				</step>
+				<step>
+					<para> unverändert lassen.
+				<informalfigure>
+					<mediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_3.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_3.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</mediaobject>
+					</informalfigure></para>
+				</step>
+				<step>
+					<para> weiter</para>
+				</step>
+				<step>
+					<para> Die Base-Datenbank unter einem frei wählbaren Namen speichern.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_4.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_4.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Die neu erstellte Base-Datenbank wird geöffnet und unter „Tabellen“ sind alle verfügbaren Fakturama-Tabellen aufgeführt.</para>
+				</step>
+				<step>
+					<para> Die Tabellen können durch Doppelklicken geöffnet und deren Inhalte eingesehen werden.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_5.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_5.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+			</procedure>
+		
+		<section>
+			<title>Beispielabfrage erstellen:</title>
+			<para> Für das Jahr 2015 sollen z.B. alle Rechnungsdokumente (Rechnungsnummer, Betrag, Vor- und Nachname, Kundennummer) in eine Tabellenkalkulation zur Weiterverarbeitung übernommen werden. </para>
+			<procedure>
+				<step>
+					<para> In der linken Spalte auf Abfragen klicken und „Abfrage in der Entwurfsansicht erstellen“ wählen.</para>
+				</step>
+				<step>
+					<para> Der Assistent öffnet sich.</para>
+				</step>
+				<step>
+					<para> TABELLE: DOCUMENTS wählen und „Hinzufügen“ anklicken.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_1.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_1.jpg" format="JPG" scalefit="1" width="80%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> TABELLE: CONTACTS wählen und „Hinzufügen“ anklicken.</para>
+				</step>
+				<step>
+					<para> „Schließen“ anklicken.</para>
+				</step>
+				<step>
+					<para> Beide Tabellen werden jetzt im oberen Teil des Bildschirms angezeigt.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_2.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_2.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Um die Daten beider Tabellen in einer gemeinsamen Abfrage zu erhalten, müssen beide Tabellen über ihren gemeinsamen Wert verbunden werden. In diesem Fall entspricht die ADDRESSID der Tabelle DOCUMENTS der ID der Tabelle CONTACTS.</para>
+				</step>
+				<step>
+					<para> Zum Verbinden der Tabellen auf ADDRESSID der Tabelle DOCUMENTS klicken, Maus gedrückt halten und auf ID der Tabelle CONTACTS ziehen. Maus loslassen.</para>
+				</step>
+				<step>
+					<para> Die Verbindung wird sichtbar.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_3.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_3.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Alle für die Abfrage benötigten Felder beider Tabellen nacheinander durch Doppelklicken in die Abfrage holen. Die gewählten Felder erscheinen als Spalten im unteren Teil des Bildschirms.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_4.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_4.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Die Abfrage auf das Jahr 2015 durch Auswahlkriterien einschränken.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_5.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_5.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Abfrage speichern.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_6.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_6.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Abfrage ausführen.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_7.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_7.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Das Ergebnis der Abfrage wird als Voransicht über den Tabellen eingeblendet und kann mit „F4“ dort wieder entfernt werden.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_8.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_8.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Entwurfsansicht schließen.</para>
+				</step>
+				<step>
+					<para> Die erstellte Abfrage durch Doppelklicken ausführen.</para>
+					<para>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_9.jpg" format="JPG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="70%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_9.jpg" format="JPG" scalefit="1" width="100%"/>
+							</imageobject>
+						</inlinemediaobject>
+					</para>
+				</step>
+				<step>
+					<para> Alle Datensätze markieren: Ersten Datensatz markieren, Umschalttaste drücken und gedrückt halten, letzten Datensatz markieren.</para>
+				</step>
+				<step>
+					<para> Markierte Datensätze in die Zwischenablage kopieren und z. B. in LibreOffice Calc einfügen.</para>
+				</step>
+				<step>
+					<para> Zum erneuten Bearbeiten der Abfrage in der Entwurfsansicht mit der rechten Maustaste auf die Abfrage klicken und „Bearbeiten“ wählen.</para>
+				</step>
+			</procedure>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/Screens/Abfrage_erstellen_2_1.jpg" format="JPG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/Screens/Abfrage_erstellen_2_1.jpg" format="JPG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Weitere nützliche Infos zu Abfragen finden Sie unter: <ulink>https://help.libreoffice.org/Common/Query_Design/de</ulink>
+			</para>
+		</section>
+  </appendix>

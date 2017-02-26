@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.1" xml:lang="de">
+	<title>Benutzerhandbuch</title>
+	<bookinfo>
+		<title>Benutzerhandbuch für Fakturama</title>
+		<footerurl>www.fakturama.info</footerurl>
+		<mediaobject>
+			<info>
+				<othercredit>
+					<orgname>Fakturama.org</orgname>
+				</othercredit>
+			</info>
+			<alt>Fakturama: Benutzerhandbuch</alt>
+			<imageobject>
+				<imagedata align="center" valign="bottom" width="6cm" depth="4cm" scalefit="0" format="PNG"
+				   fileref="images/titlelogo.png"/>
+			</imageobject>
+			<imageobject>
+				<imagedata align="right" width="2cm" format="JPG"
+				   fileref="images/logo.jpg"/>
+			</imageobject>
+		</mediaobject>
+
+		<authorgroup>
+			<author>
+				<surname>Fakturama Team</surname>
+			</author>
+		</authorgroup>
+		<edition>Benutzerhandbuch für Fakturama v2.0</edition>
+		<pubdate>
+			<?dbtimestamp format="d.m.Y"?>
+		</pubdate>
+		<copyright>
+			<year>2011-2017</year>
+			<holder>Fakturama.org</holder>
+		</copyright>
+
+		<legalnotice>
+
+			<para>Alle Grafiken, die Hilfetexte und das Handbuch stehen unter der <link linkend="license_creative_commons">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported Lizenz</link>
+			</para>
+		</legalnotice>
+
+		<legalnotice>
+			<title>Markennamen und Logos</title>
+			<para>Alle verwendeten Markennamen und Bezeichnungen sind eingetragene Warenzeichen und Marken der jeweiligen Eigentümer.</para>
+			<para>Windows und Windows Vista sind eingetragene Warenzeichen der Microsoft, Inc., USA.</para>
+			<para>Mac OS X ist ein eingetragenes Warenzeichen der Apple, Inc., USA.</para>
+			<para>
+				<trademark>Java</trademark> und alle Java-basierten Zeichen sind Markenzeichen oder eingetragene Markenzeichen der Oracle Corporation und/oder ihrer Tochtergesellschaften in den U.S.A. oder in anderen Ländern.</para>
+			<para>OpenOffice.org und das OpenOffice.org Logo sind eingetragene Markenzeichen der Oracle Corporation und/oder ihrer Tochtergesellschaften in den U.S.A. oder in anderen Ländern.</para>
+			<para>SUSE LINUX ist eine eingetragene Marke von Novell, Inc. in den USA und anderen Ländern.</para>
+			<para>Red Hat ist eine eingetragene Marke von Red Hat, Inc. in den USA und anderen Ländern.</para>
+			<para>Linux ist eine eingetragene Marke von Linus Torvalds.</para>
+			<para>Fedora ist ein Markenzeichen von Red Hat, Inc.</para>
+			<para>Ubuntu ist ein eingetragenes Markenzeichen von Canonical Ltd.</para>
+		</legalnotice>
+
+		<legalnotice><anchor xreflabel="" xml:id="license_trademarks"/>
+			<title>Lizenz der Grafiken</title>
+			<para xml:id="license_creative_commons">Die im Fakturama Projekt benutzen Grafiken, die Hilfetexte und das Handbuch stehen unter der Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported Lizenz.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../html/license/creative_commons.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../html/license/creative_commons.png" format="PNG" scalefit="1" width="50%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para><emphasis role="bold">Sie dürfen:</emphasis></para>
+					<para><inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../html/license/share.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="30%" fileref="../html/license/share.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>
+				das Werk bzw. den Inhalt vervielfältigen, verbreiten und öffentlich zugänglich machen</para>
+				<para><emphasis role="bold">Zu den folgenden Bedingungen:</emphasis></para>
+				<para>	<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../html/license/by.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="30%" fileref="../html/license/by.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>
+					<emphasis role="bold">Namensnennung</emphasis> — Sie müssen den Namen des Autors/Rechteinhabers in der von ihm festgelegten Weise nennen.</para>
+					<para><inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../html/license/nc.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="30%" fileref="../html/license/nc.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>				
+					<emphasis role="bold">Keine kommerzielle Nutzung</emphasis> — Dieses Werk bzw. dieser Inhalt darf nicht für kommerzielle Zwecke verwendet werden.</para>
+					<para><inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../html/license/nd.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="30%" fileref="../html/license/nd.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>
+				
+					<emphasis role="bold">Keine Bearbeitung</emphasis> — Dieses Werk bzw. dieser Inhalt darf nicht bearbeitet, abgewandelt oder in anderer Weise verändert werden.</para>
+			<para><emphasis role="bold">Wobei gilt:</emphasis></para>
+				
+					<para><emphasis role="bold">Verzichtserklärung</emphasis> — Jede der vorgenannten Bedingungen kann aufgehoben werden, sofern Sie die ausdrückliche Einwilligung des Rechteinhabers dazu erhalten.</para>
+				<para>
+					<emphasis role="bold">Public Domain (gemeinfreie oder nicht-schützbare Inhalte)</emphasis> — Soweit das Werk, der Inhalt oder irgendein Teil davon zur Public Domain der jeweiligen Rechtsordnung gehört, wird dieser Status von der Lizenz in keiner Weise berührt.</para>
+				<para>
+					<emphasis role="bold">Sonstige Rechte</emphasis> — Die Lizenz hat keinerlei Einfluss auf die folgenden Rechte:</para>
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para> Your fair dealing or fair use rights, or other applicable copyright exceptions and limitations;</para>
+					</listitem>
+					<listitem>
+						<para> Das Urheberpersönlichkeitsrecht des Rechteinhabers;</para>
+					</listitem>
+					<listitem>
+						<para> Rechte anderer Personen, entweder am Lizenzgegenstand selber oder bezüglich seiner Verwendung, zum Beispiel Persönlichkeitsrechte abgebildeter Personen.</para>
+					</listitem>
+				</itemizedlist>
+				<para>
+					<emphasis role="bold">Hinweis</emphasis> — Im Falle einer Verbreitung müssen Sie anderen alle Lizenzbedingungen mitteilen, die für dieses Werk gelten.</para>
+				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
+		</legalnotice>
+
+		<releaseinfo>Version 2.0</releaseinfo>
+	</bookinfo>
+
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/02_installation/02_installation.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/03_editors_and_views/03_editors_and_views.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/04_openoffice_libreoffice/04_openoffice_libreoffice.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/05_webshop/05_webshop.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/06_parcelservice/06_parcelservice.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/07_workspace/07_workspace.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/08_importexport/08_importexport.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/09_preferences/09_preferences.xml"/>
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/10_license/10_license.xml"/>
+
+	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/appendix_a_connect-base/appendix_a_connect-base.xml"/>
+	<!-- appendix>
+
+    <qandaset>
+      <title>Frequently Asked Questions (FAQ)</title>
+      <qandadiv>
+        <title>Questions about Networking</title>
+        <qandaentry>
+          <question>
+            <para>How do I get an IP address?</para>
+          </question>
+          <answer>
+            <para>Ask your system administrator.</para>
+          </answer>
+        </qandaentry>
+        <qandaentry>
+          ...
+        </qandaentry>
+        ...
+      </qandadiv>
+    </qandaset>
+
+
+  </appendix -->
+	<!-- glossary>
+    <glossentry id="DomainName">
+      <glossterm>Domain name</glossterm>
+      <glossdef>
+        <para>First part of a network address.</para>
+        <glossseealso otherterm="NetAddr"/>
+      </glossdef>
+    </glossentry>
+    <glossentry>
+      <glossterm>Machine address</glossterm>
+      <glosssee otherterm="NetAddr">network address</glosssee>
+    </glossentry>
+    <glossentry>
+      <glossterm id="NetAddr">Network address</glossterm>
+      <glossdef>
+        <para>Domain name plus machine name.</para> 
+        <glossseealso otherterm="DomainName"/>
+      </glossdef>
+    </glossentry>
+    <glossentry id="ge-xslfoprocessor">
+      <glossterm id="gt-xslfoprocessor">XSL-FO processor</glossterm>
+      <glossdef>
+        <para>Software component that converts an XSL-FO document into a
+          formatted document.</para>
+      </glossdef>
+    </glossentry>
+  </glossary>
+	<index/ -->
+</book>

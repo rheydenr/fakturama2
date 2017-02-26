@@ -1,0 +1,7 @@
+"itemnr";"name";"category";"description";"price1";"price2";"price3";"price4";"price5";"block1";"block2";"block3";"block4";"block5";"vat";"options";"weight";"unit";"date_added";"picturename";"quantity";"webshopid";"qunit"
+"SAMPL01";"Elko 1000µF";"Shop/passive Bauteile";"Elektrolytkondensator 1000µF / 16V / 125°C";1,596639;1,596639;1,596639;1,596639;1,596639;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL01_Elko_1000µF.jpg";1,00;-1;1
+"SAMPL02";"Sicherung 1A";"Shop/passive Bauteile";"Feinsicherung 5x20mm, 1A , Auslöseverhalten:flink";0,672269;0,672269;0,672269;0,672269;0,672269;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL02_Sicherung_1A.jpg";1,00;-1;1
+"SAMPL03";"Poti 100k";"Shop/passive Bauteile";"Potentiometer 100k, linear, Raster: 5mm x 7.5mm";1,260504;1,260504;1,260504;1,260504;1,260504;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL03_Poti_100k.jpg";1,00;-1;1
+"SAMPL04";"Drossel 10µH";"Shop/passive Bauteile";"Stromkompensierte Drossel 10µH, max. 2A";4,117647;4,117647;4,117647;4,117647;4,117647;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL04_Drossel_10µH.jpg";1,00;-1;1
+"SAMPL05";"LCD Display 3.5";"Shop/Optoelektronik";"LCD Display mit 3.5 Stellen und LowBat Warnung";7,478992;7,478992;7,478992;7,478992;7,478992;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL05_LCD_Display_3_5.jpg";1,00;-1;1
+"SAMPL06";"BPW21";"Shop/Optoelektronik";"BPW21 Fotodiode 10µA/550nm";1,260504;1,260504;1,260504;1,260504;1,260504;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL06_BPW21.jpg";1,00;-1;1

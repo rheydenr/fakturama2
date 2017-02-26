@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" id="importexport" xml:lang="de">
+	<anchor xreflabel="" xml:id="importexport_main"/>
+	<title>Import und Export von Daten</title>
+	<para>Fakturama bietet verschiedene Filter, um Daten zu importieren und zu exportieren. Damit lassen sich Produkte, Kontakte und Umsätze mit anderen Programmen austauschen oder Zusammenfassungen erstellen.</para>
+	<para>Import von Daten:</para>
+	<informalfigure>
+		<mediaobject>
+			<imageobject role="html">
+				<imagedata fileref="../images/importexport/import_tree.png" format="PNG" scalefit="1"/>
+			</imageobject>
+			<imageobject role="fo">
+				<imagedata contentdepth="60%" fileref="../images/importexport/import_tree.png" format="PNG" scalefit="1" width="100%"/>
+			</imageobject>
+		</mediaobject>
+	</informalfigure>
+	<para>Export von Daten:</para>
+	<informalfigure>
+		<mediaobject>
+			<imageobject role="html">
+				<imagedata fileref="../images/importexport/export_tree.png" format="PNG" scalefit="1"/>
+			</imageobject>
+			<imageobject role="fo">
+				<imagedata contentdepth="60%" fileref="../images/importexport/export_tree.png" format="PNG" scalefit="1" width="100%"/>
+			</imageobject>
+		</mediaobject>
+	</informalfigure>
+	<section>
+		<title>Import: Ausgaben aus CSV Datei</title>
+		<para>Liegen die Ausgaben bisher nur in einer Tabelle vor, können diese in Fakturama importiert werden, um diese nach der Vorsteuer oder Kontenart zusammenzufassen.</para>
+		<para>Siehe <link linkend="importexport_import_csv_expenditures">Ausgaben aus CSV Datei importieren</link>
+		</para>
+	</section>
+	<section>
+		<title>Import: Kontakte aus CSV Datei</title>
+		<para>Adressdaten können aus einer CSV Tabelle in Fakturama importiert werden. Damit ist eine Datenübernahme aus einem anderen Programm möglich.</para>
+		<para>Siehe <link linkend="importexport_import_csv_contacts">Kontakte aus CSV Datei importieren</link>
+		</para>
+	</section>
+	<section>
+		<title>Import: Produkte aus CSV Datei</title>
+		<para>Produkte können aus einer CSV Tabelle in Fakturama importiert werden.</para>
+		<para>Siehe <link linkend="importexport_import_csv_products">Produkte aus CSV Datei importieren</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Kontostand</title>
+		<para>Exportiert den Kontostand und Saldi innerhalb eines Zeitraums für ein Konto in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_accounts">Export Kontostand</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Ausgabebelege</title>
+		<para>Exportiert eine Liste mit den Ausgaben (Ausgabebelege) in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgabebelege</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Einnahmebelege</title>
+		<para>Exportiert eine Liste mit den Einnahmen (Einnahmebelege) in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_receipt_vouchers">Export Liste Einnahmebelege</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Umsätze (bezahlte Rechnungen)</title>
+		<para>Exportiert eine Liste mit den Umsätzen (alle bezahlten Rechnungen) in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_sales">Export Liste Umsätze</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste unbezahlte Rechnungen</title>
+		<para>Exportiert eine Liste mit allen unbezahlten Rechnungen in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_unpaid_invoices">Export Liste unbezahlte Rechnungen</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Adressliste</title>
+		<para>Exportiert eine Liste mit allen Kontakten in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_contacts">Export Adressliste</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Adressliste als Visitenkartendatei</title>
+		<para>Exportiert eine Liste mit allen Kontakten in einer VCard Visitenkartendatei. Diese Datei lässt sich von vielen Adressbuchprogrammen wieder einlesen.</para>
+		<para>Siehe <link linkend="importexport_export_vcf_contacts">Export Adressliste als Visitenkartendatei</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Produkte</title>
+		<para>Exportiert eine Liste mit allen Produkten in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_products">Export Liste Produkte</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Produkte</title>
+		<para>Exportiert eine Liste mit allen Produkten in einer OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe <link linkend="importexport_export_products">Export Liste Produkte</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Adressliste als CSV Datei</title>
+		<para>Exportiert eine Liste mit allen Kontakten in einer CSV Datei.</para>
+		<para>Siehe <link linkend="importexport_export_csv_contacts">Export Adressliste als CSV Datei</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Liste Produkte als CSV Datei</title>
+		<para>Exportiert eine Liste mit allen Produkten in einer CSV Datei.</para>
+		<para>Siehe <link linkend="importexport_export_csv_products">Export Liste Produkte als CSV Datei</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Produkte und deren Käufer</title>
+		<para>Erstellt eine Liste mit den meist gekaufen Produkten und einer Liste der Käufer. Die Liste kann nach Menge oder nach Umsatz sortiert werden.</para>
+		<para>Siehe <link linkend="importexport_export_products_buyers">Export Produkte und deren Käufer</link>
+		</para>
+	</section>
+	<section>
+		<title>Export: Umsätze Käufer</title>
+		<para>Erstellt eine Liste mit den Umsätzen aller Käufer. Die Liste ist nach dem Umsatz sortiert.</para>
+		<para>Siehe <link linkend="importexport_export_buyers">Export Produkte und deren Käufer</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_import_csv_expenditures"/>
+		<title>Ausgaben aus CSV Datei</title>
+		<para>Liegen die Ausgaben bisher nur in einer Tabelle vor, können diese in Fakturama importiert werden, um diese nach der Vorsteuer oder Kontenart zusammenzufassen. Die Datei muss im Format UTF-8 vorliegen und durch Semikolon getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
+		<informalexample pgwide="1">
+  <programlisting><?db-font-size 75% ?>
+"Category";"Date";"DocumentNr";"Nr";"Name";"Item Name";"Item Category";"Item Price";"Item VAT";"VAT"
+"Bank";11.05.2010;;"001";"Sparkasse Musterstadt";"Tan Generator";"Nebenkosten Geldverkehr";10,00 €;"ohne Vorsteuer";0%
+"Bank";14.05.2010;"RE45130";"002";"Toner3000";"Toner";"Bürobedarf";134,37 €;"Vorsteuer 19%";19%
+"Bank";14.05.2010;"RE45130";"002";"Toner3000";"Versandkosten";"Bezugsnebenkosten";3,78 €;"Vorsteuer 19%";19%
+		</programlisting></informalexample>
+		<para>Die zu importierenden Daten müssen in einer CSV Tabelle vorliegen und folgende Spalten beinhalten:</para>
+		<variablelist>
+			<varlistentry>
+				<term>Category</term>
+				<listitem>
+					<para> Kategorie, in die der Beleg einsortiert wird. Zum Beispiel "Bank", "Kreditkarte", privat verauslagt</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Date</term>
+				<listitem>
+					<para> Datum des Beleges, zum Beispiel das Rechnungsdatum.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>DocumentNr</term>
+				<listitem>
+					<para> Nummer des Beleges, zum Beispiel die Rechnungsnummer.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Nr</term>
+				<listitem>
+					<para> Selbst vergebene, fortlaufende Belegnummer.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Name</term>
+				<listitem>
+					<para> Name des Lieferanten.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Item Name</term>
+				<listitem>
+					<para> Text des Beleges, zum Beispiel "Weinflaschen".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Item Category</term>
+				<listitem>
+					<para> Kontenart, zum Beispiel "Wareneinkauf".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Item Price</term>
+				<listitem>
+					<para> Preis (Netto).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Item VAT</term>
+				<listitem>
+					<para> Bezeichnung der Vorsteuer, zum Beispiel "Vorsteuer 19%".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>VAT</term>
+				<listitem>
+					<para> Prozentsatz der Steuer, zum Beispiel 19%.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Positionen in einer eigenen Zeile angelegt wird, und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis>, und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
+		<para>Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
+		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird. Zum Beispiel auch ein Beleg mit mehreren Positionen. Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
+		<para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_import_csv_contacts"/>
+		<title>Kontakte aus CSV-Datei importieren</title>
+		<para>Adressdaten können aus einer CSV-Datei in Fakturama importiert werden. Damit ist eine Datenübernahme aus einem anderen Programm möglich. Die Datei muss im Format UTF-8 vorliegen und durch Semikolon getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
+		<informalexample pgwide="1">
+  <programlisting><?db-font-size 75% ?>
+"category";"gender";"title";"firstname";"name";"company";"street";"zip";"city";"country";"delivery_gender";"delivery_title";"delivery_firstname";"delivery_name";"delivery_company";"delivery_street";"delivery_zip";"delivery_city";"delivery_country";"account_holder";"account";"bank_code";"bank_name";"iban";"bic";"nr";"note";"date_added";"payment";"reliability";"phone";"fax";"mobile";"email";"website";"vatnr";"vatnrvalid";"discount"
+"Shop Kunden";"Frau";"";"Lisa";"Lausser";"";"Langerweg 19";"12345";"Lausburg";"Germany";"Frau";"";"Lisa";"Lausser";"";"Langerweg 19";"12345";"Lausburg";"Germany";"";"";"";"";"";"";"1";"";"";"Barzahlung";"---";"07889 110223";"";"";"lisalausser@web.de";"";"";0;"0,00"
+"Shop Kunden";"Herr";"";"Max";"Mustermann";"";"Musterstrasse 42";"10000";"Berlin";"Germany";"Herr";"";"Max";"Mustermann";"";"Musterstrasse 42";"10000";"Berlin";"Germany";"";"";"";"";"";"";"2";"";"";"Barzahlung";"---";"01234 567890";"";"";"maxmustermann@web.de";"";"";0;"0,00"
+		</programlisting></informalexample>
+		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
+		<variablelist>
+			<varlistentry>
+				<term>category</term>
+				<listitem>
+					<para> Kategorie, in die der Kontakt einsortiert wird. Zum Beispiel "Shop Kunden", "Lieferanten"</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>gender</term>
+				<listitem>
+					<para>Anrede. "Herr" oder "Frau".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>title</term>
+				<listitem>
+					<para> Zusätzlicher Titel.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>firstname</term>
+				<listitem>
+					<para> Vorname</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>name</term>
+				<listitem>
+					<para> Nachname</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>company</term>
+				<listitem>
+					<para> Firma</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>street</term>
+				<listitem>
+					<para> Straße und Hausnummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>zip</term>
+				<listitem>
+					<para> PLZ</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>city</term>
+				<listitem>
+					<para> Ort</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>country</term>
+				<listitem>
+					<para> Land</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_gender</term>
+				<listitem>
+					<para> Lieferanschrift - Anrede. "Herr" oder "Frau".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_title</term>
+				<listitem>
+					<para> Lieferanschrift - Zusätzlicher Titel.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_firstname</term>
+				<listitem>
+					<para> Lieferanschrift - Vorname</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_name</term>
+				<listitem>
+					<para> Lieferanschrift - Nachname</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_company</term>
+				<listitem>
+					<para> Lieferanschrift - Firma</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_street</term>
+				<listitem>
+					<para> Lieferanschrift - Strasse und Hausnummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_zip</term>
+				<listitem>
+					<para> Lieferanschrift - PLZ</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_city</term>
+				<listitem>
+					<para> Lieferanschrift - Ort</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>delivery_country</term>
+				<listitem>
+					<para> Lieferanschrift - Land</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>account_holder</term>
+				<listitem>
+					<para> Kontoinhaber</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>account</term>
+				<listitem>
+					<para> Kontonummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>bank_code</term>
+				<listitem>
+					<para> Bankleitzahl</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>bank_name</term>
+				<listitem>
+					<para> Name der Bank</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>iban</term>
+				<listitem>
+					<para> IBAN</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>bic</term>
+				<listitem>
+					<para> BIC</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>nr</term>
+				<listitem>
+					<para> Kunden/Lieferantennummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>note</term>
+				<listitem>
+					<para> Notiz</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>date_added</term>
+				<listitem>
+					<para> Datum, an dem der Kunde angelegt wurde, oder leer.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>reliability</term>
+				<listitem>
+					<para>Bonität ("---", "schlecht", "mittel" oder "gut")</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>phone</term>
+				<listitem>
+					<para> Telefonnummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>fax</term>
+				<listitem>
+					<para> Telefaxnummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>mobile</term>
+				<listitem>
+					<para> Telefonnummer Mobiltelefon</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>email</term>
+				<listitem>
+					<para> Email</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>website</term>
+				<listitem>
+					<para> Webseite</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>vatnr</term>
+				<listitem>
+					<para> USt.IdNr.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>vatnrvalid</term>
+				<listitem>
+					<para> USt.IdNr. gültig. 0 = ungültig oder nicht geprüft, 1 = geprüft und gültig</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>discount</term>
+				<listitem>
+					<para> Rabatt, der diesem Kunden gewährt wird.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird. Bei einem fehlerhaften Import muss ansonsten jeder Kontakt einzeln gelöscht werden.</para>
+		<para>Siehe auch <link linkend="importexport_export_csv_contacts">Export Adressliste als CSV Datei</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_import_csv_products"/>
+		<title>Produkte aus CSV Datei importieren</title>
+		<para>Produkte können aus einer CSV-Datei in Fakturama importiert werden. Die Datei muss im Format UTF-8 vorliegen und durch Semikolon getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
+		<informalexample pgwide="1">
+  <programlisting><?db-font-size 75% ?>
+"itemnr";"name";"category";"description";"price1";"price2";"price3";"price4";"price5";"block1";"block2";"block3";"block4";"block5";"vat";"options";"weight";"unit";"date_added";"picturename";"quantity";"webshopid";"qunit"
+"SAMPL01";"Elko 1000µF";"Shop/passive Bauteile";"Elektrolytkondensator 1000µF / 16V / 125°C";1,596639;1,596639;1,596639;1,596639;1,596639;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL01_Elko_1000µF.jpg";1,00;-1;"St."
+"SAMPL02";"Sicherung 1A";"Shop/passive Bauteile";"Feinsicherung 5x20mm, 1A , Auslöseverhalten:flink";0,672269;0,672269;0,672269;0,672269;0,672269;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL02_Sicherung_1A.jpg";1,00;-1;"St."
+"SAMPL03";"Poti 100k";"Shop/passive Bauteile";"Potentiometer 100k, linear, Raster: 5mm x 7.5mm";1,260504;1,260504;1,260504;1,260504;1,260504;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL03_Poti_100k.jpg";1,00;-1;"St."
+"SAMPL04";"Drossel 10µH";"Shop/passive Bauteile";"Stromkompensierte Drossel 10µH, max. 2A";4,117647;4,117647;4,117647;4,117647;4,117647;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL04_Drossel_10µH.jpg";1,00;-1;"St."
+"SAMPL05";"LCD Display 3.5";"Shop/Optoelektronik";"LCD Display mit 3.5 Stellen und LowBat Warnung";7,478992;7,478992;7,478992;7,478992;7,478992;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL05_LCD_Display_3_5.jpg";1,00;-1;"St."
+"SAMPL06";"BPW21";"Shop/Optoelektronik";"BPW21 Fotodiode 10µA/550nm";1,260504;1,260504;1,260504;1,260504;1,260504;"1";"10";"100";"1000";"10000";0,19;"";0,00;-1;"";"SAMPL06_BPW21.jpg";1,00;-1;"St."    
+		</programlisting></informalexample>
+		<para>Die zu importierenden Daten müssen in einer CSV Tabelle vorliegen und folgende Spalten beinhalten:</para>
+		<variablelist>
+			<varlistentry>
+				<term>itemnr</term>
+				<listitem>
+					<para>Artikelnummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>name</term>
+				<listitem>
+					<para> Name</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>category</term>
+				<listitem>
+					<para> Kategorie, in die der Artikel einsortiert wird</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>description</term>
+				<listitem>
+					<para> Beschreibung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>price1</term>
+				<listitem>
+					<para> Nettopreis für 1. Staffelung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>price2</term>
+				<listitem>
+					<para> Nettopreis für 2. Staffelung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>price3</term>
+				<listitem>
+					<para> Nettopreis für 3. Staffelung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>price4</term>
+				<listitem>
+					<para> Nettopreis für 4. Staffelung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>price5</term>
+				<listitem>
+					<para> Nettopreis für 5. Staffelung</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>block1</term>
+				<listitem>
+					<para> Menge, bei die 1. Staffel startet, (z.B.: 1 bei 1-9).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>block2</term>
+				<listitem>
+					<para> Menge, bei die 2. Staffel startet, (z.B.: 10 bei 10-99).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>block3</term>
+				<listitem>
+					<para> Menge, bei die 3. Staffel startet, (z.B.: 100 bei 100-999).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>block4</term>
+				<listitem>
+					<para> Menge, bei die 4. Staffel startet, (z.B.: 1000 bei 1000-9999).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>block5</term>
+				<listitem>
+					<para> Menge, bei die 5. Staffel startet, (z.B.: 10000 bei 10000-).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>vat</term>
+				<listitem>
+					<para> MwSt. z.B. 0,19 für 19%</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>options</term>
+				<listitem>
+					<para> wird z.Z. noch nicht unterstützt - Spalte leer lassen.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>weight</term>
+				<listitem>
+					<para> Gewicht</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>unit</term>
+				<listitem>
+					<para> wird z.Z. noch nicht unterstützt - Spalte mit -1 füllen.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>date_added</term>
+				<listitem>
+					<para> Datum, an dem das Produkt hinzugefügt wurde. Oder leer lassen.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>picturename</term>
+				<listitem>
+					<para> Name des Produktbildes, z.B.: <literal>SAMPL03_Poti_100k.jpg</literal>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>quantity</term>
+				<listitem>
+					<para> Menge</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>webshopid</term>
+				<listitem>
+					<para> ID des Webshops oder -1</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>qunit</term>
+				<listitem>
+					<para> Mengeneinheit</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird. Bei einem fehlerhaften Import muss ansonsten jedes Produkt einzeln gelöscht werden.</para>
+		<para>Siehe auch <link linkend="importexport_export_csv_products">Export Liste Produkte als CSV Datei</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_accounts"/>
+		<title>Export Kontostand</title>
+		<para>Exportiert den Kontostand in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Dieser "Kontoauszug" wird aus den bezahlten Rechnungen, den Einnahmen- und Ausgabebelegen gebildet. Vergleicht man diesen mit dem Kontoauszug der Bank kann sehr gut überprüft werden, ob alle Belege korrekt eingegeben wurden.</para>
+		<para>Damit mit unterschiedlichen Konten gearbeitet werden kann, müssen diese bei den Zahlungsarten oder den Belegen angegeben werden.</para>
+		<para>Beim Export wird der Zeitraum vorgegeben, für den die Kontobewegungen exportiert werden. Ein Export findet für ein Konto statt, das in einer Drop-Down-Liste ausgewählt wird. Diese Liste wird aus den Konten in den Zahlungsarten und Belegen gebildet.</para>
+		<section>
+			<title>Startdatum und Startwert</title>
+			<para>Legt das Datum und den Kontostand eines Kontos fest, bei dem die Berechnung beginnt.</para>
+			<para>Das Konto kann zum Beispiel zum 01.01.2011 mit 1000€ angegeben werden, der Export kann dennoch über einen späteren Zeitraum stattfinden.</para>
+			<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_expenditure_vouchers"/>
+		<title>Export Liste Ausgabebelege</title>
+		<para>Exportiert eine Liste mit den Ausgaben (Ausgabebelege) in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_expenditures.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="100%" fileref="../images/importexport/export_expenditures.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>In einer ersten Tabelle werden alle Positionen der Ausgabebelege in eine Zeile eingetragen. Für jeden Steuersatz ist eine eigene Spalte vorgesehen.</para>
+		<para>In einer zweiten Tabelle werden die Ausgaben der Kontenart zusammengefasst ausgegeben.</para>
+		<section>
+			<title>Spalten mit 0% MwSt. anzeigen</title>
+			<para>Spalten mit 0% MwSt. enthalten grundsätzlich immer den Wert 0,00€. Diese können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</section>
+		<section>
+			<title>Spalte Summe der Belege anzeigen</title>
+			<para>Legt fest, ob die eine zusätzliche Spalte mit der Summe der Ausgaben angezeigt wird.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/exportsales_columnsum.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/exportsales_columnsum.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_receipt_vouchers"/>
+		<title>Export Liste Einnahmebelege</title>
+		<para>Exportiert eine Liste mit den Einnahmen (Einnahmebelege) in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_expenditures.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="80%" fileref="../images/importexport/export_expenditures.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>In einer ersten Tabelle werden alle Positionen der Einnahmebelege in eine Zeile eingetragen. Für jeden Steuersatz ist eine eigenen Spalte vorgesehen.</para>
+		<para>In einer zweiten Tabelle werden die Einnahmen der Kontenart zusammengefasst ausgegeben.</para>
+		<section>
+			<title>Spalten mit 0% MwSt. anzeigen</title>
+			<para>Spalten mit 0% MwSt. enthalten grundsätzlich immer den Wert 0,00€. Diese können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</section>
+		<section>
+			<title>Spalte Summe der Belege anzeigen</title>
+			<para>Legt fest, ob die eine zusätzliche Spalte mit der Summe der Einnahmen angezeigt wird.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/exportsales_columnsum.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/exportsales_columnsum.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_sales"/>
+		<title>Export Liste Umsätze</title>
+		<para>Exportiert eine Liste mit den Umsätzen (alle bezahlten Rechnungen) in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_sales.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="100%" fileref="../images/importexport/export_sales.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>In der Tabelle werden alle Rechnungen und Gutschriften in eine Zeile eingetragen. Für jeden Steuersatz ist eine eigene Spalte vorgesehen.</para>
+		<section>
+			<title>Spalten mit 0% MwSt. anzeigen</title>
+			<para>Spalten mit 0% MwSt. enthalten grundsätzlich immer den Wert 0,00€. Diese können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/importexport/exportsales_column0percent.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</section>
+		<section>
+			<title>Zahldatum oder Rechnungsdatum benutzen</title>
+			<para>Ob beim Export das Zahldatum oder das Rechnungsdatum berücksichtigt wird, ist in den Programmeinstellungen festgelegt.</para>
+			<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_unpaid_invoices"/>
+		<title>Export unbezahlte Rechnungen</title>
+		<para>Exportiert alle unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_contacts"/>
+		<title>Export Adressliste</title>
+		<para>Exportiert eine Liste mit allen Kontakten in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_contacts.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="70%" fileref="../images/importexport/export_contacts.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="importexport_export_vcf_contacts"/>
+		<title>Export Adressliste als Visitenkartendatei</title>
+		<para>Exportiert eine Liste mit allen Kontakten in eine VCard Visitenkartendatei.</para>
+		<para>Diese Datei lässt sich von vielen Adressbuchprogrammen wieder einlesen.</para>
+		<programlisting> 
+      BEGIN:VCARD
+      VERSION:3.0
+      N:Mustermann;Max
+      FN:Max Mustermann
+      ADR;TYPE=home:;;Hauptstrasse 13a;Berlin;;11223;Deutschland
+      ADR;TYPE=postal:;;Hauptstrasse 13a;Berlin;;11223;Deutschland
+      ADR;TYPE=other;;Hauptstrasse 13a;Berlin;;11223;Deutschland
+      TEL;TYPE=HOME,WORK,VOICE:01234 12345
+      TEL;TYPE=HOME,WORK,FAX:01234 12346
+      TEL;TYPE=HOME,WORK,CELL:0171 12345
+      EMAIL;TYPE=internet:max@mustermann.net
+      URL:www.fakturama.info
+      NOTE:
+      CATEGORIES:Shop Kunden
+      END:VCARD </programlisting>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="importexport_export_csv_contacts"/>
+		<title>Export Adressliste als CSV-Datei</title>
+		<para>Exportiert eine Liste mit allen Kontakten in eine CSV-Datei.
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_csv_contacts.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="70%" fileref="../images/importexport/export_csv_contacts.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure></para>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="importexport_export_products"/>
+		<title>Export Liste Produkte</title>
+		<para>Exportiert eine Liste mit allen Produkten in eine OpenOffice.org / LibreOffice Tabelle.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_products.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="70%" fileref="../images/importexport/export_products.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="importexport_export_csv_products"/>
+		<title>Export Liste Produkte als CSV-Datei</title>
+		<para>Exportiert eine Liste mit allen Produkten in eine CSV-Datei.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_csv_products.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="70%" fileref="../images/importexport/export_csv_products.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="importexport_export_buyers"/>
+		<title>Export Umsätze Käufer</title>
+		<para>Erstellt eine Liste mit den Umsätzen aller Käufer. Die Liste ist nach dem Umsatz sortiert.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_buyers.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="50%" fileref="../images/importexport/export_buyers.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="importexport_export_products_buyers"/>
+		<title>Export Produkte und deren Käufer</title>
+		<para>Erstellt eine Liste mit den meistgekaufen Produkten und eine Liste der Käufer. Die Liste kann nach Menge oder nach Umsatz sortiert werden.
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/importexport/export_product_buyers.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="60%" fileref="../images/importexport/export_product_buyers.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure></para>
+		</section>
+</chapter>

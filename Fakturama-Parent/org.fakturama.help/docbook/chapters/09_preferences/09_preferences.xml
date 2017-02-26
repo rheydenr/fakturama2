@@ -1,0 +1,1022 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" id="preferences" xml:lang="de">
+    <title>Einstellungen</title>
+    <anchor xreflabel="" xml:id="preferences_main"/>
+    <para>Viele Einstellungen in Fakturama können geändert werden. Der Dialog lässt sich bei einem Windows oder Linux System im Menü <emphasis role="bold">Datei/Einstellungen</emphasis> und bei OS X im Menü <emphasis role="bold">Fakturama/Einstellungen</emphasis> öffnen.</para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject role="html">
+                <imagedata fileref="../images/preferences/preferences.png" format="PNG" scalefit="1"/>
+            </imageobject>
+            <imageobject role="fo">
+                <imagedata contentdepth="100%" fileref="../images/preferences/preferences.png" format="PNG" scalefit="1" width="100%"/>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_general"/>
+        <title>Allgemeine Einstellungen</title>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_general_navigationbar"/>
+            <title>Navigationsfenster: Expandbar einklappen</title>
+            <para>In der linken Navigationsleiste werden beim Ausklappen einer Expandbar die anderen Expandbars automatisch eingeklappt. Ist diese Option nicht ausgewählt, bleiben die anderen unbeeinflusst.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../application/navigationbar.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/../application/navigationbar.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Andere Editoren schließen</title>
+            <para>Ist diese Option angewählt werden beim Öffnen eines neuen Editorfensters automatisch alle anderen Editorfenster geschlossen. Geänderte und noch nicht gespeicherte bleiben weiterhin geöffnet.</para>
+        </section>
+        <section>
+            <title>Währungssymbol</title>
+            <para>Legt das Währungssymbol für alle Preisangaben fest. Ein Wechsel des Währungssymbols ändert nicht den Wert.</para>
+            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder 'EURO '</para>
+        </section>
+        <section>
+            <title>Zahlen mit Tausenderpunkt darstellen</title>
+            <para>Ist diese Option gesetzt, werden alle Zahlen mit Tausenderpunkt dargestellt, z. B. 1.000,00 €.</para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_document"/>
+        <title>Dokumenten-Einstellungen</title>
+        <section>
+            <title>Preise in Artikelliste</title>
+            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine ..) als Netto oder Brutto angezeigt werden</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/document_netgross.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/document_netgross.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Kommentar beim Duplizieren von Dokumenten übernehmen</title>
+            <para>Wird ein Dokument dupliziert (wird zum Beispiel aus einer Bestellung eine Rechnung erzeugt), so werden Adresse und Artikel übernommen. Es ist möglich, den Kommentartext ebenfalls zu übernehmen oder beim duplizierten Dokument leer zu lassen.</para>
+            <para>Der Kommentar einer Bestellung ist derjenige, den der Kunde bei seiner Bestellung im Webshop eingegeben hat. Es ist nicht immer sinnvoll, diesen Text auch auf die Rechnung weiter zu geben. Der Text dort ist vielmals eine Information an den Kunden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/document_copymessage.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/document_copymessage.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Beschreibung aus Produktauswahl-Dialog übernehmen</title>
+            <para>In den Dokumenten kann ein neuer Artikel über den Produktauswahl-Dialog eingefügt werden. Diese Einstellung legt fest, ob die Produktbeschreibung mit übernommen wird. Oftmals ist die Produktbeschreibung ein längerer Text und nicht geeignet für die Artikelliste eines Dokumentes. Ist diese Option nicht ausgewählt bleibt das Feld 'Beschreibung' der Artikelliste leer und kann mit zusätzlicher Information wie 'Farbe: rot' versehen werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/document_description.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/document_description.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+            </para>
+        </section>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_document_previewpicture"/>
+            <title>Vorschaubild anzeigen</title>
+            <para>Im Dokumenteneditor wird eine zusätzliche Spalte mit dem Produktbild eingefügt.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_preview.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="75%" fileref="../images/preferences/product_preview.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <para>Siehe auch <link linkend="editor_document_previewpicture">Dokumenteneditor</link>
+            </para>
+        </section>
+        <!-- section> @deprecated
+        <title>Artikelposition benutzen</title>
+        <para>Die Spalte <emphasis role="bold">POS</emphasis> in der Artikelliste wird ein- oder ausgeblendet.</para>
+      </section -->
+        <section>
+            <title>Rabatt auf einzelne Artikel benutzen</title>
+            <para>Die Spalte <emphasis role="bold">Rabatt</emphasis> in der Artikelliste wird ein- oder ausgeblendet.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/discount_item.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="75%" fileref="../images/preferences/discount_item.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Rabatt auf alle Artikel benutzen</title>
+            <para>Die Zeile <emphasis role="bold">Rabatt</emphasis> auf alle Artikel wird ein- oder ausgeblendet.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/discount_items.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="75%" fileref="../images/preferences/discount_items.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Artikelpreise im Lieferschein anzeigen</title>
+            <para>Im Dokumenteneditor für Lieferscheine können die Artikelpreise ein- oder ausgeblendet werden. Unabhängig davon, ob sie später gedruckt werden oder nicht.</para>
+        </section>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_document_importdeliverynote"/>
+            <title>Lieferscheinnummer beim Import hinzufügen</title>
+            <para>Werden alle Produkte eines Lieferscheins importiert, kann zusätzlich die Lieferscheinnummer in das Textfeld <emphasis role="bold">Bemerkung</emphasis> übernommen werden.</para>
+        </section>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_document_customer_statistics"/>
+            <title>Dialog bei Stammkunden anzeigen</title>
+            <para>Ist diese Einstellung aktiv, wird beim Öffnen einer Bestellung geprüft, ob der Kunde in der Vergangenheit bereits bestellt hat. Umsatz und Anzahl der bezahlten Rechnungen werden in einem Dialog angezeigt.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../editor/customer_statistics_dialog.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/../editor/customer_statistics_dialog.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Vergleichen:</title>
+            <para>Legt fest, welche Dokumente beim Überprüfen eines Stammkunden verwendet werden.</para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">Nur die Kunden-ID</emphasis>  Es werden nur die Rechnungen verwendet, die unter der gleichen Kundennummer angelegt wurden.</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">auch das Adressfeld</emphasis>  Es werden auch die Rechnungen mit gleicher oder sehr ähnlicher Adresse verwendet</para>
+                </listitem>
+            </itemizedlist>
+        </section>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_document_messagefields"/>
+            <title>Anzahl der zusätzlichen Felder "Bemerkung"</title>
+            <para>Im Dokumenteneditor können bis zu 3 Felder für Bemerkungen eingeblendet werden.</para>
+            <para>Siehe auch <link linkend="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"</link>
+            </para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_optional_items"/>
+        <title>Bedarfspositionen</title>
+        <section>
+            <title>Bedarfspositionen</title>
+            <para>Ist diese Einstellung aktiviert, wird im Dokumenteditor eine zusätzliche Spalte "Opt." für optionale Artikel / Bedarfsposition eingeblendet. Enthält ein Dokument einen solchen Artikel, wird die Spalte auch dann angezeigt, wenn diese Einstellung deaktiviert ist.</para>
+        </section>
+        <section>
+            <title>Preis ersetzen</title>
+            <para>Der Gesamtpreis eines Artikels (Menge x Einzelpreis) kann durch einen Platzhalter wie zum Beispiel "---" ersetzt werden, um eine Bedarfsposition zusätzlich zu markieren.</para>
+        </section>
+        <section>
+            <title>Ersatztext für Preisangabe</title>
+            <para>Dieser Text wird bei einer Bedarfsposition anstatt des Gesamtpreises eines Artikels angezeigt.</para>
+            <para> Dabei wird sowohl der Platzhalter für Nettopreis als auch MwSt. und Bruttopreis ersetzt.</para>
+            <para>Siehe <link linkend="placeholder_itemtable_item_total">Platzhalter Gesamtpreis</link>
+            </para>
+        </section>
+        <section>
+            <title>Text Bedarfsposition</title>
+            <para>Der Platzhalter <emphasis role="bold">ITEM.OPTIONAL.TEXT</emphasis> wird bei einer Bedarfsposition durch diesen Text ersetzt.</para>
+            <para>Siehe <link linkend="placeholder_itemtable_optional_text">Platzhalter ITEM.OPTIONAL.TEXT</link>
+            </para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_export"/>
+        <title>Einstellungen Export</title>
+        <section>
+            <title>Zahldatum anstatt Rechnungsdatum verwenden</title>
+            <para>Beim Export der Umsätze und Ausgaben in einer Tabelle wird ein Zeitabschnitt, zum Beispiel ein Monat oder ein Quartal angegeben. Es werden nur diejenigen Rechnungen und Belege exportiert, deren Datum in diesem Zeitabschnitt liegen. Hier kann festgelegt werden, ob dabei das Zahldatum oder das Rechnungsdatum berücksichtigt wird.</para>
+            <para>Bei einer Istversteuerung wird hier üblicherweise das Zahldatum gewählt. Bei einer Sollversteuerung das Rechnungsdatum.</para>
+            <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
+            </para>
+            <para>Siehe auch <link linkend="importexport_export_sales">Export Liste Umsätze</link>
+            </para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_yourcompany"/>
+        <title>Firmendaten</title>
+        <section>
+            <title>Adresse und zusätzliche Daten Ihrer Firma</title>
+            <para>Die Adresse wird benutzt, um beispielsweise beim Exportieren der Umsätze in einer Tabelle diese mit den Firmendaten zu füllen oder auch zum Ausfüllen der Formulardaten des Paketdienstes.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/yourcompany.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/yourcompany.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <para>Siehe auch <link linkend="parcelservice_main">Einstellungen Paketdienst</link>
+            </para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_help"/>
+        <title>Hilfe</title>
+        <informalfigure>
+            <mediaobject>
+                <imageobject role="html">
+                    <imagedata fileref="../images/preferences/help.png" format="PNG" scalefit="1"/>
+                </imageobject>
+                <imageobject role="fo">
+                    <imagedata contentdepth="100%" fileref="../images/preferences/help.png" format="PNG" scalefit="1" width="100%"/>
+                </imageobject>
+            </mediaobject>
+        </informalfigure>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_help_search"/>
+            <title>Öffnen der Suche für die Hilfe</title>
+            <para>Legt fest, ob bei Hilfe/Suchen ein Fenster innerhalb Fakturama oder ein extra Fenster geöffnet wird.</para>
+        </section>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_help_content"/>
+            <title>Hilfeinhalte öffnen</title>
+            <para>Legt fest, ob bei Hilfe/Handbuch ein extra Fenster oder der Webbrowser geöffnet wird.</para>
+        </section>
+        <section>
+            <title>Kontexthilfe für Fenster</title>
+            <para>Legt fest, ob die Kontexthilfe (STRG+F1) bei einem Fenster in einem Fakturama-Fenster oder in einem extra Popup-Fenster angezeigt wird.</para>
+        </section>
+        <section>
+            <title>Kontexthilfe für Dialog</title>
+            <para>Legt fest, ob die Kontexthilfe (STRG+F1) bei einem Dialog im erweiterten Dialog oder in einem extra Popup-Fenster angezeigt wird.</para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_help_content.1"/>
+        <title>Hilfe Inhalt</title>
+        <para>Es ist nicht nur möglich, das lokale Hilfesystem auf dem Rechner zu benutzen, auch kann eine Online-Hilfe eingebunden werden. Je nach Einstellung wird die lokale Hilfe oder die Online-Hilfe bevorzugt.</para>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_contact"/>
+        <title>Einstellungen Kontakte</title>
+        <para>Legt das Erscheinungsbild des Kontakteditors fest. Einige Felder können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
+        <section>
+            <title>Lieferadresse benutzen</title>
+            <para>Falls die Rechnungsadresse und Lieferadresse bei jedem Vorgang übereinstimmen kann das Feld 'Lieferadresse' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Bankkonto benutzen</title>
+            <para>Die Seite 'Bankkonto' kann eingeblendet werden, falls die Bankverbindung der Kunden hinterlegt werden soll.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Seite Sonstiges benutzen</title>
+            <para>Die Seite 'Sonstiges' kann eingeblendet werden, falls zusätzliche Informationen hinterlegt werden sollen.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Seite Notiz benutzen</title>
+            <para>Die Seite 'Notiz' kann eingeblendet werden, falls zusätzliche Notizen hinterlegt werden sollen. Ist eine Notiz hinterlegt, wird die Seite beim Aufruf einer Adresse im Vordergrund angezeigt.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <para>Siehe auch <link linkend="editor_editor_contact">Kontakteditor</link>
+            </para>
+        </section>
+    </section>
+    <section>
+        <anchor xreflabel="" xml:id="preferences_contactformat"/>
+        <title>Format des Adressfeldes</title>
+        <para>Definiert den Text der Grußformel und den Aufbau des Adressfeldes bei allen Dokumenten.</para>
+        <para>Folgende Platzhalter können verwendet werden:</para>
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>{title}  Platzhalter für Titel</para>
+            </listitem>
+            <listitem>
+                <para>{gender}  Platzhalter für Anrede</para>
+            </listitem>
+            <listitem>
+                <para>{firstname}  Platzhalter für Vorname</para>
+            </listitem>
+            <listitem>
+                <para>{lastname}  Platzhalter für Nachname</para>
+            </listitem>
+            <listitem>
+                <para>{company}  Platzhalter für Firmenname</para>
+            </listitem>
+            <listitem>
+                <para>{street}  Platzhalter für Straße</para>
+            </listitem>
+            <listitem>
+                <para>{zip}  Platzhalter für PLZ</para>
+            </listitem>
+            <listitem>
+                <para>{city}  Platzhalter für Ort</para>
+            </listitem>
+            <listitem>
+                <para>{country}  Platzhalter für Land</para>
+            </listitem>
+        </itemizedlist>
+        <para>Siehe auch <link linkend="editor_editor_document_address">Adresse Dokumenteneditor</link>
+        </para>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_contactformat_greeting"/>
+            <title>Allgemeine Grußformel</title>
+            <para>Format der Grußformel, die dann benutzt wird, wenn dem Kontakteintrag keine Anrede zugewiesen wurde.</para>
+            <para>Beispiel:</para>
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis>
+            </programlisting>
+            <para>wird auf einer Rechnung ersetzt zu:</para>
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis>
+            </programlisting>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
+            </para>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            </para>
+        </section>
+        <section>
+            <title>Grußformel Männer</title>
+            <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um einen Mann handelt.</para>
+            <para>Beispiel:</para>
+            <programlisting>Sehr geehrter Herr <emphasis role="bold">{lastname}</emphasis>
+            </programlisting>
+            <para>wird auf einer Rechnung ersetzt zu:</para>
+            <programlisting>Sehr geehrter Herr <emphasis role="bold">Müller</emphasis>
+            </programlisting>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
+            </para>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            </para>
+        </section>
+        <section>
+            <title>Grußformel Frauen</title>
+            <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Frau handelt.</para>
+            <para>Beispiel:</para>
+            <programlisting>Sehr geehrte Frau <emphasis role="bold">{lastname}</emphasis>
+            </programlisting>
+            <para>wird auf einer Rechnung ersetzt zu:</para>
+            <programlisting>Sehr geehrte Frau <emphasis role="bold">Müller</emphasis>
+            </programlisting>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
+            </para>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            </para>
+        </section>
+        <section>
+            <title>Grußformel Firma</title>
+            <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Firma handelt.</para>
+            <para>Beispiel:</para>
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis>
+            </programlisting>
+            <para>wird auf einer Rechnung ersetzt zu:</para>
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis>
+            </programlisting>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
+            </para>
+            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            </para>
+        </section>
+    </section>
+    <section>
+                <anchor xreflabel="" xml:id="preferences_numberrangevalues"/>
+        <title>Nummernkreise</title>
+        <para>Beim Anlegen eines neuen Kunden, eines Produktes oder eines Dokumentes wird automatisch die Kunden-, Artikel- oder Dokumentennummer hochgezählt.</para>
+        <para>Auf dieser Seite wird angezeigt, wie die nächste Nummer lautet, die vergeben wird. Ebenso kann diese geändert werden, falls die Zählreihenfolge nicht mehr stimmt oder geändert werden soll.</para>
+        <informalfigure>
+            <mediaobject>
+                <imageobject role="html">
+                    <imagedata fileref="../images/preferences/numberrange_documentnr.png" format="PNG" scalefit="1"/>
+                </imageobject>
+                <imageobject role="fo">
+                    <imagedata contentdepth="70%" fileref="../images/preferences/numberrange_documentnr.png" format="PNG" scalefit="1" width="100%"/>
+                </imageobject>
+            </mediaobject>
+        </informalfigure>
+        <para>Für folgende Daten werden automatisch Nummern vergeben:</para>
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para> Kundennummer</para>
+            </listitem>
+            <listitem>
+                <para> Artikelnummer</para>
+            </listitem>
+            <listitem>
+                <para> Rechnungsnummer</para>
+            </listitem>
+            <listitem>
+                <para> Lieferscheinnummer</para>
+            </listitem>
+            <listitem>
+                <para> Angebotsnummer</para>
+            </listitem>
+            <listitem>
+                <para> Bestellungsnummer</para>
+            </listitem>
+            <listitem>
+                <para> Auftragsbestätigungsnummer</para>
+            </listitem>
+            <listitem>
+                <para> Gutschriftnummer</para>
+            </listitem>
+            <listitem>
+                <para> Mahnungsnummer</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+    <section>
+            <anchor xreflabel="" xml:id="preferences_numberrangeformat"/>
+        <title>Format der Nummernkreise</title>
+        <para>Beim Anlegen eines neuen Kunden, eines Produktes oder eines Dokumentes wird automatisch die Kunden-, Artikel- oder Dokumentennummer hochgezählt.</para>
+        <para>Für Kunden, Produkte und jede Art von Dokument kann ein unterschiedliches Format vorgegeben werden.</para>
+        <informalfigure>
+            <mediaobject>
+                <imageobject role="html">
+                    <imagedata fileref="../images/preferences/numberrange_documentnr.png" format="PNG" scalefit="1"/>
+                </imageobject>
+                <imageobject role="fo">
+                    <imagedata contentdepth="70%" fileref="../images/preferences/numberrange_documentnr.png" format="PNG" scalefit="1" width="100%"/>
+                </imageobject>
+            </mediaobject>
+        </informalfigure>
+        <section>
+            <title>Fortlaufende Nummerierung</title>
+            <para>Als Platzhalter für die Nummer dient die Zeichensequenz: {Xnr}</para>
+            <para> Das X ist durch die Anzahl der Stellen zu ersetzen. Die Zahl wird mit Nullen aufgefüllt, bis die Anzahl der Stellen erreicht ist.</para>
+            <para>Beispiel:</para>
+            <programlisting>RE{5nr}</programlisting>
+            <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
+            <programlisting>RE00200</programlisting>
+        </section>
+        <section>
+            <title>Nummerierung mit Datum und fortlaufender Nummerierung</title>
+            <para>Für das Datum sind folgende Platzhalter vorgesehen:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>{YYYY}  Jahr 4 stellig (2011)</para>
+                </listitem>
+                <listitem>
+                    <para>{YY}  Jahr 2 stellig (11)</para>
+                </listitem>
+                <listitem>
+                    <para>{MM}  Monat</para>
+                </listitem>
+                <listitem>
+                    <para>{DD}  Tag</para>
+                </listitem>
+            </itemizedlist>
+            <para>Beispiel:</para>
+            <programlisting>RE{YYYY}-{MM}-{DD}-{5nr}</programlisting>
+            <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
+            <programlisting>RE2011-04-09-00200</programlisting>
+        </section>
+        <section>
+            <title>Nummerierung mit Datum und neu beginnender Nummerierung</title>
+            <para>Soll die Dokumentennummer täglich / monatlich / jährlich bei 1 beginnen, so sind die Platzhalter für das Datum in Kleinbuchstaben zu setzen:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>{yyyy}  Jahr 4 stellig (2011), Nummerierung beginnt jährlich bei 1.</para>
+                </listitem>
+                <listitem>
+                    <para>{yy}  Jahr 2 stellig (11), Nummerierung beginnt jährlich bei 1.</para>
+                </listitem>
+                <listitem>
+                    <para>{mm}  Monat, Nummerierung beginnt monatlich bei 1.</para>
+                </listitem>
+                <listitem>
+                    <para>{dd}  Tag, Nummerierung beginnt täglich bei 1.</para>
+                </listitem>
+            </itemizedlist>
+            <para>Beispiel:</para>
+            <programlisting>RE{yyyy}-{mm}-{5nr}</programlisting>
+            <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2011 eine formatierte Rechnungsnummer am Beginn des 01.04.2011 von:</para>
+            <programlisting>RE2011-04-00001</programlisting>
+        </section>
+        <section>
+            <title>Verwendung</title>
+            <para>Für folgende Daten kann das Format vorgegeben werden:</para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para> Kundennummer</para>
+                </listitem>
+                <listitem>
+                    <para> Artikelnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Rechnungsnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Lieferscheinnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Angebotsnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Bestellungsnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Auftragsbestätigungsnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Gutschriftnummer</para>
+                </listitem>
+                <listitem>
+                    <para> Mahnungsnummer</para>
+                </listitem>
+            </itemizedlist>
+         </section>
+    </section>
+    <section>
+                 <anchor xreflabel="" xml:id="preferences_openoffice"/>
+       <title>OpenOffice.org / LibreOffice Einstellungen</title>
+        <para>Fakturama benutzt OpenOffice / LibreOffice, um Dokumente und Tabellen zu exportieren.</para>
+        <section>
+            <title>OpenOffice-org Pfad/App</title>
+            <para>Je nach Betriebssystem wird hier der Ordner ausgewählt, in dem sich die OpenOffice / LibreOffice Installation befindet, oder die OpenOffice App. In der Klammer steht der Standard-Pfad. Wurde es an einer anderen Stelle installiert, ist diese auszuwählen.</para>
+            <para>Standardpfad für Windows Betriebssysteme</para>
+            <programlisting>C:\Program Files\OpenOffice.org 3</programlisting>
+            <para>Standardpfad für Linux Betriebssysteme</para>
+            <programlisting>/usr/lib/openoffice</programlisting>
+            <para>Standardapp für MAC OS X Betriebssysteme</para>
+            <programlisting>/Applications/OpenOffice.org.app</programlisting>
+        </section>
+        <section>
+            <title>Dokument als ODT und PDF exportieren</title>
+            <para>Beim Exportieren/Drucken eines Dokumentes wird dieses automatisch im Ordner <emphasis role="bold">Dokumente</emphasis> im Arbeitsverzeichnis gespeichert. Entweder als OpenOffice.org/LibreOffice ODT Dokument, als PDF oder beides.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/odt.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/odt.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/pdf.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/pdf.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+                <anchor xreflabel="" xml:id="preferences_office_path"/>
+            <title>Format und Pfad der Dateien</title>
+            <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest.</para>
+            <para>Über das Hauptmenü Extras <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
+            <para>Beispiel:</para>
+            <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
+            <para>Folgende Platzhalter können benutzt werden:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{docname}</emphasis>  Name des Dokumentes</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{doctype}</emphasis>  Art des Dokumentes, z.B. <emphasis role="bold">Rechnungen</emphasis>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{docref}</emphasis>  Kundenreferenz</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{address}</emphasis>  Adresse des Kunden (1. Zeile)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{name}</emphasis>  Name des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{Xnr}</emphasis>  Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{yyyy}</emphasis>  Jahr (4-stellig)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{yy}</emphasis>  Jahr (2-stellig)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{mm}</emphasis>  Monat</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{dd}</emphasis>  Tag</para>
+                </listitem>
+            </itemizedlist>
+            <para>Siehe auch <link linkend="application_mainmenu_extras">Hauptmenü Extras</link>
+            </para>
+        </section>
+        <!-- section> @deprecated
+            <title>OpenOffice in eigenem Thread starten</title>
+            <para>Wird diese Option aktiviert, so wird beim Drucken eines Dokumentes die Anwendung OpenOffice.org Writer in einem eigenen Thread gestartet. Dies ermöglicht bei einigen Windows Betriebssystemen einen Start von OpenOffice.org.</para>
+            <para>
+                <emphasis role="italic">Hinweis:</emphasis> Für die LibreOffice-Versionen ab 4 ist ein neues Plugin erforderlich, das die Fakturama-Version 1.6 bereits beinhaltet. Möchte man eine ältere Version von LibreOffice bzw. auch eine Openoffice 3-Version nutzen muß man das NOA-Plugin entsprechend den Hinweisen auf der Download-Seite ersetzen.</para>
+            <para>Siehe auch <link linkend="openoffice_main">OpenOffice.org / LibreOffice</link>
+            </para>
+        </section -->
+    </section>
+    <section>
+                <anchor xreflabel="" xml:id="preferences_product"/>
+        <title>Produkteinstellungen</title>
+        <para>Legt das Erscheinungsbild des Produkteditors fest. Einige Felder können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
+        <section>
+            <title>Artikelnummer benutzen</title>
+            <para>Falls keine Artikelnummern vergeben werden und die Produkte nur über den Namen identifiziert werden kann das Feld 'Artikelnummer' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_useitemnr.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="60%" fileref="../images/preferences/product_useitemnr.png" format="PNG" scalefit="1" width="80%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Mengeneinheiten benutzen</title>
+            <para>Es wird zusätzlich ein Feld für die Mengeneinheit im Produkteditor eingeblendet. Im Dokumenteneditor erscheint eine neue Spalte für diesen Wert.</para>
+            <para>Beispiel für Mengeneinheit: <emphasis role="bold">m, Stück, kg</emphasis>.</para>
+        </section>
+        <section>
+            <title>Beschreibung benutzen</title>
+            <para>Falls zum Produkt neben dem Namen keine weitere Beschreibung notwendig ist, kann das Feld 'Beschreibung' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_useitemnr.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="60%" fileref="../images/preferences/product_useitemnr.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+                <anchor xreflabel="" xml:id="preferences_product_netgross"/>
+            <title>Preise als Netto und Brutto eingeben</title>
+            <para>Es ist möglich, den Preis sowohl als Netto- als auch als Bruttowert darstellen zu lassen.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_usenetgross.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/product_usenetgross.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Staffelpreise benutzen</title>
+            <para>Hier kann angegeben werden, ob Staffelpreise benutzt werden sollen. Wenn ja, wie viele Preisstaffelungen benutzt werden sollen.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_usescaledprices.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/product_usescaledprices.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>MwSt. auswählbar</title>
+            <para>Falls die Produkte immer mit dem gleichen, dem Standardsteuersatz ausgezeichnet werden, kann das Feld 'Mehrwertsteuer' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_usevat.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/product_usevat.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Gewicht benutzen</title>
+            <para>Falls die Produkte ohne Gewichtsangabe angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_usevat.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/product_usevat.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Mengenangaben benutzen</title>
+            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_usequantity.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="70%" fileref="../images/preferences/product_usequantity.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Produktbild benutzen</title>
+            <para>Falls die Produkte ohne Produktbild angelegt werden, kann das Feld 'Produktbild' ausgeblendet werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/product_useproductpicture.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="90%" fileref="../images/preferences/product_useproductpicture.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+            <para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
+            </para>
+        </section>
+    </section>
+    <!-- section>
+                 <anchor xreflabel="" xml:id="preferences_columnwidth"/>
+       <title>Einstellungen Spaltenbreite Tabellen</title>
+        <para>Die Spaltenbreite der Tabellen können geändert werden. Damit lassen sich diese auf die eigenen Bedürfnisse anpassen.</para>
+        <para>Zu beachten ist, dass einige Spalten feste Breite haben. Andere ändern ihre Breite beim Vergrößern des Fensters.</para>
+        <section>
+            <title>Artikel Dokumenteneditor</title>
+            <para>Ändert die Spaltenbreite der Artikelliste im Dokumenteneditor.</para>
+        </section>
+        <section>
+            <title>Ausgaben</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Ausgaben.</para>
+        </section>
+        <section>
+            <title>Ausgabebelege</title>
+            <para>Ändert die Spaltenbreite der Liste der einzelnen Positionen im Editor eines Ausgabebeleges.</para>
+        </section>
+        <section>
+            <title>Dokumente</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Dokumente.</para>
+        </section>
+        <section>
+            <title>Kontaktdialog</title>
+            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Kontakt ausgewählt wird.</para>
+        </section>
+        <section>
+            <title>Kontakte</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Kontakte.</para>
+        </section>
+        <section>
+            <title>Listen</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Listeneinträge.</para>
+        </section>
+        <section>
+            <title>Produktdialog</title>
+            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neues Produkt ausgewählt wird.</para>
+        </section>
+        <section>
+            <title>Produkte</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Produkte.</para>
+        </section>
+        <section>
+            <title>Steuersätze</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Steuersätze.</para>
+        </section>
+        <section>
+            <title>Textdialog</title>
+            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Text ausgewählt wird.</para>
+        </section>
+        <section>
+            <title>Texte</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Texte.</para>
+        </section>
+        <section>
+            <title>Versandarten</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Versandarten.</para>
+        </section>
+        <section>
+            <title>Zahlungsarten</title>
+            <para>Ändert die Spaltenbreite der Tabelle aller Zahlungsarten.</para>
+            <para>
+                <anchor xreflabel="" xml:id="preferences_toolbar"/>
+            </para>
+        </section>
+    </section -->
+    <section>
+        <title>Einstellungen Toolbar</title>
+        <section>
+            <title>Icons in der Werkzeugleiste ein/ausblenden</title>
+            <para>Alle Icons in der Werkzeugleiste können ein- oder ausgeblendet werden.</para>
+            <para>Die Werkzeugleiste lässt sich so an die eigenen Bedürfnisse anpassen. Selten oder nicht benutze Icons werden ausgeblendet. Das Programm bleibt übersichtlich.</para>
+        </section>
+    </section>
+    <section>
+                <anchor xreflabel="" xml:id="preferences_browser"/>
+        <title>Webbrowser / Startseite</title>
+        <section>
+            <anchor xreflabel="" xml:id="preferences_general_url_start"/>
+            <title>URL der Startseite</title>
+            <para>Die Fakturama Startseite kann frei gewählt werden.</para>
+            <para>Voreingestellt ist "leer", und somit die Startseite im Ordner Vorlagen/Start/start.html.</para>
+            <para>Beispiele:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">http://forum.fakturama.info/</emphasis>  Fakturama Forum</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">file:///home/USER/Bilder/logo.jpg</emphasis>  Eigenes Logo</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">-</emphasis>  (Minus-Symbol) keine Startseite anzeigen</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold"/>  (Feld bleibt leer) Startseite Vorlagen/Start/start.html anzeigen</para>
+                </listitem>
+            </itemizedlist>
+            <para>Siehe <link linkend="editor_editor_browser">Webbrowser</link>
+            </para>
+        </section>
+        <!-- section>
+            <title>Art des Webbrowsers</title>
+            <para>Je nach Betriebssystem wird ein WebKit oder Mozilla basierter Browser benutzt, um die Startseite, die Seite des Paketdienstes oder die Fakturama Projektseite anzuzeigen. Über diese Einstellung kann man dies explizit angeben.</para>
+            <para>Siehe <link xl:href="http://www.eclipse.org/swt/faq.php#browserplatforms">http://www.eclipse.org/swt/faq.php#browserplatforms</link>
+            </para>
+            <para>
+            </para>
+        </section -->
+    </section>
+    <section>
+                <anchor xreflabel="" xml:id="preferences_webshopimport"/>
+        <title>Import aus Webshop</title>
+        <section>
+            <anchor xreflabel="" xml:id="webshop_url"/>
+            <title>Webshop URL</title>
+            <para>Vollständige URL des Importskriptes des Webshops. Wird kein Protokoll angegeben, wird http verwendet. Ansonsten kann auch ein <emphasis role="bold">https://</emphasis> vorangestellt werden.</para>
+            <para>Beispiel:</para>
+            <programlisting>www.deinshop.de/admin/fakturama_connector.php</programlisting>
+            <para>Die Datei <emphasis role="bold">fakturama_connector.php</emphasis> muss auf dem Webserver zur Verfügung stehen. Siehe dazu Kapitel <link linkend="install_main">Installation</link>.</para>
+        </section>
+        <section>
+            <title>Benutzername</title>
+            <para>Benutzername (z.B. E-Mail) des Shop-Administrators.</para>
+        </section>
+        <section>
+            <title>Passwort</title>
+            <para>Passwort des Shop-Administrators.</para>
+        </section>
+        <section>
+            <title>Produkte in Kategorie</title>
+            <para>Kategorie, in die alle importierten Produkte aus dem Webshop abgelegt werden. Ist keine Kategorie angegeben, wird die Kategorie aus dem Webshop übernommen.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/webshop_productcategory.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/webshop_productcategory.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Kunden in Kategorie</title>
+            <para>Kategorie, in die alle importierten Kunden aus dem Webshop abgelegt werden.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/webshop_contactcategory.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="80%" fileref="../images/preferences/webshop_contactcategory.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+        </section>
+        <section>
+            <title>Versandart in Kategorie</title>
+            <para>Kategorie, in die alle importierten Versandarten aus dem Webshop abgelegt werden.</para>
+        </section>
+        <section>
+                <anchor xreflabel="" xml:id="preferences_notification"/>
+            <title>Kunde bei 'in Bearbeitung' benachrichtigen</title>
+            <para>Wird der Status einer Bestellung auf 'in Bearbeitung' gesetzt, so kann der Kunde darüber per E-Mail benachrichtigt werden. Der Status im Webshop wird ebenfalls aktualisiert.</para>
+        </section>
+        <section>
+            <title>Kunde bei 'versendet' benachrichtigen</title>
+            <para>Wird der Status einer Bestellung auf 'versendet' gesetzt, so kann der Kunde darüber per E-Mail benachrichtigt werden. Der Status im Webshop wird ebenfalls aktualisiert.</para>
+        </section>
+        <section>
+            <title>Maximale Anzahl importierter Produkte</title>
+            <para>Die maximale Anzahl der importierten Produkte während eines Importvorgangs kann begrenzt werden.</para>
+        </section>
+        <section>
+            <title>Nur geänderte Produkte importieren</title>
+            <para>Beim Import aus dem Webshop werden nur diejenigen Produkte eingelesen, die seit dem letzten Import verändert wurden. Zum Beispiel: Neuer Preis, geänderte Produktbeschreibung.</para>
+        </section>
+        <section>
+            <title>EAN als Artikelnummer importieren</title>
+            <para>Die im Webshop hinterlegte EAN wird als Artikelnummer importiert.</para>
+            <para>Siehe auch <link linkend="webshop_webshop_connector">Die Schnittstelle zum Webshop</link>
+            </para>
+        </section>
+    </section>
+    <section>
+                 <anchor xreflabel="" xml:id="preferences_webshopauthorization"/>
+       <title>Webshop Autorisierung</title>
+        <section>
+            <title>Webshop ist passwortgeschützt</title>
+            <para>Diese Einstellung soll nur dann aktiviert sein, wenn das Webverzeichnis, in dem das Skript der Webshop Schnittstelle liegt noch zusätzlich passwortgeschützt ist.</para>
+        </section>
+        <section>
+            <title>Benutzername</title>
+            <para>Benutzername des geschützten Webverzeichnisses.</para>
+        </section>
+        <section>
+            <title>Passwort</title>
+            <para>Passwort des geschützten Webverzeichnisses.</para>
+            <para>Siehe auch <link linkend="webshop_webshop_connector">Die Schnittstelle zum Webshop</link>
+            </para>
+        </section>
+    </section>
+</chapter>

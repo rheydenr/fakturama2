@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" xml:lang="de">
+	<anchor xreflabel="" xml:id="install_main"/>
+	<title>Installation</title>
+	<para>In diesem Kapitel ist beschrieben, wie Fakturama installiert wird und was vor dem erstmaligen Benutzen zu beachten ist.</para>
+	<section>
+		<anchor xreflabel="" xml:id="install_download"/>
+		<title>Download der Software</title>
+		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung.</para>
+		<para>Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>
+		</para>
+		<para>Fakturama läuft unter folgenden Betriebssystemen:</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<trademark>Windows</trademark> 7, 8 und 10 (32Bit und 64Bit)</para>
+			</listitem>
+			<listitem>
+				<para> Mac OS X</para>
+			</listitem>
+			<listitem>
+				<para> Linux (32Bit und 64Bit)</para>
+			</listitem>
+		</itemizedlist>
+		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig. Zum Erstellen der Druckvorlagen und der PDFs sind OpenOffice.org bzw. LibreOffice erforderlich. Für die Erstellung der Rechnungsdokumente im OpenOffice-Format ist kein OpenOffice/LibreOffice notwendig.</para>
+		<itemizedlist>
+			<listitem>
+				<para> Downloadseite OpenOffice.org: <link xl:href="http://www.openoffice.org/">http://www.openoffice.org/</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para> Downloadseite LibreOffice <link xl:href="http://www.libreoffice.org/">http://www.libreoffice.org/</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para> Downloadseite <trademark>Java</trademark>: <link xl:href="http://www.java.com/de/">http://www.java.com/de/</link>
+				</para>
+			</listitem>
+			<listitem>
+				<para> Überprüfen, ob <trademark>Java</trademark> bereits installiert ist: <link xl:href="http://www.java.com/de/download/installed.jsp">TEST</link>
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.</para>
+	</section>
+	
+	
+	
+	
+	
+	
+	<section>
+			<anchor xreflabel="" xml:id="install_install_windows"/>
+		<title>Installation unter einem <trademark>Windows</trademark> Betriebssystem</title>
+		<para>Laden und installieren Sie <trademark>Java</trademark> und OpenOffice, falls noch nicht geschehen.</para>
+		<para> Starten Sie OpenOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
+		<para>Laden Sie den für Ihr Betriebssystem geeigneten Fakturama-Installer 
+			<inlinemediaobject>
+				<imageobject role="html">
+					<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+				</imageobject>
+			</inlinemediaobject>(Installer_ Fakturama_ windows-x64_x_x_x.exe bzw. Installer_Fakturama_windows-32Bit_x_x_x.exe) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter.</para>
+		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
+		<para> Auf einem Windows-Betriebssystem sind für die Installation Administratorrechte notwendig.</para>
+		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte beschrieben werden darf. Beispiel:</para>
+		<programlisting>C:\Projekte\MeineFirma\</programlisting>
+		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
+		</para>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="install_install_linux"/>
+		<title>Installation unter einem <trademark>Linux</trademark> Betriebssystem</title>
+		<para>Laden und installieren Sie Java und LibreOffice, falls noch nicht geschehen.</para>
+		<para>Starten Sie LibreOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
+		<section>
+			<title>Für Debian und Ubuntu Betriebssysteme:</title>
+			<para>Laden Sie den Fakturama-Debian-Package-Installer
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+					</imageobject>
+				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_x_ x.deb bzw. Installer_Fakturama_linux_64Bit_x_x_x.deb) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
+		</section>
+		<section>
+			<title>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</title>
+			<para>Laden Sie den Fakturama-RedHat-Package-Installer
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+					</imageobject>
+				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_ x_x.rpm bzw. Installer_Fakturama_linux_64Bit_x_x_x.rpm) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
+		</section>
+		<section>
+			<title>Für sonstige Linux-Systeme</title>
+			<para>Laden Sie den für Linux gebauten Installer 
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+					</imageobject>
+				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_64Bit_x_x_x.sh) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
+			<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
+			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
+			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
+			</para>
+		</section>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="install_install_mac_os_x"/>
+		<title>Installation unter einem Mac OS X Betriebssystem</title>
+		<para>Laden und installieren Sie Java und LibreOffice, falls noch nicht geschehen.</para>
+		<para> Starten Sie LibreOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
+		<para>Laden Sie den Fakturama-Installer 
+			<inlinemediaobject>
+				<imageobject role="html">
+					<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+				</imageobject>
+			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: <inlinemediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="40%" fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</inlinemediaobject>
+		</para>
+		<para>Damit ist die Anwendung fertig installiert. Für die MacOS-Version Yosemite (10.10) beachten Sie bitte unbedingt die <link xl:href="http://www.fakturama.info/MacWorkaround.html">Hinweise auf der Homepage</link>, damit das Programm gestartet werden kann. </para>
+		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
+		<programlisting>/Benutzername/Dokumente/MeineFirma/</programlisting>
+		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
+		</para>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="install_start"/>
+		<title>Erstes Starten von Fakturama</title>
+		<para>Starten Sie Fakturama.</para>
+		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch im Dateidialog geschehen.</para>
+		<!-- das wurde noch nicht umgesetzt -->
+		<!-- para>Fakturama begrüßt Sie mit einem Intro. Schließen Sie dies über das <emphasis role="bold">X</emphasis> rechts neben dem Text "Willkommen"</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/install/intro.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="100%" fileref="../images/install/intro.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure --> 
+		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">http://www.fakturama.info</link> ausgewählt. Startet man ein Importieren von Webshopdaten, so werden 3 Musterprodukte und 2 Musterkunden angelegt. Diese können später wieder gelöscht werden.</para>
+		<para>Vor dem Arbeiten mit Fakturama sollten noch einige Einstellungen gesetzt werden. Die Werte sind bereits sinnvoll ausgewählt, doch nicht immer passen diese auf den eigenen Arbeitsablauf.</para>
+		<para>Einige Einstellungen wie Firmendaten oder die Zugangsdaten des Webshops müssen gesetzt werden. Es empfiehlt sich, alle Einstellungen zu prüfen.</para>
+		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheine Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden.</para>
+		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link>
+		</para>
+		<para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
+		</para>
+	</section>
+	<section>
+			<anchor xreflabel="" xml:id="install_startparameter"/>
+		<title>Zusätzliche Programmparameter beim Programmaufruf</title>
+		<section>
+			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
+			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
+				<programlisting>-workspace <emphasis role="italic">Verzeichnispfad</emphasis>
+				</programlisting>
+			</para>
+			<para>Beispiel:</para>
+			<programlisting>-workspace /home/user/Dokumente/FirmaB</programlisting>
+		</section>
+		<section>
+			<title>Arbeitsverzeichnis / Mandant - Variante B</title>
+			<para>Startet Fakturama komplett mit neuen Einstellungen. Aufruf:
+				<programlisting>-data <emphasis role="italic">Verzeichnispfad</emphasis>
+				</programlisting>
+			</para>
+			<para>Beispiel:</para>
+			<programlisting>-data /home/user/.fakturamaB</programlisting>
+			<para>Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma/Mandanten zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
+		</section>
+		<section>
+			<title>Sprache / Land</title>
+			<para>Startet Fakturama mit einer bestimmten Sprach- oder Ländereinstellung. Aufruf:
+				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
+				</programlisting>
+			</para>
+			<para>Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, wenn die Systemeinstellung nicht geändert werden kann.</para>
+			<para>Folgende Länder und Sprachen werden unterstützt:</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl en</emphasis>  Englisch, (keine Hilfe verfügbar)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl de</emphasis>  Deutsch, Deutschland</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl de_AT</emphasis>  Deutsch, Österreich</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl de_CH</emphasis>  Deutsch, Schweiz</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl de_LI</emphasis>  Deutsch, Liechtenstein</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl ru</emphasis>  Russisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl ro</emphasis>  Rumänisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl uk</emphasis>  Ukrainisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl hu</emphasis>  Ungarisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl es</emphasis>  Spanisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl eu</emphasis>  Baskisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl fr</emphasis>  Französisch</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">-nl pl</emphasis>  Polnisch</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+</chapter>

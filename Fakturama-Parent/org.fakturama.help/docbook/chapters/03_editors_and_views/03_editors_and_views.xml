@@ -1,0 +1,2793 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="de">
+	<anchor xreflabel="" xml:id="application_main"/>
+	<title>Das Programm</title>
+	<para>Die Programmoberfläche ist in verschiedene Bereiche eingeteilt.</para>
+	<informalfigure>
+		<mediaobject>
+			<imageobject role="html">
+				<imagedata fileref="../images/application/application.png" format="PNG" scalefit="1"/>
+			</imageobject>
+			<imageobject role="fo">
+				<imagedata contentdepth="80%" fileref="../images/application/application.png" format="PNG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</informalfigure>
+	<sect2>
+		<title>(1) Die Titelleiste</title>
+		<para>Das Fakturama-Arbeitsverzeichnis wird in der Titelleiste angezeigt.</para>
+	</sect2>
+	<sect2>
+		<title>(2) Die Menüleiste</title>
+		<para>Viele Kommandos können über die Menüleiste aufgerufen werden. Manche sind zusätzlich auch in der Werkzeugleiste oder der Navigationsleiste verfügbar. Einige nur hier.</para>
+		<para>Siehe <link linkend="application_menubar">Menüleiste</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(3) Die Werkzeugleiste</title>
+		<para>Die Kommandos, die am häufigsten benutzt werden, sind zusätzlich in der Werkzeugleiste vorhanden.</para>
+		<para>Siehe <link linkend="application_toolbar">Werkzeugleiste</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(4) Die Navigationsleiste</title>
+		<para>Die wichtigsten Vorgänge können aus der Navigationsleiste gestartet werden. Übersichtlich mit Icons versehen und in Gruppen sortiert. Das Verhalten der Navigationsleiste kann in den <link linkend="preferences_general_navigationbar">Einstellungen</link> festgelegt werden.</para>
+		<para>Siehe <link linkend="application_navigationbar">Navigationsleiste</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(5) Das Editorfenster</title>
+		<para>Jedes Produkt, jeder Kontakt oder jedes Dokument kann in einem Editorfenster geöffnet und bearbeitet werden. Gleichzeitig können mehrere Editoren geöffnet sein.</para>
+		<para>Siehe <link linkend="editor_editor_main">Editorfenster</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(6) Der Taschenrechner</title>
+		<para>Ein eingebauter Taschenrechner.</para>
+		<para>Siehe <link linkend="application_calculator">Taschenrechner</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(7) Das Fehlerfenster</title>
+		<para>Das Fehlerfenster wird nur bei einem internen Fehler angezeigt und bleibt ansonsten unsichtbar.</para>
+		<para>Siehe <link linkend="application_errorview">Fehlerfenster</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(8) Das Übersichtsfenster</title>
+		<para>Hier wird tabellarisch eine Übersicht aller Produkte, Kontaktadressen oder Dokumente angezeigt. Ein Eintrag kann angewählt und im Editorfenster zum Bearbeiten geöffnet werden.</para>
+		<para>Siehe <link linkend="application_overview">Übersichtsfenster</link>
+		</para>
+	</sect2>
+	<sect2>
+		<title>(9) Die Statusleiste</title>
+		<para>Die Statusleiste kann den Zustand verschiedener Programmabläufe darstellen. Aktuell hat sie aber keine Funktion.</para>
+	</sect2>
+	<section><anchor xreflabel="" xml:id="application_menubar"/>
+		<title>Menüleiste</title>
+		<para>Die Menüleiste ist aus 5 Hauptmenüs aufgebaut.</para>
+
+		<variablelist spacing="compact">
+			<varlistentry>
+				<term>Hauptmenü Datei</term>
+				<listitem>
+					<para>Beinhaltet alle Befehle zum Schließen, Speichern, Laden und Drucken des Editorinhaltes oder des gesamten Programms. Siehe <link linkend="application_mainmenu_file">Hauptmenü Datei</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Hauptmenü Daten</term>
+				<listitem>
+					<para>Befehle zum Anzeigen der verschiedenen Datentabellen. 
+					Siehe <link linkend="application_mainmenu_data">Hauptmenü Daten</link>
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>Hauptmenü Neu erzeugen</term>
+				<listitem>
+					<para>Befehle zum Erzeugen neuer Datensätze und zum Öffnen in einem Editor-Fenster.
+			Siehe <link linkend="application_mainmenu_new">Hauptmenü Neu erzeugen</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Hauptmenü Fenster</term>
+				<listitem>
+					<para>Befehle zum Erzeugen oder Anordnen von Fenstern.
+			Siehe <link linkend="application_mainmenu_window">Hauptmenü Fenster</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Hauptmenü Hilfe</term>
+				<listitem>
+					<para>Befehle zum Abrufen von Informationen und zur Softwareaktualisierung.
+			Siehe <link linkend="application_mainmenu_help">Hauptmenü Hilfe</link>
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>		
+	</section>
+	<section><anchor xreflabel="" xml:id="application_mainmenu_file"/>
+		<title>Hauptmenü Datei</title>
+		<variablelist>
+			<varlistentry>
+				<term>Schließen</term>
+				<listitem>
+					<para>Schließt den zur Zeit aktiven Editor und prüft, ob die Daten gespeichert werden müssen.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Alle schließen</term>
+				<listitem>
+					<para>Schließt alle zur Zeit geöffneten Editoren und prüft, ob die Daten gespeichert werden müssen.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata width="20pt" fileref="../images/application/save_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/save_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>
+					Speichern</term>
+				<listitem>
+					<para>Speichert das Dokument, Kontaktadresse, Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/save_all_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/save_all_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Alle speichern</term>
+				<listitem>
+					<para>Speichert den Inhalt aller geöffneten Editoren.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/print_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/print_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Drucken</term>
+				<listitem>
+					<para>Konvertiert das Dokument des aktiven Editors in ein OpenOffice-Writer-Dokument. Dazu wird eine Vorlage benutzt. Es erscheint ein Auswahlmenü, wenn mehr als eine Vorlage existiert. Ist das Icon ausgegraut, so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Arbeitsverzeichnis wählen</term>
+				<listitem>
+					<para>Wählt das Arbeitsverzeichnis, in dem Fakturama die Firmendatenbank und alle Dokumente ablegt. Beispiel:</para>
+					<computeroutput>C:\Projekte\MeineFirma\</computeroutput>
+					<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Einstellungen</term>
+				<listitem>
+					<para>Öffnet den Dialog, um verschiedene Einstellungen zu ändern.
+			Siehe auch <link linkend="preferences_main">Einstellungen</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/shop_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/shop_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Webshop</term>
+				<listitem>
+					<para>Stellt eine Verbindung mit dem Webshop her. Eingegangene Bestellungen werden abgerufen, neue Produkte werden importiert und Preise aktualisiert. Kontaktadressen werden ebenfalls geladen und zu den Adressdaten hinzugefügt, falls diese noch nicht existieren.
+					Siehe auch <link linkend="webshop_webshop">Webshop</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/import_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/import_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Importieren</term>
+				<listitem>
+					<para>Öffnet einen Importdialog, um verschiedene Daten in Fakturama zu importieren.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/export_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/export_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Exportieren</term>
+				<listitem>
+					<para>Öffnet einen Exportdialog, um verschiedene Daten aus Fakturama zu exportieren.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Fakturama beenden</term>
+				<listitem>
+					<para>Beendet das Programm.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section><anchor xreflabel="" xml:id="application_mainmenu_edit"/>
+		<title>Hauptmenü Bearbeiten</title>
+		<variablelist>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/delete_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/delete_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>löschen</term>
+				<listitem>
+					<para>Löscht den aktuellen Datensatz.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/error_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/error_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>Als "unbezahlt" markieren</term>
+				<listitem>
+					<para>Markiert eine Rechnung, eine Gutschrift oder eine Mahnung als "unbezahlt".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/checked_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/checked_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>Als "bezahlt" markieren</term>
+				<listitem>
+					<para>Markiert eine Rechnung, eine Gutschrift oder eine Mahnung als "bezahlt". Der Rechnungsbetrag wird als Zahlbetrag übernommen. Das heutige Datum wird als Zahldatum verwendet.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/order_pending_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/order_pending_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>Als "offen" markieren</term>
+				<listitem>
+					<para>Markiert die ausgewählte Bestellung als "offen".</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/order_processing_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/order_processing_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>Als "in Bearbeitung" markieren</term>
+				<listitem>
+					<para>Markiert die ausgewählte Bestellung als "in Bearbeitung".</para>
+					<para>Je nach Einstellung wird der Kunde per E-Mail über den neuen Status benachrichtigt.
+			Siehe <link linkend="preferences_notification">Kunde benachrichtigen</link>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/order_shipped_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" fileref="../images/application/order_shipped_16.png" format="PNG" scalefit="1" width="20pt"/>
+						</imageobject>
+					</inlinemediaobject>Als "versendet" markieren</term>
+				<listitem>
+					<para>Markiert die ausgewählte Bestellung als "versendet".</para>
+					<para>Je nach Einstellung wird der Kunde per E-Mail über den neuen Status benachrichtigt.
+			Siehe <link linkend="preferences_notification">Kunde benachrichtigen</link>
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section><anchor xreflabel="" xml:id="application_mainmenu_data"/>
+		<title>Hauptmenü Daten</title>
+		<variablelist>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Dokumente</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Dokumenten im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Produkte</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Produkten im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Kontakte</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Kontaktadressen im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Zahlungsarten</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Zahlungsarten im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Versandarten</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Versandarten im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Steuersätze</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Steuersätzen im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Texte</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen vordefinierten Texten im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Listen</term>
+
+				<listitem>
+					<para>Öffnet eine Zusammenfassung aller Listeneinträge im Übersichtsfenster.
+			Bei der Installation werden bereits zwei Listen mit Ländercodes angelegt. Diese können zum Ausfüllen der Platzhalter benutzt werden.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Ausgabebelege</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Ausgabebelegen im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Einnahmebelege</term>
+
+				<listitem>
+					<para>Öffnet eine Liste mit allen Einnahmebelegen im Übersichtsfenster.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_mainmenu_new"/><title>Hauptmenü Neu</title>
+		<variablelist>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Brief</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Brief und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/offer_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/offer_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neues Angebot</term>
+
+				<listitem>
+					<para>Erstellt ein neues Angebot und öffnet dieses in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/order_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/order_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Auftrag</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/confirmation_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/confirmation_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Auftragsbestätigung</term>
+
+				<listitem>
+					<para>Erstellt eine neue Auftragsbestätigung und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/invoice_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/invoice_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Rechnung</term>
+
+				<listitem>
+					<para>Erstellt eine neue Rechnung und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/delivery_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/delivery_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Lieferschein</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Lieferschein und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/credit_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/credit_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Rechnungskorrektur</term>
+
+				<listitem>
+					<para>Erstellt eine neue Rechnungskorrektur und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/dunning_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/dunning_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Mahnung</term>
+
+				<listitem>
+					<para>Erstellt eine neue Mahnung und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neues Produkt</term>
+
+				<listitem>
+					<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Kontakt</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Adresseintrag (Debitor / Kreditor) und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Zahlungsart</term>
+
+				<listitem>
+					<para>Erstellt eine neue Zahlungsart und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neue Versandart</term>
+
+				<listitem>
+					<para>Erstellt eine neue Versandart und öffnet diese in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Steuersatz</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Steuersatz und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Text</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Text und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Listeneintrag</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Listeneintrag und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Ausgabebeleg</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Ausgabebeleg und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Neuer Einnahmebelege</term>
+
+				<listitem>
+					<para>Erstellt einen neuen Einnahmebeleg und öffnet diesen in einem Editorfenster.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/parcel_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/parcel_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Paketdienst</term>
+
+				<listitem>
+					<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist, oder das im Übersichtsfenster markierte Dokument.
+			Siehe auch <link linkend="editor_editor_parcelservice">Paketdienst</link>
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_mainmenu_extras"/><title>Hauptmenü Extras</title>
+		<variablelist>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/reorganize_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/reorganize_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Dokumente neu organisieren</term>
+
+				<listitem>
+					<para>Verschiebt und benennt alle bereits erstellten OpenOffice- und PDF-Dokumente im Unterorder Dokumente so um, wie in den Einstellungen <emphasis role="bold">Office</emphasis> angegeben. Siehe auch <link linkend="preferences_office_path">OpenOffice.org / LibreOffice Einstellungen</link>
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_mainmenu_window"/><title>Hauptmenü Fenster</title>
+		<!-- section>
+			<title>Perspektive zurücksetzen</title>
+			<listitem><para>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</para></listitem>
+		</section -->
+		<variablelist>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Taschenrechner</term>
+
+				<listitem>
+					<para>Öffnet einen Taschenrechner in einem eigenen Fenster. Siehe auch <link linkend="application_calculator">Taschenrechner</link>
+					</para>
+				</listitem>
+
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_mainmenu_help"/><title>Hauptmenü Hilfe</title>
+		<variablelist>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/www_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/www_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>www.fakturama.info</term>
+
+				<listitem>
+					<para>Öffnet die Fakturama-Projektwebseite in einem Editorfenster. Siehe auch <link linkend="editor_editor_browser">Webbrowser</link>
+					</para>
+				</listitem>
+
+			</varlistentry>
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/help_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/help_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Handbuch / Hilfe</term>
+
+				<listitem>
+					<para>Öffnet dieses Handbuch entweder in einem eigenen Fenster oder im Webbrowser.
+			Siehe auch <link linkend="preferences_help_content">Hilfeinhalte öffnen</link>
+					</para>
+				</listitem>
+
+			</varlistentry>
+			<!-- varlistentry>
+			<term>
+			
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/help_search_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" width="20pt" fileref="../images/application/help_search_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>Suchen</term>
+			
+			<listitem><para>Öffnet das Hilfesystem zum Suchen nach einem Begriff. Dieses wird entweder in einem eigenen Fenster oder innerhalb Fakturama geöffnet.</para>
+			<para>Siehe auch <link linkend="preferences_help_search">Öffnen der Suche für die Hilfe</link>
+			</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Dynamische Hilfe</term>
+			<para>Öffnet das Hilfesystem zur dynamischen Hilfe in einem eigenen Fenster innerhalb Fakturama. Bei der dynamischen Hilfe wird auf denjenigen Teil des Programms geklickt, für den ein Hilfetext benötigt wird.</para>
+		</varlistentry>
+		<varlistentry>
+			<term>Zeige Intro</term>
+			<para>Zeigt das Willkommensfenster (Intro), wie es auch beim erstmaligen Start von Fakturama präsentiert wurde.</para>
+			<para>Siehe auch <link linkend="install_start">Start von Fakturama</link>
+			</para>
+		</varlistentry>
+		<varlistentry>
+			<term>Nach Updates suchen</term>
+			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
+		</varlistentry>
+		<varlistentry>
+			<term>Neue Software installieren</term>
+			<para>Fakturama besteht aus vielen einzelnen Modulen, sogenannten PlugIns. Über einen Dialog können weitere PlugIns angewählt und installiert werden.</para>
+		</varlistentry -->
+			<varlistentry>
+				<term>
+
+					<inlinemediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/app_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/app_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</inlinemediaobject>Über Fakturama</term>
+
+				<listitem>
+					<para>Öffnet ein Fenster mit Versionsinformationen zu Fakturama.</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_toolbar"/><title>Die Werkzeugleiste</title>
+		<para>Die Werkzeugleiste beinhaltet die Kommandos, die am häufigsten benutzt werden und schnell aufgerufen werden können.</para>
+		<sect2>
+			<title>Webshop</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/shop_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/shop_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Stellt eine Verbindung mit dem Webshop her. Eingegangene Bestellungen werden abgerufen. Neue Produkte werden importiert und Preise aktualisiert. Kontaktadressen werden ebenfalls geladen und zu den Adressdaten hinzugefügt, falls diese noch nicht existieren.</para>
+			<para>Siehe auch <link linkend="webshop_webshop">Webshop</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Drucken</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/printoo_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/printoo_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt anhand einer Vorlage ein OpenOffice-Dokument. Es erscheint ein Auswahlmenü, wenn mehr als eine Vorlage existiert. Ist das Icon ausgegraut, so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+			<para>Siehe auch <link linkend="openoffice_main">OpenOffice.org</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Speichern</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/save_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/save_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Speichert das Dokument, Kontaktadresse, Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+		</sect2>
+		<sect2>
+			<title>Brief</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/letter_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/letter_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Brief und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Angebot</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/offer_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/offer_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt ein neues Angebot und öffnet dieses in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Auftrag</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/order_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/order_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Auftragsb.</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/confirmation_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/confirmation_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt eine neue Auftragsbestätigung und öffnet diese in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Rechnung</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/invoice_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/invoice_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt eine neue Rechnung und öffnet diese in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Lieferschein</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/delivery_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/delivery_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Lieferschein und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Gutschr.</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/credit_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/credit_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt eine neue Gutschrift und öffnet diese in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Mahnung</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/dunning_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/dunning_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt eine neue Mahnung und öffnet diese in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Produkt</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/product_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/product_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Kontakt</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/contact_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/contact_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Adresseintrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_contact">Kontakteditor</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Ausgabebeleg</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/expenditure_voucher_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/expenditure_voucher_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Ausgabebeleg und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_voucher">Editor Ausgabebeleg</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Einnahmebeleg</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/expenditure_voucher_new_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/expenditure_voucher_new_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Einnahmebeleg und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_voucher">Editor Einnahmebeleg</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Paket</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/parcel_service_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/parcel_service_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist oder das im Übersichtsfenster markierte Dokument.</para>
+			<para>Siehe auch <link linkend="editor_editor_parcelservice">Paketdienst Editor</link>
+			</para>
+			<para>Siehe auch <link linkend="parcelservice_main">Paketdienst Vorlagen</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>www</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/www_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/www_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet die Fakturama-Projektwebseite in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_browser">Webbrowser</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Rechner</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/calculator_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/calculator_32.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet einen Taschenrechner in einem eigenen Fenster.</para>
+			<para>Siehe auch <link linkend="application_calculator">Taschenrechner</link>
+			</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_navigationbar"/><title>Navigationsleiste</title>
+		<para>Daten können aus der Navigationsleiste schnell aufgerufen und Aktionen ausgeführt werden.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/application/navigationbar.png" format="PNG" scalefit="1"/>
+				</imageobject> 
+				<imageobject role="fo">
+					<imagedata contentdepth="65%" fileref="../images/application/navigationbar.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>Die Einträge der Navigationsleiste sind in Gruppen aufgeteilt. Jede Gruppe lässt sich ein- oder ausklappen. Es ist möglich, das Verhalten der Navigationsleiste in den <link linkend="preferences_general_navigationbar">Einstellungen</link> so zu ändern, dass beim Aufklappen einer Gruppe die anderen automatisch eingeklappt werden.</para>
+		<sect2>
+			<title>Gruppe Importieren</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/import_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" width="20pt" fileref="../images/application/import_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Befehle, um verschiedenen Daten in Fakturama zu importieren.</para>
+			<para>Siehe <link linkend="application_navigationbar_import">Gruppe Importieren</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Gruppe Daten</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/data_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" width="20pt" fileref="../images/application/data_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Befehle zum Anzeigen der verschiedenen Datentabellen.</para>
+			<para>Siehe <link linkend="application_navigationbar_data">Gruppe Daten</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Gruppe Neu erzeugen</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" width="20pt" fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Befehle zum Erzeugen von neuen Datensätzen und Öffnen in einem Editorfenster.</para>
+			<para>Siehe <link linkend="application_navigationbar_new">Gruppe Neu erzeugen</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Sonstiges</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/misc_stuff_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" fileref="../images/application/misc_stuff_32.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Gruppe mit Befehlen, die sich in keine andere Gruppe einsortieren lassen.</para>
+			<para>Siehe <link linkend="application_navigationbar_misc">Gruppe Sonstiges</link>
+			</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_navigationbar_import"/><title>Navigationsleiste Gruppe Importieren</title>
+		<section>
+			<title>Webshop</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/shop_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/shop_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Stellt eine Verbindung mit dem Webshop her. Eingegangene Bestellungen werden abgerufen, neue Produkte werden importiert und Preise aktualisiert. Kontaktadressen werden ebenfalls geladen und zu den Adressdaten hinzugefügt, falls diese noch nicht existieren.</para>
+			<para>Siehe auch <link linkend="webshop_webshop">Webshop</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_navigationbar_data"/><title>Navigationsleiste Gruppe Daten</title>
+		<section>
+			<title>Dokumente</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/letter_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Dokumenten im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Produkte</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Produkten im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Kontakte</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Kontaktadressen im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Zahlungsarten</title>
+			<para>
+				<informalfigure>
+					<mediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata contentdepth="50%" fileref="../images/application/payment_16.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</mediaobject>
+				</informalfigure>
+			Öffnet eine Liste mit allen Zahlungsarten im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Versandarten</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/shipping_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Versandarten im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Steuersätze</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/vat_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Steuersätzen im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Texte</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/text_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen vordefinierten Texten im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Listen</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/list_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Zusammenfassung aller Listeneinträge im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Ausgabebelege</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/expenditure_voucher_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Ausgabebelegen im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+		<section>
+			<title>Einnahmebelege</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet eine Liste mit allen Einnahmebelegen im Übersichtsfenster.</para>
+			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_navigationbar_new"/><title>Navigationsleiste Gruppe Neu erzeugen</title>
+		<section>
+			<title>Neues Produkt</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/product_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
+			</para>
+		</section>
+		<section>
+			<title>Neuer Kontakt</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/application/contact_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erstellt einen neuen Adresseintrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_contact">Kontakteditor</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_navigationbar_misc"/><title>Navigationsleiste Gruppe Sonstiges</title>
+		<section>
+			<title>Paketdienst</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/parcel_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" fileref="../images/application/parcel_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist, oder das im Übersichtsfenster markierte Dokument. </para>
+			<para>Siehe auch <link linkend="parcelservice_main">Paketdienst</link>
+			</para>
+		</section>
+		<section>
+			<title>www.fakturama.info</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/www_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" fileref="../images/application/www_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet die Fakturama-Projektwebseite in einem Editorfenster.</para>
+			<para>Siehe auch <link linkend="editor_editor_browser">Webbrowser</link>
+			</para>
+		</section>
+		<section>
+			<title>Taschenrechner</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="40%" fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Öffnet einen Taschenrechner in einem eigenen Fenster.</para>
+			<para>Siehe auch <link linkend="application_calculator">Taschenrechner</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_main"/><title>Das Editorfenster</title>
+		<para>Im Bereich der Editorfenster können gleichzeitig mehrere Editoren dargestellt werden.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="65%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<section>
+			<title>Kontextmenü</title>
+			<para>Ein Klick (rechte Maustaste) auf die Titelleiste jedes Editors öffnet ein Kontextmenü. Darüber ist es möglich, die Größe und Position zu ändern und diesen oder mehrere Editoren gleichzeitig zu schließen.</para>
+		</section>
+		<section>
+			<title>Editor mit geändertem Inhalt</title>
+			<para>Wurde der Inhalt eines Datensatzes mit dem Editor geändert, wird dies durch einen <emphasis role="bold">*</emphasis> vor dem Namen in der Titelleiste angezeigt. Durch Speichern wird der Datensatz aktualisiert.</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_browser"/><title>Webbrowser</title>
+		<para>Öffnet die Fakturama-<link xl:href="http://www.fakturama.info/">Projektseite</link> in einem Browserfenster.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_browser.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="70%" fileref="../images/editor/editor_browser.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<section>
+			<title>Startseite</title>
+			<para>Beim Programmstart wird ebenfalls eine Webseite geöffnet.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/start_page.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/editor/start_page.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Diese kann frei gewählt werden. Eine Seite im Internet, eine lokale Datei oder ein Bild (z. B. das eigene Firmenlogo).</para>
+			<para>Siehe <link linkend="preferences_general_url_start">URL der Startseite</link>.</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_document"/><title>Der Dokumenteneditor</title>
+		<para>Der Dokumenteneditor ist für alle Arten von Dokumenten ähnlich. Je nach Art des Dokumentes (Brief, Rechnung&#x2026;) sind einige Elemente ausgeblendet.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_document.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="85%" fileref="../images/editor/editor_document.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Bestellstatistik</title>
+			<para>Wird ein Dokument vom Typ <emphasis role="bold">Bestellung</emphasis> geöffnet, kann bei Stammkunden ein Dialog eingeblendet werden, der die bisher bezahlten Rechnungen und den Umsatz anzeigt.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/customer_statistics_dialog.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="65%" fileref="../images/editor/customer_statistics_dialog.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Siehe auch <link linkend="preferences_document_customer_statistics">Einstellungen Dokument</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Nr.</title>
+			<para>Dokumentennummer. Diese wird automatisch hochgezählt. Sie kann nachträglich geändert werden. Es erscheint beim Abspeichern eine Warnung, wenn sie nicht der nächsten freien Nummer entspricht.</para>
+			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Datum</title>
+			<para>Datum des Dokumentes. Bei einer Rechnung ist dies beispielsweise das Rechnungsdatum. Änderungen beeinflussen das Datum bei "<emphasis role="bold">zahlbar in X Tagen bis zum:</emphasis>"</para>
+		</sect2>
+		<sect2>
+			<title>Netto oder Brutto</title>
+			<para>Legt fest, ob die Rechnung später mit Netto- oder Bruttopreisen ausgedruckt wird. Abhängig davon werden die Zwischensummen, Rabattbeträge, Versand und MwSt. auf ganze Netto- oder Bruttowerte gerundet. Wird ein Dokument als <emphasis role="bold">netto</emphasis> angelegt, später jedoch trotzdem in ein Dokument mit Bruttopreisen gedruckt, kann es sein, dass sich die Summen um &#x00B1;1 Cent unterscheiden.</para>
+		</sect2>
+		<sect2>
+			<title>Rechnung</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/invoice.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="60%" fileref="../images/editor/invoice.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Art dieses Dokumentes incl. Logo. Beispiel: Rechnung, Bestellung, Brief etc.</para>
+		</sect2>
+		<sect2>
+			<title>Kundenreferenz</title>
+			<para>Referenznummer des Kunden. Bei einem Import aus dem Webshop wird hier die Webshop-Bestellnummer verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Bearbeiter</title>
+			<para>Hier kann der Name des Mitarbeiters eingegeben werden, der für diesen Vorgang zuständig ist.</para>
+		</sect2>
+		<sect2>
+			<anchor xreflabel="" xml:id="editor_editor_document_address"/><title>Adresse</title>
+			<para>Adresse des Kunden. Bei einem Lieferschein ist dies die Lieferadresse, bei allen anderen Dokumenten die Rechnungsadresse.</para>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+
+							<imageobject role="html">
+								<imagedata contentdepth="60%" fileref="../images/editor/contact_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="60%" fileref="../images/editor/contact_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Die Adresse kann direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Kontaktadressen geöffnet und die gewünschte Adresse ausgewählt werden. Dann wird neben dem Adresstext auch eine Verknüpfung mit der Adresse hergestellt. Der Adresstext sollte dann nur noch geringfügig geändert werden.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata contentdepth="60%" fileref="../images/editor/contact_plus_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="60%" fileref="../images/editor/contact_plus_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Soll eine neue Adresse eingegeben und die Adressdaten gleichzeitig als neuer Kontakt angelegt werden, so wird über dieses Symbol der Kontakteditor geöffnet und beim Speichern die Daten automatisch in das Dokument übernommen.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			<para>Siehe auch <link linkend="preferences_contactformat">Format des Adressfeldes</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Warnsymbol</title>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="90%" fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Ist die Lieferadresse unterschiedlich zur Rechnungsadresse, so erscheint ein Warnsymbol. Die Lie-feradresse wird beim Überfahren mit der Maus angezeigt.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<sect2>
+			<title>Bestelldatum</title>
+			<para>Datum der Bestellung. Kann zum Beispiel auf die Rechnung gedruckt werden.</para>
+		</sect2>
+		<sect2>
+			<title>Rechnung</title>
+			<para>Nummer der Rechnung, die diesem Vorgang zugeordnet ist.</para>
+		</sect2>
+		<sect2>
+			<title>MwSt.</title>
+			<para>Die Mehrwertsteuer lässt sich für das komplette Dokument auf 0% setzen.</para>
+		</sect2>
+		<sect2>
+			<title>Folgedokument erzeugen</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/create_duplicate.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/editor/create_duplicate.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Erzeugt aus dem aktuellen Dokument eines neues. Daten werden dabei soweit wie möglich übernommen.</para>
+		</sect2>
+		<sect2>
+			<title>Artikel</title>
+			<para>Tabelle mit allen Artikeln dieses Dokumentes. Alle Spalten bis auf den (Gesamt-)Preis lassen sich ändern. Ein neuer Artikel kann hinzugefügt werden:</para>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/product_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/editor/product_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Auswahl des Artikels aus der Liste mit allen Produkten. Es können mehrere Artikel gleichzeitig ausgewählt werden.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/delivery_note_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/editor/delivery_note_list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+
+						<para>Importieren aller Artikel eines Lieferscheins. Zusätzlich kann die Lieferscheinnummer in das Feld <emphasis role="bold">Bemerkung</emphasis> übernommen werden.</para>
+						<para>Es werden im Auswahldialog nur die Lieferscheine angezeigt, die noch keiner Rechnung zugeordnet sind. Ein bereits zugeordneter Lieferscheinnummer kann im <link linkend="application_overview">Übersichtsfenster</link> wieder zurückgesetzt werden. Ist bereits eine Kontaktadresse vergeben, werden nur die Lieferscheine dieses Kunden aufgelistet.</para>
+						<para>Dieses Icon ist nur bei Rechnungen und Proformarechnungen aktiv.</para>
+						<para>Siehe auch <link linkend="preferences_document_importdeliverynote">Lieferscheinnummer beim Import hinzufügen</link>
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/../application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/editor/../application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+
+					<listitem>
+						<para>Fügt eine neue Zeile mit einem Artikel ein.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/../application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/editor/../application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+
+					<listitem>
+
+						<para>Löscht den ausgewählten Artikel.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			<para>
+				<anchor xreflabel="" xml:id="editor_document_previewpicture"/>In der Artikelliste kann zusätzlich ein Vorschaubild angezeigt werden. Ein Klick auf dieses öffnet eine vergrößerte Ansicht des Produktbildes.</para>
+			<para>Siehe auch <link linkend="preferences_document_previewpicture">Einstellungen Dokument Vorschaubild</link>
+			</para>
+			<para>Bei einem Angebot kann ein Artikel als optionaler Artikel (Bedarfspostion) markiert werden. Er wird auf dem Angebot markiert und wird nicht bei der Berechnung der Gesamtsumme verwendet.</para>
+			<informalfigure>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>
+			</informalfigure>
+			<para>Siehe auch <link linkend="preferences_optional_items">Einstellungen Bedarfspositionen</link>
+			</para>
+			<para>Artikel können über das Kontextmenü nach oben und unten verschoben werden (rechte Maustaste auf Artikelliste).</para>
+			<informalfigure>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_document_context_menu.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/editor/editor_document_context_menu.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>
+			</informalfigure>
+			<tip>
+				<para>Sind alle Preise in Brutto, kann ein Preis dennoch als Nettowert eingegeben werden. Dazu bei der Eingabe des Preises ein <emphasis role="bold">netto</emphasis> anfügen. Bei Bruttopreisen ein <emphasis role="bold">brutto</emphasis> anfügen.</para>
+				<para>Beispiel:<emphasis role="bold">7,00€ netto</emphasis>
+				</para>
+				<para>Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
+				</para>
+			</tip>
+		</sect2>
+		<sect2>
+			<title>Bemerkung</title>
+			<para>Feld für eine zusätzliche Bemerkung, die auf Rechnung oder Lieferschein gedruckt wird.
+			Es können bis zu 3 Felder für Bemerkungen eingeblendet werden </para>
+			<para>Siehe auch <link linkend="preferences_document_messagefields">Einstellungen Dokument Felder "Bemerkung"</link>
+			</para>
+			<para>Siehe auch <olink xlink:role="http://docbook.org/xlink/role/olink"
+xlink:href="04_openoffice_libreoffice#openoffice_placeholders_message">Platzhalter Feld "Bemerkung"
+</olink >
+			</para>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/editor/list_20.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Öffnet eine Liste mit vordefinierten Texten.
+			Siehe <link linkend="editor_editor_text">Editor Text</link>
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<sect2>
+			<title>Bezahlt</title>
+			<para>Markierung, ob die Rechnung bezahlt wurde.</para>
+		</sect2>
+		<sect2>
+			<title>Zahlungsart</title>
+			<para>Auswahl der Zahlungsart. Je nach Zahlungsart wird auf der Rechnung der entsprechende Text gedruckt.</para>
+			<para>Siehe <link linkend="editor_editor_payment">Editor Zahlungsart</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>zahlbar in</title>
+			<para>Anzahl der Tage, innerhalb derer die Rechnung bezahlt werden muss. Beim Ändern wird automatisch das Datum angepasst.</para>
+		</sect2>
+		<sect2>
+			<title>Tagen bis zum</title>
+			<para>Datum, bis zu dem die Rechnung bezahlt werden muss. Beim Ändern wird automatisch die Anzahl der Tage angepasst.</para>
+		</sect2>
+		<sect2>
+			<title>am</title>
+			<para>Tag des Geldeingangs.</para>
+		</sect2>
+		<sect2>
+			<title>Wert</title>
+			<para>Tatsächlicher Geldeingang. Zieht ein Kunde einen Skontobetrag ab, wird dies hier berücksichtigt. Es ist auch möglich, Teilzahlungen zu erfassen. Dann trägt man den bereits bezahlten Wert hier ein. Es erscheint ein Warnsymbol mit dem Hinweis "Anzahlung". Der Status der Rechnung bleibt "unbezahlt". </para>
+			<para>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/document_deposit.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="90%" fileref="../images/editor/document_deposit.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Summe Brutto/Netto</title>
+			<para>Summe aller Artikel</para>
+		</sect2>
+		<sect2>
+			<title>Rabatt</title>
+			<para>Rabatt auf alle Artikel</para>
+		</sect2>
+		<sect2>
+			<title>Versand</title>
+			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, den Betrag nachträglich von Hand zu ändern. Versandkosten werden als Netto- oder Bruttowert angezeigt.</para>
+			<para>Siehe <link linkend="editor_editor_shipping">Editor Versandart</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>MwSt.</title>
+			<para>Anteil der Mehrwertsteuer</para>
+			<para>Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Gesamt</title>
+			<para>Gesamtsumme (Brutto) des Dokumentes incl. Mehrwertsteuer.</para>
+			<para>Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
+			</para>
+
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_product"/><title>Der Produkteditor</title>
+		<para>Je nach Einstellungen sind einige Elemente ausgeblendet.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_product.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="80%" fileref="../images/editor/editor_product.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Artikelnummer</title>
+			<para>Artikelnummer des Produktes. Diese wird automatisch hochgezählt. Sie kann nachträglich geändert werden. Es erscheint beim Abspeichern eine Warnung, wenn sie nicht der nächsten freien Nummer entspricht.</para>
+			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Name</title>
+			<para>Name des Produktes.</para>
+		</sect2>
+		<sect2>
+			<title>Kategorie</title>
+			<para>Kategorie, in die das Produkt einsortiert wird. Beim Import aus einem Webshop wird hier die Kategorie aus dem Webshop verwendet. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich <emphasis role="bold">/</emphasis> zu trennen. Beispiel:</para>
+			<programlisting>Hauptkategorie/Unterkategorie/WeitereUnterkategorie</programlisting>
+		</sect2>
+		<sect2>
+			<title>Beschreibung</title>
+			<para>Kurze Beschreibung des Produktes.</para>
+		</sect2>
+		<sect2>
+			<title>Preis</title>
+			<para>Je nach Einstellung wird der Netto- oder Bruttopreis angezeigt. Beim Editieren des Nettopreises wird automatisch der Bruttopreis angepasst und umgekehrt, jeweils abhängig vom Mehrwertsteuersatz. Die Verwendung von Staffelpreisen ist ebenfalls möglich.</para>
+		</sect2>
+		<sect2>
+			<title>MwSt.</title>
+			<para>Mehrwertsteuersatz dieses Produktes.</para>
+			<para>Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Gewicht</title>
+			<para>Angabe des Gewichtes. Dieser Wert ist nur zur Information.</para>
+		</sect2>
+		<sect2>
+			<title>Menge</title>
+			<para>Anzahl der Artikel im Lager. Der Wert kann unter folgenden Bedingungen automatisch aktualisiert werden: </para>
+			<itemizedlist>
+				<listitem>
+					<para> Abruf der aktuellen Menge aus dem Webshop</para>
+				</listitem>
+				<listitem>
+					<para> Statusänderung einer Bestellung (auch ohne Webshop-Anbindung)</para>
+				</listitem>
+			</itemizedlist>
+			<para> Bei der Statusänderung einer Bestellung von "offen" oder "in Bearbeitung" auf "versendet" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend verringert. Bei der Statusänderung von "versendet" auf "in Bearbeitung" oder "offen" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend erhöht. Wenn der Bestand eines Produktes auf Null oder darunter sinkt, wird eine Meldung ausgegeben. Die Aktualisierung des Bestands durch Statusänderungen erfolgt nur bei Bestellungen und nicht bei Lieferscheinen, Rechnungen, Gutschriften oder anderen Dokumenten. Zurzeit können nur ganzzahlige Werte ohne Dezimalstellen verwendet werden. </para>
+		</sect2>
+		<sect2>
+			<anchor xreflabel="" xml:id="editor_editor_product_pic"/>
+			<title>Produktbild</title>
+			<para>Wird das Produkt aus einem Webshop importiert, wird automatisch das Produktbild verwendet. Bei manuell angelegten Produkten kann ein Bild ausgewählt werden.</para>
+			<para>Siehe auch <link linkend="preferences_product">Einstellungen Produkt</link>
+			</para>
+		</sect2>
+	</section>
+	<section>
+		<title>Der Kontakteditor</title>
+		<anchor xreflabel="" xml:id="editor_editor_contact"/>
+		<para>Je nach Einstellungen sind einige Elemente ausgeblendet.</para>
+		<sect2>
+			<title>Reiter Adresse</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_contact_address.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="85%" fileref="../images/editor/editor_contact_address.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</sect2>
+		<sect2>
+			<title>Kundennummer</title>
+			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt.</para>
+			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Adresse</title>
+			<para>Adresse ist auch Rechnungsadresse. Einzelne Felder wie <emphasis role="bold">Geschlecht, Titel, Firma, Land</emphasis> können in den Einstellungen auch ausgeblendet werden, falls diese nie benutzt werden.</para>
+		</sect2>
+		<sect2>
+			<title>Lieferadresse entspricht Rechnungsadresse</title>
+			<para>Ist dieses Feld aktiviert, so wird als Lieferadresse die Rechnungsadresse verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Lieferadresse</title>
+			<para>Wird ausgeblendet, wenn <emphasis role="bold">Lieferadresse entspricht Rechnungsadresse</emphasis> aktiviert wurde.</para>
+		</sect2>
+		<sect2>
+			<title>Reiter Bankkonto</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="60%" fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Kontodaten des Kontaktes. Es ist nicht erforderlich, alle Felder auszufüllen.</para>
+		</sect2>
+		<sect2>
+			<title>Reiter Sonstiges</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="80%" fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</sect2>
+		<sect2>
+			<title>Kategorie</title>
+			<para>Kategorie, in die der Kontakt einsortiert wird. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich <emphasis role="bold">/</emphasis> zu trennen. Beispiel:</para>
+			<programlisting>Kunden/Webshop</programlisting>
+		</sect2>
+		<sect2>
+			<title>Zusätzliche Kontaktdaten</title>
+			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, Geburtsdatum und USt.-IdNr.</para>
+		</sect2>
+		<sect2>
+			<title>Zahlungsart</title>
+			<para>Zahlungsart des Kunden. Wird beim Anlegen eines neues Dokumentes mit diesem Kunden verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Bonität</title>
+			<para>Angabe über die Bonität (Kreditwürdigkeit) eines Kunden. Dieser Wert ist nur zur Information.</para>
+		</sect2>
+		<sect2>
+			<title>Rabatt</title>
+			<para>Rabatt, der diesem Kunden üblicherweise gewährt wird. Wird beim Anlegen eines neues Dokumentes mit diesem Kunden verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Netto oder Brutto</title>
+			<para>Normalerweise wird im Dokumenteneditor der Preis als Netto oder als Brutto angezeigt, abhängig davon, welche Einstellung programmweit vorgenommen wurde. Für bestimmte Kunden lässt sich unabhängig davon eine andere Einstellung festlegen. Der Dokumenteneditor öffnet sich dann mit den hier eingestellten Preisen.</para>
+		</sect2>
+		<sect2>
+			<title>Reiter Notiz</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="75%" fileref="../images/editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Zu jedem Kontakt kann eine Notiz hinterlegt werden. Ist dort ein Text vorhanden, so wird dieser bei jedem Aufruf des Texteditors in den Vordergrund gestellt.</para>
+			<para>Siehe auch <link linkend="preferences_contact">Einstellungen Kontakte</link>
+			</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_parcelservice"/>
+		<title>Webseite Paketdienst</title>
+		<para>Öffnet die Webseite des Paketdienstes in einem Browserfenster und füllt die Formularfelder mit den Adressdaten.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_parcelservice.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="80%" fileref="../images/editor/editor_parcelservice.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>Die Seite mit den zu füllenden Formularfelder muss nicht unbedingt die Startseite sein. Werden auf einer Webseite des Paketdienstes die erforderlichen Felder gefunden, werden Absender und Empfängerdaten verwendet, um die Formularfelder zu füllen. Dieser Vorgang wird einmalig durchgeführt. Für neue Adressdaten ist das Editorfenster neu zu öffnen.</para>
+		<para>Siehe auch <link linkend="parcelservice_main">Paketdienst</link>
+		</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_payment"/>
+		<title>Editor Zahlungsart</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_payment.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata width="100%" fileref="../images/editor/editor_payment.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Name</title>
+			<para>Eindeutiger Name der Zahlungsart. Dies ist auch die Kennung, die vom Shopsystem verwendet wird. Der Name sollte dann nicht verändert werden. Anstatt dessen sollte der Text <emphasis role="bold">Beschreibung</emphasis> angepasst werden.</para>
+		</sect2>
+		<sect2>
+			<title>Konto</title>
+			<para>Konto, auf das alle Rechnungen mit dieser Zahlungsart gebucht werden.Zum Beispiel <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Eine neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird.</para>
+		</sect2>
+		<sect2>
+			<title>Beschreibung</title>
+			<para>Dieser Text wird auf den Dokumenten verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Skonto</title>
+			<para>Skonto in %, das innerhalb der Frist <emphasis role="bold">Tage Skonto</emphasis> abgezogen werden darf.</para>
+		</sect2>
+		<sect2>
+			<title>Tage Skonto</title>
+			<para>Innerhalb dieser Zeit ist ein Skontoabzug möglich.</para>
+		</sect2>
+		<sect2>
+			<title>Tage Netto</title>
+			<para>Innerhalb dieser Zeit ist der Rechnungsbetrag ohne Skontoabzug zu bezahlen.</para>
+		</sect2>
+		<sect2>
+			<title>Text 'bezahlt'</title>
+			<para>Dieser Text wird auf die Rechnung gedruckt, wenn diese als 'bezahlt' markiert ist.</para>
+			<para>
+				<emphasis role="italic">Beispiel:</emphasis> Betrag von &lt;PAID.VALUE&gt; am &lt;PAID.DATE&gt; dankend erhalten.</para>
+		</sect2>
+		<sect2>
+			<title>Text 'unbezahlt'</title>
+			<para>Dieser Text wird auf die Rechnung gedruckt, wenn diese als 'unbezahlt' markiert ist. </para>
+			<para>
+				<emphasis role="italic">Beispiel:</emphasis> Zahlbar mit &lt;DUE.DISCOUNT.PERCENT&gt; Skonto innerhalb von &lt;DUE.DISCOUNT.DAYS&gt; Tagen bis spätestens zum &lt;DUE.DISCOUNT.DATE&gt; (=&lt;DUE.DISCOUNT.VALUE&gt;) oder ohne Abzug (=&lt;DOCUMENT.TOTAL&gt;) innerhalb von &lt;DUE.DAYS&gt; Tagen (bis spätestens zum &lt;DUE.DATE&gt;).</para>
+			<para>Bei beiden Texten ist es möglich, folgende Platzhalter zu verwenden:</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;PAID.VALUE&gt;</emphasis>  bezahlter Betrag</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;PAID.DATE&gt;</emphasis>  Zahldatum</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DISCOUNT.PERCENT&gt;</emphasis>  gewährtes Skonto in Prozent</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DISCOUNT.DAYS&gt;</emphasis>  Skonto-Tage, innerhalb deren zu zahlen ist</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DISCOUNT.DATE&gt;</emphasis>  Skontofrist, bis zu der der Betrag abzüglich Skonto fällig ist.</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DISCOUNT.VALUE&gt;</emphasis>  Zu zahlender Gesamtbetrag mit gezogenem Skonto</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DAYS&gt;</emphasis>  Netto-Tage, innerhalb deren zu zahlen ist</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DUE.DATE&gt;</emphasis>  Nettofrist, bis zu der der Betrag ohne Abzug fällig ist.</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.BANK.ACCOUNT.HOLDER&gt;</emphasis>  Kontoinhaber des Kundenkontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.BANK.IBAN&gt;</emphasis>  IBAN des Kundenkontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.BANK.IBAN.CENSORED&gt;</emphasis>  verkürzte IBAN des Kunden (zum Beispiel *****123)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.BANK.BIC&gt;</emphasis>  BIC zur IBAN des Kundenkontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.BANK.NAME&gt;</emphasis>  Kreditinstitut des Kundenkontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.ACCOUNT.HOLDER&gt;</emphasis>  Kontoinhaber des Rechnungsersteller-Kontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.ACCOUNT&gt;</emphasis>  Rechnungsersteller-Konto</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.ACCOUNT.CENSORED&gt;</emphasis>  verkürzte Kontonummer des Rechnungsersteller-Kontos (zum Beispiel *****123)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.IBAN&gt;</emphasis>  IBAN des Rechnungsersteller-Kontos</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.IBAN.CENSORED&gt;</emphasis>  verkürzte IBAN des Rechnungsersteller-Kontos (zum Beispiel *****123)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.BIC&gt;</emphasis>  BIC zur IBAN des Rechnungserstellers</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;BANK.NAME&gt;</emphasis>  Kreditinstitut des Rechnungserstellers</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DOCUMENT.TOTAL&gt;</emphasis>  Zu zahlender Gesamtbetrag bei abgelaufener Skontofrist</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;DEBITOR.MANDATREF&gt;</emphasis>  Mandatsreferenz des Kunden (bei SEPA-Lastschrift)</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">&lt;YOURCOMPANY.CREDITORID&gt;</emphasis>  eigene Gläubiger-ID (für SEPA-Lastschrift)</para>
+				</listitem>
+			</itemizedlist>
+			<para>
+				<emphasis role="italic">Beispiel für SEPA-Lastschrifteinzug (Prenotification):</emphasis> Den Rechnungsbetrag in Höhe von &lt;DOCUMENT.TOTAL&gt; ziehen wir am &lt;DUE.DATE&gt; von Ihrem Konto &lt;DEBITOR.BANK.IBAN.CENSORED&gt; bei der &lt;DEBITOR.BANK.NAME&gt; unter Angabe der Mandatsreferenz &lt;DEBITOR.MANDATREF&gt; ein. Unsere Gläubiger-ID lautet &lt;YOURCOMPANY.CREDITORID&gt;. </para>
+		</sect2>
+		<sect2>
+			<title>Standard</title>
+			<para>Zeigt den Namen derjenigen Zahlungsart, die momentan die Standardzahlungsart ist.</para>
+		</sect2>
+		<sect2>
+			<title>zum Standard machen</title>
+			<para>Macht diese Zahlungsart zur Standardzahlungsart. Zahlungsart muss zuvor gespeichert worden sein.</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_shipping"/>
+		<title>Editor Versandart/Versandkosten</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_shipping.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="75%" fileref="../images/editor/editor_shipping.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Name</title>
+			<para>Eindeutiger Name der Versandart. Dies ist auch die Kennung, die vom Shopsystem verwendet wird. Der Name sollte dann nicht verändert werden. Anstatt dessen sollte der Text <emphasis role="bold">Beschreibung</emphasis> angepasst werden.</para>
+		</sect2>
+		<sect2>
+			<title>Kategorie</title>
+			<para>Kategorie, in die die Versandart einsortiert wird. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich <emphasis role="bold">/</emphasis> zu trennen. Beispiel:</para>
+			<programlisting>Hauptkategorie/Unterkategorie/WeitereUnterkategorie</programlisting>
+		</sect2>
+		<sect2>
+			<title>Beschreibung</title>
+			<para>Dieser Text wird auf den Dokumenten verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Wert</title>
+			<para>Wert der Versandkosten. Netto oder Brutto. Welcher Wert dargestellt wird hängt von den Einstellungen und der Art der <emphasis role="bold">MwSt. Berechnung</emphasis> ab.</para>
+			<para>Siehe <link linkend="preferences_product_netgross">Einstellungen Produkt</link>
+			</para>
+		</sect2>
+		<sect2>
+			<title>MwSt.</title>
+			<para>Mehrwertsteuersatz, falls bei <emphasis role="bold">MwSt. Berechnung</emphasis> die Einstellung <emphasis role="bold">konstante MwSt.</emphasis> gewählt wurde.</para>
+		</sect2>
+		<sect2>
+			<title>MwSt. Berechnung</title>
+			<para>Neben einem konstanten Mehrwertsteuersatz auf die Versandkosten ist es auch möglich, die Mehrwertsteuer abhängig von der Steuer der Produkte zu berechnen.</para>
+			<para>Beispiel: Werden Bücher mit 7% bestellt, so werden auch auf die Versandkosten 7% berechnet. Bei einer Mischbestellung mit Artikeln zu 7% und 19% wird die Mehrwertsteuer der Versandkosten anteilig berechnet. Der effektive Mehrwertsteuersatz liegt dann zwischen 7% und 19%.</para>
+		</sect2>
+		<sect2>
+			<title>Standard</title>
+			<para>Zeigt den Namen derjenigen Versandart, die momentan die Standardversandart ist.</para>
+		</sect2>
+		<sect2>
+			<title>zum Standard machen</title>
+			<para>Macht diese Versandart zur Standardversandart. Versandart muss zuvor gespeichert worden sein.</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_vat"/><title>Editor Steuersatz</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="75%" fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Name</title>
+			<para>Eindeutiger Name des Steuersatzes. Dies ist auch die Kennung, die vom Shopsystem verwendet wird. Der Name sollte dann nicht verändert werden. Stattdessen sollte der Text <emphasis role="bold">Beschreibung</emphasis> angepasst werden.</para>
+		</sect2>
+		<sect2>
+			<title>Kategorie</title>
+			<para>Kategorie, in die der Steuersatz einsortiert wird. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich <emphasis role="bold">/</emphasis> zu trennen. Beispiel:</para>
+			<programlisting>Hauptkategorie/Unterkategorie/WeitereUnterkategorie</programlisting>
+			<para>
+				<emphasis role="italic">Wichtig:</emphasis>Trägt man hier die Kategorie "Umsatzsteuer" ein (oder die in der jeweiligen Landessprache geltende Bezeichnung), </para>
+			<para>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/vat_step1.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="90%" fileref="../images/editor/vat_step1.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>
+			</para>
+			<para> dann wird dieser Steuersatz in der Artikelliste eines Dokuments (Rechnung, Lieferschein o.ä.) für die Auswahlbox der Steuer verwendet. </para>
+			<para>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/vat_step2.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="90%" fileref="../images/editor/vat_step2.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</inlinemediaobject>
+			</para>
+			<para> Definiert man allerdings ein Produkt, das mit einem anderen Steuersatz versehen wurde, dann wird beim Hineinklicken oder Anspringen des MwSt.-Feldes in der Artikelliste ein mit dieser Kategorie versehener Steuersatz ausgewählt (oder der Standard-Steuersatz). Der ursprünglich dem Produkt zugewiesene Steuersatz (mit einer beliebigen anderen Kategorie) wird damit für diese Artikelliste überschrieben!</para>
+		</sect2>
+		<sect2>
+			<title>Beschreibung</title>
+			<para>Dieser Text wird auf den Dokumenten verwendet.</para>
+		</sect2>
+		<sect2>
+			<title>Wert</title>
+			<para>Prozentualer Wert des Steuersatzes.</para>
+		</sect2>
+		<sect2>
+			<title>Standard</title>
+			<para>Zeigt den Namen desjenigen Steuersatzes, der momentan der Standardsteuersatz ist.</para>
+		</sect2>
+		<sect2>
+			<title>zum Standard machen</title>
+			<para>Macht diese Steuersatzes zum Standardsteuersatz. Der Steuersatz muss zuvor gespeichert worden sein.</para>
+		</sect2>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_text"/>
+		<title>Editor Text</title>
+		<para>Es ist möglich, standardisierte Texte abzulegen, die mit einem Klick verwendet werden können. Zum Beispiel im <link linkend="editor_editor_document">Dokumenteneditor</link>.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_text.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="75%" fileref="../images/editor/editor_text.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<variablelist>
+				<varlistentry>
+					<term>Name</term>
+			<listitem><para>Eindeutiger Name des Textes.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Kategorie</term>
+			<listitem><para>Kategorie, in die der Text einsortiert wird. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich <emphasis role="bold">/</emphasis> zu trennen. Beispiel:</para>
+			<programlisting>Hauptkategorie/Unterkategorie/WeitereUnterkategorie</programlisting></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Text</term>
+			<listitem><para>Der eigentliche Text.</para></listitem>
+		</varlistentry></variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_list"/>
+		<title>Editor Listeneintrag</title>
+		<para>Erstellt oder ändert einen Eintrag einer Liste.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_list.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="75%" fileref="../images/editor/editor_list.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<variablelist>
+				<varlistentry>
+					<term>Liste</term>
+			<listitem><para>Liste, in die der Listeneintrag einsortiert wird.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Name</term>
+			<listitem><para>Eindeutiger Name des Listeneintrages.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Wert</term>
+			<listitem><para>Wert (Text) des Listeneintrages.</para>
+			<para>Bei der Installation werden bereits zwei Listen mit Ländercodes angelegt. Diese können zum Ausfüllen der Platzhalter benutzt werden.</para></listitem>
+		</varlistentry></variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="editor_editor_voucher"/><title>Editor Einnahmen- oder Ausgabebeleg</title>
+		<para>Alle Einahmen/Ausgaben können in Belegen erfasst und später tabellarisch und sortiert als OpenOffice Calc Tabelle exportiert werden.</para>
+		<!-- TODO nochmal checken, ob das geht -->
+		<!-- para>Viele Felder des Beleges sind mit einer Autovervollständigung ausgestattet. Diese wird automatisch für das Feld abgeschaltet, sobald einmal der Wert korrigiert wurde.</para -->
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/editor_expenditure.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="85%" fileref="../images/editor/editor_expenditure.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure><variablelist>
+		<varlistentry>
+			<term>Gebucht</term>
+			<listitem><para>Alle Belege werden normalerweise beim Export berücksichtigt. Soll ein Beleg nicht gebucht/exportiert werden, ist dieses Häkchen zu entfernen. Der Beleg erscheint dann nur noch beim Export des Kontostandes. Beispiel: 1000€ wird auf Konto A überwiesen.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Konto</term>
+			<listitem><para>Konto, auf das der Beleg gebucht wird, z.B. <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Eine neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Datum</term>
+			<listitem><para>Datum des Beleges. Das Datum, an dem die Zahlung durchgeführt wurde.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Beleg Nr.</term>
+			<listitem><para>Eigene Nummerierung der Belege.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Dokument Nr.</term>
+			<listitem><para>Nummer des Beleges, z.B. die Rechnungsnummer.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Lieferant</term>
+			<listitem><para>Name des Lieferanten</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Positionen</term>
+			<listitem><para>Tabelle mit allen Positionen dieses Beleges. Der Mehrwertsteuersatz wird automatisch ausgewählt. Die Zuordnung Kontenart und Mehrwertsteuersatz wird gelernt und in die Liste <emphasis role="bold">Kontennummern</emphasis> eingetragen. Sie lässt sich nachträglich mit dem <link linkend="editor_editor_list">Editor Listeneintrag</link> ändern</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/../application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata  contentdepth="40%" width="20pt" fileref="../images/editor/../application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Zeile hinzufügen</term>
+					
+					<listitem>
+						<para>Fügt eine neue Zeile für eine neuen Position ein.</para>
+					</listitem>
+			
+		</varlistentry>
+		<varlistentry>
+			<term>
+			
+					
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/editor/../application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" width="20pt" fileref="../images/editor/../application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Zeile löschen</term>
+					
+					<listitem>
+						<para>Löscht die ausgewählte Zeile/Position.</para>
+					</listitem>
+				
+		</varlistentry>
+		<varlistentry>
+			<term>Skonto abgezogen</term>
+			<listitem><para>Wird dann angewählt, wenn der gezahlte Betrag nicht mit dem berechneten <emphasis role="bold">Gesamtbetrag</emphasis> übereinstimmt.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Zahlbetrag</term>
+			<listitem><para>Der Betrag, der tatsächlich bezahlt wurde.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Gesamtbetrag</term>
+			<listitem><para>Aus den einzelnen Positionen berechneter Gesamtbetrag.</para></listitem>
+		</varlistentry></variablelist>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_overview"/><title>Das Übersichtsfenster</title>
+		<para>Das Übersichtsfenster stellt alle Datensätze tabellarisch dar.</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/application/overview.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="85%" fileref="../images/application/overview.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<sect2>
+			<title>Der Kategoriebaum</title>
+			<para>Alle Datensätze können in eine Kategorie eingeordnet werden. Am linken Rand des Übersichtsfensters erscheint ein Baum mit allen verwendeten Kategorien. Wird das Element <emphasis role="bold">alle</emphasis> ausgewählt, werden alle Datensätze angezeigt. Ist ein Kategorieelement angewählt, erscheinen nur diejenigen Datensätze, die in die gleiche Kategorie eingeordnet wurden.</para>
+		</sect2>
+		<sect2>
+			<title>Der Kategoriebaum für Dokumente</title>
+			<para>Der Kategoriebaum für Dokumente unterscheidet sich etwas von dem für andere Datensätze. Dokumente werden je nach Art des Dokumentes automatisch in Kategorien sortiert.</para>
+		</sect2>
+		<!-- sect2> TODO
+			<title>Summe der unbezahlten Rechnungen</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/unpaid_sum.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="35%" fileref="../images/application/unpaid_sum.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Fährt man mit der Maus über den Eintrag "unbezahlte Rechnungen", wird die Summe aller unbezahlten Rechnungen angezeigt.</para>
+		</sect2 -->
+		<sect2>
+			<title>Weitere Bearbeitungssymbole</title>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/document_10.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" width="20pt" fileref="../images/application/document_10.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Gleicher Vorgang
+					</term>
+					<listitem>
+						<para>Wird dieses Element ausgewählt, werden diejenigen Dokumente angezeigt, die dem gleichen Vorgang zugeordnet werden können.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/contact_10.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" width="20pt" fileref="../images/application/contact_10.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Gleicher Kontakt
+					</term>
+					<listitem>
+						<para>Wird dieses Element ausgewählt, werden diejenigen Dokumente angezeigt, die dem gleichen Kontakt (Kunde/Lieferant) zugeordnet werden können.</para>
+					</listitem>
+				</varlistentry>
+
+				<varlistentry>
+					<term>
+
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata  contentdepth="40%" width="20pt" fileref="../images/application/delete_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Löschen von Datensätzen
+					</term>
+					<listitem>
+						<para>Über diesen Knopf oder über das Kontextmenü (rechte Maustaste) oder mit der Taste <emphasis role="bold">Entf</emphasis> kann der ausgewählte Datensatz gelöscht werden.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" width="20pt" fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>Hinzufügen eines neuen Datensatzes
+					</term>
+					<listitem>
+						<para>Über diesen Knopf oder über das Kontextmenü (rechte Maustaste) kann ein neuer Datensatz hinzugefügt werden.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<section>
+			<title>Suchfeld</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/search.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/application/search.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Die Menge der angezeigten Datensätzen lässt sich einschränken. Wird in das Suchfeld eine Zeichenkette eingetragen, so werden nur diejenigen Datensätze angezeigt, die diese beinhalten. Je nach Art des Datensatzes werden unterschiedliche Spalten zur Suche verwendet. Die Spalte <emphasis role="bold">Name</emphasis> wird immer verwendet.</para>
+			<para>Ist das Suchfeld leer, werden alle Datensätze angezeigt.</para>
+		</section>
+		<section>
+			<title>Tabelle</title>
+			<para>Die Datensätze sind tabellarisch dargestellt.</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/overview_table_heading.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="80%" fileref="../images/application/overview_table_heading.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Durch Klicken auf die Kopfzeile der Tabelle lassen sich die Datensätze aufsteigend oder absteigend sortieren.</para>
+		</section>
+		<section>
+			<title>Tabelle für Dokumente</title>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/order_status.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="80%" fileref="../images/application/order_status.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			<para>Die Tabelle für Dokumente enthält eine Spalte <emphasis role="bold">Status</emphasis>.</para>
+			<para>Rechnungen werden als <emphasis role="bold">bezahlt</emphasis> oder <emphasis role="bold">unbezahlt</emphasis> markiert.</para>
+			<para>Bestellungen werden als <emphasis role="bold">offen</emphasis>, <emphasis role="bold">in Bearbeitung</emphasis> oder <emphasis role="bold">versendet</emphasis> markiert.</para>
+			<para>Über das Kontextmenü (rechte Maustaste) kann der Status einer Bestellung geändert werden. Je nach Einstellung wird der Kunde per E-Mail über den neuen Status benachrichtigt.</para>
+			<variablelist>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+			
+				
+					<imageobject role="html">
+						<imagedata fileref="../images/application/printer_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/printer_16.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</inlinemediaobject></term><listitem><para>Wurde ein Dokument bereits gedruckt, wird dies durch ein Druckersymbol angezeigt.</para>
+			</listitem></varlistentry>
+				<varlistentry><term>
+				<inlinemediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/application/printer_grey_16.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="100%" fileref="../images/application/printer_grey_16.png" format="PNG" scalefit="1" width="100%"/>
+					</imageobject>
+				</inlinemediaobject></term><listitem><para>Sind Daten nachträglich nochmals geändert worden, erscheint das Symbol ausgegraut.</para></listitem></varlistentry></variablelist>
+			<para>Siehe <link linkend="preferences_notification">Kunde benachrichtigen</link>
+			</para>
+		</section>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_calculator"/><title>Taschenrechner</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/application/calculator.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="50%" fileref="../images/application/calculator.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>Ein Taschenrechner, der immer griffbereit zur Verfügung steht.</para>
+	</section>
+	<section>
+		<anchor xreflabel="" xml:id="application_errorview"/>
+		<title>Fehlerfenster</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/application/errorview.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="80%" fileref="../images/application/errorview.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<para>Das Fehlerfenster wird bei einem internen Fehler eingeblendet. Es bleibt ansonsten unsichtbar. Alle Fehler werden gleichzeitig in einer Logdatei im <emphasis role="bold">Arbeitsverzeichnis</emphasis> im Ordner <emphasis role="bold">Log</emphasis> in der Datei <emphasis role="bold">Error.log</emphasis> gespeichert.</para>
+		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
+		</para>
+	</section>
+</chapter>
