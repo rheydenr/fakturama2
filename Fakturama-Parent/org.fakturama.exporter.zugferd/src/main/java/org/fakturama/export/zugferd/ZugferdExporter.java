@@ -199,7 +199,12 @@ public class ZugferdExporter {
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/shop_16.png"));
-		workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+		if(preferences != null) {
+			workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+		} else {
+			// this only happens at first run (from installation phase) and shouldn't be a problem
+			workspace = "NO_WORKSPACE_SELECTED";
+		}
 	}
 
 	/**

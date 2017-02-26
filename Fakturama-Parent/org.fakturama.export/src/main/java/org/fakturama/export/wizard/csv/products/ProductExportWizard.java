@@ -103,6 +103,7 @@ public class ProductExportWizard extends Wizard implements IExportWizard {
 		fileDialog.setFilterNames(new String[] { exportMessages.wizardExportFilenameTypeCsv + " (*.csv)" });
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
+		fileDialog.setFileName(getOutputFileName());
 		fileDialog.setOverwrite(true);
 		String selectedFile = fileDialog.open();
 		if (selectedFile != null) {
@@ -117,5 +118,10 @@ public class ProductExportWizard extends Wizard implements IExportWizard {
 		}
 		else 
 			return false;
+	}
+	
+	@Override
+	public String getOutputFileName() {
+		return "ProductExport.csv";
 	}
 }

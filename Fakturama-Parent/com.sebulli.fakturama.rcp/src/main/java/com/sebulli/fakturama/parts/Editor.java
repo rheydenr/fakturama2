@@ -419,6 +419,7 @@ public abstract class Editor<T extends IEntity> {
 			lastSetNextNrDate.setValue(now.format(DateTimeFormatter.ISO_DATE));
 			propertiesDao.save(lastSetNextNrDate);
 			propertiesDao.save(nextNumber);
+			defaultValuePrefs.setValue(prefStrNr, nr);
         } catch (FakturamaStoringException e1) {
             log.error(e1, "Error while flushing default value preferences.");
         }

@@ -99,6 +99,7 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 		//T: Text in a file name dialog
 		fileDialog.setText(exportMessages.wizardExportFilename);
 		fileDialog.setFileName(getOutputFileName());
+		fileDialog.setOverwrite(true);
 		String selectedFile = fileDialog.open();
 		if (selectedFile != null) {
 			AddressExport exporter = ContextInjectionFactory.make(AddressExport.class, ctx);
@@ -119,6 +120,6 @@ public class AddressExportWizard extends Wizard implements IExportWizard {
 	 */
 	@Override
 	public String getOutputFileName() {
-		return "AddressExportCSV.csv";
+		return "AddressExport.csv";
 	}
 }

@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.export.wizard.CellFormatter;
@@ -105,6 +106,10 @@ public class VoucherExporter extends OOCalcExporter {
 		
 		String customerSupplier = "";
 		List<Voucher> vouchers = new ArrayList<>();
+		if(BooleanUtils.toBoolean((Boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD))) {
+			startDate = null;
+			endDate = null;
+		}
 		
 		switch (type) {
 		case SUPPLIER:

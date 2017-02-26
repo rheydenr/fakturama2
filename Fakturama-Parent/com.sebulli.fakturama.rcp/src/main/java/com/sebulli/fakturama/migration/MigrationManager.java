@@ -1367,7 +1367,7 @@ public class MigrationManager {
            		            migLogUser.info("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
            		        } else {
-           		            // Since most of the Fakturama users are from Germany we choose "de/DE" as default locale.
+           		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
            		            currencyLocale = Locale.GERMANY;
            		            propValue = "de/DE";
            		            migLogUser.info("!!! Can't determine the currency locale. Please choose the right locale "
@@ -1375,7 +1375,9 @@ public class MigrationManager {
            		        }
            			}
                     retval = DataUtils.getInstance().formatCurrency(exampleNumber, currencyLocale, 
-                            CurrencySettingEnum.valueOf(propUseSymbol.getValue()), false, false);
+                    		propUseSymbol.getValue().contentEquals(CurrencySettingEnum.SYMBOL.name()) 
+                    		? CurrencySettingEnum.SYMBOL
+                    		: CurrencySettingEnum.CODE, false, false);
                     UserProperty propFormatExample = modelFactory.createUserProperty();
                     propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
                     propFormatExample.setUser(currentUser);

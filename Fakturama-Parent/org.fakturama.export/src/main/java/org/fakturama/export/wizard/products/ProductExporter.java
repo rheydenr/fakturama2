@@ -117,12 +117,12 @@ public class ProductExporter extends OOCalcExporter {
 			setCellText(row, col++, Integer.toString(product.getBlock5()));
 			setCellText(row, col++, Double.toString(product.getVat().getTaxValue()));
 			setCellText(row, col++, StringUtils.join(product.getAttributes(), ','));
-			setCellText(row, col++, Double.toString(product.getWeight()));
+			setCellText(row, col++, Double.toString(product.getWeight() != null ? product.getWeight() : 0));
 			setCellText(row, col++, product.getQuantityUnit());
 			setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(product.getDateAdded()));
 //			setCellText(row, col++, product.getFormatedStringValueByKey("picturename"));
-			setCellText(row, col++, Double.toString(product.getQuantity()));
-			setCellText(row, col++, Long.toString(product.getWebshopId()));
+			setCellText(row, col++, Double.toString(product.getQuantity() != null ? product.getQuantity() : 0));
+			setCellText(row, col++, Long.toString(product.getWebshopId() != null ? product.getWebshopId() : 0));
 			
 			// Alternate the background color
 			if ((row % 2) == 0)

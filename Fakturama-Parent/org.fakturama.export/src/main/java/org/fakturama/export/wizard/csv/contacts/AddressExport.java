@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,6 +42,8 @@ import com.sebulli.fakturama.util.ContactUtil;
  * 
  */
 public class AddressExport {
+	
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
 	
 	@Inject
 	private ContactsDAO contactsDAO;
@@ -113,6 +116,7 @@ public class AddressExport {
 					"\"vatnr\";"+
 					"\"vatnrvalid\";"+
 					"\"discount\""+
+					"\"birthday\""+
 					NEW_LINE);
 		
 			// Get all undeleted contacts
@@ -196,8 +200,12 @@ public class AddressExport {
 				   .append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getVatNumber())).append(";")
 				   .append(BooleanUtils.isTrue(contact.getVatNumberValid())).append(";")
-				   .append(ExporterHelper.inQuotes(DataUtils.getInstance().DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00")));
-								
+				   .append(ExporterHelper.inQuotes(DataUtils.getInstance().DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
+				
+				if(contact.getBirthday() != null) {
+					stringBuffer.append(sdf.format(contact.getBirthday()));
+				} 
+
 				bos.write(stringBuffer.toString() + NEW_LINE);
 			}
 		}

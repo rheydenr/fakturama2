@@ -221,6 +221,11 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      */
     public List<DummyStringCategory> getCategoryStrings() {
         List<DummyStringCategory> resultList = new ArrayList<>();
+        
+        if(getEntityManager() == null) {
+        	return null;
+        }
+        
         Query q = getEntityManager().createQuery("select distinct type(d) from Document d where d.deleted = false");
         @SuppressWarnings("unchecked")
         List<Class<? extends Document>> typeList = q.getResultList();

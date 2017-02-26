@@ -902,57 +902,57 @@ public class Placeholders {
      */
     public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
 	    String paymenttext = document.getPayment().getPaidText();
-	    paymenttext = paymenttext.replace("<PAID.VALUE>", DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()));
-	    paymenttext = paymenttext.replace("<PAID.DATE>", DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
-	    paymenttext = paymenttext.replace("<DUE.DAYS>", Integer.toString(document.getDueDays()));
+	    paymenttext = StringUtils.replace(paymenttext, "<PAID.VALUE>", DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()));
+	    paymenttext = StringUtils.replace(paymenttext, "<PAID.DATE>", DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DAYS>", Integer.toString(document.getDueDays()));
 	    LocalDateTime dueDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
-	    paymenttext = paymenttext.replace("<DUE.DATE>", dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DATE>", dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 	    
-	    paymenttext = paymenttext.replace("<DUE.DISCOUNT.PERCENT>", DataUtils.getInstance().DoubleToFormatedPercent(document.getPayment().getDiscountValue()));
-	    paymenttext = paymenttext.replace("<DUE.DISCOUNT.DAYS>", document.getPayment().getDiscountDays().toString());
-	    paymenttext = paymenttext.replace("<DUE.DISCOUNT.VALUE>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent)));
-	    paymenttext = paymenttext.replace("<DUE.DISCOUNT.DATE>", getDiscountDueDate(document));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.PERCENT>", DataUtils.getInstance().DoubleToFormatedPercent(document.getPayment().getDiscountValue()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DAYS>", document.getPayment().getDiscountDays().toString());
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.VALUE>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent)));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DATE>", getDiscountDueDate(document));
 
-// FIXME doesn't exist!	    paymenttext = paymenttext.replace("<BANK.ACCOUNT.HOLDER>", preferences.getString("BANK_ACCOUNT_HOLDER"));
-	    paymenttext = paymenttext.replace("<BANK.ACCOUNT>", 
+// FIXME doesn't exist!	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT.HOLDER>", preferences.getString("BANK_ACCOUNT_HOLDER"));
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT>", 
 	    		preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"));
-	    paymenttext = paymenttext.replace("<BANK.IBAN>", 
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN>", 
 	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN));
-	    paymenttext = paymenttext.replace("<BANK.BIC>", 
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.BIC>", 
 	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC));
-	    paymenttext = paymenttext.replace("<BANK.NAME>", 
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.NAME>", 
 	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK));
-	    paymenttext = paymenttext.replace("<BANK.CODE>", 
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.CODE>", 
 	    		preferences.getString("YOURCOMPANY_COMPANY_BANKCODE"));
-	    paymenttext = paymenttext.replace("<YOURCOMPANY.CREDITORID>", 
+	    paymenttext = StringUtils.replace(paymenttext, "<YOURCOMPANY.CREDITORID>", 
 	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID));
 	    
 	    // Additional placeholder for censored bank account
 	    String censoredAccount = censorAccountNumber(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"));
-	    paymenttext = paymenttext.replace("<BANK.ACCOUNT.CENSORED>", censoredAccount);
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT.CENSORED>", censoredAccount);
 	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN));
-	    paymenttext = paymenttext.replace("<BANK.IBAN.CENSORED>", censoredAccount);
+	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN.CENSORED>", censoredAccount);
 	    
 	    Contact contact = document.getBillingContact();
         if(contact != null && contact.getBankAccount() != null) {
     	    // debitor's bank account
-    	    paymenttext = paymenttext.replace("<DEBITOR.BANK.ACCOUNT.HOLDER>", 
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
     	            contact.getBankAccount().getAccountHolder());
-    	    paymenttext = paymenttext.replace("<DEBITOR.BANK.IBAN>", 
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN>", 
     	            contact.getBankAccount().getIban());
-    	    paymenttext = paymenttext.replace("<DEBITOR.BANK.BIC>", 
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.BIC>", 
     	            contact.getBankAccount().getBic());
-    	    paymenttext = paymenttext.replace("<DEBITOR.BANK.NAME>", 
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.NAME>", 
     	            contact.getBankAccount().getBankName());
-    	    paymenttext = paymenttext.replace("<DEBITOR.MANDATREF>", 
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.MANDATREF>", 
     	            contact.getMandateReference());
     	    // Additional placeholder for censored bank account
     	    censoredAccount = censorAccountNumber(contact.getBankAccount().getIban());
-    	    paymenttext = paymenttext.replace("<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
+    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
 	    }
 	    
 	    // placeholder for total sum
-	    paymenttext = paymenttext.replace("<DOCUMENT.TOTAL>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross()));
 	    return paymenttext;
     }
 

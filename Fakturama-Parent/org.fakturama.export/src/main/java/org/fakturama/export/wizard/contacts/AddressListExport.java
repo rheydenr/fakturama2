@@ -67,6 +67,7 @@ public class AddressListExport extends OOCalcExporter {
 
 		//T: Used as heading of a table. Keep the word short.
 		setCellTextInBold(row, col++, "ID");
+		setCellTextInBold(row, col++, "TYPE");
 		setCellTextInBold(row, col++, msg.commonFieldCategory);
 		setCellTextInBold(row, col++, msg.commonFieldGender);
 		setCellTextInBold(row, col++, msg.commonFieldTitle);
@@ -105,6 +106,7 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.exporterDataVatno);
 		setCellTextInBold(row, col++, msg.exporterDataVatnoValid);
 		setCellTextInBold(row, col++, msg.exporterDataRebate);
+		setCellTextInBold(row, col++, msg.editorContactFieldBirthdayName);
 		
 		// Draw a horizontal line
 		for (col = 0; col < 39; col++) {
@@ -118,7 +120,8 @@ public class AddressListExport extends OOCalcExporter {
 			col = 0;
 			
 			// Place the contact information into the table
-			setCellText(row, col++, Long.toString(contact.getId()));
+			setCellText(row, col++, contact.getCustomerNumber());
+			setCellText(row, col++, contact.getClass().getSimpleName());
 			if(contact.getCategories() != null) {
 				setCellText(row, col++, contact.getCategories().getName());
 			} else {
@@ -194,6 +197,9 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getVatNumber());
 			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
 			setCellValueAsPercent(row, col++, contact.getDiscount());
+			if(contact.getBirthday() != null) {
+				setCellText(row, col++, contact.getBirthday().toString());
+			} 
 
 			// Alternate the background color
 			if ((row % 2) == 0)
@@ -210,7 +216,7 @@ public class AddressListExport extends OOCalcExporter {
 	
 	@Override
 	protected String getOutputFileName() {
-		return "AddressListExport";
+		return "AddressListExport.csv";
 	}
 
 }
