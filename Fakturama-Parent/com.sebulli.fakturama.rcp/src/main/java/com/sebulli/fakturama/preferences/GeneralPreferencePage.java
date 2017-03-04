@@ -167,7 +167,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
          * The current value of the radiogroup can't only read from attribute "value", but this attribute is private and 
          * has no getter. This forced me to use another ugly hack... Please, excuse me...
          */
-        String value = "SYMBOL"; // only as a precaution
+        String value = CurrencySettingEnum.SYMBOL.name(); // only as a precaution
         try {
         	privateValueField = RadioGroupFieldEditor.class.getDeclaredField("value");
         	privateValueField.setAccessible(true);

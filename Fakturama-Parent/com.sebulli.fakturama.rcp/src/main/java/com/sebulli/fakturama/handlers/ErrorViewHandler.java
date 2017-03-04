@@ -47,6 +47,7 @@ public class ErrorViewHandler {
         // we've to catch it and silently ignore it...
         try {
             MPart errorPart = partService.findPart(ErrorView.ID);
+ //           errorPart = partService.createPart(ErrorView.ID);
             if(errorPart != null) {
                 // prepare the error string
                 if (errorLogEntry.getException() != null) {

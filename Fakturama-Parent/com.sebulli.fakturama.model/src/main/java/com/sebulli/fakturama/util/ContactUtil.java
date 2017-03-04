@@ -629,7 +629,7 @@ public class ContactUtil {
 //        if (!oldContact.getDeliveryCity().equals(oldContact.getCity())) { return false; }
 //        if (!oldContact.getDeliveryCountry().equals(oldContact.getCountry())) { return false; }
 //        
-        return deliveryAddress.equalsIgnoreCase(billingAddress);
+        return deliveryAddress.isEmpty() || deliveryAddress.equalsIgnoreCase(billingAddress);
     }
 	
 

@@ -674,10 +674,8 @@ public class Placeholders {
 
 		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return DataUtils.getInstance().formatCurrency(documentSummary.getDeposit());
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return DataUtils.getInstance().formatCurrency(documentSummary.getFinalPayment());
-		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString("DEPOSIT_TEXT");
-		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString("FINALPAYMENT_TEXT");
-		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString("DEPOSIT_TEXT");
-		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString("FINALPAYMENT_TEXT");
+		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
+		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
 		if (key.equals("ITEMS.DISCOUNT.PERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
 		if (key.equals("ITEMS.DISCOUNT.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountNet());
@@ -687,8 +685,8 @@ public class Placeholders {
 		if (key.equals("ITEMS.DISCOUNT.DUEDATE")) {
 			return getDiscountDueDate(document);
 		}
-		if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(document.getPayment().getDiscountValue());
 		double percent = document.getPayment().getDiscountValue();
+		if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(percent);
 		if (key.equals("ITEMS.DISCOUNT.VALUE")) {
 			return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
 		}

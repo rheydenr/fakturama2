@@ -19,6 +19,9 @@
   <!-- if using FOP 1.x we have to turn on the appropriate extension -->
   <xsl:param name="fop1.extensions">1</xsl:param>
   <xsl:param name="sidebar.float.type">start</xsl:param>
+  
+  <!-- use DocBook extensions -->
+  <xsl:param name="use.extensions">0</xsl:param>
   <!-- this is for processing olinks -->
   <xsl:param name="current.docid" select="/*/@id"/>
   

@@ -60,6 +60,7 @@ public class PreferencesInDatabase {
 	    UserProperty property = propertiesDAO.findByName(key);
 	    if(property != null) {
 	        preferences.setValue(property.getName(), property.getValue());
+	        pref.put(property.getName(), property.getValue());
 	    }
 	}
 

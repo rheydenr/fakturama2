@@ -284,7 +284,7 @@ public class ProductBuyersExporter extends OOCalcExporter {
 			// Place the item, the total quantity and volume in the first 3 columns
 			col = 0;
 			setCellText(row, col++, entry.getKey());
-			setCellText(row, col++, Double.toString(entry.getValue().getTotalQuantity()));
+			setCellValueAsDouble(row, col++, entry.getValue().getTotalQuantity());
 			setCellValueAsLocalCurrency(row, col++, entry.getValue().getTotalSold());
 
 			// Get the buyers and sort them

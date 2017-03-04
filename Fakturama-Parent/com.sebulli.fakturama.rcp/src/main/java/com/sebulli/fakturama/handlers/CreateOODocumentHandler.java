@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -224,30 +225,35 @@ public class CreateOODocumentHandler {
 
     private void openOODocument(final Document document, final Path template, Shell shell) {
         OfficeDocument od = ContextInjectionFactory.make(OfficeDocument.class, context);
-        if (od.testOpenAsExisting(document, template)) {
-            // Show an information dialog if the document was already printed
-            String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
-            MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, null, msg.dialogPrintooDocumentalreadycreated,
-                    MessageDialog.INFORMATION, dialogButtonLabels, 0);
-            int answer = md.open();
-            // Attention: The return code is the *position* of a button, not the button value itself!
-            if (md.getReturnCode() != 2) {
-                od.setDocument(document);
-                od.setTemplate(template);
-                if (answer == 0) {
-                    log.debug("open doc");
-                    od.createDocument(false);
-                }
-                if (answer == 1) {
-                    log.debug("create doc");
-                    od.createDocument(true);
-                }
-            }
-        } else {
-            od.setDocument(document);
-            od.setTemplate(template);
-            log.debug("******************* open NEW doc");
-            od.createDocument(false);
-        }
+        try {
+			if (od.testOpenAsExisting(document, template)) {
+			    // Show an information dialog if the document was already printed
+			    String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
+			    MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, null, msg.dialogPrintooDocumentalreadycreated,
+			            MessageDialog.INFORMATION, dialogButtonLabels, 0);
+			    int answer = md.open();
+			    // Attention: The return code is the *position* of a button, not the button value itself!
+			    if (md.getReturnCode() != 2) {
+			        od.setDocument(document);
+			        od.setTemplate(template);
+			        if (answer == 0) {
+			            log.debug("open doc");
+			            od.createDocument(false);
+			        }
+			        if (answer == 1) {
+			            log.debug("create doc");
+			            od.createDocument(true);
+			        }
+			    }
+			} else {
+			    od.setDocument(document);
+			    od.setTemplate(template);
+			    log.debug("******************* open NEW doc");
+			    od.createDocument(false);
+			}
+		} catch (FakturamaStoringException e) {
+			log.error(e, "Dokument konnte nicht erstellt werden!");
+			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+		}
     }
 }

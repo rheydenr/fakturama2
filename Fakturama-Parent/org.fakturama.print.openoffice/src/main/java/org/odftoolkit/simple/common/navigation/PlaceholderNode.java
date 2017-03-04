@@ -117,7 +117,7 @@ public class PlaceholderNode extends Selection {
 			if (StringUtils.defaultString(content).startsWith("<ITEM.")) {
 				this.tableType = PlaceholderTableType.ITEMS_TABLE;
 			}
-		} else {
+		} else if(tableType != null){
 			this.tableType = tableType;
 		}
 		this.styleNode = styleNode;

@@ -360,24 +360,32 @@ public class OOCalcExporter {
 	 *            The cell row
 	 * @param column
 	 *            The cell column
-	 * @param d
+	 * @param amount
 	 *            The value that will be inserted.
 	 */
-	protected void setCellValueAsLocalCurrency( int row, int column, MonetaryAmount d) {
+	protected void setCellValueAsLocalCurrency(int row, int column, MonetaryAmount amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
-		cell.setCurrencyValue(d.getNumber().doubleValue(), d.getCurrency().getCurrencyCode());
-		cell.setCurrencyCode(d.getCurrency().getCurrencyCode());
+		cell.setCurrencyValue(amount.getNumber().doubleValue(), amount.getCurrency().getCurrencyCode());
+		cell.setCurrencyCode(amount.getCurrency().getCurrencyCode());
+		String currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		// TODO make it more flexible!
+		cell.setCurrencyFormat(currencyCode, "#,##0.00 " + currencyCode);
 	}
 	
-	protected void setCellValueAsLocalCurrency( int row, int column, Double d) {
+	protected void setCellValueAsLocalCurrency(int row, int column, Double amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
-		cell.setCurrencyValue(d, DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
+		cell.setCurrencyValue(amount, DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
 		cell.setCurrencyCode(DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
 	}
 	
 	protected void setCellValueAsPercent( int row, int column, Double d) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setPercentageValue(d != null ? d : Double.valueOf(0.0));
+	}
+	
+	protected void setCellValueAsDouble( int row, int column, Double d) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setDoubleValue(d != null ? d : Double.valueOf(0.0));
 	}
 	
 	protected void setCellValueAsBoolean( int row, int column, Boolean b) {

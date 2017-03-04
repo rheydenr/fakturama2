@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.OdfDocumentNamespace;
 import org.odftoolkit.odfdom.dom.element.office.OfficeAnnotationElement;
 import org.odftoolkit.odfdom.dom.element.office.OfficeMasterStylesElement;
+import org.odftoolkit.odfdom.dom.element.table.TableTableElement;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
 import org.odftoolkit.odfdom.pkg.OdfElement;
@@ -234,9 +235,9 @@ public class PlaceholderNavigation extends Navigation {
 			logger.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 
-		NodeList placeholders = rootElement.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
-		for (int i = 0; i < placeholders.getLength(); i++) {
-			Node item = placeholders.item(i);
+		NodeList localPlaceHolders = rootElement.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+		for (int i = 0; i < localPlaceHolders.getLength(); i++) {
+			Node item = localPlaceHolders.item(i);
 			PlaceholderNode placeholderNode;
 			// Search for entries within VATLIST or ITEM table
 			
@@ -244,7 +245,11 @@ public class PlaceholderNavigation extends Navigation {
 			                .filter(id -> item.getTextContent().startsWith(useDelimiters ? StringUtils.prependIfMissing(id.getKey(), PLACEHOLDER_PREFIX) : id.getKey()))
 			                .findFirst();
 			
-            if (getTableForNode(item) != null && tableIdentifier.isPresent()) {
+            Node tableForNode = getTableForNode(item);
+			if (tableForNode != null && tableIdentifier.isPresent()) {
+				// set the table name as identifier for this node since we can have more than one tables of this type
+				String tableNameAttribute = StringUtils.defaultString(((TableTableElement)tableForNode).getTableNameAttribute(), "Unnamed_Table");				
+				item.setUserData("TABLE_ID", tableNameAttribute, null);
 				placeholderNode = new PlaceholderNode(item, PlaceholderNodeType.TABLE_NODE, tableIdentifier.orElse(PlaceholderTableType.NO_TABLE), false);
 			} else {
 				placeholderNode = new PlaceholderNode(item);
@@ -270,7 +275,7 @@ public class PlaceholderNavigation extends Navigation {
 	 * @return
 	 */
 	private Node getTableForNode(Node item) {
-		return getContainerNode(item, OdfDocumentNamespace.TABLE.getUri());
+		return getContainerNode(item, OdfDocumentNamespace.TABLE.getUri(), TableTableElement.class);
 	}
 
 	/**
@@ -280,14 +285,15 @@ public class PlaceholderNavigation extends Navigation {
         return tableIdentifierStrings;
     }
 
-    private Node getContainerNode(Node item, String urn) {
+    private Node getContainerNode(Node item, String urn, Class<?> clazz) {
 		if (item == null || item.getParentNode() == null) {
 			return null;
 		} else {
-			if (StringUtils.equals(item.getParentNode().getNamespaceURI(), urn)) {
+			//if (StringUtils.equals(item.getParentNode().getNamespaceURI(), urn)) {
+			if (clazz.isInstance(item)) {
 				return item;
 			} else {
-				return getContainerNode(item.getParentNode(), urn);
+				return getContainerNode(item.getParentNode(), urn, clazz);
 			}
 		}
 	}

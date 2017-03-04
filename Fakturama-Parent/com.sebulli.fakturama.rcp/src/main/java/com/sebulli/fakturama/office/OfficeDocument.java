@@ -85,7 +85,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class OfficeDocument {
 
-	private static final int TIME_TO_WAIT_FOR_PROCESS = 3000;
+//	private static final int TIME_TO_WAIT_FOR_PROCESS = 3000;
 
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
@@ -141,7 +141,7 @@ public class OfficeDocument {
         this.shell = shell;
     }
 	
-	public void createDocument(boolean forceRecreation) {
+	public void createDocument(boolean forceRecreation) throws FakturamaStoringException {
 		//Open an existing document instead of creating a new one
 		boolean openExisting = false;
 
@@ -175,9 +175,9 @@ public class OfficeDocument {
                             .of(textdoc)
                             .withDelimiters(true)
                             .withTableIdentifiers(PlaceholderTableType.ITEMS_TABLE, 
-                                    PlaceholderTableType.VATLIST_TABLE,
+                                    PlaceholderTableType.VATLIST_TABLE/*,
                                     PlaceholderTableType.DISCOUNT_TABLE, 
-                                    PlaceholderTableType.DEPOSIT_TABLE)
+                                    PlaceholderTableType.DEPOSIT_TABLE*/)
                             .build();
             List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
 
@@ -197,7 +197,7 @@ public class OfficeDocument {
 			setCommonProperties();
 
 			// A reference to the item and vat table
-	        Set<PlaceholderTableType> processedTables = new HashSet<>();
+	        Set<String> processedTables = new HashSet<>();
 
 			// Get the items of the UniDataSet document
 			List<DocumentItem> itemDataSets = document.getItems();
@@ -210,19 +210,25 @@ public class OfficeDocument {
 	                  replaceText(placeholderNode);
 	                break;
 	            case TABLE_NODE:
-	                // process only if that table wasn't processed
-	                // but wait: a table (e.g., "ITEM" table) could occur more than once!
-	                if(!processedTables.contains(placeholderNode.getTableType())) {
-	                    // get the complete row with placeholders and store it as a template
-	                    Row pRowTemplate = navi.getTableRow(placeholderNode);
+	            	// process only if that table wasn't processed
+	            	// but wait: a table (e.g., "ITEM" table) could occur more than once!
+	            	if(!processedTables.contains(placeholderNode.getNode().getUserData("TABLE_ID"))) {
+		            	// get the complete row with placeholders and store it as a template
+		            	Row pRowTemplate = navi.getTableRow(placeholderNode);
+		            	Table pTable = pRowTemplate.getTable();
 	                    // for each item from items list create a row and replace the placeholders
-	                    Table pTable = pRowTemplate.getTable();
 	                    pTable.setCellStyleInheritance(true);
 	                    
 	                    // which table?
 	                    switch (placeholderNode.getTableType()) {
                         case ITEMS_TABLE:
                 			// Fill the item table with the items
+                        	/* Attention: Not only the current placeholderNode is replaced in this step,
+                        	 * but also *all* other placeholders belonging to this item table!
+                        	 * Therefore we have to skip all the other items placeholder in this
+                        	 * table template.
+                        	 * We distinguish the placeholders for a certain table by its user data field.
+                        	 */
     	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
                         case VATLIST_TABLE:
@@ -232,6 +238,7 @@ public class OfficeDocument {
                           vatSummarySetManager.add(this.document, 1.0);
                           fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate);
                           break;
+//                        	
                         default:
                             break;
                         }
@@ -240,8 +247,7 @@ public class OfficeDocument {
 	                    pTable.removeRowsByIndex(pRowTemplate.getRowIndex(), 1);
 
 	                    // determine type of this table and store it
-	                    // irgendwie muß hier noch ein Name oder 'ne ID oder sowas mit ran...
-	                    processedTables.add(placeholderNode.getTableType());
+	                    processedTables.add((String) placeholderNode.getNode().getUserData("TABLE_ID"));
 	                }
 	                break;
 
@@ -264,11 +270,11 @@ public class OfficeDocument {
 		}
 		catch (Exception e) {
 		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
-// TODO		    throw new FakturamaStoringException(description, e);
+		    throw new FakturamaStoringException("Error starting OpenOffice from " + template.getFileName(), e);
 		}
 	}
 
-    /**
+	/**
      * Save an OpenOffice document as *.odt and as *.pdf
      * 
      * @param textdoc
