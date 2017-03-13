@@ -740,6 +740,9 @@ public class Messages {
 	public String productDataGross;
 	public String productDataNet;
 	public String productFieldItemno;
+	public String editorProductFieldUdf01;
+	public String editorProductFieldUdf02;
+	public String editorProductFieldUdf03;
 	public String receiptvoucherEditorTitle;
 	public String receiptvoucherFieldBook;
 	public String receiptvoucherFieldCustomer;

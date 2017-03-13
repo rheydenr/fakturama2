@@ -99,6 +99,7 @@ import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
+import com.sebulli.fakturama.model.ContactType;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -523,7 +524,7 @@ public class MigrationManager {
 
 
 	/**
-	 * Add a new price block o the new product. Copy from old product if not <code>null</code>.
+	 * Add a new price block to the new product. Copy from old product if not <code>null</code>.
 	 * 
 	 * @param product the new Product
 	 * @param block1 the block which should be created.
@@ -533,6 +534,8 @@ public class MigrationManager {
 			ProductBlockPrice blockPrice = modelFactory.createProductBlockPrice();
 			blockPrice.setBlock(block);
 			blockPrice.setPrice(price);
+			blockPrice.setValidFrom(new Date());
+			blockPrice.setDateAdded(new Date());
 			product.getBlockPrices().add(blockPrice);
 		}
 	}
@@ -782,6 +785,7 @@ public class MigrationManager {
 			DocumentItem item = modelFactory.createDocumentItem();
 			// the position was formerly determined through the order how they stayed in documents entry
 			item.setPosNr(Integer.valueOf(i+1));
+			item.setValidFrom(document.getDocumentDate());
 			item.setDescription(oldItem.getDescription());
 			item.setDeleted(oldItem.isDeleted());
 			item.setItemType(ItemType.POSITION);
@@ -831,13 +835,11 @@ public class MigrationManager {
 //		Image image = new Image(Display.getCurrent(), oldFile.toFile().getAbsolutePath());
 //		return image.getImageData().data;
 		if(Files.exists(oldFile)) {
-			try {
+			try(InputStream inputStream = Files.newInputStream(oldFile);) {
 				buffer = new byte[Long.valueOf(Files.size(oldFile)).intValue()];
-				InputStream inputStream = Files.newInputStream(oldFile);
 				IOUtils.read(inputStream, buffer);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				migLogUser.severe(String.format("can't read image for product from file '%s'!", oldFile));
 			}
 		}
 		return buffer;
@@ -867,8 +869,6 @@ public class MigrationManager {
                     bankAccount.setValidFrom(new Date());
                     contact.setBankAccount(bankAccount);
                 }
-				contact.setBirthday(getSaveParsedDate(oldContact.getBirthday()));
-//				contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
 				if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
 					// add it to the new entity
 //					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
@@ -878,7 +878,6 @@ public class MigrationManager {
 				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 				if(!isAddressEqualToDeliveryAdress(oldContact)) {
     				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-    				deliveryContact.setBirthday(getSaveParsedDate(oldContact.getDeliveryBirthday()));
     //				contact.getAlternateContacts().add(deliveryContact);
                     contact.setAlternateContacts(deliveryContact);
 				}
@@ -909,7 +908,7 @@ public class MigrationManager {
 				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | RuntimeException e) {
-				migLogUser.info("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
+				migLogUser.warning("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
 			}
 		}
 	}
@@ -938,12 +937,15 @@ public class MigrationManager {
 //		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
 //		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
 			contact = modelFactory.createDebitor();
+			contact.setContactType(isDeliveryAddress ? ContactType.DELIVERY : ContactType.BILLING);
 			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
 			contact.setGender(isDeliveryAddress ? oldContact.getDeliveryGender() : oldContact.getGender());
 			contact.setName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName()));
 			contact.setTitle(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryTitle(), oldContact.getTitle()));
 			contact.setValidFrom(new Date());
+			contact.setBirthday(isDeliveryAddress ? getSaveParsedDate(oldContact.getBirthday()) :  getSaveParsedDate(oldContact.getDeliveryBirthday()));
+//			contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
 			
 			// create address
 			Address address = modelFactory.createAddress();
@@ -1036,7 +1038,7 @@ public class MigrationManager {
 				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
-				migLogUser.info("!!! error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
+				migLogUser.warning("!!! error while migrating Receiptvoucher. (old) ID=" + oldReceiptvoucher.getId() + "; Message: " + e.getMessage());
 			}
 		}
 		subMonitor.done();
@@ -1096,7 +1098,7 @@ public class MigrationManager {
 				subMonitor.worked(1);
 			}
 			catch (FakturamaStoringException | ParseException e) {
-				migLogUser.info("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
+				migLogUser.warning("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
             }
 		}
 	}

@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -53,6 +54,12 @@ public class DbUpdateService implements IDbUpdateService {
 	@Override
 	public boolean updateDatabase() {
 		boolean retval = true;
+		
+		// emergency switch: turn off this feature with NODBUPDATE=true
+		if(BooleanUtils.toBoolean(System.getProperty("NODBUPDATE"))) {
+			return retval;
+		}
+		
 		// get the preferences for this application from common plugin
 		this.eclipsePrefs = Activator.getPreferences();
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();

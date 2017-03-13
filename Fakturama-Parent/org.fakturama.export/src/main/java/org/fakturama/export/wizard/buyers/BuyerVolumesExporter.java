@@ -33,6 +33,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.BuyersAndTotal;
+import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.fakturama.export.wizard.TotalSoldAndQuantity;
@@ -214,7 +215,7 @@ public class BuyerVolumesExporter extends OOCalcExporter {
 			
 			// Alternate the background color
 			if ((row % 2) == 0) {
-				setBackgroundColor( 0, row, col-1, row, "#e8ebed");
+				setBackgroundColor( 0, row, col-1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 			}
 
 			row++;

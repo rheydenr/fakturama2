@@ -63,7 +63,7 @@ public class SalesExportOptionPage extends WizardPage {
 	 * Constructor Create the page and set title and message.
 	 */
 	public SalesExportOptionPage(String title, String label) {
-		super("ExportOptionPage");
+		super(SalesExportOptionPage.class.getSimpleName());
 		//T: Title of the Sales Export Wizard Page 1
 		setTitle(title);
 		setMessage(label );
@@ -75,7 +75,7 @@ public class SalesExportOptionPage extends WizardPage {
 	 * initial values are set in initialize method.
 	 */
 	public SalesExportOptionPage() {
-		super("ExportOptionPage");
+		super(SalesExportOptionPage.class.getSimpleName());
 	}
 	
 	@PostConstruct

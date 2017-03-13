@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.fakturama.wizards.ExporterHelper;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Product;
@@ -102,7 +103,7 @@ public class ProductExporter {
 					.append(ExporterHelper.inQuotes(product.getItemNumber())).append(";")
 					.append(ExporterHelper.inQuotes(product.getName())).append(";");
 				if(product.getCategories() != null) {
-					stringBuffer.append(ExporterHelper.inQuotes(product.getCategories().getName()));
+					stringBuffer.append(ExporterHelper.inQuotes(CommonConverter.getCategoryName(product.getCategories(), "/")));
 				}
                 stringBuffer.append(";")
 					.append(ExporterHelper.inQuotes(product.getDescription())).append(";")

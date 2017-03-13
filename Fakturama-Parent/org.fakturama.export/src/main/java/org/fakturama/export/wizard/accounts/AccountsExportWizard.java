@@ -117,9 +117,15 @@ public class AccountsExportWizard extends Wizard implements IExportWizard {
 			eclipsePrefs.put(valuePropertyKey, valuePropertyValue);
 		}
 		
-		ctx.set(Constants.PARAM_START_DATE, page1.getStartDate());
-		ctx.set(Constants.PARAM_END_DATE, page1.getEndDate());
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, page1.getDoNotUseTimePeriod());
+		if(!page1.getDoNotUseTimePeriod()) {
+			// only filter by date if it is wanted
+			ctx.set(Constants.PARAM_START_DATE, page1.getStartDate());
+			ctx.set(Constants.PARAM_END_DATE, page1.getEndDate());
+		} else {
+			ctx.remove(Constants.PARAM_START_DATE);
+			ctx.remove(Constants.PARAM_END_DATE);
+		}
 		AccountsExporter exporter = ContextInjectionFactory.make(AccountsExporter.class, ctx);
 		return exporter.export(page2.getSelectedAccount(), page3.getDate(), 
 				startValue);

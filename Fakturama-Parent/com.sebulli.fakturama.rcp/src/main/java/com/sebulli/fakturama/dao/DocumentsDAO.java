@@ -632,13 +632,12 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    Predicate predicate = cb.and(
 				cb.not(root.get(Document_.deleted)),
 				cb.or(
-						cb.equal(root.get(Document_.billingType), BillingType.INVOICE/*),
-						cb.equal(root.get(Document_.billingType), BillingType.CREDIT*/)
+						cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
+						cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
 					  ),
 				cb.equal(root.get(Document_.paid), paidFlag)
 		);
 	    
-	    // take the paydate OR the document date into account
 	    if(startDate != null && endDate != null) {
 	    	// if startDate is after endDate we switch the two dates silently
 	    	predicate = cb.and(predicate,
@@ -647,6 +646,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    					endDate.after(startDate) ? endDate : startDate)
 	    		);
 	    }
+	    // take the paydate OR the document date into account
 		CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(
 				cb.asc(root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
 	    TypedQuery<Document> query = getEntityManager().createQuery(cq);

@@ -334,4 +334,6 @@ public class CellFormatter {
 		return s;
 	}
 
+	public static final String ALTERNATE_BACKGROUND_COLOR = "#e8ebed";
+
 }

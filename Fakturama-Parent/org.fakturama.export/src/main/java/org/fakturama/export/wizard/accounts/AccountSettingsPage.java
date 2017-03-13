@@ -148,6 +148,7 @@ public class AccountSettingsPage extends WizardPage {
 		JFaceResources.getColorRegistry().put("red", new RGB(255,0,0));
 		Color red = JFaceResources.getColorRegistry().get("red");
 		warning.setForeground(red);
+		warning.setVisible(false);  // initially set to invisible
 		
 		// Show or hide the warning
 		isPageComplete();

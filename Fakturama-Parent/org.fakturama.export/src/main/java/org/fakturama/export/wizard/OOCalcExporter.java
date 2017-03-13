@@ -65,7 +65,7 @@ public class OOCalcExporter {
     protected Logger log;
 	
 	@Inject
-	private Shell shell;
+	protected Shell shell;
 	
     @Inject
     @Preference(nodePath = "com.sebulli.fakturama.rcp")
@@ -147,7 +147,7 @@ public class OOCalcExporter {
 	
 	
 	/**
-	 * Returns if a given document should be used to export. Only invoice and
+	 * Returns if a given document should be used to export. Only invoices and
 	 * credit documents that are paid in the specified time interval are
 	 * exported.
 	 * 
@@ -180,7 +180,7 @@ public class OOCalcExporter {
 			}
 		}
 
-		// Only invoiced and credits in the interval
+		// Only invoices and credits in the interval
 		// will be exported.
 		boolean isInvoiceOrCreditInIntervall = ((document.getBillingType() == BillingType.INVOICE) 
 				|| (document.getBillingType() == BillingType.CREDIT
@@ -299,7 +299,13 @@ public class OOCalcExporter {
 	protected Cell setCellText(int row, int column, String text) {
 		
 		Cell cellText = CellFormatter.getCell(spreadsheet, row, column);
-		cellText.setStringValue(text);
+		if(text != null && text.contains("\n")) {
+			cellText.setTextWrapped(true);
+			cellText.addParagraph(text.substring(0, text.indexOf('\n')));
+			cellText.addParagraph(text.substring(text.indexOf('\n')+1));
+		} else {
+			cellText.setStringValue(text);
+		}
 		return cellText;
 	}
 
@@ -366,16 +372,21 @@ public class OOCalcExporter {
 	protected void setCellValueAsLocalCurrency(int row, int column, MonetaryAmount amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setCurrencyValue(amount.getNumber().doubleValue(), amount.getCurrency().getCurrencyCode());
-		cell.setCurrencyCode(amount.getCurrency().getCurrencyCode());
-		String currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		String currencyCode = amount.getCurrency().getCurrencyCode(); 
+		// DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		cell.setCurrencyCode(currencyCode);
+//		String formattedValue = DataUtils.getInstance().formatCurrency(amount);
+//		cell.setDisplayText(formattedValue);
 		// TODO make it more flexible!
-		cell.setCurrencyFormat(currencyCode, "#,##0.00 " + currencyCode);
+		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", amount.getCurrency().getDefaultFractionDigits())+" " + currencyCode);
 	}
 	
 	protected void setCellValueAsLocalCurrency(int row, int column, Double amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
-		cell.setCurrencyValue(amount, DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
-		cell.setCurrencyCode(DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
+		String currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		cell.setCurrencyValue(amount, currencyCode);
+		cell.setCurrencyCode(currencyCode);
+		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", DataUtils.getInstance().getDefaultCurrencyUnit().getDefaultFractionDigits())+" " + currencyCode);
 	}
 	
 	protected void setCellValueAsPercent( int row, int column, Double d) {

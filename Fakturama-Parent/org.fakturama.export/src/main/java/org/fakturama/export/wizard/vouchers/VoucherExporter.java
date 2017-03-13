@@ -251,15 +251,14 @@ public class VoucherExporter extends OOCalcExporter {
 
 			if (isInTimeIntervall(voucher)) {
 				List<VoucherItem> items = new ArrayList<>();
-				if(voucher instanceof Voucher) {
+//				if(voucher instanceof Voucher) {
+//					items.addAll(((Voucher)voucher).getItems());
+//				} else {
 					items.addAll(((Voucher)voucher).getItems());
-				} else {
-					items.addAll(((Voucher)voucher).getItems());
-				}
+//				}
 				
-				int voucherItemIndex = 0;
-				for (VoucherItem voucherItem : items) {
-
+				for (int voucherItemIndex = 0; voucherItemIndex < voucher.getItems().size(); voucherItemIndex++) {
+					VoucherItem voucherItem = items.get(voucherItemIndex);
 					// Now analyze voucher by voucher
 					VoucherSummarySetManager vatSummarySetOneVoucher = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
 					MonetaryAmount paidValue = Money.of(voucher.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
@@ -268,11 +267,11 @@ public class VoucherExporter extends OOCalcExporter {
 //					voucher.calculate();
 
 					// Add the voucher to the VAT summary
-					if(voucher instanceof Voucher) {
+//					if(voucher instanceof Voucher) {
+//						vatSummarySetOneVoucher.add((Voucher) voucher, false, voucherItemIndex);
+//					} else {
 						vatSummarySetOneVoucher.add((Voucher) voucher, false, voucherItemIndex);
-					} else {
-						vatSummarySetOneVoucher.add((Voucher)voucher, false, voucherItemIndex);
-					}
+//					}
 					
 					// Fill the row with the voucher data
 					col = 0;
@@ -341,7 +340,7 @@ public class VoucherExporter extends OOCalcExporter {
 					// alternating blue color.
 					if ((voucherIndex % 2) == 0)
 						setBackgroundColor(0, row, columnsWithVatHeading + columnsWithNetHeading + columnOffset - 1, row,
-								"#e8ebed");
+								CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 					row++;
 
@@ -419,7 +418,7 @@ public class VoucherExporter extends OOCalcExporter {
 			// Set the background of the table rows. Use an light and
 			// alternating blue color.
 			if ((row % 2) == 0)
-				setBackgroundColor(0, row, 3, row, "#e8ebed");
+				setBackgroundColor(0, row, 3, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 			row++;
 

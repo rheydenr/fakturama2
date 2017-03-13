@@ -20,14 +20,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -43,6 +47,8 @@ public class VcardExport {
     
     @Inject
     private IEclipseContext context;
+    
+//    private SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
 
 	// Buffered writer for the output stream
 	private BufferedWriter bos  = null;
@@ -76,7 +82,9 @@ public class VcardExport {
 	 * 			The 1st attribute
 	 */
 	private void writeVCard(String property, String s) {
-		writeVCard(property, s, null);
+		if(StringUtils.isNotBlank(s)) {
+			writeVCard(property, s, null);
+		}
 	}
 
 	/**
@@ -121,30 +129,19 @@ public class VcardExport {
 	}
 
 	/**
-	 * Write a property and 7 attributes
+	 * Write a property and n attributes
 	 * 
 	 * @param property
 	 * 			The property to write
-	 * @param s1
-	 * 			The 1st attribute
-	 * @param s2
-	 * 			The 2nd attribute
-	 * @param s3
-	 * 			The 3rd attribute
-	 * @param s4
-	 * 			The 4th attribute
-	 * @param s5
-	 * 			The 5th attribute
-	 * @param s6
-	 * 			The 6th attribute
-	 * @param s7
-	 * 			The 7th attribute
+	 * @param s
+	 * 			The attribute(d)
 	 */
 	private void writeVCard(String property, String... s) {
 
 		// Exit, if all attributes are empty 
-		if (s.length == 0)
+		if (s.length == 0 || Arrays.stream(s).allMatch(o -> o.length() == 0)) {
 			return;
+		}
 		
 		// Write the property and all attributes
 		try {
@@ -190,15 +187,26 @@ public class VcardExport {
 				writeVCard("N:", contact.getName(),
 						contact.getFirstName());
 				writeVCard("FN:", contactUtil.getNameWithCompany(contact));
-				if(contact.getAddress() != null) {
+				// doesn't work :-( ... at least not with Thunderbird
+//				if(contact.getBirthday() != null) {
+//					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
+//				}
+				Address address = contact.getAddress();
+				if(address != null
+						&& (StringUtils.isNotBlank(contact.getCompany()) 
+								|| StringUtils.isNotBlank(address.getStreet()) 
+								|| StringUtils.isNotBlank(address.getCity())
+					)) {
 					writeVCard("ADR;TYPE=home:",
 							"",
 							contact.getCompany(),
-							contact.getAddress().getStreet(),
-							contact.getAddress().getCity(),
+							address.getStreet(),
+							address.getCity(),
 							"",
-							contact.getAddress().getZip(),
-							contact.getAddress().getCountryCode()
+							address.getZip(),
+							address.getCountryCode() != null
+							   ? LocaleUtil.getInstance().findByCode(address.getCountryCode()).get().getDisplayCountry()
+							   : ""
 							);
 				}
 				
@@ -208,25 +216,29 @@ public class VcardExport {
 				} else {
 					alternateContacts = contact;
 				}
-				if(alternateContacts.getAddress() != null) {
-					writeVCard("ADR;TYPE=postal:",
-							"",
-							alternateContacts.getCompany(),
-							alternateContacts.getAddress().getStreet(),
-							alternateContacts.getAddress().getCity(),
-							"",
-							alternateContacts.getAddress().getZip(),
-							alternateContacts.getAddress().getCountryCode()
-							);
-					
+				address = alternateContacts.getAddress();
+				if(address != null) {
+					if(StringUtils.isNotBlank(contact.getCompany()) 
+							|| StringUtils.isNotBlank(address.getStreet()) 
+							|| StringUtils.isNotBlank(address.getCity())) {	
+						writeVCard("ADR;TYPE=postal:",
+								"",
+								alternateContacts.getCompany(),
+								address.getStreet(),
+								address.getCity(),
+								"",
+								address.getZip(),
+								LocaleUtil.getInstance().findByCode(address.getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry()
+								);
+					}
 					writeVCard("ADR;TYPE=other:",
 							contactUtil.getNameWithCompany(alternateContacts),
 							alternateContacts.getCompany(),
-							alternateContacts.getAddress().getStreet(),
-							alternateContacts.getAddress().getCity(),
+							address.getStreet(),
+							address.getCity(),
 							"",
-							alternateContacts.getAddress().getZip(),
-							alternateContacts.getAddress().getCountryCode()
+							address.getZip(),
+							LocaleUtil.getInstance().findByCode(address.getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry()
 							);
 				}
 				

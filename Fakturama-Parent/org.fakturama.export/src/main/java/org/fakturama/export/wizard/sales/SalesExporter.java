@@ -344,7 +344,7 @@ public class SalesExporter extends OOCalcExporter {
 				// Set the background of the table rows. Use a light and
 				// alternating blue color.
 				if ((row % 2) == 0)
-					setBackgroundColor( 0, row, col + columnsWithVatHeading + columnsWithNetHeading - 1, row, "#e8ebed");
+					setBackgroundColor( 0, row, col + columnsWithVatHeading + columnsWithNetHeading - 1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 				row++;
 			}

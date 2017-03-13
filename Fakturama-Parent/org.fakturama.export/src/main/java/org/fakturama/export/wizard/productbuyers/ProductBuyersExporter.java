@@ -34,6 +34,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.BuyersAndTotal;
+import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.fakturama.export.wizard.TotalSoldAndQuantity;
@@ -251,7 +252,7 @@ public class ProductBuyersExporter extends OOCalcExporter {
 		// Export the document data
 		for (Document document : documents) {
 
-			if (documentShouldBeExported(document)) {
+//			if (documentShouldBeExported(document)) {
 				
 				// Get the name of the buyer
 				String buyerName = document.getAddressFirstLine();
@@ -265,7 +266,7 @@ public class ProductBuyersExporter extends OOCalcExporter {
 						itemMap.put(item.getName(), new BuyersAndTotal(buyerName, item));
 					}
 				}
-			}
+//			}
 		}
 		
 		// Sort the list of all items by quantity or by volume
@@ -275,7 +276,7 @@ public class ProductBuyersExporter extends OOCalcExporter {
 		// Alternate the background color every new item 
 		int altrow =0;
 		
-		// Get all items of the list
+		// Get all items from the list
 		for ( Iterator<Entry<String, BuyersAndTotal>> iterator = sortedItemMap.entrySet().iterator(); iterator.hasNext(); ) {
 			
 			// Get the item
@@ -303,12 +304,12 @@ public class ProductBuyersExporter extends OOCalcExporter {
 				// Place the buyer's name, the quantity and the volume into
 				// the next columns
 				setCellText(row, col++, buyer.getKey());
-				setCellText(row, col++, Double.toString(buyer.getValue().getTotalQuantity()));
+				setCellValueAsDouble(row, col++, buyer.getValue().getTotalQuantity());
 				setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSold());
 				
 				// Alternate the background color
 				if ((altrow % 2) == 0)
-					setBackgroundColor( 0, row, col-1, row, "#e8ebed");
+					setBackgroundColor( 0, row, col-1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 				row++;
 			}

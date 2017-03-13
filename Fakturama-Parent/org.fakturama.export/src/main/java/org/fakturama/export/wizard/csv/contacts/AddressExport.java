@@ -32,6 +32,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.wizards.ExporterHelper;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -68,7 +69,7 @@ public class AddressExport {
 		Path csvFile = Paths.get(filename);
 		
 		// Create a new file
-		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE);){
+		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);){
 
 			bos.write(
 					//T: Used as heading of a table. Keep the word short.
@@ -142,7 +143,7 @@ public class AddressExport {
 						stringBuffer.append(ExporterHelper.inQuotes(contact.getAddress().getStreet())).append(";")
 						   .append(ExporterHelper.inQuotes(contact.getAddress().getZip())).append(";")
 						   .append(ExporterHelper.inQuotes(contact.getAddress().getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(contact.getAddress().getCountryCode())).append(";");
+						   .append(ExporterHelper.inQuotes(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}
@@ -163,7 +164,7 @@ public class AddressExport {
 					stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCountryCode())).append(";");
+					   .append(ExporterHelper.inQuotes(LocaleUtil.getInstance().findByCode(deliveryContact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}

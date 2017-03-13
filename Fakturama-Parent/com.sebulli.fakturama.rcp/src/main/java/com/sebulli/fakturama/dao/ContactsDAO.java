@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +7,7 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
@@ -44,6 +45,34 @@ public class ContactsDAO extends AbstractDAO<Contact> {
             em.close();
         }
     }  
+    
+    /**
+     * We have to override this method since we want to only find "real" contacts, i.e., no "alternate" contacts.
+     */
+    @Override
+    public List<Contact> findAll() {
+        return findAll(false);
+    }
+    
+    @Override
+    public List<Contact> findAll(boolean forceRead) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
+        Root<Contact> root = query.from(getEntityClass());
+        /*
+         * A "real" contact has _always_ a contact number, even if it's a space...
+         */
+        query.where(
+        		cb.and(
+        				cb.not(root.<Boolean> get(Contact_.deleted)),
+        				cb.isNotNull(root.get(Contact_.customerNumber)))
+        		);
+        TypedQuery<Contact> q = getEntityManager().createQuery(query);
+        if(forceRead) {
+            q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+        }
+        return q.getResultList();
+    }
     
     @Override
     protected Set<Predicate> getRestrictions(Contact object, CriteriaBuilder cb, Root<Contact> root) {

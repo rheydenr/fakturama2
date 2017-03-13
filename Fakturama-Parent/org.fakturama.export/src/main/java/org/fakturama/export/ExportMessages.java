@@ -46,6 +46,7 @@ public class ExportMessages {
 	public String wizardExportBuyersTitle;
 	public String wizardExportCommonNosuccess;
 	public String wizardExportCommonSuccess;
+	public String wizardExportCommonLabel;
 	public String wizardExportContactsAllcontactsDefaultfilename;
 	public String wizardExportContactsAllcontactsDescription;
 	public String wizardExportContactsAllcontactsTitle;

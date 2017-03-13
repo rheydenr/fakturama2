@@ -105,8 +105,6 @@ public class DataUtils {
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
 
-        NumberFormat form = NumberFormat.getCurrencyInstance(currencyLocale);
-        form.setGroupingUsed(useThousandsSeparator);
         if (currencyLocale.getCountry().equals("CH")) {
             if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
                 CurrencyUnit chf = Monetary.getCurrency(currencyLocale);

@@ -22,10 +22,12 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.odftoolkit.odfdom.type.Color;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -137,7 +139,7 @@ public class AddressListExport extends OOCalcExporter {
 				setCellText(row, col++, contact.getAddress().getStreet());
 				setCellText(row, col++, contact.getAddress().getZip());
 				setCellText(row, col++, contact.getAddress().getCity());
-				setCellText(row, col++, contact.getAddress().getCountryCode());
+				setCellText(row, col++, LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry());
 			} else {
 				col += 4;
 			}
@@ -157,7 +159,7 @@ public class AddressListExport extends OOCalcExporter {
 				setCellText(row, col++, deliveryContact.getAddress().getStreet());
 				setCellText(row, col++, deliveryContact.getAddress().getZip());
 				setCellText(row, col++, deliveryContact.getAddress().getCity());
-				setCellText(row, col++, deliveryContact.getAddress().getCountryCode());
+				setCellText(row, col++, LocaleUtil.getInstance().findByCode(deliveryContact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry());
 			} else {
 				col += 4;
 			}
@@ -203,7 +205,7 @@ public class AddressListExport extends OOCalcExporter {
 
 			// Alternate the background color
 			if ((row % 2) == 0)
-				setBackgroundColor( 0, row, col-1, row, "#e8ebed");
+				setBackgroundColor( 0, row, col-1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 			row++;
 		}

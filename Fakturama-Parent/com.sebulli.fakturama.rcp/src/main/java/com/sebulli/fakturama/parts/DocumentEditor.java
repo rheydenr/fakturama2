@@ -114,6 +114,7 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -1436,10 +1437,12 @@ public class DocumentEditor extends Editor<Document> {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts()));
 //		    document.setDeliveryContact(contact);
 		    billingAddress = contactUtil.getAddressAsString(contact.getAlternateContacts());
+		    contact.setContactType(ContactType.DELIVERY);
 		} else {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact));
 //		    document.setBillingContact(contact);
 		    billingAddress = contactUtil.getAddressAsString(contact);
+		    contact.setContactType(ContactType.BILLING);
 		}
 		
 		this.addressId = contact;

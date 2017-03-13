@@ -137,6 +137,7 @@ public class ProductEditor extends Editor<Product> {
 	private Text textName;
 	private Text textGtin;
 	private Text textDescription;
+	private Text udf01, udf02, udf03;
 	private Combo comboVat;
 	private FormattedText textWeight;
 	private FormattedText textQuantity;
@@ -817,6 +818,35 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 
+		// user defined fields
+		// #1
+		Label udf01Lbl = new Label(productDescGroup, SWT.NONE);
+		udf01Lbl.setText(msg.editorProductFieldUdf01);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf01Lbl);
+		udf01 = new Text(productDescGroup, SWT.BORDER);
+		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf01);
+		
+		// #2
+		Label udf02Lbl = new Label(productDescGroup, SWT.NONE);
+		udf02Lbl.setText(msg.editorProductFieldUdf02);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf02Lbl);
+		udf02 = new Text(productDescGroup, SWT.BORDER);
+		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf02);
+
+		// #3
+		Label udf03Lbl = new Label(productDescGroup, SWT.NONE);
+		udf03Lbl.setText(msg.editorProductFieldUdf03);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf03Lbl);
+		udf03 = new Text(productDescGroup, SWT.BORDER);
+		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf03);
+
+		
 		// Group: Product picture
 		Group productPictureGroup = new Group(usePicture ? top : invisible, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(productPictureGroup);

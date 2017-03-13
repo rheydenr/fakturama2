@@ -28,6 +28,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.ExportMessages;
+import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.javamoney.moneta.Money;
@@ -155,7 +156,7 @@ public class AccountsExporter extends OOCalcExporter {
 		setCellValueAsLocalCurrency(row, 4,balance);
 		
 		setBold(row, 4);
-		setBackgroundColor( 0, row, 4, row, "#e8ebed");
+		setBackgroundColor( 0, row, 4, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 		row += 2;
 
@@ -204,7 +205,7 @@ public class AccountsExporter extends OOCalcExporter {
 				// Set the background of the table rows. Use an light and
 				// alternating blue color.
 				if ((row % 2) == 0) {
-					setBackgroundColor( 0, row, 4, row, "#e8ebed");
+					setBackgroundColor( 0, row, 4, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 				}
 
 				row++;

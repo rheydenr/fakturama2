@@ -53,7 +53,7 @@
 		
 			<!-- update database automagically ;-)  -->
 			<!-- enable this option if you want to skip liquibase usage -->
-			<!-- persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" / -->
+			<!-- <persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" /> -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
 			<!-- <persistence:property name="eclipselink.weaving" value="false"/> -->

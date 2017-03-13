@@ -14,13 +14,19 @@
 
 package org.fakturama.export.wizard.products;
 
+import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.fakturama.export.ExportMessages;
+import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.odftoolkit.odfdom.type.Color;
 
@@ -44,10 +50,14 @@ public class ProductExporter extends OOCalcExporter {
 	
 	@Inject
 	private ProductsDAO productsDAO;
-	
+
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
+
+	private int row;
+
+	private int col;
 	
 	/**
 	 * 	Do the export job.
@@ -64,9 +74,8 @@ public class ProductExporter extends OOCalcExporter {
 		// Get all undeleted products
 		List<Product> products = productsDAO.findAll();
 
-		// Counter for the current row and columns in the Calc document
-		int row = 0;
-		int col = 0;
+		row = 0;
+		col = 0;
 
 		setCellTextInBold(row, col++, "ID");
 		setCellTextInBold(row, col++, msg.exporterDataItemnumber);
@@ -94,44 +103,63 @@ public class ProductExporter extends OOCalcExporter {
 		}
 		row++;
 		
-		// Export the product data
-		for (Product product : products) {
+	    try {
+	        IRunnableWithProgress op =  new IRunnableWithProgress() {
+	        	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	        		monitor.beginTask(MessageFormat.format(exportMessages.wizardExportCommonLabel, exportMessages.wizardExportProductsName), products.size());
+					// Export the product data
+					for (Product product : products) {
+						col = 0;
+						if(monitor.isCanceled()) {
+							throw new InterruptedException();
+						}
+						// Place the products information into the table
+						setCellText(row, col++, Long.toString(product.getId()));
+						setCellText(row, col++, product.getItemNumber());
+						setCellText(row, col++, product.getName());
+						setCellText(row, col++, CommonConverter.getCategoryName(product.getCategories(), ""));
+						setCellText(row, col++, product.getDescription());
+						setCellValueAsLocalCurrency(row, col++, product.getPrice1());
+						setCellValueAsLocalCurrency(row, col++, product.getPrice2());
+						setCellValueAsLocalCurrency(row, col++, product.getPrice3());
+						setCellValueAsLocalCurrency(row, col++, product.getPrice4());
+						setCellValueAsLocalCurrency(row, col++, product.getPrice5());
+						setCellText(row, col++, Integer.toString(product.getBlock1()));
+						setCellText(row, col++, Integer.toString(product.getBlock2()));
+						setCellText(row, col++, Integer.toString(product.getBlock3()));
+						setCellText(row, col++, Integer.toString(product.getBlock4()));
+						setCellText(row, col++, Integer.toString(product.getBlock5()));
+						setCellValueAsPercent(row, col++, product.getVat().getTaxValue());
+						setCellText(row, col++, StringUtils.join(product.getAttributes(), ','));
+						setCellText(row, col++, Double.toString(product.getWeight() != null ? product.getWeight() : 0));
+						setCellText(row, col++, product.getQuantityUnit());
+						setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(product.getDateAdded()));
+			//			setCellText(row, col++, product.getFormatedStringValueByKey("picturename"));
+						setCellValueAsDouble(row, col++, product.getQuantity() != null ? product.getQuantity() : 0);
+						setCellText(row, col++, Long.toString(product.getWebshopId() != null ? product.getWebshopId() : 0));
+						
+						// Alternate the background color
+						if ((row % 2) == 0)
+							setBackgroundColor( 0, row, col-1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 			
-			col = 0;
+						monitor.worked(1);
+						row++;
+					}
+        		
+	        		monitor.done();
+	        	};
+			};
 			
-			// Place the products information into the table
-			setCellText(row, col++, Long.toString(product.getId()));
-			setCellText(row, col++, product.getItemNumber());
-			setCellText(row, col++, product.getName());
-			setCellText(row, col++, CommonConverter.getCategoryName(product.getCategories(), ""));
-			setCellText(row, col++, product.getDescription());
-			setCellValueAsLocalCurrency(row, col++, product.getPrice1());
-			setCellValueAsLocalCurrency(row, col++, product.getPrice2());
-			setCellValueAsLocalCurrency(row, col++, product.getPrice3());
-			setCellValueAsLocalCurrency(row, col++, product.getPrice4());
-			setCellValueAsLocalCurrency(row, col++, product.getPrice5());
-			setCellText(row, col++, Integer.toString(product.getBlock1()));
-			setCellText(row, col++, Integer.toString(product.getBlock2()));
-			setCellText(row, col++, Integer.toString(product.getBlock3()));
-			setCellText(row, col++, Integer.toString(product.getBlock4()));
-			setCellText(row, col++, Integer.toString(product.getBlock5()));
-			setCellText(row, col++, Double.toString(product.getVat().getTaxValue()));
-			setCellText(row, col++, StringUtils.join(product.getAttributes(), ','));
-			setCellText(row, col++, Double.toString(product.getWeight() != null ? product.getWeight() : 0));
-			setCellText(row, col++, product.getQuantityUnit());
-			setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(product.getDateAdded()));
-//			setCellText(row, col++, product.getFormatedStringValueByKey("picturename"));
-			setCellText(row, col++, Double.toString(product.getQuantity() != null ? product.getQuantity() : 0));
-			setCellText(row, col++, Long.toString(product.getWebshopId() != null ? product.getWebshopId() : 0));
-			
-			// Alternate the background color
-			if ((row % 2) == 0)
-				setBackgroundColor( 0, row, col-1, row, "#e8ebed");
-
-			row++;
+			ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(shell);
+			progressMonitorDialog.setCancelable(true);
+			progressMonitorDialog.run(true, true, op);
+	    } catch (InvocationTargetException e) {
+			return false;
+		} catch (InterruptedException e) {
+			return true;
 		}
-		
-		save();
+				
+	    save();
 
 		// True = Export was successful
 		return true;
@@ -139,6 +167,6 @@ public class ProductExporter extends OOCalcExporter {
 
 	@Override
 	protected String getOutputFileName() {
-		return exportMessages.wizardExportProductandbuyersDefaultfilename;
+		return exportMessages.wizardExportProductsDefaultfilename;
 	}
 }

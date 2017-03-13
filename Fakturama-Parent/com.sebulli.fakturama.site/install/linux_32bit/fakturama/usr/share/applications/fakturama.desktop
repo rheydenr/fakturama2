@@ -2,10 +2,11 @@
 Name=Fakturama
 Name[de]=Fakturama
 Comment=Invoicing Software - http://www.fakturama.info
-Comment[de]=Programm - http://www.fakturama.info
+Comment[de]=Faktura-Software - http://www.fakturama.info
 Exec=/usr/share/fakturama2/Fakturama
 Icon=Fakturama
 Terminal=false
+Version=2.0
 Type=Application
 Categories=Office;
 StartupNotify=false

@@ -10,7 +10,7 @@
             id="com.sebulli.fakturama.export.productbuyers.exportWizard"
             name="%wizard.export.productandbuyers.name">
          <description>
-            %wizard.export.productbuyers.description
+            %wizard.export.productandbuyers.description
          </description>
       </wizard>
       <wizard

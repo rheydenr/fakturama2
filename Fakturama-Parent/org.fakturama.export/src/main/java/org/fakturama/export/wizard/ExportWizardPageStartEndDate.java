@@ -159,7 +159,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		dtStartDate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				setPageComplete(canFlipToNextPage());
-				((AccountSettingsPage)getNextPage().getNextPage()).getDtDate().setSelection(dtStartDate.getSelection());
+				if(getNextPage().getNextPage() != null) {
+					((AccountSettingsPage)getNextPage().getNextPage()).getDtDate().setSelection(dtStartDate.getSelection());
+				}
 			}
 		});
 		
