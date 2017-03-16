@@ -53,7 +53,6 @@ import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
-import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
@@ -333,7 +332,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<Voucher, Vouc
 
     @Override
     protected String getEditorTypeId() {
-        return VatEditor.class.getSimpleName();
+        return ReceiptVoucherEditor.class.getSimpleName();
     }
     
     protected String getPopupId() {
@@ -343,6 +342,11 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<Voucher, Vouc
     @Override
     protected AbstractDAO<Voucher> getEntityDAO() {
         return receiptVouchersDAO;
+    }
+    
+    @Override
+    protected Class<Voucher> getEntityClass() {
+    	return Voucher.class;
     }
 }
 

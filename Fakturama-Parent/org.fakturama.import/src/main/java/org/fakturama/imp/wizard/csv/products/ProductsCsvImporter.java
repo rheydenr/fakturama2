@@ -18,20 +18,19 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
+import com.ibm.icu.text.MessageFormat;
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -43,7 +42,6 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
-import com.sebulli.fakturama.model.ProductOptions;
 import com.sebulli.fakturama.model.VAT;
 
 /**
@@ -176,7 +174,7 @@ public class ProductsCsvImporter {
 					if(updateExisting) {
 					    product = productsDAO.findOrCreate(product);
 					}
-					ProductCategory category = productCategoriesDAO.findByName(prop.getProperty("category"));
+					ProductCategory category = productCategoriesDAO.getCategory(prop.getProperty("category"), false);
 					product.setCategories(category);
 					product.setDescription(prop.getProperty("description"));
 					product.setPrice1(DataUtils.getInstance().StringToDouble(prop.getProperty("price1")));
@@ -221,7 +219,7 @@ public class ProductsCsvImporter {
 					product.setVat(prodVat);
 
 					// Add the product to the data base
-					if (product.getDateAdded().equals(Calendar.getInstance().getTime())) {
+					if (DateUtils.isSameDay(product.getDateAdded(), Calendar.getInstance().getTime())) {
 						importedProducts++;
 					} else if (updateExisting) {
 						// Update data
@@ -244,8 +242,7 @@ public class ProductsCsvImporter {
 			result += NL + importMessages.wizardImportErrorOpenfile;
 		}
 		catch (FakturamaStoringException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+			log.error(e, "cant't store import data.");
 		}
 	}
 

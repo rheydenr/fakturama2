@@ -71,6 +71,8 @@ public class AddressExport {
 		// Create a new file
 		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);){
 
+			// TODO Use OpenCSV
+			
 			bos.write(
 					//T: Used as heading of a table. Keep the word short.
 					"\"id\";"+ 

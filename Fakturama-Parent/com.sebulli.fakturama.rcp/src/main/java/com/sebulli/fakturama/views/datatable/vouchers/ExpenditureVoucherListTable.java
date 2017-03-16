@@ -349,5 +349,10 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
     protected AbstractDAO<Voucher> getEntityDAO() {
         return expendituresDAO;
     }
+    
+    @Override
+    protected Class<Voucher> getEntityClass() {
+    	return Voucher.class;
+    }
 }
 

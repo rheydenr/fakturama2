@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
@@ -28,10 +27,12 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
+import com.ibm.icu.text.MessageFormat;
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -266,11 +267,11 @@ public class ContactsCsvImporter {
 					testContact.setDiscount(DataUtils.getInstance().StringToDouble(prop.getProperty("discount")));
 					
 					// Add the contact to the data base
-					if (testContact.getDateAdded().equals(Calendar.getInstance().getTime())) {
+					if (DateUtils.isSameDay(testContact.getDateAdded(), Calendar.getInstance().getTime())) {
 						importedContacts++;
 					} else if (updateExisting) {
 						// Update data
-						updatedContacts ++;
+						updatedContacts++;
 					}
 					// Update the modified contact data
 					contactsDAO.update(testContact);
@@ -299,8 +300,7 @@ public class ContactsCsvImporter {
 			result += NL + importMessages.wizardImportErrorOpenfile;
 		}
 		catch (FakturamaStoringException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+			log.error("can't save or update imported expenditure");
 		}
 	}
 

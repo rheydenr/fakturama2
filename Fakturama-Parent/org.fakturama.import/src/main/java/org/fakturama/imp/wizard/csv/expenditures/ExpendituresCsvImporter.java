@@ -20,15 +20,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
+import com.ibm.icu.text.MessageFormat;
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
@@ -187,10 +189,8 @@ public class ExpendituresCsvImporter {
 
 				// Dispatch all the cells into a property
 				for (int col = 0; col < cells.length; col++) {
-					if (col < columns.length) {
-						if (isRequiredColumn(columns[col])) {
-							prop.setProperty(columns[col].toLowerCase(), cells[col]);
-						}
+					if (col < columns.length && isRequiredColumn(columns[col])) {
+						prop.setProperty(columns[col].toLowerCase(), cells[col]);
 					}
 				}
 
@@ -267,11 +267,11 @@ public class ExpendituresCsvImporter {
 						// Add the item to the item string
 //						String oldItems = expenditure.getStringValueByKey("items");
 //						String newItem = expenditureItem.getStringValueByKey("id");
-//						if (!oldItems.isEmpty())
+						if (DateUtils.isSameDay(expenditure.getDateAdded(), Calendar.getInstance().getTime())) {
 //							oldItems += ",";
-//						else {
-//							importedExpenditures++;
-//						}
+						} else {
+							importedExpenditures++;
+						}
 
 						// Recalculate the total sum of all items and set the total value
 						VoucherSummaryCalculator calculator = new VoucherSummaryCalculator();
