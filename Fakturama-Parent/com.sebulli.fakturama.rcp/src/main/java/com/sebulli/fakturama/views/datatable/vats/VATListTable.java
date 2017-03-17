@@ -418,4 +418,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     protected AbstractDAO<VAT> getEntityDAO() {
         return vatsDAO;
     }
+    
+    @Override
+    protected Class<VAT> getEntityClass() {
+    	return VAT.class;
+    }
 }

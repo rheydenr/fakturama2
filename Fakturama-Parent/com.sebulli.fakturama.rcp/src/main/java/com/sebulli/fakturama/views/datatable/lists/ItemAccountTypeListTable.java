@@ -355,4 +355,9 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
     protected AbstractDAO<ItemAccountType> getEntityDAO() {
         return itemAccountTypeDAO;
     }
+    
+    @Override
+    protected Class<ItemAccountType> getEntityClass() {
+    	return ItemAccountType.class;
+    }
 }

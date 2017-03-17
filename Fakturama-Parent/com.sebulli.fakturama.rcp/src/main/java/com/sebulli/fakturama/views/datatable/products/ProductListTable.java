@@ -34,6 +34,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
@@ -225,6 +226,11 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+
+        E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
+        gridListLayer.getSelectionLayer().addLayerListener(esl);
         
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerMouseDownBinding(
@@ -245,6 +251,11 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         natTable.configure();
     }
 
+    @Override
+    protected Class<Product> getEntityClass() {
+    	return Product.class;
+    }
+    
     /**
      * @param propertyNames
      * @return

@@ -757,4 +757,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         getVoucherItemsListData().add(newItem);
         notifyChangeListener(false);
     }
+    
+    @Override
+    protected Class<VoucherItemDTO> getEntityClass() {
+    	return VoucherItemDTO.class;
+    }
 }

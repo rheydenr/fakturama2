@@ -440,4 +440,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
                                                    GridRegion.BODY.toString());     // apply the above for all cells with this label
         }
     }
+    
+    protected Class<TextModule> getEntityClass() {
+    	return TextModule.class;
+    };
 }

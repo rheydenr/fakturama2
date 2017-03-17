@@ -35,6 +35,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -66,6 +67,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
@@ -110,6 +112,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	/** This UniDataSet represents the editor's input */ 
 	protected C editorContact;
+    
+    @Inject
+    private EPartService partService;
 
 	// SWT widgets of the editor
     private Composite top;
@@ -477,6 +482,25 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //		txtDeliveryCity.setText(txtCity.getText());
 ////		txtDeliveryCountry.setText(comboCountry.getText());
 	}
+	
+    
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    public void handleForceClose(Event event) {
+        // the event has already all given params in it since we created them as Map
+        String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
+        // at first we have to check if the message is for us
+        if (!StringUtils.equals(targetDocumentName, editorContact.getName())) {
+            // if not, silently ignore this event
+            return;
+        }
+        partService.hidePart(part, true);
+    }
+
+	
 
 	/**
 	 * Creates the SWT controls for this workbench part

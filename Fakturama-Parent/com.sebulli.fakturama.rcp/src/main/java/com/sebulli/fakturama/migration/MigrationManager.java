@@ -1383,14 +1383,14 @@ public class MigrationManager {
                     		propUseSymbol.getValue().contentEquals(CurrencySettingEnum.SYMBOL.name()) 
                     		? CurrencySettingEnum.SYMBOL
                     		: CurrencySettingEnum.CODE, false, false);
-                    UserProperty propFormatExample = modelFactory.createUserProperty();
-                    propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
-                    propFormatExample.setUser(currentUser);
-                    propFormatExample.setValue(retval);
+//                    UserProperty propFormatExample = modelFactory.createUserProperty();
+//                    propFormatExample.setName(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE);
+//                    propFormatExample.setUser(currentUser);
+//                    propFormatExample.setValue(retval);
                     propertiesDAO.save(propUseSymbol, true);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
-                    propertiesDAO.save(propFormatExample, true);
-                    eclipsePrefs.put(propFormatExample.getName(), propFormatExample.getValue());
+//                    propertiesDAO.save(propFormatExample, true);
+//                    eclipsePrefs.put(propFormatExample.getName(), propFormatExample.getValue());
                     break;
                 case Constants.PREFERENCES_BROWSER_TYPE:
                 	propValue = "0";  // because setting the browser type makes a lot of trouble!

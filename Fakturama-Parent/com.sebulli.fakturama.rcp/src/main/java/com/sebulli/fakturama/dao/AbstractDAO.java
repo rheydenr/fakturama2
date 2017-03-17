@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -32,6 +33,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
+import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
@@ -52,12 +56,33 @@ import com.sebulli.fakturama.model.IEntity;
  *
  */
 public abstract class AbstractDAO<T> {
+
+    @Inject
+    @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
+            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
+            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
+            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
+            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
+//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
+            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
+    private EntityManager em;
     
     @Inject
     private ILogger log;
     
     protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
     
+
+    @PreDestroy
+    public void destroy() {
+        if (em != null && em.isOpen()) {
+            em.close();
+        }
+    }  
+
+	protected EntityManager getEntityManager() {
+		return em;
+	}
     public T save(T object) throws FakturamaStoringException {
     	return save(object, false);
     }
@@ -372,7 +397,6 @@ em.joinTransaction();
         }
     }
 
-	protected abstract EntityManager getEntityManager();
 	protected abstract Class<T> getEntityClass();
 
 	/**

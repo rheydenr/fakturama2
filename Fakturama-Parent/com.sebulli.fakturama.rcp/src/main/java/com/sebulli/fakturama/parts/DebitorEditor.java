@@ -16,7 +16,10 @@ package com.sebulli.fakturama.parts;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
@@ -53,6 +56,19 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	protected String getEditorIconURI() {
 		return Icon.COMMAND_CONTACT.getIconURI();
 	}
+
+    
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(DebitorEditor.EDITOR_ID + "/forceClose") Event event) {
+    	super.handleForceClose(event);
+    }
+
 
 	@Override
 	protected String getEditorID() {

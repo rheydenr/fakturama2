@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,10 +12,6 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
-import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Address_;
@@ -27,23 +20,6 @@ import com.sebulli.fakturama.model.Creditor_;
 
 @Creatable
 public class CreditorsDAO extends AbstractDAO<Creditor> {
-
-    @Inject
-    @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-    private EntityManager em;
-
-    @PreDestroy
-    public void destroy() {
-        if (em != null && em.isOpen()) {
-            em.close();
-        }
-    }
     
     @Override
     protected Set<Predicate> getRestrictions(Creditor object, CriteriaBuilder cb, Root<Creditor> root) {
@@ -97,11 +73,6 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
         }
         return query.getResultList();
     }
-
-	@Override
-	protected EntityManager getEntityManager() {
-		return em;
-	}
 
 	@Override
 	protected Class<Creditor> getEntityClass() {

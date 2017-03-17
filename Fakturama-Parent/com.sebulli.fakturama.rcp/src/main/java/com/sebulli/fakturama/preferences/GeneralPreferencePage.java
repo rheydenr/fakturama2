@@ -44,8 +44,11 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
@@ -70,7 +73,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private PreferencesInDatabase preferencesInDatabase;
 
     private ComboFieldEditor currencyLocaleCombo;
-    private StringFieldEditor example;
+    private Text example;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
@@ -96,8 +99,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
-//		addField(new StringFieldEditor(Constants.PREFERENCE_GENERAL_CURRENCY, msg.preferencesGeneralCurrency, getFieldEditorParent()));
-        
         Locale[] locales = NumberFormat.getAvailableLocales();
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY);
@@ -116,9 +117,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         currencyLocaleCombo = new ComboFieldEditor(Constants.PREFERENCE_CURRENCY_LOCALE, msg.preferencesGeneralCurrencyLocale, currencyLocales, getFieldEditorParent());
         addField(currencyLocaleCombo);
         
-        example = new StringFieldEditor(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, msg.preferencesGeneralCurrencyExample, getFieldEditorParent());
-        example.setEnabled(false, getFieldEditorParent());
-        addField(example);
+        Label exampleLabel = new Label(getFieldEditorParent(), SWT.NONE);
+        exampleLabel.setText(msg.preferencesGeneralCurrencyExample);
+        example = new Text(getFieldEditorParent(), SWT.BORDER);
+        example.setEnabled(false);
+        example.setText(calculateExampleCurrencyFormatString(
+        		super.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE), 
+        		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR), 
+        		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING), 
+        		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
 
         cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, getFieldEditorParent());
         cashCheckbox.getDescriptionControl(getFieldEditorParent()).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
@@ -127,8 +134,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             cashCheckbox.setEnabled(false, getFieldEditorParent());
         }
         addField(cashCheckbox);
-
-//        useCurrencySymbolCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, getFieldEditorParent());
 
         useCurrencySymbolCheckbox = new RadioGroupFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, 3, new String[][] { 
 			{ msg.preferencesGeneralCurrencyUsesymbol, CurrencySettingEnum.SYMBOL.name() },
@@ -182,7 +187,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         if (event.getSource() instanceof ComboFieldEditor) {
             String newValue = (String) event.getNewValue();
             String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue(), currencySetting);
-            example.setStringValue(exampleFormat);
+            example.setText(exampleFormat);
         } else if(event.getSource() instanceof BooleanFieldEditor
                 && (((BooleanFieldEditor)event.getSource()).getPreferenceName()
                     .equals(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING)
@@ -223,7 +228,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                 value = (String)privateValueMethod.invoke(currencyLocaleCombo, localeString);
                 
                 String exampleFormat = calculateExampleCurrencyFormatString(value, useThousandsSeparator, useCashRounding, currencySetting);
-                example.setStringValue(exampleFormat);
+                example.setText(exampleFormat);
             }
             catch (NoSuchMethodException | SecurityException | IllegalAccessException 
                     | IllegalArgumentException | InvocationTargetException e) {
@@ -299,7 +304,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_LOCALE, write);
-        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
+//        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, write);

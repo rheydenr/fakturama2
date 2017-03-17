@@ -23,6 +23,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -80,6 +81,7 @@ import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -589,27 +591,44 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      */
 	abstract protected boolean isHeaderLabelEnabled();
 	abstract protected EntityGridListLayer<T> getGridLayer();
+	protected abstract Class<T> getEntityClass();
 	
 	/**
 	 * Deletes the selected entry (or entries, if multiple selection is enabled) from the items table).
 	 */
 	public void removeSelectedEntry() {
-        if(getGridLayer().getSelectionLayer().getFullySelectedRowPositions().length > 0) {
-            T objToDelete = getGridLayer().getBodyDataProvider().getRowObject(getGridLayer().getSelectionLayer().getFullySelectedRowPositions()[0]);
-            if(objToDelete != null) {
+        @SuppressWarnings("unchecked")
+		List<T> selection = (List<T>)selectionService.getSelection();
+		int selectedEntries = selection.size();
+		boolean confirmation = false;
+		/*
+		 * If you switch between views the selection still remains and the ESelectionService
+		 * doesn't clear it's selection. Therefore we have to prove at least the first element 
+		 * of the selected list for it's class type.
+		 */
+		if(selectedEntries > 0 && getEntityClass().isInstance(selection.get(0))) {
+			if(selectedEntries > 1) {
+				confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
+                        MessageFormat.format("Do you REALLY want to kill {0} entries?", selectedEntries));
+                if(!confirmation) return;
+			}
+			for (T objToDelete : selection) {
                 try {
-                    boolean confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
-                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
-                    if(confirmation) {
+                	/*
+                	 * If deletion was not confirmed yet (e.g., if we've only one entry to delete),
+                	 * here's the time to ask for it. 
+                	 */
+                	if(!confirmation) {
+	                    confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
+	                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
+                	}
+                    if(confirmation) {  // only kill if confirmed
                         // refresh object from database
                         objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
-                        // Instead of deleting is completely from the database, the element is just marked
+                        // Instead of deleting it completely from the database the element is just marked
                         // as deleted. So a document which still refers to this element would not cause an error.
                         objToDelete.setDeleted(Boolean.TRUE);
                         getEntityDAO().update(objToDelete);
-            
-                        // Refresh the corresponding table view
-                        evtBroker.post(getEditorTypeId(), "update");
                         
                         // if an editor with this object is open we have to close it forcibly
                         Map<String, Object> params = new HashMap<>();
@@ -620,7 +639,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 catch (FakturamaStoringException e) {
                     log.error(e, "can't save the current Entity: " + objToDelete.toString());
                 }
-            }
+    
+                // Refresh the corresponding table view
+                evtBroker.post(getEditorTypeId(), Editor.UPDATE_EVENT);
+			}
         } else {
             log.debug("no rows selected!");
         }

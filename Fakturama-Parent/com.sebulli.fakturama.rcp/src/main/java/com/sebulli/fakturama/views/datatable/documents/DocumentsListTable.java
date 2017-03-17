@@ -345,6 +345,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.configure();
     }
     
+    @Override
+    protected Class<Document> getEntityClass() {
+    	return Document.class;
+    }
+    
     private IColumnPropertyAccessor<Document> createColumnPropertyAccessor(String[] propertyNames) {
         final IColumnPropertyAccessor<Document> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Document>(propertyNames);
         final SpecialCellValueProvider specialCellValueProvider = new SpecialCellValueProvider(msg);

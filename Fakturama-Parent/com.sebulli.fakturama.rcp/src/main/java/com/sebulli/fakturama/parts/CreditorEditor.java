@@ -16,7 +16,10 @@ package com.sebulli.fakturama.parts;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
@@ -49,6 +52,13 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
 		return modelFactory.createCreditor();
 	}
+	
+    @Inject
+    @Optional
+    @Override
+    public void handleForceClose(@UIEventTopic(CreditorEditor.EDITOR_ID + "/forceClose") Event event) {
+    	super.handleForceClose(event);
+    }
 
 	@Override
 	protected String getEditorID() {

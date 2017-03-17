@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -79,11 +80,15 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
         Root<Debitor> debitor = query.from(getEntityClass());
-        query.select(debitor).where(debitor.get(Debitor_.customerNumber).isNotNull()).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
+        query.select(debitor).where(
+        		cb.and(
+        				debitor.get(Debitor_.customerNumber).isNotNull(),
+        				cb.not(debitor.get(Debitor_.deleted)))
+        		).orderBy(cb.asc(debitor.get(Debitor_.customerNumber)));
         TypedQuery<Debitor> q = getEntityManager().createQuery(query);
         q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
 //        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
-//        q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+        q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
         debitor.fetch(Debitor_.categories);
         return q.getResultList();
     }

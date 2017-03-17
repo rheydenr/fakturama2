@@ -5,7 +5,6 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 
@@ -15,7 +14,6 @@ import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.Creditor_;
 import com.sebulli.fakturama.parts.CreditorEditor;
-import com.sebulli.fakturama.parts.Editor;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
@@ -55,13 +53,7 @@ public class CreditorListTable extends ContactListTable<Creditor> {
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(CreditorEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
-	        sync.syncExec(() -> top.setRedraw(false));
-	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(contactListData, getListData(true), false);
-	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-	        sync.syncExec(() -> top.setRedraw(true));
-    	}
+    	super.handleRefreshEvent(message);
     }
 
     protected String getPopupId() {
@@ -98,4 +90,8 @@ public class CreditorListTable extends ContactListTable<Creditor> {
     protected AbstractDAO<Creditor> getEntityDAO() {
         return creditorDAO;
     }
+    
+    protected Class<Creditor> getEntityClass() {
+    	return Creditor.class;
+    };
 }

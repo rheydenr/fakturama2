@@ -5,14 +5,8 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
-
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
@@ -20,6 +14,11 @@ import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 import com.sebulli.fakturama.parts.DebitorEditor;
+
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 /**
  * View with the table of all contacts
@@ -46,13 +45,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, "update")) {
-	        sync.syncExec(() -> top.setRedraw(false));
-	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(contactListData, getListData(true), false);
-	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-	        sync.syncExec(() -> top.setRedraw(true));
-    	}
+    	super.handleRefreshEvent(message);
     }
 
     protected String getPopupId() {
@@ -88,5 +81,10 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     @Override
     protected AbstractDAO<Debitor> getEntityDAO() {
         return debitorDAO;
+    }
+    
+    @Override
+    protected Class<Debitor> getEntityClass() {
+    	return Debitor.class;
     }
 }

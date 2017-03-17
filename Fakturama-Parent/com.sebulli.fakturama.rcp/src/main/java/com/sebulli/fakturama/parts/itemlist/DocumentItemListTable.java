@@ -140,7 +140,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
 /**
- *
+ * The table of items inside a Document (invoice, order etc). 
  */
 public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO, DummyStringCategory> {
 
@@ -1266,5 +1266,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	 */
 	public final void setContainer(DocumentEditor container) {
 		this.container = container;
+	}
+	
+	@Override
+	protected Class<DocumentItemDTO> getEntityClass() {
+		return DocumentItemDTO.class;
 	}
 }

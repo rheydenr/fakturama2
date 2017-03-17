@@ -13,11 +13,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -27,6 +27,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
@@ -46,15 +47,14 @@ import org.eclipse.swt.widgets.Control;
 
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
-import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
@@ -78,6 +78,9 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     
     @Inject
     protected IEclipseContext context;
+    
+    @Inject
+    protected ESelectionService selectionService;
 
     // ID of this view
     public static final String ID = "fakturama.views.contactTable";
@@ -98,7 +101,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
     private T selectedObject;
 
-    
     private EntityGridListLayer<T> gridLayer;
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -206,6 +208,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 //        addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
+
+        gridLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+
+        E4SelectionListener<T> esl = new E4SelectionListener<>(selectionService, gridLayer.getSelectionLayer(), gridLayer.getBodyDataProvider());
+        gridLayer.getSelectionLayer().addLayerListener(esl);
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
@@ -337,36 +344,15 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(ContactEditor.EDITOR_ID) String message) {
-        sync.syncExec(() -> top.setRedraw(false));
-        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-        GlazedLists.replaceAll(contactListData, getListData(true), false);
-        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-        treeFilteredIssues.setMatcher(currentFilter);
-        sync.syncExec(() -> top.setRedraw(true));
+    public void handleRefreshEvent(String message) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(contactListData, getListData(true), false);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
-
-    public void removeSelectedEntry() {
-        if(getGridLayer().getSelectionLayer().getFullySelectedRowPositions().length > 0) {
-            Contact objToDelete = getGridLayer().getBodyDataProvider().getRowObject(getGridLayer().getSelectionLayer().getFullySelectedRowPositions()[0]);
-            try {
-                // don't delete the entry because it could be referenced
-                // from another entity
-                objToDelete.setDeleted(Boolean.TRUE);
-                contactDAO.save(objToDelete);
-            }
-            catch (FakturamaStoringException e) {
-                log.error(e, "can't save the current Contact: " + objToDelete.toString());
-            }
-    
-            // Refresh the table view of all VATs
-            evtBroker.post("ContactEditor", "update");
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
-    
-    
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#setCategoryFilter(java.lang.String, com.sebulli.fakturama.views.datatable.vats.TreeObjectType)

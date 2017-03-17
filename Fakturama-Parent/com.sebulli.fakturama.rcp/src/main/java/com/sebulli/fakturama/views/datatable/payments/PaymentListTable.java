@@ -441,4 +441,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     protected AbstractDAO<Payment> getEntityDAO() {
         return paymentsDAO;
     }
+    
+    @Override
+    protected Class<Payment> getEntityClass() {
+    	return Payment.class;
+    }
 }

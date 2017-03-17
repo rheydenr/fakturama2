@@ -361,7 +361,7 @@ public class DataUtils {
         // Format as "0.00"
         NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setGroupingUsed(useThousandsSeparator);
-        numberFormat = new DecimalFormat((useThousandsSeparator ? ",##." : ".") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
+        numberFormat = new DecimalFormat((useThousandsSeparator ? ",###." : ".") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
         String s = numberFormat.format(floorValue);
 
         // Are there parts of a cent ? Add ".."

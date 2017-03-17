@@ -413,5 +413,10 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     protected AbstractDAO<Shipping> getEntityDAO() {
         return shippingsDAO;
     }
+    
+    @Override
+    protected Class<Shipping> getEntityClass() {
+    	return Shipping.class;
+    }
 }
 
