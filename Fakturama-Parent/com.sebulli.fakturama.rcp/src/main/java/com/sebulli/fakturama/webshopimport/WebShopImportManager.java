@@ -54,7 +54,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dao.WebshopStateMappingDAO;
+import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
@@ -137,7 +137,7 @@ public class WebShopImportManager implements IWebshopConnection {
     @Inject ProductCategoriesDAO productCategoriesDAO;
     
 	@Inject
-	private WebshopStateMappingDAO webshopStateMappingDAO;
+	private WebshopDAO webshopStateMappingDAO;
 
 	        
 	// List of all orders which are out of sync with the web shop.
@@ -486,7 +486,7 @@ public class WebShopImportManager implements IWebshopConnection {
 	 * @return the webshopStateMappingDAO
 	 */
 	@Override
-	public final WebshopStateMappingDAO getWebshopStateMappingDAO() {
+	public final WebshopDAO getWebshopDAO() {
 		return webshopStateMappingDAO;
 	}
 

@@ -1215,7 +1215,7 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.TOTAL.GROSS</entry>
 						<entry>
 							<para>Gesamtpreis unter Berücksichtigung eines Rabattes (brutto)</para>
-							<para> Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
+							<para>Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
 							<para>Siehe <link linkend="preferences_optional_items">Einstellungen Bedarfspositionen</link>
 							</para>
 						</entry>
@@ -1229,6 +1229,13 @@ id="04_openoffice_libreoffice">
 							</para>
 							<para>
 								<emphasis role="bold">ITEM.PICTURE$WIDTH:200$HEIGHT:150</emphasis> Produktbild wird 200 x 150 Pixel groß.</para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.UDF01; ITEM.UNIT.UDF02; ITEM.UNIT.UDF03</entry>
+						<entry>
+							<para>Nutzerdefinierte Felder. Diese Werte werden nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
 						</entry>
 					</row>
 				</tbody>

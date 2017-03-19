@@ -2,7 +2,7 @@
 <chapter id="webshop" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" xml:lang="de">
 <anchor xreflabel="" xml:id="webshop_webshop"/>
     <title>Webshop</title>
-    <informalfigure>
+    <abstract><informalfigure>
       <mediaobject>
         <imageobject role="html">
           <imagedata fileref="../images/webshop/shop_32.png" format="PNG" scalefit="1"/>
@@ -14,10 +14,9 @@
     </informalfigure>
      <para>Fakturama kann Bestellungen aus einem Webshop importieren und daraus Rechnung und Lieferschein erstellen. Ebenso können Adressdaten und Produkte mit Produktbild importiert werden.</para>
     <para>Die Verbindung zwischen einem Webshop und Fakturama wird durch eine Webshop Schnittstelle hergestellt. Zurzeit stehen Schnittstellen für 3 verschiedene, kostenlose Shopsysteme zur Verfügung. </para>
-    <para>
-<anchor xreflabel="" xml:id="webshop_overview_webshops"/>
-</para>
+    </abstract>
     <section>
+<anchor xreflabel="" xml:id="webshop_overview_webshops"/>
       <title>Übersicht Webshop-Systeme</title>
       <para>Folgende Shopsysteme werden unterstützt:</para>
       <section>

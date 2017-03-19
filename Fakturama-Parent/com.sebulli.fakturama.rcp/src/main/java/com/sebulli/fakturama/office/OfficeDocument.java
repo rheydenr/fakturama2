@@ -76,6 +76,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
@@ -587,7 +588,6 @@ public class OfficeDocument {
                         fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                     }
                 }
-//                System.out.println();
             }
 	}
 	
@@ -694,8 +694,17 @@ public class OfficeDocument {
 		}
 
 		// Get the item's category
-		else if (key.equals("ITEM.UNIT.CATEGORY") && item.getProduct() != null) {
-			value = item.getProduct().getCategories().getName();
+		else if (item.getProduct() != null) {
+			Product product = item.getProduct();
+			if(key.equals("ITEM.UNIT.CATEGORY")) {
+				value = product.getCategories().getName();
+			} else if(key.equals("ITEM.UNIT.UDF01")) {
+				value = product.getCdf01();
+			} else if(key.equals("ITEM.UNIT.UDF02")) {
+				value = product.getCdf02();
+			} else if(key.equals("ITEM.UNIT.UDF03")) {
+				value = product.getCdf03();
+			}
 		}
 		
 		// Get the item net value

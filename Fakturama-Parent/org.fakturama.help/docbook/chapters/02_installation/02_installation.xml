@@ -2,7 +2,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" xml:lang="de">
 	<anchor xreflabel="" xml:id="install_main"/>
 	<title>Installation</title>
-	<para>In diesem Kapitel ist beschrieben, wie Fakturama installiert wird und was vor dem erstmaligen Benutzen zu beachten ist.</para>
+	<abstract>In diesem Kapitel ist beschrieben, wie Fakturama installiert wird und was vor dem erstmaligen Benutzen zu beachten ist.</abstract>
 	<section>
 		<anchor xreflabel="" xml:id="install_download"/>
 		<title>Download der Software</title>

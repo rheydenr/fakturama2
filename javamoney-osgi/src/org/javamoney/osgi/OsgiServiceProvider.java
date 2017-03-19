@@ -17,7 +17,6 @@ import javax.money.spi.ServiceProvider;
 import org.osgi.framework.ServiceReference;
 
 /**
- * @author G527032
  *
  */
 public class OsgiServiceProvider implements ServiceProvider {

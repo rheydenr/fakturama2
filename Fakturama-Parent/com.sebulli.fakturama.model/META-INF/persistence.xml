@@ -45,6 +45,7 @@
 			<persistence:class>com.sebulli.fakturama.model.VoucherItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VATCategory</persistence:class> 
 			<persistence:class>com.sebulli.fakturama.model.WebshopStateMapping</persistence:class> 
+			<persistence:class>com.sebulli.fakturama.model.WebShop</persistence:class> 
 			
 			<!--  later on we could use LocalDate; here we have to convert the values -->
 			<!--  persistence:class>com.sebulli.fakturama.model.LocalDateConverter</persistence:class -->
@@ -53,7 +54,8 @@
 		
 			<!-- update database automagically ;-)  -->
 			<!-- enable this option if you want to skip liquibase usage -->
-			<!-- <persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" /> -->
+			<!-- think about -DNODBUPDATE=true -->
+<!-- 			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" /> -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
 			<!-- <persistence:property name="eclipselink.weaving" value="false"/> -->

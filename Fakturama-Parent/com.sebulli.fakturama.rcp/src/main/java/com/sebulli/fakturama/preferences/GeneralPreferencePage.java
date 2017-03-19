@@ -42,7 +42,6 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
-import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -126,6 +125,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR), 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING), 
         		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
+        example.setSize(400, SWT.DEFAULT);
 
         cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, getFieldEditorParent());
         cashCheckbox.getDescriptionControl(getFieldEditorParent()).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);

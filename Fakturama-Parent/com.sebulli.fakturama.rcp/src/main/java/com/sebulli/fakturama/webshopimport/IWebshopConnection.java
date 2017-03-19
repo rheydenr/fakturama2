@@ -16,7 +16,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dao.WebshopStateMappingDAO;
+import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.i18n.Messages;
 
 public interface IWebshopConnection {
@@ -78,6 +78,6 @@ public interface IWebshopConnection {
 
 	Object getData();
 
-	WebshopStateMappingDAO getWebshopStateMappingDAO();
+	WebshopDAO getWebshopDAO();
 
 }

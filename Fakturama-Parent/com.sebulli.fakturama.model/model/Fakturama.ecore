@@ -324,11 +324,15 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="target" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name_de" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WebShop" eSuperTypes="#//IEntity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopVendor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopVersion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stateMapping" upperBound="-1"
+        eType="#//WebshopStateMapping" containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WebshopStateMapping" eSuperTypes="#//IEntity">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopId" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELongObject"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopStateId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderState" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopState" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fakturamaOrderState" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="BillingType">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">

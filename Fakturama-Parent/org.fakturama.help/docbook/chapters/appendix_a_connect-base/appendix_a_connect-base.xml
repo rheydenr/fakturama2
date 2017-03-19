@@ -7,14 +7,11 @@
 			Durch diesen Datenbankzugriff könnten versehentlich Echtdaten direkt in der Fakturama-Datenbank verändert oder gelöscht werden. Die Datenbank muss vorher geeignet gesichert werden. Greifen Sie nicht direkt auf die Echtdaten im Arbeitsverzeichnis zu!</warning>
 		
 			<procedure>
-				<step>
-					<para> Die letzte Version von „hsqldb“ unter <link xl:href="http://hsqldb.org/">http://hsqldb.org/</link> - Downloads herunterladen.</para>
+				<step>Die letzte Version von „hsqldb“ unter <link xl:href="http://hsqldb.org/">http://hsqldb.org/</link> - Downloads herunterladen.
 				</step>
-				<step>
-					<para> Zip-Datei an einen geeigneten Ort dauerhaft entpacken. </para>
+				<step>Zip-Datei an einen geeigneten Ort dauerhaft entpacken.
 				</step>
-				<step>
-					<para> In LibreOffice Base unter "Extras – Optionen... – Erweitert – Class-Pfad... - Archiv Hinzufügen" die Datei <filename>hsqldb.jar</filename> aus dem entpackten Verzeichnis hinzufügen.
+				<step>In LibreOffice Base unter "Extras – Optionen... – Erweitert – Class-Pfad... - Archiv Hinzufügen" die Datei <filename>hsqldb.jar</filename> aus dem entpackten Verzeichnis hinzufügen.
 				
 				<informalfigure>
 					<mediaobject>
@@ -25,15 +22,10 @@
 							<imagedata contentdepth="100%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_0_aus Handbuch.jpg" format="JPG" scalefit="1" width="100%"/>
 						</imageobject>
 					</mediaobject>
-				</informalfigure></para></step>
-				<step>
-					<para> LibreOffice Base neu starten.</para>
-				</step>
-				<step>
-					<para> Dialog des Datenbank-Assistenten erscheint.</para>
-				</step>
-				<step>
-					<para> Verbindung zu einer bestehenden Datenbank herstellen: JDBC
+				</informalfigure></step>
+				<step>LibreOffice Base neu starten.</step>
+				<step>Dialog des Datenbank-Assistenten erscheint.</step>
+				<step>Verbindung zu einer bestehenden Datenbank herstellen: JDBC
 				<informalfigure>
 					<mediaobject>
 							<imageobject role="html">
@@ -43,13 +35,10 @@
 								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_1.jpg" format="JPG" scalefit="1" width="100%"/>
 							</imageobject>
 						</mediaobject>
-					</informalfigure></para>
+					</informalfigure>
 				</step>
-				<step>
-					<para> weiter</para>
-				</step>
-				<step>
-					<para> Einträge:
+				<step>weiter</step>
+				<step>Einträge:
 				<informalfigure>
 					<mediaobject>
 							<imageobject role="html">
@@ -59,29 +48,19 @@
 								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_2.jpg" format="JPG" scalefit="1" width="100%"/>
 							</imageobject>
 						</mediaobject>
-					</informalfigure></para>
-				</step>
+					</informalfigure></step>
 				<step>
 					<substeps>
 						<step>
 							<programlisting> jdbc:hsqldb:file:[Pfad zum Fakturama-Arbeitsverzeichnis, z.B C:\Daten\Arbeitsverzeichnis]\Database\Database</programlisting>
 						</step>
-						<step>
-							<para> JDBC-Treiberklasse: org.hsqldb.jdbc.JDBCDriver</para>
-						</step>
-						<step>
-							<para> weiter</para>
-						</step>
+						<step>JDBC-Treiberklasse: org.hsqldb.jdbc.JDBCDriver</step>
+						<step>weiter</step>
 					</substeps>
 				</step>
-				<step>
-					<para> Benutzername ist nicht erforderlich.</para>
-				</step>
-				<step>
-					<para> weiter</para>
-				</step>
-				<step>
-					<para> unverändert lassen.
+				<step>Benutzername ist nicht erforderlich.</step>
+				<step>weiter</step>
+				<step>unverändert lassen.
 				<informalfigure>
 					<mediaobject>
 							<imageobject role="html">
@@ -91,14 +70,10 @@
 								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_3.jpg" format="JPG" scalefit="1" width="100%"/>
 							</imageobject>
 						</mediaobject>
-					</informalfigure></para>
+					</informalfigure>
 				</step>
-				<step>
-					<para> weiter</para>
-				</step>
-				<step>
-					<para> Die Base-Datenbank unter einem frei wählbaren Namen speichern.</para>
-					<para>
+				<step>weiter</step>
+				<step><para>Die Base-Datenbank unter einem frei wählbaren Namen speichern.</para>
 						<inlinemediaobject>
 							<imageobject role="html">
 								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_4.jpg" format="JPG" scalefit="1"/>
@@ -107,14 +82,9 @@
 								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_4.jpg" format="JPG" scalefit="1" width="100%"/>
 							</imageobject>
 						</inlinemediaobject>
-					</para>
 				</step>
-				<step>
-					<para> Die neu erstellte Base-Datenbank wird geöffnet und unter „Tabellen“ sind alle verfügbaren Fakturama-Tabellen aufgeführt.</para>
-				</step>
-				<step>
-					<para> Die Tabellen können durch Doppelklicken geöffnet und deren Inhalte eingesehen werden.</para>
-					<para>
+				<step>Die neu erstellte Base-Datenbank wird geöffnet und unter „Tabellen“ sind alle verfügbaren Fakturama-Tabellen aufgeführt.</step>
+				<step>Die Tabellen können durch Doppelklicken geöffnet und deren Inhalte eingesehen werden.
 						<inlinemediaobject>
 							<imageobject role="html">
 								<imagedata fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_5.jpg" format="JPG" scalefit="1"/>
@@ -123,7 +93,6 @@
 								<imagedata contentdepth="80%" fileref="../images/importexport/Screens/Dialog_DB_Assistent_1_5.jpg" format="JPG" scalefit="1" width="100%"/>
 							</imageobject>
 						</inlinemediaobject>
-					</para>
 				</step>
 			</procedure>
 		
@@ -131,12 +100,8 @@
 			<title>Beispielabfrage erstellen:</title>
 			<para> Für das Jahr 2015 sollen z.B. alle Rechnungsdokumente (Rechnungsnummer, Betrag, Vor- und Nachname, Kundennummer) in eine Tabellenkalkulation zur Weiterverarbeitung übernommen werden. </para>
 			<procedure>
-				<step>
-					<para> In der linken Spalte auf Abfragen klicken und „Abfrage in der Entwurfsansicht erstellen“ wählen.</para>
-				</step>
-				<step>
-					<para> Der Assistent öffnet sich.</para>
-				</step>
+				<step>In der linken Spalte auf Abfragen klicken und „Abfrage in der Entwurfsansicht erstellen“ wählen.</step>
+				<step>Der Assistent öffnet sich.</step>
 				<step>
 					<para> TABELLE: DOCUMENTS wählen und „Hinzufügen“ anklicken.</para>
 					<para>
@@ -150,12 +115,8 @@
 						</inlinemediaobject>
 					</para>
 				</step>
-				<step>
-					<para> TABELLE: CONTACTS wählen und „Hinzufügen“ anklicken.</para>
-				</step>
-				<step>
-					<para> „Schließen“ anklicken.</para>
-				</step>
+				<step>TABELLE: CONTACTS wählen und „Hinzufügen“ anklicken.</step>
+				<step>„Schließen“ anklicken.</step>
 				<step>
 					<para> Beide Tabellen werden jetzt im oberen Teil des Bildschirms angezeigt.</para>
 					<para>
@@ -169,12 +130,11 @@
 						</inlinemediaobject>
 					</para>
 				</step>
-				<step>
-					<para> Um die Daten beider Tabellen in einer gemeinsamen Abfrage zu erhalten, müssen beide Tabellen über ihren gemeinsamen Wert verbunden werden. In diesem Fall entspricht die ADDRESSID der Tabelle DOCUMENTS der ID der Tabelle CONTACTS.</para>
-				</step>
-				<step>
-					<para> Zum Verbinden der Tabellen auf ADDRESSID der Tabelle DOCUMENTS klicken, Maus gedrückt halten und auf ID der Tabelle CONTACTS ziehen. Maus loslassen.</para>
-				</step>
+				<step>Um die Daten beider Tabellen in einer gemeinsamen Abfrage zu erhalten, müssen beide Tabellen 
+				über ihren gemeinsamen Wert verbunden werden. In diesem Fall entspricht die ADDRESSID der Tabelle 
+				DOCUMENTS der ID der Tabelle CONTACTS.</step>
+				<step>Zum Verbinden der Tabellen auf ADDRESSID der Tabelle DOCUMENTS klicken, Maus gedrückt halten 
+				und auf ID der Tabelle CONTACTS ziehen. Maus loslassen.</step>
 				<step>
 					<para> Die Verbindung wird sichtbar.</para>
 					<para>
@@ -269,15 +229,12 @@
 						</inlinemediaobject>
 					</para>
 				</step>
-				<step>
-					<para> Alle Datensätze markieren: Ersten Datensatz markieren, Umschalttaste drücken und gedrückt halten, letzten Datensatz markieren.</para>
+				<step>Alle Datensätze markieren: Ersten Datensatz markieren, Umschalttaste drücken und gedrückt halten, 
+				letzten Datensatz markieren.</step>
+				<step>Markierte Datensätze in die Zwischenablage kopieren und z. B. in LibreOffice Calc einfügen.
 				</step>
-				<step>
-					<para> Markierte Datensätze in die Zwischenablage kopieren und z. B. in LibreOffice Calc einfügen.</para>
-				</step>
-				<step>
-					<para> Zum erneuten Bearbeiten der Abfrage in der Entwurfsansicht mit der rechten Maustaste auf die Abfrage klicken und „Bearbeiten“ wählen.</para>
-				</step>
+				<step>Zum erneuten Bearbeiten der Abfrage in der Entwurfsansicht mit der rechten Maustaste auf die Abfrage 
+				klicken und „Bearbeiten“ wählen.</step>
 			</procedure>
 			<informalfigure>
 				<mediaobject>

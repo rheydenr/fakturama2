@@ -7,23 +7,27 @@
 				<xs:element name="phpversion" type="xs:string"/>
 				<xs:element name="webshop" type="fkt:WebshopType"/>
 				<xs:element name="complete_version" type="xs:string"/>
-				<xs:element maxOccurs="1" minOccurs="0" name="products" type="fkt:ProductsType"/>
-				<xs:element name="orders" maxOccurs="1" minOccurs="0"
-						type="fkt:OrdersType" /> 
-				<xs:element minOccurs="0" name="error" type="xs:string"/>
-				<xs:element maxOccurs="unbounded" minOccurs="0" name="status" type="fkt:StatusType"/>
+				<xs:element name="products" minOccurs="0" maxOccurs="1" type="fkt:ProductsType"/>
+				<xs:element name="orders" minOccurs="0" maxOccurs="1" type="fkt:OrdersType" /> 
+				<xs:element name="error" minOccurs="0" type="xs:string"/>
+				<xs:element name="status_list" minOccurs="0" maxOccurs="1" type="fkt:StatusType"/>
 			</xs:sequence>
 			<xs:attribute name="version" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="StatusType">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="id" type="xs:string"/>
-				<xs:attribute name="name" type="xs:string"/>
-			</xs:extension>
-		</xs:simpleContent>
+	<xs:complexType name="StatusType"> 
+            <xs:sequence>
+              <xs:element name="status" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="id" type="xs:string" />
+							<xs:attribute name="name" type="xs:string" />
+						</xs:extension>
+					</xs:simpleContent></xs:complexType>
+              </xs:element>
+            </xs:sequence>
 	</xs:complexType>
 
 	<xs:element name="product" type="fkt:ProductType"/>

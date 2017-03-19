@@ -246,7 +246,7 @@
             </para>
         </section>
     </section>
-    <section>
+    <!-- section>
         <anchor xreflabel="" xml:id="preferences_help"/>
         <title>Hilfe</title>
         <informalfigure>
@@ -277,12 +277,12 @@
             <title>Kontexthilfe für Dialog</title>
             <para>Legt fest, ob die Kontexthilfe (STRG+F1) bei einem Dialog im erweiterten Dialog oder in einem extra Popup-Fenster angezeigt wird.</para>
         </section>
-    </section>
-    <section>
+    </section -->
+    <!-- section>
         <anchor xreflabel="" xml:id="preferences_help_content.1"/>
         <title>Hilfe Inhalt</title>
         <para>Es ist nicht nur möglich, das lokale Hilfesystem auf dem Rechner zu benutzen, auch kann eine Online-Hilfe eingebunden werden. Je nach Einstellung wird die lokale Hilfe oder die Online-Hilfe bevorzugt.</para>
-    </section>
+    </section -->
     <section>
         <anchor xreflabel="" xml:id="preferences_contact"/>
         <title>Einstellungen Kontakte</title>

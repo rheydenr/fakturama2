@@ -160,6 +160,16 @@
   </xsl:attribute>
 </xsl:attribute-set>
 
+<xsl:attribute-set name="section.title.level3.properties">
+  <xsl:attribute name="font-size">
+    <xsl:value-of select="$body.font.master * 1.1"/>
+    <xsl:text>pt</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="margin-top">
+    <xsl:text>10pt</xsl:text>
+  </xsl:attribute>
+</xsl:attribute-set>
+
 <xsl:template match="*" mode="simple.xlink.properties">
   <!-- Placeholder template to apply properties to links made from
        elements other than xref, link, and olink.

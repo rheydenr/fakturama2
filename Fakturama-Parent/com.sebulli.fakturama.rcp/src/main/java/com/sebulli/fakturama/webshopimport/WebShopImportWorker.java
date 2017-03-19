@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.money.MonetaryAmount;
@@ -414,6 +415,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	
     		// Order data
     		String webshopId;
+    		String webShopName = webShopImportManager.getWebshopDAO().createWebShopIdentifier(webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_URL));
     		String webshopDate;
 
     		// Comments
@@ -733,7 +735,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			dataSetDocument.setCustomerRef(webShopNo);
     		}
         
-        	// Get the payment (s)
+        	// Get the payment(s)
     		PaymentType paymentType = order.getPayment();
 			if (paymentType != null) {
     			// Add the payment to the data base, if it's a new one
@@ -746,9 +748,9 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     		}
         
         	// Set the progress of an imported order to "pending"
-        	WebshopStateMapping mappedStatus = webShopImportManager.getWebshopStateMappingDAO().findByName(order.getStatus());
-        	if(mappedStatus != null) {
-        		dataSetDocument.setProgress(OrderState.valueOf(mappedStatus.getOrderState()).getState());
+        	Optional<WebshopStateMapping> mappedStatus = webShopImportManager.getWebshopDAO().findOrderState(webShopName, order.getStatus());
+        	if(mappedStatus.isPresent()) {
+        		dataSetDocument.setProgress(OrderState.valueOf(mappedStatus.get().getFakturamaOrderState()).getState());
         	} else {
         		dataSetDocument.setProgress(OrderState.PENDING.getState());
         	}

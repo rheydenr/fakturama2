@@ -2,7 +2,7 @@
 <annotationsmodel:AnnotatedModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:annotationsmodel="http://www.eclipse.org/emf/texo/annotations/model" xmlns:modelannotations="http://www.eclipse.org/emf/texo/modelgenerator/modelannotations" xmlns:ormannotations="http://www.eclipse.org/emf/texo/orm/ormannotations">
   <annotatedEPackages>
     <ePackage href="Fakturama.ecore#/"/>
-    <ePackageAnnotations xsi:type="modelannotations:EPackageModelGenAnnotation" name="model" addRuntimeModelBehavior="true" packagePath="com.sebulli.fakturama.model" modelClassesPackagePath="com.sebulli.fakturama.model" qualifiedClassName="com.sebulli.fakturama.model.FakturamaModelPackage" simpleClassName="FakturamaModelPackage" simpleModelFactoryClassName="FakturamaModelFactory" ecoreFileName="model.ecore" javaFileHeader="" daoClassesPackagePath="com.sebulli.fakturama.dao" daoRootClass="org.eclipse.emf.texo.server.store.BaseDao"/>
+    <ePackageAnnotations xsi:type="modelannotations:EPackageModelGenAnnotation" name="model" addRuntimeModelBehavior="true" packagePath="com.sebulli.fakturama.model" modelClassesPackagePath="com.sebulli.fakturama.model" qualifiedClassName="com.sebulli.fakturama.model.FakturamaModelPackage" simpleClassName="FakturamaModelPackage" simpleModelFactoryClassName="FakturamaModelFactory" ecoreFileName="model.ecore" rootClassExtends="" daoClassesPackagePath="com.sebulli.fakturama.dao" daoRootClass="org.eclipse.emf.texo.server.store.BaseDao"/>
     <ePackageAnnotations xsi:type="ormannotations:EPackageORMAnnotation" generateFullDbSchemaNames="true" tableNamePrefix="FKT_" maximumSqlNameLength="255" lowerCasedNames="false" upperCasedNames="true" enforceUniqueNames="true" useJoinTablesForContainment="false" useJoinTablesForNonContainment="true" generateJavaAnnotations="false" addOrderColumnToListMappings="false" renameSQLReservedNames="true" uniqueEntityNames="false" setDelimitedIdentifierTagInORM="true"/>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//AbstractCategory"/>
@@ -1288,6 +1288,25 @@
       <eEnumAnnotations xsi:type="modelannotations:EEnumModelGenAnnotation" documentation="The type of a document position. This can be a &quot;normal&quot; Position, Free text, a delivery part (which is a part of a delivery in a collecting invoice) or a subtotal line."/>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
+      <eClass href="Fakturama.ecore#//WebShop"/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Contains information about a certain webshop."/>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
+        <entity>
+          <entityListeners>
+            <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
+          </entityListeners>
+        </entity>
+      </eClassAnnotations>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//WebShop/stateMapping"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <oneToMany name="">
+            <joinColumn name="FK_WEBSHOP"/>
+          </oneToMany>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
+    </annotatedEClassifiers>
+    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//WebshopStateMapping"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="Mapping between order states of a web shop to the order states of the Fakturama application. Since we plan to assign multiple web shops we store a mapping with its webshop ID. This is for later use, at the moment we don't use it." serializable="true">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
@@ -1301,29 +1320,17 @@
         </entity>
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/webshopId"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="ID of the webshop for which this assignment is for"/>
+        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/webshopState"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="the state from web shop"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/webshopStateId"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="ID of the state from web shop"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/orderState"/>
+        <eAttribute href="Fakturama.ecore#//WebshopStateMapping/fakturamaOrderState"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="OrderState from Fakturama, to which the web shop state is mapped."/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//IEntity/name"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="description (or name) of the state from web shop"/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEEnum">
       <eEnum href="Fakturama.ecore#//VoucherType"/>
       <eEnumAnnotations xsi:type="modelannotations:EEnumModelGenAnnotation" documentation="The type enum for Vouchers. "/>
-    </annotatedEClassifiers>
-    <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
-      <eClass href="Fakturama.ecore#//ContactWrapper"/>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" serializable="true"/>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEEnum">
       <eEnum href="Fakturama.ecore#//ContactType"/>

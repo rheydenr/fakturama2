@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -59,17 +60,20 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dao.WebshopStateMappingDAO;
+import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.WebShop;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
 import com.sebulli.fakturama.webshopimport.IWebshopConnection;
 import com.sebulli.fakturama.webshopimport.WebShopStatusImport;
 import com.sebulli.fakturama.webshopimport.type.StatusType;
+import com.sebulli.fakturama.webshopimport.type.StatusType.Status;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
 /**
@@ -77,24 +81,23 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
  */
 public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWebshopConnection {
 	
-	private static final long FIX_WEBSHOP_ID = 0L;
-
 	@Inject
 	@Translation
 	protected Messages msg;
 
 	@Inject
+	public
 	IPreferenceStore preferences;
 	
 	@Inject
-	private WebshopStateMappingDAO webshopStateMappingDAO;
+	private WebshopDAO webshopDAO;
 
 	@Inject
 	private IEclipseContext context;
     
     @Inject
     protected Logger log;
-
+    
     /**
      * contains the result from Web shop connector execution
      */
@@ -109,8 +112,8 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	private String runResult = "";
 
 	private TreeMapper<WebshopOrderStateMapping, WebshopOrderState, OrderState> treeMapper;
-
 	private List<WebshopOrderStateMapping> mappings;
+	private boolean isMappingChanged = false;
 
 	@Inject
 	public WebShopStatusSettingsDialog(Shell shell, @Translation Messages msg) {
@@ -155,25 +158,29 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 			public void widgetSelected(SelectionEvent e) {
 				execute(parent);
 
-				Webshopexport expenseObj = (Webshopexport) getData();
-				if(expenseObj != null) {
+				Webshopexport wsExport = (Webshopexport) getData();
+				if(wsExport != null) {
 					// set the values from web shop
-					shopInfoString.setText(String.format("%s (%s)", expenseObj.getWebshop().getShop(), expenseObj.getCompleteVersion()));
-					connectorVersion.setText(expenseObj.getVersion());
+					shopInfoString.setText(String.format("%s (%s)", wsExport.getWebshop().getShop(), wsExport.getCompleteVersion()));
+					connectorVersion.setText(wsExport.getVersion());
+					isMappingChanged = true;
 					
 					// fill WebshopStateTreeMapper
-					if(expenseObj.getStatus() == null) {
+					if(wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
 						MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError, msg.preferencesWebshopSettingsStateError);
 					} else {
-						List<StatusType> statusList = expenseObj.getStatus();
-						List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.size());
-						for (StatusType state : statusList) {
-							WebshopOrderState webshopOrderState = new WebshopOrderState(state.getId(), 
-									state.getName());
+						StatusType statusList = wsExport.getStatusList();
+						List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.getStatus().size());
+						// TODO perhaps a naming confusion?
+						// statusList is a container for several statuses, getStatus() returns a list of statuses
+						for (Status st : statusList.getStatus()) {
+							WebshopOrderState webshopOrderState = new WebshopOrderState(st.getId(), 
+								st.getName());
 							leftTreeInput.add(webshopOrderState);
 						}
 						// throw away all mappings
 						mappings.clear();
+						// and create a new one
 						setInputAndActivateTreeMapperWidget(leftTreeInput, true);
 					}
 				}
@@ -235,7 +242,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		treeMapper = new TreeMapper<>(parent, semanticSupport,
 				uiConfig);
 
-		treeMapper.setContentProviders(new WebshopStateContentProvider(), new FtkOrderStateContentProvider());
+		treeMapper.setContentProviders(new WebshopStateContentProvider(), new FktOrderStateContentProvider());
 		treeMapper.setLabelProviders(new ViewLabelProvider(null), new ViewLabelProvider(null));
 		List<WebshopOrderState> leftTreeInput = new ArrayList<>();
 		
@@ -303,18 +310,36 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		}
 		
 		try {
-			// at first clear any pre-existing mappings
-			webshopStateMappingDAO.clearOldMappings(FIX_WEBSHOP_ID);
 			
-			for (WebshopOrderStateMapping orderStatesMapping : mappings) {
-				WebshopStateMapping webshopStateMapping = new WebshopStateMapping();
-				webshopStateMapping.setWebshopId(FIX_WEBSHOP_ID);
-				webshopStateMapping.setWebshopStateId(orderStatesMapping.getLeftItem().getId());
-				webshopStateMapping.setName(orderStatesMapping.getLeftItem().getStateName());
-				webshopStateMapping.setOrderState(orderStatesMapping.getRightItem().name());
-				webshopStateMapping.setValidFrom(Date.from(Instant.now()));
-				webshopStateMappingDAO.save(webshopStateMapping);
+			// TODO
+			/*
+			 * - at first, give the webshop a name, e.g. by extracting some infos from webshop url
+			 * (because we could have more than one webshop from a vendor and therefore we couldn't 
+			 * distinguish between all them)
+			 * - how could we create a unique name for a shop?
+			 * - after this, create a new mapping object and assign it to that webshop (clear the old one). 
+			WebShop currentWebshop = webShopDAO.findByName(currentShop);
+			currentWebshop.
+			 */
+			String webShopIdentifier = webshopDAO.createWebShopIdentifier(preferences.getString(Constants.PREFERENCES_WEBSHOP_URL));
+			WebShop currentWebshop = webshopDAO.findByName(webShopIdentifier);
+			if(currentWebshop == null) {
+				currentWebshop = FakturamaModelPackage.MODELFACTORY.createWebShop();
+				currentWebshop.setName(webShopIdentifier);
+				currentWebshop.setWebshopVendor(shopInfoString.getText());
+			} else {
+				// at first clear any pre-existing mappings
+				currentWebshop = webshopDAO.clearOldMappings(webShopIdentifier);
 			}
+			for (WebshopOrderStateMapping orderStatesMapping : mappings) {
+				WebshopStateMapping webshopStateMapping = FakturamaModelPackage.MODELFACTORY.createWebshopStateMapping();
+				webshopStateMapping.setWebshopState(orderStatesMapping.getLeftItem().getId());
+				webshopStateMapping.setName(orderStatesMapping.getLeftItem().getStateName());
+				webshopStateMapping.setFakturamaOrderState(orderStatesMapping.getRightItem().name());
+				webshopStateMapping.setValidFrom(Date.from(Instant.now()));
+				currentWebshop.getStateMapping().add(webshopStateMapping);
+			}
+			webshopDAO.save(currentWebshop);
 			creationOk = true;
 		} catch (FakturamaStoringException exception) {
 			MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, exception.getDescription());
@@ -363,15 +388,22 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		if(forceReMapping) {
 			webshopOrderStatesMapping = new ArrayList<>();
 		} else {
-			webshopOrderStatesMapping = webshopStateMappingDAO.findAllForWebshop(FIX_WEBSHOP_ID);
+			String webshopName = webshopDAO.createWebShopIdentifier(preferences.getString(Constants.PREFERENCES_WEBSHOP_URL));
+			WebShop webShop = webshopDAO.findByName(webshopName);
+			if (webShop != null) {
+				webshopOrderStatesMapping = webshopDAO.findAllForWebshop(webshopName);
+				shopInfoString.setText(StringUtils.defaultString(webShop.getWebshopVendor()));
+			} else {
+				webshopOrderStatesMapping = Collections.emptyList(); 
+			}
 		}
 		List<OrderState> rightTreeInput = Arrays.asList(OrderState.values());
 		if(!webshopOrderStatesMapping.isEmpty()) {
 			for (WebshopStateMapping webshopStateMapping : webshopOrderStatesMapping) {
-				WebshopOrderState webshopOrderState = new WebshopOrderState(webshopStateMapping.getWebshopStateId(), 
+				WebshopOrderState webshopOrderState = new WebshopOrderState(webshopStateMapping.getWebshopState(), 
 						webshopStateMapping.getName());
 				leftTreeInput.add(webshopOrderState);
-				OrderState orderState = OrderState.valueOf(webshopStateMapping.getOrderState());
+				OrderState orderState = OrderState.valueOf(webshopStateMapping.getFakturamaOrderState());
 				if(orderState != null) {
 					mappings.add(new WebshopOrderStateMapping(webshopOrderState, orderState));
 				}
@@ -389,7 +421,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	}
 
 	/* **************************************************************************************************/
-	class FtkOrderStateContentProvider extends SimpleTreeContentProvider {
+	class FktOrderStateContentProvider extends SimpleTreeContentProvider {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
@@ -710,7 +742,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.webshopimport.IWebshopConnection#getWebshopStateMappingDAO()
 	 */
-	public WebshopStateMappingDAO getWebshopStateMappingDAO() {
+	public WebshopDAO getWebshopDAO() {
 		return null;
 	}
 

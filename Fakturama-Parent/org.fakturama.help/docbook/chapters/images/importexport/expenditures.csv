@@ -1,0 +1,4 @@
+"Category";"Date";"DocumentNr";"Nr";"Name";"Item Name";"Item Category";"Item Price";"Item VAT";"VAT"
+"Bank";11.05.2010;;"001";"Sparkasse Musterstadt";"Tan Generator";"Nebenkosten Geldverkehr";10,00 €;"ohne Vorsteuer";0%
+"Bank";14.05.2010;"RE45130";"002";"Toner3000";"Toner";"Bürobedarf";134,37 €;"Vorsteuer 19%";19%
+"Bank";14.05.2010;"RE45130";"002";"Toner3000";"Versandkosten";"Bezugsnebenkosten";3,78 €;"Vorsteuer 19%";19%
