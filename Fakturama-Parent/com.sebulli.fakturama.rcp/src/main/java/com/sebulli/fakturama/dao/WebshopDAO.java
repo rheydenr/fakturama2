@@ -68,7 +68,7 @@ public class WebshopDAO extends AbstractDAO<WebShop> {
 		WebShop result;
 		try {
 			result = query.getSingleResult();
-			// initialize the steMapping manually...
+			// initialize the stateMapping manually...
 			result.getStateMapping().forEach(e -> e.getDeleted());
 		} catch (NoResultException e) {
 			result = null;

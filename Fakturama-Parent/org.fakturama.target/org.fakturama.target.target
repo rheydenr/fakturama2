@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="407">
+<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="410">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -59,52 +59,6 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/milestones/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.4.0.201606011907"/>
-<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.4.0.201606011907"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.4.0.201606011907"/>
-<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.4.0.201606011907"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="1.0.0.201606011907"/>
-<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="1.0.0.201606011907"/>
-<repository location="http://download.eclipse.org/nattable/releases/1.4.0/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
-<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
-<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
-<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
-<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
-<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
-<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-<unit id="org.dom4j" version="1.6.1.v201312101416"/>
-<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
-<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.6.0.v20160813060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_bg.feature.group" version="4.6.0.v20160813060001"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.14.0/neon"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.0.v20160823-2221"/>
 <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.13.2.v20160823-2221"/>
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.5.1.v20160907-0248"/>
@@ -140,6 +94,51 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.persistence.sdk.feature.group" version="2.6.4.v20160829-44060b6"/>
 <repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
+<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
+<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
+<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
+<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
+<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
+<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+<unit id="org.dom4j" version="1.6.1.v201312101416"/>
+<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
+<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+<repository location="http://download.eclipse.org/tools/orbit/R-builds/R20170307180635/repository"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.5.0.201703192131"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="1.1.0.201703192131"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="1.1.0.201703192131"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.5.0.201703192131"/>
+<unit id="org.eclipse.nebula.widgets.nattable.core.source.feature.feature.group" version="1.5.0.201703192131"/>
+<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="1.5.0.201703192131"/>
+<repository location="http://download.eclipse.org/nattable/releases/1.5.0/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.6.0.v20161126060001"/>
+<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.6.0.v20161126060001"/>
+<repository location="http://download.eclipse.org/technology/babel/update-site/R0.14.1/neon"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

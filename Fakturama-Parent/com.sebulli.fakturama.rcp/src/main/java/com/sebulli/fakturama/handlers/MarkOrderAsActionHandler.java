@@ -37,10 +37,10 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
@@ -94,6 +94,9 @@ public class MarkOrderAsActionHandler {
     @Inject
     private EHandlerService handlerService;
     
+    @Inject
+    private ESelectionService selectionService;
+
     /**
      * Event Broker for sending update events to the list table
      */
@@ -107,11 +110,6 @@ public class MarkOrderAsActionHandler {
     public boolean canExecute(@Active MPart activePart, EPartService partService) {
         boolean retval = false;
         Document[] selectedObjects = null;
-        
-        MDirtyable dirtyable ;
-        if (partService != null) {
-            dirtyable = partService.getActivePart();
-        }        
         
         if (activePart.getElementId().contentEquals(DocumentsListTable.ID)) {
             @SuppressWarnings("rawtypes")
@@ -150,18 +148,21 @@ public class MarkOrderAsActionHandler {
     public void markOrderAs(Shell parent, Document[] documents, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
 
         for (int i = 0; i < documents.length; i++) {
-            Document document = documents[i];
+        	Document document = (Document) documents[i];
             markOrderAs(parent, document, progress, comment, sendNotification, iEclipseContext);
         }
     }
 
     public void markOrderAs(Shell parent, Document document, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
-    	boolean needUpdate = false;  // if an update of views is needed
-    	
+    	boolean needUpdate = false ;  // if an update of views is needed
         // Do it only, if it is an order.
         if (document.getBillingType() == BillingType.ORDER) {
             try {
 
+            	// the object has to be refreshed, else no action is taken by saving 
+            	// (even if some values are changed - the uow isn't updated :-( )
+            	document = documentsDAO.update(document);
+            	
                 OrderState progress_old = OrderState.findByProgressValue(Optional.of(document.getProgress()));
                 // Stock
                 List<DocumentItem> items = document.getItems();
@@ -204,8 +205,8 @@ public class MarkOrderAsActionHandler {
                 // change the state
                 document.setProgress(progress.getState());
 
-                // also in the database
-                documentsDAO.update(document);
+                // also in the database 
+                document = documentsDAO.update(document);
                 evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 
                 // Change the state also in the webshop
@@ -255,28 +256,26 @@ public class MarkOrderAsActionHandler {
      * Run the action Search all views to get the selected element. If a view
      * with an selection is found, change the state, if it was an order.
      */
-    @Execute
+    @SuppressWarnings("unchecked")
+	@Execute
     public void run(@Active MPart activePart, @Named(PARAM_STATUS) String status, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
 
         OrderState progress = OrderState.NONE;
         progress = OrderState.valueOf(status);
-        Document[] uds;
+        List<Document> uds;
         if(activePart.getObject() instanceof DocumentsListTable) {
-	        @SuppressWarnings("rawtypes")
-	        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-	        uds = (Document[]) currentListtable.getSelectedObjects();
+	        uds = (List<Document>)selectionService.getSelection();
         } else {
-        	Document doc = ((DocumentEditor)activePart.getObject()).getDocument();
-			uds = new Document[]{doc};
+        	Document doc = (Document) ((DocumentEditor)activePart.getObject()).getDocument();
+			uds = Arrays.asList(doc);
         }
-        for (int i = 0; i < uds.length; i++) {
-            Document document = uds[i];
+        for (Document document : uds) {
             // Get the document
             // and the type of the document
             DocumentType documentType = DocumentType.findByKey(document.getBillingType().getValue());
 
             // Exit, if it was not an order
-            if (documentType != DocumentType.ORDER)
+            if (documentType != DocumentType.ORDER || document.getProgress() == OrderState.valueOf(status).getState())
                 continue;
 
             String comment = "";

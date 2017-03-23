@@ -62,6 +62,7 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
@@ -217,6 +218,7 @@ public class WebShopImportManager implements IWebshopConnection {
 		// Refresh the views -> fire some update events
 		// => the messages are handled by list views! 
 		evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 		evtBroker.post(ContactEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 		evtBroker.post(PaymentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 		evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
@@ -262,31 +264,30 @@ public class WebShopImportManager implements IWebshopConnection {
 		// Get the progress value of the UniDataSet
 		String orderId = uds.getWebshopId();
 		int progress = uds.getProgress();
-		int webshopState;
+		String webshopState;
 
 		// Get the orders that are out of sync with the shop
 		readOrdersToSynchronize();
 
 		// Convert a percent value of 0..100% to a state of 1,2,3
 		if (progress >= OrderState.SHIPPED.getState())
-			webshopState = 3;
+			webshopState = "3";
 		else if (progress >= OrderState.PROCESSING.getState())
-			webshopState = 2;
+			webshopState = "2";
 		else
-			webshopState = 1;
+			webshopState = "1";
 
 		// Set the new progress state 
 		// Add an "*" to mark the ID as "notify customer"
-		String value = Integer.toString(webshopState);
 
 		//Replace the "," by "&comma;
 		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%2C", "%26comma%3B");
 		//Replace the "=" by "&equal;
 		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%3D", "%26equal%3B");
 		
-		if (notify)	value += "*" + comment;
+		if (notify)	webshopState += "*" + comment;
 
-		getOrderstosynchronize().setProperty(orderId, value);
+		getOrderstosynchronize().setProperty(orderId, webshopState);
 		saveOrdersToSynchronize();
 	}
 

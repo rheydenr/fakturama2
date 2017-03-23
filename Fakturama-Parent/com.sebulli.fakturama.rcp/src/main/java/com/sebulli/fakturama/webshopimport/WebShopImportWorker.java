@@ -678,6 +678,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			item.setValidFrom(today);
     			item.setProduct(newOrExistingProduct);
     			item.setItemVat(vat);
+    			item.setItemType(com.sebulli.fakturama.model.ItemType.POSITION);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));
     			// add prices from attributes
     			// TODO cannot get option price from an item (it has no such field)
