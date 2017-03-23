@@ -201,16 +201,16 @@
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>
 			</para>
-			<para>Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, wenn die Systemeinstellung nicht geändert werden kann.</para>
+			<para>Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zubeachte, daß wirklich der komplette Bezeichner angegeben wird, da es sonst zu fehlerhaften Darstellungen im Programm kommen kann.</para>
 			<para>Folgende Länder und Sprachen werden unterstützt:</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl en</emphasis>  Englisch, (keine Hilfe verfügbar)</para>
+						<emphasis role="bold">-nl en_US</emphasis>  Englisch (keine Hilfe verfügbar)</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl de</emphasis>  Deutsch, Deutschland</para>
+						<emphasis role="bold">-nl de_DE</emphasis>  Deutsch, Deutschland</para>
 				</listitem>
 				<listitem>
 					<para>
@@ -226,35 +226,35 @@
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl ru</emphasis>  Russisch</para>
+						<emphasis role="bold">-nl ru_RU</emphasis>  Russisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl ro</emphasis>  Rumänisch</para>
+						<emphasis role="bold">-nl ro_RO</emphasis>  Rumänisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl uk</emphasis>  Ukrainisch</para>
+						<emphasis role="bold">-nl uk_UK</emphasis>  Ukrainisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl hu</emphasis>  Ungarisch</para>
+						<emphasis role="bold">-nl hu_HU</emphasis>  Ungarisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl es</emphasis>  Spanisch</para>
+						<emphasis role="bold">-nl es_ES</emphasis>  Spanisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl eu</emphasis>  Baskisch</para>
+						<emphasis role="bold">-nl eu_EU</emphasis>  Baskisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl fr</emphasis>  Französisch</para>
+						<emphasis role="bold">-nl fr_FR</emphasis>  Französisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl pl</emphasis>  Polnisch</para>
+						<emphasis role="bold">-nl pl_PL</emphasis>  Polnisch</para>
 				</listitem>
 			</itemizedlist>
 		</section>

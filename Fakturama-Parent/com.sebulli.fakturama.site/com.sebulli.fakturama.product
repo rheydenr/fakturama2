@@ -22,7 +22,6 @@
 
    <windowImages i16="app/app_16.png" i32="app/app_32.png" i48="app/app_48.png" i64="app/app_64.png" i128="app/app_128.png" i256="app/app_256.png"/>
 
-
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
@@ -258,17 +257,17 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
-      <feature id="org.eclipse.babel.nls_eclipse_de" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_es" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_fr" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_hu" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_it" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_pl" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ro" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.6.0.v20160813060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.6.0.v20160813060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_de" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_es" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_fr" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_hu" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_it" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_pl" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ro" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.6.0.v20161126060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.6.0.v20161126060001"/>
    </features>
 
    <configurations>
