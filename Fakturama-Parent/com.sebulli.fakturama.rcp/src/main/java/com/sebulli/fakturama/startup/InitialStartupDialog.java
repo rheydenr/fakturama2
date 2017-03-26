@@ -112,38 +112,47 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		Collection<ServiceReference<DataSourceFactory>> serviceReferences;
         String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "org.hsqldb.jdbc.JDBCDriver");
 		try {
-			// get all available Datasources (which are registered in OSGi context
+			// get all available Datasources (which are registered in OSGi context)
 			// and store them in a hash for using in ComboBox
 			serviceReferences = bundleContext.getServiceReferences(DataSourceFactory.class, null);
 //			serviceReferences.stream()
 			int i = 0;
 			for (ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
 				connectionProviders.add(serviceReference);
-				if(StringUtils.equalsIgnoreCase((String)serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), oldJdbcDriverClass)) {
-				    jdbcClassComboIndex = i;
+				String driverClass = (String) serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+				if(StringUtils.equalsIgnoreCase((String)driverClass, oldJdbcDriverClass)) {
+				    jdbcClassComboIndex = i;  // remember HSQL service
+				}
+				
+				// initialize some JDBC URLs
+				switch (driverClass) {
+				case "org.hsqldb.jdbc.JDBCDriver":
+		            // HSQL (File) => this is the original setting from Fakturama 1.x
+		            // "jdbc:hsqldb:file:/path/to/database;shutdown=true
+		            jdbcUrlMap.put(driverClass, "jdbc:hsqldb:file:/path/to/database;shutdown=true");
+					break;
+				case "org.apache.derby.jdbc.ClientDriver":
+				case "org.apache.derby.jdbc.EmbeddedDriver":
+		            // Derby
+		            // jdbc:derby://localhost:1527/<databasename>;user=<username>;password=<password>
+		            // jdbc:derby://localhost:1527/c:/my-db-dir/my-db-name;user=<username>;password=<password>
+		            jdbcUrlMap.put(driverClass, "jdbc:derby://localhost:1527/<databasename>");
+					break;
+				case "com.mysql.jdbc.Driver":
+		            // MySQL
+		            // jdbc:mysql://[<host>][:<port>]/<database>[?propertyName1][=propertyValue1][&propertyName2][=propertyValue2]...
+		            jdbcUrlMap.put(driverClass, "jdbc:mysql://[<host>][:<port>]/<database>");
+		            break;
+				default:
+					log.warn(String.format("unknown database driver found in service registry; class name=[%s]",driverClass));
+					break;
 				}
 				log.info(String.format("adding [%s (%s), %s] as DB Connection Provider", 
 						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME),
 						serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION),
-						StringUtils.substringAfterLast((String) serviceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS), ".")));
+						StringUtils.substringAfterLast((String) driverClass, ".")));
 				i++;
 			}
-
-			// initialize some JDBC URLs
-            // Derby
-            // jdbc:derby://localhost:1527/<databasename>;user=<username>;password=<password>
-            // jdbc:derby://localhost:1527/c:/my-db-dir/my-db-name;user=<username>;password=<password>
-            jdbcUrlMap.put("org.apache.derby.jdbc.ClientDriver", "jdbc:derby://localhost:1527/<databasename>");
-            jdbcUrlMap.put("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby://localhost:1527/<databasename>");
-            
-            // MySQL
-            // jdbc:mysql://[<host>][:<port>]/<database>[?propertyName1][=propertyValue1][&propertyName2][=propertyValue2]...
-            jdbcUrlMap.put("com.mysql.jdbc.Driver", "jdbc:mysql://[<host>][:<port>]/<database>");
-            
-            // HSQL (File) => this is the original setting from Fakturama 1.x
-            // "jdbc:hsqldb:file:/path/to/database;shutdown=true
-            jdbcUrlMap.put("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:/path/to/database;shutdown=true");
-
 		}
 		catch (InvalidSyntaxException e) {
 			log.error(e);
@@ -276,8 +285,9 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblJdbcurl.setText(msg.startFirstSelectDbCredentialsJdbc);
 		
 		txtJdbcUrl = new Text(dbSettings, SWT.BORDER);
-		// if an old value is set, we use it
-		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, "jdbc:derby:memory:test;create=true"));
+		// if an old value is set, we use it, else use the first entry from combo box
+		String firstEntry = (String) ((ServiceReference<DataSourceFactory>)comboDriver.getElementAt(jdbcClassComboIndex)).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, firstEntry));
 		txtJdbcUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		// 5th row

@@ -9,6 +9,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.cli.BasicParser;
@@ -80,9 +81,8 @@ public class ConfigurationManager {
 	@Inject
 	private ILogger log;
 	
-	public ConfigurationManager() {
-	    // constructor for injection framework
-		
+	@PostConstruct
+	public void init() {
         // at first create a (temporary) shell
         shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
 	}
@@ -92,36 +92,24 @@ public class ConfigurationManager {
 	 * has changed.
 	 * 
 	 */
+	@SuppressWarnings("static-access")
 	public void checkAndUpdateConfiguration() {
 		String requestedWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		int restart = STATUS_OK;
 		// Get the program parameters
 
 		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
-		OptionBuilder.withArgName("workspace");
-		OptionBuilder.hasArg();
-		OptionBuilder.withLongOpt("workspace");
-		OptionBuilder.withDescription(msg.commandSelectworkspaceTooltip);
-        Option selectWorkspaceOpt = OptionBuilder.create("w");
-        
-		OptionBuilder.withArgName(IWorkbench.PERSIST_STATE);
-		OptionBuilder.hasArg();
-		OptionBuilder.withLongOpt(IWorkbench.PERSIST_STATE);
-        Option persistState = OptionBuilder.create("r");
-        
-		OptionBuilder.withArgName("showlocation");
-		OptionBuilder.withLongOpt("showlocation");
-        Option showlocation = OptionBuilder.create("s");
+		Option selectWorkspaceOpt = OptionBuilder.withArgName("workspace").hasArg().withLongOpt("workspace").withDescription(msg.commandSelectworkspaceTooltip).create("w");
+		Option persistState = OptionBuilder.withArgName(IWorkbench.PERSIST_STATE).hasArg().withLongOpt(IWorkbench.PERSIST_STATE).create("r");
+		Option showlocation = OptionBuilder.withArgName("showlocation").withLongOpt("showlocation").create("s");
 
         // create Options object
         Options options = new Options();
-        options.addOption(selectWorkspaceOpt);
-        options.addOption(persistState);
-        options.addOption(showlocation);
+        options.addOption(selectWorkspaceOpt).addOption(persistState).addOption(showlocation);
         
         CommandLineParser parser = new BasicParser();
         try {
-            CommandLine cmd = parser.parse(options, args);
+            CommandLine cmd = parser.parse(options, args, true);
             if(cmd.hasOption("w")) {
     			// Read the parameter "--workspace"
                 //  --workspace d:\MeineDaten\Fakt1.6.1-EN
@@ -153,7 +141,7 @@ public class ConfigurationManager {
 			if (eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, null) == null) {
 				// if no database is set then we launch the application for the first time
 				log.info("Application was started the first time or no workspace was set!");
-				selectWorkspace(requestedWorkspace, shell);
+				selectWorkspace(requestedWorkspace);
                 restart = STATUS_RESTART;
 			} else if (eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null) != null || requestedWorkspace == null) {
 				// Checks whether the workspace request is set.
@@ -178,7 +166,7 @@ public class ConfigurationManager {
 				// Checks, whether the workspace is set.
 				// If not, the SelectWorkspaceAction is started to select it.
 				if (StringUtils.isBlank(requestedWorkspace)) {
-					selectWorkspace(requestedWorkspace, shell);
+					selectWorkspace(requestedWorkspace);
 					restart = STATUS_RESTART;
 				} else {
 					// Checks whether the workspace exists
@@ -231,8 +219,9 @@ public class ConfigurationManager {
 	 * @param requestedWorkspace
 	 * @param shell
 	 */
-	private void selectWorkspace(String requestedWorkspace, Shell shell) {
+	private void selectWorkspace(String requestedWorkspace) {
 	    // you can't use the ModelService because it isn't available at this moment :-(
+//		InitialStartupDialog startDialog = ContextInjectionFactory.make(InitialStartupDialog.class, context);
 		InitialStartupDialog startDialog = new InitialStartupDialog(shell, eclipsePrefs, log, msg, requestedWorkspace);
 		int result = startDialog.open();
 		if (result != Window.OK || eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) == null) {
