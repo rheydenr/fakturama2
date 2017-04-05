@@ -302,7 +302,7 @@ public class PlaceholderNode extends Selection {
 	 * @param startNode
 	 * @return
 	 */
-	private OdfElement findParentNode(String qName, Node startNode) {
+	public OdfElement findParentNode(String qName, Node startNode) {
 		// OdfElement retval = null;
 		if (startNode != null && startNode.getParentNode() != null) {
 			if (startNode.getParentNode().getNodeName().contentEquals(qName)) {

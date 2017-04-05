@@ -86,8 +86,6 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class OfficeDocument {
 
-//	private static final int TIME_TO_WAIT_FOR_PROCESS = 3000;
-
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
 
@@ -176,9 +174,7 @@ public class OfficeDocument {
                             .of(textdoc)
                             .withDelimiters(true)
                             .withTableIdentifiers(PlaceholderTableType.ITEMS_TABLE, 
-                                    PlaceholderTableType.VATLIST_TABLE/*,
-                                    PlaceholderTableType.DISCOUNT_TABLE, 
-                                    PlaceholderTableType.DEPOSIT_TABLE*/)
+                                    PlaceholderTableType.VATLIST_TABLE)
                             .build();
             List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
 
@@ -186,13 +182,11 @@ public class OfficeDocument {
 			// Collect all placeholders
 			allPlaceholders = placeholderNodes.stream().map(pn -> pn.getNodeText()).collect(Collectors.toList());
 			
-			
 //			// TEST ONLY *********************************************
 //			for (PlaceholderNode placeholderNode : placeholderNodes) {
 //                System.out.println(placeholderNode.getNodeText() + " is child of " + placeholderNode.getNode().getParentNode());
 //            }
-//			
-//			
+			
 			// Fill the property list with the placeholder values
 			properties = new Properties();
 			setCommonProperties();
@@ -202,13 +196,26 @@ public class OfficeDocument {
 
 			// Get the items of the UniDataSet document
 			List<DocumentItem> itemDataSets = document.getItems();
+			Set<Node> nodesMarkedForRemoving = new HashSet<>();
 			
 	        for (PlaceholderNode placeholderNode : placeholderNodes) {
 	            if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
 	            switch (placeholderNode.getNodeType()) {
 	            case NORMAL_NODE:
+	    			// Remove the discount cells, if there is no discount set
+	    			// Remove the Deposit & the Finalpayment Row if there is no Deposit
+	                if (StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DISCOUNT_TABLE.getKey()) 
+	                		&& documentSummary.getDiscountNet().isZero()
+	                	|| StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DEPOSIT_TABLE.getKey())
+	                		&& documentSummary.getDeposit().isZero()
+	                	) {
+						// store parent node for later removing
+						// we have to remember the parent node since the current node is replaced (could be orphaned)
+						TableTableRowElement row = (TableTableRowElement)placeholderNode.findParentNode(TableTableRowElement.ELEMENT_NAME.getQName(), placeholderNode.getNode());
+						nodesMarkedForRemoving.add(row);
+					}
 	              // Replace all other placeholders
-	                  replaceText(placeholderNode);
+	                replaceText(placeholderNode);
 	                break;
 	            case TABLE_NODE:
 	            	// process only if that table wasn't processed
@@ -254,8 +261,13 @@ public class OfficeDocument {
 
 	            default:
 	                break;
-	            }}
-	        
+	            }
+	        }
+            
+			for (Node removeNode : nodesMarkedForRemoving) {
+				removeNode.getParentNode().removeChild(removeNode);
+			}
+
 //			// Save the document
 			if(saveOODocument(textdoc)) {
 			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
@@ -289,7 +301,7 @@ public class OfficeDocument {
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator("Fakturama application");
-        textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
+        textdoc.getOfficeMetadata().setTitle(document.getBillingType().getName());
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {

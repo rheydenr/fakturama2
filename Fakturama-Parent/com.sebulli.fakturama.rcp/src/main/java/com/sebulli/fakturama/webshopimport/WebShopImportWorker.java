@@ -206,7 +206,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 //                factory.setNamespaceAware(true);
 //                XMLReader reader = factory.newSAXParser().getXMLReader();
         		
-//        		// 2. Use JAXBContext instance to create the Unmarshaller.
+        		// 2. Use JAXBContext instance to create the Unmarshaller.
         		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
     
                 //T: Status message importing data from web shop
