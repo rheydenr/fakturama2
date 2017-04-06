@@ -152,23 +152,19 @@ public class FileOrganizer {
 		// Replace all backslashes
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
 
-		// Remove the extension
-		if (fileNamePlaceholder.toLowerCase().endsWith(targetFormat.getExtension()))
-			fileNamePlaceholder = fileNamePlaceholder.substring(0, fileNamePlaceholder.length() - 4);
-
-		// Replace the placeholders
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName());
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docref\\}", StringUtils.defaultString(document.getCustomerRef()));
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
-				DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))));
-
 		String address = document.getAddressFirstLine();
 		address = replaceIllegalCharacters(address);
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{address\\}", address);
 
 		String name = StringUtils.defaultString(document.getBillingContact().getName());
 		name = replaceIllegalCharacters(name);
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{name\\}", name);
+
+		// Replace the placeholders
+		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName())
+				.replaceAll("\\{docref\\}", StringUtils.defaultString(document.getCustomerRef()))
+				.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
+						DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))))
+				.replaceAll("\\{address\\}", address)
+				.replaceAll("\\{name\\}", name);
 
 		// Find the placeholder for a decimal number with n digits
 		// with the format "{Xnr}", "X" is the number of digits (which can be
@@ -204,12 +200,10 @@ public class FileOrganizer {
 
 		int yyyy = docDateTime.getYear();
 		// Replace the date information
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{yyyy\\}", String.format("%04d", yyyy));
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{yy\\}", String.format("%04d", yyyy).substring(2, 4));
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{mm\\}",
-				String.format("%02d", docDateTime.getMonth().getValue()));
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{dd\\}",
-				String.format("%02d", docDateTime.getDayOfMonth()));
+		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{yyyy\\}", String.format("%04d", yyyy))
+									.replaceAll("\\{yy\\}", String.format("%04d", yyyy).substring(2, 4))
+									.replaceAll("\\{mm\\}",	String.format("%02d", docDateTime.getMonth().getValue()))
+									.replaceAll("\\{dd\\}",	String.format("%02d", docDateTime.getDayOfMonth()));
 
 		// Extract path and filename
 		int pos = fileNamePlaceholder.lastIndexOf('/');
@@ -229,8 +223,8 @@ public class FileOrganizer {
 			savePath += filename;
 
 		// Use the document name as filename
-		if (pathOptions.contains(PathOption.WITH_EXTENSION)) {
-			savePath += "." + targetFormat;
+		if (pathOptions.contains(PathOption.WITH_EXTENSION) && !fileNamePlaceholder.toLowerCase().endsWith(targetFormat.getExtension())) {
+			savePath += targetFormat.getExtension();
 		}
 
 		return savePath;

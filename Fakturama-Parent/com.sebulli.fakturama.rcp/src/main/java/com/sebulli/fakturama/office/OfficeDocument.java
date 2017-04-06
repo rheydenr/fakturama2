@@ -307,7 +307,7 @@ public class OfficeDocument {
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
-            createOutputDirectory(TargetFormat.ODT);
+            createOutputDirectory(documentPath);
 
             try (OutputStream fs = Files.newOutputStream(documentPath);) {
 
@@ -389,8 +389,7 @@ public class OfficeDocument {
 		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
-		createOutputDirectory(targetFormat);
-		Path directory = fo.getDocumentPath(Collections.emptySet(), targetFormat, document);
+		Path directory = createOutputDirectory(targetFormat);
 
 		try {
 
@@ -420,7 +419,7 @@ public class OfficeDocument {
 				pathOptions.add(PathOption.WITH_EXTENSION);
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 				Path tmpPdf = Paths.get(directory.toString(),
-						documentPath.getFileName().toString().replaceAll("\\.ODT$", ".PDF"));
+						documentPath.getFileName().toString().replaceAll("\\.ODT$|\\.odt$", TargetFormat.PDF.getExtension()));
 
 				if (/* !Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
@@ -434,15 +433,8 @@ public class OfficeDocument {
 		}
 		return pdfFilename;
 	}
-
-	/**
-	 * Creates the output directory, if necessary.
-	 *
-	 * @param targetFormat the target document format
-	 */
-	private void createOutputDirectory(TargetFormat targetFormat) {
-		Set<PathOption> pathOptions = Collections.emptySet();
-		Path directory = fo.getDocumentPath(pathOptions, targetFormat, document);
+	
+	private void createOutputDirectory(Path directory) {
 		if (Files.notExists(directory)) {
 		    try {
 		        Files.createDirectories(directory);
@@ -450,6 +442,19 @@ public class OfficeDocument {
 		    	log.error(e, "could not create output directory: " + directory.toString());
 		    }
 		}
+	}
+
+	/**
+	 * Creates the output directory, if necessary.
+	 *
+	 * @param targetFormat the target document format
+	 * @return the path that was created
+	 */
+	private Path createOutputDirectory(TargetFormat targetFormat) {
+		Set<PathOption> pathOptions = Collections.emptySet();
+		Path directory = fo.getDocumentPath(pathOptions, targetFormat, document);
+		createOutputDirectory(directory);
+		return directory;
 	}
 
 	
@@ -997,11 +1002,8 @@ public class OfficeDocument {
 				FileOrganizer.WITH_EXTENSION, 
 				FileOrganizer.ODT, document);
 
-		if (Files.exists(oODocumentFile) && document.getPrinted() &&
-				filesAreEqual(document.getPrintTemplate(),template)) {
-			return true;
-		}
-		return false;
+		return (Files.exists(oODocumentFile) && document.getPrinted() &&
+				filesAreEqual(document.getPrintTemplate(),template));
 	}
 
     /**
