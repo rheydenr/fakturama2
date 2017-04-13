@@ -9,6 +9,7 @@ This is the command for creating a changelog from an existing  MySQL database. I
 
 Changes after creation:
 * change table names to upper case (search for 'ableName="(.+?)"' and replace it by 'ableName="\U\1"')
+* change "categoryName" to "CATEGORYNAME"
 * change (conditionally) the author's name
 * add a start value to each id column (search for 'name="ID"' and replace it by 'name="ID" startWith="1"')
 * change the constraint names for primary keys, because HSQL isn't able to process them. Search for 'constraintName="PRIMARY" tableName="(.+)"' and replace it by 'constraintName="PRIMARY_\1" tableName="\1"'

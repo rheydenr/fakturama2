@@ -44,7 +44,7 @@
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="categoryName" type="VARCHAR(31)"/>
+            <column name="CATEGORYNAME" type="VARCHAR(31)"/>
             <column name="DATEADDED" type="date"/>
             <column defaultValueNumeric="0" name="DELETED" type="BIT"/>
             <column name="MODIFIED" type="date"/>
