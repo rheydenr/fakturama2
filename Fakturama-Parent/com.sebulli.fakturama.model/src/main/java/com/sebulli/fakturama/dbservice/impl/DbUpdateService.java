@@ -70,6 +70,7 @@ public class DbUpdateService implements IDbUpdateService {
 					new OSGiResourceAccessor(context.getBundle()), database);
 			liquibase.update(new Contexts(), new LabelExpression());
 		} catch (LiquibaseException | SQLException ex) {
+			ex.printStackTrace();
 			retval = false;
 		}
 		return retval;
