@@ -80,8 +80,8 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
     /**
      * 
      */
-    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_NR = "NUMBERRANGE_DEBITOREDITOR_NR";
-    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_NR = "NUMBERRANGE_CREDITOREDITOR_NR";
+    public static final String PREFERENCES_NUMBERRANGE_DEBTOR_NR = "NUMBERRANGE_DEBTOR_NR";
+    public static final String PREFERENCES_NUMBERRANGE_CREDITOR_NR = "NUMBERRANGE_CREDITOR_NR";
 
     @Inject
     @Translation
@@ -110,7 +110,7 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.NUMBERRANGE_PREFERENCE_PAGE);
 
 		//T: Preference page "Number Range Values" - Label "next free number"
-		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_DEBITOR_NR, msg.preferencesNumberrangeValuesLabelNextdebitorno, getFieldEditorParent()));
+		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_DEBTOR_NR, msg.preferencesNumberrangeValuesLabelNextdebitorno, getFieldEditorParent()));
 		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_CREDITOR_NR, msg.preferencesNumberrangeValuesLabelNextcreditorno, getFieldEditorParent()));
 		//T: Preference page "Number Range Values" - Label "next free number"
 		addField(new IntegerFieldEditor(PREFERENCES_NUMBERRANGE_PRODUCT_NR, msg.preferencesNumberrangeValuesLabelNextitemno, getFieldEditorParent()));
@@ -148,7 +148,7 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
 
-		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DEBITOR_NR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_DEBTOR_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_CREDITOR_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_PRODUCT_NR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_NUMBERRANGE_INVOICE_NR, write);
@@ -178,17 +178,17 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(PREFERENCES_NUMBERRANGE_DEBITOR_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_CREDITOR_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, 1);
-		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, 1);
+		node.setDefault(PREFERENCES_NUMBERRANGE_DEBTOR_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDITOR_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_PRODUCT_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_INVOICE_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_DELIVERY_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_OFFER_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_ORDER_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_CREDIT_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_CONFIRMATION_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_DUNNING_NR, Integer.valueOf(1));
+		node.setDefault(PREFERENCES_NUMBERRANGE_PROFORMA_NR, Integer.valueOf(1));
 		
 	    List<String> documentTypes = Arrays.stream(DocumentType.values())
 	    		.filter(d -> d != DocumentType.NONE)
@@ -199,7 +199,7 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	    
 		for (String editorId : documentTypes) {
             node.setDefault("last_setnextnr_date_" + editorId.toLowerCase(), "2000-01-01");
-            node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_NR", 1);
+            node.setDefault("NUMBERRANGE_" + editorId.toUpperCase() + "_NR", Integer.valueOf(1));
         }
 	}
 }

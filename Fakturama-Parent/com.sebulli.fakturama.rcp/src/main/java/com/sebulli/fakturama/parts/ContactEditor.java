@@ -1301,7 +1301,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	
 	@Override
 	protected String getEditorID() {
-	    return EDITOR_ID;
+	    return "Contact";
 	}
 }
 

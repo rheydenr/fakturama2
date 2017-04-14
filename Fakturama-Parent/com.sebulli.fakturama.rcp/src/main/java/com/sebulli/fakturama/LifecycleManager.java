@@ -427,7 +427,7 @@ public class LifecycleManager {
         }
     	                
         MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
-        mainMTrimmedWindow.setLabel("Fakturama - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
+        mainMTrimmedWindow.setLabel(msg.applicationName + " - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));
         
         initDialogSettings(instanceLocation);
     	splashService.worked(2);

@@ -62,7 +62,7 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 
 	@Override
 	protected String getEditorID() {
-		return CreditorEditor.EDITOR_ID;
+		return "Creditor";
 	}
 
 	/* (non-Javadoc)

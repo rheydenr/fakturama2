@@ -31,6 +31,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -341,7 +342,7 @@ public class MigrationManager {
 					Path newtemplateDir = Paths.get(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, ""), msg.configWorkspaceTemplatesName);
 					if(Files.exists(oldtemplateDir)) {
 						try {
-							Files.walkFileTree(oldtemplateDir, null, -1, new CopyDir(oldtemplateDir, newtemplateDir));
+							Files.walkFileTree(oldtemplateDir, Collections.emptySet(), Integer.MAX_VALUE, new CopyDir(oldtemplateDir, newtemplateDir));
 						} catch (IOException e) {
 							log.error("can't copy old template files:", e.getMessage());
 						}
@@ -1381,13 +1382,13 @@ public class MigrationManager {
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
            		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
-           		            migLogUser.info("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
+           		            migLogUser.warning("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
            		        } else {
            		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
            		            currencyLocale = Locale.GERMANY;
            		            propValue = "de/DE";
-           		            migLogUser.info("!!! Can't determine the currency locale. Please choose the right locale "
+           		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
            		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
            			}
@@ -1400,6 +1401,15 @@ public class MigrationManager {
                 default:
                     break;
                 }
+
+                // Contacts now are split into Debtors and Creditors
+				// we assume "Debtor" is equal to old Contact
+                if(oldProperty.getName().startsWith("NUMBERRANGE_CONTACT")) {
+                	prop.setName(oldProperty.getName().replaceAll("CONTACT", "DEBTOR"));
+                } else if(StringUtils.endsWith(oldProperty.getName(), "contact")) {
+                	prop.setName(oldProperty.getName().replaceAll("contact", "debtor"));
+                }
+                
                 prop.setValue(propValue);
                 propertiesDAO.save(prop, true);
                 

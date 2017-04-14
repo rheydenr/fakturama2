@@ -324,8 +324,6 @@ public abstract class Editor<T extends IEntity> {
 		int last_mm = 0; 
 		int last_dd = 0; 
 
-//		String lastSetNextNrDate = defaultValuePrefs.getString("last_setnextnr_date_" + getEditorID().toLowerCase());
-//		String lastSetNextNrDate = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
 		Optional<String> propVal = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
 		String lastSetNextNrDate = propVal.orElse(DateTimeFormatter.ISO_DATE.format(now));
 				

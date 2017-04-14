@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
 	
 @Override
 public List<Document> findAll(boolean forceRead) {
+	List<Document> resultList;
     CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
     Root<Document> root = criteria.from(getEntityClass());
@@ -80,7 +82,13 @@ public List<Document> findAll(boolean forceRead) {
         query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
         query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
     }
-    return query.getResultList();
+	try {
+		resultList = query.getResultList();
+	} catch (PersistenceException e) {
+		System.err.println("First start, no table found. If this problem remains after first start, please contact your administrator.");
+		resultList = Collections.emptyList();
+	}
+	return resultList;
 }
 
 /**

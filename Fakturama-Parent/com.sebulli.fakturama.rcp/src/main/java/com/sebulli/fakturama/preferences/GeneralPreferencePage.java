@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.preferences;
 
-import java.awt.FontMetrics;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,7 +45,6 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -340,8 +338,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
-        node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2);
-        node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
+        node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(2));
+        node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));
