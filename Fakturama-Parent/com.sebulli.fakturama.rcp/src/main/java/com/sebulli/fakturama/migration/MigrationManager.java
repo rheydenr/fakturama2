@@ -67,6 +67,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
@@ -93,7 +94,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
@@ -273,7 +273,7 @@ public class MigrationManager {
 	}
 
 	/**
-	 * entry point for migration of old data (db only)
+	 * entry point for migration of old data
 	 * 
 	 * @param parent the current {@link Shell}
 	 * @throws BackingStoreException
@@ -335,6 +335,18 @@ public class MigrationManager {
 						runMigration(monitor, tableinfo);
 //						monitor.worked(1);
 					}
+					
+					// copy old template files
+					Path oldtemplateDir = Paths.get(oldWorkDir, msg.configWorkspaceTemplatesName);
+					Path newtemplateDir = Paths.get(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, ""), msg.configWorkspaceTemplatesName);
+					if(Files.exists(oldtemplateDir)) {
+						try {
+							Files.walkFileTree(oldtemplateDir, null, -1, new CopyDir(oldtemplateDir, newtemplateDir));
+						} catch (IOException e) {
+							log.error("can't copy old template files:", e.getMessage());
+						}
+					}
+					
 					monitor.done();
 				}
 			};
@@ -358,6 +370,8 @@ public class MigrationManager {
         
         // kindly close all handlers (otherwise some file fragments could remain).
         Arrays.stream(migLogUser.getHandlers()).forEach(handler -> handler.close());
+        
+        MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startMigrationReorganizeHint);
 	}
 	
 
@@ -691,7 +705,7 @@ public class MigrationManager {
 					// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
 				}
 				
-				// if either the ODT or the PDF field is filled we can assume that the document was printed.
+				// if either the ODT or the PDF field is filled we can assume that the document was ed.
 				// Therefore we needn't the "printed" flag.
 				document.setOdtPath(oldDocument.getOdtpath());
 				document.setPdfPath(oldDocument.getPdfpath());
@@ -1349,8 +1363,6 @@ public class MigrationManager {
                 	propValue = Integer.toString(Integer.parseInt(propValue)+1);
                     break;
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
-                    double exampleNumber = -1234.56864;
-                    String retval = "";
                 	// if the currency is stored as symbol we have to convert it to an ISO code.
            			// Money doesn't work with symbols, therefore we have to convert this.
                     // Try to determine a Locale from symbol
@@ -1379,10 +1391,6 @@ public class MigrationManager {
            		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
            			}
-                    retval = DataUtils.getInstance().formatCurrency(exampleNumber, currencyLocale, 
-                    		propUseSymbol.getValue().contentEquals(CurrencySettingEnum.SYMBOL.name()) 
-                    		? CurrencySettingEnum.SYMBOL
-                    		: CurrencySettingEnum.CODE, false, false);
                     propertiesDAO.save(propUseSymbol, true);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
                     break;

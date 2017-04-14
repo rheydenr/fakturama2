@@ -141,7 +141,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         URL fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource(resource);
         if(fileResource == null) {
         	// if running inside Eclipse IDE we have to change the source path silently
-        	fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource("/bin/"+resource);
+        	fileResource = ResourceBundleHelper.getBundleForName("com.sebulli.fakturama.resources").getResource("/src/main/resources/"+ resource);
         }
 		try(InputStream in = fileResource.openStream()) {
             // Create the destination folder if it doesn't exists

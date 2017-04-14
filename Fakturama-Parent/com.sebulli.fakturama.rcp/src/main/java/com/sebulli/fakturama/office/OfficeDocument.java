@@ -307,7 +307,7 @@ public class OfficeDocument {
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
-            createOutputDirectory(documentPath);
+            createOutputDirectory(documentPath.getParent());
 
             try (OutputStream fs = Files.newOutputStream(documentPath);) {
 
@@ -327,7 +327,7 @@ public class OfficeDocument {
         	if(generatedPdf != null && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
         		try {
 					Desktop.getDesktop().open(generatedPdf.toFile());
-				} catch (IOException e) {
+				} catch (IOException | IllegalArgumentException e) {
 	                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
 				}
         	}

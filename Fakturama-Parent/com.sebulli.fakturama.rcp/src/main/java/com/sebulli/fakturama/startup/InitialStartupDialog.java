@@ -191,9 +191,15 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		txtWorkdir = new Text(container, SWT.BORDER);
 		GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		layoutData.minimumWidth = 450;
-		txtWorkdir.setLayoutData(layoutData);
 		txtWorkdir.setText(StringUtils.defaultIfEmpty(workspace, ""));
-		
+		txtWorkdir.setLayoutData(layoutData);
+//		txtWorkdir.addFocusListener(new FocusAdapter() {
+//			@Override
+//			public void focusLost(FocusEvent e) {
+//				getButton(OK).setEnabled(StringUtils.isNotBlank(txtWorkdir.getText()));
+//			}
+//		});
+
 		final Button btnDirChooser = new Button(container, SWT.NONE);
 		btnDirChooser.setText("...");
 		btnDirChooser.setToolTipText(msg.startFirstSelectWorkdirVerbose);
@@ -286,6 +292,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		
 		txtJdbcUrl = new Text(dbSettings, SWT.BORDER);
 		// if an old value is set, we use it, else use the first entry from combo box
+		@SuppressWarnings("unchecked")
 		String firstEntry = (String) ((ServiceReference<DataSourceFactory>)comboDriver.getElementAt(jdbcClassComboIndex)).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, firstEntry));
 		txtJdbcUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -307,8 +314,16 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		txtPassword.setText(preferences.get(PersistenceUnitProperties.JDBC_PASSWORD, ""));
 
 	    return container;
-
 	}
+//	
+//	@Override
+//	protected Control createContents(Composite parent) {
+//		Control retval = super.createContents(parent);
+//		getButton(OK).setEnabled(false); // initially the ok button is disabled
+//											// (because we haven't set a new
+//											// workdir)
+//		return retval;
+//	}
 
 	/**
 	 * Try to find the old workdir path.
@@ -351,8 +366,9 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			workspace = txtWorkdir.getText();
 			
 			// handle workdir and JDBC connection
-			if (workspace.isEmpty()) {
+			if (workspace.isEmpty() || Files.notExists(Paths.get(workspace))) {
 				MessageDialog.openError(parent, msg.dialogMessageboxTitleError, msg.startFirstSelectWorkdirNoselection);
+				txtWorkdir.setFocus();
 			} else {
     			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
     			
@@ -411,11 +427,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
                 Path directory = Paths.get(selectedDirectory, "/Database/Database.script");
                 if(!alreadyCheckedDirs.contains(selectedDirectory) && Files.exists(directory)) {
                     boolean answer = MessageDialog.openQuestion(shell, "Datenübernahme", 
-                               "In dem angegebenen alten Arbeitsverzeichnis befindet sich eine frühere\n"
-                             + "Fakturama-Version. Möchten Sie diese Daten (Rechnungen,\n"
-                             + "Produkte, Kontakte usw.) übernehmen?\n"
-                             + "HINWEIS: Eventuell in der neuen Datenbank vorhandene Werte "
-                             + "werden vor dem Import gelöscht!!!");
+                               msg.startMigrationWarning);
                     if(answer) {
                         preferences.put(ConfigurationManager.MIGRATE_OLD_DATA, selectedDirectory);
                         txtOldWorkdir.setText(selectedDirectory);
@@ -424,7 +436,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
                 }
             }
         }
-
 	}
 	
 	/**

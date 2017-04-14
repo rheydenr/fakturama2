@@ -238,7 +238,7 @@ public class LifecycleManager {
 	        defaultVat.setName(msg.dataDefaultVat);
 	        defaultVat.setDescription(msg.dataDefaultVatDescription);
 	        defaultVat.setTaxValue(Double.valueOf(0.0));
-            defaultVat = vatsDAO.save(defaultVat);
+            defaultVat = vatsDAO.findOrCreate(defaultVat);
 //	        defaultValuesNode.setValue(Constants.DEFAULT_VAT, defaultVat.getId());
 	        eclipsePrefs.putLong(Constants.DEFAULT_VAT, defaultVat.getId());
         }
@@ -252,7 +252,7 @@ public class LifecycleManager {
 	        defaultShipping.setShippingValue(Double.valueOf(0.0));
 	        defaultShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
 	        defaultShipping.setShippingVat(vatsDAO.findById(eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0))));
-            defaultShipping = shippingsDAO.save(defaultShipping);
+            defaultShipping = shippingsDAO.findOrCreate(defaultShipping);
 //            defaultValuesNode.setValue(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
             eclipsePrefs.putLong(Constants.DEFAULT_SHIPPING, defaultShipping.getId());
         }
@@ -269,7 +269,7 @@ public class LifecycleManager {
 	        defaultPayment.setPaidText(msg.dataDefaultPaymentPaidtext);
 	        defaultPayment.setDepositText(msg.dataDefaultPaymentDescription);
 	        defaultPayment.setUnpaidText(msg.dataDefaultPaymentUnpaidtext);
-            defaultPayment = paymentsDAO.save(defaultPayment);
+            defaultPayment = paymentsDAO.findOrCreate(defaultPayment);
 //            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
             eclipsePrefs.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }

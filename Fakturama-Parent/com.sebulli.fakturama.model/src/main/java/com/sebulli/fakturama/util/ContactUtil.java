@@ -64,7 +64,7 @@ public class ContactUtil {
          * Therefore we've to skip the following in case we use a manual address
          * (which is determined by a missing customer number).
          */
-        if(contact.getCustomerNumber() == null && contact.getAddress().getManualAddress() != null) {
+        if(contact.getCustomerNumber() == null && contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
             String manualAddress = contact.getAddress().getManualAddress();
             String[] splitted = manualAddress.split("\\n");
             line += splitted[0];
