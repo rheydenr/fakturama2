@@ -17,6 +17,7 @@ package com.sebulli.fakturama.dto;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
@@ -306,4 +307,9 @@ hier klingt vor allem das interessant:
 	public void setTotalQuantity(double totalQuantity) {
 		this.totalQuantity = totalQuantity;
 	} 
+	
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
 }

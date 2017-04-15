@@ -360,9 +360,8 @@ public class OfficeDocument {
             }
 
             // Update the document entry "pdfpath"
-            Path filename = fo.getDocumentPath(pathOptions, TargetFormat.PDF, document);
-            if (Files.exists(filename)) {
-                document.setPdfPath(filename.toString());
+            if (Files.exists(generatedPdf)) {
+                document.setPdfPath(generatedPdf.toString());
             }
 
             try {
@@ -407,9 +406,7 @@ public class OfficeDocument {
 				// pdfFilter.getPDFFilterProperties().setPdfVersion(1);
 
 				ProcessBuilder pb = new ProcessBuilder(sysCall);
-
 				Process p = pb.start();
-
 				p.waitFor();
 
 				// now, if the file name templates are different, we have to
@@ -709,20 +706,6 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.VAT.DESCRIPTION")) {
 			value = item.getItemVat().getDescription();
 		}
-
-		// Get the item's category
-		else if (item.getProduct() != null) {
-			Product product = item.getProduct();
-			if(key.equals("ITEM.UNIT.CATEGORY")) {
-				value = product.getCategories().getName();
-			} else if(key.equals("ITEM.UNIT.UDF01")) {
-				value = product.getCdf01();
-			} else if(key.equals("ITEM.UNIT.UDF02")) {
-				value = product.getCdf02();
-			} else if(key.equals("ITEM.UNIT.UDF03")) {
-				value = product.getCdf03();
-			}
-		}
 		
 		// Get the item net value
 		else if (key.equals("ITEM.UNIT.NET")) {
@@ -892,6 +875,20 @@ public class OfficeDocument {
 		
 		else
 			return null;
+
+		// Get the item's category
+		if (item.getProduct() != null) {
+			Product product = item.getProduct();
+			if(key.equals("ITEM.UNIT.CATEGORY")) {
+				value = product.getCategories().getName();
+			} else if(key.equals("ITEM.UNIT.UDF01")) {
+				value = product.getCdf01();
+			} else if(key.equals("ITEM.UNIT.UDF02")) {
+				value = product.getCdf02();
+			} else if(key.equals("ITEM.UNIT.UDF03")) {
+				value = product.getCdf03();
+			}
+		}
 
 		// Interpret all parameters
 		value = placeholders.interpretParameters(placeholder,value);
