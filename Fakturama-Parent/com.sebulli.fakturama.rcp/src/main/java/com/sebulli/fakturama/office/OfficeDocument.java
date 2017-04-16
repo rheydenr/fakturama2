@@ -19,10 +19,15 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -161,6 +166,9 @@ public class OfficeDocument {
 			if (openExisting)
 				return;
 
+			// remove previous images            
+            cleanup();
+			
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
 
@@ -301,7 +309,7 @@ public class OfficeDocument {
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator("Fakturama application");
-        textdoc.getOfficeMetadata().setTitle(document.getBillingType().getName());
+        textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
@@ -365,7 +373,7 @@ public class OfficeDocument {
             }
 
             try {
-                documentsDAO.update(document);
+                documentsDAO.update(document);                
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -376,6 +384,36 @@ public class OfficeDocument {
         
         return wasSaved;
     }
+
+	private void cleanup() throws IOException {
+		// remove temp images
+		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
+				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
+		
+		Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
+			
+			@Override
+			public FileVisitResult visitFile(Path path,
+					BasicFileAttributes attrs) throws IOException {
+				if (pathMatcher.matches(path)) {
+					Files.deleteIfExists(path);
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFileFailed(Path file, IOException exc)
+					throws IOException {
+				return FileVisitResult.CONTINUE;
+			}
+			
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				return FileVisitResult.SKIP_SIBLINGS;
+			}
+		});
+		
+	}
 
 	/**
 	 * Creates the PDF.
@@ -542,9 +580,10 @@ public class OfficeDocument {
 		else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
 			textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
 		}
-		else
+		else {
 			return null;
-
+		}
+		
 		// Set the text
 		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
 
@@ -795,8 +834,8 @@ public class OfficeDocument {
 				double pixelRatio = 1.0;
 			      
 				// Read the image a first time to get width and height
-				try {
-					ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());
+				try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
+					
 					BufferedImage image = ImageIO.read(imgStream);
 					pictureHeight = image.getHeight();
 					pictureWidth = image.getWidth();
@@ -826,7 +865,7 @@ public class OfficeDocument {
 					 * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
 					 * we have to convert it to a temporary image and insert that into the document.
 					 */
-					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage");
+					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage"+item.getDescription().hashCode());
 					
 					// FIXME Scaling doesn't work! :-(
 					// Therefore we "scale" the image manually by setting width and height inside result document
@@ -863,6 +902,7 @@ public class OfficeDocument {
 
 					// replace the placeholder
 					cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
+
 					return null; 
 				}
 				catch (IOException e) {
