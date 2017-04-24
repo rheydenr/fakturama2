@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.FileSystemException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -308,7 +309,7 @@ public class OfficeDocument {
 		pathOptions.add(PathOption.WITH_EXTENSION);
 
         boolean wasSaved = false;
-        textdoc.getOfficeMetadata().setCreator("Fakturama application");
+        textdoc.getOfficeMetadata().setCreator(msg.applicationName);
         textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
@@ -396,7 +397,11 @@ public class OfficeDocument {
 			public FileVisitResult visitFile(Path path,
 					BasicFileAttributes attrs) throws IOException {
 				if (pathMatcher.matches(path)) {
-					Files.deleteIfExists(path);
+					try {
+						Files.deleteIfExists(path);
+					} catch (FileSystemException e) {
+						log.warn(String.format("temporary File couldn't be deleted! %s", e.getMessage()));
+					}
 				}
 				return FileVisitResult.CONTINUE;
 			}
@@ -436,7 +441,7 @@ public class OfficeDocument {
 			if (ooPath != null) {
 				// FIXME How to create a PDF/A1 document?
 				String sysCall = String.format(
-						"\"%s\" -headless -convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
+						"\"%s\" --headless --convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
 						// program%sswriter File.separator,
 						ooPath.toString(), directory.toAbsolutePath(), // this is the PDF path
 						documentPath.toAbsolutePath());
@@ -637,8 +642,8 @@ public class OfficeDocument {
                     int countOfPlaceholders = cellPlaceholders.getLength();
                     for (int k = 0; k < countOfPlaceholders; k++) {
                       Node item = cellPlaceholders.item(0);
-                        PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
-                        fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
+                      PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                      fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                     }
                 }
             }
@@ -901,9 +906,8 @@ public class OfficeDocument {
 //					textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
 
 					// replace the placeholder
-					cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
+					return cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
 
-					return null; 
 				}
 				catch (IOException e) {
 					e.printStackTrace();

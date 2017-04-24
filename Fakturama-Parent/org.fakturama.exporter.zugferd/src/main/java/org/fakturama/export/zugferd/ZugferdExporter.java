@@ -785,20 +785,20 @@ public class ZugferdExporter {
 	 * @return
 	 */
 	private TradeSettlementMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
-		MonetaryAmount amount = documentSummary.getDiscountNet();
-		boolean isAllowance = amount.isPositiveOrZero();
+		MonetaryAmount allowanceAmount = documentSummary.getDiscountGross();
+		boolean isAllowance = allowanceAmount.isPositiveOrZero();
 		if(!isAllowance) {
-			amount = amount.multiply(-1.0);
+			allowanceAmount = allowanceAmount.multiply(-1.0);
 		}
 		MonetaryAmount totalAmount = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 		for (MonetaryAmount amt : netPricesPerVat.values()) {
 			totalAmount = totalAmount.add(amt);
 		}
-		MonetaryAmount taxBasisTotalAmount = totalAmount.add(documentSummary.getShippingNet()).subtract(amount);
+		MonetaryAmount taxBasisTotalAmount = totalAmount.add(documentSummary.getShippingNet()).subtract(allowanceAmount);
 		TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
 				.withLineTotalAmount(createAmount(totalAmount))
 				.withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
-				.withAllowanceTotalAmount(createAmount(amount))
+				.withAllowanceTotalAmount(createAmount(allowanceAmount))
 				.withTaxBasisTotalAmount(createAmount(taxBasisTotalAmount))
 				.withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
 				.withGrandTotalAmount(createAmount(taxBasisTotalAmount.add(documentSummary.getTotalVat())))
@@ -858,7 +858,6 @@ public class ZugferdExporter {
 		LogisticsServiceChargeType logisticsServiceCharge = factory.createLogisticsServiceChargeType()
 			.withDescription(createText(invoice.getShipping().getDescription()))			
 			.withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
-		
 		VAT shippingVat = invoice.getShipping().getShippingVat();
 		if(shippingVat != null) {
 			logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
@@ -920,10 +919,11 @@ public class ZugferdExporter {
 		// VAT description
 		// (unused) String key = vatSummaryItem.getVatName();
 		// It's the VAT value
+		MonetaryAmount basisAmount = netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()));
 		TradeTaxType retval = factory.createTradeTaxType()
-				.withCalculatedAmount(createAmount(vatSummaryItem.getVat()))
+				.withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
 				.withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
-				.withBasisAmount(createAmount(netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))))
+				.withBasisAmount(createAmount(basisAmount))
 				.withCategoryCode(createTaxCategoryCode("S"))   // Standard rate, FIXME for other uses!
 				//.withExemptionReason(TODO)
 				.withTypeCode(createTaxTypeCode("VAT"))
