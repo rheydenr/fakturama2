@@ -369,7 +369,7 @@ public class OfficeDocument {
             }
 
             // Update the document entry "pdfpath"
-            if (Files.exists(generatedPdf)) {
+            if (generatedPdf != null && Files.exists(generatedPdf)) {
                 document.setPdfPath(generatedPdf.toString());
             }
 
