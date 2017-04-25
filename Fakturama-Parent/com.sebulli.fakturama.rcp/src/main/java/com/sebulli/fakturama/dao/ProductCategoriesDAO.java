@@ -49,7 +49,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
      */
     public List<ProductCategory> findProductCategoryByName(String productCategory) {
     	List<ProductCategory> result = new ArrayList<ProductCategory>();
-        if(StringUtils.isNotEmpty(productCategory)) {
+        if(StringUtils.isNotEmpty(productCategory) && !StringUtils.equalsIgnoreCase(productCategory, "/")) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         	CriteriaQuery<ProductCategory> cq = cb.createQuery(getEntityClass());
         	Root<ProductCategory> rootEntity = cq.from(getEntityClass());
@@ -93,12 +93,16 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
         ProductCategory parentCategory = null;
         String category = "";
         try {
+        	
             for (int i = 0; i < splittedCategories.length; i++) {
+            	if(StringUtils.isBlank(splittedCategories[i])) {
+            		continue;
+            	}
                 category += "/" + splittedCategories[i];
                 List<ProductCategory> foundCategories = findProductCategoryByName(category);
                 ProductCategory searchCat = null;
                 if(!foundCategories.isEmpty()) {
-                searchCat = foundCategories.get(0);
+                	searchCat = foundCategories.get(0);
                 }
                 if (searchCat == null) {
                     // not found? Then create a new one.
@@ -111,7 +115,7 @@ public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
                 // save the parent and then dive deeper...
                 parentCategory = searchCat;
             } 
-            if(!getEntityManager().contains(parentCategory)) {
+            if(parentCategory != null && !getEntityManager().contains(parentCategory)) {
                 parentCategory = save(parentCategory);
             }
         }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -112,6 +113,7 @@ public class ProductsCsvImporter {
 	 */
 	public void importCSV(final String fileName, boolean test,boolean updateExisting, boolean importEmptyValues) {
 		modelFactory = FakturamaModelPackage.MODELFACTORY;
+		Date today = Calendar.getInstance().getTime();
 
 		// Result string
 		//T: Importing + .. FILENAME
@@ -198,9 +200,10 @@ public class ProductsCsvImporter {
 					product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
 
 					if (prop.getProperty("date_added").isEmpty()) {
-						product.setDateAdded(Calendar.getInstance().getTime());
+						product.setDateAdded(today);
 					} else {
-						product.setModified(Calendar.getInstance().getTime());
+						product.setDateAdded(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						product.setModified(today);
 					}
 					
 //					product.setPictureName(prop.getProperty("picturename"));
@@ -219,9 +222,9 @@ public class ProductsCsvImporter {
 					product.setVat(prodVat);
 
 					// Add the product to the data base
-					if (DateUtils.isSameDay(product.getDateAdded(), Calendar.getInstance().getTime())) {
+					if (DateUtils.isSameDay(product.getDateAdded(), today)) {
 						importedProducts++;
-					} else if (updateExisting) {
+					} else if (updateExisting || DateUtils.isSameDay(product.getModified(), today)) {
 						// Update data
 						updatedProducts++;
 					}

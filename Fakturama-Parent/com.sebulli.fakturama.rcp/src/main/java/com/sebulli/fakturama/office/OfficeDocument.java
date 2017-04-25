@@ -465,6 +465,8 @@ public class OfficeDocument {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
 				}
 			}
+		} catch (FileSystemException e) {
+			System.err.println("is nich!");
 		} catch (IOException e) {
 		    log.error(e, "Error moving the PDF document");
 		} catch (InterruptedException e) {

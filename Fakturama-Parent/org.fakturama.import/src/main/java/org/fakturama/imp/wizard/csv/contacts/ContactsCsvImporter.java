@@ -178,8 +178,8 @@ public class ContactsCsvImporter {
 						if (!prop.containsKey(requiredHeaders[i]))
 							//T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
 							result += NL 
-								+ MessageFormat.format(importMessages.wizardImportErrorNodatafound, Integer.toString(lineNr) 
-							    + "\"" + requiredHeaders[i] + "\""); 
+								+ MessageFormat.format(importMessages.wizardImportErrorNodatafound, Integer.toString(lineNr),
+							    "\"" + requiredHeaders[i] + "\""); 
 					}
 				}
 				else {
