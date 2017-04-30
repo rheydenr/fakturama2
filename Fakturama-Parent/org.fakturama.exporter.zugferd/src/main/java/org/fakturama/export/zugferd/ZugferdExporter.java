@@ -53,9 +53,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.XmpParsingException;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
@@ -147,6 +149,10 @@ public class ZugferdExporter {
     private IPreferenceStore preferences;
     
     @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+
+    @Inject
     private IEclipseContext eclipseContext;
     
     @Inject
@@ -191,7 +197,8 @@ public class ZugferdExporter {
 	public void initializeZugferdExporter() {
 
 //		super(ACTIONTEXT);
-
+//		ZFDefaultValuesInitializer make = ContextInjectionFactory.make(ZFDefaultValuesInitializer.class, eclipseContext);
+//		make.initializeDefaultPreferences();
 		factory = new ObjectFactory();
 
 		//T: Tool Tip Text
@@ -324,22 +331,27 @@ public class ZugferdExporter {
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
 			
-			// store file
-			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-			dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
-			dialog.setFilterPath(workspace); 
-			dialog.setOverwrite(true); 
+			String fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
 			
 			// extract filename for further use
 			// unify path name so that we can extract a filename
 			int lastIndexOfPathSeparator = pdfFile.replaceAll("\\\\", "/").lastIndexOf('/');
+			String fileName = ""; // filename w/o separator
 			if(lastIndexOfPathSeparator > -1) { // found! (else no separator was found)
-				String fileName = pdfFile.substring(lastIndexOfPathSeparator + 1); // filename w/o separator
-				dialog.setFileName("ZF-" + fileName);
+				fileName = pdfFile.substring(lastIndexOfPathSeparator + 1);
 			}
-			dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
-			String fileSelected = dialog.open();
+			if(StringUtils.isBlank(fileSelected)) {
+				// store file
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
+				dialog.setFilterPath(workspace); 
+				dialog.setOverwrite(true); 
+				dialog.setFileName("ZF-" + fileName);
+				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
+				fileSelected = dialog.open();
+			}
 			if (fileSelected != null) {
+				fileSelected += File.separator + "ZF-" + fileName;
 				pdfa3.save(fileSelected);
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled

@@ -142,7 +142,7 @@ public class LifecycleManager {
 //        splashService.setMessage("checks before startup");
         // at first we check if we have to migrate an older version
         // check if the db connection is set
-        if (StringUtils.isNoneEmpty(eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, ""))) {
+        if (StringUtils.isNotEmpty(eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, ""))) {
         	
         	// comment this if you want to generate or update the database with EclipseLink
         	// (but don't forget to enable it in persistence.xml)

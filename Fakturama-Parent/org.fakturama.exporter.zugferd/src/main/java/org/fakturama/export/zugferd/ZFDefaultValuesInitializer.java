@@ -14,7 +14,6 @@ import com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider;
 import com.sebulli.fakturama.preferences.IInitializablePreference;
 
 /**
- * @author Ralf
  *
  */
 public class ZFDefaultValuesInitializer extends AbstractPreferenceInitializer {
@@ -24,9 +23,9 @@ public class ZFDefaultValuesInitializer extends AbstractPreferenceInitializer {
      */
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore defaultValuesNode = FakturamaPreferenceStoreProvider.getInstance().getPreferenceStore();       
+        IPreferenceStore defaultValuesNode = ZFPreferenceStoreProvider.getInstance().getPreferenceStore();       
         
-        final Bundle bundle = FrameworkUtil.getBundle(com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider.class);
+        final Bundle bundle = FrameworkUtil.getBundle(ZFDefaultValuesInitializer.class);
         IInitializablePreference p = ContextInjectionFactory.make(ZugferdPreferences.class, EclipseContextFactory.getServiceContext(bundle.getBundleContext()));
         p.setInitValues(defaultValuesNode);
         

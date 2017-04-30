@@ -202,7 +202,7 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 
-        itemAccountTypeData = GlazedLists.readOnlyList(GlazedLists.eventList(itemAccountTypeDAO.findAll(true)));
+        itemAccountTypeData = GlazedLists.eventList(itemAccountTypeDAO.findAll(true));
 
         // get the visible properties to show in list view
         String[] propertyNames = itemAccountTypeDAO.getVisibleProperties();

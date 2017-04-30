@@ -200,12 +200,20 @@ public class ContactUtil {
 		        
         		// Get the format string
         		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
-        
+        		
         		// Hide the following countries
         		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
         		String[] hideCountries = hideCountriesString.split(",");
         		for (String hideCountry : hideCountries) {
-        			if (StringUtils.defaultString(contact.getAddress().getCountryCode()).equalsIgnoreCase(hideCountry)) {
+        			String hiddenCountry = "";
+        			if(hideCountry.length() <= 3) {
+	        			Optional<Locale> hiddenLocale = LocaleUtil.getInstance().findByCode(hideCountry);
+						if(hiddenLocale.isPresent()) {
+							hiddenCountry = hiddenLocale.orElse(Locale.ENGLISH).getDisplayCountry();
+						}
+        			}
+        			if (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.ENGLISH).getDisplayCountry(), hiddenCountry)) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         			}
         		}

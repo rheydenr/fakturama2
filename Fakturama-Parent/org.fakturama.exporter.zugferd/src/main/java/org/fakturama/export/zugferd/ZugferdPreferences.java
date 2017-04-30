@@ -17,13 +17,10 @@ package org.fakturama.export.zugferd;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.RadioGroupFieldEditor;
 
 import com.sebulli.fakturama.preferences.IInitializablePreference;
 
@@ -35,9 +32,6 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	@Inject
     @Translation
     protected ZFMessages msg;
-
-    @Inject @Optional
-    private IPreferenceStore preferences;
     
     /**
      * The Constructor.
@@ -54,7 +48,6 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	@Override
 	protected void createFieldEditors() {
 		addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
-		
 		// TODO enable if necessary
 //		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
 //			{ "1", "1" },
