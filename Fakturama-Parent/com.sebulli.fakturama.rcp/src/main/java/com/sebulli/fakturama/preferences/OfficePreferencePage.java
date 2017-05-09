@@ -116,7 +116,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	 *            TRUE: Write to the data base
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
-		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PATH, write);
+//		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PATH, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PATH_FORMAT, write);
@@ -148,18 +148,17 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		
 		// Set the default value
 		// Search for the Office installation only if there is no path set.
-		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
-		String defaultOOHome = "";
-
-			if (oOHome.isEmpty()){
-//				defaultOOHome = OfficeStarter.getHome();
-				if (defaultOOHome.isEmpty())
-					defaultOOHome = OSDependent.getOODefaultPath();
-			}
-			else {
-				defaultOOHome = OSDependent.getOODefaultPath();
-			}
-			node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
+//		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
+//		String defaultOOHome = "";
+//
+//		if (oOHome.isEmpty()) {
+//			// defaultOOHome = OfficeStarter.getHome();
+//			if (defaultOOHome.isEmpty())
+//				defaultOOHome = OSDependent.getOODefaultPath();
+//		} else {
+//			defaultOOHome = OSDependent.getOODefaultPath();
+//		}
+//		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
 	}
 
     public void loadOrSaveUserValuesFromDB(IEclipseContext context) {

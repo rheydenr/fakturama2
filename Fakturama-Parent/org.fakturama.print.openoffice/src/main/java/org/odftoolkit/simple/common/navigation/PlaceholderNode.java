@@ -138,7 +138,7 @@ public class PlaceholderNode extends Selection {
         // the simple case: if a placeholder sits in a node with only one child
         // AND the new text has no line breaks then we can simply replace this 
         // placeholder node with some text.
-        if(newText != null && !newText.contains("\n")) {
+        if(newText != null && !newText.contains("\r")) {
         	Span s = Span.getInstanceof(new TextSpanElement((OdfFileDom) parentNode.getOwnerDocument()));
         	s.setTextContent(newText);
         	parentNode.replaceChild(s.getOdfElement(), getNode());
@@ -180,7 +180,7 @@ public class PlaceholderNode extends Selection {
         }
         
         // make every line break a separate paragraph
-        StringTokenizer st = new StringTokenizer(StringUtils.defaultString(newText), "\n");
+        StringTokenizer st = new StringTokenizer(StringUtils.defaultString(newText), "\r");
         while (st.hasMoreTokens()) {
             String s = st.nextToken();
             // create a "template node" by cloning the original node

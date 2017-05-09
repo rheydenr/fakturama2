@@ -75,7 +75,7 @@ public class OfficeStarter {
             //T: Format: OpenOffice path ... is invalid.
                     MessageFormat.format(msg.officePathInvalid, preferencePath));
         } else {
-            ooPath = OSDependent.getOOBinary(preferencePath);
+        	ooPath = OSDependent.getOOBinary(preferencePath);
         }
         return ooPath;
     }

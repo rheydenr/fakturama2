@@ -120,6 +120,8 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 	                childNode.setNodeType(TreeObjectType.DEFAULT_NODE);
 	                if(entry instanceof DummyStringCategory) {
 	                    childNode.setDocType(((DummyStringCategory)entry).getDocType());
+//	                    double totalSum = documentsDao.getTotalFor(entry);
+//	                    childNode.setToolTip(totalSum);
 	                }
 	                node.addChild(childNode);
 	            }

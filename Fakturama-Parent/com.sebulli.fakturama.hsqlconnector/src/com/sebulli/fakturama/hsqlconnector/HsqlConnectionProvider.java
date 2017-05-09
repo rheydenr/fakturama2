@@ -2,7 +2,6 @@ package com.sebulli.fakturama.hsqlconnector;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
