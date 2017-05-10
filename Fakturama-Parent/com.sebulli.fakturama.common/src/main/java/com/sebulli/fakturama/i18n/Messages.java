@@ -768,6 +768,8 @@ public class Messages {
 	public String startMigrationConvert;
 	public String startMigrationEnd;
 	public String startMigrationWorking;
+	public String startMigrationWarning;
+	public String startMigrationReorganizeHint;
 	public String textFieldCategoryTooltip;
 	public String textFieldNameTooltip;
 	public String textFieldTextTooltip;

@@ -13,21 +13,27 @@
  */
 package org.fakturama.export.zugferd;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -47,13 +53,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.XmpParsingException;
-import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -111,6 +117,7 @@ import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -142,10 +149,14 @@ public class ZugferdExporter {
     private IPreferenceStore preferences;
     
     @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
+
+    @Inject
     private IEclipseContext eclipseContext;
     
-//    @Inject
-    protected Logger log;
+    @Inject
+    protected ILogger log;
 
     @Inject
 	private CEFACTCodeDAO measureUnits;
@@ -163,6 +174,8 @@ public class ZugferdExporter {
 	private static SimpleDateFormat sdfDest = new SimpleDateFormat("yyyyMMdd");
 	private ObjectFactory factory;
 	private String workspace;
+
+	private Map<String, MonetaryAmount> netPricesPerVat = new HashMap<>();;
 
 	/**
 	 * This is for distinguishing the different contact entries.
@@ -184,7 +197,8 @@ public class ZugferdExporter {
 	public void initializeZugferdExporter() {
 
 //		super(ACTIONTEXT);
-
+//		ZFDefaultValuesInitializer make = ContextInjectionFactory.make(ZFDefaultValuesInitializer.class, eclipseContext);
+//		make.initializeDefaultPreferences();
 		factory = new ObjectFactory();
 
 		//T: Tool Tip Text
@@ -212,7 +226,7 @@ public class ZugferdExporter {
 	 * 
 	 */
 	@Execute
-    public Object execute(Shell shell, IEclipseContext context, @Active MPart part) {
+    public Object execute(Shell shell, IEclipseContext context, EPartService partService) {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
 		d:\Programme\LibreOffice 5\share\registry\main.xcd
@@ -227,7 +241,7 @@ public class ZugferdExporter {
 		Idee: Vor dem Speichern den Wert umsetzen und am Schluß wieder zurücksetzen.
 		*/
 		this.shell = shell;
-		Document invoice = findSelectedInvoice(part);
+		Document invoice = findSelectedInvoice(partService);
 		if(invoice != null) {
 			// 1. check if PDF file exists
 			// (neu erzeugte PDFs sind automatisch PDF/A-1
@@ -236,6 +250,8 @@ public class ZugferdExporter {
 		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNosource);
 		    	return null;
 		    }
+		    
+		    netPricesPerVat.clear();
 		    
 		    if(!(new File(invoice.getPdfPath()).exists())) {
 		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, 
@@ -246,21 +262,7 @@ public class ZugferdExporter {
 			// 2. create XML file
 			CrossIndustryDocument root = createInvoiceFromDataset(invoice);
 
-			/* * * * * * TEST ONLY!!! * * * * * */
-//			Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
-//			try {
-//				BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);
-//				DOMResult res = new DOMResult();
-//				JAXBContext context = JAXBContext.newInstance(root.getClass());
-//				context.createMarshaller().marshal(root, res);
-//				Document doc = (Document) res.getNode();
-//				printDocument(doc, new StreamResult(newBufferedWriter));
-//			}
-//			catch (JAXBException | IOException | TransformerException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			/* * * * * *  END TEST ONLY!!! * * * * * */
+//			testOutput(root);
 			
 			// 3. merge XML & PDF/A-1 to PDF/A-3
 			boolean result = createPdf(invoice, root);
@@ -276,6 +278,32 @@ public class ZugferdExporter {
 			MessageDialog.openWarning(shell, msg.zugferdExportCommandTitle, msg.zugferdExportWarningChooseinvoice);
 		}
 		return null;
+	}
+	
+	/**
+	 * tests the generated export file (only for debugging purposes)  
+	 * 
+	 * @param root the document 
+	 */
+	@SuppressWarnings("unused")
+	private void testOutput(CrossIndustryDocument root) {
+		/* * * * * * TEST ONLY!!! * * * * * */
+		Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
+		try(BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);) {
+			
+			DOMResult res = new DOMResult();
+			JAXBContext testContext = JAXBContext.newInstance(root.getClass());
+			testContext.createMarshaller().marshal(root, res);
+			org.w3c.dom.Document doc = (org.w3c.dom.Document) res.getNode();
+			printDocument(doc, new StreamResult(newBufferedWriter));
+		}
+		catch (JAXBException | IOException | TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/* * * * * *  END TEST ONLY!!! * * * * * */
+		
+		
 	}
 
 	/**
@@ -303,39 +331,31 @@ public class ZugferdExporter {
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
 			
-			// store file
-			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-			dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
-			dialog.setFilterPath(workspace);
+			String fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
+			
 			// extract filename for further use
-			int lastIndexOfPathSeparator = pdfFile.lastIndexOf('/');
+			// unify path name so that we can extract a filename
+			int lastIndexOfPathSeparator = pdfFile.replaceAll("\\\\", "/").lastIndexOf('/');
+			String fileName = ""; // filename w/o separator
 			if(lastIndexOfPathSeparator > -1) { // found! (else no separator was found)
-				String fileName = pdfFile.substring(lastIndexOfPathSeparator + 1); // filename w/o separator
-				dialog.setFileName("ZF-" + fileName);
+				fileName = pdfFile.substring(lastIndexOfPathSeparator + 1);
 			}
-			dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
-			boolean retry = true;
-			while(retry) {
-				String fileSelected = dialog.open();
-				if (fileSelected != null) {
-					Path outFile = Paths.get(fileSelected);
-					if(Files.exists(outFile)) {
-						boolean result = MessageDialog.openQuestion(shell, msg.zugferdExportCommandTitle, msg.zugferdExportWarningOverwrite);
-						if(result) {
-							pdfa3.save(fileSelected);
-							//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
-							retry = false;
-						} else {
-							retry = true;
-						}
-					} else {
-						pdfa3.save(fileSelected);
-						retry = false;
-					}
-				} else {  // dialog cancelled
-					retry = false;
-					retval = false;
-				}
+			if(StringUtils.isBlank(fileSelected)) {
+				// store file
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
+				dialog.setFilterPath(workspace); 
+				dialog.setOverwrite(true); 
+				dialog.setFileName("ZF-" + fileName);
+				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
+				fileSelected = dialog.open();
+			}
+			if (fileSelected != null) {
+				fileSelected += File.separator + "ZF-" + fileName;
+				pdfa3.save(fileSelected);
+				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
+			} else {  // dialog cancelled
+				retval = false;
 			}
 		}
 		catch (JAXBException | IOException | TransformerException | BadFieldValueException | XmpParsingException | XPathExpressionException e) {
@@ -357,9 +377,7 @@ public class ZugferdExporter {
 	private CrossIndustryDocument createInvoiceFromDataset(Document invoice) {
 		// Recalculate the sum of the document before exporting
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-	    DocumentSummary documentSummary;
-
-		documentSummary = documentSummaryCalculator.calculate(invoice);
+	    DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
 
 		CrossIndustryDocument root = factory.createCrossIndustryDocument();
 		// at first create a reasonable context
@@ -469,8 +487,8 @@ public class ZugferdExporter {
 		}
 		tradeTransaction.setApplicableSupplyChainTradeDelivery(tradeDelivery);
 		String currency = getGlobalCurrencyCode();
-		
-		// Verwendungszweck, Kassenzeichen 
+//		
+//		// Verwendungszweck, Kassenzeichen 
 		SupplyChainTradeSettlementType tradeSettlement = factory.createSupplyChainTradeSettlementType()
 				.withPaymentReference(createText(invoice.getName())) /* customerref ? */
 				.withInvoiceCurrencyCode(createCurrencyCode(currency));
@@ -479,9 +497,9 @@ public class ZugferdExporter {
 
 		Contact contact = invoice.getBillingContact();
 		DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact);
-		IDType id = contact.getMandateReference() != null ? 
+		IDType id = StringUtils.isNotBlank(contact.getMandateReference()) ? 
 				factory.createIDType().withValue(contact.getMandateReference())
-				.withSchemeAgencyID(preferences.getString("YOURCOMPANY_CREDITORID")) : 
+				.withSchemeAgencyID(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID)) : 
 					null;
 		TradeSettlementPaymentMeansType paymentType = factory.createTradeSettlementPaymentMeansType()
 				.withTypeCode(createPaymentTypeCode(invoice))
@@ -499,12 +517,12 @@ public class ZugferdExporter {
 		}
 		tradeSettlement.getSpecifiedTradeSettlementPaymentMeans().add(paymentType);
 
-		// Get the VAT summary of the UniDataSet document
-		VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
-		vatSummarySetManager.add(invoice, 1.0);
-		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
-			// für jeden Steuerbetrag muß es einen eigenen Eintrag geben
-			tradeSettlement.getApplicableTradeTax().add(createTradeTax(vatSummaryItem));
+		// Get the items of the UniDataSet document
+		List<DocumentItem> itemDataSets = invoice.getItems();
+		for (int row = 0; row < itemDataSets.size(); row++) {
+			// Get the item
+			DocumentItem item = itemDataSets.get(row);
+			tradeTransaction.getIncludedSupplyChainTradeLineItem().add(createLineItem(item, row + 1));
 		}
 		
 		// Detailinformationen zur Rechnungsperiode 
@@ -517,12 +535,12 @@ public class ZugferdExporter {
 		
 		tradeTransaction.setApplicableSupplyChainTradeSettlement(tradeSettlement);
 
-		// Get the items of the UniDataSet document
-		List<DocumentItem> itemDataSets = invoice.getItems();
-		for (int row = 0; row < itemDataSets.size(); row++) {
-			// Get the item
-			DocumentItem item = itemDataSets.get(row);
-			tradeTransaction.getIncludedSupplyChainTradeLineItem().add(createLineItem(item, row + 1));
+		// Get the VAT summary of the UniDataSet document
+		VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+		vatSummarySetManager.add(invoice, Double.valueOf(1.0));
+		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
+			// für jeden Steuerbetrag muß es einen eigenen Eintrag geben
+			tradeSettlement.getApplicableTradeTax().add(createTradeTax(vatSummaryItem));
 		}
 		root.setSpecifiedSupplyChainTradeTransaction(tradeTransaction);
 	    return root;
@@ -546,26 +564,28 @@ public class ZugferdExporter {
      * @return
      */
     private String createSimpleDateTime(Date dateValue) {
-	    return dateValue + "T00:00:00";
+    	String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .format(dateValue);
+	    return formatted;
     }
 
 	/**
      * @return
      */
     private String getGlobalCurrencyCode() {
-	    String currency = preferences.getString(Constants.PREFERENCE_GENERAL_CURRENCY);
-
-	    // TODO later on we will use JSR 354...
-	    switch (currency) {
-	    case "€":
-	    	currency = "EUR";
-	    	break;
-	    case "$":
-	    	currency = "USD";
-	    	break;
-	    default:
-	    	break;
-	    }
+	    String currency = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+//
+//	    // TODO later on we will use JSR 354...
+//	    switch (currency) {
+//	    case "€":
+//	    	currency = "EUR";
+//	    	break;
+//	    case "$":
+//	    	currency = "USD";
+//	    	break;
+//	    default:
+//	    	break;
+//	    }
 	    return currency;
     }
 	
@@ -638,7 +658,7 @@ public class ZugferdExporter {
 	    return factory.createQuantityType()
 	    		.withValue(String.format(Locale.ENGLISH, "%.4f", value))
 	    		// use a default value since this field shouldn't be empty
-	    		.withUnitCode(StringUtils.isEmpty(unit) ? "C62" : unit);
+	    		.withUnitCode(StringUtils.isBlank(unit) ? "C62" : unit);
     }
 
 	/**
@@ -755,8 +775,8 @@ public class ZugferdExporter {
 	private String determineQuantityUnit(String userdefinedQuantityUnit) {
 		String isoUnit = "";
 		if(StringUtils.isNotBlank(userdefinedQuantityUnit) && measureUnits!= null)	{
-			CEFACTCode code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
-			isoUnit = code.getCode();
+			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
+			isoUnit = code.isPresent() ? code.get().getCode() : "";
 		}
 		return isoUnit;
 	}
@@ -777,18 +797,23 @@ public class ZugferdExporter {
 	 * @return
 	 */
 	private TradeSettlementMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
-		MonetaryAmount amount = documentSummary.getDiscountNet();
-		boolean isAllowance = amount.isPositiveOrZero();
+		MonetaryAmount allowanceAmount = documentSummary.getDiscountGross();
+		boolean isAllowance = allowanceAmount.isPositiveOrZero();
 		if(!isAllowance) {
-			amount = amount.multiply(-1.0);
+			allowanceAmount = allowanceAmount.multiply(-1.0);
 		}
+		MonetaryAmount totalAmount = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
+		for (MonetaryAmount amt : netPricesPerVat.values()) {
+			totalAmount = totalAmount.add(amt);
+		}
+		MonetaryAmount taxBasisTotalAmount = totalAmount.add(documentSummary.getShippingNet()).subtract(allowanceAmount);
 		TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
-				.withLineTotalAmount(createAmount(documentSummary.getItemsNet()))
+				.withLineTotalAmount(createAmount(totalAmount))
 				.withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
-				.withAllowanceTotalAmount(createAmount(amount))
-				.withTaxBasisTotalAmount(createAmount(documentSummary.getTotalNet()))
+				.withAllowanceTotalAmount(createAmount(allowanceAmount))
+				.withTaxBasisTotalAmount(createAmount(taxBasisTotalAmount))
 				.withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
-				.withGrandTotalAmount(createAmount(documentSummary.getTotalGross()))
+				.withGrandTotalAmount(createAmount(taxBasisTotalAmount.add(documentSummary.getTotalVat())))
 			//	.withTotalPrepaidAmount(createAmount(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit())))
 			//	.withDuePayableAmount(createAmount(documentSummary.getTotalGross().subtract(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit()))
 			//			)
@@ -804,10 +829,26 @@ public class ZugferdExporter {
 		Price price = new Price(item);
 		TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
 				.withLineTotalAmount(createAmount(price.getTotalNetRounded()));
+		
+		storeNetPrice(price.getVatPercent(), price.getTotalNetRounded());
+
 		// alle anderen hier angebotenen Felder resultieren nur aus dem XSD, die sind in der Spezifikation
 		// gar nicht aufgeführt (nur an anderer Stelle, wo sie sinnvoller sind)
 	    return retval;
     }
+
+	/**
+	 * Stores the net price value per VAT for later use
+	 * @param vatPercent
+	 * @param totalNetRounded
+	 */
+	private void storeNetPrice(String vatPercent, MonetaryAmount totalNetRounded) {
+		MonetaryAmount newAmount = totalNetRounded;
+		if(netPricesPerVat.get(vatPercent) != null) {
+			newAmount = netPricesPerVat.get(vatPercent).add(totalNetRounded);
+		}
+		netPricesPerVat.put(vatPercent, newAmount);
+	}
 
 	private TradePaymentTermsType createTradePaymentTerms(Document invoice, DocumentSummary documentSummary) {
 		LocalDateTime dueDate = 
@@ -829,7 +870,6 @@ public class ZugferdExporter {
 		LogisticsServiceChargeType logisticsServiceCharge = factory.createLogisticsServiceChargeType()
 			.withDescription(createText(invoice.getShipping().getDescription()))			
 			.withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
-		
 		VAT shippingVat = invoice.getShipping().getShippingVat();
 		if(shippingVat != null) {
 			logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
@@ -847,13 +887,18 @@ public class ZugferdExporter {
 	private TradeAllowanceChargeType createTradeAllowance(DocumentItem item) {
 		Double discountPercent = item.getItemRebate();
 		Double amount = item.getPrice() * discountPercent;
+		Price price = new Price(item);
+		double factor = Math.pow(10, DEFAULT_AMOUNT_SCALE);
+		double s = Math.round(price.getUnitNet().multiply(factor).getNumber().doubleValue()) / factor;
+		double t = Math.round(price.getUnitNetDiscounted().multiply(factor).getNumber().doubleValue()) / factor;
+		double u = Math.round((s-t) * factor) / factor;
 		boolean isAllowance = amount > 0;
 		if(!isAllowance) {
 			amount *= -1;
 		}
 		return factory.createTradeAllowanceChargeType()
 			.withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
-			.withActualAmount(createAmount(Money.of(amount, DataUtils.getInstance().getDefaultCurrencyUnit()), DEFAULT_AMOUNT_SCALE, true))
+			.withActualAmount(createAmount(Money.of(u/*amount*/, DataUtils.getInstance().getDefaultCurrencyUnit()), DEFAULT_AMOUNT_SCALE, true))
 //			.withBasisAmount(createAmount(item.getDoubleValueByKey("price")))
 			.withReason(createText(msg.zugferdExportLabelRebate));
 //			.withCategoryTradeTax(createTradeTax(item.getDoubleValueByKey("vatvalue")));
@@ -867,7 +912,7 @@ public class ZugferdExporter {
 		}
 		return factory.createTradeAllowanceChargeType()
 			.withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
-			.withActualAmount(createAmount(amount, 4))
+			.withActualAmount(createAmount(amount, 2 /*DEFAULT_AMOUNT_SCALE*/))
 //			.withBasisAmount(createAmount(summary.getItemsNet().asRoundedDouble(), true))
 			.withReason(createText(msg.zugferdExportLabelRebate))
 // TODO which VAT?			.withCategoryTradeTax(createTradeTax(item.getDoubleValueByKey("vatvalue")));
@@ -886,11 +931,11 @@ public class ZugferdExporter {
 		// VAT description
 		// (unused) String key = vatSummaryItem.getVatName();
 		// It's the VAT value
-		
+		MonetaryAmount basisAmount = netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()));
 		TradeTaxType retval = factory.createTradeTaxType()
-				.withCalculatedAmount(createAmount(vatSummaryItem.getNet().multiply(vatSummaryItem.getVatPercent())))
+				.withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
 				.withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
-				.withBasisAmount(createAmount(vatSummaryItem.getNet()))
+				.withBasisAmount(createAmount(basisAmount))
 				.withCategoryCode(createTaxCategoryCode("S"))   // Standard rate, FIXME for other uses!
 				//.withExemptionReason(TODO)
 				.withTypeCode(createTaxTypeCode("VAT"))
@@ -946,14 +991,14 @@ public class ZugferdExporter {
 	private AmountType createAmount(MonetaryAmount amount, int scale, boolean withCurrency) {
 		return factory.createAmountType()
 				.withValue(String.format(Locale.ENGLISH, "%."+scale+"f", amount.getNumber().doubleValue()))
-				.withCurrencyID(withCurrency ? getGlobalCurrencyCode() : null);		
+				.withCurrencyID(withCurrency ? amount.getCurrency().getCurrencyCode() : null);		
 	}
 
 	private CreditorFinancialInstitutionType createCreditorFinancialInstitution() {
 		return factory.createCreditorFinancialInstitutionType()
-				.withBICID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BIC")))
+				.withBICID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC)))
 //				.withGermanBankleitzahlID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BANKCODE")))
-				.withName(createText(preferences.getString("YOURCOMPANY_COMPANY_BANK")));
+				.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK)));
 	}
 
 	private DebtorFinancialInstitutionType createDebtorFinancialInstitution(Document invoice) {
@@ -967,10 +1012,10 @@ public class ZugferdExporter {
 
 	private CreditorFinancialAccountType createCreditorAccount() {
 		CreditorFinancialAccountType retval = null;
-		if(!StringUtils.isEmpty(preferences.getString("YOURCOMPANY_COMPANY_IBAN")) 
+		if(!StringUtils.isEmpty(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN)) 
 				|| !StringUtils.isEmpty(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"))) {
 			retval = factory.createCreditorFinancialAccountType()
-	        		.withIBANID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_IBAN")))/*
+	        		.withIBANID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN)))/*
 	        		.withProprietaryID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR")))*/;
 		}
 		return retval;
@@ -1021,16 +1066,16 @@ public class ZugferdExporter {
 		TaxRegistrationType retval = null;
 		switch (contactType) {
 		case SELLER:
-			String companyVatNo = preferences.getString("YOURCOMPANY_COMPANY_VATNR");
+			String companyVatNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR);
 			if(!StringUtils.isEmpty(companyVatNo)) {
-				retval = factory.createTaxRegistrationType();
-				retval.setID(createIdWithSchemeFromString(getNullCheckedValue(companyVatNo), "VA"));
+				retval = factory.createTaxRegistrationType()
+						.withID(createIdWithSchemeFromString(getNullCheckedValue(companyVatNo), "VA"));
 			}
 			break;
 		case BUYER:
 			if(!StringUtils.isEmpty(invoice.getBillingContact().getVatNumber())) {
-				retval = factory.createTaxRegistrationType();
-				retval.setID(createIdWithSchemeFromString(getNullCheckedValue(invoice.getBillingContact().getVatNumber()), "VA"));
+				retval = factory.createTaxRegistrationType()
+						.withID(createIdWithSchemeFromString(getNullCheckedValue(invoice.getBillingContact().getVatNumber()), "VA"));
 			}
 			break;
 		default:
@@ -1058,13 +1103,13 @@ public class ZugferdExporter {
 		TradeAddressType retval = null;
 		switch (contactType) {
 		case SELLER:
-			String countryCode = preferences.getString("YOURCOMPANY_COMPANY_COUNTRY");
-			
+			String countryCode = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY);
+
 			retval = factory.createTradeAddressType()
-				.withPostcodeCode(createCode(preferences.getString("YOURCOMPANY_COMPANY_ZIP")))
-				.withLineOne(createText(preferences.getString("YOURCOMPANY_COMPANY_STREET")))
+				.withPostcodeCode(createCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP)))
+				.withLineOne(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET)))
 	//		.withLineTwo(is empty at the moment);
-				.withCityName(createText(preferences.getString("YOURCOMPANY_COMPANY_CITY")))
+				.withCityName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY)))
 				.withCountryID(createCountry(countryCode));
 				//.withCountryID(createCountry(preferences.getString("YOURCOMPANY_COMPANY_COUNTRY")));
 			break;
@@ -1086,6 +1131,9 @@ public class ZugferdExporter {
 	}
 
 	private CountryIDType createCountry(String value) {
+		if(StringUtils.length(value) > 2) {
+			value = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
+		}
 		return factory.createCountryIDType().withValue(value);
 	}
 
@@ -1175,12 +1223,12 @@ public class ZugferdExporter {
 //	    return findSelectedInvoice() != null;
 //	}
 	
-	private Document findSelectedInvoice(MPart currentPart) {
+	private Document findSelectedInvoice(EPartService partService) {
 		Document retval = null;
 		
 		// at first we try to use an open editor
-		if(currentPart != null && currentPart.getElementId().equalsIgnoreCase("com.sebulli.fakturama.editors.documentEditor")) {
-			DocumentEditor editor = (DocumentEditor)currentPart.getObject();
+		if(partService != null && StringUtils.equalsIgnoreCase(partService.getActivePart().getElementId(), "com.sebulli.fakturama.editors.documentEditor")) {
+			DocumentEditor editor = (DocumentEditor)partService.getActivePart().getObject();
 			retval = editor.getDocument();
 		} else if(selectionService != null && selectionService.getSelection() != null) {
 			List<Document> tmpList = (List<Document>) selectionService.getSelection();

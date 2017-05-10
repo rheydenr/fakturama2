@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.equinox.preferences;bundle-version="3.6.1",
  org.javamoney.osgi;bundle-version="1.0.1",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
- com.sebulli.fakturama.rcp;bundle-version="2.0.0"
+ com.sebulli.fakturama.rcp;bundle-version="2.0.0",
+ org.eclipse.e4.core.di.extensions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: OSGI-INF/l10n/zfbundle
 Export-Package: org.fakturama.export.zugferd
@@ -33,3 +34,4 @@ Import-Package: com.sebulli.fakturama.model,
  com.sebulli.fakturama.util,
  org.eclipse.e4.ui.model,
  org.eclipse.e4.ui.model.application.ui.basic
+Bundle-Activator: org.fakturama.export.zugferd.Activator

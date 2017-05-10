@@ -82,7 +82,7 @@
                         <goals>
                             <goal>generate</goal>
                         </goals><configuration>
-                                            <forceRegenerate>true</forceRegenerate>
+                                            <!-- forceRegenerate>true</forceRegenerate   -->
                     <verbose>true</verbose>
                     <schemaDirectory>src/main/resources</schemaDirectory>                    
                     <generateDirectory>src-gen/main/java</generateDirectory>

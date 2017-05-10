@@ -132,8 +132,8 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_ITEMNR, true);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_QUNIT, false);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_DESCRIPTION, true);
-		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, 2);
-		node.setDefault(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, 1);
+		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, Integer.valueOf(2));
+		node.setDefault(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_VAT, true);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, false);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, true);

@@ -899,10 +899,17 @@ public class Placeholders {
      * @return
      */
     public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
-	    String paymenttext = document.getPayment().getPaidText();
-	    paymenttext = StringUtils.replace(paymenttext, "<PAID.VALUE>", DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()));
-	    paymenttext = StringUtils.replace(paymenttext, "<PAID.DATE>", DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
-	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DAYS>", Integer.toString(document.getDueDays()));
+	    // String paymenttext = document.getPayment().getPaidText();
+	    String paymenttext = document.getAdditionalInfo().getPaymentText();
+	    if(paymenttext == null && document.getPayment() != null) {
+	    	// try to get the default payment text from payment entry, if one exists
+	    	paymenttext = document.getPaid() ? document.getPayment().getPaidText() : document.getPayment().getUnpaidText();
+	    }
+	    paymenttext = StringUtils.replaceEach(paymenttext, new String[]{"<PAID.VALUE>", "<PAID.DATE>", "<DUE.DAYS>"}, 
+	    		new String[]{
+	    				DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()), 
+	    				DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()), 
+	    				Integer.toString(document.getDueDays())});
 	    LocalDateTime dueDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DATE>", dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 	    
@@ -951,6 +958,7 @@ public class Placeholders {
 	    
 	    // placeholder for total sum
 	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.NAME>", document.getName());
 	    return paymenttext;
     }
 

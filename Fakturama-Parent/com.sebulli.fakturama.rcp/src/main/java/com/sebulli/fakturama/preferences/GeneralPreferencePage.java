@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.preferences;
 
-import java.awt.FontMetrics;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,6 +36,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -45,7 +45,6 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -127,14 +126,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR), 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING), 
         		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
-
-        GC gc = new GC(example);
-        org.eclipse.swt.graphics.FontMetrics fm = gc.getFontMetrics();
-        int width = 10 * fm.getAverageCharWidth();
-        int height = fm.getHeight();
-        gc.dispose();
-        example.setSize(example.computeSize(400, height));
-
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(example);
                 
 //        example.setSize(400, SWT.DEFAULT);
 
@@ -346,8 +338,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
-        node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2);
-        node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
+        node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(2));
+        node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));

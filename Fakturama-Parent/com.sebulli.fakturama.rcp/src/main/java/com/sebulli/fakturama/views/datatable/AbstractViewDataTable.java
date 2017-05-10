@@ -599,6 +599,9 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	public void removeSelectedEntry() {
         @SuppressWarnings("unchecked")
 		List<T> selection = (List<T>)selectionService.getSelection();
+        if(selection == null || selection.isEmpty()) {
+        	return;
+        }
 		int selectedEntries = selection.size();
 		boolean confirmation = false;
 		/*

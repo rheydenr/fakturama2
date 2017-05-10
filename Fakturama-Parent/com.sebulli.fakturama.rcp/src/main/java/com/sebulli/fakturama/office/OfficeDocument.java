@@ -19,10 +19,16 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.FileSystemException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -85,8 +91,6 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  * placeholders with the document data.
  */
 public class OfficeDocument {
-
-//	private static final int TIME_TO_WAIT_FOR_PROCESS = 3000;
 
 	/** The UniDataSet document, that is used to fill the OpenOffice document */ 
 	private Document document;
@@ -163,6 +167,9 @@ public class OfficeDocument {
 			if (openExisting)
 				return;
 
+			// remove previous images            
+            cleanup();
+			
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
 
@@ -176,9 +183,7 @@ public class OfficeDocument {
                             .of(textdoc)
                             .withDelimiters(true)
                             .withTableIdentifiers(PlaceholderTableType.ITEMS_TABLE, 
-                                    PlaceholderTableType.VATLIST_TABLE/*,
-                                    PlaceholderTableType.DISCOUNT_TABLE, 
-                                    PlaceholderTableType.DEPOSIT_TABLE*/)
+                                    PlaceholderTableType.VATLIST_TABLE)
                             .build();
             List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
 
@@ -186,13 +191,11 @@ public class OfficeDocument {
 			// Collect all placeholders
 			allPlaceholders = placeholderNodes.stream().map(pn -> pn.getNodeText()).collect(Collectors.toList());
 			
-			
 //			// TEST ONLY *********************************************
 //			for (PlaceholderNode placeholderNode : placeholderNodes) {
 //                System.out.println(placeholderNode.getNodeText() + " is child of " + placeholderNode.getNode().getParentNode());
 //            }
-//			
-//			
+			
 			// Fill the property list with the placeholder values
 			properties = new Properties();
 			setCommonProperties();
@@ -202,13 +205,26 @@ public class OfficeDocument {
 
 			// Get the items of the UniDataSet document
 			List<DocumentItem> itemDataSets = document.getItems();
+			Set<Node> nodesMarkedForRemoving = new HashSet<>();
 			
 	        for (PlaceholderNode placeholderNode : placeholderNodes) {
 	            if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
 	            switch (placeholderNode.getNodeType()) {
 	            case NORMAL_NODE:
+	    			// Remove the discount cells, if there is no discount set
+	    			// Remove the Deposit & the Finalpayment Row if there is no Deposit
+	                if (StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DISCOUNT_TABLE.getKey()) 
+	                		&& documentSummary.getDiscountNet().isZero()
+	                	|| StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DEPOSIT_TABLE.getKey())
+	                		&& documentSummary.getDeposit().isZero()
+	                	) {
+						// store parent node for later removing
+						// we have to remember the parent node since the current node is replaced (could be orphaned)
+						TableTableRowElement row = (TableTableRowElement)placeholderNode.findParentNode(TableTableRowElement.ELEMENT_NAME.getQName(), placeholderNode.getNode());
+						nodesMarkedForRemoving.add(row);
+					}
 	              // Replace all other placeholders
-	                  replaceText(placeholderNode);
+	                replaceText(placeholderNode);
 	                break;
 	            case TABLE_NODE:
 	            	// process only if that table wasn't processed
@@ -254,8 +270,13 @@ public class OfficeDocument {
 
 	            default:
 	                break;
-	            }}
-	        
+	            }
+	        }
+            
+			for (Node removeNode : nodesMarkedForRemoving) {
+				removeNode.getParentNode().removeChild(removeNode);
+			}
+
 //			// Save the document
 			if(saveOODocument(textdoc)) {
 			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
@@ -288,14 +309,14 @@ public class OfficeDocument {
 		pathOptions.add(PathOption.WITH_EXTENSION);
 
         boolean wasSaved = false;
-        textdoc.getOfficeMetadata().setCreator("Fakturama application");
-        textdoc.getOfficeMetadata().setTitle("Fakturama invoice");
+        textdoc.getOfficeMetadata().setCreator(msg.applicationName);
+        textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
-            createOutputDirectory(TargetFormat.ODT);
+            createOutputDirectory(documentPath.getParent());
 
             try (OutputStream fs = Files.newOutputStream(documentPath);) {
 
@@ -315,7 +336,7 @@ public class OfficeDocument {
         	if(generatedPdf != null && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
         		try {
 					Desktop.getDesktop().open(generatedPdf.toFile());
-				} catch (IOException e) {
+				} catch (IOException | IllegalArgumentException e) {
 	                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
 				}
         	}
@@ -348,13 +369,12 @@ public class OfficeDocument {
             }
 
             // Update the document entry "pdfpath"
-            Path filename = fo.getDocumentPath(pathOptions, TargetFormat.PDF, document);
-            if (Files.exists(filename)) {
-                document.setPdfPath(filename.toString());
+            if (generatedPdf != null && Files.exists(generatedPdf)) {
+                document.setPdfPath(generatedPdf.toString());
             }
 
             try {
-                documentsDAO.update(document);
+                documentsDAO.update(document);                
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -365,6 +385,40 @@ public class OfficeDocument {
         
         return wasSaved;
     }
+
+	private void cleanup() throws IOException {
+		// remove temp images
+		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
+				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
+		
+		Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
+			
+			@Override
+			public FileVisitResult visitFile(Path path,
+					BasicFileAttributes attrs) throws IOException {
+				if (pathMatcher.matches(path)) {
+					try {
+						Files.deleteIfExists(path);
+					} catch (FileSystemException e) {
+						log.warn(String.format("temporary File couldn't be deleted! %s", e.getMessage()));
+					}
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFileFailed(Path file, IOException exc)
+					throws IOException {
+				return FileVisitResult.CONTINUE;
+			}
+			
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				return FileVisitResult.SKIP_SIBLINGS;
+			}
+		});
+		
+	}
 
 	/**
 	 * Creates the PDF.
@@ -377,8 +431,7 @@ public class OfficeDocument {
 		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
-		createOutputDirectory(targetFormat);
-		Path directory = fo.getDocumentPath(Collections.emptySet(), targetFormat, document);
+		Path directory = createOutputDirectory(targetFormat);
 
 		try {
 
@@ -388,7 +441,7 @@ public class OfficeDocument {
 			if (ooPath != null) {
 				// FIXME How to create a PDF/A1 document?
 				String sysCall = String.format(
-						"\"%s\" -headless -convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
+						"\"%s\" --headless --convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
 						// program%sswriter File.separator,
 						ooPath.toString(), directory.toAbsolutePath(), // this is the PDF path
 						documentPath.toAbsolutePath());
@@ -396,9 +449,7 @@ public class OfficeDocument {
 				// pdfFilter.getPDFFilterProperties().setPdfVersion(1);
 
 				ProcessBuilder pb = new ProcessBuilder(sysCall);
-
 				Process p = pb.start();
-
 				p.waitFor();
 
 				// now, if the file name templates are different, we have to
@@ -408,12 +459,14 @@ public class OfficeDocument {
 				pathOptions.add(PathOption.WITH_EXTENSION);
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 				Path tmpPdf = Paths.get(directory.toString(),
-						documentPath.getFileName().toString().replaceAll("\\.ODT$", ".PDF"));
+						documentPath.getFileName().toString().replaceAll("\\.ODT$|\\.odt$", TargetFormat.PDF.getExtension()));
 
 				if (/* !Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
 				}
 			}
+		} catch (FileSystemException e) {
+			System.err.println("is nich!");
 		} catch (IOException e) {
 		    log.error(e, "Error moving the PDF document");
 		} catch (InterruptedException e) {
@@ -422,15 +475,8 @@ public class OfficeDocument {
 		}
 		return pdfFilename;
 	}
-
-	/**
-	 * Creates the output directory, if necessary.
-	 *
-	 * @param targetFormat the target document format
-	 */
-	private void createOutputDirectory(TargetFormat targetFormat) {
-		Set<PathOption> pathOptions = Collections.emptySet();
-		Path directory = fo.getDocumentPath(pathOptions, targetFormat, document);
+	
+	private void createOutputDirectory(Path directory) {
 		if (Files.notExists(directory)) {
 		    try {
 		        Files.createDirectories(directory);
@@ -438,6 +484,19 @@ public class OfficeDocument {
 		    	log.error(e, "could not create output directory: " + directory.toString());
 		    }
 		}
+	}
+
+	/**
+	 * Creates the output directory, if necessary.
+	 *
+	 * @param targetFormat the target document format
+	 * @return the path that was created
+	 */
+	private Path createOutputDirectory(TargetFormat targetFormat) {
+		Set<PathOption> pathOptions = Collections.emptySet();
+		Path directory = fo.getDocumentPath(pathOptions, targetFormat, document);
+		createOutputDirectory(directory);
+		return directory;
 	}
 
 	
@@ -528,9 +587,10 @@ public class OfficeDocument {
 		else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
 			textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
 		}
-		else
+		else {
 			return null;
-
+		}
+		
 		// Set the text
 		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
 
@@ -584,8 +644,8 @@ public class OfficeDocument {
                     int countOfPlaceholders = cellPlaceholders.getLength();
                     for (int k = 0; k < countOfPlaceholders; k++) {
                       Node item = cellPlaceholders.item(0);
-                        PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
-                        fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
+                      PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                      fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                     }
                 }
             }
@@ -692,20 +752,6 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.VAT.DESCRIPTION")) {
 			value = item.getItemVat().getDescription();
 		}
-
-		// Get the item's category
-		else if (item.getProduct() != null) {
-			Product product = item.getProduct();
-			if(key.equals("ITEM.UNIT.CATEGORY")) {
-				value = product.getCategories().getName();
-			} else if(key.equals("ITEM.UNIT.UDF01")) {
-				value = product.getCdf01();
-			} else if(key.equals("ITEM.UNIT.UDF02")) {
-				value = product.getCdf02();
-			} else if(key.equals("ITEM.UNIT.UDF03")) {
-				value = product.getCdf03();
-			}
-		}
 		
 		// Get the item net value
 		else if (key.equals("ITEM.UNIT.NET")) {
@@ -795,8 +841,8 @@ public class OfficeDocument {
 				double pixelRatio = 1.0;
 			      
 				// Read the image a first time to get width and height
-				try {
-					ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());
+				try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
+					
 					BufferedImage image = ImageIO.read(imgStream);
 					pictureHeight = image.getHeight();
 					pictureWidth = image.getWidth();
@@ -826,7 +872,7 @@ public class OfficeDocument {
 					 * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
 					 * we have to convert it to a temporary image and insert that into the document.
 					 */
-					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage");
+					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage"+item.getDescription().hashCode());
 					
 					// FIXME Scaling doesn't work! :-(
 					// Therefore we "scale" the image manually by setting width and height inside result document
@@ -862,8 +908,8 @@ public class OfficeDocument {
 //					textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
 
 					// replace the placeholder
-					cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
-					return null; 
+					return cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
+
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -875,6 +921,20 @@ public class OfficeDocument {
 		
 		else
 			return null;
+
+		// Get the item's category
+		if (item.getProduct() != null) {
+			Product product = item.getProduct();
+			if(key.equals("ITEM.UNIT.CATEGORY")) {
+				value = product.getCategories().getName();
+			} else if(key.equals("ITEM.UNIT.UDF01")) {
+				value = product.getCdf01();
+			} else if(key.equals("ITEM.UNIT.UDF02")) {
+				value = product.getCdf02();
+			} else if(key.equals("ITEM.UNIT.UDF03")) {
+				value = product.getCdf03();
+			}
+		}
 
 		// Interpret all parameters
 		value = placeholders.interpretParameters(placeholder,value);
@@ -985,11 +1045,8 @@ public class OfficeDocument {
 				FileOrganizer.WITH_EXTENSION, 
 				FileOrganizer.ODT, document);
 
-		if (Files.exists(oODocumentFile) && document.getPrinted() &&
-				filesAreEqual(document.getPrintTemplate(),template)) {
-			return true;
-		}
-		return false;
+		return (Files.exists(oODocumentFile) && document.getPrinted() &&
+				filesAreEqual(document.getPrintTemplate(),template));
 	}
 
     /**

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.AbstractParameterValueConverter;
@@ -482,10 +483,15 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        context.set("useDocumentAndContactFilter", true);
 	        context.set("useAll", false);
 	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-	        topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
-	        categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
-	        topicTreeViewer.setInput(categories);
-	        topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+	        try {
+				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
+				topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+				topicTreeViewer.setInput(categories);
+				topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+			} catch (PersistenceException e) {
+				// if no database is created an exception occurs at this point
+				log.warn("Category tree couldn't be created, perhaps because of initially startup?");
+			}
         }
         return topicTreeViewer;
         

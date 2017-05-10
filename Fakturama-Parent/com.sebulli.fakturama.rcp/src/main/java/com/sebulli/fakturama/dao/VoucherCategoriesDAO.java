@@ -85,7 +85,7 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
             try {
                 List<VoucherCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
                 // remove leading slash
-                String testCat = StringUtils.removeStart(voucherCategory, "/");
+                String testCat = StringUtils.stripStart(voucherCategory, "/");
                 for (VoucherCategory vatCategory2 : tmpResultList) {
                     if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
                         result = vatCategory2;
@@ -118,6 +118,9 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
+                if(category.contentEquals("/")) {
+                	continue;
+                }
                 VoucherCategory searchCat = findVoucherCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.

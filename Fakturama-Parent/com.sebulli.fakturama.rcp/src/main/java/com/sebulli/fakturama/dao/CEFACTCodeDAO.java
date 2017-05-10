@@ -17,6 +17,7 @@ package com.sebulli.fakturama.dao;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -49,9 +50,9 @@ public class CEFACTCodeDAO extends AbstractDAO<CEFACTCode> {
 	 * @param locale the locale
 	 * @return the CEFACT code
 	 */
-	public CEFACTCode findByAbbreviation(String userdefinedQuantityUnit, Locale locale) {
+	public Optional<CEFACTCode> findByAbbreviation(String userdefinedQuantityUnit, Locale locale) {
 		Set<Predicate> restrictions = new HashSet<>();
-		CEFACTCode retval = null;
+		Optional<CEFACTCode> retval = Optional.empty();
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<CEFACTCode> query = cb.createQuery(getEntityClass());
         Root<CEFACTCode> root = query.from(getEntityClass());
@@ -60,11 +61,10 @@ public class CEFACTCodeDAO extends AbstractDAO<CEFACTCode> {
         } else {
         	restrictions.add(cb.equal(root.get(CEFACTCode_.abbreviation_en), StringUtils.defaultString(userdefinedQuantityUnit)));
         }
-        CriteriaQuery<CEFACTCode> select = query.select(root);
-        select.where(restrictions.toArray(new Predicate[]{}));
+        CriteriaQuery<CEFACTCode> select = query.select(root).where(restrictions.toArray(new Predicate[]{}));
         List<CEFACTCode> resultList = getEntityManager().createQuery(select).getResultList();
         if(!resultList.isEmpty()) {
-        	retval = resultList.get(0);
+        	retval = Optional.of(resultList.get(0));
         }
 		return retval;
 	}

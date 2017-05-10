@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -128,6 +129,11 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
+        gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+
+        E4SelectionListener<ItemAccountType> esl = new E4SelectionListener<>(selectionService, gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
+        gridListLayer.getSelectionLayer().addLayerListener(esl);
+
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
@@ -196,7 +202,7 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 
-        itemAccountTypeData = GlazedLists.readOnlyList(GlazedLists.eventList(itemAccountTypeDAO.findAll(true)));
+        itemAccountTypeData = GlazedLists.eventList(itemAccountTypeDAO.findAll(true));
 
         // get the visible properties to show in list view
         String[] propertyNames = itemAccountTypeDAO.getVisibleProperties();
