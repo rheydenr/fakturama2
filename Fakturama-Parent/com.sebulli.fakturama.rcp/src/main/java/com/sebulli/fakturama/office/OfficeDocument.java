@@ -441,7 +441,7 @@ public class OfficeDocument {
 			if (ooPath != null) {
 				// FIXME How to create a PDF/A1 document?
 				String sysCall = String.format(
-						"\"%s\" --headless --convert-to pdf:writer_pdf_Export --outdir \"%s\" \"%s\"",
+						"'%s' --headless --convert-to pdf:writer_pdf_Export --outdir '%s' '%s'",
 						// program%sswriter File.separator,
 						ooPath.toString(), directory.toAbsolutePath(), // this is the PDF path
 						documentPath.toAbsolutePath());
