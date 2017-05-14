@@ -313,6 +313,7 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		Path origFileName = documentPath.getFileName();;
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
@@ -327,18 +328,41 @@ public class OfficeDocument {
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
             }
+        } else {
+	    	// create a temporary document because the user doesn't want an ODT
+        	OutputStream fs = null;
+            try {
+            	documentPath = Files.createTempFile(null, null);
+            	documentPath.toFile().deleteOnExit();
+				fs = Files.newOutputStream(documentPath);
+                // Save the document
+                textdoc.save(fs);
+            } catch (Exception e) {
+                log.error(e, "Error saving the OpenOffice document");
+            } finally {
+            	if(fs != null) {
+            		try {
+						fs.close();
+					} catch (IOException e) {
+		                log.error(e, "Error closing temporary OpenOffice file");
+					}
+            	}
+            }
         }
 
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId())) {
-        	generatedPdf = createPdf(documentPath, TargetFormat.PDF);
+        	generatedPdf = createPdf(documentPath, origFileName, TargetFormat.PDF);
         	
             // open the pdf if needed
-        	if(generatedPdf != null && preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
-        		try {
-					Desktop.getDesktop().open(generatedPdf.toFile());
-				} catch (IOException | IllegalArgumentException e) {
-	                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
-				}
+        	if(generatedPdf != null) {
+        		wasSaved = true;
+        		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+	        		try {
+						Desktop.getDesktop().open(generatedPdf.toFile());
+					} catch (IOException | IllegalArgumentException e) {
+		                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
+					}
+        		}
         	}
         }
         
@@ -364,7 +388,7 @@ public class OfficeDocument {
             document.setPrinted(Boolean.TRUE);
             document.setPrintTemplate(template.toString());
 
-            if (Files.exists(documentPath)) {
+            if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId()) && Files.exists(documentPath)) {
                 document.setOdtPath(documentPath.toString());
             }
 
@@ -424,33 +448,22 @@ public class OfficeDocument {
 	 * Creates the PDF.
 	 *
 	 * @param documentPath the path to the ODT document (which will be converted)
+	 * @param origFileName 
 	 * @param targetFormat 
 	 * @return <code>true</code> if the creation was successful
 	 */
-	private Path createPdf(Path documentPath, TargetFormat targetFormat) {
+	private Path createPdf(Path documentPath, Path origFileName, TargetFormat targetFormat) {
 		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
-		Path directory = createOutputDirectory(targetFormat);
+		createOutputDirectory(targetFormat);
 
 		try {
 
 		    // Save the document
 		    OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
 		    Path ooPath = ooStarter.getCheckedOOPath();
-			if (ooPath != null) {
-				// FIXME How to create a PDF/A1 document?
-				String sysCall = String.format(
-						"'%s' --headless --convert-to pdf:writer_pdf_Export --outdir '%s' '%s'",
-						// program%sswriter File.separator,
-						ooPath.toString(), directory.toAbsolutePath(), // this is the PDF path
-						documentPath.toAbsolutePath());
-				// PDFFilter pdfFilter = new PDFFilter();
-				// pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-
-				ProcessBuilder pb = new ProcessBuilder(sysCall);
-				Process p = pb.start();
-				p.waitFor();
+			if (ooPath != null ) {
 
 				// now, if the file name templates are different, we have to
 				// rename the pdf
@@ -458,12 +471,31 @@ public class OfficeDocument {
 				pathOptions.add(PathOption.WITH_FILENAME);
 				pathOptions.add(PathOption.WITH_EXTENSION);
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
-				Path tmpPdf = Paths.get(directory.toString(),
-						documentPath.getFileName().toString().replaceAll("\\.ODT$|\\.odt$", TargetFormat.PDF.getExtension()));
+
+				// FIXME How to create a PDF/A1 document?
+				// PDFFilter pdfFilter = new PDFFilter();
+				// pdfFilter.getPDFFilterProperties().setPdfVersion(1);
+
+				ProcessBuilder pb = new ProcessBuilder(ooPath.toString(),"--headless", 
+						"--convert-to", "pdf:writer_pdf_Export", 
+						"--outdir", pdfFilename.getParent().toString(), // this is the PDF path
+						documentPath.toAbsolutePath().toString());
+//				pb.redirectErrorStream(true);
+//				pb.inheritIO();
+				Process p = pb.start();
+				p.waitFor();
+				
+				// if we convert a temporary document the suffix is changing to ".PDF", therefore
+				// we have to change the document name here
+				// create a temporary filename as it would be created by PDF writer process
+				Path tmpPdf = Paths.get(pdfFilename.getParent().toString(),
+						documentPath.getFileName().toString().replaceAll("\\.ODT$|\\.odt$|.tmp$", TargetFormat.PDF.getExtension()));
 
 				if (/* !Files.exists(pdfFilename) && */Files.exists(tmpPdf)) {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
 				}
+			} else {
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
 			}
 		} catch (FileSystemException e) {
 			System.err.println("is nich!");
@@ -1028,7 +1060,7 @@ public class OfficeDocument {
 		
 		// If the String is non empty, replace the OS new line with the OpenOffice new line
 		if(StringUtils.isNotBlank(text)){
-			text = text.replaceAll(System.lineSeparator(), "\r");
+			text = text.replaceAll("\n", "\r");
 		}
 		// Replace the placeholder with the value of the property list.
 		log.debug(String.format("trying to replace %s with [%s]", placeholderDisplayText, text));
