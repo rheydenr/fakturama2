@@ -76,7 +76,7 @@ public List<Document> findAll(boolean forceRead) {
     CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
     CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
     Root<Document> root = criteria.from(getEntityClass());
-    CriteriaQuery<Document> cq = criteria.where(cb.not(root.get(Document_.deleted)));
+    CriteriaQuery<Document> cq = criteria.where(cb.notEqual(root.get(Document_.deleted), Boolean.TRUE));
     TypedQuery<Document> query = getEntityManager().createQuery(cq);
     if(forceRead) {
         query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
@@ -164,7 +164,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 cb.and(
                         cb.equal(root.<BillingType> get(Document_.billingType), billingType),
                         cb.equal(root.<String> get(Document_.webshopId), webshopId),
-                        cb.equal(root.<Date> get(Document_.webshopDate), res)
+                        cb.equal(root.<Date> get(Document_.webshopDate), res),
+                        cb.notEqual(root.get(Document_.deleted), Boolean.TRUE)
                       )
             );
         return getEntityManager().createQuery(cq).getResultList();

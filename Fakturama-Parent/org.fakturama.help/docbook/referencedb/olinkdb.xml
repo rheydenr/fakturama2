@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE targetset 
+       SYSTEM "file:///d|/Projekte/herold-doclet/docbook-xsl-1.79.1/common/targetdatabase.dtd" [
+<!ENTITY faktargets SYSTEM "file:////eclipse46/workspace/com.sebulli.fakturama.help/docbook/referencedb/target.db"> 
+]>
+<targetset>
+  <targetsetinfo>
+    Description of this target database document,
+    which is for the examples in olink doc.
+  </targetsetinfo>
+
+  <!-- Site map for generating relative paths between documents -->
+  <sitemap>
+    <dir name="docbook">
+        <dir name="mailuser">
+          <document targetdoc="manual-main.xml"  
+                    baseuri="manual-main.xml">
+            &ugtargets; 
+          </document>
+        </dir>
+    </dir>
+  </sitemap>
+</targetset>

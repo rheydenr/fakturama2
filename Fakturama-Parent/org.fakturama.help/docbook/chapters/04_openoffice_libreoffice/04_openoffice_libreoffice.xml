@@ -25,29 +25,28 @@ id="04_openoffice_libreoffice">
 	</informalfigure>
 	<section>
 		<title>Fakturama und OpenOffice.org / LibreOffice</title>
-		<para>Fakturama benutzt OpenOffice.org / LibreOffice Writer, um Dokumente wie Rechnungen und Lieferscheine zu drucken und Berichte als Calc-Tabelle zu exportieren.</para>
-		<para>Für die Dokumente werden Vorlagen mit Firmenlogo, Adresse usw. angelegt, die dann mit dem eigentlichen Dokumenteninhalt befüllt werden.</para>
-	</section>
-	<section>
+		<para>Fakturama benutzt OpenOffice.org bzw. LibreOffice Writer, um Dokumente (Rechnungen, Lieferscheine usw.) in PDFs umzuwandeln und Berichte als Calc-Tabelle zu exportieren. Für die Dokumente werden Vorlagen mit Firmenlogo, Adresse usw. angelegt, die dann mit dem eigentlichen Dokumenteninhalt befüllt werden. Die Befüllung der Vorlage geschieht unabhängig von OpenOffice / LibreOffice.</para>
+	<sect2>
 		<title>OpenOffice.org Projektseite</title>
 		<para>OpenOffice.org ist eine freie Bürosoftware. Das Projekt ist Open-Source und steht in zahlreichen Sprachen und für verschiedenen Betriebssysteme zur Verfügung.</para>
 		<para>Link zur deutschsprachigen Seite des OpenOffice.org Projektes: <link xl:href="http://www.openoffice.org/de/">www.openoffice.org</link>
 		</para>
-	</section>
-	<section>
+	</sect2>
+	<sect2>
 		<title>LibreOffice Projektseite</title>
 		<para>LibreOffice ist eine freie Bürosoftware. Das Projekt ist Open-Source und steht in zahlreichen Sprachen und für verschiedenen Betriebssysteme zur Verfügung.</para>
 		<para>Link zur deutschsprachigen Seite des LibreOffice Projektes: <link xl:href="http://de.libreoffice.org/">de.libreoffice.org</link>
 		</para>
 		<para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice Einstellungen</link>
 		</para>
+	</sect2>
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="openoffice_templates"/>
 		<title>Erstellen von OpenOffice.org-Vorlagen</title>
 		<sect2>
 			<title>Ordner für Vorlagen</title>
-			<para>Vorlagen für Dokumente wie Rechnungen, Lieferscheine usw. werden im Arbeitsverzeichnis im Ordner <emphasis role="bold">Vorlagen</emphasis> und dort im entsprechenden Unterordner abgelegt.</para>
+			<para>Vorlagen für Dokumente (Rechnungen, Lieferscheine usw.) werden im Arbeitsverzeichnis im Ordner <emphasis role="bold">Vorlagen</emphasis> und dort im entsprechenden Unterordner abgelegt.</para>
 			<para>Beim Drucken eines Dokumentes wird die entsprechende Vorlage verwendet. Existiert mehr als eine Vorlage, so wird ein Auswahlmenü eingeblendet.</para>
 			<para>Vorlagen müssen im OpenOffice.org Vorlagenformat <emphasis role="bold">*.ott</emphasis> vorliegen. Der Dateiname kann ansonsten beliebig gewählt werden, sollte jedoch kurz und aussagekräftig sein, da er bei mehr als einer Vorlage auch im Auswahlmenü erscheint.</para>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
@@ -93,7 +92,7 @@ id="04_openoffice_libreoffice">
 			</informalfigure>
 			<para>Ein Platzhalter wird in OpenOffice/LibreOffice Writer eingefügt über das Menü <guimenuitem>Einfügen/Feldbefehl/Andere</guimenuitem> oder die Tastenkombination <keycombo>
 					<keysym>Strg-F2</keysym>        
-				</keycombo>. Im Dialog im Reiter <emphasis role="bold">Funktionen</emphasis> als Feldtyp <emphasis role="bold">Platzhalter</emphasis> auswählen und als <emphasis role="bold">Format</emphasis> den Eintrag <emphasis role="bold">Text</emphasis>. Der Platzhalter wird in Großbuchstaben ohne die <emphasis role="bold">spitzen Klammern</emphasis> im Feld <emphasis role="bold">Platzhalter</emphasis> eingegeben.</para>
+				</keycombo>. Im Dialog unter dem Reiter <emphasis role="bold">Funktionen</emphasis> als Feldtyp <emphasis role="bold">Platzhalter</emphasis> auswählen und als <emphasis role="bold">Format</emphasis> den Eintrag <emphasis role="bold">Text</emphasis>. Der Platzhalter wird in Großbuchstaben ohne die <emphasis role="bold">spitzen Klammern</emphasis> im Feld <emphasis role="bold">Platzhalter</emphasis> eingegeben.</para>
 		</section>
 		<section>
 			<title>Abspeichern</title>
@@ -108,7 +107,7 @@ id="04_openoffice_libreoffice">
 	</section>
 	<section>
 		<title>Allgemeine Platzhalter</title>
-		<para>Dies sind Platzhalter, die an jeder Stelle in der Vorlage stehen dürfen.</para>
+		<para>Dies sind Platzhalter, die an jeder Stelle in der Vorlage stehen dürfen, z. B.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -122,7 +121,7 @@ id="04_openoffice_libreoffice">
 		<para>Bei diesen Platzhaltern können zusätzliche Parameter angegeben werden.</para>
 		<para>Siehe auch <link linkend="openoffice_placeholders_parameter">Platzhalter mit Parameter</link>
 		</para>
-		<para>Nachfolgend eine Auflistung sämtlicher Platzhalter, die in Fakturama verwendet werden können.</para>
+		<para>Nachfolgend eine Auflistung sämtlicher Platzhalter, die in Fakturama verwendet werden können:</para>
 
 
 		<informaltable rowsep="1" colsep="0" tabstyle="striped" frame="none">
@@ -131,7 +130,7 @@ id="04_openoffice_libreoffice">
 				<tbody>
 					<row>
 						<entry>DOCUMENT.DATE</entry>
-						<entry>Datum des Dokumentes. Zum Beispiel Rechnungsdatum bei einer Rechnung.</entry>
+						<entry>Datum des Dokumentes, z. B. Rechnungsdatum bei einer Rechnung.</entry>
 					</row>
 					<row>
 						<entry>DOCUMENT.ADDRESS</entry>
@@ -147,7 +146,7 @@ id="04_openoffice_libreoffice">
 						<entry>Lieferadresse</entry>
 					</row>
 					<row>
-						<entry>DOCUMENT.DIFFERENT.DELIVERYAD-DRESS</entry>
+						<entry>DOCUMENT.DIFFERENT.DELI-VERYADDRESS</entry>
 						<entry>
 							<para>Lieferadresse</para>
 							<para>Wird nur dann angezeigt, wenn sich Rechnungs- und Lieferadresse unterscheiden.</para>
@@ -181,8 +180,7 @@ id="04_openoffice_libreoffice">
 						<entry>Leistungsdatum</entry>
 					</row>
 					<row>
-						<anchor xreflabel="" xml:id="openoffice_placeholders_message"/>
-						<entry>DOCUMENT.MESSAGE  DOCUMENT.MESSAGE1</entry>
+						<entry><anchor xreflabel="" xml:id="openoffice_placeholders_message"/>DOCUMENT.MESSAGE oder DOCUMENT.MESSAGE1</entry>
 						<entry>Text der Nachricht (Bemerkungsfeld 1)</entry>
 					</row>
 					<row>
@@ -199,7 +197,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>DOCUMENT.TRANSACTION</entry>
-						<entry>Eindeutiger Transaktionscode des Vorganges. Ist für Bestellung, Rechnung, Lieferschein identisch.</entry>
+						<entry>Eindeutiger Transaktionscode des Vorganges. Ist für Bestellung, Rechnung und Lieferschein identisch.</entry>
 					</row>
 					<row>
 						<entry>DOCUMENT.INVOICE</entry>
@@ -231,6 +229,10 @@ id="04_openoffice_libreoffice">
 						<entry>rabattierte Zwischensumme der Artikel (netto)</entry>
 					</row>
 					<row>
+						<entry>DOCUMENT.ITEMS.COUNT</entry>
+						<entry>Gesamtanzahl der Artikel</entry>
+					</row>
+					<row>
 						<entry>DOCUMENT.TOTAL.VAT</entry>
 						<entry>Mehrwertsteuer</entry>
 					</row>
@@ -244,7 +246,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>DOCUMENT.TOTAL.QUANTITY</entry>
-						<entry>Gesamtanzahl der Artikel</entry>
+						<entry>Gesamtmenge der Artikel (dies ist natürlich nur bei vergleichbaren Artikeln sinnvoll)</entry>
 					</row>
 					<row>
 						<entry>DOCUMENT.REFERENCE.OFFER</entry>
@@ -252,7 +254,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>DOCUMENT.REFERENCE.ORDER</entry>
-						<entry>Die Bestellungen, die zum gleichen Vorgang wie dieses Dokument gehören.</entry>
+						<entry>Die Aufträge, die zum gleichen Vorgang wie dieses Dokument gehören.</entry>
 					</row>
 					<row>
 						<entry>DOCUMENT.REFERENCE.CONFIRMATION</entry>
@@ -300,15 +302,15 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>SHIPPING.DESCRIPTION</entry>
-						<entry>Bezeichnung Versandkosten/Versandart</entry>
+						<entry>Bezeichnung der Versandkosten/Versandart</entry>
 					</row>
 					<row>
 						<entry>SHIPPING.VAT.DESCRIPTION</entry>
-						<entry>Bezeichnung Steuer der Versandkosten/Versandart</entry>
+						<entry>Bezeichnung der Steuer der Versandkosten/Versandart</entry>
 					</row>
 					<row>
 						<entry>PAYMENT.TEXT</entry>
-						<entry>Text der Zahlungsart. Abhängig davon, ob bezahlt wurde wird der Text für <emphasis role="bold">bezahlt</emphasis> oder <emphasis role="bold">unbezahlt</emphasis> verwendet.</entry>
+						<entry>Text der Zahlungsart. Abhängig davon, ob bezahlt wurde, wird der Text für <emphasis role="bold">bezahlt</emphasis> oder <emphasis role="bold">unbezahlt</emphasis> verwendet.</entry>
 					</row>
 					<row>
 						<entry>PAYMENT.DESCRIPTION</entry>
@@ -348,8 +350,7 @@ id="04_openoffice_libreoffice">
 						<entry>Geschlecht (Rechnungsadresse)</entry>
 					</row>
 					<row>
-						<anchor xreflabel="" xml:id="openoffice_placeholders_common_address_greeting"/>
-						<entry>ADDRESS.GREETING</entry>
+						<entry><anchor xreflabel="" xml:id="openoffice_placeholders_common_address_greeting"/>ADDRESS.GREETING</entry>
 						<entry>
 							<para>Anrede (Rechnungsadresse).</para>
 							<para>Siehe auch <link linkend="preferences_contactformat_greeting">Format Grußformel</link>
@@ -429,11 +430,9 @@ id="04_openoffice_libreoffice">
 						<entry>Geschlecht (Lieferadresse)</entry>
 					</row>
 					<row>
-						<anchor xreflabel="" xml:id="openoffice_placeholders_common_delivery_address_greeting"/>
-						<entry>DELIVERY.ADDRESS.GREETING</entry>
+						<entry><anchor xreflabel="" xml:id="openoffice_placeholders_common_delivery_address_greeting"/>DELIVERY.ADDRESS.GREETING</entry>
 						<entry>
-							<para>Anrede (Lieferadresse)</para>
-							<para>Siehe auch <link linkend="preferences_contactformat_greeting">Format Grußformel</link>
+							<para>Anrede (Lieferadresse); siehe auch <link linkend="preferences_contactformat_greeting">Format Grußformel</link>
 							</para>
 						</entry>
 					</row>
@@ -579,7 +578,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>ADDRESS.NOTE</entry>
-						<entry>Text der Notiz über diesen Kunden/Lieferanten. Vorsicht bei der Benutzung. Dieser Text sollte nicht immer auf einem Dokument erscheinen.</entry>
+						<entry>Text der Notiz über diesen Kunden/Lieferanten. Vorsicht bei der Benutzung! Dieser Text sollte nicht immer auf einem Dokument erscheinen.</entry>
 					</row>
 					<row>
 						<entry>ADDRESS.DISCOUNT</entry>
@@ -667,7 +666,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>YOURCOMPANY.VATNR</entry>
-						<entry>Eigene USt-IdNr</entry>
+						<entry>Eigene USt.-IDNr.</entry>
 					</row>
 					<row>
 						<entry>YOURCOMPANY.TAXOFFICE</entry>
@@ -711,17 +710,16 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.DAYS</entry>
-						<entry>Skontodauer ("zahlbar in... Tagen mit Skonto")</entry>
+						<entry>Skontodauer ("zahlbar in&#x2026; Tagen mit Skonto")</entry>
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.DUEDATE</entry>
-						<entry>letztmöglicher Skontotag ("bis zum... mit x% Skonto")</entry>
+						<entry>letztmöglicher Skontotag ("bis zum&#x2026; mit x% Skonto")</entry>
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.TARAVALUE</entry>
 						<entry>
-							<para>MwSt. abzgl. Skonto.</para>
-							<para>Siehe auch <link linkend="openoffice_placeholders_parameter">Platzhalter mit Parametern</link>
+							<para>MwSt. abzgl. Skonto.; siehe auch <link linkend="openoffice_placeholders_parameter">Platzhalter mit Parametern</link>
 							</para>
 						</entry>
 					</row>
@@ -809,236 +807,60 @@ id="04_openoffice_libreoffice">
 		<section>
 			<title>Sonderzeichen</title>
 			<para>Um in den Parametern auch spezielle Sonderzeichen verwenden zu können, werden diese extra codiert:</para>
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						<emphasis role="bold">%LT</emphasis>  für <emphasis role="bold">&lt;</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%GT</emphasis>  für <emphasis role="bold">&gt;</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%NL</emphasis>  für <emphasis role="bold">Neue Zeile</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%TAB</emphasis>  für <emphasis role="bold">Tabspace</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%DOLLAR</emphasis>  für <emphasis role="bold">$</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%A_GRAVE</emphasis>  für <emphasis role="bold">À</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%A_ACUTE</emphasis>  für <emphasis role="bold">Á</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%A_CIRC</emphasis>  für <emphasis role="bold">Â</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%A_TILDE</emphasis>  für <emphasis role="bold">Ã</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%A_RING</emphasis>  für <emphasis role="bold">Å</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%C_CED</emphasis>  für <emphasis role="bold">Ç</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%E_GRAVE</emphasis>  für <emphasis role="bold">È</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%E_ACUTE</emphasis>  für <emphasis role="bold">É</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%E_CIRC</emphasis>  für <emphasis role="bold">Ê</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%I_GRAVE</emphasis>  für <emphasis role="bold">Ì</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%I_ACUTE</emphasis>  für <emphasis role="bold">Í</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%I_CIRC</emphasis>  für <emphasis role="bold">Î</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%O_GRAVE</emphasis>  für <emphasis role="bold">Ò</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%O_ACUTE</emphasis>  für <emphasis role="bold">Ó</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%O_CIRC</emphasis>  für <emphasis role="bold">Ô</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%O_TILDE</emphasis>  für <emphasis role="bold">Õ</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%O_STROKE</emphasis>  für <emphasis role="bold">Ø</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%U_GRAVE</emphasis>  für <emphasis role="bold">Ù</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%U_ACUTE</emphasis>  für <emphasis role="bold">Ú</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%U_CIRC</emphasis>  für <emphasis role="bold">Û</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%a_GRAVE</emphasis>  für <emphasis role="bold">à</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%a_ACUTE</emphasis>  für <emphasis role="bold">á</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%a_CIRC</emphasis>  für <emphasis role="bold">â</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%a_TILDE</emphasis>  für <emphasis role="bold">ã</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%a_RING</emphasis>  für <emphasis role="bold">å</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%c_CED</emphasis>  für <emphasis role="bold">ç</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%e_GRAVE</emphasis>  für <emphasis role="bold">è</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%e_ACUTE</emphasis>  für <emphasis role="bold">é</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%e_CIRC</emphasis>  für <emphasis role="bold">ê</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%i_GRAVE</emphasis>  für <emphasis role="bold">ì</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%i_ACUTE</emphasis>  für <emphasis role="bold">í</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%i_CIRC</emphasis>  für <emphasis role="bold">î</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%n_TILDE</emphasis>  für <emphasis role="bold">ñ</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%o_GRAVE</emphasis>  für <emphasis role="bold">ò</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%o_ACUTE</emphasis>  für <emphasis role="bold">ó</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%o_CIRC</emphasis>  für <emphasis role="bold">ô</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%o_TILDE</emphasis>  für <emphasis role="bold">õ</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%u_GRAVE</emphasis>  für <emphasis role="bold">ù</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%u_ACUTE</emphasis>  für <emphasis role="bold">ú</emphasis>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis role="bold">%u_CIRC</emphasis>  für <emphasis role="bold">û</emphasis>
-					</para>
-				</listitem>
-			</itemizedlist>
-			<para>Siehe auch <link linkend="openoffice_placeholders_common">Allgemeine Platzhalter</link>
-			</para>
-			<para>Siehe auch <link linkend="openoffice_placeholders_itemtable">Platzhalter der Artikeltabelle</link>
+			<informaltable rowsep="1" colsep="0" tabstyle="striped" frame="none">
+				<tgroup cols='2'>
+					<colspec colwidth='1.5in'/>
+					<colspec colwidth='1.5in'/>
+					<tbody>
+						<row><entry>%LT</entry><entry>&lt;</entry></row>
+						<row><entry>%GT</entry><entry>&gt;</entry></row>
+						<row><entry>%NL</entry><entry>Neue Zeile</entry></row>
+						<row><entry>%TAB</entry><entry>Tabspace</entry></row>
+						<row><entry>%DOLLAR</entry><entry>$</entry></row>
+						<row><entry>%A_GRAVE</entry><entry>À</entry></row>
+						<row><entry>%A_ACUTE</entry><entry>Á</entry></row>
+						<row><entry>%A_CIRC</entry><entry>Â</entry></row>
+						<row><entry>%A_TILDE</entry><entry>Ã</entry></row>
+						<row><entry>%A_RING</entry><entry>Å</entry></row>
+						<row><entry>%C_CED</entry><entry>Ç</entry></row>
+						<row><entry>%E_GRAVE</entry><entry>È</entry></row>
+						<row><entry>%E_ACUTE</entry><entry>É</entry></row>
+						<row><entry>%E_CIRC</entry><entry>Ê</entry></row>
+						<row><entry>%I_GRAVE</entry><entry>Ì</entry></row>
+						<row><entry>%I_ACUTE</entry><entry>Í</entry></row>
+						<row><entry>%I_CIRC</entry><entry>Î</entry></row>
+						<row><entry>%O_GRAVE</entry><entry>Ò</entry></row>
+						<row><entry>%O_ACUTE</entry><entry>Ó</entry></row>
+						<row><entry>%O_CIRC</entry><entry>Ô</entry></row>
+						<row><entry>%O_TILDE</entry><entry>Õ</entry></row>
+						<row><entry>%O_STROKE</entry><entry>Ø</entry></row>
+						<row><entry>%U_GRAVE</entry><entry>Ù</entry></row>
+						<row><entry>%U_ACUTE</entry><entry>Ú</entry></row>
+						<row><entry>%U_CIRC</entry><entry>Û</entry></row>
+						<row><entry>%a_GRAVE</entry><entry>à</entry></row>
+						<row><entry>%a_ACUTE</entry><entry>á</entry></row>
+						<row><entry>%a_CIRC</entry><entry>â</entry></row>
+						<row><entry>%a_TILDE</entry><entry>ã</entry></row>
+						<row><entry>%a_RING</entry><entry>å</entry></row>
+						<row><entry>%c_CED</entry><entry>ç</entry></row>
+						<row><entry>%e_GRAVE</entry><entry>è</entry></row>
+						<row><entry>%e_ACUTE</entry><entry>é</entry></row>
+						<row><entry>%e_CIRC</entry><entry>ê</entry></row>
+						<row><entry>%i_GRAVE</entry><entry>ì</entry></row>
+						<row><entry>%i_ACUTE</entry><entry>í</entry></row>
+						<row><entry>%i_CIRC</entry><entry>î</entry></row>
+						<row><entry>%n_TILDE</entry><entry>ñ</entry></row>
+						<row><entry>%o_GRAVE</entry><entry>ò</entry></row>
+						<row><entry>%o_ACUTE</entry><entry>ó</entry></row>
+						<row><entry>%o_CIRC</entry><entry>ô</entry></row>
+						<row><entry>%o_TILDE</entry><entry>õ</entry></row>
+						<row><entry>%u_GRAVE</entry><entry>ù</entry></row>
+						<row><entry>%u_ACUTE</entry><entry>ú</entry></row>
+						<row><entry>%u_CIRC</entry><entry>û</entry></row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>Siehe auch <link linkend="openoffice_placeholders_common">Allgemeine Platzhalter</link> und <link linkend="openoffice_placeholders_itemtable">Platzhalter der Artikeltabelle</link>
 			</para>
 		</section>
 	</section>
@@ -1073,15 +895,12 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.POS</entry>
 						<entry>
 							<para>Position, fortlaufende Nummer bei 1 beginnend.</para>
-							<para>
-								<anchor xreflabel="" xml:id="placeholder_itemtable_optional_text"/>
-							</para>
 						</entry>
 					</row>
 					<row>
 						<entry>ITEM.OPTIONAL.TEXT</entry>
 						<entry>
-							<para>Platzhalter, wird mit dem entsprechenden Text gefüllt, wenn es sich um einen optionalen Artikel / Bedarfsposition handelt.</para>
+							<para><anchor xreflabel="" xml:id="placeholder_itemtable_optional_text"/>Platzhalter, wird mit dem entsprechenden Text gefüllt, wenn es sich um einen optionalen Artikel / Bedarfsposition handelt.</para>
 							<para>Siehe <link linkend="preferences_optional_items">Einstellungen Bedarfspositionen</link>
 							</para>
 						</entry>
@@ -1125,13 +944,13 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>ITEM.VESTINGPERIOD.START</entry>
 						<entry>
-							<para>Beginn des Leistungszeitraumes.</para>
+							<para>Beginn des Leistungszeitraumes</para>
 						</entry>
 					</row>
 					<row>
 						<entry>ITEM.VESTINGPERIOD.END</entry>
 						<entry>
-							<para>Ende des Leistungszeitraumes.</para>
+							<para>Ende des Leistungszeitraumes</para>
 						</entry>
 					</row>
 					<row>
@@ -1192,30 +1011,25 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.UNIT.GROSS.DISCOUNTED</entry>
 						<entry>
 							<para>Einzelpreis unter Berücksichtigung eines Rabattes (brutto)</para>
-							<para>
-								<anchor xreflabel="" xml:id="placeholder_itemtable_item_total"/>
-							</para>
 						</entry>
 					</row>
 					<row>
 						<entry>ITEM.TOTAL.NET</entry>
 						<entry>
-							<para>Gesamtpreis unter Berücksichtigung eines Rabattes (netto).</para>
+							<para><anchor xreflabel="" xml:id="placeholder_itemtable_item_total"/>Gesamtpreis unter Berücksichtigung eines Rabattes (netto).</para>
 							<para> Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
 						</entry>
 					</row>
 					<row>
 						<entry>ITEM.TOTAL.VAT</entry>
 						<entry>
-							<para>Gesamter Steueranteil unter Berücksichtigung eines Rabattes</para>
-							<para> Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
+							<para>Gesamter Steueranteil unter Berücksichtigung eines Rabattes Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
 						</entry>
 					</row>
 					<row>
 						<entry>ITEM.TOTAL.GROSS</entry>
 						<entry>
-							<para>Gesamtpreis unter Berücksichtigung eines Rabattes (brutto)</para>
-							<para>Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
+							<para>Gesamtpreis unter Berücksichtigung eines Rabattes (brutto). Bei einem optionalen Artikel / Bedarfsposition kann dieser Platzhalter ersetzt werden.</para>
 							<para>Siehe <link linkend="preferences_optional_items">Einstellungen Bedarfspositionen</link>
 							</para>
 						</entry>
@@ -1223,11 +1037,9 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>ITEM.PICTURE</entry>
 						<entry>
-							<para>Platzhalter für das Produktbild. Größe des Bilder kann über die Parameter <emphasis role="bold">HEIGHT</emphasis> und <emphasis role="bold">WIDTH</emphasis> festgelegt werden.</para>
+							<para>Platzhalter für das Produktbild. Die Größe des Bilder kann über die Parameter <emphasis role="bold">HEIGHT</emphasis> und <emphasis role="bold">WIDTH</emphasis> festgelegt werden.</para>
 							<para>
 								<emphasis role="italic">Beispiel:</emphasis>
-							</para>
-							<para>
 								<emphasis role="bold">ITEM.PICTURE$WIDTH:200$HEIGHT:150</emphasis> Produktbild wird 200 x 150 Pixel groß.</para>
 						</entry>
 					</row>
@@ -1266,16 +1078,16 @@ id="04_openoffice_libreoffice">
 
 					<row>
 						<entry>ITEMS.DISCOUNT.PERCENT</entry>
-						<entry>Rabatt auf alle Artikel (% Wert).</entry>
+						<entry>Rabatt auf alle Artikel (% Wert)</entry>
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.NET</entry>
-						<entry>Rabatt auf alle Artikel (netto).</entry>
+						<entry>Rabatt auf alle Artikel (netto)</entry>
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.GROSS</entry>
 						<entry>
-							<para>Rabatt auf alle Artikel (brutto).</para>
+							<para>Rabatt auf alle Artikel (brutto)</para>
 							<para>Diese drei Platzhalter für <emphasis role="bold">Rabatt auf alle Artikel</emphasis> haben die Besonderheit, dass für den Fall <emphasis role="bold">kein Rabatt (0%)</emphasis> die komplette Zeile der Tabelle gelöscht wird.</para>
 						</entry>
 					</row>

@@ -12,28 +12,28 @@
         </imageobject>
       </mediaobject>
     </informalfigure>
-     <para>Fakturama kann Bestellungen aus einem Webshop importieren und daraus Rechnung und Lieferschein erstellen. Ebenso können Adressdaten und Produkte mit Produktbild importiert werden.</para>
-    <para>Die Verbindung zwischen einem Webshop und Fakturama wird durch eine Webshop Schnittstelle hergestellt. Zurzeit stehen Schnittstellen für 3 verschiedene, kostenlose Shopsysteme zur Verfügung. </para>
+     <para>Fakturama kann Bestellungen aus einem Webshop importieren und daraus Rechnungen und Lieferscheine erstellen. Ebenso können Adressdaten und Produkte mit Produktbild importiert werden.</para>
+    <para>Die Verbindung zwischen einem Webshop und Fakturama wird durch eine Webshop-Schnittstelle hergestellt. Zurzeit stehen Schnittstellen für 3 verschiedene, kostenlose Shopsysteme zur Verfügung. </para>
     </abstract>
     <section>
 <anchor xreflabel="" xml:id="webshop_overview_webshops"/>
       <title>Übersicht Webshop-Systeme</title>
       <para>Folgende Shopsysteme werden unterstützt:</para>
-      <section>
+      <sect2>
         <title>osCommerce</title>
         <para>
-<link xl:href="http://www.oscommerce.com/">http://www.oscommerce.com</link>
+<link xl:href="http://www.oscommerce.com/">www.oscommerce.com</link>
 </para>
         <para>osCommerce ist ein Open-Source Shopsystem. Es ist kostenlos und bietet sehr viele <link xl:href="http://www.oscommerce.com/community/contributions">Erweiterungen</link>, um den Shop auf die eigenen Bedürfnisse anzupassen. Neben der englischen gibt es auch eine <link xl:href="http://www.oscommerce.de/">deutschsprachige Seite</link>.</para>
-      </section>
-      <section>
+      </sect2>
+      <sect2>
         <title>xt:Commerce 3</title>
         <para>
-<link xl:href="http://www.xt-commerce.com/">http://www.xt-commerce.com</link>
+<link xl:href="http://www.xt-commerce.com/">www.xt-commerce.com</link>
 </para>
         <para>xt:Commerce 3 zählt laut Hersteller zu den führenden Shopsoftware Lösungen. xt:Commerce 3 basiert auf osCommerce und beinhaltet bereits viele Erweiterungen.</para>
-      </section>
-      <section>
+      </sect2>
+      <sect2>
         <title>xtcModified</title>
         <informalfigure>
           <mediaobject>
@@ -46,18 +46,18 @@
           </mediaobject>
         </informalfigure>
          <para>
-<link xl:href="http://www.xtc-modified.org/">http://www.xtc-modified.org</link>
+<link xl:href="http://www.xtc-modified.org/">www.xtc-modified.org</link>
 </para>
         <para>xtcModified ist eine verbesserte Version von xt:Commerce 3.04 SP2.1. Es sind viele Fehlerkorrekturen und Verbesserungen eingeflossen. xtcModified ist ebenfalls kostenlos. Ein <link xl:href="http://www.xtc-modified.org/forum/">deutschsprachiges Forum</link> bietet Hilfe rund um dieses Shopsystem.</para>
-      </section>
-    </section>
+     </sect2>
+     </section>
     <section>
 <anchor xreflabel="" xml:id="webshop_webshop_connector"/>
       <title>Die Schnittstelle zum Webshop</title>
       <para>Damit Fakturama Bestellungen aus dem Webshop abrufen kann ist es notwendig, die Schnittstelle zu Fakturama auf dem Server des Shopsystems zu installieren.</para>
       <section>
         <title>Download</title>
-        <para>Im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenbereich</link> auf der Fakturama Projektseite finden sich Schnittstellen zu unterschiedlichen Shopsystemen. Entpacken Sie das entsprechende ZIP Archiv auf Ihrem Rechner. Im entpackten Ordner müssen sich folgende zwei Dateien befinden:</para>
+        <para>Im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenbereich</link> auf der Fakturama-Projektseite finden sich Schnittstellen zu unterschiedlichen Shopsystemen. Entpacken Sie das entsprechende ZIP Archiv auf Ihrem Rechner. Im entpackten Ordner müssen sich die folgenden zwei Dateien befinden:</para>
         <informalfigure>
           <mediaobject>
             <imageobject role="html">
@@ -73,4 +73,33 @@
 </para>
       </section>
     </section>
+	<section><anchor xreflabel="" xml:id="webshop_webshop_status"/><title>Behandlung unterschiedlicher Status im Webshop</title>
+	<para>Beim Webshop-Import kann man angeben, wie die Status im Webshop im Fakturama abgebildet werden sollen. Dazu gibt es in den Einstellungen unter Webshop den Button „Einstellungen Webshop“:</para>
+        <informalfigure>
+          <mediaobject>
+            <imageobject role="html">
+              <imagedata fileref="../images/webshop/setting.png" format="PNG" scalefit="1"/>
+            </imageobject>
+            <imageobject role="fo">
+              <imagedata contentdepth="50%" fileref="../images/webshop/setting.png" format="PNG" scalefit="1" width="100%"/>
+            </imageobject>
+          </mediaobject>
+        </informalfigure>
+		<para>Damit gelangt man in einen Dialog, in dem man zunächst die Versionsdaten sowie weitere Informationen vom Webshop abholen kann. 
+		Mit Hilfe des Buttons „alle Bestellstatus vom Webshop abholen“ erhält man die aktuellen Daten des Webshops. Nun kann man durch einfaches Anklicken und Ziehen die Status der linken Seite auf die Status der rechten Seite ziehen. Dadurch entsteht beispielsweise folgendes Bild:</para>
+        <informalfigure>
+          <mediaobject>
+            <imageobject role="html">
+              <imagedata fileref="../images/webshop/status.png" format="PNG" scalefit="1"/>
+            </imageobject>
+            <imageobject role="fo">
+              <imagedata contentdepth="50%" fileref="../images/webshop/status.png" format="PNG" scalefit="1" width="100%"/>
+            </imageobject>
+          </mediaobject>
+        </informalfigure>
+<para>Wurden nicht alle Status zugeordnet gibt das Programm eine entsprechende Warnung aus. Bestätigt man diesen Dialog, werden ab diesem Zeitpunkt die Status des Webshops den entsprechenden Pendants aus Fakturama zugeordnet.
+<note>Beim Import der Daten werden die Preise in der jeweils eingestellten Währung dargestellt. Da dies nicht unbedingt der eigentlichen Währung entspricht, die im Shop verwendet wird, sollte man sich dafür ein eigenes Buchungskonto zusammenstellen.</note>
+Nach dem Import wird die Baumdarstellung noch nicht aktualisiert. Schließen und Öffnen der Übersichtsfenster hilft aber.</para>
+	</section>
+	
   </chapter>

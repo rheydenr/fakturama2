@@ -27,7 +27,8 @@
 	</sect2>
 	<sect2>
 		<title>OpenOffice.org / LibreOffice Vorlagen</title>
-		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an.</para>
+		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an. Wählen Sie bitte auch in den Einstellungen das 
+		Programmverzeichnis von LibreOffice/OpenOffice aus, falls Sie PDF-Dateien erzeugen möchten.</para>
 		<para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org/LibreOffice Vorlagen</link>
 		</para>
 	</sect2>
@@ -43,7 +44,7 @@
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
-		<para>Laden Sie die Daten wie Produkte, Adressen und offene Bestellungen aus dem Webshop.</para>
+		<para>Laden Sie die Daten (Produkte, Adressen und offene Bestellungen) aus dem Webshop.</para>
 		<para>Siehe auch <link linkend="application_main">Das Programm</link>
 		</para>
 	</sect2>
