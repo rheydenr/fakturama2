@@ -42,7 +42,11 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  *
  */
 public class TemplateResourceManager implements ITemplateResourceManager {
-    private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
+    private static final String START_DOC_HTML = "start.html";
+
+	private static final String START_DOC_PATH = "Start";
+
+	private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
     
 //    @Inject
     private Logger log;   
@@ -88,10 +92,10 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                 }
     
                 // Create the start page, if it does not exist.
-                Path startPage = Paths.get(workspace, templateFolderName, "Start", "start.html");
+                Path startPage = Paths.get(workspace, templateFolderName, START_DOC_PATH, START_DOC_HTML);
                 if (Files.notExists(startPage)) {
-                    resourceCopy("Templates/Start/start.html", Paths.get(workspace, templateFolderName, "Start", "start.html"));
-                    resourceCopy("Templates/Start/logo.png", Paths.get(workspace, templateFolderName,  "Start", "logo.png"));
+                    resourceCopy("Templates/Start/start.html", Paths.get(workspace, templateFolderName, START_DOC_PATH, START_DOC_HTML));
+                    resourceCopy("Templates/Start/logo.png", Paths.get(workspace, templateFolderName,  START_DOC_PATH, "logo.png"));
                 }
         
                 // Copy the parcel service templates

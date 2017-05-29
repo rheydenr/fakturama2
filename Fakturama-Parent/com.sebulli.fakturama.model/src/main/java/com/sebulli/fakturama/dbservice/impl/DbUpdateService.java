@@ -46,7 +46,9 @@ import liquibase.osgi.OSGiResourceAccessor;
  */
 public class DbUpdateService implements IDbUpdateService {
 
-    private Preferences eclipsePrefs;
+    private static final String PROP_HSQLFILEDB = "hsqlfiledb";
+	private Preferences eclipsePrefs;
+	private IActivateDbServer currentService;
 
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
@@ -99,16 +101,34 @@ public class DbUpdateService implements IDbUpdateService {
 		    prop.put(DataSourceFactory.JDBC_PASSWORD, eclipsePrefs.get(PersistenceUnitProperties.JDBC_PASSWORD, "fakturama"));
 	    	
 			String dataSource = (String)prop.get(DataSourceFactory.JDBC_URL);
+			/*
+			 * This part is for optimizing performance. Since most users don't want to create an HSQL server database,
+			 * we use the standard database (under working dir's Database directory) and start them in server mode.
+			 * This is fully transparent to the user. The database is closed after the application shut down.
+			 * The problem is, if the user switches the workspace, we have to switch the database, too.
+			 * Therefore we have to shutdown the old one and start the database in the correct working directory.
+			 * 
+			 * ONLY(!!!) important if we use HSQL in the standard way. All other possibilities use an extra database which is 
+			 * independent of working directory. 
+			 */
 			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef;
 					serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
-					prop.put("hsqlfiledb", eclipsePrefs.get("hsqlfiledb", ""));
-					Properties activateProps= context.getService(serviceDbRef).activateServer(prop);
+					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
+					if(currentService != null) {
+						try {
+							currentService.stopServer();
+						} catch (Exception e) {
+							// ignore any exception
+						}
+					}
+					currentService = context.getService(serviceDbRef);
+					Properties activateProps = currentService.activateServer(prop);
 					eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL, String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
 					prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
-					eclipsePrefs.put("hsqlfiledb", (String) activateProps.get("hsqlfiledb"));
+					eclipsePrefs.put(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
 				}
 			}
 

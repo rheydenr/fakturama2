@@ -170,10 +170,11 @@
 		<sect2>
 			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
 			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
-				<programlisting>-workspace <emphasis role="italic">Verzeichnispfad</emphasis>
+				<programlisting>--workspace <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
 			Beispiel:
-			<programlisting>-workspace /home/user/Dokumente/FirmaB</programlisting></para>
+			<programlisting>--workspace /home/user/Dokumente/FirmaB</programlisting></para>
+			<para>Statt <computeroutput>--workspace</computeroutput> kann auch der Schalter <computeroutput>-w</computeroutput> verwendet werden.</para>
 		</sect2>
 		<sect2>
 			<title>Arbeitsverzeichnis / Mandant - Variante B</title>
@@ -183,16 +184,20 @@
 			Beispiel:
 			<programlisting>-data /home/user/.fakturamaB</programlisting>
 			Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma/Mandanten 
-			zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen 
-			wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
+			zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
 		</sect2>
+		
+		<important>Bitte beachten Sie die Schreibweise der Schalter. Der Schalter <computeroutput>-data</computeroutput> (mit <emphasis role="italic">einem</emphasis> Gedankenstrich) wird direkt von der Laufzeitumgebung ausgewertet.</important>
+		
+		<note>Beim ersten Start des Programmes kann es etwas länger dauern, bis alle Initialisierungen vorgenommen wurden und die initialen Daten in die Datenbank geschrieben wurden. Dasselbe gilt auch für das erste Beenden des Programmes, da bestimmte Einstellungen gesichert werden müssen. Die nachfolgenden Programmaufrufe werden dann schneller ausgeführt. Die Zeit ist auch abhängig von der gewählten Datenbank.</note>
+		
 		<sect2>
 			<title>Sprache / Land</title>
 			<para>Fakturama kann mit einer bestimmten Sprach- oder Ländereinstellung gestartet werden. Aufruf:
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>
 			Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, 
-			wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zu beachten, daß wirklich der komplette Bezeichner angegeben wird, 
+			wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zu beachten, dass wirklich der komplette Bezeichner angegeben wird, 
 			da es sonst zu fehlerhaften Darstellungen im Programm kommen kann.</para>
 			<para>Folgende Länder und Sprachen werden unterstützt:</para>
 			<itemizedlist>

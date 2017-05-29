@@ -170,7 +170,7 @@
 					wenn mehr als eine Vorlage existiert. Ist das Icon ausgegraut, so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
 				</listitem>
 			</varlistentry>
-			<!--  TODO varlistentry>
+			<varlistentry>
 				<term>Arbeitsverzeichnis wählen</term>
 				<listitem>
 					<para>Wählt das Arbeitsverzeichnis, in dem Fakturama die Firmendatenbank und alle Dokumente ablegt. Beispiel:</para>
@@ -178,7 +178,7 @@
 					<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 					</para>
 				</listitem>
-			</varlistentry -->
+			</varlistentry>
 			<varlistentry>
 				<term>Einstellungen</term>
 				<listitem>
