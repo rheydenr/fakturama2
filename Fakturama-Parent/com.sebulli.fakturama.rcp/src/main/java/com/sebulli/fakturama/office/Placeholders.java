@@ -643,7 +643,6 @@ public class Placeholders {
 						s="";
 				}
 				if (key.equals("DOCUMENT" + differentstring +"."+ deliverystring.toUpperCase()+ "ADDRESS")) return s;
-				
 			}
 		}
 		
@@ -743,15 +742,19 @@ public class Placeholders {
 		
 		if (key.startsWith("DELIVERY.")) {
 			key2 = key.substring(9);
-            addressField = document.getDeliveryContact() != null ? document.getDeliveryContact().getAddress().getManualAddress() : contactUtil
-                    .getAddressAsString(document.getDeliveryContact());
+            addressField = document.getDeliveryContact() != null 
+            		? contactUtil.getAddressAsString(document.getDeliveryContact()) 
+            		: contactUtil.getAddressAsString(document.getBillingContact() != null 
+            		  && document.getBillingContact().getAlternateContacts() != null 
+            		     ? document.getBillingContact().getAlternateContacts() 
+            		     : document.getBillingContact());
 		}
 		else {
 			key2 = key;
-			addressField = Optional.ofNullable(document.getBillingContact().getAddress().getManualAddress()).orElse(contactUtil.getAddressAsString(document.getBillingContact()));
+			addressField = contactUtil.getAddressAsString(document.getBillingContact());
 		}
 
-		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, "addressfirstline");
+		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
 		// There is a reference to a contact. Use this
 		if (contact != null) {
@@ -759,7 +762,7 @@ public class Placeholders {
 			if (key.equals("ADDRESS.GENDER")) return contactUtil.getGenderString(contact);
 			if (key.equals("ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("ADDRESS.TITLE")) return contact.getTitle();
-			if (key.equals("ADDRESS.NAME")) return contact.getName();
+			if (key.equals("ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("ADDRESS.BIRTHDAY")) {
 				return contact.getBirthday() == null ? "" : DataUtils.getInstance().getFormattedLocalizedDate(contact.getBirthday());
 			}
@@ -811,6 +814,9 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
+			if(document.getBillingContact().getAlternateContacts() != null) {
+			    contact = document.getBillingContact().getAlternateContacts();
+			}
 			if(document.getDeliveryContact() != null) {
 			    contact = document.getDeliveryContact();
 			    // if no delivery contact is available, use billing contact
@@ -819,7 +825,7 @@ public class Placeholders {
 			if (key.equals("DELIVERY.ADDRESS.GENDER")) return contactUtil.getGenderString(contact);
 			if (key.equals("DELIVERY.ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("DELIVERY.ADDRESS.TITLE")) return contact.getTitle();
-			if (key.equals("DELIVERY.ADDRESS.NAME")) return contact.getName();
+			if (key.equals("DELIVERY.ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY")) {
 				return contact.getBirthday() == null ? "" : DataUtils.getInstance().getFormattedLocalizedDate(contact.getBirthday());
 			}

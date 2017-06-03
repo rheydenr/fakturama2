@@ -630,28 +630,28 @@ public class MigrationManager {
 					Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
 					contact.setAddress(address);
 					// try to get the name
-					String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), "lastname");
+					String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME);
 					if(name.isEmpty()) {
-						name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), "name");
+						name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_NAME);
 					}
 					contact.setName(name);
-					contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), "firstname"));
+					contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
 //					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
 					document.setBillingContact(contact);
 					
 					Contact deliveryContact = modelFactory.createDebitor();
 					Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
 					deliveryContact.setAddress(deliveryAddress);
-					String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname");
+					String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
 					if(deliveryName.isEmpty()) {
-						deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "name");
+						deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
 					}
 					deliveryContact.setName(deliveryName);
 //					deliveryContact.setName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname"));
-					deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "firstname"));
-					if(!deliveryContact.isSameAs(contact)) {
+					deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
+//					if(!deliveryContact.isSameAs(contact)) {
 						document.setDeliveryContact(deliveryContact);
-					}
+//					}
 //					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
 				} else {
 					// use the previous filled Contact hashmap
@@ -665,11 +665,11 @@ public class MigrationManager {
 						if(contact != null) {
 						    // delivery documents are slightly different...
 						    if(document.getBillingType() == BillingType.DELIVERY) {
-		                        document.setBillingContact(contact.getAlternateContacts());
+		                        document.setBillingContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
 		                        document.setDeliveryContact(contact);
 						    } else {
 		                        document.setBillingContact(contact);
-		                        document.setDeliveryContact(contact.getAlternateContacts());
+		                        document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
 						    }
 						}
 //					}

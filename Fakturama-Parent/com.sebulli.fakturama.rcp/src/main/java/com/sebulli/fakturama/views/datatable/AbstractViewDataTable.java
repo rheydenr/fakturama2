@@ -500,7 +500,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         Label searchLabel = new Label(searchComposite, SWT.NONE);
         searchLabel.setText(msg.commonLabelSearchfield);
         GridDataFactory.swtDefaults().applyTo(searchLabel);
-        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.CANCEL | SWT.ICON_SEARCH);
+        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
         return searchAndTableComposite;
     }
