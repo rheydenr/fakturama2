@@ -110,9 +110,9 @@ public class ConfigurationManager {
         CommandLineParser parser = new BasicParser();
         try {
             CommandLine cmd = parser.parse(options, args, true);
-            if(cmd.hasOption("w")) {
+            if(cmd.hasOption('w')) {
     			// Read the parameter "--workspace"
-                //  --workspace d:\MeineDaten\Fakt1.6.1-EN
+                // e.g. --workspace d:\MeineDaten\Fakt1.6.1-EN
     			String workspaceFromParameters = cmd.getOptionValue('w');
     
     			// Checks, whether the workspace from the parameters exists
@@ -120,7 +120,20 @@ public class ConfigurationManager {
     			if (Files.exists(workspacePath, LinkOption.NOFOLLOW_LINKS)) {
     				// Use it, if it is an existing folder.
     			    requestedWorkspace = workspaceFromParameters;
-    				eclipsePrefs.put(GENERAL_WORKSPACE_REQUEST, requestedWorkspace);
+    			    String oldWorkspace = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
+    				eclipsePrefs.put(Constants.GENERAL_WORKSPACE, requestedWorkspace);
+    				eclipsePrefs.remove(GENERAL_WORKSPACE_REQUEST);
+    				// clear any previously set database (if any)
+    				// change the JDBC connection, if the database is an HSQL one and it's only a file
+    				if(eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, "").startsWith("jdbc:hsqldb:file") 
+    						|| eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, "").endsWith("fakdbneu")) {
+    					String jdbcUrl = String.format("jdbc:hsqldb:file:%s/Database/Database;shutdown=true", requestedWorkspace);
+    					eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL, jdbcUrl);
+    					eclipsePrefs.put(PersistenceUnitProperties.JDBC_USER, "sa");
+    					eclipsePrefs.put(PersistenceUnitProperties.JDBC_PASSWORD, "");
+    					// stop a running instance of HSQLDB, if any
+    					eclipsePrefs.putBoolean("isreinit", !StringUtils.equalsIgnoreCase(oldWorkspace, requestedWorkspace));
+    				}
                 } else {
         			// if it not exists, ignore it quietly...
         			// ... or, better, at least we inform the user
@@ -132,7 +145,7 @@ public class ConfigurationManager {
         } catch (ParseException e1) {
             log.error(e1, "Error launching program.");
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Fakturama", options);
+            formatter.printHelp(msg.applicationName, options);
             //  ExitHandler!
             System.exit(-1);  // TODO error handling?!
         }
@@ -148,7 +161,7 @@ public class ConfigurationManager {
 				// If yes, the workspace is set to this value and the request value is cleared.
 				// This mechanism is used because the workspace can only be changed by restarting the application.
 			    requestedWorkspace = eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null);
-				if (StringUtils.isNoneBlank(requestedWorkspace)) {
+				if (StringUtils.isNotBlank(requestedWorkspace)) {
 					// at first we have to copy the logfile template
 					adaptLogfile(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null), requestedWorkspace);
 				    // switch the preference from a temporary one to the right one
@@ -184,10 +197,10 @@ public class ConfigurationManager {
 		} catch (BackingStoreException | IOException e) {
 			log.error(e);
 		}
-		if(restart != STATUS_OK) {
+//		if(restart != STATUS_OK) {
     		// now initialize the new workspace
     		initWorkspace(eclipsePrefs.get(Constants.GENERAL_WORKSPACE, eclipsePrefs.get(GENERAL_WORKSPACE_REQUEST, null)));
-		}
+//		}
 	}
 
 	/**
@@ -242,16 +255,6 @@ public class ConfigurationManager {
 	 * 
 	 */
 	private void initWorkspace(String requestedWorkspace) {
-		/*
-			
-			// now we have to update the file paths of the stored documents
-			Map<String, Object> parameters = new HashMap<>();
-			parameters.put(ReorganizeDocuments.RUN_REORGANIZE_SILENTLY, Boolean.TRUE.toString());
-            ParameterizedCommand pCmd = commandService.createCommand(CommandIds.CMD_REORGANIZE_DOCUMENTS, parameters);
-            if (handlerService.canExecute(pCmd)) {
-                handlerService.executeHandler(pCmd);
-            }
-		 */
 		resourceManager.createWorkspaceTemplates(requestedWorkspace, context);
 	}
 

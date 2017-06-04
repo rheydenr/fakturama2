@@ -33,6 +33,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.TitleEvent;
+import org.eclipse.swt.browser.TitleListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -362,11 +364,18 @@ public class BrowserEditor {
 				}
 
 			});
+			browser.addTitleListener(new TitleListener() {
+				
+				@Override
+				public void changed(TitleEvent event) {
+					part.setLabel(StringUtils.abbreviate(event.title, 20));
+				}
+			});
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(browser);
 
 			// Open the website: url
-			browser.setUrl(url);
-
+			resetUrl(url);
+			
 		}
 		catch (Exception e) {
 			log.error(e, "Error opening browser");
@@ -382,8 +391,9 @@ public class BrowserEditor {
 
 		// set the URL
 	    this.url = url;
-		if (browser != null)
+		if (browser != null) {
 			browser.setUrl(url);
+		}
 	}
 
 	

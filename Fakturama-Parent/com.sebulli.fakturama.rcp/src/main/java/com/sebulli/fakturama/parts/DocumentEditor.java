@@ -460,6 +460,10 @@ public class DocumentEditor extends Editor<Document> {
 			// TODO check FAK-276 if it is working! 
 			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
 			|| addressModified && addressId.getCustomerNumber() == null) {
+				// before we change an address we have to check for delivery addresses and save it...
+				if(document.getDeliveryContact() == null && document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) {
+					document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
+				}
 			    addressId = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
 			    address.setManualAddress(txtAddress.getText());
@@ -868,8 +872,27 @@ public class DocumentEditor extends Editor<Document> {
             }
         }
 
-        billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
-		deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+		/*
+		 * We have to distinguish the following cases:
+		 * 1.  document type is a delivery document
+		 * 1.1 document has a delivery contact ==> use that as billing (main) contact
+		 * 1.2 document has a billing contact ==> use that as delivery contact
+		 * 1.3 document has no billing contact ==> use delivery contact as billing contact
+		 * 2.  document's type is other than delivery document
+		 * 2.1 document has a billing contact ==> use that as main contact
+		 * 2.2 document has a delivery contact ==> use that as delivery contact 
+		 * 2.3 document has no delivery contact ==> check if billing contact has an alternate contact and use use billing contact as delivery contact
+		 */
+		if(document.getBillingType() == BillingType.DELIVERY) {
+	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
+					? document.getBillingContact() : document.getDeliveryContact());
+		} else {
+	        billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
+			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
+					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
+						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
+		}
 
         showOrderStatisticDialog(parent);
         
@@ -1406,17 +1429,17 @@ public class DocumentEditor extends Editor<Document> {
     private void showHideWarningIcon() {
 
         // Check, whether the delivery address is the same as the billing address
-        boolean differentDeliveryAddress;
+        boolean hasDifferentDeliveryAddress;
 
         if (documentType == DocumentType.DELIVERY) {
-            differentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
             differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
         } else {
-            differentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
             differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
         }
 
-        if (differentDeliveryAddress) {
+        if (hasDifferentDeliveryAddress) {
             // Show the icon
             GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
         } else {
@@ -1434,16 +1457,17 @@ public class DocumentEditor extends Editor<Document> {
 	private void setAddress(Contact contact) {
 		// Use delivery address, if it's a delivery note
 		if (documentType == DocumentType.DELIVERY) {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts()));
-//		    document.setDeliveryContact(contact);
-		    billingAddress = contactUtil.getAddressAsString(contact.getAlternateContacts());
+		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact));
 		    contact.setContactType(ContactType.DELIVERY);
 		} else {
 		    txtAddress.setText(contactUtil.getAddressAsString(contact));
-//		    document.setBillingContact(contact);
-		    billingAddress = contactUtil.getAddressAsString(contact);
 		    contact.setContactType(ContactType.BILLING);
 		}
+		
+	    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
+	    document.setBillingContact(contact);
+	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
+    	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
 		this.addressId = contact;
 
@@ -1900,9 +1924,9 @@ public class DocumentEditor extends Editor<Document> {
 		// The address field
 		txtAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		if (documentType == DocumentType.DELIVERY) {
-			txtAddress.setText(contactUtil.getAddressAsString(document.getDeliveryContact() != null ? document.getDeliveryContact() : document.getBillingContact()));
+			txtAddress.setText(deliveryAddress);
 		} else {
-			txtAddress.setText(contactUtil.getAddressAsString(document.getBillingContact() != null ? document.getBillingContact() : document.getDeliveryContact()));
+			txtAddress.setText(billingAddress);
 		}
 		
 		/*

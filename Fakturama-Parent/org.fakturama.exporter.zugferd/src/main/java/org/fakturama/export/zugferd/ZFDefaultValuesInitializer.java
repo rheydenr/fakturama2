@@ -10,7 +10,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider;
 import com.sebulli.fakturama.preferences.IInitializablePreference;
 
 /**

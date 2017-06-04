@@ -677,6 +677,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			item.setQuantityUnit(StringUtils.isBlank(itemType.getQunit()) ? newOrExistingProduct.getQuantityUnit() : itemType.getQunit());
     			item.setValidFrom(today);
     			item.setProduct(newOrExistingProduct);
+    			item.setPicture(newOrExistingProduct.getPicture());
     			item.setItemVat(vat);
     			item.setItemType(com.sebulli.fakturama.model.ItemType.POSITION);
     			item.setPrice(productUtil.getPriceByQuantity(newOrExistingProduct, item.getQuantity()));

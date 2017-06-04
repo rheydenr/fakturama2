@@ -6,77 +6,64 @@
 	<section>
 		<anchor xreflabel="" xml:id="install_download"/>
 		<title>Download der Software</title>
-		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung.</para>
-		<para>Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>
+		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>
 		</para>
 		<para>Fakturama läuft unter folgenden Betriebssystemen:</para>
 		<itemizedlist>
-			<listitem>
-				<para>
-					<trademark>Windows</trademark> 7, 8 und 10 (32Bit und 64Bit)</para>
-			</listitem>
-			<listitem>
-				<para> Mac OS X</para>
-			</listitem>
-			<listitem>
-				<para> Linux (32Bit und 64Bit)</para>
-			</listitem>
+			<listitem><trademark>Windows</trademark> 8 und 10 (32Bit und 64Bit)</listitem>
+			<listitem>Mac OS X</listitem>
+			<listitem>Linux (32Bit und 64Bit)</listitem>
 		</itemizedlist>
-		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig. Zum Erstellen der Druckvorlagen und der PDFs sind OpenOffice.org bzw. LibreOffice erforderlich. Für die Erstellung der Rechnungsdokumente im OpenOffice-Format ist kein OpenOffice/LibreOffice notwendig.</para>
+		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig. Zum Erstellen der Druckvorlagen und 
+		der PDFs sind OpenOffice.org bzw. LibreOffice erforderlich. Für die Erstellung der Rechnungsdokumente im 
+		OpenOffice-Format ist kein OpenOffice/LibreOffice notwendig.</para>
 		<itemizedlist>
-			<listitem>
-				<para> Downloadseite OpenOffice.org: <link xl:href="http://www.openoffice.org/">http://www.openoffice.org/</link>
-				</para>
-			</listitem>
-			<listitem>
-				<para> Downloadseite LibreOffice <link xl:href="http://www.libreoffice.org/">http://www.libreoffice.org/</link>
-				</para>
-			</listitem>
-			<listitem>
-				<para> Downloadseite <trademark>Java</trademark>: <link xl:href="http://www.java.com/de/">http://www.java.com/de/</link>
-				</para>
-			</listitem>
-			<listitem>
-				<para> Überprüfen, ob <trademark>Java</trademark> bereits installiert ist: <link xl:href="http://www.java.com/de/download/installed.jsp">TEST</link>
-				</para>
-			</listitem>
+			<listitem>Downloadseite OpenOffice.org: <link xl:href="http://www.openoffice.org/">http://www.openoffice.org/</link></listitem>
+			<listitem>Downloadseite LibreOffice <link xl:href="http://www.libreoffice.org/">http://www.libreoffice.org/</link></listitem>
+			<listitem>Downloadseite <trademark>Java</trademark>: <link xl:href="http://www.java.com/de/">http://www.java.com/de/</link></listitem>
+			<listitem>Überprüfen, ob <trademark>Java</trademark> bereits installiert ist: <link xl:href="http://www.java.com/de/download/installed.jsp">TEST</link></listitem>
 		</itemizedlist>
-		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.</para>
+		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende 
+		Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.
+		</para>
 	</section>
 	
-	
-	
-	
-	
-	
+	<section><title>Allgemeine Installationshinweise</title>
+        <para>Laden und installieren Sie <trademark>Java</trademark> und OpenOffice (bzw. LibreOffice), falls noch nicht geschehen. Starten Sie 
+        OpenOffice (bzw. LibreOffice) nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel abgefragt.
+        Sie benötigen das Programm, um Vorlagen bearbeiten zu können bzw. aus Fakturama heraus PDFs erzeugen zu können.</para>
+        <para>Sollten Sie sich für den Einsatz einer MySQL- oder MariaDB entscheiden (z. B. wegen des Mehrbenutzerzugriffes), 
+        müssen Sie diese ebenfalls bereits 
+        installiert haben. Für den Zugriff konfigurieren Sie in dieser Datenbank einen Nutzer, der
+        die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
+        Es wird <emphasis role="bold">nicht</emphasis> empfohlen, den <computeroutput>root</computeroutput>-Benutzer für den Zugriff zu verwenden.</para>
+	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_install_windows"/>
-		<title>Installation unter einem <trademark>Windows</trademark> Betriebssystem</title>
-		<para>Laden und installieren Sie <trademark>Java</trademark> und OpenOffice, falls noch nicht geschehen.</para>
-		<para> Starten Sie OpenOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
+		<title>Installation unter einem <trademark>Windows</trademark>-Betriebssystem</title>
 		<para>Laden Sie den für Ihr Betriebssystem geeigneten Fakturama-Installer 
 			<inlinemediaobject>
 				<imageobject role="html">
 					<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
+					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_ Fakturama_ windows-x64_x_x_x.exe bzw. Installer_Fakturama_windows-32Bit_x_x_x.exe) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter.</para>
-		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
-		<para> Auf einem Windows-Betriebssystem sind für die Installation Administratorrechte notwendig.</para>
-		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte beschrieben werden darf. Beispiel:</para>
-		<programlisting>C:\Projekte\MeineFirma\</programlisting>
+			</inlinemediaobject>(Installer_Fakturama_windows-x64_x_x_x.exe bzw. Installer_Fakturama_windows-32Bit_x_x_x.exe) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter.</para>
+		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
+		sind für die Installation Administratorrechte notwendig.</para>
+		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden die Firmendatenbank und alle 
+		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
+		beschrieben werden darf. Beispiel:</para>
+		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_install_linux"/>
-		<title>Installation unter einem <trademark>Linux</trademark> Betriebssystem</title>
-		<para>Laden und installieren Sie Java und LibreOffice, falls noch nicht geschehen.</para>
-		<para>Starten Sie LibreOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
-		<section>
-			<title>Für Debian und Ubuntu Betriebssysteme:</title>
+		<title>Installation unter einem <trademark>Linux</trademark>-Betriebssystem</title>
+		<sect2>
+			<title>Für Debian- und Ubuntu-Betriebssysteme:</title>
 			<para>Laden Sie den Fakturama-Debian-Package-Installer
 				<inlinemediaobject>
 					<imageobject role="html">
@@ -87,8 +74,8 @@
 					</imageobject>
 				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_x_ x.deb bzw. Installer_Fakturama_linux_64Bit_x_x_x.deb) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</title>
 			<para>Laden Sie den Fakturama-RedHat-Package-Installer
 				<inlinemediaobject>
@@ -100,8 +87,8 @@
 					</imageobject>
 				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_ x_x.rpm bzw. Installer_Fakturama_linux_64Bit_x_x_x.rpm) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>Für sonstige Linux-Systeme</title>
 			<para>Laden Sie den für Linux gebauten Installer 
 				<inlinemediaobject>
@@ -113,17 +100,16 @@
 					</imageobject>
 				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_64Bit_x_x_x.sh) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
-			<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
+			<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
+			und alle Dokumente und Vorlagen abgelegt. Beispiel:</para>
 			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 			</para>
-		</section>
+		</sect2>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_install_mac_os_x"/>
 		<title>Installation unter einem Mac OS X Betriebssystem</title>
-		<para>Laden und installieren Sie Java und LibreOffice, falls noch nicht geschehen.</para>
-		<para> Starten Sie LibreOffice nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel benötigt.</para>
 		<para>Laden Sie den Fakturama-Installer 
 			<inlinemediaobject>
 				<imageobject role="html">
@@ -132,7 +118,8 @@
 				<imageobject role="fo">
 					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: <inlinemediaobject>
+			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. 
+			Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: <inlinemediaobject>
 				<imageobject role="html">
 					<imagedata fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
 				</imageobject>
@@ -141,9 +128,9 @@
 				</imageobject>
 			</inlinemediaobject>
 		</para>
-		<para>Damit ist die Anwendung fertig installiert. Für die MacOS-Version Yosemite (10.10) beachten Sie bitte unbedingt die <link xl:href="http://www.fakturama.info/MacWorkaround.html">Hinweise auf der Homepage</link>, damit das Programm gestartet werden kann. </para>
-		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
-		<programlisting>/Benutzername/Dokumente/MeineFirma/</programlisting>
+		<para>Damit ist die Anwendung fertig installiert.</para>
+		<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
+		<programlisting>/Benutzer/IhrName/Dokumente/MeineFirma/</programlisting>
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
 	</section>
@@ -151,7 +138,9 @@
 			<anchor xreflabel="" xml:id="install_start"/>
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
-		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch im Dateidialog geschehen.</para>
+		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
+		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise im Dokument "Migration einer bestehenden Installation". Wenn Sie eine Mehrbenutzer-Installation
+		einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen.</para>
 		<!-- das wurde noch nicht umgesetzt -->
 		<!-- para>Fakturama begrüßt Sie mit einem Intro. Schließen Sie dies über das <emphasis role="bold">X</emphasis> rechts neben dem Text "Willkommen"</para>
 		<informalfigure>
@@ -163,100 +152,112 @@
 					<imagedata contentdepth="100%" fileref="../images/install/intro.png" format="PNG" scalefit="1" width="100%"/>
 				</imageobject>
 			</mediaobject>
-		</informalfigure --> 
-		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">http://www.fakturama.info</link> ausgewählt. Startet man ein Importieren von Webshopdaten, so werden 3 Musterprodukte und 2 Musterkunden angelegt. Diese können später wieder gelöscht werden.</para>
-		<para>Vor dem Arbeiten mit Fakturama sollten noch einige Einstellungen gesetzt werden. Die Werte sind bereits sinnvoll ausgewählt, doch nicht immer passen diese auf den eigenen Arbeitsablauf.</para>
+		</informalfigure -->
+		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">www.fakturama.info</link> ausgewählt. Startet man den Import von Webshopdaten, 
+		so werden 3 Musterprodukte und 2 Musterkunden angelegt. Diese können später wieder gelöscht werden.</para>
+		<para>Vor dem Arbeiten mit Fakturama sollten noch einige Einstellungen gesetzt werden. Die Werte sind bereits sinnvoll ausgewählt, doch nicht immer passen 
+		diese auf den eigenen Arbeitsablauf.</para>
 		<para>Einige Einstellungen wie Firmendaten oder die Zugangsdaten des Webshops müssen gesetzt werden. Es empfiehlt sich, alle Einstellungen zu prüfen.</para>
-		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheine Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden.</para>
-		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link>
-		</para>
-		<para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
+		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheinen Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. 
+		Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden. Die Vorlagen befinden sich im Arbeitsverzeichnis im Unterordner Vorlagen (dort jeweils
+		in einem separaten Ordner).</para>
+		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link> und <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
 		</para>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_startparameter"/>
 		<title>Zusätzliche Programmparameter beim Programmaufruf</title>
-		<section>
+		<sect2>
 			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
 			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
-				<programlisting>-workspace <emphasis role="italic">Verzeichnispfad</emphasis>
+				<programlisting>--workspace <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
-			</para>
-			<para>Beispiel:</para>
-			<programlisting>-workspace /home/user/Dokumente/FirmaB</programlisting>
-		</section>
-		<section>
+			Beispiel:
+			<programlisting>--workspace /home/user/Dokumente/FirmaB</programlisting></para>
+			<para>Statt <computeroutput>--workspace</computeroutput> kann auch der Schalter <computeroutput>-w</computeroutput> verwendet werden.</para>
+		</sect2>
+		<sect2>
 			<title>Arbeitsverzeichnis / Mandant - Variante B</title>
 			<para>Startet Fakturama komplett mit neuen Einstellungen. Aufruf:
 				<programlisting>-data <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
-			</para>
-			<para>Beispiel:</para>
+			Beispiel:
 			<programlisting>-data /home/user/.fakturamaB</programlisting>
-			<para>Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma/Mandanten zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
-		</section>
-		<section>
+			Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma/Mandanten 
+			zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
+		</sect2>
+		
+		<important>Bitte beachten Sie die Schreibweise der Schalter. Der Schalter <computeroutput>-data</computeroutput> (mit <emphasis role="italic">einem</emphasis> Gedankenstrich) wird direkt von der Laufzeitumgebung ausgewertet.</important>
+		
+		<note>Beim ersten Start des Programmes kann es etwas länger dauern, bis alle Initialisierungen vorgenommen wurden und die initialen Daten in die Datenbank geschrieben wurden. Dasselbe gilt auch für das erste Beenden des Programmes, da bestimmte Einstellungen gesichert werden müssen. Die nachfolgenden Programmaufrufe werden dann schneller ausgeführt. Die Zeit ist auch abhängig von der gewählten Datenbank.</note>
+		
+		<sect2>
 			<title>Sprache / Land</title>
-			<para>Startet Fakturama mit einer bestimmten Sprach- oder Ländereinstellung. Aufruf:
+			<para>Fakturama kann mit einer bestimmten Sprach- oder Ländereinstellung gestartet werden. Aufruf:
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>
-			</para>
-			<para>Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zubeachte, daß wirklich der komplette Bezeichner angegeben wird, da es sonst zu fehlerhaften Darstellungen im Programm kommen kann.</para>
+			Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, 
+			wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zu beachten, dass wirklich der komplette Bezeichner angegeben wird, 
+			da es sonst zu fehlerhaften Darstellungen im Programm kommen kann.</para>
 			<para>Folgende Länder und Sprachen werden unterstützt:</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl en_US</emphasis>  Englisch (keine Hilfe verfügbar)</para>
+						<emphasis role="bold">-nl en_US</emphasis> Englisch (keine Hilfe verfügbar)</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl de_DE</emphasis>  Deutsch, Deutschland</para>
+						<emphasis role="bold">-nl de_DE</emphasis> Deutsch, Deutschland</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl de_AT</emphasis>  Deutsch, Österreich</para>
+						<emphasis role="bold">-nl de_AT</emphasis> Deutsch, Österreich</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl de_CH</emphasis>  Deutsch, Schweiz</para>
+						<emphasis role="bold">-nl de_CH</emphasis> Deutsch, Schweiz</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl de_LI</emphasis>  Deutsch, Liechtenstein</para>
+						<emphasis role="bold">-nl de_LI</emphasis> Deutsch, Liechtenstein</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl ru_RU</emphasis>  Russisch</para>
+						<emphasis role="bold">-nl ru_RU</emphasis> Russisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl ro_RO</emphasis>  Rumänisch</para>
+						<emphasis role="bold">-nl ro_RO</emphasis> Rumänisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl uk_UK</emphasis>  Ukrainisch</para>
+						<emphasis role="bold">-nl uk_UK</emphasis> Ukrainisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl hu_HU</emphasis>  Ungarisch</para>
+						<emphasis role="bold">-nl hu_HU</emphasis> Ungarisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl es_ES</emphasis>  Spanisch</para>
+						<emphasis role="bold">-nl es_ES</emphasis> Spanisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl eu_EU</emphasis>  Baskisch</para>
+						<emphasis role="bold">-nl eu_EU</emphasis> Baskisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl fr_FR</emphasis>  Französisch</para>
+						<emphasis role="bold">-nl fr_FR</emphasis> Französisch</para>
 				</listitem>
 				<listitem>
 					<para>
-						<emphasis role="bold">-nl pl_PL</emphasis>  Polnisch</para>
+						<emphasis role="bold">-nl pl_PL</emphasis> Polnisch</para>
 				</listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">-nl tr_TR</emphasis> Türkisch</para>
+                </listitem>
 			</itemizedlist>
-		</section>
+		</sect2>
 	</section>
 </chapter>

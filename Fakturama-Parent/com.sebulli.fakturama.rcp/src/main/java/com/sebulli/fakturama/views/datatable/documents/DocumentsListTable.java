@@ -21,15 +21,19 @@ import org.eclipse.core.commands.AbstractParameterValueConverter;
 import org.eclipse.core.commands.CommandManager;
 import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -89,6 +93,7 @@ import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
@@ -123,6 +128,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Inject
     private IEclipseContext context;
+	
+    @Inject
+    @Preference   //(value=InstanceScope.SCOPE)
+    private IEclipsePreferences eclipsePrefs;
     
     private EventList<Document> documentListData;
     private EventList<DummyStringCategory> categories;
@@ -159,7 +168,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
         log.info("create Document list part");
-        this.listTablePart = listTablePart;//((E4Workbench)context.get(IWorkbench.class)).isRestart();
+        this.listTablePart = listTablePart;
+        if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
+        	return null;
+        }
         // This is for text only!!!
         ParameterType parameterType = cmdMan.getParameterType("myParam");
     	AbstractParameterValueConverter parameterTypeConverter = new LongParameterValueConverter();

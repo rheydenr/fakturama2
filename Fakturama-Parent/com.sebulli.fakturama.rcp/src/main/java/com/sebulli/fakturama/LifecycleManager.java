@@ -233,7 +233,7 @@ public class LifecycleManager {
     	splashService.worked(1);
         
         // Set the default values to this entries
-        if(eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0)) == 0L) {
+        if(eclipsePrefs.getBoolean("isreinit", false) || eclipsePrefs.getLong(Constants.DEFAULT_VAT, Long.valueOf(0)) == 0L) {
 	        VAT defaultVat = modelFactory.createVAT();
 	        defaultVat.setName(msg.dataDefaultVat);
 	        defaultVat.setDescription(msg.dataDefaultVatDescription);
@@ -245,7 +245,7 @@ public class LifecycleManager {
         
     	splashService.worked(1);
 
-        if (eclipsePrefs.getLong(Constants.DEFAULT_SHIPPING, Long.valueOf(0)) == 0L) {
+        if (eclipsePrefs.getBoolean("isreinit", false) || eclipsePrefs.getLong(Constants.DEFAULT_SHIPPING, Long.valueOf(0)) == 0L) {
 	        Shipping defaultShipping = modelFactory.createShipping();
 	        defaultShipping.setName(msg.dataDefaultShipping);
 	        defaultShipping.setDescription(msg.dataDefaultShippingDescription);
@@ -259,7 +259,7 @@ public class LifecycleManager {
 
     	splashService.worked(1);
 
-    	if(eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
+    	if(eclipsePrefs.getBoolean("isreinit", false) || eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
 	        Payment defaultPayment = modelFactory.createPayment();
 	        defaultPayment.setName(msg.dataDefaultPayment);
 	        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
@@ -410,6 +410,9 @@ public class LifecycleManager {
         ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkAndUpdateConfiguration();
+        if(eclipsePrefs.getBoolean("isreinit", false)) {
+        	dbUpdateService.updateDatabase();
+        }
         if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
             		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
@@ -422,9 +425,10 @@ public class LifecycleManager {
 				fillWithInitialData(splashService);
 			}
 			catch (FakturamaStoringException sqlex) {
-				log.error(sqlex, "couldn't fill with inital data! " + sqlex);
+				log.error(sqlex, "couldn't fill with initial data! " + sqlex);
 			}
         }
+    	eclipsePrefs.putBoolean("isreinit", false);
     	                
         MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
         mainMTrimmedWindow.setLabel(msg.applicationName + " - " + eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null));

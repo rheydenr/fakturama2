@@ -141,7 +141,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				case "com.mysql.jdbc.Driver":
 		            // MySQL
 		            // jdbc:mysql://[<host>][:<port>]/<database>[?propertyName1][=propertyValue1][&propertyName2][=propertyValue2]...
-		            jdbcUrlMap.put(driverClass, "jdbc:mysql://[<host>][:<port>]/<database>");
+		            jdbcUrlMap.put(driverClass, "jdbc:mysql://<host>[:<port>]/<database>");
 		            break;
 				default:
 					log.warn(String.format("unknown database driver found in service registry; class name=[%s]",driverClass));
@@ -384,11 +384,11 @@ public class InitialStartupDialog extends TitleAreaDialog {
     			    preferences.put(PersistenceUnitProperties.JDBC_PASSWORD, txtPassword.getText());   // TODO encrypt!!!
     			}
     			preferences.putBoolean("jdbc_reconnect", true);
-    			preferences.flush();
     		
     			dirChecker.checkPreviousVersion(txtOldWorkdir.getText());
-				// Store the requested directory in a preference value
+				// Store the requested directory in a preference value and clear an old one (if it exists)
 				preferences.put(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, workspace);
+				preferences.remove(Constants.GENERAL_WORKSPACE);
 				preferences.flush();
 				// restarting application
 				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);

@@ -34,7 +34,27 @@ import com.sebulli.fakturama.model.ReliabilityType;
 @Singleton
 public class ContactUtil {
     
-    public static final int MAX_SALUTATION_COUNT = 4;
+    public static final String KEY_COUNTY = "county";
+
+	public static final String KEY_CITY = "city";
+
+	public static final String KEY_ZIP = "zip";
+
+	public static final String KEY_STREETNO = "streetno";
+
+	public static final String KEY_STREETNAME = "streetname";
+
+	public static final String KEY_STREET = "street";
+
+	public static final String KEY_ADDRESSFIRSTLINE = "addressfirstline";
+
+	public static final String KEY_LASTNAME = "lastname";
+
+	public static final String KEY_FIRSTNAME = "firstname";
+
+	public static final String KEY_NAME = "name";
+
+	public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
     @Translation
@@ -190,9 +210,9 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact, String separator) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null && (/*contact.getCustomerNumber() != null ||*/ contact.getAddress() != null)) {
+		if(contact != null /*&& (contact.getCustomerNumber() != null ||contact.getAddress() != null)*/ ) {
 		    
-		    if(contact.getAddress().getManualAddress() != null) {
+		    if(contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
 		        // if a manual address is set we use this one
 		        address = contact.getAddress().getManualAddress();
 		    } else {
@@ -212,8 +232,8 @@ public class ContactUtil {
 							hiddenCountry = hiddenLocale.orElse(Locale.ENGLISH).getDisplayCountry();
 						}
         			}
-        			if (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.ENGLISH).getDisplayCountry(), hiddenCountry)) {
+        			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.ENGLISH).getDisplayCountry(), hiddenCountry))) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         			}
         		}
@@ -242,10 +262,10 @@ public class ContactUtil {
 	
 	public Address createAddressFromString(String address) {
 		Address retval = modelFactory.createAddress();
-		retval.setStreet(getDataFromAddressField(address, "street"));
-		retval.setCity(getDataFromAddressField(address, "city"));
-		retval.setZip(getDataFromAddressField(address, "zip"));
-		String country = getDataFromAddressField(address, "county");
+		retval.setStreet(getDataFromAddressField(address, KEY_STREET));
+		retval.setCity(getDataFromAddressField(address, KEY_CITY));
+		retval.setZip(getDataFromAddressField(address, KEY_ZIP));
+		String country = getDataFromAddressField(address, KEY_COUNTY);
 		Optional<Locale> locale = determineCountryCode(country);
 		if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
 			retval.setCountryCode(locale.get().getCountry());
@@ -374,16 +394,16 @@ public class ContactUtil {
 			}
 		}
 
-		if (key.equals("name")) return addressName;
-		if (key.equals("firstname")) return addressFirstName;
-		if (key.equals("lastname")) return addressLastName;
-		if (key.equals("addressfirstline")) return addressLine;
-		if (key.equals("street")) return addressStreet;
-		if (key.equals("streetname")) return getStreetName(addressStreet);
-		if (key.equals("streetno")) return getStreetNo(addressStreet);
-		if (key.equals("zip")) return addressZIP;
-		if (key.equals("city")) return addressCity;
-		if (key.equals("county")) return addressCountry;
+		if (key.equals(KEY_NAME)) return addressName;
+		if (key.equals(KEY_FIRSTNAME)) return addressFirstName;
+		if (key.equals(KEY_LASTNAME)) return addressLastName;
+		if (key.equals(KEY_ADDRESSFIRSTLINE)) return addressLine;
+		if (key.equals(KEY_STREET)) return addressStreet;
+		if (key.equals(KEY_STREETNAME)) return getStreetName(addressStreet);
+		if (key.equals(KEY_STREETNO)) return getStreetNo(addressStreet);
+		if (key.equals(KEY_ZIP)) return addressZIP;
+		if (key.equals(KEY_CITY)) return addressCity;
+		if (key.equals(KEY_COUNTY)) return addressCountry;
 		return "";
 	}
 	
@@ -518,6 +538,8 @@ public class ContactUtil {
 				countrycode += "-";
 			}
 			formatString = replaceAllWithSpace(formatString, "\\{countrycode\\}", countrycode);
+		} else {
+			formatString = formatString.replaceAll("\\{street\\}|\\{zip\\}|\\{city\\}|\\{country\\}|\\{countrycode\\}", "");
 		}
 
 		formatString = replaceAllWithSpace(formatString, "\\{removed\\}", "");
@@ -625,7 +647,11 @@ public class ContactUtil {
      */
     public Boolean deliveryAddressEqualsBillingAddress(Document document) {
         String billingAddress = getAddressAsString(document.getBillingContact());
-        String deliveryAddress = getAddressAsString(document.getDeliveryContact());
+        String deliveryAddress = getAddressAsString(document.getDeliveryContact() != null 
+        		? document.getDeliveryContact() 
+        		: (document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) 
+        		   ? document.getBillingContact().getAlternateContacts() 
+        		   : document.getBillingContact());
 
 //        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
 //        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }

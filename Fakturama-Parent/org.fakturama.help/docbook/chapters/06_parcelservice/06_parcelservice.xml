@@ -18,9 +18,7 @@
 	<section>
 		<title>Vorlagen</title>
 		<para>Die URL des Paketdienstes sowie die Informationen darüber, welche Felder wie gefüllt werden, sind in den Vorlagen des Paketdienstes beschrieben. Dies sind Textdateien, die editiert und ggf. um neue Paketdienste erweitert werden können.</para>
-		<para>Siehe auch <link linkend="parcelservice_templates">Paketdienst-Vorlagen</link>
-		</para>
-		<para>Siehe auch <link linkend="editor_editor_parcelservice">Paketdienst-Editor</link>
+		<para>Siehe auch <link linkend="parcelservice_templates">Paketdienst-Vorlagen</link>und <link linkend="editor_editor_parcelservice">Paketdienst-Editor</link>
 		</para>
 	</section>
 	<section>
@@ -57,7 +55,7 @@
 		<section>
 			<title>Platzhalter des Adressformulares</title>
 			<para>Die HTML-Formularelemente der Paketdienstseite können mit Platzhaltern belegt werden. Dazu ist der Name des Formularelementes gefolgt von einem <emphasis role="bold">=</emphasis>, gefolgt vom Platzhalter anzugeben.</para>
-			<para>Als Platzhalter können die gleichen wie auch bei Open/Libre-Office Vorlagen benutzt werden.</para>
+			<para>Als Platzhalter können die gleichen wie auch bei OpenOffice/LibreOffice-Vorlagen benutzt werden.</para>
 		</section>
 		<section>
 			<title>Name der Formularfelder bestimmen</title>

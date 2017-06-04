@@ -18,23 +18,18 @@
     </section -->
     <section>
       <title>Ordner Database</title>
-      <para>Startet man Fakturama ohne die Auswahl einer Datenbank, so speichert es alle Daten (bis auf die Produktbilder) in einer HSQLDB 2.0 Datenbank. Diese Datenbank besteht aus den beiden Dateien <filename>Database.properties</filename>, welche Einstellungen der Datenbank speichert und <filename>Database.script</filename> mit den eigentlichen Daten.</para>
+      <para>Startet man Fakturama ohne die Auswahl einer Datenbank, so speichert es alle Daten (bis auf die Produktbilder) in einer HSQLDB 2.0 Datenbank. Diese Datenbank besteht aus den beiden Dateien <filename>Database.properties</filename>, welche Einstellungen der Datenbank speichert und <filename>Database.script</filename> mit den eigentlichen Daten. Produktbilder werden ebenfalls in der Datenbank gespeichert.</para>
       <para>Ist Fakturama geöffnet, werden bis zum Schließen zusätzlich noch die Dateien <filename>Database.lck</filename> und <filename>Database.log</filename> erzeugt. Den Ordner <filename>Database.tmp</filename> benutzt die Datenbank, um kurzzeitig Daten zwischenzuspeichern.</para>
+	  <para>Bei Mehrbenutzer-Installationen wird in der Regel eine andere Datenbank gewählt. In diesem Fall existiert dieses Verzeichnis nicht, da sich die Datenbank dann auf einem anderen System befindet (zentraler Server).</para>
     </section>
     <section>
       <title>Ordner Log</title>
-      <para>Fehler während des Programmablaufes werden in der Datei <filename>Error.log</filename> festgehalten. <filename>WebShopImport.log</filename> ist die Antwort des Webshops bei Abfragen von Daten.</para>
-    </section>
-    <section>
-      <title>Ordner Pics</title>
-      <para>Fakturama speichert Bilder in der Datenbank. </para>
-      <para>Siehe auch <link linkend="editor_editor_product_pic">Produktbild</link>
-</para>
+      <para>Fehler während des Programmablaufes werden in der Datei <filename>Error.log</filename> festgehalten (ergänzt jeweils um den aktuellen Tageszeitstempel). Die Datei <filename>WebShopImport.log</filename> ist die Antwort des Webshops beim Abfragen von Daten.</para>
     </section>
     <section>
       <title>Ordner Vorlagen</title>
       <para>In diesem Ordner befinden sich die Vorlagen für alle Dokumente im OpenOffice-/LibreOffice-Format und für die Paketdienste. Damit eine Vorlage benutzt werden kann, muss diese nur in dem entsprechenden Ordner im <filename>*.ott</filename>-Format abgelegt werden. Bei zwei oder mehreren Vorlagen kann der Benutzer kurz vor dem Drucken die entsprechende Vorlage auswählen.</para>
-      <para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org Vorlagen</link>
+      <para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org-Vorlagen</link>
 </para>
     </section>
   </chapter>

@@ -2,14 +2,14 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" id="preferences" xml:lang="de">
     <title>Einstellungen</title>
     <anchor xreflabel="" xml:id="preferences_main"/>
-    <para>Viele Einstellungen in Fakturama können geändert werden. Der Dialog lässt sich bei einem Windows oder Linux System im Menü <emphasis role="bold">Datei/Einstellungen</emphasis> und bei OS X im Menü <emphasis role="bold">Fakturama/Einstellungen</emphasis> öffnen.</para>
+    <para>Viele Einstellungen in Fakturama können geändert werden. Der Dialog lässt sich bei einem Windows- oder Linux-System im Menü <emphasis role="bold">Datei/Einstellungen</emphasis> und bei OS X im Menü <emphasis role="bold">Fakturama/Einstellungen</emphasis> öffnen.</para>
     <informalfigure>
         <mediaobject>
             <imageobject role="html">
                 <imagedata fileref="../images/preferences/preferences.png" format="PNG" scalefit="1"/>
             </imageobject>
             <imageobject role="fo">
-                <imagedata contentdepth="100%" fileref="../images/preferences/preferences.png" format="PNG" scalefit="1" width="100%"/>
+                <imagedata contentdepth="55%" fileref="../images/preferences/preferences.png" format="PNG" scalefit="1" width="100%"/>
             </imageobject>
         </mediaobject>
     </informalfigure>
@@ -26,7 +26,7 @@
                         <imagedata fileref="../images/preferences/../application/navigationbar.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="80%" fileref="../images/preferences/../application/navigationbar.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="220%" fileref="../images/preferences/../application/navigationbar.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -36,9 +36,11 @@
             <para>Ist diese Option angewählt werden beim Öffnen eines neuen Editorfensters automatisch alle anderen Editorfenster geschlossen. Geänderte und noch nicht gespeicherte bleiben weiterhin geöffnet.</para>
         </section>
         <section>
-            <title>Währungssymbol</title>
-            <para>Legt das Währungssymbol für alle Preisangaben fest. Ein Wechsel des Währungssymbols ändert nicht den Wert.</para>
-            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder 'EURO '</para>
+            <title>Währungsland</title>
+            <para>Legt fest, in welcher Währung die Geldbeträge erscheinen sollen. Ein Wechsel des Währungslandes ändert nicht den Wert.</para>
+            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, das sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen Locale-Einstellungen greifen.</para>
+			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, daß alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
+			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen und anderen Zahlen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
         </section>
         <section>
             <title>Zahlen mit Tausenderpunkt darstellen</title>
@@ -50,7 +52,7 @@
         <title>Dokumenten-Einstellungen</title>
         <section>
             <title>Preise in Artikelliste</title>
-            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine ..) als Netto oder Brutto angezeigt werden</para>
+            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine&#x2026;) als Netto oder Brutto angezeigt werden</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -143,8 +145,12 @@
             </informalfigure>
         </section>
         <section>
+            <title>Leistungszeitraum verwenden</title>
+            <para>Hier kann festgelegt werden, ob im Dokumenteneditor ein Leistungszeitraum verwendet werden soll (in der Artikeltabelle). Dabei kann ausgewählt werden, ob nur ein Startdatum oder sowohl Start- als auch Endedatum angegeben werden können soll.</para>
+        </section>
+        <section>
             <title>Artikelpreise im Lieferschein anzeigen</title>
-            <para>Im Dokumenteneditor für Lieferscheine können die Artikelpreise ein- oder ausgeblendet werden. Unabhängig davon, ob sie später gedruckt werden oder nicht.</para>
+            <para>Im Dokumenteneditor für Lieferscheine können die Artikelpreise ein- oder ausgeblendet werden. Dies ist unabhängig davon, ob sie später gedruckt werden oder nicht.</para>
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_document_importdeliverynote"/>
@@ -161,7 +167,7 @@
                         <imagedata fileref="../images/preferences/../editor/customer_statistics_dialog.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="80%" fileref="../images/preferences/../editor/customer_statistics_dialog.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/customer_statistics_dialog.png" format="PNG" scalefit="1" width="50%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -187,6 +193,14 @@
             <para>Siehe auch <link linkend="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"</link>
             </para>
         </section>
+       <section>
+            <title>Text in der Abschlagszahlungszeile</title>
+            <para>Dieser Text wird als Ersetzungstext für den Platzhalter <emphasis role="bold">&lt;DOCUMENT.DEPOSIT.DEP_TEXT&gt;</emphasis> verwendet.</para>
+        </section>
+       <section>
+            <title>Text der letzten Zeile der Zahlungsbedingungen</title>
+            <para>Dieser Text wird als Ersetzungstext für den Platzhalter <emphasis role="bold">&lt;DOCUMENT.DEPOSIT.FINALPMT_TEXT&gt;</emphasis> verwendet.</para>
+        </section>
     </section>
     <section>
         <anchor xreflabel="" xml:id="preferences_optional_items"/>
@@ -201,8 +215,8 @@
         </section>
         <section>
             <title>Ersatztext für Preisangabe</title>
-            <para>Dieser Text wird bei einer Bedarfsposition anstatt des Gesamtpreises eines Artikels angezeigt.</para>
-            <para> Dabei wird sowohl der Platzhalter für Nettopreis als auch MwSt. und Bruttopreis ersetzt.</para>
+            <para>Dieser Text wird bei einer Bedarfsposition anstatt des Gesamtpreises eines Artikels angezeigt.
+            Dabei wird sowohl der Platzhalter für Nettopreis als auch MwSt. und Bruttopreis ersetzt.</para>
             <para>Siehe <link linkend="placeholder_itemtable_item_total">Platzhalter Gesamtpreis</link>
             </para>
         </section>
@@ -220,9 +234,7 @@
             <title>Zahldatum anstatt Rechnungsdatum verwenden</title>
             <para>Beim Export der Umsätze und Ausgaben in einer Tabelle wird ein Zeitabschnitt, zum Beispiel ein Monat oder ein Quartal angegeben. Es werden nur diejenigen Rechnungen und Belege exportiert, deren Datum in diesem Zeitabschnitt liegen. Hier kann festgelegt werden, ob dabei das Zahldatum oder das Rechnungsdatum berücksichtigt wird.</para>
             <para>Bei einer Istversteuerung wird hier üblicherweise das Zahldatum gewählt. Bei einer Sollversteuerung das Rechnungsdatum.</para>
-            <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
-            </para>
-            <para>Siehe auch <link linkend="importexport_export_sales">Export Liste Umsätze</link>
+            <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link> und <link linkend="importexport_export_sales">Export Liste Umsätze</link>
             </para>
         </section>
     </section>
@@ -238,7 +250,7 @@
                         <imagedata fileref="../images/preferences/yourcompany.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="70%" fileref="../images/preferences/yourcompany.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/yourcompany.png" format="PNG" scalefit="1" width="60%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -310,7 +322,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="80%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="70%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -324,7 +336,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -338,13 +350,29 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
             <para>Siehe auch <link linkend="editor_editor_contact">Kontakteditor</link>
             </para>
-        </section>
+        </section>       
+		<section>
+            <title>Titel benutzen</title>
+            <para>Das Feld für den Titel eines Kontaktes kann ein- oder ausgeblendet werden.</para>
+		</section>
+		<section>
+            <title>Format des Namens</title>
+            <para>Die Reihenfolge von Vor- und Nachname kann für die Anzeige vertauscht werden.</para>
+		</section>
+		<section>
+            <title>Firmenfeld benutzen</title>
+            <para>Das Feld für die Firma kann ein- oder ausgeblendet werden.</para>
+		</section>
+		<section>
+            <title>Länderfeld benutzen</title>
+            <para>Das Feld für das Land eines Kontaktes kann ein- oder ausgeblendet werden. Zusätzlich kann unter dem Punkt <link linkend="preferences_contactformat">Format des Adressfeldes</link> festgelegt werden, welche Länder bei der Ausgabe nicht mit aufgeführt werden sollen.</para>
+		</section>
     </section>
     <section>
         <anchor xreflabel="" xml:id="preferences_contactformat"/>
@@ -379,6 +407,12 @@
             <listitem>
                 <para>{country}  Platzhalter für Land</para>
             </listitem>
+            <listitem>
+                <para>{countrycode}  Platzhalter für den Ländercode</para>
+            </listitem>
+            <listitem>
+                <para>{removed}  Feld wird gelöscht bzw. ignoriert</para>
+            </listitem>
         </itemizedlist>
         <para>Siehe auch <link linkend="editor_editor_document_address">Adresse Dokumenteneditor</link>
         </para>
@@ -386,62 +420,46 @@
             <anchor xreflabel="" xml:id="preferences_contactformat_greeting"/>
             <title>Allgemeine Grußformel</title>
             <para>Format der Grußformel, die dann benutzt wird, wenn dem Kontakteintrag keine Anrede zugewiesen wurde.</para>
-            <para>Beispiel:</para>
-            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis>
-            </programlisting>
-            <para>wird auf einer Rechnung ersetzt zu:</para>
-            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis>
-            </programlisting>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
-            </para>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            <para>Beispiel:
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis></programlisting>
+            wird auf einer Rechnung ersetzt zu:
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis></programlisting>
+            Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link> und <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
             </para>
         </section>
         <section>
             <title>Grußformel Männer</title>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um einen Mann handelt.</para>
-            <para>Beispiel:</para>
-            <programlisting>Sehr geehrter Herr <emphasis role="bold">{lastname}</emphasis>
-            </programlisting>
-            <para>wird auf einer Rechnung ersetzt zu:</para>
-            <programlisting>Sehr geehrter Herr <emphasis role="bold">Müller</emphasis>
-            </programlisting>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
-            </para>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            <para>Beispiel:
+            <programlisting>Sehr geehrter Herr <emphasis role="bold">{lastname}</emphasis></programlisting>
+            wird auf einer Rechnung ersetzt zu:
+            <programlisting>Sehr geehrter Herr <emphasis role="bold">Müller</emphasis></programlisting>
+            Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link> bzw. <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
             </para>
         </section>
         <section>
             <title>Grußformel Frauen</title>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Frau handelt.</para>
-            <para>Beispiel:</para>
-            <programlisting>Sehr geehrte Frau <emphasis role="bold">{lastname}</emphasis>
-            </programlisting>
-            <para>wird auf einer Rechnung ersetzt zu:</para>
-            <programlisting>Sehr geehrte Frau <emphasis role="bold">Müller</emphasis>
-            </programlisting>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
-            </para>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            <para>Beispiel:
+            <programlisting>Sehr geehrte Frau <emphasis role="bold">{lastname}</emphasis></programlisting>
+            wird auf einer Rechnung ersetzt zu:
+            <programlisting>Sehr geehrte Frau <emphasis role="bold">Müller</emphasis></programlisting>
+            Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link> bzw. <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
             </para>
         </section>
         <section>
             <title>Grußformel Firma</title>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Firma handelt.</para>
-            <para>Beispiel:</para>
-            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis>
-            </programlisting>
-            <para>wird auf einer Rechnung ersetzt zu:</para>
-            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis>
-            </programlisting>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link>
-            </para>
-            <para>Siehe auch <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
+            <para>Beispiel:
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis></programlisting>
+            wird auf einer Rechnung ersetzt zu:
+            <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">Impex Import Export GmbH</emphasis></programlisting>
+            Siehe auch <link linkend="openoffice_placeholders_common_address_greeting">Anrede (Rechnungsadresse)</link> bzw. <link linkend="openoffice_placeholders_common_delivery_address_greeting">Anrede (Lieferadresse)</link>
             </para>
         </section>
     </section>
     <section>
-                <anchor xreflabel="" xml:id="preferences_numberrangevalues"/>
+        <anchor xreflabel="" xml:id="preferences_numberrangevalues"/>
         <title>Nummernkreise</title>
         <para>Beim Anlegen eines neuen Kunden, eines Produktes oder eines Dokumentes wird automatisch die Kunden-, Artikel- oder Dokumentennummer hochgezählt.</para>
         <para>Auf dieser Seite wird angezeigt, wie die nächste Nummer lautet, die vergeben wird. Ebenso kann diese geändert werden, falls die Zählreihenfolge nicht mehr stimmt oder geändert werden soll.</para>
@@ -461,6 +479,9 @@
                 <para> Kundennummer</para>
             </listitem>
             <listitem>
+                <para> Lieferantennummer</para>
+            </listitem>
+            <listitem>
                 <para> Artikelnummer</para>
             </listitem>
             <listitem>
@@ -473,21 +494,24 @@
                 <para> Angebotsnummer</para>
             </listitem>
             <listitem>
-                <para> Bestellungsnummer</para>
+                <para> Auftragsnummer</para>
             </listitem>
             <listitem>
                 <para> Auftragsbestätigungsnummer</para>
             </listitem>
             <listitem>
-                <para> Gutschriftnummer</para>
+                <para> Rechnungskorrekturnummer</para>
             </listitem>
             <listitem>
                 <para> Mahnungsnummer</para>
             </listitem>
+            <listitem>
+                <para> Proforma-Rechnungsnummer</para>
+            </listitem>
         </itemizedlist>
     </section>
     <section>
-            <anchor xreflabel="" xml:id="preferences_numberrangeformat"/>
+        <anchor xreflabel="" xml:id="preferences_numberrangeformat"/>
         <title>Format der Nummernkreise</title>
         <para>Beim Anlegen eines neuen Kunden, eines Produktes oder eines Dokumentes wird automatisch die Kunden-, Artikel- oder Dokumentennummer hochgezählt.</para>
         <para>Für Kunden, Produkte und jede Art von Dokument kann ein unterschiedliches Format vorgegeben werden.</para>
@@ -561,6 +585,9 @@
                 <listitem>
                     <para> Kundennummer</para>
                 </listitem>
+				<listitem>
+					<para> Lieferantennummer</para>
+				</listitem>
                 <listitem>
                     <para> Artikelnummer</para>
                 </listitem>
@@ -579,33 +606,36 @@
                 <listitem>
                     <para> Auftragsbestätigungsnummer</para>
                 </listitem>
-                <listitem>
-                    <para> Gutschriftnummer</para>
-                </listitem>
-                <listitem>
-                    <para> Mahnungsnummer</para>
-                </listitem>
+				<listitem>
+					<para> Rechnungskorrekturnummer</para>
+				</listitem>
+				<listitem>
+					<para> Mahnungsnummer</para>
+				</listitem>
+				<listitem>
+					<para> Proforma-Rechnungsnummer</para>
+				</listitem>
             </itemizedlist>
          </section>
     </section>
     <section>
                  <anchor xreflabel="" xml:id="preferences_openoffice"/>
-       <title>OpenOffice.org / LibreOffice Einstellungen</title>
+       <title>OpenOffice.org / LibreOffice-Einstellungen</title>
         <para>Fakturama benutzt OpenOffice / LibreOffice, um Dokumente und Tabellen zu exportieren.</para>
         <section>
             <title>OpenOffice-org Pfad/App</title>
-            <para>Je nach Betriebssystem wird hier der Ordner ausgewählt, in dem sich die OpenOffice / LibreOffice Installation befindet, oder die OpenOffice App. In der Klammer steht der Standard-Pfad. Wurde es an einer anderen Stelle installiert, ist diese auszuwählen.</para>
-            <para>Standardpfad für Windows Betriebssysteme</para>
-            <programlisting>C:\Program Files\OpenOffice.org 3</programlisting>
-            <para>Standardpfad für Linux Betriebssysteme</para>
+            <para>Je nach Betriebssystem wird hier der Ordner ausgewählt, in dem sich die OpenOffice / LibreOffice Installation oder die OpenOffice App befindet. In Klammern steht der Standard-Pfad. Wurde es an einer anderen Stelle installiert, ist diese auszuwählen.</para>
+            <para>Standardpfad für Windows-Betriebssysteme</para>
+            <programlisting>C:\Program Files\OpenOffice.org 4</programlisting>
+            <para>Standardpfad für Linux-Betriebssysteme</para>
             <programlisting>/usr/lib/openoffice</programlisting>
-            <para>Standardapp für MAC OS X Betriebssysteme</para>
+            <para>Standardapp für MacOS-Betriebssysteme</para>
             <programlisting>/Applications/OpenOffice.org.app</programlisting>
         </section>
         <section>
             <title>Dokument als ODT und PDF exportieren</title>
-            <para>Beim Exportieren/Drucken eines Dokumentes wird dieses automatisch im Ordner <emphasis role="bold">Dokumente</emphasis> im Arbeitsverzeichnis gespeichert. Entweder als OpenOffice.org/LibreOffice ODT Dokument, als PDF oder beides.</para>
-            <informalfigure>
+            <para>Beim Exportieren/Drucken eines Dokumentes wird dieses automatisch im Ordner <emphasis role="bold">Dokumente</emphasis> im Arbeitsverzeichnis gespeichert. Entweder als OpenOffice.org/LibreOffice-ODT-Dokument, als PDF oder beides.</para>
+            <!-- informalfigure>
                 <mediaobject>
                     <imageobject role="html">
                         <imagedata fileref="../images/preferences/odt.png" format="PNG" scalefit="1"/>
@@ -624,16 +654,16 @@
                         <imagedata contentdepth="100%" fileref="../images/preferences/pdf.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
-            </informalfigure>
+            </informalfigure -->
         </section>
         <section>
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
             <title>Format und Pfad der Dateien</title>
             <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest.</para>
             <para>Über das Hauptmenü Extras <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
-            <para>Beispiel:</para>
+            <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
-            <para>Folgende Platzhalter können benutzt werden:</para>
+            Folgende Platzhalter können benutzt werden:</para>
             <itemizedlist>
                 <listitem>
                     <para>
@@ -679,6 +709,9 @@
             </itemizedlist>
             <para>Siehe auch <link linkend="application_mainmenu_extras">Hauptmenü Extras</link>
             </para>
+			<para>Im Feld <emphasis role="bold">Zusätzlicher Pfad der .pdf-Dateien</emphasis> kann man einen weiteren Pfad angeben, in dem PDF-Dateien abgelegt werden. Dies wird beispielsweise verwendet,
+			wenn andere Programme (z. B. Archivsysteme) Dateien aus diesem Pfad direkt lesen und verschieben.</para>
+			<para>Mit dem Schalter <emphasis role="bold">PDF nach Druck anzeigen</emphasis> kann man sich das erstellte PDF-Dokument direkt nach dem Erstellen anzeigen lassen.</para>
         </section>
         <!-- section> @deprecated
             <title>OpenOffice in eigenem Thread starten</title>
@@ -743,7 +776,7 @@
         </section>
         <section>
             <title>Staffelpreise benutzen</title>
-            <para>Hier kann angegeben werden, ob Staffelpreise benutzt werden sollen. Wenn ja, wie viele Preisstaffelungen benutzt werden sollen.</para>
+            <para>Hier kann angegeben werden, ob und wie viele Preisstaffelungen benutzt werden sollen.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -757,7 +790,7 @@
         </section>
         <section>
             <title>MwSt. auswählbar</title>
-            <para>Falls die Produkte immer mit dem gleichen, dem Standardsteuersatz ausgezeichnet werden, kann das Feld 'Mehrwertsteuer' ausgeblendet werden.</para>
+            <para>Falls die Produkte immer mit dem gleichen (Standard-) Steuersatz ausgezeichnet werden, kann das Feld 'Mehrwertsteuer' ausgeblendet werden.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -806,7 +839,7 @@
                         <imagedata fileref="../images/preferences/product_useproductpicture.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="90%" fileref="../images/preferences/product_useproductpicture.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/product_useproductpicture.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -880,21 +913,13 @@
         </section>
     </section -->
     <section>
-        <title>Einstellungen Toolbar</title>
-        <section>
-            <title>Icons in der Werkzeugleiste ein/ausblenden</title>
-            <para>Alle Icons in der Werkzeugleiste können ein- oder ausgeblendet werden.</para>
-            <para>Die Werkzeugleiste lässt sich so an die eigenen Bedürfnisse anpassen. Selten oder nicht benutze Icons werden ausgeblendet. Das Programm bleibt übersichtlich.</para>
-        </section>
-    </section>
-    <section>
-                <anchor xreflabel="" xml:id="preferences_browser"/>
+        <anchor xreflabel="" xml:id="preferences_browser"/>
         <title>Webbrowser / Startseite</title>
         <section>
             <anchor xreflabel="" xml:id="preferences_general_url_start"/>
             <title>URL der Startseite</title>
-            <para>Die Fakturama Startseite kann frei gewählt werden.</para>
-            <para>Voreingestellt ist "leer", und somit die Startseite im Ordner Vorlagen/Start/start.html.</para>
+            <para>Die Fakturama-Startseite kann frei gewählt werden.</para>
+            <para>Voreingestellt ist "leer" und somit die Startseite im Ordner <emphasis role="bold">Vorlagen/Start/start.html</emphasis>.</para>
             <para>Beispiele:</para>
             <itemizedlist>
                 <listitem>
@@ -911,12 +936,15 @@
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold"/>  (Feld bleibt leer) Startseite Vorlagen/Start/start.html anzeigen</para>
+                        <emphasis role="bold"/>  (Feld bleibt leer) Startseite <emphasis role="bold">Vorlagen/Start/start.html</emphasis> anzeigen</para>
                 </listitem>
             </itemizedlist>
             <para>Siehe <link linkend="editor_editor_browser">Webbrowser</link>
             </para>
         </section>
+		<section><title>Adresleiste anzeigen</title>
+		<para>Mit diesem Schalter kann die Adressleiste im Browserfenster ein- oder ausgeblendet werden.</para>
+		</section>
         <!-- section>
             <title>Art des Webbrowsers</title>
             <para>Je nach Betriebssystem wird ein WebKit oder Mozilla basierter Browser benutzt, um die Startseite, die Seite des Paketdienstes oder die Fakturama Projektseite anzuzeigen. Über diese Einstellung kann man dies explizit angeben.</para>
@@ -927,8 +955,9 @@
         </section -->
     </section>
     <section>
-                <anchor xreflabel="" xml:id="preferences_webshopimport"/>
+        <anchor xreflabel="" xml:id="preferences_webshopimport"/>
         <title>Import aus Webshop</title>
+		<para>Zur Zuordnung der unterschiedlichen Status zwischen Webshop und Fakturama siehe <link linkend="webshop_webshop_status">Zuordnung von Webshop-Status</link>.</para>
         <section>
             <anchor xreflabel="" xml:id="webshop_url"/>
             <title>Webshop URL</title>
@@ -1019,4 +1048,15 @@
             </para>
         </section>
     </section>
+    <section>
+        <title>Einstellungen Werkzeugleiste</title>
+        <section>
+            <title>Icons in der Werkzeugleiste ein/ausblenden</title>
+            <para>Alle Icons in der Werkzeugleiste können ein- oder ausgeblendet werden.</para>
+            <para>Die Werkzeugleiste lässt sich so an die eigenen Bedürfnisse anpassen. Selten oder nicht benutze Icons werden ausgeblendet. Das Programm bleibt übersichtlich.</para>
+        </section>
+    </section>
+	<section><title>ZUGFeRD-Einstellungen</title>
+	<para>In diesem Dialog können Sie die Einstellungen für den ZUGFeRD-Export vornehmen.</para>
+	<sect2><title>Standardpfad für die ZUGFeRD-Datei</title><para>In diesem Feld legen Sie fest, wo die ZUGFeRD-Datei nach der Generierung abgelegt werden soll.</para></sect2></section>
 </chapter>

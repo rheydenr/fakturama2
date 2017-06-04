@@ -70,6 +70,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		return props;
 	}
 
+	@Override
 	public void stopServer() {
 		server.shutdown();
 	}
