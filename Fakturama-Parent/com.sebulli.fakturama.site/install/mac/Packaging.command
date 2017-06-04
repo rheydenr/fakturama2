@@ -9,27 +9,25 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.0
+VERSION=2.0.0RC3
 # prepare the correct directory structure
-unzip fakturama-${VERSION}.macosx.cocoa.x86_64.zip
-cd fakturama/Fakturama.app/Contents/MacOS
-# mv ../../../configuration ../../../features ../../../p2 ../../../readme ../../../.eclipseproduct ../../../artifacts.xml ../../../epl-v10.html ../../../notice.html ../../../plugins .
-# chmod 755 Fakturama
-# cd ../../..
+tar -xzvf fakturama-${VERSION}.macosx.cocoa.x86_64.tar.gz
 
 # set up your app name, version number, and background image file name
-APP_NAME="Fakturama"
+APP_NAME="Fakturama2"
+
+mv Fakturama.app $APP_NAME.app
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
-cp ../${DMG_BACKGROUND_IMG} .
+# cp ../${DMG_BACKGROUND_IMG} .
 
 
 # you should not need to change these
 APP_EXE="${APP_NAME}.app/Contents/MacOS/${APP_NAME}"
 
-VOL_NAME="${APP_NAME}_${VERSION}"   # volume name will be "Fakturama_1_6_8"
+VOL_NAME="${APP_NAME}_${VERSION}"   # volume name will be "Fakturama2_2_0_0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
-DMG_FINAL="Installer_${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama_1_6_8.dmg"
+DMG_FINAL="Installer_${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama2_2_0_0.dmg"
 STAGING_DIR="./Install"             # we copy all our stuff into this dir
 
 # Check the background image DPI and convert it if it isn't 72x72
