@@ -85,7 +85,7 @@
       <customAttributes />
     </autoUpdate>
     <applications>
-      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customIcoFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../app/app.icns" customIcoFile="../app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication" id="InstallerApplication0">
@@ -100,22 +100,22 @@
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_16.png</string>
+                    <string>../app/app_16.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_32.png</string>
+                    <string>../app/app_32.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_48.png</string>
+                    <string>../app/app_48.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_128.png</string>
+                    <string>../app/app_128.png</string>
                   </object>
                 </void>
               </void>
@@ -377,7 +377,7 @@
           </screen>
         </screens>
       </application>
-      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customIcoFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../app/app.icns" customIcoFile="../app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.UninstallerApplication" id="UninstallerApplication0">
@@ -389,22 +389,22 @@
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_16.png</string>
+                    <string>../app/app_16.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_32.png</string>
+                    <string>../app/app_32.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_48.png</string>
+                    <string>../app/app_48.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_128.png</string>
+                    <string>../app/app_128.png</string>
                   </object>
                 </void>
               </void>
@@ -524,7 +524,7 @@
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="Windows" id="24" customizedId="" mediaFileName="" installDir="Fakturama" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows" id="24" customizedId="" mediaFileName="" installDir="Fakturama2" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -682,7 +682,7 @@
         <content />
       </postUninstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_64Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_64Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -707,8 +707,8 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="3" file="">
-        <content>chmod 755 /usr/share/fakturama2/${compiler:sys.fullName}</content>
+      <postInstallScript mode="1" file="">
+        <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
         <content />
@@ -717,7 +717,7 @@
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
+    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -796,7 +796,7 @@
     </macos>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="126" />
+    <mediaSet refId="123" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
