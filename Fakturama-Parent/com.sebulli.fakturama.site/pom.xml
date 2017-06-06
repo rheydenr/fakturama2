@@ -63,7 +63,7 @@
                 <id>Fakturama.ID</id>
                 <rootFolders>
                   <!-- for MacOSX, make sure you use a folder ending with .app , see bug 463670 -->
-                  <macosx>Fakturama.app</macosx>
+                  <macosx>Fakturama2.app</macosx>
                 </rootFolders>
               </product>
             </products>
