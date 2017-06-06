@@ -970,6 +970,9 @@ public class MigrationManager {
 			address.setValidFrom(new Date());
 			// we don't have a CountryCode table :-(, therefore we have to look up in Locale classes
 			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
+			if(country.equalsIgnoreCase("deu")) {
+				country = "de";
+			}
 			Optional<Locale> locale = contactUtil.determineCountryCode(country);
 			if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
 			    address.setCountryCode(locale.get().getCountry());

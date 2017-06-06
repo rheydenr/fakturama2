@@ -10,8 +10,10 @@
  ******************************************************************************/
 package com.sebulli.fakturama.views.datatable.products;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -62,6 +64,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -130,6 +133,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         // Listen to double clicks
         Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
+        	getGridLayer().getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+            
+            E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, getGridLayer().getSelectionLayer(), getGridLayer().getBodyDataProvider());
+            getGridLayer().getSelectionLayer().addLayerListener(esl);
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         } else {
             hookDoubleClickCommand2(natTable, getGridLayer());
@@ -145,6 +152,23 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     public Product getSelectedObject() {
         return selectedObject;
     }
+    
+    @Override
+    public Product[] getSelectedObjects() {
+        List<Product> selectedObjects = new ArrayList<>();
+        int[] fullySelectedRowPositions = getGridLayer().getSelectionLayer().getFullySelectedRowPositions();
+        if(fullySelectedRowPositions.length > 0 && fullySelectedRowPositions[0] > -1) {
+            for (int i = 0; i < fullySelectedRowPositions.length; i++) {
+                selectedObjects.add(getGridLayer().getBodyDataProvider().getRowObject(fullySelectedRowPositions[i]));
+            }
+        } else {
+            log.debug("no rows selected!");
+        }
+        Product[] retArr = selectedObjects.toArray(new Product[selectedObjects.size()]);
+        selectionService.setSelection(selectedObjects);
+        return retArr;
+    }
+    
 
     @Override
     protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<Product> gridLayer) {

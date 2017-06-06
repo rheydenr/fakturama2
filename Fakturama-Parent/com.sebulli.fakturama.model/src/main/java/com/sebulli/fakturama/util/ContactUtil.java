@@ -279,6 +279,12 @@ public class ContactUtil {
 	}
     
 
+	/**
+	 * Try to determine the Locale from a given country string.
+	 * 
+	 * @param country the country string to look up
+	 * @return a {@link Locale} or an empty Optional, if not found
+	 */
 	public Optional<Locale> determineCountryCode(String country) {
 		/*
 		 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
