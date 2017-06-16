@@ -44,7 +44,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@EventTopic("Debitor") String message) {
     	super.handleRefreshEvent(message);
     }
 

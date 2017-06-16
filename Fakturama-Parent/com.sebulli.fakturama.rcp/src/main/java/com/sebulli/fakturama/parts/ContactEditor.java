@@ -387,6 +387,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
+			
+            // a new contact is always dirty...
+            setDirty(true);
 
 		}
 		else {
@@ -1299,6 +1302,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		return part;
 	}
 	
+    public void setDirty(boolean isDirty) {
+    	getMDirtyablePart().setDirty(isDirty);
+    }
+
 	@Override
 	protected String getEditorID() {
 	    return "Contact";

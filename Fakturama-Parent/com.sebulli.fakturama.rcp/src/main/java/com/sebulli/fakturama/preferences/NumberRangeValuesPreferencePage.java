@@ -140,6 +140,14 @@ public class NumberRangeValuesPreferencePage extends FieldEditorPreferencePage i
 	    return msg.preferencesNumberrangeValuesLabel;
 	}
 	
+	@Override
+	public boolean performOk() {
+		// put the new preferences in database immediately.
+		boolean retval = super.performOk();
+		syncWithPreferencesFromDatabase(true);
+		return retval;
+	}
+
 	/**
 	 * Write or read the preference settings to or from the database
 	 * 
