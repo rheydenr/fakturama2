@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.5" transformSequenceNumber="5">
-  <directoryPresets config="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/license" />
+  <directoryPresets config="./linux_32bit" />
   <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.0-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="de" customLocalizationFile="" />
@@ -46,25 +46,25 @@
       <mountPoint id="56" root="55" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="22" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/win32/win32/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="22" file="../target/products/Fakturama.ID/win32/win32/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="34" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/macosx/cocoa/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="34" file="../target/products/Fakturama.ID/macosx/cocoa/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="43" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/win32/win32/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="51" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/linux/gtk/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="51" file="../target/products/Fakturama.ID/linux/gtk/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="51" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/install/linux_32bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="51" file="linux_32bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="56" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID/linux/gtk/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="56" file="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/install/linux_64bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="56" file="linux_64bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
     </entries>
@@ -74,9 +74,9 @@
     <launcher name="Fakturama.exe (win32)" id="25" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
     <launcher name="Fakturama" id="35" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
-    <launcher name="Fakturama (Linux 32bit)" id="52" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama" />
+    <launcher name="Fakturama (Linux 32bit)" id="52" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="fakturama2/Fakturama" />
     <launcher name="Fakturama (Linux 64bit)" id="58" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama" />
-    <launcher name="FakturamaMac" id="133" customizedId="" external="false" excludeFromMenu="true" unixMode="755" unixAutoStart="true" menuName="" icnsFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="true" fileset="32" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="">
+    <launcher name="FakturamaMac" id="133" customizedId="" external="false" excludeFromMenu="true" unixMode="755" unixAutoStart="true" menuName="" icnsFile="../app/app.icns" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="true" fileset="32" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="">
       <executable name="Fakturama2" type="1" iconSet="true" iconFile="" executableDir="Fakturama.app" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -115,7 +115,7 @@
       <customAttributes />
     </autoUpdate>
     <applications>
-      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customIcoFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../app/app.icns" customIcoFile="../app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.InstallerApplication" id="InstallerApplication0">
@@ -124,28 +124,28 @@
               </void>
               <void property="customHeaderImage">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/about_small.png</string>
+                  <string>../app/about_small.png</string>
                 </object>
               </void>
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_16.png</string>
+                    <string>../app/app_16.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_32.png</string>
+                    <string>../app/app_32.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_48.png</string>
+                    <string>../app/app_48.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_128.png</string>
+                    <string>../app/app_128.png</string>
                   </object>
                 </void>
               </void>
@@ -237,13 +237,13 @@
                       <void method="put">
                         <string>de</string>
                         <object class="com.install4j.api.beans.ExternalFile">
-                          <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/license/epl-v10.html</string>
+                          <string>../license/epl-v10.html</string>
                         </object>
                       </void>
                       <void method="put">
                         <string>en</string>
                         <object class="com.install4j.api.beans.ExternalFile">
-                          <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/license/epl-v10.html</string>
+                          <string>../license/epl-v10.html</string>
                         </object>
                       </void>
                     </void>
@@ -346,7 +346,7 @@
                     <object class="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction">
                       <void property="icon">
                         <object class="com.install4j.api.beans.ExternalFile">
-                          <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/win_Installer.ico</string>
+                          <string>../app/win_Installer.ico</string>
                         </object>
                       </void>
                       <void property="iconSource">
@@ -363,7 +363,7 @@
                 </serializedBean>
                 <condition />
               </action>
-              <action name="" id="77" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.SetModeAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+              <action name="" id="206" customizedId="" beanClass="com.install4j.runtime.beans.actions.files.SetModeAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.files.SetModeAction">
@@ -384,9 +384,6 @@
                       </void>
                       <void property="mode">
                         <string>755</string>
-                      </void>
-                      <void property="recursive">
-                        <boolean>true</boolean>
                       </void>
                     </object>
                   </java>
@@ -411,34 +408,34 @@
           </screen>
         </screens>
       </application>
-      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app.icns" customIcoFile="../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
+      <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="../app/app.icns" customIcoFile="../app/win_Installer.ico" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.applications.UninstallerApplication" id="UninstallerApplication0">
               <void property="customHeaderImage">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/about.png</string>
+                  <string>../app/about.png</string>
                 </object>
               </void>
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_16.png</string>
+                    <string>../app/app_16.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_32.png</string>
+                    <string>../app/app_32.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_48.png</string>
+                    <string>../app/app_48.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/app/app_128.png</string>
+                    <string>../app/app_128.png</string>
                   </object>
                 </void>
               </void>
@@ -631,7 +628,7 @@
         <customAttributes />
       </autoUpdate>
     </windows>
-    <unixInstaller name="Unix Installer" id="53" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/usr/share/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1">
+    <unixInstaller name="Unix Installer" id="53" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_32Bit_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -654,11 +651,11 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <installerScript mode="1" file="">
+      <installerScript mode="2" file="./linux_32bit/make_executable.sh">
         <content />
       </installerScript>
     </unixInstaller>
-    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_x64" installDir="/usr/share/${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
+    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_x64" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -681,7 +678,7 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <installerScript mode="1" file="">
+      <installerScript mode="2" file="./linux_32bit/make_executable.sh">
         <content />
       </installerScript>
     </unixInstaller>
@@ -711,7 +708,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux_32bit/make_executable.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -747,7 +744,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux_32bit/make_executable.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -783,7 +780,7 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
+      <postInstallScript mode="2" file="./linux_32bit/make_executable.sh">
         <content />
       </postInstallScript>
       <preUninstallScript mode="1" file="">
@@ -826,6 +823,8 @@
     </macos>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="24" />
+    <mediaSet refId="45" />
     <mediaSet refId="53" />
     <mediaSet refId="59" />
     <mediaSet refId="119" />
