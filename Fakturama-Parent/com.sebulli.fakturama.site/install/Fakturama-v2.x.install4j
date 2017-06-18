@@ -651,7 +651,7 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <installerScript mode="2" file="./linux_32bit/make_executable.sh">
+      <installerScript mode="1" file="">
         <content />
       </installerScript>
     </unixInstaller>
@@ -678,7 +678,7 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <installerScript mode="2" file="./linux_32bit/make_executable.sh">
+      <installerScript mode="1" file="">
         <content />
       </installerScript>
     </unixInstaller>
@@ -823,13 +823,7 @@
     </macos>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="24" />
-    <mediaSet refId="45" />
-    <mediaSet refId="53" />
     <mediaSet refId="59" />
-    <mediaSet refId="119" />
-    <mediaSet refId="120" />
-    <mediaSet refId="123" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
