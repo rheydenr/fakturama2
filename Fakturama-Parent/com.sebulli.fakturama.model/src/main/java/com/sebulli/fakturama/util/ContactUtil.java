@@ -288,9 +288,15 @@ public class ContactUtil {
 	public Optional<Locale> determineCountryCode(String country) {
 		/*
 		 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
-		 * we have to look up the whole Locales  
+		 * we have to look up the whole Locales
+		 * But wait... Sometimes the country is given as code only (e.g., "DE" or even "DEU"). That has to be respected, too.  
 		 */
-		Optional<Locale> locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+		Optional<Locale> locale;
+		if(StringUtils.length(country) > 3) {
+			locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+		} else {
+			locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findByCode(country);
+		}
 		// if not found we try to find it in localized form
 		if (!locale.isPresent()) {
 		    Locale[] availableLocales = Locale.getAvailableLocales();

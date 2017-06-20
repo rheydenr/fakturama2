@@ -428,22 +428,9 @@ public class ProductEditor extends Editor<Product> {
 				// Load the image, based on the picture name
 //				Image image = new Image(display, filename1 + filename2);
 				ByteArrayInputStream imgStream = new ByteArrayInputStream(editorProduct.getPicture());
-				Image image = new Image(display, imgStream);
 
-				// Get the pictures size
-				int width = image.getBounds().width;
-				int height = image.getBounds().height;
-
-				// Maximum picture width is 250px
-				if (width > 250) {
-					height = 250 * height / width;
-					width = 250;
-				}
-
-				// Rescale the picture to maximum 250px width
-				Image scaledImage = new Image(display, image.getImageData().scaledTo(width, height));
-				
-				labelProductPicture.setDefaultImage(scaledImage);
+				labelProductPicture.setMaxImageWidth(250);
+				labelProductPicture.setImageStream(imgStream);
 			}
 			// Display an empty background if no picture is set.
 			else {

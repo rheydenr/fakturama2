@@ -32,7 +32,6 @@ public class ItemListTypeCategoriesDAO extends AbstractDAO<ItemListTypeCategory>
     	CriteriaQuery<ItemListTypeCategory> cq = cb.createQuery(ItemListTypeCategory.class);
     	CriteriaQuery<ItemListTypeCategory> selectQuery = cq.select(cq.from(ItemListTypeCategory.class));
     	return getEntityManager().createQuery(selectQuery).getResultList();
-//    	return getEntityManager().createQuery("select p from ItemListTypeCategory p", ItemListTypeCategory.class).getResultList();
     }
     
     /**

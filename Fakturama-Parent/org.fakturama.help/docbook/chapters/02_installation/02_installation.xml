@@ -118,17 +118,31 @@
 				<imageobject role="fo">
 					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. 
-			Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: <inlinemediaobject>
-				<imageobject role="html">
-					<imagedata fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
-				</imageobject>
-				<imageobject role="fo">
-					<imagedata contentdepth="40%" fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
-				</imageobject>
-			</inlinemediaobject>
+			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="60%" fileref="../images/install/install_macos.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
 		</para>
-		<para>Damit ist die Anwendung fertig installiert.</para>
+		<para>Die Anwendung wird nun in den Anwendungsordner kopiert:
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/install/macos_copyfiles.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/install/macos_copyfiles.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+		</para>
+		<para>Damit ist Fakturama fertig installiert.</para>
 		<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
 		<programlisting>/Benutzer/IhrName/Dokumente/MeineFirma/</programlisting>
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
@@ -139,8 +153,19 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise im Dokument "Migration einer bestehenden Installation". Wenn Sie eine Mehrbenutzer-Installation
-		einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen.</para>
+		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise im Dokument "Migration einer bestehenden Installation". Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="50%" fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			Sollten Sie keine Datenübernahme wünschen, löschen Sie bitte den Eintrag unter "Arbeitsverzeichnis (alt)". Dann wird die Datenübernahme übersprungen.
+		</para>
 		<!-- das wurde noch nicht umgesetzt -->
 		<!-- para>Fakturama begrüßt Sie mit einem Intro. Schließen Sie dies über das <emphasis role="bold">X</emphasis> rechts neben dem Text "Willkommen"</para>
 		<informalfigure>
@@ -153,7 +178,7 @@
 				</imageobject>
 			</mediaobject>
 		</informalfigure -->
-		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">www.fakturama.info</link> ausgewählt. Startet man den Import von Webshopdaten, 
+		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">www.fakturama.info</link> in den Einstellungen vorausgewählt. Startet man den Import von Webshopdaten, 
 		so werden 3 Musterprodukte und 2 Musterkunden angelegt. Diese können später wieder gelöscht werden.</para>
 		<para>Vor dem Arbeiten mit Fakturama sollten noch einige Einstellungen gesetzt werden. Die Werte sind bereits sinnvoll ausgewählt, doch nicht immer passen 
 		diese auf den eigenen Arbeitsablauf.</para>
