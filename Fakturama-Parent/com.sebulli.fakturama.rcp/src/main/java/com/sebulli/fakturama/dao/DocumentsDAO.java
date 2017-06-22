@@ -424,6 +424,29 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
     }
 
     /**
+     * Find all printed documents. This is relevant for reorganizing documents.
+	 * @return
+	 */
+    public List<Document> findAllPrintedDocuments() {
+    	List<Document> resultList;
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
+        Root<Document> root = criteria.from(getEntityClass());
+        CriteriaQuery<Document> cq = criteria.where(
+        		cb.and(cb.notEqual(root.get(Document_.deleted), Boolean.TRUE),
+        				cb.or(cb.notEqual(root.get(Document_.odtPath), ' '), cb.notEqual(root.get(Document_.pdfPath), ' '))
+        		));
+        TypedQuery<Document> query = getEntityManager().createQuery(cq);
+    	try {
+    		resultList = query.getResultList();
+    	} catch (PersistenceException e) {
+    		resultList = Collections.emptyList();
+    	}
+    	return resultList;
+
+    }
+    
+    /**
      * Update the invoice references in all documents within the same transaction.
      * 
      * @param document

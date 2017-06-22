@@ -372,7 +372,7 @@ public class FileOrganizer {
 	public void reorganizeDocuments(final IProgressMonitor monitor, boolean copyFile) {
 
 		// Get all documents
-		List<Document> documents = documentsDAO.findAll();
+		List<Document> documents = documentsDAO.findAllPrintedDocuments();
 		// Get the workspace path
 		String workspacePath = preferences.getString(Constants.GENERAL_WORKSPACE);
 

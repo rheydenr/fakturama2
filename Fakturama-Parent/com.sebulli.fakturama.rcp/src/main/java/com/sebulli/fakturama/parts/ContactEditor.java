@@ -49,6 +49,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -533,10 +534,20 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		    genderList.put(i, contactUtil.getGenderString(i));
 		} 
 
-		// Create the parent Composite
-        top = new Composite(parent, SWT.NONE);
+
+		// Create the ScrolledComposite to scroll horizontally and vertically
+	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+
+		// Create the top Composite
+		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
+
+		scrollcomposite.setContent(top);
+		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setExpandHorizontal(true);
+		scrollcomposite.setExpandVertical(true);
+        scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
 		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(top);
-//
+
 		// Create an invisible container for all hidden components	
 		Composite invisible = new Composite(top, SWT.NONE);
 		invisible.setVisible(false);
