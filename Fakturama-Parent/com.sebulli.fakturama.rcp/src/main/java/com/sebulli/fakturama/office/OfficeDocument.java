@@ -324,7 +324,12 @@ public class OfficeDocument {
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
-                // TODO perhaps we should open the filled document in Openoffice (if wanted)
+                // perhaps we should open the filled document in Openoffice (if wanted)
+        		try {
+					Desktop.getDesktop().open(documentPath.toFile());
+				} catch (IOException | IllegalArgumentException e) {
+	                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
+				}
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
             }
@@ -360,7 +365,7 @@ public class OfficeDocument {
 	        		try {
 						Desktop.getDesktop().open(generatedPdf.toFile());
 					} catch (IOException | IllegalArgumentException e) {
-		                log.error(e, MessageFormat.format("Error opening the PDF document {}: {}", documentPath.toString(), e.getMessage()));
+		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
 					}
         		}
         	}
