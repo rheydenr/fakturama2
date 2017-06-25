@@ -32,8 +32,8 @@ import com.sebulli.fakturama.resources.core.Icon;
  */
 public class DebitorEditor extends ContactEditor<Debitor> {
 
-	public static final String ID = "com.sebulli.fakturama.editors.debitorEditor";
-	public static final String EDITOR_ID = "DebitorEditor";
+	public static final String ID = "com.sebulli.fakturama.editors.debtorEditor";
+	public static final String EDITOR_ID = "Debtor";
 
 	@Inject
 	private DebitorsDAO contactDAO;
@@ -65,14 +65,14 @@ public class DebitorEditor extends ContactEditor<Debitor> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(DebitorEditor.EDITOR_ID + "/forceClose") Event event) {
+    public void handleForceClose(@UIEventTopic(EDITOR_ID + "/forceClose") Event event) {
     	super.handleForceClose(event);
     }
 
 
 	@Override
 	protected String getEditorID() {
-		return "Debtor";
+		return EDITOR_ID;
 	}
 
 	/* (non-Javadoc)

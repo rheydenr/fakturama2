@@ -326,7 +326,7 @@ public abstract class Editor<T extends IEntity> {
 
 		Optional<String> propVal = propertiesDao.findPropertyValue("last_setnextnr_date_" + getEditorID().toLowerCase());
 		String lastSetNextNrDate = propVal.orElse(DateTimeFormatter.ISO_DATE.format(now));
-				
+				 
         // Get the year, month and date of a string like "2011-12-24"
         if (lastSetNextNrDate.length() == 10) {
             LocalDate localDate = LocalDate.parse(lastSetNextNrDate);
@@ -334,7 +334,7 @@ public abstract class Editor<T extends IEntity> {
             last_mm = localDate.getMonthValue();
             last_dd = localDate.getDayOfMonth();
         }
-		
+
 		// Get the last (it's the next free) document number from the preferences
 		format = defaultValuePrefs.getString(prefStrFormat);
 //		nr = defaultValuePrefs.getInt(prefStrNr);

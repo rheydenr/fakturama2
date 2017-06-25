@@ -44,7 +44,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("Debitor") String message) {
+    public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
     	super.handleRefreshEvent(message);
     }
 
@@ -81,6 +81,11 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     @Override
     protected AbstractDAO<Debitor> getEntityDAO() {
         return debitorDAO;
+    }
+    
+    @Override
+    protected String getEditorId() {
+    	return DebitorEditor.EDITOR_ID;
     }
     
     @Override

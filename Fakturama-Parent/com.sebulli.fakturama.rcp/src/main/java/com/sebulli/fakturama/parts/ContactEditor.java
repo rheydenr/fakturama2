@@ -1318,8 +1318,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     }
 
 	@Override
-	protected String getEditorID() {
-	    return "Contact";
-	}
+	abstract protected String getEditorID();
 }
 

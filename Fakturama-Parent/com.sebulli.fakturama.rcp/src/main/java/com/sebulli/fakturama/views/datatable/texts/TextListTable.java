@@ -217,7 +217,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     
     public NatTable createListTable(Composite searchAndTableComposite) {
 
-        textListData = GlazedLists.readOnlyList(GlazedLists.eventList(textsDAO.findAll(true)));
+        textListData = GlazedLists.eventList(textsDAO.findAll(true));
 
         // get the visible properties to show in list view
         String[] propertyNames = textsDAO.getVisibleProperties();

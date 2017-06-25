@@ -52,7 +52,7 @@ public class CreditorListTable extends ContactListTable<Creditor> {
     }
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic("Creditor") String message) {
+    public void handleRefreshEvent(@EventTopic(CreditorEditor.EDITOR_ID) String message) {
     	super.handleRefreshEvent(message);
     }
 
