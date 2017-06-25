@@ -240,8 +240,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.hsql.jdbc.feature" version="2.3.0"/>
       <feature id="com.mysql.jdbc.feature"/>
+      <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
