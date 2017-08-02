@@ -70,9 +70,6 @@ public class MarkDocumentAsPaidHandler {
     public static final String PARAM_STATUS = "com.sebulli.fakturama.command.document.markas.state";
     public static final String PARAM_INVOICEID = "com.sebulli.fakturama.command.document.markas.invoiceid";
 
-    // progress of the order. Value from 0 to 100 (percent)
-//    private boolean paid;
-
     @CanExecute
     public boolean canExecute(@Active MPart activePart) {
         boolean retval = false;
@@ -80,7 +77,7 @@ public class MarkDocumentAsPaidHandler {
             @SuppressWarnings("rawtypes")
             AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
             Document[] selectedObjects = (Document[]) currentListtable.getSelectedObjects();
-            retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType() == BillingType.INVOICE);
+            retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isINVOICE());
         }
         return retval;
     }
@@ -103,6 +100,7 @@ public class MarkDocumentAsPaidHandler {
 		List<Document> selectedObjects = (List<Document>)selectionService.getSelection();
         if (selectedObjects != null) {
             // TODO DO THIS IN DAO!!!
+
             for (Document document : selectedObjects) {
                 // If we had a selection let's change the state
                 DocumentType docType = DocumentType.findByKey(document.getBillingType().getValue());
@@ -113,7 +111,12 @@ public class MarkDocumentAsPaidHandler {
                         document = documentsDAO.findById(document.getId(), true);  // otherwise the document isn't updated :-(
                         document.setPaid(StringUtils.equals(status, "PAID"));
                         document.setPayDate(Calendar.getInstance().getTime());
-
+						document.setPaidValue(document.getTotalValue());
+						
+						// if this document is an invoice we have to update the dunnings, too.
+                        if(document.getBillingType().isINVOICE()) {
+                        	documentsDAO.updateDunnings(document);
+                        }
                         // also in the database
                         documentsDAO.update(document);
                         

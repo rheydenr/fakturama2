@@ -668,6 +668,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		//Set the editor's name
 		this.part.setLabel(document.getName());
+		// Update Document Editor's object id
+		this.part.getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+
 		setCopyGroupEnabled(true);
 		
         // Refresh the table view of all documents
@@ -695,7 +698,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * Updates all {@link Dunning}s which are related to the current invoice.
 	 */
 	private void updateDunnings() {
-	    documentsDAO.updateDunnings(document, bPaid.getSelection(), dtPaidDate.getSelection(), document.getPaidValue());
+	    documentsDAO.updateDunnings(document, bPaid.getSelection(), dtPaidDate.getSelection());
 	}
 
 	/**
@@ -917,7 +920,7 @@ public class DocumentEditor extends Editor<Document> {
 		Document retval = DocumentTypeUtil.createDocumentByType(documentType);
 		retval.setSourceDocument(parentDoc);
 		retval.setShipping(parentDoc.getShipping());
-		retval.setShippingValue(parentDoc.getShippingValue());
+		retval.setShippingValue(parentDoc.getShipping() != null ? parentDoc.getShipping().getShippingValue() : parentDoc.getShippingValue());
 		retval.setShippingAutoVat(parentDoc.getShippingAutoVat());
 		retval.setPayment(parentDoc.getPayment());
 		retval.setTotalValue(parentDoc.getTotalValue());
@@ -1515,11 +1518,9 @@ public class DocumentEditor extends Editor<Document> {
 //		newPayment = dataSetPayment;
 		newPaymentDescription = payment.getDescription();
 
-		if (spDueDays !=null ) {
-			if (!spDueDays.isDisposed()) {
-				spDueDays.setSelection(payment.getNetDays().intValue());
-				updateIssueDate();
-			}
+		if (spDueDays !=null && !spDueDays.isDisposed()) {
+			spDueDays.setSelection(payment.getNetDays().intValue());
+			updateIssueDate();
 		}
 	}
 	

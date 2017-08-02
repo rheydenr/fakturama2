@@ -40,6 +40,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.Dunning_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Invoice_;
@@ -347,6 +348,10 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                       );
         return getEntityManager().createQuery(cq).getResultList();
     }    
+    
+    public void updateDunnings(Document document) {
+    	updateDunnings(document, document.getPaid(), document.getPayDate());
+    }
 
     /**
      * Update {@link Dunning}s which are related to a certain invoice.
@@ -354,23 +359,27 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      * @param document the invoice which is related
      * @param isPaid is it paid?
      * @param paidDate paid date
-     * @param paidValue paid value
      */
-    public void updateDunnings(Document document, boolean isPaid, Date paidDate, Double paidValue) {
+    public void updateDunnings(Document document, boolean isPaid, Date paidDate) {
 //      UPDATE dunning SET paid, paidValue, paidDate WHERE dunning.invoiceid = invid  
 //      // TODO What if "payvalue" is not the total sum? Is it paid?
+    	if(!document.getBillingType().isINVOICE()) {
+    		// only update dunnings if we have an invoice!
+    		return;
+    	}
+    	Double paidValue = document.getPaidValue();
 //          dunning.setPaid(bPaid.getSelection());
 //          dunning.setStringValueByKey("paydate", DataUtils.getDateTimeAsString(dtPaidDate));
 //          dunning.setDoubleValueByKey("payvalue", paidValue.getValueAsDouble());
-//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
-//        criteria
-//            .set(Dunning_.paid, isPaid)
-//            .set(Dunning_.payDate, paidDate)
-//            .set(Dunning_.paidValue, paidValue)
-//            .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
-//            ;
-//        executeCriteria(criteria);
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaUpdate<Dunning> criteria = cb.createCriteriaUpdate(Dunning.class);
+        criteria
+            .set(Dunning_.paid, isPaid)
+            .set(Dunning_.payDate, paidDate)
+            .set(Dunning_.paidValue, paidValue)
+            .where(cb.equal(criteria.from(Dunning.class).get(Dunning_.invoiceReference), document))
+            ;
+        executeCriteria(criteria);
     }
 
     /**

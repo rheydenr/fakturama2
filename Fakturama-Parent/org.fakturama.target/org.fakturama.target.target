@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="414">
+<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="415">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -10,10 +10,6 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
 <repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.draw2d.feature.group" version="3.10.1.201508170204"/>
-<repository location="http://download.eclipse.org/tools/gef/updates/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.0.0"/>
@@ -142,6 +138,10 @@
 <unit id="org.javamoney.feature.feature.group" version="1.0.1"/>
 <unit id="org.apache.commons.feature.feature.group" version="3.3.0"/>
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.draw2d.feature.group" version="3.10.1.201508170204"/>
+<repository location="http://download.eclipse.org/tools/gef/updates/releases-pre-legacy/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

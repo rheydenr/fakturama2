@@ -85,7 +85,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     
     @Override
     protected String getEditorId() {
-    	return DebitorEditor.EDITOR_ID;
+    	return DebitorEditor.ID;
     }
     
     @Override

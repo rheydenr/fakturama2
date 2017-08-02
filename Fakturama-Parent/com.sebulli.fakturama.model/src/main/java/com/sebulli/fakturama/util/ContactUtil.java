@@ -244,7 +244,7 @@ public class ContactUtil {
         			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
         			String trimmedAddressLine = formatedAddressLine.trim();
         
-        			if (formatedAddressLine.equals(addressFormatLine) || (!trimmedAddressLine.isEmpty())) {
+        			if (formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) {
         				if (!address.isEmpty())
         					address += separator;
         			}
@@ -370,7 +370,7 @@ public class ContactUtil {
 								addressZIP = matcher.group();
 
 								// and the city
-								addressCity = line.length() > 5 ? line.substring(matcher.end()+1).trim() : "";
+								addressCity = line.length() > 5 && line.length() > matcher.end() ? line.substring(matcher.end()+1).trim() : "";
 								
 							}
 							cityFound = addressCity.length() > 0;
@@ -685,14 +685,14 @@ public class ContactUtil {
 	 * @return The greeting string
 	 */
 	public String getCommonGreeting() {
-
 		// Get the common greeting string from the preference page.
 		return eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMMON);
 	}
 
 	private String replaceAllWithSpace(final String s, final String exp, final String replacement) {
 		String replacedString = StringUtils.isBlank(replacement) ? s.replaceAll(exp + " ", "") : s;
-		return replacedString.replaceAll(exp, Optional.ofNullable(Matcher.quoteReplacement(StringUtils.defaultString(replacement))).orElse(""));
+		// remove \r character because else multi-lined addresses aren't shown correctly
+		return replacedString.replaceAll(exp, Optional.ofNullable(Matcher.quoteReplacement(StringUtils.remove(StringUtils.defaultString(replacement), "\r"))).orElse(""));
 	}
 
     /**
