@@ -116,7 +116,7 @@ public class DocumentSummaryCalculator {
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
 				vatDescription = noVatReference.getDescription();
-				vatPercent = Double.valueOf(0.0);
+				vatPercent = noVatReference.getTaxValue();
 				itemVat = Money.of(Double.valueOf(0.0), currencyCode);
 			}
 

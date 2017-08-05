@@ -546,7 +546,7 @@ public class ContactUtil {
 			
 			String countrycode = StringUtils.defaultString(address.getCountryCode());
 	
-			if (!countrycode.isEmpty()) {
+			if (!countrycode.isEmpty() && !StringUtils.containsAny(countrycode, eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES).split(","))) {
 				countrycode += "-";
 			}
 			formatString = replaceAllWithSpace(formatString, "\\{countrycode\\}", countrycode);

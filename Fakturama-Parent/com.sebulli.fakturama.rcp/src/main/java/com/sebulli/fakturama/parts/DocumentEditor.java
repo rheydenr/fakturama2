@@ -1342,7 +1342,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 */
 	private void createDepositWarningIcon() {
-		if(!paidDataContainer.isDisposed()) { // if the editor is about to close...
+		if(!paidDataContainer.isDisposed() && (warningDepositIcon == null || warningDepositIcon.getImage() == null)) { // if the editor is about to close...
 			// Add the attention sign if its a deposit
 			warningDepositIcon = new Label(paidDataContainer, SWT.NONE);
 			warningDepositIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
@@ -1641,7 +1641,7 @@ public class DocumentEditor extends Editor<Document> {
 			public void widgetSelected(SelectionEvent e) {
 				netgross = comboNetGross.getCombo().getSelectionIndex();
 				// recalculate the total sum
-//				calculate();
+				calculate();
 				updateUseGross(false);
 			}
 
@@ -1815,11 +1815,11 @@ public class DocumentEditor extends Editor<Document> {
 					// update NoVat reference
 					document.setNoVatReference(dataSetVat);
 					itemListTable.refresh();
-					
-					setDirty(true);
 
 					// recalculate the total sum
 					calculate();
+					
+					setDirty(true);
 				}
 			}
 		});

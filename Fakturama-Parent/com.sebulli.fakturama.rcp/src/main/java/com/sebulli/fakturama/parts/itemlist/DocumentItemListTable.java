@@ -380,8 +380,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 	retval = rowObject.getDocumentItem().getPicture();
                     break;
                 case VAT:
-                    retval = /*noVatReference != null ? noVatReference 
-                    		: */(VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+                    retval = noVatReference != null ? noVatReference 
+                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     break;
                 case UNITPRICE:
                 	MonetaryAmount amount;
