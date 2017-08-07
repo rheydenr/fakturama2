@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,11 +34,15 @@ public class SelectWorkspaceHandler {
     @Inject
     private ILogger log;
 
+    @Inject
+    @Preference
+    private IEclipsePreferences preferences;
+
 	/**
 	 * Opens a dialog to select the workspace
 	 */
 	@Execute
-	public void selectWorkspace(IWorkbench workbench, Shell parent, IEclipsePreferences preferences) {
+	public void selectWorkspace(Shell parent, IWorkbench workbench) {
 
 		// Open a directory dialog 
 		DirectoryDialog directoryDialog = new DirectoryDialog(parent);

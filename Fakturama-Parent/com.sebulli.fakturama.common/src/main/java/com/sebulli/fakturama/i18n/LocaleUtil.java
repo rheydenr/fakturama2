@@ -45,12 +45,15 @@ public class LocaleUtil {
     
     /**
      * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
-     * @param lang the language code to be used
+     * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
      * @return a {@link LocaleUtil} instance
      */
     public static LocaleUtil getInstance(String lang) {
-        if(instance == null || !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
-            instance = new LocaleUtil(lang);
+    	if(lang == null) {
+    		instance = new LocaleUtil("en_US");
+    	}
+        if(instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
+        		instance = new LocaleUtil(lang);
         }
         return instance;
     }

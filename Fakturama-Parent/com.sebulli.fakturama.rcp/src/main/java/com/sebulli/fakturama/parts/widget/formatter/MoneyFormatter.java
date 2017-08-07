@@ -47,15 +47,21 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
     public MoneyFormatter(IPreferenceStore defaultValuePrefs) {
         super();
         DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
+        // the edit pattern has to be a normal number pattern
         DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(LocaleUtil.getInstance().getCurrencyLocale());
+        editFormat.setMaximumIntegerDigits(6);
         if(defaultValuePrefs != null) {
         	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES));
         	editFormat.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES));
         }
-        String editFormatPattern = editFormat.toPattern();
-        if(editFormat.getMaximumFractionDigits() > 2) {
-        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
-        }
+        // add some more digits before the decimal point (default is 4 digits, this is too less)
+        // Because the content is not interpreted by DecimalFormat, but by Formatter (nebula),
+        // we can't use a normal currency pattern.
+        String editFormatPattern = "###,##" + editFormat.toPattern();
+        //RHE: I don't know why I wrote this, really! Perhaps sometimes I get a lightning in my mind...
+//        if(editFormat.getMaximumFractionDigits() > 2) {
+//        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
+//        }
         setPatterns(editFormatPattern, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
 //        setFixedLengths(false, true);
     }

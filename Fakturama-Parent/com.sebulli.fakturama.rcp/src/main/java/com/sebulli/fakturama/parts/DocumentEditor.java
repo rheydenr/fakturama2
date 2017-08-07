@@ -669,7 +669,8 @@ public class DocumentEditor extends Editor<Document> {
 		//Set the editor's name
 		this.part.setLabel(document.getName());
 		// Update Document Editor's object id
-		this.part.getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+		// FIXME Doesn't work for newly created documents :-( "You must modify UIEventPublisher appropriately" 
+//		this.part.getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
 
 		setCopyGroupEnabled(true);
 		
@@ -930,14 +931,17 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setTransactionId(parentDoc.getTransactionId());
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
-		retval.setBillingContact(parentDoc.getBillingContact());
-		retval.setDeliveryContact(parentDoc.getDeliveryContact());
-		retval.setAddressFirstLine(parentDoc.getAddressFirstLine());
+		
+		// for delivery documents we have to switch between delivery address and billing address
+		retval.setBillingContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
+		retval.setDeliveryContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
+		retval.setAddressFirstLine(pDocumentType == DocumentType.DELIVERY ? contactUtil.getNameWithCompany(parentDoc.getDeliveryContact()) : parentDoc.getAddressFirstLine());
+		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setConsultant(parentDoc.getConsultant());
 		retval.setServiceDate(parentDoc.getServiceDate());
 		retval.setOrderDate(parentDoc.getOrderDate());
-		if(parentDoc.getBillingType() == BillingType.INVOICE) {
+		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);
 		}
 

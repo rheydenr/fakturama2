@@ -67,11 +67,18 @@ public class Transaction {
 	}
 	
 	/**
-	 * Gets the first referenced document for this transaction.
+	 * Gets the first referenced document's date for this transaction.
 	 * 
 	 * @return
 	 */
 	public String getFirstReferencedDocumentDate(DocumentType docType) {
+		Document reference = getFirstReferencedDocument(docType);
+		
+		// Return the reference date
+		return reference != null ? DataUtils.getInstance().getFormattedLocalizedDate(reference.getDocumentDate()) : "";
+	}
+	
+	public Document getFirstReferencedDocument(DocumentType docType) {
 		Document reference = null;
 		
 		// Get all documents
@@ -84,12 +91,15 @@ public class Transaction {
 				break;
 			}
 		}
-		
-		// Return the reference date
-		return reference != null ? DataUtils.getInstance().getFormattedLocalizedDate(reference.getDocumentDate()) : "";
-		
+		return reference;
 	}
-	
+//	
+//	public Date getFirstReferencedDocumentDueDate(DocumentType docType) {
+//		Document reference = getFirstReferencedDocument(docType);
+//		
+//		// Return the reference date
+//		return reference != null ? DataUtils.getInstance().getFormattedLocalizedDate(reference.getDocumentDate())) : "";
+//	}
     
     /**
      * Returns a string with all documents with the same transaction

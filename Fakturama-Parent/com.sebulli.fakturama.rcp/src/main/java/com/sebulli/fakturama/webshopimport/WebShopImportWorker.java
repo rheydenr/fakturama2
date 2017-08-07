@@ -497,7 +497,8 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setStreet(contact.getStreet());
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
-            address.setValidFrom(today);
+            address.setValidFrom(today); //
+            int h = 1;
             String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             

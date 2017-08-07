@@ -713,6 +713,7 @@ public class Placeholders {
 			if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION")) return transaction.getReference(DocumentType.CONFIRMATION);
 			if (key.equals("DOCUMENT.REFERENCE.INVOICE")) return transaction.getReference(DocumentType.INVOICE);
 			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DATE")) return transaction.getFirstReferencedDocumentDate(DocumentType.INVOICE);
+//			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DUEDATE")) return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
 			if (key.equals("DOCUMENT.REFERENCE.DELIVERY")) return transaction.getReference(DocumentType.DELIVERY);
 			if (key.equals("DOCUMENT.REFERENCE.CREDIT")) return transaction.getReference(DocumentType.CREDIT);
 			if (key.equals("DOCUMENT.REFERENCE.DUNNING")) return transaction.getReference(DocumentType.DUNNING);
