@@ -1578,6 +1578,7 @@ public class DocumentEditor extends Editor<Document> {
 			labelName.setToolTipText(msg.editorDocumentRefnumberTooltip);
 		}
 		
+
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		
 		// Container for the document number and the date

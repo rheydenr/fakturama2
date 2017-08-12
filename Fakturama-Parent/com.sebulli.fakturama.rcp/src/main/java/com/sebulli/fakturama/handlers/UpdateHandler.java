@@ -34,6 +34,7 @@ public class UpdateHandler {
 		IStatus status = operation.resolveModal(null);
 		if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
 			MessageDialog.openInformation(null, msg.dialogMessageboxTitleInfo, "Nothing to update");
+			return;
 		}
 
 		ProvisioningJob provisioningJob = operation.getProvisioningJob(null);

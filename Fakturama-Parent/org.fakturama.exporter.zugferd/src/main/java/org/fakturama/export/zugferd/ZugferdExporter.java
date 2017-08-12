@@ -866,13 +866,21 @@ public class ZugferdExporter {
 		return tradePaymentTerms;
     }
 
-	private LogisticsServiceChargeType createLogisticsServiceCharge(Document invoice, DocumentSummary documentSummary) {	
-		LogisticsServiceChargeType logisticsServiceCharge = factory.createLogisticsServiceChargeType()
-			.withDescription(createText(invoice.getShipping().getDescription()))			
-			.withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
-		VAT shippingVat = invoice.getShipping().getShippingVat();
-		if(shippingVat != null) {
-			logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
+	private LogisticsServiceChargeType createLogisticsServiceCharge(Document invoice, DocumentSummary documentSummary) {
+		LogisticsServiceChargeType logisticsServiceCharge;
+		if(invoice.getShipping() != null) {
+			logisticsServiceCharge = factory.createLogisticsServiceChargeType()
+				.withDescription(createText(invoice.getShipping().getDescription()))			
+				.withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
+			VAT shippingVat = invoice.getShipping().getShippingVat();
+			if(shippingVat != null) {
+				logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
+			}
+		} else if(invoice.getShippingValue() != null) {
+			logisticsServiceCharge = factory.createLogisticsServiceChargeType()
+					.withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
+		} else {
+			logisticsServiceCharge = factory.createLogisticsServiceChargeType();
 		}
 		
 		return logisticsServiceCharge;
