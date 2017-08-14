@@ -2627,8 +2627,10 @@ public class DocumentEditor extends Editor<Document> {
                 // Get the array list of all selected elements
                 @SuppressWarnings("unchecked")
                 List<Long> selectedIds = (List<Long>)event.getProperty(ProductListTable.SELECTED_PRODUCT_ID);
-                List<Product> selectedProducts = productsDAO.findSelectedProducts(selectedIds);
-                addItemsToItemList(selectedProducts);
+                if(!selectedIds.isEmpty()) {
+	                List<Product> selectedProducts = productsDAO.findSelectedProducts(selectedIds);
+	                addItemsToItemList(selectedProducts);
+                }
                 break;
             case "Delivery":
                 // select a delivery note for creating a collective invoice 
