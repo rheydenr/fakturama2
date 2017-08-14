@@ -386,57 +386,58 @@ public class Constants {
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_STREET = "YOURCOMPANY_COMPANY_STREET";
+    public static final String PREFERENCES_YOURCOMPANY_STREET = "YOURCOMPANY_COMPANY_STREET";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY = "YOURCOMPANY_COMPANY_COUNTRY";
+    public static final String PREFERENCES_YOURCOMPANY_COUNTRY = "YOURCOMPANY_COMPANY_COUNTRY";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_TEL = "YOURCOMPANY_COMPANY_TEL";
+    public static final String PREFERENCES_YOURCOMPANY_TEL = "YOURCOMPANY_COMPANY_TEL";
+
+	public static final String PREFERENCES_YOURCOMPANY_MOBILE = "PREFERENCES_YOURCOMPANY_MOBILE";
+    /**
+     * 
+     */
+    public static final String PREFERENCES_YOURCOMPANY_FAX = "YOURCOMPANY_COMPANY_FAX";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_FAX = "YOURCOMPANY_COMPANY_FAX";
+    public static final String PREFERENCES_YOURCOMPANY_EMAIL = "YOURCOMPANY_COMPANY_EMAIL";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_EMAIL = "YOURCOMPANY_COMPANY_EMAIL";
+    public static final String PREFERENCES_YOURCOMPANY_WEBSITE = "YOURCOMPANY_COMPANY_WEBSITE";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_WEBSITE = "YOURCOMPANY_COMPANY_WEBSITE";
+    public static final String PREFERENCES_YOURCOMPANY_VATNR = "YOURCOMPANY_COMPANY_VATNR";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_VATNR = "YOURCOMPANY_COMPANY_VATNR";
+    public static final String PREFERENCES_YOURCOMPANY_TAXOFFICE = "YOURCOMPANY_COMPANY_TAXOFFICE";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_TAXOFFICE = "YOURCOMPANY_COMPANY_TAXOFFICE";
+    public static final String PREFERENCES_YOURCOMPANY_BANK = "YOURCOMPANY_COMPANY_BANK";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BANK = "YOURCOMPANY_COMPANY_BANK";
+    public static final String PREFERENCES_YOURCOMPANY_IBAN = "YOURCOMPANY_COMPANY_IBAN";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_IBAN = "YOURCOMPANY_COMPANY_IBAN";
-
-    /**
-     * 
-     */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_BIC = "YOURCOMPANY_COMPANY_BIC";
+    public static final String PREFERENCES_YOURCOMPANY_BIC = "YOURCOMPANY_COMPANY_BIC";
 
     /**
      * 
@@ -446,22 +447,22 @@ public class Constants {
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_CITY = "YOURCOMPANY_COMPANY_CITY";
+    public static final String PREFERENCES_YOURCOMPANY_CITY = "YOURCOMPANY_COMPANY_CITY";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_ZIP = "YOURCOMPANY_COMPANY_ZIP";
+    public static final String PREFERENCES_YOURCOMPANY_ZIP = "YOURCOMPANY_COMPANY_ZIP";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_OWNER = "YOURCOMPANY_COMPANY_OWNER";
+    public static final String PREFERENCES_YOURCOMPANY_OWNER = "YOURCOMPANY_COMPANY_OWNER";
 
     /**
      * 
      */
-    public static final String PREFERENCES_YOURCOMPANY_COMPANY_NAME = "YOURCOMPANY_COMPANY_NAME";
+    public static final String PREFERENCES_YOURCOMPANY_NAME = "YOURCOMPANY_COMPANY_NAME";
 
     /**
      * 
@@ -528,5 +529,6 @@ public class Constants {
 	public static final String DETAILPANEL_ID = "com.sebulli.fakturama.rcp.detailpanel";
 
 	public static final String PREFERENCES_OPENPDF = "OPENPDF";
+
 
 }

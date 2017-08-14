@@ -404,12 +404,12 @@ public class ZugferdExporter {
 		NoteType note = factory.createNoteType();
 		
 		String owner = String.format("%s%n%s%n%s%n%s %s%n%s", 
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER),
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME),
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET),
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP),
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY),
-				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR));
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER),
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME),
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET),
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP),
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY),
+				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR));
 
 		note.getContent().add(createText(owner));
 		note.setSubjectCode(createCode("REG"));
@@ -425,7 +425,7 @@ public class ZugferdExporter {
 		// create seller information
 		TradePartyType seller = factory.createTradePartyType()
 //				.withID(createIdFromString("id assigned from customer(!)"))
-				.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME)))
+				.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME)))
 //TODO EXTENDED				.withDefinedTradeContact(createContact(invoice, ContactType.SELLER))
 				.withPostalTradeAddress(createAddress(invoice, ContactType.SELLER))
 //				.withGlobalID(createIdWithSchemeFromString("EAN|BIC or whatever", "according to ISO 6523"))
@@ -1004,9 +1004,9 @@ public class ZugferdExporter {
 
 	private CreditorFinancialInstitutionType createCreditorFinancialInstitution() {
 		return factory.createCreditorFinancialInstitutionType()
-				.withBICID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC)))
+				.withBICID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC)))
 //				.withGermanBankleitzahlID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BANKCODE")))
-				.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK)));
+				.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK)));
 	}
 
 	private DebtorFinancialInstitutionType createDebtorFinancialInstitution(Document invoice) {
@@ -1020,10 +1020,10 @@ public class ZugferdExporter {
 
 	private CreditorFinancialAccountType createCreditorAccount() {
 		CreditorFinancialAccountType retval = null;
-		if(!StringUtils.isEmpty(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN)) 
+		if(!StringUtils.isEmpty(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN)) 
 				|| !StringUtils.isEmpty(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"))) {
 			retval = factory.createCreditorFinancialAccountType()
-	        		.withIBANID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN)))/*
+	        		.withIBANID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN)))/*
 	        		.withProprietaryID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR")))*/;
 		}
 		return retval;
@@ -1074,7 +1074,7 @@ public class ZugferdExporter {
 		TaxRegistrationType retval = null;
 		switch (contactType) {
 		case SELLER:
-			String companyVatNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_VATNR);
+			String companyVatNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
 			if(!StringUtils.isEmpty(companyVatNo)) {
 				retval = factory.createTaxRegistrationType()
 						.withID(createIdWithSchemeFromString(getNullCheckedValue(companyVatNo), "VA"));
@@ -1111,13 +1111,13 @@ public class ZugferdExporter {
 		TradeAddressType retval = null;
 		switch (contactType) {
 		case SELLER:
-			String countryCode = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_COUNTRY);
+			String countryCode = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY);
 
 			retval = factory.createTradeAddressType()
-				.withPostcodeCode(createCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP)))
-				.withLineOne(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET)))
+				.withPostcodeCode(createCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP)))
+				.withLineOne(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET)))
 	//		.withLineTwo(is empty at the moment);
-				.withCityName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY)))
+				.withCityName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY)))
 				.withCountryID(createCountry(countryCode));
 				//.withCountryID(createCountry(preferences.getString("YOURCOMPANY_COMPANY_COUNTRY")));
 			break;

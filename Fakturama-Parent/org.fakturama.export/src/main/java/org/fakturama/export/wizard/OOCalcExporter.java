@@ -120,11 +120,11 @@ public class OOCalcExporter {
 	protected void fillCompanyInformation(int row) {
 		
 		// Fill the first cells with company data
-		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_NAME, ""));
-		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_OWNER, ""));
-		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_STREET, ""));
-		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_ZIP, "") + " "
-				+ eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_COMPANY_CITY, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_NAME, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_OWNER, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_STREET, ""));
+		setCellTextInItalic(row++, 0, eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_ZIP, "") + " "
+				+ eclipsePrefs.get(Constants.PREFERENCES_YOURCOMPANY_CITY, ""));
 	}
 	
 	protected void fillTimeIntervall(int row) {

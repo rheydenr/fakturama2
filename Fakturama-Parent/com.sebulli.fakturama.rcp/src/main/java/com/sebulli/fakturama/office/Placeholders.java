@@ -81,6 +81,7 @@ public class Placeholders {
 			"YOURCOMPANY.COUNTRY",
 			"YOURCOMPANY.EMAIL",
 			"YOURCOMPANY.PHONE",
+			"YOURCOMPANY.MOBILE",
 			"YOURCOMPANY.PHONE.PRE",
 			"YOURCOMPANY.PHONE.POST",
 			"YOURCOMPANY.FAX",
@@ -578,36 +579,37 @@ public class Placeholders {
 		
 		// Get the company information from the preferences
 		if (key.startsWith("YOURCOMPANY")) {
-			if (key.equals("YOURCOMPANY.COMPANY")) return  preferences.getString("YOURCOMPANY_COMPANY_NAME");
+			if (key.equals("YOURCOMPANY.COMPANY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME);
 
-			String owner = preferences.getString("YOURCOMPANY_COMPANY_OWNER");
+			String owner = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER);
 			if (key.equals("YOURCOMPANY.OWNER")) return  owner;
 			if (key.equals("YOURCOMPANY.OWNER.FIRSTNAME")) return  contactUtil.getFirstName(owner);
 			if (key.equals("YOURCOMPANY.OWNER.LASTNAME")) return  contactUtil.getLastName(owner);
 
-			String streetWithNo = preferences.getString("YOURCOMPANY_COMPANY_STREET");
+			String streetWithNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET);
 			if (key.equals("YOURCOMPANY.STREET")) return  streetWithNo;
 			if (key.equals("YOURCOMPANY.STREETNAME")) return  contactUtil.getStreetName(streetWithNo);
 			if (key.equals("YOURCOMPANY.STREETNO")) return  contactUtil.getStreetNo(streetWithNo);
 
-			if (key.equals("YOURCOMPANY.ZIP")) return  preferences.getString("YOURCOMPANY_COMPANY_ZIP");
-			if (key.equals("YOURCOMPANY.CITY")) return  preferences.getString("YOURCOMPANY_COMPANY_CITY");
-			if (key.equals("YOURCOMPANY.COUNTRY")) return  preferences.getString("YOURCOMPANY_COMPANY_COUNTRY");
-			if (key.equals("YOURCOMPANY.EMAIL")) return  preferences.getString("YOURCOMPANY_COMPANY_EMAIL");
-			if (key.equals("YOURCOMPANY.PHONE")) return  preferences.getString("YOURCOMPANY_COMPANY_TEL");
-			if (key.equals("YOURCOMPANY.PHONE.PRE")) return  getTelPrePost(preferences.getString("YOURCOMPANY_COMPANY_TEL"), true);
-			if (key.equals("YOURCOMPANY.PHONE.POST")) return  getTelPrePost(preferences.getString("YOURCOMPANY_COMPANY_TEL"), false);
-			if (key.equals("YOURCOMPANY.FAX")) return  preferences.getString("YOURCOMPANY_COMPANY_FAX");
-			if (key.equals("YOURCOMPANY.FAX.PRE")) return  getTelPrePost(preferences.getString("YOURCOMPANY_COMPANY_FAX"), true);
-			if (key.equals("YOURCOMPANY.FAX.POST")) return  getTelPrePost(preferences.getString("YOURCOMPANY_COMPANY_FAX"), false);
-			if (key.equals("YOURCOMPANY.WEBSITE")) return  preferences.getString("YOURCOMPANY_COMPANY_WEBSITE");
-			if (key.equals("YOURCOMPANY.VATNR")) return  preferences.getString("YOURCOMPANY_COMPANY_VATNR");
-			if (key.equals("YOURCOMPANY.TAXOFFICE")) return  preferences.getString("YOURCOMPANY_COMPANY_TAXOFFICE");
+			if (key.equals("YOURCOMPANY.ZIP")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP);
+			if (key.equals("YOURCOMPANY.CITY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY);
+			if (key.equals("YOURCOMPANY.COUNTRY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY);
+			if (key.equals("YOURCOMPANY.EMAIL")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL);
+			if (key.equals("YOURCOMPANY.PHONE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL);
+			if (key.equals("YOURCOMPANY.PHONE.PRE")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), true);
+			if (key.equals("YOURCOMPANY.PHONE.POST")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), false);
+			if (key.equals("YOURCOMPANY.MOBILE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_MOBILE);
+			if (key.equals("YOURCOMPANY.FAX")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX);
+			if (key.equals("YOURCOMPANY.FAX.PRE")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), true);
+			if (key.equals("YOURCOMPANY.FAX.POST")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
+			if (key.equals("YOURCOMPANY.WEBSITE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_WEBSITE);
+			if (key.equals("YOURCOMPANY.VATNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
+			if (key.equals("YOURCOMPANY.TAXOFFICE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE);
 			if (key.equals("YOURCOMPANY.BANKACCOUNTNR")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR");
 			if (key.equals("YOURCOMPANY.BANKCODE")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKCODE");
-			if (key.equals("YOURCOMPANY.BANK")) return  preferences.getString("YOURCOMPANY_COMPANY_BANK");
-			if (key.equals("YOURCOMPANY.IBAN")) return  preferences.getString("YOURCOMPANY_COMPANY_IBAN");
-			if (key.equals("YOURCOMPANY.BIC")) return  preferences.getString("YOURCOMPANY_COMPANY_BIC");
+			if (key.equals("YOURCOMPANY.BANK")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK);
+			if (key.equals("YOURCOMPANY.IBAN")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN);
+			if (key.equals("YOURCOMPANY.BIC")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC);
 		}
 
 		if (document == null)
@@ -929,11 +931,11 @@ public class Placeholders {
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT>", 
 	    		preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN>", 
-	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN));
+	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.BIC>", 
-	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BIC));
+	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.NAME>", 
-	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_BANK));
+	    		preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.CODE>", 
 	    		preferences.getString("YOURCOMPANY_COMPANY_BANKCODE"));
 	    paymenttext = StringUtils.replace(paymenttext, "<YOURCOMPANY.CREDITORID>", 
@@ -942,7 +944,7 @@ public class Placeholders {
 	    // Additional placeholder for censored bank account
 	    String censoredAccount = censorAccountNumber(preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR"));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT.CENSORED>", censoredAccount);
-	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COMPANY_IBAN));
+	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN.CENSORED>", censoredAccount);
 	    
 	    Contact contact = document.getBillingContact();
