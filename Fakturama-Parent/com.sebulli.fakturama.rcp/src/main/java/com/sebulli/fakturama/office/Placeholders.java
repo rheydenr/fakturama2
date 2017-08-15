@@ -682,20 +682,28 @@ public class Placeholders {
 		if (key.equals("ITEMS.DISCOUNT.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountNet());
 		if (key.equals("ITEMS.DISCOUNT.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountGross());
 
-		if (key.equals("ITEMS.DISCOUNT.DAYS")) return document.getPayment().getDiscountDays().toString();
-		if (key.equals("ITEMS.DISCOUNT.DUEDATE")) {
-			return getDiscountDueDate(document);
-		}
-		double percent = document.getPayment().getDiscountValue();
-		if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(percent);
-		if (key.equals("ITEMS.DISCOUNT.VALUE")) {
-			return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
-		}
-		if (key.equals("ITEMS.DISCOUNT.NETVALUE")) {
-			return DataUtils.getInstance().formatCurrency(documentSummary.getTotalNet().multiply(1 - percent));
-		}
-		if (key.equals("ITEMS.DISCOUNT.TARAVALUE")) {
-			return DataUtils.getInstance().formatCurrency(documentSummary.getTotalVat().multiply(1 - percent));
+		if(document.getPayment() != null) {
+			if (key.equals("ITEMS.DISCOUNT.DAYS")) return document.getPayment().getDiscountDays().toString();
+			if (key.equals("ITEMS.DISCOUNT.DUEDATE")) {
+				return getDiscountDueDate(document);
+			}
+			double percent = document.getPayment().getDiscountValue();
+			if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(percent);
+			if (key.equals("ITEMS.DISCOUNT.VALUE")) {
+				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
+			}
+			if (key.equals("ITEMS.DISCOUNT.NETVALUE")) {
+				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalNet().multiply(1 - percent));
+			}
+			if (key.equals("ITEMS.DISCOUNT.TARAVALUE")) {
+				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalVat().multiply(1 - percent));
+			}
+			
+			if (key.equals("PAYMENT.TEXT")) {
+				// Replace the placeholders in the payment text
+				String paymenttext = createPaymentText(document, documentSummary, percent);
+				return paymenttext;
+			}
 		}
 
 		if (key.equals("SHIPPING.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingNet());
@@ -721,12 +729,6 @@ public class Placeholders {
 			if (key.equals("DOCUMENT.REFERENCE.DUNNING")) return transaction.getReference(DocumentType.DUNNING);
 			if (key.equals("DOCUMENT.REFERENCE.PROFORMA")) return transaction.getReference(DocumentType.PROFORMA);
 
-		}
-		
-		if (key.equals("PAYMENT.TEXT")) {
-			// Replace the placeholders in the payment text
-			String paymenttext = createPaymentText(document, documentSummary, percent);
-			return paymenttext;
 		}
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
@@ -854,16 +856,16 @@ public class Placeholders {
 		else {
 			if (key2.equals("ADDRESS.GENDER")) return "";
 			if (key2.equals("ADDRESS.TITLE")) return "";
-			if (key2.equals("ADDRESS.NAME")) return contactUtil.getDataFromAddressField(addressField,"name");
-			if (key2.equals("ADDRESS.FIRSTNAME")) return contactUtil.getDataFromAddressField(addressField,"firstname");
-			if (key2.equals("ADDRESS.LASTNAME")) return contactUtil.getDataFromAddressField(addressField,"lastname");
+			if (key2.equals("ADDRESS.NAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_NAME);
+			if (key2.equals("ADDRESS.FIRSTNAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_FIRSTNAME);
+			if (key2.equals("ADDRESS.LASTNAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_LASTNAME);
 			if (key2.equals("ADDRESS.COMPANY")) return contactUtil.getDataFromAddressField(addressField,"company");
-			if (key2.equals("ADDRESS.STREET")) return contactUtil.getDataFromAddressField(addressField,"street");
-			if (key2.equals("ADDRESS.STREETNAME")) return contactUtil.getDataFromAddressField(addressField,"streetname");
-			if (key2.equals("ADDRESS.STREETNO")) return contactUtil.getDataFromAddressField(addressField,"streetno");
-			if (key2.equals("ADDRESS.ZIP")) return contactUtil.getDataFromAddressField(addressField,"zip");
-			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField,"city");
-			String country = contactUtil.getDataFromAddressField(addressField,"country");
+			if (key2.equals("ADDRESS.STREET")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_STREET);
+			if (key2.equals("ADDRESS.STREETNAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_STREETNAME);
+			if (key2.equals("ADDRESS.STREETNO")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_STREETNO);
+			if (key2.equals("ADDRESS.ZIP")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ZIP);
+			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_CITY);
+			String country = contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_COUNTY);
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
             Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
