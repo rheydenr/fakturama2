@@ -669,6 +669,10 @@ id="04_openoffice_libreoffice">
 						<entry>Eigene USt.-IDNr.</entry>
 					</row>
 					<row>
+						<entry>YOURCOMPANY.TAXNR</entry>
+						<entry>Eigene Steuernummer</entry>
+					</row>
+					<row>
 						<entry>YOURCOMPANY.TAXOFFICE</entry>
 						<entry>Finanzamtbezeichnung</entry>
 					</row>

@@ -418,6 +418,7 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_YOURCOMPANY_VATNR = "YOURCOMPANY_COMPANY_VATNR";
+	public static final String PREFERENCES_YOURCOMPANY_TAXNR = "YOURCOMPANY_TAXNR";
 
     /**
      * 
@@ -529,6 +530,7 @@ public class Constants {
 	public static final String DETAILPANEL_ID = "com.sebulli.fakturama.rcp.detailpanel";
 
 	public static final String PREFERENCES_OPENPDF = "OPENPDF";
+
 
 
 }

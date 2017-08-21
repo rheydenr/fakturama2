@@ -565,6 +565,7 @@ public class Messages {
 	public String pageCompanyStreet;
 	public String pageCompanyTaxoffice;
 	public String pageCompanyVatno;
+	public String pageCompanyTaxno;
 	public String pageContacts;
 	public String pageContactsFormat;
 	public String pageExport;

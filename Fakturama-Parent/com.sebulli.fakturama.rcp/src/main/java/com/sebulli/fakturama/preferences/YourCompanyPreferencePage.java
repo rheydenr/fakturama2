@@ -92,6 +92,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_VATNR, msg.pageCompanyVatno, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_TAXNR, msg.pageCompanyTaxno, getFieldEditorParent()));
 
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE, msg.pageCompanyTaxoffice, getFieldEditorParent()));
