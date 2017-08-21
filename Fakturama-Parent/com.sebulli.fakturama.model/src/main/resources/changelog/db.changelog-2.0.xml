@@ -918,4 +918,12 @@
     <changeSet author="rheydenr (generated)" id="1489873806573-119" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>
+
+	<changeSet author="rheydenr" id="20170821-2344-120">
+	    <addColumn tableName="FKT_DOCUMENT">
+	        <column name="VESTINGPERIODSTART" type="date"/>
+	        <column name="VESTINGPERIODEND" type="date"/>
+	    </addColumn>
+	</changeSet>
+    
 </databaseChangeLog>

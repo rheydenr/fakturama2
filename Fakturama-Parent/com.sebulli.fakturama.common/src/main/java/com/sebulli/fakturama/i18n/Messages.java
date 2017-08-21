@@ -276,6 +276,14 @@ public class Messages {
 	public String editorDocumentFieldInvoiceTooltip;
 	public String editorDocumentFieldOrderdate;
 	public String editorDocumentFieldOrderdateTooltip;
+	
+	public String editorDocumentFieldVestingperiodEnd;
+	public String editorDocumentFieldVestingperiodEndTooltip;
+	public String editorDocumentFieldVestingperiodStart;
+	public String editorDocumentFieldVestingperiodStartTooltip;
+	
+	public String editorDocumentFieldVestingperiodEndShort;
+	public String editorDocumentFieldVestingperiodStartShort;
 	public String editorDocumentFieldPosition;
 	public String editorDocumentFieldQunit;
 	public String editorDocumentFieldRemarks;
@@ -296,8 +304,6 @@ public class Messages {
 	public String editorDocumentSelecttemplateTooltip;
 	public String editorDocumentTotalgross;
 	public String editorDocumentTotalnet;
-	public String editorDocumentFieldVestingend;
-	public String editorDocumentFieldVestingstart;
 	public String editorDocumentWarningDifferentaddress;
 	public String editorDocumentWarningDifferentdeliveryaddress;
 	public String editorDocumentZerovatTooltip;

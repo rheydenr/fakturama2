@@ -217,6 +217,14 @@ id="04_openoffice_libreoffice">
 						<entry>Bestelldatum</entry>
 					</row>
 					<row>
+						<entry>DOCUMENT.VESTINGPERIOD.START</entry>
+						<entry>Beginn des Leistungszeitraumes</entry>
+					</row>
+					<row>
+						<entry>DOCUMENT.VESTINGPERIOD.END</entry>
+						<entry>Ende des Leistungszeitraumes</entry>
+					</row>
+					<row>
 						<entry>DOCUMENT.ITEMS.GROSS</entry>
 						<entry>Zwischensumme der Artikel (brutto)</entry>
 					</row>

@@ -28,8 +28,8 @@ public enum DocumentItemListDescriptor {
     QUNIT("quantityUnit", "editor.document.field.qunit", 3, 10),
     ITEMNUMBER("itemNumber", "product.field.itemno", 4, 20),
     PICTURE("pictureName", "common.field.picture", 5, 20), // $ProductPictureSmall
-    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingstart", 5, 20),
-    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingend", 5, 20),
+    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingperiod.start.short", 5, 20),
+    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingperiod.end.short", 5, 20),
     NAME("name", "common.field.name", 6, 0),
     DESCRIPTION("description", "common.field.description", 7, 0),
     VAT("itemVat", "common.field.vat", 8, 10), // $ItemVatPercent

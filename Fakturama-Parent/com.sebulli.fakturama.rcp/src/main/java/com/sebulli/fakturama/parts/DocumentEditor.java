@@ -131,6 +131,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.converter.Double2SpinnerUpdateStrategy;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
+import com.sebulli.fakturama.parts.itemlist.DocumentItemListDescriptor;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.parts.itemlist.ItemListBuilder;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
@@ -217,7 +218,7 @@ public class DocumentEditor extends Editor<Document> {
 	private Composite top;
 	private Text txtName;
 	private CDateTime dtDate;
-	private CDateTime dtOrderDate;
+	private CDateTime dtOrderDate, dtVestingPeriodStart, dtVestingPeriodEnd;
 	private CDateTime dtServiceDate;
 	private Text txtCustomerRef;
 	private Text txtConsultant;
@@ -1754,6 +1755,31 @@ public class DocumentEditor extends Editor<Document> {
 		// If "orderdate" is not set, use "webshopdate"
 		Date orderDateString = document.getOrderDate() == null ? document.getWebshopDate() : document.getOrderDate();
 		dtOrderDate.setSelection(orderDateString);
+		
+		// Vesting period
+		Label labelVestingPeriodStart = new Label(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0 ? xtraSettingsComposite : invisible, SWT.NONE);
+		labelVestingPeriodStart.setText(msg.editorDocumentFieldVestingperiodStart);
+		labelVestingPeriodStart.setToolTipText(msg.editorDocumentFieldVestingperiodStartTooltip);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVestingPeriodStart);
+		
+		dtVestingPeriodStart = new CDateTime(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0 ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
+		dtVestingPeriodStart.setToolTipText(labelVestingPeriodStart.getToolTipText());
+		dtVestingPeriodStart.setFormat(CDT.DATE_MEDIUM);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtVestingPeriodStart);
+		// Set the dtDate widget to the documents date
+		bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName());
+        
+		Label labelVestingPeriodEnd = new Label(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1 ? xtraSettingsComposite : invisible, SWT.NONE);
+		labelVestingPeriodEnd.setText(msg.editorDocumentFieldVestingperiodEnd);
+		labelVestingPeriodEnd.setToolTipText(msg.editorDocumentFieldVestingperiodEndTooltip);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVestingPeriodEnd);
+		
+		dtVestingPeriodEnd = new CDateTime(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1 ? xtraSettingsComposite : invisible, CDT.BORDER | CDT.DROP_DOWN);
+		dtVestingPeriodEnd.setToolTipText(labelVestingPeriodEnd.getToolTipText());
+		dtVestingPeriodEnd.setFormat(CDT.DATE_MEDIUM);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtVestingPeriodEnd);
+		// Set the dtDate widget to the documents date
+		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());		
 
 		// A reference to the invoice
 		Label labelInvoiceRef = new Label(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.NONE);

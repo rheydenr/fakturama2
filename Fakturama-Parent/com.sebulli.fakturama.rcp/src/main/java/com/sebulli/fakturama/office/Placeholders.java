@@ -118,6 +118,8 @@ public class Placeholders {
 			"DOCUMENT.WEBSHOP.ID",
 			"DOCUMENT.WEBSHOP.DATE",
 			"DOCUMENT.ORDER.DATE",
+			"DOCUMENT.VESTINGPERIOD.START",
+			"DOCUMENT.VESTINGPERIOD.END",
 			"DOCUMENT.ITEMS.GROSS",
 			"DOCUMENT.ITEMS.NET",
 			"DOCUMENT.ITEMS.COUNT",
@@ -605,6 +607,7 @@ public class Placeholders {
 			if (key.equals("YOURCOMPANY.FAX.POST")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
 			if (key.equals("YOURCOMPANY.WEBSITE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_WEBSITE);
 			if (key.equals("YOURCOMPANY.VATNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
+			if (key.equals("YOURCOMPANY.TAXNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR);
 			if (key.equals("YOURCOMPANY.TAXOFFICE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE);
 			if (key.equals("YOURCOMPANY.BANKACCOUNTNR")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR");
 			if (key.equals("YOURCOMPANY.BANKCODE")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKCODE");
@@ -664,6 +667,8 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.WEBSHOP.ID")) return document.getWebshopId();
 		if (key.equals("DOCUMENT.WEBSHOP.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getWebshopDate());
 		if (key.equals("DOCUMENT.ORDER.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getOrderDate());
+		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getVestingPeriodStart());
+		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getVestingPeriodEnd());
 		if (key.equals("DOCUMENT.ITEMS.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsGross());
 		if (key.equals("DOCUMENT.ITEMS.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet());
 		// FAK-432
