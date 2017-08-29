@@ -228,7 +228,7 @@
                 </menus>
                 <toolbar xmi:id="_8PeIUFDyEeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.rcp.toolbar.9">
                   <children xsi:type="menu:HandledToolItem" xmi:id="_R2Q18FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.listview.receiptvoucher.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.receiptvoucher.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
-                    <parameters xmi:id="_q7LE4FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.72" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptvoucherEditor"/>
+                    <parameters xmi:id="_q7LE4FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.72" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptVoucherEditor"/>
                   </children>
                   <children xsi:type="menu:HandledToolItem" xmi:id="_0f4VUFM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.listview.receiptvoucher.delete" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
                 </toolbar>
