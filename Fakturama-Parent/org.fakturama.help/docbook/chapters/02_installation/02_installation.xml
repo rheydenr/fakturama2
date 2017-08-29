@@ -6,12 +6,12 @@
 	<section>
 		<anchor xreflabel="" xml:id="install_download"/>
 		<title>Download der Software</title>
-		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>
+		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>.
 		</para>
 		<para>Fakturama läuft unter folgenden Betriebssystemen:</para>
 		<itemizedlist>
 			<listitem><trademark>Windows</trademark> 8 und 10 (32Bit und 64Bit)</listitem>
-			<listitem>Mac OS X</listitem>
+			<listitem>Mac OS X (ab Version 10.10 Yosemite)</listitem>
 			<listitem>Linux (32Bit und 64Bit)</listitem>
 		</itemizedlist>
 		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig. Zum Erstellen der Druckvorlagen und 
@@ -34,7 +34,7 @@
         Sie benötigen das Programm, um Vorlagen bearbeiten zu können bzw. aus Fakturama heraus PDFs erzeugen zu können.</para>
         <para>Sollten Sie sich für den Einsatz einer MySQL- oder MariaDB entscheiden (z. B. wegen des Mehrbenutzerzugriffes), 
         müssen Sie diese ebenfalls bereits 
-        installiert haben. Für den Zugriff konfigurieren Sie in dieser Datenbank einen Nutzer, der
+        installiert haben. Für den Zugriff konfigurieren Sie zu dieser Datenbank einen Nutzer, der
         die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
         Es wird <emphasis role="bold">nicht</emphasis> empfohlen, den <computeroutput>root</computeroutput>-Benutzer für den Zugriff zu verwenden.</para>
 	</section>
@@ -100,7 +100,7 @@
 					</imageobject>
 				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_64Bit_x_x_x.sh) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
-			<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
+			<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
 			und alle Dokumente und Vorlagen abgelegt. Beispiel:</para>
 			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
@@ -192,6 +192,7 @@
 	<section>
 			<anchor xreflabel="" xml:id="install_startparameter"/>
 		<title>Zusätzliche Programmparameter beim Programmaufruf</title>
+		<para>Sie können Fakturama mit zusätzlichen Parametern starten, um bestimmte Einstellungen zu überschreiben bzw. neu zu setzen (z. B. Sprache oder Arbeitsverzeichnis). </para>
 		<sect2>
 			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
 			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
@@ -208,7 +209,7 @@
 				</programlisting>
 			Beispiel:
 			<programlisting>-data /home/user/.fakturamaB</programlisting>
-			Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma/Mandanten 
+			Im Gegensatz zur Variante A wird für Fakturama selbst ein neuer Arbeitsordner gesetzt, der nur indirekt etwas mit dem Arbeitsverzeichnis der Firma / des Mandanten 
 			zu tun hat. Bei dieser Variante wird der Benutzer nach dem ersten Start aufgefordert, ein neues Arbeitsverzeichnis auszuwählen. Außerdem werden hier Einstellungen wie Fensterposition und Größe von Mandant zu Mandant unterschiedlich abgespeichert.</para>
 		</sect2>
 		
@@ -221,7 +222,7 @@
 			<para>Fakturama kann mit einer bestimmten Sprach- oder Ländereinstellung gestartet werden. Aufruf:
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>
-			Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte deshalb nur dann benutzt werden, 
+			Normalerweise benutzt Fakturama die Ländereinstellung des Systems. Dieser Programmparameter sollte nur dann benutzt werden, 
 			wenn die Systemeinstellung nicht geändert werden kann. Beim Aufruf ist zu beachten, dass wirklich der komplette Bezeichner angegeben wird, 
 			da es sonst zu fehlerhaften Darstellungen im Programm kommen kann.</para>
 			<para>Folgende Länder und Sprachen werden unterstützt:</para>

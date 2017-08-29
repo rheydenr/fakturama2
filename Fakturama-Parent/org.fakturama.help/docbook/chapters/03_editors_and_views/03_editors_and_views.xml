@@ -31,7 +31,7 @@
 	</sect2>
 	<sect2>
 		<title>(4) Die Navigationsleiste</title>
-		<para>Die wichtigsten Vorgänge können aus der Navigationsleiste gestartet werden. Übersichtlich mit Icons versehen und in Gruppen sortiert. Das Verhalten der Navigationsleiste kann in den <link linkend="preferences_general_navigationbar">Einstellungen</link> festgelegt werden.</para>
+		<para>Die wichtigsten Vorgänge können aus der Navigationsleiste gestartet werden. Sie sind übersichtlich mit Icons versehen und in Gruppen sortiert. Das Verhalten der Navigationsleiste kann in den <link linkend="preferences_general_navigationbar">Einstellungen</link> festgelegt werden.</para>
 		<para>Siehe <link linkend="application_navigationbar">Navigationsleiste</link>
 		</para>
 	</sect2>
@@ -137,8 +137,7 @@
 					</inlinemediaobject>
 					Speichern</term>
 				<listitem>
-					<para>Speichert das Dokument, Kontaktadresse, Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein 
-					Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+					<para>Speichert das Dokument, die Kontaktadresse, das Produkt&#x2026; des aktiven Editors.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -167,13 +166,13 @@
 					</inlinemediaobject>Drucken</term>
 				<listitem>
 					<para>Konvertiert das Dokument des aktiven Editors in ein OpenOffice-Writer-Dokument. Dazu wird eine Vorlage benutzt. Es erscheint ein Auswahlmenü, 
-					wenn mehr als eine Vorlage existiert. Ist das Icon ausgegraut, so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+					wenn mehr als eine Vorlage existiert. Ist das Icon ausgegraut, so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken, falls der Button nicht aktiv ist.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Arbeitsverzeichnis wählen</term>
 				<listitem>
-					<para>Wählt das Arbeitsverzeichnis, in dem Fakturama die Firmendatenbank und alle Dokumente ablegt. Beispiel:</para>
+					<para>Wählt das Arbeitsverzeichnis, in dem Fakturama die Firmendatenbank (falls nicht extern) und alle Dokumente ablegt. Beispiel:</para>
 					<computeroutput>C:\Projekte\MeineFirma\</computeroutput>
 					<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 					</para>
@@ -1011,7 +1010,7 @@
 						<imagedata contentdepth="80%" width="40pt" fileref="../images/application/save_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Speichern</title>
-			<para>Speichert das Dokument, die Kontaktadresse, das Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
+			<para>Speichert das Dokument, die Kontaktadresse, das Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Aktivieren des Buttons einmal in das Editorfenster klicken, falls er nicht aktiv ist. Ein geänderter Editor-Inhalt ist am Sternchen neben dem Tab oben erkennbar.</para>
 		</sect2>
 		<sect2>
 			<title> 

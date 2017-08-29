@@ -138,8 +138,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
             E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, getGridLayer().getSelectionLayer(), getGridLayer().getBodyDataProvider());
             getGridLayer().getSelectionLayer().addLayerListener(esl);
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
-        } else {
-            hookDoubleClickCommand2(natTable, getGridLayer());
         }
         hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);

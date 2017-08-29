@@ -366,7 +366,7 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
-						<entry>ADDRESS.entry</entry>
+						<entry>ADDRESS.TITLE</entry>
 						<entry>Titel (Rechnungsadresse)</entry>
 					</row>
 					<row>
@@ -639,6 +639,10 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>YOURCOMPANY.COUNTRY</entry>
 						<entry>Eigenes Land</entry>
+					</row>
+					<row>
+						<entry>YOURCOMPANY.MOBILE</entry>
+						<entry>Eigene Mobilrufnummer</entry>
 					</row>
 					<row>
 						<entry>YOURCOMPANY.PHONE</entry>

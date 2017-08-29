@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -49,8 +50,8 @@ import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.model.VoucherCategory;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -139,6 +140,10 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
+        gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
+
+        E4SelectionListener<Voucher> esl = new E4SelectionListener<>(selectionService, gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
+        gridListLayer.getSelectionLayer().addLayerListener(esl);
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)

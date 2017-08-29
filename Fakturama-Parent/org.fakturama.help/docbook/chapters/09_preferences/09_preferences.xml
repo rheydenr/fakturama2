@@ -38,8 +38,8 @@
         <section>
             <title>Währungsland</title>
             <para>Legt fest, in welcher Währung die Geldbeträge erscheinen sollen. Ein Wechsel des Währungslandes ändert nicht den Wert.</para>
-            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, das sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen Locale-Einstellungen greifen.</para>
-			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, daß alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
+            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, dass sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen Locale-Einstellungen greifen.</para>
+			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, dass alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
 			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen und anderen Zahlen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
         </section>
         <section>
@@ -66,7 +66,7 @@
         </section>
         <section>
             <title>Kommentar beim Duplizieren von Dokumenten übernehmen</title>
-            <para>Wird ein Dokument dupliziert (wird zum Beispiel aus einer Bestellung eine Rechnung erzeugt), so werden Adresse und Artikel übernommen. Es ist möglich, den Kommentartext ebenfalls zu übernehmen oder beim duplizierten Dokument leer zu lassen.</para>
+            <para>Wird ein Dokument dupliziert (wird zum Beispiel aus einer Bestellung eine Rechnung erzeugt), so werden Adresse und Artikel übernommen. Es ist möglich, den Kommentartext ebenfalls zu übernehmen oder beim Duplizierten Dokument leer zu lassen.</para>
             <para>Der Kommentar einer Bestellung ist derjenige, den der Kunde bei seiner Bestellung im Webshop eingegeben hat. Es ist nicht immer sinnvoll, diesen Text auch auf die Rechnung weiter zu geben. Der Text dort ist vielmals eine Information an den Kunden.</para>
             <informalfigure>
                 <mediaobject>

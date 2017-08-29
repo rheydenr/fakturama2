@@ -15,19 +15,19 @@
 	</sect2>
 	<sect2>
 		<title>Webshop Schnittstelle</title>
-		<para>Laden Sie die Webshop Schnittstelle aus dem <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link> und kopieren Sie diese in den Ordner <emphasis role="bold">/admin/</emphasis> Ihres Webshops.</para>
+		<para>Laden Sie die Webshop-Schnittstelle aus dem <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link> und kopieren Sie diese in den Ordner <emphasis role="bold">/admin/</emphasis> Ihres Webshops.</para>
 		<para>Siehe auch <link linkend="webshop_webshop_connector">Webshop Schnittstelle</link>
 		</para>
 	</sect2>
 	<sect2>
 		<title>Einstellungen</title>
-		<para>Setzen Sie die Einstellungen des Programms auf die von Ihnen gewünschten Werte. Vor allem wichtige Einstellungen wie <emphasis role="bold">Firmendaten</emphasis>, <emphasis role="bold">Verbindungsdaten Webshop</emphasis> oder <emphasis role="bold">Nummernkreise</emphasis>.</para>
+		<para>Setzen Sie die Einstellungen des Programms auf die von Ihnen gewünschten Werte. Vor allem wichtige Einstellungen wie <emphasis role="bold">Firmendaten</emphasis>, <emphasis role="bold">Verbindungsdaten Webshop</emphasis> oder <emphasis role="bold">Nummernkreise</emphasis> sollten hier hinterlegt werden.</para>
 		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link>
 		</para>
 	</sect2>
 	<sect2>
 		<title>OpenOffice.org / LibreOffice Vorlagen</title>
-		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an. Wählen Sie bitte auch in den Einstellungen das 
+		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an. Eine Standardvorlage finden Sie im Verzeichnis <emphasis role="bold">Vorlagen</emphasis> Ihres Arbeitsverzeichnisses. Wählen Sie bitte auch in den Einstellungen das 
 		Programmverzeichnis von LibreOffice/OpenOffice aus, falls Sie PDF-Dateien erzeugen möchten.</para>
 		<para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org/LibreOffice Vorlagen</link>
 		</para>
