@@ -372,7 +372,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
                     // the receiver of this topic. Therefore the receiver's SelectionService
                     // is empty :-(
 //                    selectionService.setSelection(selectedObject);
-                    evtBroker.post("DialogSelection/TextModule", eventParams);
+
+                    // "Close" fills the text fields, too.
                     evtBroker.post("DialogAction/CloseTextModule", eventParams);
                 } else {
                     // if we come from the list view then we should open a new editor 

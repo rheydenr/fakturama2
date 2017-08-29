@@ -114,7 +114,16 @@ public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
      */
     @Override
     protected void okPressed() {
-        if (textListTable.getSelectedObject() != null) {
+    	/*
+    	 * TODO check if this dialog could only opened once!
+    	 * If you call this dialog more than once, a new instance is created. If the dialog is closed, the shell is disposed, 
+    	 * but the event handler live further (as a kind of zombie event... boo!). Now, if one selects an entry by double click,
+    	 * *all* event handlers (even if they are the same kind of event!) are called and cause the text to be inserted multiple times.
+    	 * Therefore I've introduced a new condition "this.getShell() != null" because this checks if the (former) shell is dead.
+    	 * If anyone out there has another idea to suppress these events he is welcome! 
+    	 * 
+    	 */
+        if (this.getShell() != null && textListTable.getSelectedObject() != null) {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
             eventParams.put(TextListTable.SELECTED_TEXT_ID, Long.valueOf(textListTable.getSelectedObject().getId()));

@@ -2703,7 +2703,7 @@ public class DocumentEditor extends Editor<Document> {
                 break;
             case "TextModule":
                 Long textModuleId = (Long) event.getProperty(TextListTable.SELECTED_TEXT_ID);
-              TextModule text = textsDAO.findById(textModuleId);
+                TextModule text = textsDAO.findById(textModuleId);
                   
               // Insert the selected text in the message text (selected widget is set in the calling method)
               // look at addMessageButton
@@ -2721,7 +2721,7 @@ public class DocumentEditor extends Editor<Document> {
             default:
                 break;
             }
-            setDirty(true);
+            setDirty(isChanged);
         }
     }
 
