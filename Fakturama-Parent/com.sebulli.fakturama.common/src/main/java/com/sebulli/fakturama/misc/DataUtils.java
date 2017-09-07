@@ -348,26 +348,29 @@ public class DataUtils {
      * @return Converted value as String
      */
     private String doubleToFormattedValue(Double d, int scale) {
+        String s = "";
 
         // Calculate the floor cent value.
         // for negative values, use the ceil
-        Double floorValue;
-        double factor = Math.pow(10, scale);
-        if (d >= 0)
-            floorValue = Math.floor(d * factor + EPSILON) / factor;
-        else
-            floorValue = Math.ceil(d * factor - EPSILON) / factor;
-
-        // Format as "0.00"
-        NumberFormat numberFormat = NumberFormat.getNumberInstance();
-        numberFormat.setGroupingUsed(useThousandsSeparator);
-        numberFormat = new DecimalFormat((useThousandsSeparator ? ",###." : ".") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
-        String s = numberFormat.format(floorValue);
-
-        // Are there parts of a cent ? Add ".."
-        double epsilon = 2*Math.pow(10, -1*(scale+2));
-        if (Math.abs(d - floorValue) > epsilon) {
-            s += "..";
+        if(d != null) {
+        	Double floorValue;
+        	double factor = Math.pow(10, scale);
+	        if (d >= 0)
+	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	        else
+	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+        
+	        // Format as "0.00"
+	        NumberFormat numberFormat = NumberFormat.getNumberInstance();
+	        numberFormat.setGroupingUsed(useThousandsSeparator);
+	        numberFormat = new DecimalFormat((useThousandsSeparator ? ",##0." : "0.") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
+			s = numberFormat.format(floorValue);
+	
+	        // Are there parts of a cent ? Add ".."
+	        double epsilon = 2*Math.pow(10, -1*(scale+2));
+	        if (Math.abs(d - floorValue) > epsilon) {
+	            s += "..";
+	        }
         }
         return s;
     }
