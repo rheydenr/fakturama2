@@ -72,7 +72,7 @@ public class NumberRangeFormatPreferencePage extends FieldEditorPreferencePage i
     /**
      * 
      */
-    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT = "NUMBERRANGE_DEBITOR_FORMAT";
+    public static final String PREFERENCES_NUMBERRANGE_DEBITOR_FORMAT = "NUMBERRANGE_DEBTOR_FORMAT";
     public static final String PREFERENCES_NUMBERRANGE_CREDITOR_FORMAT = "NUMBERRANGE_CREDITOR_FORMAT";
     
     @Inject
