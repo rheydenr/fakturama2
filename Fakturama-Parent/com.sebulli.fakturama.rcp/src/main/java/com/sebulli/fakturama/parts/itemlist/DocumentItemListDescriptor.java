@@ -14,10 +14,8 @@
  
 package com.sebulli.fakturama.parts.itemlist;
 
-
-
 /**
- *
+ * This enum holds all information about the columns in the {@link DocumentItemListTable}.
  */
 public enum DocumentItemListDescriptor {
     // enums with empty property name have no counterparts in database

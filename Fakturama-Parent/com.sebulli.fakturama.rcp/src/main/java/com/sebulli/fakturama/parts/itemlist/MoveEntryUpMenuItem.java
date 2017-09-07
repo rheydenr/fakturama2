@@ -15,8 +15,6 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.CanExecute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -70,7 +68,7 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
         //            moveRowUp.setID(???);
         moveRowUp.setImage(Icon.COMMAND_UP.getImage(IconSize.DefaultIconSize));
         moveRowUp.setEnabled(true);
-//        moveRowUp.setAccelerator(SWT.ALT + SWT.ARROW_UP); // doesn't work at the moment 
+//        moveRowUp.setAccelerator(SWT.ALT | SWT.ARROW_UP); // doesn't work at the moment 
 
         moveRowUp.addSelectionListener(new SelectionAdapter() {
 

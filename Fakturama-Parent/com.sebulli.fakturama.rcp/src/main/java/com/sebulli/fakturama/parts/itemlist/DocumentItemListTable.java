@@ -40,6 +40,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -67,6 +68,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.cdatetime.CDateTimeCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -573,9 +575,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         // set default percentage width 
         tableDataLayer.setColumnPercentageSizing(true);
-        propertyNamesList.forEach(
-                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
-                		colIndex, descriptor.getDefaultWidth()));
+        
+        // DON'T DO THIS! This leads to an unpredictable and very annoying behavior of the items list columns (sometimes the columns are 
+        // sized to only a few pixels)
+//        propertyNamesList.forEach(
+//                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
+//                		colIndex, descriptor.getDefaultWidth()));
         
         // Custom selection configuration
         selectionLayer = gridListLayer.getSelectionLayer();
@@ -630,7 +635,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 if (event instanceof RowReorderEvent) {
                     RowReorderEvent evt = (RowReorderEvent) event;
                     evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
-                    int newIdx = 0;
+                    int newIdx = 0; // documentItemsListData??
                     for (Integer rowIndex : gridListLayer.getBodyLayerStack().getRowReorderLayer().getRowIndexOrder()) {
                         DocumentItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
                         objToRenumber.getDocumentItem().setPosNr(++newIdx);
@@ -966,7 +971,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, OPTIONAL_CELL_LABEL); 
             
             // for date cells (e.g., vesting period)
-            DateCellEditor dateCellEditor = new DateCellEditor(true);
+            CDateTimeCellEditor dateCellEditor = new CDateTimeCellEditor(false, CDT.DROP_DOWN | CDT.DATE_SHORT);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
                     dateCellEditor, 

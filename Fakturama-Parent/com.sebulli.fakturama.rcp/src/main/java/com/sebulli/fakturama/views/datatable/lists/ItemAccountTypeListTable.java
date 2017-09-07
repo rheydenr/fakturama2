@@ -229,8 +229,8 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
         
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 25);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 25);
+//        tableDataLayer.setColumnWidthPercentageByPosition(0, 25);
+//        tableDataLayer.setColumnWidthPercentageByPosition(1, 25);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
        

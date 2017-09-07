@@ -915,12 +915,12 @@ public class Placeholders {
      * @param percent
      * @return
      */
-    public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
+    private String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
 	    // String paymenttext = document.getPayment().getPaidText();
 	    String paymenttext = document.getAdditionalInfo().getPaymentText();
 	    if(paymenttext == null && document.getPayment() != null) {
 	    	// try to get the default payment text from payment entry, if one exists
-	    	paymenttext = document.getPaid() ? document.getPayment().getPaidText() : document.getPayment().getUnpaidText();
+	    	paymenttext = BooleanUtils.toBoolean(document.getPaid()) ? document.getPayment().getPaidText() : document.getPayment().getUnpaidText();
 	    }
 	    paymenttext = StringUtils.replaceEach(paymenttext, new String[]{"<PAID.VALUE>", "<PAID.DATE>", "<DUE.DAYS>"}, 
 	    		new String[]{

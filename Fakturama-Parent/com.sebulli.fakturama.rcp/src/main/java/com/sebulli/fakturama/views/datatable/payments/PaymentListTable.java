@@ -265,9 +265,9 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         gridLayer = new EntityGridListLayer<Payment>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        for (PaymentListDescriptor descriptor : PaymentListDescriptor.values()) {
-            tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
-        }
+//        for (PaymentListDescriptor descriptor : PaymentListDescriptor.values()) {
+//            tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth());
+//        }
 
         // now is the time where we can create the NatTable itself
 

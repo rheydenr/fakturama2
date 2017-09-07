@@ -249,8 +249,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
         
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+//        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+//        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
 
         //turn the auto configuration off as we want to add our header menu configuration
         NatTable natTable = new NatTable(searchAndTableComposite, gridListLayer.getGridLayer(), false);

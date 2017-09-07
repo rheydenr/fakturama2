@@ -231,9 +231,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
      * @param natTable the {@link NatTable} to style
      */
     private void addCustomStyling(NatTable natTable) {
-        // NOTE: Getting the colors and fonts from the GUIHelper ensures that
-        // they are disposed properly (required by SWT)
-        // Setup selection styling
         DefaultSelectionStyleConfiguration selectionStyle = createDefaultSelectionStyle();
 
         // Add all style configurations to NatTable
@@ -301,6 +298,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         }
     }
 	
+    /**
+     * Creates the concrete list table for a given view. 
+     * 
+     * @param searchAndTableComposite container for the {@link NatTable}
+     * @return {@link NatTable} which displays some items
+     */
 	abstract protected NatTable createListTable(Composite searchAndTableComposite);
 	
 	/**
