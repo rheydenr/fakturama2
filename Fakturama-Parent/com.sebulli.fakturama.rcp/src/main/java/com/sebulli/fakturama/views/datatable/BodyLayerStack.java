@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
@@ -31,7 +32,7 @@ import ca.odell.glazedlists.TransformedList;
  */
 public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
 
-    private GlazedListsDataProvider<T> bodyDataProvider;
+    private ListDataProvider<T> bodyDataProvider;
     private DataLayer bodyDataLayer;
     private final SelectionLayer selectionLayer;
     private SortedList<T> sortedList;
@@ -60,7 +61,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         //will be set by configuration
         this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
-        this.bodyDataProvider = new GlazedListsDataProvider<T>(sortedList, columnPropertyAccessor);
+        this.bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(bodyDataProvider);
 
 //        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
@@ -101,7 +102,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         return selectionLayer;
     }
 
-    protected GlazedListsDataProvider<T> getBodyDataProvider() {
+    protected ListDataProvider<T> getBodyDataProvider() {
         return bodyDataProvider;
     }
 

@@ -40,6 +40,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -67,6 +68,7 @@ import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
 import org.eclipse.nebula.widgets.nattable.edit.gui.ICellEditDialog;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
+import org.eclipse.nebula.widgets.nattable.extension.nebula.cdatetime.CDateTimeCellEditor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -969,7 +971,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, OPTIONAL_CELL_LABEL); 
             
             // for date cells (e.g., vesting period)
-            DateCellEditor dateCellEditor = new DateCellEditor(true);
+            CDateTimeCellEditor dateCellEditor = new CDateTimeCellEditor(false, CDT.DROP_DOWN | CDT.DATE_SHORT);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITOR, 
                     dateCellEditor, 
