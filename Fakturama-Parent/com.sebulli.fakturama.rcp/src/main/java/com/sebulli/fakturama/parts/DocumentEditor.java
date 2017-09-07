@@ -759,7 +759,8 @@ public class DocumentEditor extends Editor<Document> {
 			}
             document.setBillingType(billingType);
             // a new document is always dirty...
-            setDirty(true);
+            // no, this is false!
+//            setDirty(true);
 
 			// Copy the entry "message", or reset it to ""
 			if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {

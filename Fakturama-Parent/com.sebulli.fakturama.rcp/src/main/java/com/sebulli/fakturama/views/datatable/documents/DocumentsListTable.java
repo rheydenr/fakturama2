@@ -454,8 +454,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         gridLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        Arrays.stream(DocumentListDescriptor.values()).forEach(
-                descriptor -> tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth()));
+//        Arrays.stream(DocumentListDescriptor.values()).forEach(
+//                descriptor -> tableDataLayer.setColumnWidthPercentageByPosition(descriptor.getPosition(), descriptor.getDefaultWidth()));
 
         // now is the time where we can create the NatTable itself
 

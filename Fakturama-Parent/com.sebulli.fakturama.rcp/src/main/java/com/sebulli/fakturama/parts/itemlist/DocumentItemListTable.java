@@ -573,9 +573,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         // set default percentage width 
         tableDataLayer.setColumnPercentageSizing(true);
-        propertyNamesList.forEach(
-                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
-                		colIndex, descriptor.getDefaultWidth()));
+        
+        // DON'T DO THIS! This leads to an unpredictable and very annoying behavior of the items list columns (sometimes the columns are 
+        // sized to only a few pixels)
+//        propertyNamesList.forEach(
+//                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
+//                		colIndex, descriptor.getDefaultWidth()));
         
         // Custom selection configuration
         selectionLayer = gridListLayer.getSelectionLayer();
@@ -630,7 +633,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 if (event instanceof RowReorderEvent) {
                     RowReorderEvent evt = (RowReorderEvent) event;
                     evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
-                    int newIdx = 0;
+                    int newIdx = 0; // documentItemsListData??
                     for (Integer rowIndex : gridListLayer.getBodyLayerStack().getRowReorderLayer().getRowIndexOrder()) {
                         DocumentItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
                         objToRenumber.getDocumentItem().setPosNr(++newIdx);

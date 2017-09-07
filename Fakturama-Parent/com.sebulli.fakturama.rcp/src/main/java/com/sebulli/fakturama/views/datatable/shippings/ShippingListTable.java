@@ -207,10 +207,10 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         gridLayer = new EntityGridListLayer<Shipping>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
+//        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+//        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+//        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
+//        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently. In this case render as an image.
