@@ -830,6 +830,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     	@SuppressWarnings("unchecked")
 		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection();
         if(selectedEntries != null && selectedEntries.size() > 0) {
+        	
+        	// at first, close an open cell editor, if any
+        	if(natTable.getActiveCellEditor() != null) {
+        		natTable.getActiveCellEditor().close();
+        	}
+        	
         	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
  //           if(isRemoved) {
             	renumberItems();
