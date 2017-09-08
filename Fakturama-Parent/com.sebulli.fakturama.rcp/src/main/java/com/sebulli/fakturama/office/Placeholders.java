@@ -911,11 +911,14 @@ public class Placeholders {
 	}
 
 	/**
-     * @param document
-     * @param percent
-     * @return
+	 * Creates the {@link Payment} text according to the document infos. 
+	 * 
+     * @param document the {@link Document} which contains the {@link Payment} information
+     * @param documentSummary the {@link DocumentSummary} for some additional information
+     * @param percent the discount, if any
+     * @return fully formatted {@link Payment} text
      */
-    private String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
+    public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
 	    // String paymenttext = document.getPayment().getPaidText();
 	    String paymenttext = document.getAdditionalInfo().getPaymentText();
 	    if(paymenttext == null && document.getPayment() != null) {

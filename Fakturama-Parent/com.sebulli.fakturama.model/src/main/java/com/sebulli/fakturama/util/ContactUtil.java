@@ -87,7 +87,7 @@ public class ContactUtil {
         if(contact.getCustomerNumber() == null && contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
             String manualAddress = contact.getAddress().getManualAddress();
             String[] splitted = manualAddress.split("\\n");
-            line += splitted[0];
+            line += StringUtils.chomp(splitted[0]);
         } else {
             line += getFirstAndLastName(contact);
         }

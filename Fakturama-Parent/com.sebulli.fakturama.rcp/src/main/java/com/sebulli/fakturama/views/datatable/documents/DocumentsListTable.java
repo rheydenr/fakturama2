@@ -28,12 +28,10 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -317,8 +315,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                         if (selectedObject != null && topicTreeViewer != null) {
                             if(selectedObject.getTransactionId() != null) {
                                 topicTreeViewer.setTransaction(selectedObject.getTransactionId());
+                            } else {
+                            	// reset transaction id
+                            	topicTreeViewer.setTransaction(Long.valueOf(-1));
                             }
-                            topicTreeViewer.setContact(selectedObject.getAddressFirstLine(), selectedObject.getBillingContact());
+                            topicTreeViewer.setContactFromDocument(selectedObject);
                             changePopupEntries(null);
                         }
                     }

@@ -431,7 +431,7 @@ public class DocumentEditor extends Editor<Document> {
 			if (billingAddress.isEmpty()) {
 				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-			if (addressId.getCustomerNumber() != null) {
+			if (addressId != null && addressId.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
     			document.setDeliveryContact(addressId);
 			} else {
@@ -754,6 +754,7 @@ public class DocumentEditor extends Editor<Document> {
 			// if this document should be a copy of an existing document, create it
 			if (duplicated) {
 				document = copyFromSourceDocument(parentDoc, documentType);
+				setDirty(true);
 			} else {
 				// create a blank new document
 				document = DocumentTypeUtil.createDocumentByType(documentType);
@@ -937,7 +938,13 @@ public class DocumentEditor extends Editor<Document> {
 		// for delivery documents we have to switch between delivery address and billing address
 		retval.setBillingContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
 		retval.setDeliveryContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
-		retval.setAddressFirstLine(pDocumentType == DocumentType.DELIVERY ? contactUtil.getNameWithCompany(parentDoc.getDeliveryContact()) : parentDoc.getAddressFirstLine());
+		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
+		// addressFirstLine instead
+		retval.setAddressFirstLine(pDocumentType == DocumentType.DELIVERY 
+				? parentDoc.getDeliveryContact() != null 
+					? contactUtil.getNameWithCompany(parentDoc.getDeliveryContact()) 
+					: parentDoc.getAddressFirstLine()
+				: parentDoc.getAddressFirstLine());
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setConsultant(parentDoc.getConsultant());

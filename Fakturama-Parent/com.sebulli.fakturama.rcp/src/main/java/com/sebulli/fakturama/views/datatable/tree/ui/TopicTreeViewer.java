@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Tree;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -298,8 +299,12 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		transactionItem.setTransactionId(transactionId);
 
 		// Set the name
-		//T: Topic Tree Viewer transaction title
-		transactionItem.setName(msg.topictreeLabelThistransaction);
+		if(transactionId > 0) {
+			//T: Topic Tree Viewer transaction title
+			transactionItem.setName(msg.topictreeLabelThistransaction);
+		} else {
+			transactionItem.setName(TreeObjectType.TRANSACTIONS_ROOTNODE.getDefaultName());
+		}
 		
         internalTreeViewer.refresh();
 	}
@@ -401,9 +406,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param contactId
 	 *            ID of the contact
 	 */
-	public void setContact(String name, Contact contact) {
-		if (contactItem == null || contact == null)
+	public void setContactFromDocument(Document selectedDocument) {
+		if (contactItem == null || selectedDocument == null)
 			return;
+		Contact contact = selectedDocument.getBillingContact();
+		String name = selectedDocument.getAddressFirstLine(); 
 		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);
 		internalTreeViewer.refresh();
