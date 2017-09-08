@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultGridLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.grid.layer.config.DefaultRowStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -84,7 +86,17 @@ public class EntityGridListLayer<T extends IEntity> {
 
         // 5. build the grid layer
         gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-        gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer));
+        // change the alternating row configuration so it does not change on row
+        // reordering or scrolling, see Bug #521990
+        gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer) {
+
+            @Override
+            protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
+                addConfiguration(new DefaultRowStyleConfiguration());
+            }
+
+        });
+
         
         setViewportLayer(new ViewportLayer(bodyLayerStack.getSelectionLayer()));
         // as the selection mouse bindings are registered for the region label

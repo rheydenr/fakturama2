@@ -8,6 +8,7 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
@@ -72,6 +73,9 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
         // this is crucial for using custom values display
         glazedListsEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
         rowReorderLayer = new RowReorderLayer(glazedListsEventLayer);
+        // this is for the correct coloring of alternating rows
+        rowReorderLayer.setConfigLabelAccumulator(new AlternatingRowConfigLabelAccumulator());
+        
         this.selectionLayer = new SelectionLayer(rowReorderLayer);
 
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
