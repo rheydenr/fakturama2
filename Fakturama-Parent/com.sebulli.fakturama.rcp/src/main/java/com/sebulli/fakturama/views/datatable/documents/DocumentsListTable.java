@@ -525,8 +525,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
-	        // the tree is static, so here we don't have to update it (only re-read the filter)
 	        treeFilteredIssues.setMatcher(currentFilter);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(documentsDAO.getCategoryStrings()), false);
 	        sync.syncExec(() -> top.setRedraw(true));
     	}
     }

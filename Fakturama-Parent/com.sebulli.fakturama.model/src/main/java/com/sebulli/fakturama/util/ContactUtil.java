@@ -195,12 +195,18 @@ public class ContactUtil {
         return 0;
     }
     
+    /**
+     * Get the address as one String.
+     * 
+	 * @param contact the {@link Contact} to use
+	 * @return Complete address
+     */
 	public String getAddressAsString(Contact contact) {
 		return getAddressAsString(contact, "\n");
 	}
 
     /**
-	 * Get the address. Use a specified separator.
+	 * Get the address as one String. Use a specified separator.
 	 *
 	 * @param contact the {@link Contact} to use
 	 * @param separator the separator
