@@ -109,6 +109,7 @@ public enum Icon {
 	TREE_DOT,
 
 	// icons (32x32) for toolbar
+	ICON_APP,
 	ICON_CALCULATOR,
 	ICON_CONFIRMATION,
 	ICON_CONFIRMATION_NEW,
@@ -145,6 +146,7 @@ public enum Icon {
 	ICON_WWW,
 
 	// big icons (48x48, for use in document editor)
+	BIGICON_APP,
 	BIGICON_CONFIRMATION,
 	BIGICON_CREDIT,
 	BIGICON_DELIVERY,

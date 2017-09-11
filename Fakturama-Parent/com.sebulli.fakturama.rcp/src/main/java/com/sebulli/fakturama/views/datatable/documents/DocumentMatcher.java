@@ -72,7 +72,7 @@ public class DocumentMatcher implements Matcher<Document> {
             } else {
                 DocumentType docType = DocumentType.findDocumentTypeByClass(item.getClass());
                 if (docType != null) {
-                        String fullCategoryName = getCategory(item); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
+                        String fullCategoryName = getCategory(item, docType); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
                         if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {
                             found = true;
                         }
@@ -82,10 +82,9 @@ public class DocumentMatcher implements Matcher<Document> {
         return isRootNode || found;
     }
     
-    public String getCategory(Document item) {
+    private String getCategory(Document item, DocumentType documentType) {
         try {
-            DocumentType documentType = DocumentType.findDocumentTypeByClass(item.getClass());
-            if (documentType != null) {
+            if (item != null && documentType != null) {
                 String category = "/" + msg.getMessageFromKey(DocumentType.getPluralString(documentType));
 
                 // use the document type to generate the category string ..
@@ -101,7 +100,7 @@ public class DocumentMatcher implements Matcher<Document> {
                     break;
                 case DELIVERY:
                     // .. the state of the delivery document ..
-                    if (item.getSourceDocument() != null)
+                    if (item.getSourceDocument() != null && item.getSourceDocument().getBillingType().isINVOICE())
                         category += "/" + msg.documentDeliveryStateHasinvoice;
                     else
                         category += "/" + msg.documentDeliveryStateHasnoinvoice;

@@ -332,7 +332,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(PaymentEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(paymentListData, GlazedLists.eventList(paymentsDAO.findAll(true)), false);

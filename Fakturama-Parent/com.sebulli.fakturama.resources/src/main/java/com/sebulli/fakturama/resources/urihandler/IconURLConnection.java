@@ -41,8 +41,7 @@ public class IconURLConnection extends URLConnection {
 			if(iconName.startsWith("ICON_")) {
 				// ... except it starts with ICON_, because then it's a toolbar icon
 				size = IconSize.ToolbarIconSize;
-			}
-			if(iconName.startsWith("APP_")) {
+			} else if(iconName.startsWith("APP_")) {
 				size = IconSize.AppIconSize;				
 			}
 			InputStream is = selectedIcon

@@ -131,7 +131,6 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.converter.Double2SpinnerUpdateStrategy;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
-import com.sebulli.fakturama.parts.itemlist.DocumentItemListDescriptor;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.parts.itemlist.ItemListBuilder;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
@@ -420,10 +419,10 @@ public class DocumentEditor extends Editor<Document> {
 				addressModified = true;
 			}
             if(document.getDeliveryContact() == null) {
-            	Debitor contact = modelFactory.createDebitor();
+            	addressId = modelFactory.createDebitor();
             	Address address = modelFactory.createAddress();
-            	contact.setAddress(address);
-            	document.setDeliveryContact(contact);
+            	addressId.setAddress(address);
+            	document.setDeliveryContact(addressId);
             }
 			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 
@@ -439,7 +438,7 @@ public class DocumentEditor extends Editor<Document> {
 			     * If no addressId was given (no contact selected) then we use
 			     * the text field content for the manual address.
 			     */
-    			document.getBillingContact().getAddress().setManualAddress(billingAddress);
+    			document.getDeliveryContact().getAddress().setManualAddress(billingAddress);
 			}
 		}
 		else {
@@ -452,22 +451,22 @@ public class DocumentEditor extends Editor<Document> {
 				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
 			
-			/* if the address was modified but addressId has a customer number then we have
+		   /* if the address was modified but addressId has a customer number then we have
 			* a manually changed contact which has to created as new contact (else we would
 			* update the existing contact which isn't wanted in most cases).
 			* But wait... the Id of the old entry and the new entry have to be the same.
 			* Else it could be a newly selected contact from the contact list.
 			*/
 			// TODO check FAK-276 if it is working! 
-			if(addressModified && addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
-			|| addressModified && addressId.getCustomerNumber() == null) {
+			if(addressModified && (addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
+			       || addressId.getCustomerNumber() == null)) {
 				// before we change an address we have to check for delivery addresses and save it...
 				if(document.getDeliveryContact() == null && document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) {
 					document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
 				}
 			    addressId = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
-			    address.setManualAddress(txtAddress.getText());
+			    address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 			    addressId.setAddress(address);
 			    try {
                     addressId = contactDAO.save(addressId);
@@ -860,7 +859,9 @@ public class DocumentEditor extends Editor<Document> {
 		// These variables contain settings that are not in
 		// visible SWT widgets.
 //		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
-		addressId = document.getBillingContact();
+		
+		// the address is either the delivery address (if the document is a delivery note) or the billing address
+		addressId = (document.getBillingType() == BillingType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
@@ -1018,7 +1019,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		// Get the sign of this document ( + or -)
-		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+//		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
 		// Get the discount value from the control element
 		Double rebate = Double.valueOf(0.0);
@@ -1052,11 +1053,6 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-//        documentSummary = documentSummaryCalculator.calculate(null, docItems,
-//                document.getShipping() != null ? document.getShipping().getShippingValue() : document.getShippingValue()/* * sign*/,
-//                document.getShipping() != null ? document.getShipping().getShippingVat() : shipping.getShippingVat(), 
-//                document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
-//                discount, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         if(document.getShipping() != null) {
 			documentSummary = documentSummaryCalculator.calculate(null, docItems,
 	                document.getShipping().getShippingValue(),
