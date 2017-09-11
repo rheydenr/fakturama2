@@ -283,7 +283,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<Voucher, Vouc
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ReceiptVoucherEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(receiptVoucherListData, GlazedLists.eventList(receiptVouchersDAO.findAll(true)), false);

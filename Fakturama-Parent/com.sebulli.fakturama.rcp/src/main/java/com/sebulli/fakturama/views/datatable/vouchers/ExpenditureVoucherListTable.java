@@ -289,7 +289,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
      */
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(ExpenditureVoucherEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(expenditureListData, GlazedLists.eventList(expendituresDAO.findAll(true)), false);

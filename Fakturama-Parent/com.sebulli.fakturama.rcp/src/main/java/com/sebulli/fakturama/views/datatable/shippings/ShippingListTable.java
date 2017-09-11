@@ -314,7 +314,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     @Inject
     @Optional
     public void handleRefreshEvent(@EventTopic(ShippingEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(shippingListData, GlazedLists.eventList(shippingsDAO.findAll(true)), false);
