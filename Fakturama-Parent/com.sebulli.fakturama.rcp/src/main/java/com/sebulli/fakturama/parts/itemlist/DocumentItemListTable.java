@@ -469,7 +469,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     Double discountValue = ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0));
                     // Convert it to negative values
                     if (discountValue > 0) {
-                        discountValue = -1 * discountValue;
+                        discountValue *= -1;
                     }
                     rowObject.getDocumentItem().setItemRebate(discountValue);
                     break;

@@ -17,7 +17,6 @@ package com.sebulli.fakturama.parts.converter;
 import java.util.TreeSet;
 
 import org.eclipse.core.databinding.conversion.Converter;
-import org.eclipse.core.databinding.conversion.IConverter;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;

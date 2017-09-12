@@ -10,8 +10,6 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.DocumentSummary;

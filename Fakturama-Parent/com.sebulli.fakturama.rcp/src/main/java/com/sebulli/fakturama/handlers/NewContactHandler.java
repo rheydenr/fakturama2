@@ -14,13 +14,11 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -35,8 +33,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.ContactType;
-import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.CreditorEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.resources.core.Icon;

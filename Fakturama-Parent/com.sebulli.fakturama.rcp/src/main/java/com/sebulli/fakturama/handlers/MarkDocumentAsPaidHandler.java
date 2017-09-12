@@ -37,7 +37,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;

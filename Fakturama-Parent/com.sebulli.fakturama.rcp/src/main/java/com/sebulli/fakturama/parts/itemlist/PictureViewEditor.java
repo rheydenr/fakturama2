@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.nebula.widgets.nattable.edit.editor.AbstractCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
