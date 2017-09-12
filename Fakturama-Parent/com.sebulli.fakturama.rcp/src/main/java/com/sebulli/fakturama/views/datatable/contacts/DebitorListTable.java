@@ -43,6 +43,12 @@ public class DebitorListTable extends ContactListTable<Debitor> {
         return ID;
     }
     
+    @Override
+    protected String getEditorTypeId() {
+        return DebitorEditor.EDITOR_ID;
+    }
+    
+    
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
     	super.handleRefreshEvent(message);

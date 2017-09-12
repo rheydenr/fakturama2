@@ -326,11 +326,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     protected String getEditorId() {
         return DebitorEditor.ID;
     }
-    
-    @Override
-    protected String getEditorTypeId() {
-        return DebitorEditor.class.getSimpleName();
-    }
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#createCategoryTreeViewer(org.eclipse.swt.widgets.Composite)

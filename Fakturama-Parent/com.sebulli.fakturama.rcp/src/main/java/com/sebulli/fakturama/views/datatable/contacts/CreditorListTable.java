@@ -51,6 +51,11 @@ public class CreditorListTable extends ContactListTable<Creditor> {
         return CreditorEditor.ID;
     }
     
+    @Override
+    protected String getEditorTypeId() {
+        return CreditorEditor.EDITOR_ID;
+    }
+
     @Inject @Optional
     public void handleRefreshEvent(@EventTopic(CreditorEditor.EDITOR_ID) String message) {
     	super.handleRefreshEvent(message);
