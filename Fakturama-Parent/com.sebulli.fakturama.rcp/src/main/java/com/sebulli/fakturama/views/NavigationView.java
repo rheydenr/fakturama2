@@ -162,7 +162,7 @@ public class NavigationView {
         
         parameters = new HashMap<>();
         parameters.put(CallEditor.PARAM_EDITOR_TYPE, DebitorEditor.ID);
-        addAction(group3, Icon.COMMAND_CONTACT, "main.menu.new.contact", CommandIds.CMD_CALL_EDITOR /*CommandIds.CMD_NEW_CONTACT*/, parameters);
+        addAction(group3, Icon.COMMAND_CONTACT, "main.menu.new.contact", CommandIds.CMD_NEW_CONTACT, parameters);
 
         // Create the 4th expand bar "export"
         /*
