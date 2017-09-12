@@ -188,7 +188,7 @@ public class Price {
             this.vatPercent = vatPercent;
         }
 		
-		this.quantity = quantity;
+		this.quantity = quantity != null ? quantity : Double.valueOf(0);
 		this.unitPrice = unitPrice;
 		this.discount = discount;
 
@@ -203,6 +203,7 @@ public class Price {
 	 *            <code>true</code> if price is a gross value
 	 */
 	private void calculate(boolean asGross) {
+		
          CurrencyUnit currencyUnit = getDataUtils().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
          MonetaryRounding rounding = getDataUtils().getRounding(currencyUnit);  
 

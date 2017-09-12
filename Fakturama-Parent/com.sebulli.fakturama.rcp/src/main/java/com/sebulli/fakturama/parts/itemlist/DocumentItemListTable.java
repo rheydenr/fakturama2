@@ -32,6 +32,8 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -56,13 +58,11 @@ import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBooleanDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditBindings;
 import org.eclipse.nebula.widgets.nattable.edit.config.DefaultEditConfiguration;
 import org.eclipse.nebula.widgets.nattable.edit.editor.CheckBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
-import org.eclipse.nebula.widgets.nattable.edit.editor.DateCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.gui.CellEditDialog;
@@ -127,6 +127,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
+import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.ProductUtil;
@@ -426,7 +427,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case QUANTITY:
                     Double oldQuanity = rowObject.getDocumentItem().getQuantity();
                     // Set the quantity
-                    rowObject.getDocumentItem().setQuantity((Double) newValue);
+                    rowObject.getDocumentItem().setQuantity(ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0)));
                     Product product = rowObject.getDocumentItem().getProduct();
 
                     // If the item is coupled with a product, get the graduated price
@@ -465,7 +466,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     calculate = false; // no recalculation needed
                     break;
                 case DISCOUNT:
-                    Double discountValue = (Double) newValue;
+                    Double discountValue = ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0));
                     // Convert it to negative values
                     if (discountValue > 0) {
                         discountValue = -1 * discountValue;
@@ -501,7 +502,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     }
                     break;
                 case UNITPRICE:
-                    String priceString = ((String) newValue).toLowerCase();
+                    String priceString = StringUtils.defaultString((String) newValue, "0").toLowerCase();
                     boolean useGross = container.getUseGross();
                     
                     // If the price is tagged with an "Net" or "Gross", force this
@@ -997,7 +998,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new PercentageDisplayConverter(),
+                    new DoublePercentageDisplayConverter(),
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL);
             configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 

@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.OOCalcExporter;
 import org.odftoolkit.odfdom.type.Color;
@@ -59,6 +60,12 @@ public class AddressListExport extends OOCalcExporter {
 
 		// Get all undeleted contacts
 		List<Contact> contacts = contactsDAO.findAll();
+		
+		// if no data, return immediately
+		if(contacts.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
 
 		// Counter for the current row and columns in the Calc document
 		int row = 0;

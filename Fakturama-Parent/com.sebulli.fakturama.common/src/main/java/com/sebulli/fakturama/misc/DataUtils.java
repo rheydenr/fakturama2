@@ -228,7 +228,7 @@ public class DataUtils {
      */
     // TODO Check if it can be replaced by NumberUtils.createDouble((String) newValue);
     public Double StringToDouble(String s) {
-        Double d = 0.0;
+        Double d = Double.valueOf(0.0);
         
         // Remove leading and trailing spaces
         s = s.trim();

@@ -24,8 +24,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -107,10 +106,7 @@ public class AccountsExportOptionPage extends WizardPage {
 		comboAccount.setToolTipText(labelDescription.getToolTipText());
 		comboAccount.setText("");
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboAccount);
-		comboAccount.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		comboAccount.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				boolean complete = me.canFlipToNextPage();
 				if (complete) {
 					if (me.getNextPage() instanceof AccountSettingsPage) {
@@ -124,8 +120,7 @@ public class AccountsExportOptionPage extends WizardPage {
 				}
 					
 				me.setPageComplete(complete);
-			}
-		});
+		}));
 		
 		// Collect all account entries
 		AccountSummaryCalculator accountSummary = ContextInjectionFactory.make(AccountSummaryCalculator.class, ctx);

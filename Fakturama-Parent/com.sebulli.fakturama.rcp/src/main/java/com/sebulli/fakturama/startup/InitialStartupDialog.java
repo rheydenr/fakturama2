@@ -32,6 +32,7 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -239,12 +240,9 @@ public class InitialStartupDialog extends TitleAreaDialog {
         btnUseDefaultDb.setSelection(true);
         btnUseDefaultDb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
         btnUseDefaultDb.setToolTipText(msg.startFirstSelectDbUsedefaultTooltip);
-        btnUseDefaultDb.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
+        btnUseDefaultDb.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
                 dbSettings.setVisible(!((Button)e.getSource()).getSelection());
-            }
-        });
+        }));
 		
 		dbSettings = new Composite(container, SWT.NONE);
         GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(dbSettings);

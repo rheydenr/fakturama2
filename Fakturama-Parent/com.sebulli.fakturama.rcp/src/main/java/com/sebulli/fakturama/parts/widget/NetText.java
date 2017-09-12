@@ -78,13 +78,10 @@ public class NetText {
 
 //		// Set the text of the NetText, based on the GrossText's value.
 //		// Do this, if the text widget is selected (If "ENTER" is pressed).
-//		netText.getControl().addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
+//		netText.getControl().addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 //			    System.out.println("INFO: " + netText.getValue() + "; " + netValue);
 ////				netText.setValue(netValue);
-//			}
-//		});
+//		}));
 
 		// Set the text of the GrossText, based on the NetText's value
 		netText.getControl().addModifyListener(new ModifyListener() {

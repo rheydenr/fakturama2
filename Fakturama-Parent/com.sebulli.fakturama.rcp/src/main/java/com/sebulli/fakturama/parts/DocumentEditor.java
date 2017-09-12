@@ -70,7 +70,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -115,7 +114,6 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactType;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -788,7 +786,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			// If it's a credit or a dunning, set it to unpaid
-			if ( documentType == DocumentType.CREDIT|| documentType == DocumentType.DUNNING) {
+			if ( documentType == DocumentType.CREDIT || documentType == DocumentType.DUNNING) {
 				document.setPaid(false);
 			}
 			
@@ -861,7 +859,7 @@ public class DocumentEditor extends Editor<Document> {
 //		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
 		
 		// the address is either the delivery address (if the document is a delivery note) or the billing address
-		addressId = (document.getBillingType() == BillingType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
+		addressId = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
@@ -873,7 +871,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 //		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
 		if (dunningLevel <= 0) {
-            if (document.getBillingType() == BillingType.DUNNING) {
+            if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
             } else {
                 dunningLevel = Integer.valueOf(1);
@@ -891,7 +889,7 @@ public class DocumentEditor extends Editor<Document> {
 		 * 2.2 document has a delivery contact ==> use that as delivery contact 
 		 * 2.3 document has no delivery contact ==> check if billing contact has an alternate contact and use use billing contact as delivery contact
 		 */
-		if(document.getBillingType() == BillingType.DELIVERY) {
+		if(document.getBillingType().isDELIVERY()) {
 	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
 					? document.getBillingContact() : document.getDeliveryContact());
@@ -937,8 +935,8 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setDeposit(parentDoc.getDeposit());
 		
 		// for delivery documents we have to switch between delivery address and billing address
-		retval.setBillingContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
-		retval.setDeliveryContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
+		retval.setBillingContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
+		retval.setDeliveryContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
 		retval.setAddressFirstLine(pDocumentType == DocumentType.DELIVERY 
@@ -1027,7 +1025,7 @@ public class DocumentEditor extends Editor<Document> {
 	        // Convert it to negative values
 	        rebate = (Double)itemsDiscount.getValue();
 			if (rebate > 0) {
-				rebate *= -1;
+				rebate *= Integer.valueOf(-1);
 				itemsDiscount.setValue(rebate);
 	        }
 		}
@@ -1072,11 +1070,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the items sum
 		if (itemsSum != null) {
-			if (useGross) {
-				itemsSum.setValue(documentSummary.getItemsGross());
-			} else {
-				itemsSum.setValue(documentSummary.getItemsNet());
-			}
+			itemsSum.setValue(useGross ? documentSummary.getItemsGross() : documentSummary.getItemsNet());
 		}
 
 		// Set the shipping
@@ -1084,11 +1078,7 @@ public class DocumentEditor extends Editor<Document> {
             // shippingValue is the only field which could be modified manually *and* per calculation
             // therefore we have to disable the ModifyListener at first.
             shippingValue.getControl().setData(CALCULATING_STATE, true);
-            if (useGross) {
-                shippingValue.setValue(documentSummary.getShippingGross());
-            } else {
-                shippingValue.setValue(documentSummary.getShippingNet());
-            }
+            shippingValue.setValue(useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet());
             // don't set it to "false" because the condition in ModifyListener checks for a null value!
             shippingValue.getControl().setData(CALCULATING_STATE, null);
         }
@@ -1112,12 +1102,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * 		The total text
 	 */
 	private String getTotalText () {
-		if (useGross) {
-			return msg.editorDocumentTotalgross;
-		} else {
-			//T: Document Editor - Label Total net 
-			return msg.editorDocumentTotalnet;
-		}
+		return useGross ? msg.editorDocumentTotalgross : msg.editorDocumentTotalnet;
 	}
 	
 	/**
@@ -1131,16 +1116,16 @@ public class DocumentEditor extends Editor<Document> {
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
             useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
         } else {
-            useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
+            useGross = netgross == DocumentSummary.ROUND_GROSS_VALUES;
         }
 		
 		// Use the customers settings instead, if they are set
 		if (addressId != null && address_changed) {
 			// useNetGross can be null (from database!)
-			if (addressId.getUseNetGross() != null && addressId.getUseNetGross() == 1) {
+			if (addressId.getUseNetGross() != null && addressId.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-			} else if (addressId.getUseNetGross() == null || addressId.getUseNetGross() == 2) {
+			} else if (addressId.getUseNetGross() == null || addressId.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1292,16 +1277,14 @@ public class DocumentEditor extends Editor<Document> {
 
 			// If the spinner's value changes, add the due days to the
 			// day of today.
-			spDueDays.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+			spDueDays.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				    Calendar calendar = Calendar.getInstance();
 				    calendar.setTime(dtDate.getSelection());
 //					duedays = spDueDays.getSelection();
 					calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
 					dtIssueDate.setSelection(calendar.getTime());
 					setDirty(true);
-				}
-			});
+			}));
 			
 			// value is set by dueDays variable, not directly by binding
 			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
@@ -1324,8 +1307,7 @@ public class DocumentEditor extends Editor<Document> {
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
 			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
 			GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
-			dtIssueDate.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+			dtIssueDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 					// Calculate the difference between the date of the
 					// issue date widget and the documents date,
 					// calculate is in "days" and set the due day spinner
@@ -1336,8 +1318,7 @@ public class DocumentEditor extends Editor<Document> {
 					int days = (int) (difference / (1000 * 60 * 60 * 24));
 //					duedays = days;
 					spDueDays.setSelection(days);
-				}
-			});
+			}));
 
 			updateIssueDate();
 		}
@@ -1541,7 +1522,7 @@ public class DocumentEditor extends Editor<Document> {
 	 *            parent control
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
-	public void createPartControl(Composite parent) {
+	private void createPartControl(Composite parent) {
 		// Printing an document from the document editor means:
 		// Start OpenOffice in the background and export the document as
 		// an OpenOffice document.
@@ -1617,13 +1598,11 @@ public class DocumentEditor extends Editor<Document> {
 		dtDate = new CDateTime(nrDateNetGrossComposite, CDT.BORDER | CDT.DROP_DOWN);
 		dtDate.setToolTipText(labelDate.getToolTipText());
 		dtDate.setFormat(CDT.DATE_MEDIUM);
-		dtDate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		dtDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				// If the date is modified, also modify the issue date.
 				// (Let the due days constant).
 			    updateIssueDate();
-			}
-		});
+		}));
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
 		
 		// Set the dtDate widget to the documents date
@@ -2274,15 +2253,12 @@ public class DocumentEditor extends Editor<Document> {
         GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(paidContainer);
 
         // If the paid check box is selected ...
-        bPaid.addSelectionListener(new SelectionAdapter() {
-
-        	// ... Recreate the paid composite
-        	public void widgetSelected(SelectionEvent e) {
+        bPaid.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
+	        	// ... Recreate the paid composite
         		createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
         		// remove the grayed state
         		bPaid.setGrayed(false);
-        	}
-        });
+        }));
 
         // Combo to select the payment
         comboPayment = new Combo(paidContainer, SWT.BORDER | SWT.READ_ONLY);
@@ -2732,7 +2708,7 @@ public class DocumentEditor extends Editor<Document> {
 	/**
 	 * @param selectedProducts
 	 */
-	public void addItemsToItemList(Collection<Product> selectedProducts) {
+    private void addItemsToItemList(Collection<Product> selectedProducts) {
 		for (Product product : selectedProducts) {
 		    DocumentItem newItem = modelFactory.createDocumentItem();
 		    newItem.setName(product.getName());
@@ -2790,26 +2766,48 @@ public class DocumentEditor extends Editor<Document> {
         catch (NotDefinedException e1) {
             log.error(e1, "Unknown command or creation of a parameterized command failed!");
         }
-        item.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
+        item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
             	// at first try to save if document wasn't saved
             	if(getMDirtyablePart().isDirty()) {
             		doSave(null);
             	}
             	
-                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
-                ParameterizedCommand pCmdCopy = cmdService.createCommand(commandId, params);
-                if (handlerService.canExecute(pCmdCopy)) {
-                    handlerService.executeHandler(pCmdCopy);
-                } else {
-                    MessageDialog.openInformation(toolBar.getShell(),
-                            msg.dialogMessageboxTitleError, "current action can't be executed!");
-                }
-            }
-        });
+            	BillingType targetType = BillingType.get((String) params.get(CallEditor.PARAM_CATEGORY));
+            	if(!copyExists(document, targetType)) {            	
+	                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+	                ParameterizedCommand pCmdCopy = cmdService.createCommand(commandId, params);
+	                if (handlerService.canExecute(pCmdCopy)) {
+	                    handlerService.executeHandler(pCmdCopy);
+	                } else {
+	                    MessageDialog.openInformation(toolBar.getShell(),
+	                            msg.dialogMessageboxTitleError, "current action can't be executed!");
+	                }
+            	}
+        }));
         item.setImage(iconImage);
     }
+    
+    /**
+     * Checks if a follow-up document already exists. If so, the user is asked
+     * to confirm the copy. 
+     * 
+     * @param document the {@link Document} to be checked (source document)
+     * @param targetype the target to which this document should be copied
+     * @return
+     */
+	final private boolean copyExists(final Document document, final BillingType targetype) {
+		boolean retval = false;
+		if(document != null && document.getTransactionId() != null && targetype != null) {
+			// lookup for a document with the same transaction id and the given target type
+			Document copyDoc = documentsDAO.findByTransactionIdAndDBillingType(document.getTransactionId(), targetype);
+			if(copyDoc != null) {
+				// the retval has to be inverted because the question asks if you want to create another copy
+				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));
+			}
+		}
+		return retval;
+	}
+    
 
 //	/**
 //	 * Set the focus to the top composite.
@@ -2827,7 +2825,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @return TRUE, if one with the same number is found
 	 */
-	public boolean thereIsOneWithSameNumber() {
+	private boolean thereIsOneWithSameNumber() {
 		// Letters do not have to be checked
 		if (documentType == DocumentType.LETTER)
 			return false;
@@ -2835,7 +2833,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Cancel, if there is already a document with the same ID
 		if (documentsDAO.existsOther(document)) {
 			// Display an error message
-		    MessageDialog.openError(top.getShell(), msg.editorDocumentErrorDocnumberTitle, msg.editorDocumentDialogWarningDocumentexists+ " " + txtName.getText());
+		    MessageDialog.openError(top.getShell(), msg.editorDocumentErrorDocnumberTitle, MessageFormat.format(msg.editorDocumentDialogWarningDocumentexists, txtName.getText()));
 			return true;
 		}
 

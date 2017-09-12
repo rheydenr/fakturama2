@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.BuyersAndTotal;
 import org.fakturama.export.wizard.CellFormatter;
@@ -224,7 +225,13 @@ public class ProductBuyersExporter extends OOCalcExporter {
 		List<Document> documents = documentsDao.findPaidDocumentsInRange(usePaidDate,
 				(startDate != null && !doNotUseTimePeriod ? startDate.getTime() : null),
 				(endDate != null && !doNotUseTimePeriod ? endDate.getTime() : null));
-
+		
+		// if no data, return immediately
+		if(documents.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
+		
 		//T: Title of the exported table
 		setCellTextInBold(0, 0, exportMessages.wizardExportProductandbuyersTableTitle);
 

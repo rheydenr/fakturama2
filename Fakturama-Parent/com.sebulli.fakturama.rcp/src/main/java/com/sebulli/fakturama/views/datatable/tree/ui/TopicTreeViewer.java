@@ -409,7 +409,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	public void setContactFromDocument(Document selectedDocument) {
 		if (contactItem == null || selectedDocument == null)
 			return;
-		Contact contact = selectedDocument.getBillingContact();
+		Contact contact = selectedDocument.getBillingType().isDELIVERY() ? selectedDocument.getDeliveryContact() : selectedDocument.getBillingContact();
 		String name = selectedDocument.getAddressFirstLine(); 
 		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);

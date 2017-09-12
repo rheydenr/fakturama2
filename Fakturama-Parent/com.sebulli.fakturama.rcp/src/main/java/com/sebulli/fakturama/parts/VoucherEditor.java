@@ -50,8 +50,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -190,9 +189,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(bBook);
 	        
 	        // If the book check box is selected ...
-	        bBook.addSelectionListener(new SelectionAdapter() {
-	
-	            public void widgetSelected(SelectionEvent e) {
+	        bBook.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 	                if (!bBook.getSelection()) {
 	                    //T: Dialog in the voucher editor to uncheck the book field 
 	                    if (MessageDialog.openConfirm(parent.getShell(), msg.voucherDialogBookConfirmHeader,
@@ -201,8 +198,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	                        getMDirtyablePart().setDirty(true);
 	                    }
 	                }
-	            }
-	        });
+	        }));
 	        
 	        // Voucher category
 	        Label labelCategory = new Label(top, SWT.NONE);
@@ -296,10 +292,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(bPaidWithDiscount);
 	
 	        // If the bPaidWithDiscount check box is selected ...
-	        bPaidWithDiscount.addSelectionListener(new SelectionAdapter() {
-	
-	            // check dirty
-	            public void widgetSelected(SelectionEvent e) {
+	        bPaidWithDiscount.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 	                if (textPaidValue != null) {
 	                    boolean selection = bPaidWithDiscount.getSelection();
 	                    
@@ -313,8 +306,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	                    textPaidValue.getControl().setVisible(selection);
 	                    labelPaidValue.setVisible(selection);
 	                }
-	            }
-	        });
+	        }));
 	
 	        
 	        labelPaidValue = new Label(bottom, SWT.NONE);

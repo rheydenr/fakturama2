@@ -39,8 +39,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -349,13 +348,11 @@ public class BrowserEditor {
 							homeButton = new Button(homeButtonComposite, SWT.NONE);
 							//T: Button to go back to the Fakturama home page
 							homeButton.setText(msg.editorBrowserButtonProject);
-							homeButton.addSelectionListener(new SelectionAdapter() {
-								public void widgetSelected(SelectionEvent e) {
+							homeButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 
 									// Restore the last URL
 									browser.setUrl(lastFakturamaURL);
-								}
-							});
+							}));
 							GridDataFactory.swtDefaults().applyTo(homeButton);
 							GridDataFactory.fillDefaults().grab(true, false).applyTo(homeButtonComposite);
 							top.layout(true);

@@ -27,8 +27,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 
 import com.sebulli.fakturama.dialogs.WebShopStatusSettingsDialog;
@@ -106,16 +105,12 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 
 		Button b = new Button(getFieldEditorParent(), SWT.PUSH);
 		b.setText(msg.pageWebshopsettings);
-		b.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		b.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				context.set(Messages.class, msg);
 				WebShopStatusSettingsDialog dialog = ContextInjectionFactory.make(WebShopStatusSettingsDialog.class, context);
 				dialog.open();				
 				// modelService isn't available at this moment, therefore we can't use the dialog from ApplicationModel
-			}
-		});
+		}));
 	
 	}
 

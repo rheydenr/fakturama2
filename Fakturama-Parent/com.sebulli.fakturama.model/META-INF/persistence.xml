@@ -58,6 +58,7 @@
 <!-- 			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" /> -->
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
+<!--  doesn't work at the moment -->			
 			<!-- <persistence:property name="eclipselink.weaving" value="false"/> -->
 <!-- <persistence:property name="eclipselink.weaving.changetracking" value="true"/> -->
 <!-- <persistence:property name="eclipselink.weaving.lazy" value="true"/> -->
@@ -71,6 +72,11 @@
 			<!--  if you want to show the generated SQL commands and their parameter substitution -->
 			<!--  persistence:property name="eclipselink.logging.level.sql" value="FINE"/> -->
 			<!--  persistence:property name="eclipselink.logging.parameters" value="true"/> -->
+			
+			<!--  This is the real performance boost! Setting this property the internal connection pool is
+			      used. This prevents the database layer from permanently reconnecting. -->
+			<persistence:property name="eclipselink.connection-pool.force-internal-pool" value="true"/>
+			
 			
 			<!-- DOESN'T WORK!!! persistence:property name="eclipselink.logging.logger" value="com.sebulli.fakturama.log.FakturamaLogger" / -->
             <!-- custom SessionLog implementation -->

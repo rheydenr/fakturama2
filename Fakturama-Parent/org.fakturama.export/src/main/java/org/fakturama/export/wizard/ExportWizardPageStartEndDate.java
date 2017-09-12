@@ -29,8 +29,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -156,14 +155,12 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		dtStartDate.setSelection(Calendar.getInstance().getTime());
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtStartDate);
 
-		dtStartDate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		dtStartDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				setPageComplete(canFlipToNextPage());
 				if(getNextPage().getNextPage() != null) {
 					((AccountSettingsPage)getNextPage().getNextPage()).getDtDate().setSelection(dtStartDate.getSelection());
 				}
-			}
-		});
+		}));
 		
 		// End date
 		dtEndDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
@@ -171,11 +168,9 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		dtEndDate.setSelection(Calendar.getInstance().getTime());
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).indent(20, 0).applyTo(dtEndDate);
 
-		dtEndDate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		dtEndDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				setPageComplete(canFlipToNextPage());
-			}
-		});
+		}));
 
 		// Enable or disable the date widgets
 		enableDisableDateWidget();
@@ -198,14 +193,12 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		//T: Label in the export wizard page
 		bDoNotUseTimePeriod.setText(exportMessages.wizardExportDateselectExportall);
 		GridDataFactory.swtDefaults().applyTo(bDoNotUseTimePeriod);
-		bDoNotUseTimePeriod.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		bDoNotUseTimePeriod.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				
 				doNotUseTimePeriod = bDoNotUseTimePeriod.getSelection();
 				enableDisableDateWidget();
 				setPageComplete(canFlipToNextPage());
-			}
-		});
+		}));
 	}
 
 	/**

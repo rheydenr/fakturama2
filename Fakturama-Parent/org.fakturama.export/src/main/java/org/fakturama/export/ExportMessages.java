@@ -25,6 +25,7 @@ public class ExportMessages {
 	public String wizardCommonMaskAllfiles;
 	public String wizardCommonMaskCalcfiles;
 	public String wizardCommonPreviewLabel;
+	public String wizardCommonNodata;
 	public String wizardCommonSaveInfo;
 	public String wizardExportAccountsDefaultfilename;
 	public String wizardExportAccountsDescription;

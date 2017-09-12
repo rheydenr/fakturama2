@@ -54,8 +54,7 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -642,12 +641,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		//T: Label in the contact editor
 		bDelAddrEquAddr.setText(msg.editorContactFieldDeliveryaddressequalsName);
 		GridDataFactory.swtDefaults().applyTo(bDelAddrEquAddr);
-		bDelAddrEquAddr.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		bDelAddrEquAddr.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				deliveryAddressIsEqual(bDelAddrEquAddr.getSelection());
 				comboDeliveryCountry.refresh();
-			}
-		});
+		}));
 
 		// Group: address
 		Group addressGroup = new Group(tabAddress, SWT.NONE);

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -654,6 +655,32 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 				cb.asc(root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
 	    TypedQuery<Document> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
+	}
+
+	/**
+	 * Finds a document by its transaction id and billing type. Returns <code>null</code> if none is found. 
+	 * 
+	 * @param transactionId the transaction id to which the document belongs
+	 * @param targetype the type of document which is to be searched
+	 */
+	public Document findByTransactionIdAndDBillingType(Integer transactionId, BillingType targetype) {
+		Document retval = null;
+		if(transactionId != null && targetype != null) {
+	        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
+	        Root<Document> root = criteria.from(Document.class);
+	        CriteriaQuery<Document> cq = criteria.where(
+	        		cb.and(
+	        				cb.equal(root.<Integer>get(Document_.transactionId), transactionId),
+	        				cb.equal(root.<BillingType>get(Document_.billingType), targetype)
+	        			));
+	        try {
+				retval = getEntityManager().createQuery(cq).getSingleResult();
+			} catch (NoResultException e) {
+				// is ok, we have to return a null value
+			}
+		}
+		return retval;
 	}
 	
 	

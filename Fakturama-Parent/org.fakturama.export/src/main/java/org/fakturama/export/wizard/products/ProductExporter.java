@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.fakturama.export.ExportMessages;
@@ -73,6 +74,12 @@ public class ProductExporter extends OOCalcExporter {
 
 		// Get all undeleted products
 		List<Product> products = productsDAO.findAll();
+		
+		// if no data, return immediately
+		if(products.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
 
 		row = 0;
 		col = 0;

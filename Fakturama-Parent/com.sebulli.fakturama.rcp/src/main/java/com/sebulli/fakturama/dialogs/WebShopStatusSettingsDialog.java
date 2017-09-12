@@ -37,8 +37,7 @@ import org.eclipse.nebula.widgets.treemapper.TreeMapperUIConfigProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -153,9 +152,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		stateBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
 
 		stateBtn.setText(msg.preferencesWebshopSettingsGetallstates);
-		stateBtn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		stateBtn.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				execute(parent);
 
 				Webshopexport wsExport = (Webshopexport) getData();
@@ -184,8 +181,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 						setInputAndActivateTreeMapperWidget(leftTreeInput, true);
 					}
 				}
-			}
-		});
+		}));
 
 		Label lblShopInfo = new Label(container, SWT.READ_ONLY);
 		lblShopInfo.setText(msg.preferencesWebshopSettingsShopinfo);

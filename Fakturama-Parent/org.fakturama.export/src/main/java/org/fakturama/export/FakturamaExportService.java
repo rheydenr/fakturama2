@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
 
-package de.rhe.tester;
+package org.fakturama.export;
 
 import java.util.ArrayList;
 import java.util.Arrays;

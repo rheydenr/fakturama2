@@ -105,16 +105,22 @@ public class AccountsExporter extends OOCalcExporter {
 				
 			}
 		}
-		
-		// Try to generate a spreadsheet
-		if (!createSpreadSheet()) {
-			return false;
-		}
 
 		// Collect all documents and vouchers to export
 		AccountSummaryCalculator accountSummary = ContextInjectionFactory.make(AccountSummaryCalculator.class, ctx);
 		accountSummary.collectEntries(account);
 		accountEntries = accountSummary.getAccountEntries();
+		
+		// if no data, return immediately
+		if(accountEntries.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
+
+		// Try to generate a spreadsheet
+		if (!createSpreadSheet()) {
+			return false;
+		}
 		
 		// Sort the accountEntries by category and date --> already done by database
 //		Collections.sort(accountEntries, new UniDataSetSorter("date"));

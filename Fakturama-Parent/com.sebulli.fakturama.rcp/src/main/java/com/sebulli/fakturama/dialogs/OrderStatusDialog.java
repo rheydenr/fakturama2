@@ -14,14 +14,12 @@
 
 package com.sebulli.fakturama.dialogs;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -96,13 +94,7 @@ public class OrderStatusDialog extends Dialog {
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(bNotification);
 
 		// Hide the text field, when "No notification" is selected
-		bNotification.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				txtComment.setVisible(bNotification.getSelection());
-			}
-		});
+		bNotification.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { txtComment.setVisible(bNotification.getSelection()); }));
 
 		return composite;
 	}

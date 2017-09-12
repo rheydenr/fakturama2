@@ -26,6 +26,7 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
@@ -122,6 +123,12 @@ public class VoucherExporter extends OOCalcExporter {
 			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
 			outputFileName = msg.commandReceiptvouchersName;
 			break;
+		}
+		
+		// if no data, return immediately
+		if(vouchers.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
 		}
 
 		// Try to generate a spreadsheet

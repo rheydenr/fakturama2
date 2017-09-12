@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.BuyersAndTotal;
 import org.fakturama.export.wizard.CellFormatter;
@@ -163,6 +164,12 @@ public class BuyerVolumesExporter extends OOCalcExporter {
 		List<Document> documents = documentsDao.findPaidDocumentsInRange(usePaidDate, 
 				(startDate != null ? startDate.getTime() : null), 
 				(endDate != null ? endDate.getTime() : null));
+		
+		// if no data, return immediately
+		if(documents.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
 
 		setCellTextInBold(0, 0, exportMessages.wizardExportBuyersTabletitle);
 

@@ -258,6 +258,7 @@ public class Messages {
 	public String editorDocumentDialogGrossvalues;
 	public String editorDocumentDialogNetvalues;
 	public String editorDocumentDialogWarningDocumentexists;
+	public String editorDocumentDialogWarningCopyexists;
 	public String editorDocumentDiscountTooltip;
 	public String editorDocumentDuedays;
 	public String editorDocumentDuedaysTooltip;

@@ -10,6 +10,8 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -111,7 +113,7 @@ public class DocumentSummaryCalculator {
 			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNet()));
 
 			// Sums the total amount of item quantities. 
-			retval.setTotalQuantity(retval.getTotalQuantity() + item.getQuantity());
+			retval.setTotalQuantity(retval.getTotalQuantity() + item.getQuantity()); 
 
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {

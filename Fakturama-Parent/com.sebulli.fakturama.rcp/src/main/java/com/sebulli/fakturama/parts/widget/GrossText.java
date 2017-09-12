@@ -23,8 +23,7 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.misc.Constants;
@@ -70,12 +69,9 @@ public class GrossText {
 
 		// Set the text of the GrossText, based on the NetText's value.
 		// Do this, if the text widget is selected (If "ENTER" is pressed).
-		grossText.getControl().addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+		grossText.getControl().addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				grossText.setValue(DataUtils.getInstance().CalculateGrossFromNet(netValue, vatValue));
-			}
-		});
+		}));
 
 		// Set the text of the NetText, based on the GrossText's value
 		grossText.getControl().addModifyListener(new ModifyListener() {

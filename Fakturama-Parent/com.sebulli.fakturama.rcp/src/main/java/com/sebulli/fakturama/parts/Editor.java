@@ -52,8 +52,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Button;
@@ -226,15 +225,12 @@ public abstract class Editor<T extends IEntity> {
 			stdButton.setText(msg.commonButtonSetdefault);
 			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(stdButton);
 			stdButton.setEnabled(false);
-			stdButton.addSelectionListener(new SelectionAdapter() {
-				
-				/**
-				 * Make this entry to the standard
-				 * 
-				 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-				 */
-				@Override
-				public void widgetSelected(SelectionEvent e) {
+			/**
+			 * Make this entry to the standard
+			 * 
+			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+			 */
+			stdButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 					if (uds.getId() > 0) {
 						defaultValuePrefs.setValue(getDefaultEntryKey(), uds.getId());
 						txtStd.setText(thisDataset);
@@ -246,9 +242,7 @@ public abstract class Editor<T extends IEntity> {
                             log.error(e1, "Error while flushing default value preferences.");
                         }
 					}
-				}
-
-			});
+			}));
 
 		}
 		
@@ -547,19 +541,13 @@ public abstract class Editor<T extends IEntity> {
                 }
             });
         } else if(source instanceof CDateTime) {
-            ((CDateTime)source).addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
+            ((CDateTime)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
                     getMDirtyablePart().setDirty(true);
-                }
-            });
+            }));
         } else if(source instanceof Button) {
-        	((Button)source).addSelectionListener(new SelectionAdapter() {
-        		@Override
-        		public void widgetSelected(SelectionEvent e) {
+        	((Button)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
         			getMDirtyablePart().setDirty(true);
-        		}
-        	});
+        	}));
         }
     }
 	

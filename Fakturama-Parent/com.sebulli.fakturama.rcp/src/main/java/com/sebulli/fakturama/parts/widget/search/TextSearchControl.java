@@ -135,18 +135,13 @@ public class TextSearchControl extends Composite {
 	}
 
 	private void registerListeners() {
-		addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+		addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				if (textControl != null && !textControl.isDisposed()) {
 					addToSearchHistory(textControl.getText());
 					System.out.println("SUCHE läuft! (selected)");
 					// TODO: Suche auslösen!
 				}
-
-			}
-		});
+		}));
 		textControl.addFocusListener(new FocusAdapter() {
 
 			@Override

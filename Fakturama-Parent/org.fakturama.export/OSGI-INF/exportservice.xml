@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="startUp" deactivate="shutDown" enabled="true" name="myExporter">
-   <implementation class="de.rhe.tester.FakturamaExportService"/>
+   <implementation class="org.fakturama.export.FakturamaExportService"/>
    <reference cardinality="1..1" interface="com.sebulli.fakturama.log.ILogger" name="ILogger" policy="static"/>
    <service>
       <provide interface="org.fakturama.wizards.IFakturamaWizardService"/>

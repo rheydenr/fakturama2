@@ -25,8 +25,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -126,13 +125,10 @@ public class CoolbarViewPart {
 		ToolItem ooPrintButton = createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
-//		ooPrintButton.addSelectionListener(new SelectionAdapter() {
-//		    @Override
-//		    public void widgetSelected(SelectionEvent e) {
+//		ooPrintButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 //		        
 //		        super.widgetSelected(e);
-//		    }
-//        });
+//        }));
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
@@ -344,17 +340,14 @@ public class CoolbarViewPart {
 		catch (NotDefinedException e1) {
 			log.error(e1, "Fehler!");
 		}
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				if (handlerService.canExecute(pCmd)) {
 					handlerService.executeHandler(pCmd);
 				} else {
 					MessageDialog.openInformation(toolBar.getShell(),
 							"Action Info", "current action can't be executed!");
 				}
-			}
-		});
+		}));
         item.setImage(iconImage);
         return item;
 	}

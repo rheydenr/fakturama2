@@ -33,8 +33,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
@@ -124,11 +123,9 @@ public class AccountSettingsPage extends WizardPage {
 		dtDate.setFormat(CDT.DATE_MEDIUM);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtDate);
 
-		dtDate.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		dtDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				setPageComplete(isPageComplete());
-			}
-		});
+		}));
 
 		txtValue = new FormattedText(dateAndValue, SWT.BORDER | SWT.RIGHT);
 		txtValue.setFormatter(new MoneyFormatter());

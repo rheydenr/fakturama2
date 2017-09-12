@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
@@ -123,6 +124,12 @@ public class SalesExporter extends OOCalcExporter {
 					(endDate != null && !doNotUseTimePeriod ? endDate.getTime() : null));
 		}
 		
+		
+		// if no data, return immediately
+		if(documents.isEmpty()) {
+			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+			return true;
+		}
 		
 		// Get all undeleted expenditures
 //		List<Voucher> expenditures = expendituresDAO.findAllExpendituresSorted();
