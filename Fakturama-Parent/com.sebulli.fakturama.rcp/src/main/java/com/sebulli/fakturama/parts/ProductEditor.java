@@ -272,8 +272,12 @@ public class ProductEditor extends Editor<Product> {
                 log.error(e);
             }
 
-		// Set the Editor's name to the product name.
+		// Set the Editor's name to the product name...
 		this.part.setLabel(editorProduct.getName());
+        
+        // ...and "mark" it with current objectId (though it can be find by 
+        // CallEditor if one tries to open it immediately from list view)
+        part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorProduct.getId()));
 
 		// Refresh the table view of all contacts
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);

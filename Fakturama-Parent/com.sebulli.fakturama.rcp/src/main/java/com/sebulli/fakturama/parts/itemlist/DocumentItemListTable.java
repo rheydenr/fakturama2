@@ -115,7 +115,6 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.handlers.DeleteHandler;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -254,7 +253,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 		MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
 		moveEntryDownHandler.setGridListLayer(gridListLayer);
 		
-		DeleteHandler deleteHandler = ContextInjectionFactory.make(DeleteHandler.class, context);
+//		DeleteHandler deleteHandler = ContextInjectionFactory.make(DeleteHandler.class, context);
 		MenuManager menuManager = new MenuManager();
 		Menu retval = new PopupMenuBuilder(natTable, menuManager)
 				.withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
@@ -838,7 +837,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         	}
         	
         	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
- //           if(isRemoved) {
+            if(isRemoved) {
             	renumberItems();
                 // Recalculate the total sum of the document if necessary
                 // do it via the messaging system and send a message to DocumentEditor
@@ -846,7 +845,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 event.put(DocumentEditor.DOCUMENT_ID, document.getName());
                 event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
                 evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
-            //}
+            }
         } else {
             log.debug("no rows selected!");
         }

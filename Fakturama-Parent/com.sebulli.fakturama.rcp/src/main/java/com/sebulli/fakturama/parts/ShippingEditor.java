@@ -178,9 +178,13 @@ public class ShippingEditor extends Editor<Shipping> {
 			stdComposite.stdButton.setEnabled(true);
     	}
 
-       	// Set the Editor's name to the payment name.
+       	// Set the Editor's name to the payment name...
         part.setLabel(editorShipping.getName());
         
+        // ...and "mark" it with current objectId (though it can be find by 
+        // CallEditor if one tries to open it immediately from list view)
+        part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorShipping.getId()));
+     
 		// Refresh the table view of all Shippings (this also refreshes the tree of categories)
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         

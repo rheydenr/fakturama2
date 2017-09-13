@@ -144,10 +144,13 @@ public class VatEditor extends Editor<VAT> {
         
         // ...and "mark" it with current objectId (though it can be find by 
         // CallEditor if one tries to open it immediately from list view)
-        part.getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorVat.getId()));
+        // please note that you have to use transientData Hashmap, else
+        // else you get an ugly "java.lang.IllegalArgumentException: A StringToStringMap that was NOT MApplicationElement.persistedState changed"
+        // while saving a new VAT or also other editor.
+        part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorVat.getId()));
         
 		// Refresh the table view of all VATs (this also refreshes the tree of categories)
-        evtBroker.post(VatEditor.class.getSimpleName(), Editor.UPDATE_EVENT);
+        evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);

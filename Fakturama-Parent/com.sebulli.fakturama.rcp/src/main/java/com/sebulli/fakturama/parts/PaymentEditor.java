@@ -149,8 +149,12 @@ public class PaymentEditor extends Editor<Payment> {
 			stdComposite.stdButton.setEnabled(true);
 		}
 
-		// Set the Editor's name to the payment name.
+		// Set the Editor's name to the payment name...
         part.setLabel(payment.getName());
+        
+        // ...and "mark" it with current objectId (though it can be find by 
+        // CallEditor if one tries to open it immediately from list view)
+        part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(payment.getId()));
 
 		// Refresh the table view of all payments
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);

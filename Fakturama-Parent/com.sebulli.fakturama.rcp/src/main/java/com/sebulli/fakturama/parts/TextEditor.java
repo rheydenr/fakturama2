@@ -133,8 +133,12 @@ public class TextEditor extends Editor<TextModule> {
 			newText = false;
 		}
 
-		// Set the Editor's name to the shipping name.
+		// Set the Editor's name to the shipping name...
 		part.setLabel(editorText.getName());
+        
+        // ...and "mark" it with current objectId (though it can be find by 
+        // CallEditor if one tries to open it immediately from list view)
+        part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorText.getId()));
 
 		// Refresh the table view of all texts
         evtBroker.post(TextEditor.EDITOR_ID, Editor.UPDATE_EVENT);

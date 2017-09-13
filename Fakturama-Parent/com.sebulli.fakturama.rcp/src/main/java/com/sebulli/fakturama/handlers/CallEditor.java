@@ -157,6 +157,7 @@ public class CallEditor {
             }
 
             Map<String, String> params = new HashMap<>();
+        	
             // forceNew means we want to create a new document unconditionally
             if(!forceNew) {
             	params.put(PARAM_OBJ_ID, objId);
@@ -166,6 +167,7 @@ public class CallEditor {
             
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);
+            
 			partService.showPart(editorPart, PartState.ACTIVATE);
 			
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
@@ -202,6 +204,10 @@ public class CallEditor {
 	            	 */
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
+	    				if(object == null) {
+	    					// try another info container :-)
+	    					object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
+	    				}
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
 	    					myPart = mPart;
 	    					break;

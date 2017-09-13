@@ -402,6 +402,7 @@
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_aX-dwEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.vat.id" label="%main.menu.new.vat" iconURI="icon://COMMAND_VAT" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_ZCyDMCTKEeS9z6SQNducwg" elementId="com.sebulli.fakturama.menu.newvat.handler.parm0" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.vatEditor"/>
+          <parameters xmi:id="_L-4x4JhOEeeOMKmqCO0j6w" elementId="com.sebulli.fakturama.rcp.parameter.79" name="com.sebulli.fakturama.editors.category"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_atkTQEgOEeOrp6PdA0AQig" elementId="menu:main.menu.new.text.id" label="%main.menu.new.text" iconURI="icon://COMMAND_TEXT" command="_A9gvoDtXEeOcltwCzP-ZbQ">
           <parameters xmi:id="_DKPu8PBEEeSE6viOnMbMyQ" elementId="com.sebulli.fakturama.menu.newtext.handler.parm0" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.textEditor"/>
