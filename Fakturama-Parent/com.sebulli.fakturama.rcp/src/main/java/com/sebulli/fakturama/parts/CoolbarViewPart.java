@@ -161,7 +161,7 @@ public class CoolbarViewPart {
 				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
 				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING), createCommandParams(DocumentType.DUNNING));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
-				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
+				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImage(IconSize.ToolbarIconSize)
 				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
 		finishToolbar(coolbar1, toolBar2);
 
@@ -182,7 +182,7 @@ public class CoolbarViewPart {
         params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ExpenditureVoucherEditor.ID);
 		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewExpenditurevoucherName,
-		        tooltipPrefix + msg.mainMenuNewExpenditurevoucher, Icon.ICON_EXPENDITURE_NEW.getImage(IconSize.ToolbarIconSize),
+		        tooltipPrefix + msg.mainMenuNewExpenditurevoucher, Icon.ICON_EXPENDITURE_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER), params);	
         params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ReceiptVoucherEditor.ID);

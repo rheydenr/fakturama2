@@ -105,6 +105,7 @@
 		<persistence:exclude-unlisted-classes>true</persistence:exclude-unlisted-classes>
 		<persistence:properties>
 			<persistence:property name="eclipselink.session.customizer" value="com.sebulli.fakturama.dbconnector.CamelCaseSessionCustomizer" />
+            <persistence:property name="eclipselink.connection-pool.force-internal-pool" value="true"/>
 		</persistence:properties>
 	</persistence:persistence-unit>
 </persistence:persistence>

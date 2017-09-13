@@ -504,17 +504,17 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Set the payment values depending on if the document is paid or not
-		if (comboPayment != null) {
+//		if (comboPayment != null) {
 		    // this is done by databinding
 //			document.setStringValueByKey("paymentdescription", comboPayment.getText());
-		}
+//		}
 		// If this document contains no payment widgets, but..
-		else {
+//		else {
 			// the customer changed and so there is a new payment. Set it.
 			if (!newPaymentDescription.isEmpty()) {
 				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
 			}
-		}
+//		}
 
 		if (bPaid != null) {
 			String paymentText = "";
@@ -1059,7 +1059,7 @@ public class DocumentEditor extends Editor<Document> {
 	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         } else {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-                    document.getShippingValue()/* * sign*/,
+    				(Double) shippingValue.getValue()/* * sign*/,
                     null, 
                     document.getShippingAutoVat(), 
                     rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
@@ -2437,6 +2437,9 @@ public class DocumentEditor extends Editor<Document> {
             shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
             shippingValue.setFormatter(new MoneyFormatter());
             shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
+            
+            // since the shipping value can be changed also by comboNetGross we have to store
+            // the shipping value "manually"
             bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
     
@@ -2468,8 +2471,6 @@ public class DocumentEditor extends Editor<Document> {
             		}
             	}
             });
-    
-    // FIXME here the VALUE is meant, not the Name!!!			bindModelValue(document, shippingValue, Document_.shipping.getName(), 12);
     
             // VAT label
             Label vatLabel = new Label(totalComposite, SWT.NONE);
