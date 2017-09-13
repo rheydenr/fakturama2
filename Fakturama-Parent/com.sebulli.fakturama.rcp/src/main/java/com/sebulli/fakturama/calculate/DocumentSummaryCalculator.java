@@ -279,15 +279,14 @@ public class DocumentSummaryCalculator {
 
 			// Calculate the sum of all VatSummary entries
 			MonetaryAmount netSumOfAllVatSummaryItems = Money.from(zero);
-			// TODO How do I use Lambdas???
-// 			documentVatSummaryItems.forEach(vatItem -> {
-// 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatItem.getNet());
-// 			});
-			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
-			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatSummaryItem.getNet());
-			}
 
 			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
+				
+				// TODO How do I use Lambdas???
+	// 			documentVatSummaryItems.forEach(vatItem -> {
+	// 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatItem.getNet());
+	// 			});
+			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatSummaryItem.getNet());
 
 				// Get the data from each entry
 				shippingVatDescription = vatSummaryItem.getVatName();
