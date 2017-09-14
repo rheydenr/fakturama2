@@ -1059,7 +1059,7 @@ public class DocumentEditor extends Editor<Document> {
 	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         } else {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-    				(Double) shippingValue.getValue()/* * sign*/,
+    				document.getShippingValue()/* * sign*/,
                     null, 
                     document.getShippingAutoVat(), 
                     rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
@@ -1630,7 +1630,7 @@ public class DocumentEditor extends Editor<Document> {
 			public void widgetSelected(SelectionEvent e) {
 				netgross = comboNetGross.getCombo().getSelectionIndex();
 				// recalculate the total sum
-				calculate();
+//				calculate();
 				updateUseGross(false);
 			}
 
@@ -2384,8 +2384,7 @@ public class DocumentEditor extends Editor<Document> {
             comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
                
             	// If a new shipping is selected, recalculate the total
-            	// sum,
-            	// and update the shipping VAT.
+            	// sum and update the shipping VAT.
             	public void selectionChanged(SelectionChangedEvent event) {
             		// Get the selected element.
             		ISelection selection = event.getSelection();
@@ -2440,7 +2439,7 @@ public class DocumentEditor extends Editor<Document> {
             
             // since the shipping value can be changed also by comboNetGross we have to store
             // the shipping value "manually"
-            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
+//            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
     
             // Recalculate, if the discount field looses the focus.

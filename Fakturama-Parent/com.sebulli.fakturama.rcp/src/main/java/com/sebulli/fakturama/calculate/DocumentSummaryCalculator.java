@@ -245,7 +245,7 @@ public class DocumentSummaryCalculator {
 
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
-		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : 0.0;
+		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : Double.valueOf(0.0);
 		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : "";
 
 		// If shippingAutoVat is not fix, the shipping vat is 
