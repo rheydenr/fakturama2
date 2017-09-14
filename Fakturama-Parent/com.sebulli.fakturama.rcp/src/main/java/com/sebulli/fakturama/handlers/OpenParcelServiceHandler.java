@@ -73,7 +73,7 @@ public class OpenParcelServiceHandler {
 	@CanExecute
     public boolean canExecute(final MApplication application, final EModelService modelService, @Active MPart activePage) {
 //		dataSetDocument = null;
-//		documentEditor = null;
+		documentEditor = null;
 		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
 		
         return (activeBrowserEditor != null 
