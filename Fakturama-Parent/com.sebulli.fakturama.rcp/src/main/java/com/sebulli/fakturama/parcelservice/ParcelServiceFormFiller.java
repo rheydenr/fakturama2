@@ -174,8 +174,11 @@ public class ParcelServiceFormFiller {
 	}
 	
 	/**
-	 * Fills the form of the parcel service with the address data
-	 * @param part 
+	 * Fills the form of the parcel service with the address data.
+	 * 
+	 * @param browser browser frame
+	 * @param part active browser part
+	 * @param forceFill fills the form even if not all required fields are available
 	 */
 	public void fillForm(Browser browser, MPart part, boolean forceFill) {
 		this.browser = browser;

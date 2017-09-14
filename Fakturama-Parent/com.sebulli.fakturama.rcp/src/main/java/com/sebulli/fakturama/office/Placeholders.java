@@ -767,8 +767,8 @@ public class Placeholders {
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
-		// There is a reference to a contact. Use this
-		if (contact != null) {
+		// There is a reference to a contact. Use this (but only if it's a valid contact!)
+		if (contact != null && contact.getContactType() != null) {
 		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
 			if (key.equals("ADDRESS.GENDER")) return contactUtil.getGenderString(contact);
 			if (key.equals("ADDRESS.GREETING")) return contactUtil.getGreeting(contact);

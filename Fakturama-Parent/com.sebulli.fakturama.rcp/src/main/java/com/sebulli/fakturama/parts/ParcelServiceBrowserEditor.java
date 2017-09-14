@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.parcelservice.ParcelServiceFormFiller;
+import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  * Parcel Service Web Browser Editor
@@ -84,6 +85,7 @@ public class ParcelServiceBrowserEditor {
 		parcelServiceFormFiller = ContextInjectionFactory.make(ParcelServiceFormFiller.class, ctx);
 		// Set the name
 		part.setLabel(manager.getName());
+		part.setIconURI(Icon.COMMAND_PARCEL.getIconURI());
 		
 		GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);

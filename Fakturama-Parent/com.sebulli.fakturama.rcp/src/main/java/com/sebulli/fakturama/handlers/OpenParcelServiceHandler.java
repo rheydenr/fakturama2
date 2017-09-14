@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -49,7 +50,7 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
- * This action opens the project website in an editor.
+ * This action opens the project web site in an editor.
  * 
  */
 public class OpenParcelServiceHandler {
@@ -66,17 +67,14 @@ public class OpenParcelServiceHandler {
 
 	private DocumentEditor documentEditor;
 	private	ParcelServiceBrowserEditor parcelServiceBrowserEditor = null;
-	
-	//T: Text of the action
-	public final static String ACTIONTEXT = "Parcel Service";
 
 	private Document dataSetDocument = null; 
 	
 	@CanExecute
-    public boolean canExecute(final MApplication application, final EModelService modelService) {
-		dataSetDocument = null;
-		documentEditor = null;
-		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService);
+    public boolean canExecute(final MApplication application, final EModelService modelService, @Active MPart activePage) {
+//		dataSetDocument = null;
+//		documentEditor = null;
+		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
 		
         return (activeBrowserEditor != null 
         		|| documentEditor != null
@@ -91,10 +89,10 @@ public class OpenParcelServiceHandler {
 	 * Set the URL and open the editor.
 	 */
 	@Execute
-	public void run(Shell shell, final MApplication application, final EModelService modelService) {
+	public void run(Shell shell, final MApplication application, final EModelService modelService, @Active MPart activePage) {
         MPartStack documentPartStack = (MPartStack) modelService.find(CallEditor.DETAIL_PARTSTACK_ID, application);
 
-		BrowserEditor browserEditor = findActiveDocumentOrGetBrowser(application, modelService);
+		BrowserEditor browserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
 		
 		final IParcelService parcelServiceManager = ContextInjectionFactory.make(ParcelServiceManager.class, ctx);
 		// put exactly _this_ IParcelService into context
@@ -161,27 +159,27 @@ public class OpenParcelServiceHandler {
 	 * @return 
 	 * 
 	 */
-	private BrowserEditor findActiveDocumentOrGetBrowser(MApplication application, EModelService modelService) {
+	private BrowserEditor findActiveDocumentOrGetBrowser(MApplication application, EModelService modelService, MPart activePage) {
 		BrowserEditor browserEditor = null;
-		MPart activePart = null;
+		MPart activePart = activePage;
 		
         MPartStack documentPartStack = (MPartStack) modelService.find(CallEditor.DETAIL_PARTSTACK_ID, application);
         
-        // first try is to look for an open Document editor
-        // this step can't executed together with looking for an opened Browser Editor
-        // since we can't determine if one of that windows is on top (isOnTop() is false even if
-        // the Editor is opened on top...).
-        // Therefore, if we find a Document editor, all went ok.
-        for (MStackElement stackElement : documentPartStack.getChildren()) {
-			if(stackElement.isVisible() 
-				&& (stackElement.getElementId().contentEquals(DocumentEditor.ID))) {
-				activePart = (MPart) modelService.find(stackElement.getElementId(), stackElement);
-				break;
-			}
-		}
-        
-        // nothing found? Then try to find an open Browser Editor
         if(activePart == null) {
+	        // first try is to look for an open Document editor
+	        // this step can't executed together with looking for an opened Browser Editor
+	        // since we can't determine if one of that windows is on top (isOnTop() is false even if
+	        // the Editor is opened on top...).
+	        // Therefore, if we find a Document editor, all went ok.
+	        for (MStackElement stackElement : documentPartStack.getChildren()) {
+				if(stackElement.isVisible() 
+					&& (stackElement.getElementId().contentEquals(DocumentEditor.ID))) {
+					activePart = (MPart) modelService.find(stackElement.getElementId(), stackElement);
+					break;
+				}
+			}
+        
+	        // nothing found? Then try to find an open Browser Editor
 	        for (MStackElement stackElement : documentPartStack.getChildren()) {
 				if(stackElement.isVisible() 
 					&&(stackElement.getElementId().contentEquals(ParcelServiceBrowserEditor.ID)
@@ -196,13 +194,11 @@ public class OpenParcelServiceHandler {
 					}
 				}
 			}
-        }
-        
-        // try to get a reasonable document from documents list view
-        if(activePart == null) {
-			List<MUIElement> dataPanelElements = modelService.findElements(application, "fakturama.views.documentTable", MUIElement.class, null, EModelService.IN_ACTIVE_PERSPECTIVE);
+
+	        // try to get a reasonable document from documents list view
+			List<MUIElement> dataPanelElements = modelService.findElements(application, DocumentsListTable.ID, MUIElement.class, null, EModelService.IN_ACTIVE_PERSPECTIVE);
 			if(!dataPanelElements.isEmpty() && dataPanelElements.get(0).getElementId().contentEquals(DocumentsListTable.ID)) {
-				activePart= (MPart) dataPanelElements.get(0);
+				activePart = (MPart) dataPanelElements.get(0);
 			}
         }
 		if (documentEditor == null && activePart != null) {
@@ -243,13 +239,11 @@ public class OpenParcelServiceHandler {
 	}
 
 	/**
-	 * Open a new browser editor with the parcel service's web site
-	 * @param dataSetDocument 
+	 * Open a new browser editor with the parcel service's web site.
 	 * 
-	 * @param page
-	 * 	Workbench page
-	 * @param input
-	 * 	Parcel service browser editor input
+	 * @param dataSetDocument 
+	 * @param page Workbench page
+	 * @param input	Parcel service browser
 	 */
 	private void openParcelServiceBrowser(MPartStack stack) {
         // at first we look for an existing Part
@@ -262,7 +256,6 @@ public class OpenParcelServiceHandler {
 //            myPart.setContext(ctx);
             myPart.setContributionURI(CallEditor.BASE_CONTRIBUTION_URI + ParcelServiceBrowserEditor.class.getName());
 //            myPart.setLabel(msg.commandBrowserOpenStartpage);
-            myPart.getTransientData().put("DOCUMENT", dataSetDocument);
 
             if(stack == null) {
                 stack = (MPartStack) partService.createPart(CallEditor.DOCVIEW_PART_ID);
@@ -274,7 +267,7 @@ public class OpenParcelServiceHandler {
             ((ParcelServiceBrowserEditor) myPart.getObject()).resetUrl();
         }
         
+        myPart.getTransientData().put("DOCUMENT", dataSetDocument);
         partService.activate(myPart);
     }
-	
 }

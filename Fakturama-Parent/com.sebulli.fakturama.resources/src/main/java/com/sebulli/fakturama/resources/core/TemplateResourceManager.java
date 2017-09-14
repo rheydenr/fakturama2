@@ -105,6 +105,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                     resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "DHL_de.txt"));
                     resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "eFILIALE_de.txt"));
                     resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "myHermes_de.txt"));
+                    resourceCopy("Templates/ParcelService/UPS_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "UPS_de.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");
