@@ -550,14 +550,14 @@ public abstract class VoucherEditor extends Editor<Voucher>{
                 voucher.setAccount(account);
             }
 	        
-	        // Create a new voucher ID, if this is a new voucher
-	        if (newVoucher) {
-	            try {
-	                voucher = getModelRepository().save(voucher);
-	            } catch (FakturamaStoringException e) {
-	                log.error(e);
-	            }
-	        }
+//	        // Create a new voucher ID, if this is a new voucher
+//	        if (newVoucher) {
+//	            try {
+//	                getModelRepository().save(voucher);
+//	            } catch (FakturamaStoringException e) {
+//	                log.error(e);
+//	            }
+//	        }
 	
 	        // Set all the items
 	        List<VoucherItem> items = itemListTable.getVoucherItemsListData()
@@ -617,16 +617,16 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	      // The selection "book" is inverted
 	      voucher.setDoNotBook(!bBook.getSelection());
 	//
-	      // If it is a new voucher, add it to the voucher list and
-	      // to the data base
-	      if (newVoucher) {
-	          addVoucher(voucher);
-	          newVoucher = false;
-	      }
-	      // If it's not new, update at least the data base
-	      else {
-	          updateVoucher(voucher);
-	      }
+//	      // If it is a new voucher, add it to the voucher list and
+//	      // to the data base
+//	      if (newVoucher) {
+//	          addVoucher(voucher);
+//	          newVoucher = false;
+//	      }
+//	      // If it's not new, update at least the data base
+//	      else {
+//	          updateVoucher(voucher);
+//	      }
 	
 	      // Set the Editor's name to the voucher name.
 	      this.part.setLabel(voucher.getName());

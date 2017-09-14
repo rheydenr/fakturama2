@@ -225,7 +225,7 @@ public class VatEditor extends Editor<VAT> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
         textName.setToolTipText(labelName.getToolTipText());
-        bindModelValue(editorVat, textName, "name", 64);
+        bindModelValue(editorVat, textName, VAT_.name.getName(), 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // Category of the VAT
