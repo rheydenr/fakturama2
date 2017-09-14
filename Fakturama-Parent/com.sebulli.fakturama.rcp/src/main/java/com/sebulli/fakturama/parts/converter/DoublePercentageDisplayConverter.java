@@ -9,6 +9,8 @@ import java.text.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
+import com.sebulli.fakturama.i18n.LocaleUtil;
+
 /**
  * Converter for percentage values. Can also convert double values (in contrast to native NatTable converter).
  *
@@ -39,7 +41,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         }
         displayString = StringUtils.appendIfMissing(displayString.trim(), "%");
     	try {
-			return NumberFormat.getPercentInstance().parse(displayString);
+			return NumberFormat.getPercentInstance(LocaleUtil.getInstance().getDefaultLocale()).parse(displayString).doubleValue();
         } catch (ParseException e) {
             throw new NumberFormatException(e.getLocalizedMessage());
         }

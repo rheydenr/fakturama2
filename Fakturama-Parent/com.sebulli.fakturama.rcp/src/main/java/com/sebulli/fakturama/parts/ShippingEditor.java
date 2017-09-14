@@ -112,7 +112,7 @@ public class ShippingEditor extends Editor<Shipping> {
     private boolean useGross;
 
     // These are (non visible) values of the document
-//    private Double net;
+    private Double net;
 //    private Double vat = NumberUtils.DOUBLE_ZERO;
     private VAT vat = null;
     private ShippingVatType autoVat = ShippingVatType.SHIPPINGVATGROSS;
@@ -145,6 +145,8 @@ public class ShippingEditor extends Editor<Shipping> {
 
    		// Set the Shipping data
         // ... done through databinding...
+        // except value (since it could be from gross or from net
+        editorShipping.setShippingValue(net);
 
    		// save the new or updated Shipping
         try {
@@ -316,7 +318,7 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
 
         // Variable to store the net value
-//        net = editorShipping.getShippingValue();
+        net = editorShipping.getShippingValue();
 
         // Create a composite that contains a widget for the net and gross value
         Composite netGrossComposite = new Composite(top, SWT.NONE);
@@ -339,15 +341,15 @@ public class ShippingEditor extends Editor<Shipping> {
         // Create a net text widget
         if (useNet) {
             netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
-            bindModelValue(editorShipping, netText.getNetText(), Shipping_.shippingValue.getName(), 16);
+            		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
+//            bindModelValue(editorShipping, netText.getNetText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // Create a gross text widget
         if (useGross) {
             grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
-            bindModelValue(editorShipping, grossText.getGrossText(), Shipping_.shippingValue.getName(), 16);
+            		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
+//            bindModelValue(editorShipping, grossText.getGrossText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // If net and gross were created, link both together
@@ -365,7 +367,6 @@ public class ShippingEditor extends Editor<Shipping> {
         if (useNet) {
             GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(netText.getNetText().getControl());
         }
-
         
         // VAT Label
         Label labelVat = new Label(top, SWT.NONE);
@@ -406,7 +407,7 @@ public class ShippingEditor extends Editor<Shipping> {
                     // Recalculate the price values if gross is selected,
                     // So the gross value will stay constant.
                     if (!useNet) {
-//                        net = new Double(editorShipping.getShippingValue() * ((1 + oldVat) / (1 + vat.getTaxValue())));
+                        net = new Double(net * ((1 + oldVat) / (1 + vat.getTaxValue())));
                     }
 
                     // Update net and gross text widget
@@ -470,7 +471,7 @@ public class ShippingEditor extends Editor<Shipping> {
         try {
             bindModelValue(editorShipping, comboAutoVat, Shipping_.autoVat.getName());
 //            comboAutoVat.select(autoVat.getValue());
-//            autoVatChanged();
+            autoVatChanged();
         }
         catch (IndexOutOfBoundsException e) {
 //            comboAutoVat.setText("invalid");
@@ -588,11 +589,11 @@ public class ShippingEditor extends Editor<Shipping> {
             comboVat.setVisible(false);
             if (netText != null) {
                 netText.setVisible(false);
-                netText.setVatValue(0.0);
+                netText.setVatValue(Double.valueOf(0.0));
             }
             if (grossText != null) {
                 grossText.setVisible(true);
-                grossText.setVatValue(0.0);
+                grossText.setVatValue(Double.valueOf(0.0));
             }
             break;
 
@@ -602,11 +603,11 @@ public class ShippingEditor extends Editor<Shipping> {
             comboVat.setVisible(false);
             if (netText != null) {
                 netText.setVisible(true);
-                netText.setVatValue(0.0);
+                netText.setVatValue(Double.valueOf(0.0));
             }
             if (grossText != null) {
                 grossText.setVisible(false);
-                grossText.setVatValue(0.0);
+                grossText.setVatValue(Double.valueOf(0.0));
             }
             break;
         }
