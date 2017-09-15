@@ -209,7 +209,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 	
-	        createCategoryCombo();
+	        comboCategory = new Combo(top, SWT.BORDER);
+	        comboCategory.setToolTipText(msg.commonFieldAccountTooltip);
+//	        fillAndBindCategoryCombo();
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 	
 	        // Document date
@@ -225,7 +227,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        dtDate.setToolTipText(labelDate.getToolTipText());
 	        dtDate.setFormat(CDT.DATE_MEDIUM);
 	        GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(dtDate);
-	        bindModelValue(voucher, dtDate, Voucher_.voucherDate.getName());
 	
 	        // Number
 	        Label labelNr = new Label(top, SWT.NONE);
@@ -236,7 +237,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
 	        textNr = new Text(top, SWT.BORDER);
 	        textNr.setToolTipText(labelNr.getToolTipText());
-	        bindModelValue(voucher, textNr, Voucher_.voucherNumber.getName(), 32);
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textNr);
 	
 	        // Document number
@@ -247,7 +247,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDocumentNr);
 	        textDocumentNr = new Text(top, SWT.BORDER);
-	        bindModelValue(voucher, textDocumentNr, Voucher_.documentNumber.getName(), 32);
 	        textDocumentNr.setToolTipText(msg.voucherFieldDocumentnumberTooltip);
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textDocumentNr);
 	
@@ -259,7 +258,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 	        textName = new Text(top, SWT.BORDER);
-	        bindModelValue(voucher, textName, Voucher_.name.getName(), 100);
 	        textName.setToolTipText(labelName.getToolTipText());
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 	
@@ -288,7 +286,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        //T: Mark a voucher, if the paid value is not equal to the total value.
 	        bPaidWithDiscount.setText(msg.voucherFieldWithdiscountName);
 	        bPaidWithDiscount.setToolTipText(msg.voucherFieldWithdiscountTooltip);
-	        bindModelValue(voucher, bPaidWithDiscount, Voucher_.discounted.getName());
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(bPaidWithDiscount);
 	
 	        // If the bPaidWithDiscount check box is selected ...
@@ -322,7 +319,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        textPaidValue.setFormatter(new MoneyFormatter());
 	        textPaidValue.getControl().setVisible(bPaidWithDiscount.getSelection());
 	        textPaidValue.getControl().setToolTipText(labelPaidValue.getToolTipText());
-	        bindModelValue(voucher, textPaidValue, Voucher_.paidValue.getName(), 32);
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textPaidValue.getControl());
 	
 	        // Total value
@@ -339,9 +335,22 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        textTotalValue.setFormatter(new MoneyFormatter());
 	        textTotalValue.getControl().setEditable(false);
 	        textTotalValue.getControl().setToolTipText(labelTotalValue.getToolTipText());
-	        bindModelValue(voucher, textTotalValue, Voucher_.totalValue.getName(), 32);
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textTotalValue.getControl());
+	        
+	        bindModel();
 	    }
+	
+	@Override
+	protected void bindModel() {
+    	fillAndBindCategoryCombo();
+        bindModelValue(voucher, dtDate, Voucher_.voucherDate.getName());
+        bindModelValue(voucher, textNr, Voucher_.voucherNumber.getName(), 32);
+        bindModelValue(voucher, textDocumentNr, Voucher_.documentNumber.getName(), 32);
+        bindModelValue(voucher, textName, Voucher_.name.getName(), 100);
+        bindModelValue(voucher, bPaidWithDiscount, Voucher_.discounted.getName());
+        bindModelValue(voucher, textPaidValue, Voucher_.paidValue.getName(), 32);
+        bindModelValue(voucher, textTotalValue, Voucher_.totalValue.getName(), 32);
+	}
 	
 		/**
 		 * Returns the title for the voucher editor (e.g., expenditure, receipt voucher).
@@ -351,9 +360,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 		abstract protected String getEditorTitle();
 
     /**
-     * creates the combo box for the VAT category
+     * creates the combo box for the {@link VoucherCategory}
      */
-    void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
             @Override
@@ -362,9 +371,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
             }
         });
         categories.addAll(voucherCategoriesDAO.findAll());
-
-        comboCategory = new Combo(top, SWT.BORDER);
-        comboCategory.setToolTipText(msg.commonFieldAccountTooltip);
         
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
@@ -537,37 +543,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	                log.error(e);
 	            }
 	        }
-	
-	//      for (DataSetVoucherItem itemDataset : itemDatasets) {
-	//
-	//          // Get the ID of this voucher item and
-	//          int id = itemDataset.getIntValueByKey("id");
-	//
-	//          DataSetVoucherItem item = null;
-	//
-	//          // Get an existing item, or use the temporary item
-	//          if (id >= 0) {
-	//              item = (DataSetVoucherItem) getVoucherItems().getDatasetById(id);
-	//
-	//              // Copy the values to the existing voucher item.
-	//              item.setStringValueByKey("name", itemDataset.getStringValueByKey("name"));
-	//              item.setStringValueByKey("category", itemDataset.getStringValueByKey("category"));
-	//              item.setDoubleValueByKey("price", itemDataset.getDoubleValueByKey("price"));
-	//              item.setIntValueByKey("vatid", itemDataset.getIntValueByKey("vatid"));
-	//          }
-	//          else
-	//              item = itemDataset;
-	//
-	//          // Updates the list of billing account
-	//          updateBillingAccount(item);
-	//          
-	//      }
-	//      // Set the string value
-	//      ...
-	//      // Set total and paid value
-	//     ...
-	//
-	//      // The the voucher was paid with a discount, use the paid value
+
+	       // The the voucher was paid with a discount, use the paid value
 	        if (bPaidWithDiscount.getSelection()) {
 	            voucher.setPaidValue((Double) textPaidValue.getValue());
 	        }
@@ -578,7 +555,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	      // The selection "book" is inverted
 	      voucher.setDoNotBook(!bBook.getSelection());
-	//
 
 		try {
 			voucher = getModelRepository().update(voucher);
@@ -592,6 +568,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	      // Refresh the table view of all vouchers
 	      evtBroker.post(getEditorId(), Editor.UPDATE_EVENT);
 	      
+	        bindModel();
+
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);
 	    }

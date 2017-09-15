@@ -495,6 +495,15 @@ public abstract class Editor<T extends IEntity> {
 		// The result of the validation
 		return result;
 	}
+	
+    /**
+     * Binds the model properties to the according widgets on UI. This is necessary for initially creating
+     * the view <b>and</b> if the underlying object changes (e.g., if you save a newly created entity).
+     * 
+     * TODO: WIP, must be overwritten, make it abstract later on
+     */
+    protected void bindModel() {
+    }
 
 	/**
 	 * Binds a Java bean property to the UI widget.
