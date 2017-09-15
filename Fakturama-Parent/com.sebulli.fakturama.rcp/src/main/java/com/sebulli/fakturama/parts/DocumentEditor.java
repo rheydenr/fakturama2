@@ -126,7 +126,6 @@ import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.parts.converter.Double2SpinnerUpdateStrategy;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
@@ -1289,7 +1288,7 @@ public class DocumentEditor extends Editor<Document> {
 			// value is set by dueDays variable, not directly by binding
 			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
 					new UpdateValueStrategy(),
-					new Double2SpinnerUpdateStrategy());
+					new UpdateValueStrategy());
 
 			// Create the issue date label
 			Label issueDateLabel = new Label(paidDataContainer, SWT.NONE);

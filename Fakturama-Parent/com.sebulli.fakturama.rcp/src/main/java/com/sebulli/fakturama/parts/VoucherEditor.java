@@ -342,12 +342,13 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        bindModelValue(voucher, textTotalValue, Voucher_.totalValue.getName(), 32);
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textTotalValue.getControl());
 	    }
-	/**
-	 * @return
-	 */
-	protected String getEditorTitle() {
-		return "VoucherEditor";
-	}
+	
+		/**
+		 * Returns the title for the voucher editor (e.g., expenditure, receipt voucher).
+		 * 
+		 * @return the title string
+		 */
+		abstract protected String getEditorTitle();
 
     /**
      * creates the combo box for the VAT category
@@ -389,6 +390,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
         target2VatcatModel.setConverter(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
         bindModelValue(voucher, comboCategory, Voucher_.account.getName(), target2VatcatModel, vatCatModel2Target);
     }
+    
 	/**
 	 * Creates a new voucher
 	 * 
@@ -398,34 +400,17 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	 * 	The created voucher
 	 */
 	public Voucher createNewVoucher() {
-		Voucher newExpenditure = modelFactory.createVoucher();
-		newExpenditure.setVoucherType(getVoucherType());
-		newExpenditure.setPaidValue(Double.valueOf(0.0));
-		newExpenditure.setTotalValue(Double.valueOf(0.0));
-	    return newExpenditure;
+		Voucher newVoucher = modelFactory.createVoucher();
+		newVoucher.setVoucherType(getVoucherType());
+		newVoucher.setPaidValue(Double.valueOf(0.0));
+		newVoucher.setTotalValue(Double.valueOf(0.0));
+	    return newVoucher;
 	}
 	
 	/**
 	 * @return
 	 */
 	protected abstract VoucherType getVoucherType();
-	
-	/**
-	 * Add a voucher to the list of all vouchers
-	 * 
-	 * @param voucher
-	 * 	The new voucher to add
-	 * @return
-	 *  A Reference to the added voucher
-	 */
-	public Voucher addVoucher(Voucher pVoucher) {
-		try {
-	        voucher = getModelRepository().save(pVoucher);
-	    } catch (FakturamaStoringException e) {
-	        log.error(e);
-	    }
-		return voucher;
-	}
 	
 	/**
 	 * Gets the model repository.
@@ -440,29 +425,15 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	protected abstract String getCustomerSupplierString();
 	
 	/**
-	 * Creates a new array for voucher items
+	 * Creates a new voucher items
 	 * 
 	 * @return
 	 * 	Array with all voucher items
 	 */
-	public VoucherItem createNewVoucherItems() {
+	public VoucherItem createNewVoucherItem() {
 		return modelFactory.createVoucherItem();
 	}
-	/**
-	 * Updates a voucher
-	 * 
-	 * @param voucher
-	 * 		The voucher to update
-	 * @return 
-	 */
-	public Voucher updateVoucher(Voucher pVoucher) {
-		try {
-	        voucher = getModelRepository().update(pVoucher);
-	    } catch (FakturamaStoringException e) {
-	        log.error(e);
-	    }
-		return voucher;
-	}
+
 	/**
 	 * Initializes the editor. If an existing data set is opened, the local
 	 * variable "voucher" is set to this data set. If the editor is opened to
@@ -549,21 +520,12 @@ public abstract class VoucherEditor extends Editor<Voucher>{
                 // parentCategory now has the last found Category
                 voucher.setAccount(account);
             }
-	        
-//	        // Create a new voucher ID, if this is a new voucher
-//	        if (newVoucher) {
-//	            try {
-//	                getModelRepository().save(voucher);
-//	            } catch (FakturamaStoringException e) {
-//	                log.error(e);
-//	            }
-//	        }
-	
+
 	        // Set all the items
 	        List<VoucherItem> items = itemListTable.getVoucherItemsListData()
 	            .stream()
 	            .map(dto -> dto.getVoucherItem())
-	            .sorted(Comparator.comparing(VoucherItem::getId))
+	            /*.sorted(Comparator.comparing(VoucherItem::getId))*/
 	            .collect(Collectors.toList());
 	        voucher.setItems(new ArrayList<>(items));
 	        
@@ -617,17 +579,13 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	      // The selection "book" is inverted
 	      voucher.setDoNotBook(!bBook.getSelection());
 	//
-//	      // If it is a new voucher, add it to the voucher list and
-//	      // to the data base
-//	      if (newVoucher) {
-//	          addVoucher(voucher);
-//	          newVoucher = false;
-//	      }
-//	      // If it's not new, update at least the data base
-//	      else {
-//	          updateVoucher(voucher);
-//	      }
-	
+
+		try {
+			voucher = getModelRepository().update(voucher);
+		} catch (FakturamaStoringException e) {
+			log.error(e);
+		}
+
 	      // Set the Editor's name to the voucher name.
 	      this.part.setLabel(voucher.getName());
 	
@@ -637,6 +595,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);
 	    }
+	
 	/**
 	 * @return
 	 */

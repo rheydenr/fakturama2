@@ -22,12 +22,9 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,7 +36,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -151,6 +147,9 @@ public class VatEditor extends Editor<VAT> {
         
 		// Refresh the table view of all VATs (this also refreshes the tree of categories)
         evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		
+		// re-bind model
+		bindModel();
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
@@ -225,7 +224,6 @@ public class VatEditor extends Editor<VAT> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
         textName.setToolTipText(labelName.getToolTipText());
-        bindModelValue(editorVat, textName, VAT_.name.getName(), 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // Category of the VAT
@@ -235,7 +233,8 @@ public class VatEditor extends Editor<VAT> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        createCategoryCombo();
+        comboCategory = new Combo(top, SWT.BORDER);
+//        fillAndBindCategoryCombo();
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // The description
@@ -246,7 +245,6 @@ public class VatEditor extends Editor<VAT> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
         textDescription = new Text(top, SWT.BORDER);
         textDescription.setToolTipText(labelDescription.getToolTipText());
-        bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textDescription);
 
         // The value
@@ -259,7 +257,6 @@ public class VatEditor extends Editor<VAT> {
         GridData data = new GridData();
         data.widthHint = 200;
         textValue.getControl().setLayoutData(data);
-        bindModelValue(editorVat, textValue, VAT_.taxValue.getName(), 16);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
         // Create the composite to make this VAT to the standard VAT. 
@@ -286,12 +283,25 @@ public class VatEditor extends Editor<VAT> {
         if (!newVat) {
             stdComposite.stdButton.setEnabled(true);
         }
+        
+        bindModel();
+    }
+    
+    /**
+     * Binds the model properties to the according widgets on UI. This is necessary for initially creating
+     * the view <b>and</b> if the underlying object changes (e.g., if you save a newly created entity).
+     */
+    protected void bindModel() {
+        bindModelValue(editorVat, textName, VAT_.name.getName(), 64);
+    	fillAndBindCategoryCombo();
+        bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
+        bindModelValue(editorVat, textValue, VAT_.taxValue.getName(), 16);
     }
 
     /**
      * creates the combo box for the VAT category
      */
-    private void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
             @Override
@@ -301,7 +311,6 @@ public class VatEditor extends Editor<VAT> {
         });
         categories.addAll(vatCategoriesDAO.findAll());
 
-        comboCategory = new Combo(top, SWT.BORDER);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -326,15 +335,7 @@ public class VatEditor extends Editor<VAT> {
         target2VatcatModel.setConverter(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
         bindModelValue(editorVat, comboCategory, VAT_.category.getName(), target2VatcatModel, vatCatModel2Target);
     }
-    
-    @Inject
-    @Optional
-    public void partActivation(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) 
-      Event event) {
-      // do something
-//      System.out.println("Got Part");
-    }     
-    
+
     @Override
     protected String getDefaultEntryKey() {
         return Constants.DEFAULT_VAT;
