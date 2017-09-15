@@ -138,6 +138,7 @@ public class Messages {
 	public String contactCreditorFieldName;
 	public String contactDebtorFieldName;
 	public String contactFieldGln;
+	public String contactFieldGlnTooltip;
 	public String contactFieldMrName;
 	public String contactFieldMsName;
 	public String contactFieldFamilyName;

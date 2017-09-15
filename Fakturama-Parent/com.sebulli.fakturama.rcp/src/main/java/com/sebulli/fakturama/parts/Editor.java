@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -117,7 +118,7 @@ public abstract class Editor<T extends IEntity> {
 	private String editorID = "";
 	protected static final int NO_ERROR = 0;
 	protected static final int ERROR_NOT_NEXT_ID = 1;
-    protected DataBindingContext ctx = new DataBindingContext();
+    private DataBindingContext ctx = new DataBindingContext();
 
     private FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
 
@@ -516,9 +517,10 @@ public abstract class Editor<T extends IEntity> {
 	    bindModelValue(target, source, property, null, null);
 	}
 	
-    protected void bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    protected Binding bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
+        Binding retval = null;
         
         IObservableValue<T> uiWidget;
         /*
@@ -537,9 +539,9 @@ public abstract class Editor<T extends IEntity> {
         }
 
         if (modelToTarget != null) {
-            ctx.bindValue(uiWidget, model, targetToModel, modelToTarget);
+            retval = getCtx().bindValue(uiWidget, model, targetToModel, modelToTarget);
         } else {
-            ctx.bindValue(uiWidget, model);
+            retval = getCtx().bindValue(uiWidget, model);
         }    
         
         if(source instanceof Combo) {
@@ -558,6 +560,12 @@ public abstract class Editor<T extends IEntity> {
         			getMDirtyablePart().setDirty(true);
         	}));
         }
+        
+        return retval;
+    }
+    
+    protected void removeBinding(Binding binding) {
+    	getCtx().removeBinding(binding);
     }
 	
     protected void bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
@@ -591,7 +599,7 @@ public abstract class Editor<T extends IEntity> {
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
-        ctx.bindValue(uiWidget, model);
+        getCtx().bindValue(uiWidget, model);
 
         source.getControl().addModifyListener(new ModifyListener() {
             @Override
@@ -614,7 +622,7 @@ public abstract class Editor<T extends IEntity> {
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
-        ctx.bindValue(uiWidget, model);
+        getCtx().bindValue(uiWidget, model);
         
         source.getCombo().addModifyListener(new ModifyListener() {
             @Override

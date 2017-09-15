@@ -28,7 +28,7 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- *
+ * Editor for {@link Debitor}s.
  */
 public class DebitorEditor extends ContactEditor<Debitor> {
 

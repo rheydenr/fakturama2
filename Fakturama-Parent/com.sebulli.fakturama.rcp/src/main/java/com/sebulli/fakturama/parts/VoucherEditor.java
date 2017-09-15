@@ -37,6 +37,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -651,5 +652,10 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	    textTotalValue.setValue(totalValue);
 	    voucher.setTotalValue((Double) textTotalValue.getValue());
 	}
+	
+    @Override
+    protected MDirtyable getMDirtyablePart() {
+        return part;
+    }
 
 }

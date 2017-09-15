@@ -28,7 +28,7 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- *
+ * Editor for {@link Creditor}s
  */
 public class CreditorEditor extends ContactEditor<Creditor> {
 
@@ -50,7 +50,8 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 
 	@Override
 	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
-		return modelFactory.createCreditor();
+		Creditor createCreditor = modelFactory.createCreditor();
+		return createCreditor;
 	}
 	
     @Inject

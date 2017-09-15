@@ -22,9 +22,12 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -38,6 +41,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
@@ -83,6 +87,9 @@ public class VatEditor extends Editor<VAT> {
      * a PartDescriptor (see createPartControl).
      */
     private MPart part;
+    
+    @Inject
+    private EPartService partService;
 
     // This UniDataSet represents the editor's input 
     private VAT editorVat = null;
@@ -287,13 +294,9 @@ public class VatEditor extends Editor<VAT> {
         bindModel();
     }
     
-    /**
-     * Binds the model properties to the according widgets on UI. This is necessary for initially creating
-     * the view <b>and</b> if the underlying object changes (e.g., if you save a newly created entity).
-     */
     protected void bindModel() {
         bindModelValue(editorVat, textName, VAT_.name.getName(), 64);
-    	fillAndBindCategoryCombo();
+        fillAndBindCategoryCombo();
         bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
         bindModelValue(editorVat, textValue, VAT_.taxValue.getName(), 16);
     }
@@ -302,6 +305,12 @@ public class VatEditor extends Editor<VAT> {
      * creates the combo box for the VAT category
      */
     private void fillAndBindCategoryCombo() {
+    	
+    	// doesn't work :-(
+//        if(bindModelValue != null) {
+//        	removeBinding(bindModelValue);
+//        }
+        
         // Collect all category strings as a sorted Set
         final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
             @Override
@@ -319,7 +328,20 @@ public class VatEditor extends Editor<VAT> {
             }
         });
         
-        // Add all categories to the combo
+        /*
+         * FIXME don't temporarily store the category!
+         * 
+         * Oh no, don't shoot! Let me explain this. If you create 
+         * a new VAT with a new VatCategory, save it. Now, the category disappears, because
+         * it's removed by BeanObserver trigger. You can't stop it (e.g., by removing the
+         * Observer). But if you don't update the combo list, any newly created entry is not
+         * in the list. Therefore we store the category temporarily and add it to the editor
+         * after filling the combo box.
+         * If anyone has a better idea let me know.
+         */
+        VATCategory tmpKat = editorVat.getCategory();
+//        
+//        // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
             @Override
@@ -327,6 +349,8 @@ public class VatEditor extends Editor<VAT> {
                 return element instanceof VATCategory ? CommonConverter.getCategoryName((VATCategory)element, "") : null;
             }
         });
+        // restore old category
+        editorVat.setCategory(tmpKat);
 
         UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
         vatCatModel2Target.setConverter(new CategoryConverter<VATCategory>(VATCategory.class));
@@ -334,6 +358,26 @@ public class VatEditor extends Editor<VAT> {
         UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
         target2VatcatModel.setConverter(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
         bindModelValue(editorVat, comboCategory, VAT_.category.getName(), target2VatcatModel, vatCatModel2Target);
+    }
+    
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(VatEditor.EDITOR_ID + "/forceClose") Event event) {
+        //      sync.syncExec(() -> top.setRedraw(false));
+        // the event has already all given params in it since we created them as Map
+        String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
+        // at first we have to check if the message is for us
+        if (!StringUtils.equals(targetDocumentName, editorVat.getName())) {
+            // if not, silently ignore this event
+            return;
+        }
+        partService.hidePart(part, true);
+        //  sync.syncExec(() -> top.setRedraw(true));
     }
 
     @Override

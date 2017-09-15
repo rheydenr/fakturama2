@@ -16,8 +16,6 @@ package com.sebulli.fakturama.parts;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherType;
@@ -32,11 +30,6 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     
     @Inject
     protected ReceiptVouchersDAO receiptVouchersDAO;
-
-//	protected VoucherCategory getLastUsedCategory() {
-//	    return voucherCategoriesDAO.getLastUsedCategoryForReceiptvoucher();
-//	}
-//	
     
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.parts.VoucherEditor#getEditorTitle()
@@ -65,11 +58,6 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     @Override
     protected ReceiptVouchersDAO getModelRepository() {
         return receiptVouchersDAO;
-    }
-    
-    @Override
-    protected MDirtyable getMDirtyablePart() {
-        return part;
     }
 
     @Override

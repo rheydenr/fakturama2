@@ -16,8 +16,6 @@ package com.sebulli.fakturama.parts;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherType;
@@ -67,11 +65,6 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
     @Override
     protected ExpendituresDAO getModelRepository() {
         return expendituresDAO;
-    }
-	
-    @Override
-    protected MDirtyable getMDirtyablePart() {
-        return part;
     }
 
     @Override

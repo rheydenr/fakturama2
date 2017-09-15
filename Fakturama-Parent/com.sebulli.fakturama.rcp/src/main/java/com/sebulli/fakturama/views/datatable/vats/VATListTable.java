@@ -58,7 +58,6 @@ import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;

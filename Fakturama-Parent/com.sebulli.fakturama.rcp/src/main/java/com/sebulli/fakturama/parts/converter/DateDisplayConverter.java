@@ -16,7 +16,6 @@ package com.sebulli.fakturama.parts.converter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
@@ -43,17 +42,7 @@ public class DateDisplayConverter extends DisplayConverter  {
 
     @Override
     public Object displayToCanonicalValue(Object displayValue) {
-    	Date retval = Calendar.getInstance().getTime();
-        String displayString = (String) displayValue;
-        displayString = displayString.trim();
-        if (displayString.endsWith("%")) { //$NON-NLS-1$
-            displayString = displayString.substring(0,
-                    displayString.length() - 1);
-        }
-        displayString = displayString.trim();
-        int displayInt = Integer.valueOf(displayString).intValue();
-        double percentageValue = (double) displayInt / 100;
-        return retval;
+    	return Calendar.getInstance().getTime();
     }
 
 }
