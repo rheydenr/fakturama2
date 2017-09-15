@@ -334,10 +334,12 @@ public class VatEditor extends Editor<VAT> {
          * Oh no, don't shoot! Let me explain this. If you create 
          * a new VAT with a new VatCategory, save it. Now, the category disappears, because
          * it's removed by BeanObserver trigger. You can't stop it (e.g., by removing the
-         * Observer). But if you don't update the combo list, any newly created entry is not
-         * in the list. Therefore we store the category temporarily and add it to the editor
-         * after filling the combo box.
-         * If anyone has a better idea let me know.
+         * Binding, see above). But if you don't update the combo list, any newly created entry is not
+         * shown in the list. Therefore we store the category temporarily and add it to the editor
+         * after filling the combo box. Ugly, but it works. 
+         * 
+         * If anyone has a better idea how to prevent the data binding from removing 
+         * the category value let me know.
          */
         VATCategory tmpKat = editorVat.getCategory();
 //        

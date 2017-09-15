@@ -377,7 +377,7 @@ public class DocumentEditor extends Editor<Document> {
 					msg.editorDocumentErrorDocnumberTitle,
 					
 					//T: Text of the dialog that appears if the customer number is not valid.
-					msg.editorDocumentErrorDocnumberNotnextfree + " " + getNextNr() + "\n" + 
+					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
 					return;

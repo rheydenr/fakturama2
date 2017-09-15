@@ -2173,7 +2173,7 @@
 		</sect2>
 		<sect2>
 			<title>Konto</title>
-			<para>Konto, auf das alle Rechnungen mit dieser Zahlungsart gebucht werden.Zum Beispiel <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Eine neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird.</para>
+			<para>Konto, auf das alle Rechnungen mit dieser Zahlungsart gebucht werden.Zum Beispiel <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Ein neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird. Beim Anlegen eines Belegs wird das zuletzt ausgewählte Konto bereits voreingestellt.</para>
 		</sect2>
 		<sect2>
 			<title>Beschreibung</title>
@@ -2506,7 +2506,7 @@
 		</varlistentry>
 		<varlistentry>
 			<term>Konto</term>
-			<listitem><para>Konto, auf das der Beleg gebucht wird, z.B. <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Eine neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird.</para></listitem>
+			<listitem><para>Konto, auf das der Beleg gebucht wird, z.B. <emphasis role="bold">Bank, Kreditkarte, privat verauslagt</emphasis>. Ein neues Konto wird automatisch angelegt, wenn der Kontoname in die Auswahlliste eingetragen wird. Beim Anlegen eines Belegs wird das zuletzt ausgewählte Konto bereits voreingestellt.</para></listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>Datum</term>

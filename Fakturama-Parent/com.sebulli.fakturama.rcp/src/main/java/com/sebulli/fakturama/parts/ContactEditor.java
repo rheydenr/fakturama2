@@ -261,9 +261,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				messageBox.setText(msg.editorContactErrorCustomerid);
 
 				//T: Text of the dialog that appears if the customer number is not valid.
-				messageBox.setMessage(msg.editorContactErrorNotnextfreenumber + " " + txtNr.getText() + "\n" + 
+				messageBox.setMessage(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()) + "\n" + 
 						msg.editorContactHintSeepreferences);
 				messageBox.open();
+				return;
 			}
 
 		}
@@ -1260,6 +1261,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
             }
         });
         
+        // FIXME see comment in VatEditor
+        ContactCategory tmpCategory = editorContact.getCategories();
         // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
@@ -1268,6 +1271,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
                 return element instanceof ContactCategory ? CommonConverter.getCategoryName((ContactCategory)element, "") : null;
             }
         });
+        editorContact.setCategories(tmpCategory);
 
         UpdateValueStrategy catModel2Target = new UpdateValueStrategy();
         catModel2Target.setConverter(new CategoryConverter<ContactCategory>(ContactCategory.class));
