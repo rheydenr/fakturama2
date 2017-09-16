@@ -31,7 +31,9 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -491,13 +493,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 ////		txtDeliveryCountry.setText(comboCountry.getText());
 	}
 	
-    
     /**
      * If an entity is deleted via list view we have to close a possibly open
      * editor window. Since this is triggered by a UIEvent we named this method
      * "handle*".
      */
-    public void handleForceClose(Event event) {
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + "/forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
         String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
         // at first we have to check if the message is for us
@@ -508,7 +511,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         partService.hidePart(part, true);
     }
 
-	
 
 	/**
 	 * Creates the SWT controls for this workbench part
@@ -1248,10 +1250,16 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         final TreeSet<ContactCategory> categories = new TreeSet<ContactCategory>(new Comparator<ContactCategory>() {
             @Override
             public int compare(ContactCategory cat1, ContactCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
+            	// oh no... the names could be equal in different branches,
+            	// therefore we have to compare with an another attribute
+            	int result = cat1.getName().compareTo(cat2.getName());
+            	if(result == 0) {
+            		result = CommonConverter.getCategoryName(cat1, "").compareTo(CommonConverter.getCategoryName(cat2, ""));
+            	}
+        		return result;
             }
         });
-        categories.addAll(contactCategoriesDAO.findAll());
+        categories.addAll(contactCategoriesDAO.findAll(true));
 
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {

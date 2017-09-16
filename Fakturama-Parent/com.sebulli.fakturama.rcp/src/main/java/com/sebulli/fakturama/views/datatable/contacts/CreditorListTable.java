@@ -21,7 +21,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
 /**
- * View with the table of all contacts
+ * View with the table of all creditors
  * 
  */
 public class CreditorListTable extends ContactListTable<Creditor> {

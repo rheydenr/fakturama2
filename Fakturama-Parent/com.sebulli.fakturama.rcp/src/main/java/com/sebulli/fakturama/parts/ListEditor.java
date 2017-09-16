@@ -48,7 +48,7 @@ import com.sebulli.fakturama.parts.converter.MessageKeyToCategoryConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- * The text editor
+ * The lists editor
  * 
  * @author Gerd Bartelt
  */
@@ -120,6 +120,8 @@ public class ListEditor extends Editor<ItemAccountType> {
         // Refresh the table view of all ItemAccountTypes (this also refreshes the tree of categories)
         evtBroker.post(ListEditor.class.getSimpleName(), Editor.UPDATE_EVENT);
 
+        bindModel();
+        
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
     }
@@ -183,9 +185,10 @@ public class ListEditor extends Editor<ItemAccountType> {
         //T: List Editor - Category ( Name of the List to place this entry)
         labelCategory.setText(msg.editorListListfield);
         labelCategory.setToolTipText(msg.editorListTooltip);
-
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
-        createCategoryCombo();
+        
+        comboCategory = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
+        comboCategory.setToolTipText(msg.editorListTooltip);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(300, SWT.DEFAULT).applyTo(comboCategory);
 
         // The name
@@ -193,7 +196,6 @@ public class ListEditor extends Editor<ItemAccountType> {
         labelName.setText(msg.commonFieldName);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
-        bindModelValue(editorListEntry, textName, ItemAccountType_.name.getName(), 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // The value
@@ -201,14 +203,21 @@ public class ListEditor extends Editor<ItemAccountType> {
         labelCode.setText(msg.commonFieldValue);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCode);
         textValue = new Text(top, SWT.BORDER);
-        bindModelValue(editorListEntry, textValue, ItemAccountType_.value.getName(), 250);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue);
+        
+        bindModel();
     }
+
+	protected void bindModel() {
+		bindModelValue(editorListEntry, textName, ItemAccountType_.name.getName(), 64);
+		fillAndBindCategoryCombo();
+        bindModelValue(editorListEntry, textValue, ItemAccountType_.value.getName(), 250);
+	}
 
     /**
      * creates the combo box for the ItemAccountType category
      */
-    private void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<ItemListTypeCategory> categories = new TreeSet<ItemListTypeCategory>(new Comparator<ItemListTypeCategory>() {
             @Override
@@ -218,8 +227,6 @@ public class ListEditor extends Editor<ItemAccountType> {
         });
         categories.addAll(itemListTypeCategoriesDAO.findAll());
 
-        comboCategory = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
-        comboCategory.setToolTipText(msg.editorListTooltip);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -228,6 +235,7 @@ public class ListEditor extends Editor<ItemAccountType> {
             }
         });
 
+        ItemListTypeCategory tmpCategory = editorListEntry.getCategory();
         // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
@@ -238,6 +246,7 @@ public class ListEditor extends Editor<ItemAccountType> {
 //                return element instanceof ItemListTypeCategory ? ((ItemListTypeCategory) element).getName() : null;
             }
         });
+        editorListEntry.setCategory(tmpCategory);
 
         UpdateValueStrategy itemListTypeCatModel2Target = new UpdateValueStrategy();
         itemListTypeCatModel2Target.setConverter(new CategoryConverter<ItemListTypeCategory>(ItemListTypeCategory.class, msg));

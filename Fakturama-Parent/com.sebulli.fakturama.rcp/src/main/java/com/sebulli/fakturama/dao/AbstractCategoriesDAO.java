@@ -28,7 +28,7 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
      * @param pCategory the Category to search
      * @return Category
      */
-    public T findContactCategoryByName(String pCategory) {
+    public T findCategoryByName(String pCategory) {
         T result = null;
         if(StringUtils.isNotEmpty(pCategory)) {
         	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -39,8 +39,9 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
     		CriteriaQuery<T> selectQuery = cq.select(rootEntity)
     		        .where(cb.and(
-        		                cb.equal(rootEntity.<String> get("name"), leafCategory) /*,
-        		                cb.equal(rootEntity.get(ContactCategory_.parent), getEntityClass())
+        		                cb.equal(rootEntity.<String> get("name"), leafCategory),
+        		                cb.equal(rootEntity.<Boolean> get("deleted"), false)/*));
+        		                /*cb.equal(rootEntity.get(ContactCategory_.parent), getEntityClass())
         		               ,
         		                cb.equal(rootEntity.get(ContactCategory_.deleted), false)*/));
             try {

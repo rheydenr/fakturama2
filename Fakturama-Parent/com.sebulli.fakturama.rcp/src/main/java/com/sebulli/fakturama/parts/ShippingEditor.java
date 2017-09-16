@@ -29,9 +29,12 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -47,6 +50,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
@@ -86,6 +90,9 @@ public class ShippingEditor extends Editor<Shipping> {
 
     @Inject
     protected ShippingCategoriesDAO shippingCategoriesDAO;
+    
+    @Inject
+    private EPartService partService;
 
     // Editor's ID
     public static final String EDITOR_ID = "ShippingEditor";
@@ -145,8 +152,8 @@ public class ShippingEditor extends Editor<Shipping> {
 
    		// Set the Shipping data
         // ... done through databinding...
-        // except value (since it could be from gross or from net
-        editorShipping.setShippingValue(net);
+        // except value (since it could be from gross or from net        
+        editorShipping.setShippingValue(netText.getNetValue().getNumber().doubleValue());
 
    		// save the new or updated Shipping
         try {
@@ -190,8 +197,28 @@ public class ShippingEditor extends Editor<Shipping> {
 		// Refresh the table view of all Shippings (this also refreshes the tree of categories)
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
+        bindModel();
+
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
+    }
+	
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(ShippingEditor.EDITOR_ID + "/forceClose") Event event) {
+        // the event has already all given params in it since we created them as Map
+        String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
+        // at first we have to check if the message is for us
+        if (!StringUtils.equals(targetDocumentName, editorShipping.getName())) {
+            // if not, silently ignore this event
+            return;
+        }
+        partService.hidePart(part, true);
     }
 
     /**
@@ -229,7 +256,7 @@ public class ShippingEditor extends Editor<Shipping> {
             editorShipping = modelFactory.createShipping();
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
-                ShippingCategory newCat = shippingCategoriesDAO.findShippingCategoryByName(category);
+                ShippingCategory newCat = shippingCategoriesDAO.findCategoryByName(category);
                 editorShipping.setCategories(newCat);
             }
             editorShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
@@ -286,18 +313,15 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
         textName = new Text(top, SWT.BORDER);
         textName.setToolTipText(labelName.getToolTipText());
-
-        bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
         // Shipping category
         Label labelCategory = new Label(top, SWT.NONE);
         labelCategory.setText(msg.commonFieldCategory);
         labelCategory.setToolTipText(msg.editorShippingCategoryTooltip);
-
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        createCategoryCombo();
+        comboCategory = new Combo(top, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // Shipping description
@@ -309,7 +333,6 @@ public class ShippingEditor extends Editor<Shipping> {
         textDescription = new Text(top, SWT.BORDER);
         //		textDescription.setText(editorShipping.getDescription());
         textDescription.setToolTipText(labelDescription.getToolTipText());
-        bindModelValue(editorShipping, textDescription, Shipping_.description.getName(), 250);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textDescription);
 
         // Shipping value
@@ -342,14 +365,12 @@ public class ShippingEditor extends Editor<Shipping> {
         if (useNet) {
             netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
             		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
-//            bindModelValue(editorShipping, netText.getNetText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // Create a gross text widget
         if (useGross) {
             grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
             		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
-//            bindModelValue(editorShipping, grossText.getGrossText(), Shipping_.shippingValue.getName(), 16);
         }
 
         // If net and gross were created, link both together
@@ -374,71 +395,10 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVat);
 
         // VAT combo list
-        List<VAT> allVATs = vatsDao.findAll();
-        comboVat = new Combo(top, SWT.BORDER);
+        comboVat = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
         comboViewer = new ComboViewer(comboVat);
         comboViewer.setContentProvider(new EntityComboProvider());
         comboViewer.setLabelProvider(new EntityLabelProvider());
-
-        comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            public void selectionChanged(SelectionChangedEvent event) {
-
-                // Handle selection changed event 
-                ISelection selection = event.getSelection();
-                IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-
-                // If one element is selected
-                if (!structuredSelection.isEmpty()) {
-
-                    // Get the first element ...
-                    Object firstElement = structuredSelection.getFirstElement();
-
-                    // Get the selected VAT
-                    VAT uds = (VAT) firstElement;
-
-                    // Store the old value
-                    Double oldVat = editorShipping.getShippingVat().getTaxValue();
-
-                    // Get the new value
-//                    vatId = uds.getId();
-                    vat = uds;
-
-                    // Recalculate the price values if gross is selected,
-                    // So the gross value will stay constant.
-                    if (!useNet) {
-                        net = new Double(net * ((1 + oldVat) / (1 + vat.getTaxValue())));
-                    }
-
-                    // Update net and gross text widget
-                    if (netText != null)
-                        netText.setVatValue(vat.getTaxValue());
-                    if (grossText != null)
-                        grossText.setVatValue(vat.getTaxValue());
-
-                    // Check, if the document has changed.
-//                    checkDirty();
-                }
-            }
-        });
-
-        // Create a JFace combo viewer for the VAT list
-        comboViewer.setInput(allVATs);
-
-        UpdateValueStrategy vatModel2Target = new UpdateValueStrategy();
-        vatModel2Target.setConverter(new EntityConverter<VAT>(VAT.class));
-        
-        UpdateValueStrategy target2VatModel = new UpdateValueStrategy();
-        target2VatModel.setConverter(new StringToEntityConverter<VAT>(allVATs, VAT.class));
-//        try {
-        bindModelValue(editorShipping, comboVat, Shipping_.shippingVat.getName()/* + "." + VAT_.name.getName()*/,
-                target2VatModel, vatModel2Target);
-//        }
-//        catch (IndexOutOfBoundsException e) {
-//            comboVat.setText("invalid");
-//            vatId = -1;
-//        }
-
         
         // Create a label for the automatic VAT calculation
         Label labelAutoVat = new Label(top, SWT.NONE);
@@ -446,13 +406,12 @@ public class ShippingEditor extends Editor<Shipping> {
         labelAutoVat.setText(msg.editorShippingFieldAutovatcalculationName);
         //T: Tool Tip Text
         labelAutoVat.setToolTipText(msg.editorShippingFieldAutovatcalculationTooltip);
-
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAutoVat);
 
-        List<ShippingVatType> shippingVatTypes = new ArrayList<>();
         // Create a combo list box for the automatic VAT calculation
-        comboAutoVat = new ComboViewer(top, SWT.BORDER);
+        comboAutoVat = new ComboViewer(top, SWT.BORDER | SWT.READ_ONLY);
         //T: Shipping Editor: list entry for "constant VAT calculation"
+        List<ShippingVatType> shippingVatTypes = new ArrayList<>();
         shippingVatTypes.add(ShippingVatType.SHIPPINGVATFIX);
         comboAutoVat.getCombo().setToolTipText(labelAutoVat.getToolTipText());
         if (useGross)
@@ -465,18 +424,6 @@ public class ShippingEditor extends Editor<Shipping> {
         comboAutoVat.setContentProvider(new ShippingVatTypeContentProvider());
         comboAutoVat.setLabelProvider(new ShippingVatTypeLabelProvider(msg));
         comboAutoVat.setInput(shippingVatTypes);
-        
-        // On creating this editor, select the entry of the autoVat list,
-        // that is set by the shipping.
-        try {
-            bindModelValue(editorShipping, comboAutoVat, Shipping_.autoVat.getName());
-//            comboAutoVat.select(autoVat.getValue());
-            autoVatChanged();
-        }
-        catch (IndexOutOfBoundsException e) {
-//            comboAutoVat.setText("invalid");
-            autoVat = ShippingVatType.SHIPPINGVATGROSS;
-        }
 
         comboAutoVat.addSelectionChangedListener(new ISelectionChangedListener() {
             
@@ -521,12 +468,91 @@ public class ShippingEditor extends Editor<Shipping> {
         if (!newShipping) {
             stdComposite.stdButton.setEnabled(true);
         }
+        
+        bindModel();
+    }
+
+	private void fillAndBindVatCombo() {
+		List<VAT> allVATs = vatsDao.findAll();
+
+        comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            public void selectionChanged(SelectionChangedEvent event) {
+
+                // Handle selection changed event 
+                ISelection selection = event.getSelection();
+                IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+
+                // If one element is selected
+                if (!structuredSelection.isEmpty()) {
+
+                    // Get the first element ...
+                    Object firstElement = structuredSelection.getFirstElement();
+
+                    // Get the selected VAT
+                    VAT uds = (VAT) firstElement;
+
+                    // Store the old value
+                    Double oldVat = editorShipping.getShippingVat().getTaxValue();
+
+                    // Get the new value
+                    vat = uds;
+
+                    // Recalculate the price values if gross is selected,
+                    // So the gross value will stay constant.
+                    if (!useNet) {
+                        net = new Double(net * ((1 + oldVat) / (1 + vat.getTaxValue())));
+                    }
+
+                    // Update net and gross text widget
+                    if (netText != null)
+                        netText.setVatValue(vat.getTaxValue());
+                    if (grossText != null)
+                        grossText.setVatValue(vat.getTaxValue());
+
+                    // Check, if the document has changed.
+//                    checkDirty();
+                }
+            }
+        });
+
+        // Create a JFace combo viewer for the VAT list
+        
+        VAT tmpShippingVat = editorShipping.getShippingVat();
+        comboViewer.setInput(allVATs);
+        editorShipping.setShippingVat(tmpShippingVat);
+        
+        UpdateValueStrategy vatModel2Target = new UpdateValueStrategy();
+        vatModel2Target.setConverter(new EntityConverter<VAT>(VAT.class));
+        
+        UpdateValueStrategy target2VatModel = new UpdateValueStrategy();
+        target2VatModel.setConverter(new StringToEntityConverter<VAT>(allVATs, VAT.class));
+        bindModelValue(editorShipping, comboVat, Shipping_.shippingVat.getName(),
+                target2VatModel, vatModel2Target);
+	}
+    
+    protected void bindModel() {
+        bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
+        fillAndBindCategoryCombo();
+        bindModelValue(editorShipping, textDescription, Shipping_.description.getName(), 250);
+        fillAndBindVatCombo();
+        
+        // On creating this editor, select the entry of the autoVat list,
+        // that is set by the shipping.
+        try {
+            bindModelValue(editorShipping, comboAutoVat, Shipping_.autoVat.getName());
+            autoVatChanged();
+        }
+        catch (IndexOutOfBoundsException e) {
+            autoVat = ShippingVatType.SHIPPINGVATGROSS;
+        }
+        
     }
 
     /**
      * creates the combo box for the Shipping category
      */
-    private void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<ShippingCategory> categories = new TreeSet<ShippingCategory>(new Comparator<ShippingCategory>() {
             @Override
@@ -536,7 +562,6 @@ public class ShippingEditor extends Editor<Shipping> {
         });
         categories.addAll(shippingCategoriesDAO.findAll());
 
-        comboCategory = new Combo(top, SWT.BORDER);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -546,6 +571,8 @@ public class ShippingEditor extends Editor<Shipping> {
         });
         
         // Add all categories to the combo
+        // FIXME see comment in VatEditor
+        ShippingCategory tmpCat = editorShipping.getCategories();
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
             @Override
@@ -553,6 +580,7 @@ public class ShippingEditor extends Editor<Shipping> {
                 return element instanceof ShippingCategory ? CommonConverter.getCategoryName((ShippingCategory)element, "") : null;
             }
         });
+        editorShipping.setCategories(tmpCat);
 
         UpdateValueStrategy shippingCatModel2Target = new UpdateValueStrategy();
         shippingCatModel2Target.setConverter(new CategoryConverter<ShippingCategory>(ShippingCategory.class));

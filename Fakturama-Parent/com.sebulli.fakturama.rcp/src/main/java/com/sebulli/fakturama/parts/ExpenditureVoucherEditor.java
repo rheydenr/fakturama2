@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.resources.core.Icon;
 
 public class ExpenditureVoucherEditor extends VoucherEditor {
 
@@ -54,6 +55,10 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 		return VoucherType.EXPENDITURE;
 	}
 	
+	protected String getEditorIconURI() {
+		return Icon.COMMAND_EXPENDITURE_VOUCHER.getIconURI();
+	}
+
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.parts.VoucherEditor#getEditorId()
 	 */

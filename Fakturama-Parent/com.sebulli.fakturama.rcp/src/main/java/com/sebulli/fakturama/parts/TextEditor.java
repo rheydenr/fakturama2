@@ -143,6 +143,8 @@ public class TextEditor extends Editor<TextModule> {
 		// Refresh the table view of all texts
         evtBroker.post(TextEditor.EDITOR_ID, Editor.UPDATE_EVENT);
         
+        bindModel();
+        
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
 	}
@@ -217,37 +219,41 @@ public class TextEditor extends Editor<TextModule> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		textName = new Text(top, SWT.BORDER);
 		textName.setToolTipText(labelName.getToolTipText());
-		
-		bindModelValue(editorText, textName, TextModule_.name.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
 		// The category
 		Label labelCategory = new Label(top, SWT.NONE);
 		labelCategory.setText(msg.commonFieldCategory);
 		labelCategory.setToolTipText(msg.textFieldCategoryTooltip);
-
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        createCategoryCombo();
+        comboCategory = new Combo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 		
 		// The text
 		Label labelText = new Label(top, SWT.NONE);
 		labelText.setText(msg.commonFieldText);
-		//T: Tool Tip Text
 		labelText.setToolTipText(msg.textFieldTextTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelText);
 		textText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		textText.setToolTipText(labelText.getToolTipText());
-        bindModelValue(editorText, textText, TextModule_.text.getName(), 10000);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(textText);
+		
+		bindModel();
+	}
+	
+	@Override
+	protected void bindModel() {
+		bindModelValue(editorText, textName, TextModule_.name.getName(), 64);
+        fillAndBindCategoryCombo();
+        bindModelValue(editorText, textText, TextModule_.text.getName(), 10000);
 	}
 
     /**
      * creates the combo box for the TextModule category
      */
-    private void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<TextCategory> categories = new TreeSet<TextCategory>(new Comparator<TextCategory>() {
             @Override
@@ -257,7 +263,6 @@ public class TextEditor extends Editor<TextModule> {
         });
         categories.addAll(textCategoriesDAO.findAll());
 
-        comboCategory = new Combo(top, SWT.BORDER);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -266,6 +271,7 @@ public class TextEditor extends Editor<TextModule> {
             }
         });
         
+        TextCategory tmpCategory = editorText.getCategories();
         // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
@@ -274,6 +280,7 @@ public class TextEditor extends Editor<TextModule> {
                 return element instanceof TextCategory ? CommonConverter.getCategoryName((TextCategory)element, "") : null;
             }
         });
+        editorText.setCategories(tmpCategory);
 
         UpdateValueStrategy textCatModel2Target = new UpdateValueStrategy();
         textCatModel2Target.setConverter(new CategoryConverter<TextCategory>(TextCategory.class));

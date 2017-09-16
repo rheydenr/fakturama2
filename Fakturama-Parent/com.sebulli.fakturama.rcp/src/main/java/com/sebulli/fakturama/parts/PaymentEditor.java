@@ -159,6 +159,8 @@ public class PaymentEditor extends Editor<Payment> {
 		// Refresh the table view of all payments
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
         
+        bindModel();
+        
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
 	}
@@ -235,8 +237,6 @@ public class PaymentEditor extends Editor<Payment> {
 		textName = new Text(top, SWT.BORDER);
 //		textName.setText(StringUtils.defaultString(payment.getName()));
 		textName.setToolTipText(labelName.getToolTipText());
-
-        bindModelValue(payment, textName, Payment_.name.getName(), 32);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textName);
 
 		// Payment category
@@ -248,7 +248,7 @@ public class PaymentEditor extends Editor<Payment> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 		
         // Collect all category strings
-        createCategoryCombo();
+        comboCategory = new Combo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(comboCategory);
 
 		// Payment description
@@ -260,7 +260,6 @@ public class PaymentEditor extends Editor<Payment> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
 		textDescription = new Text(top, SWT.BORDER);
 		textDescription.setToolTipText(labelDescription.getToolTipText());
-        bindModelValue(payment, textDescription, Payment_.description.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDescription);
 
 		// Payment discount value
@@ -273,7 +272,6 @@ public class PaymentEditor extends Editor<Payment> {
 		textDiscountValue = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textDiscountValue.setFormatter(new PercentFormatter());
 		textDiscountValue.getControl().setToolTipText(labelDiscountValue.getToolTipText());
-        bindModelValue(payment, textDiscountValue, Payment_.discountValue.getName(), 12);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountValue.getControl());
 
 		// Payment days to pay the discount
@@ -287,7 +285,6 @@ public class PaymentEditor extends Editor<Payment> {
 		textDiscountDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textDiscountDays.setFormatter(new IntegerFormatter());
 		textDiscountDays.getControl().setToolTipText(labelDiscountDays.getToolTipText());
-        bindModelValue(payment, textDiscountDays, Payment_.discountDays.getName(), 8);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountDays.getControl());
 
 		// Payment days to pay the net value
@@ -300,7 +297,6 @@ public class PaymentEditor extends Editor<Payment> {
 		textNetDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textNetDays.setFormatter(new IntegerFormatter());
 		textNetDays.getControl().setToolTipText(labelNetDays.getToolTipText());
-        bindModelValue(payment, textNetDays, Payment_.netDays.getName(), 8);
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textNetDays.getControl());
 
 		// Label for the "paid" text message
@@ -314,7 +310,6 @@ public class PaymentEditor extends Editor<Payment> {
 		// Create text field for the "paid" text message
 		textPaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		textPaid.setToolTipText(labelPaid.getToolTipText());
-        bindModelValue(payment, textPaid, Payment_.paidText.getName(), 500);
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textPaid);
 
 		// Label for the "depositpaid" text message
@@ -329,7 +324,6 @@ public class PaymentEditor extends Editor<Payment> {
 		// Create text field for the "depositpaid" text message
 		textDepositPaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		textDepositPaid.setToolTipText(labelDepositPaid.getToolTipText());
-        bindModelValue(payment, textDepositPaid, Payment_.depositText.getName(), 500);
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textDepositPaid);
 		
 		// Label for the "unpaid" text message
@@ -343,7 +337,6 @@ public class PaymentEditor extends Editor<Payment> {
 		// Create text field for "unpaid" text message
 		textUnpaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		textUnpaid.setToolTipText(labelUnpaid.getToolTipText());
-        bindModelValue(payment, textUnpaid, Payment_.unpaidText.getName(), 500);
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textUnpaid);
 
 		// Empty label
@@ -396,12 +389,26 @@ public class PaymentEditor extends Editor<Payment> {
 		if (!newPayment)
 			stdComposite.stdButton.setEnabled(true);
 
+		bindModel();
 	}
+    
+    @Override
+    protected void bindModel() {
+        bindModelValue(payment, textName, Payment_.name.getName(), 32);
+        fillAndBindCategoryCombo();
+        bindModelValue(payment, textDescription, Payment_.description.getName(), 64);
+        bindModelValue(payment, textDiscountValue, Payment_.discountValue.getName(), 12);
+        bindModelValue(payment, textDiscountDays, Payment_.discountDays.getName(), 8);
+        bindModelValue(payment, textNetDays, Payment_.netDays.getName(), 8);
+        bindModelValue(payment, textPaid, Payment_.paidText.getName(), 500);
+        bindModelValue(payment, textDepositPaid, Payment_.depositText.getName(), 500);
+        bindModelValue(payment, textUnpaid, Payment_.unpaidText.getName(), 500);
+    }
 
     /**
      * creates the combo box for the VAT category
      */
-    private void createCategoryCombo() {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
         final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
             @Override
@@ -411,7 +418,6 @@ public class PaymentEditor extends Editor<Payment> {
         });
         categories.addAll(accountDAO.findAll());
 
-        comboCategory = new Combo(top, SWT.BORDER);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -420,6 +426,7 @@ public class PaymentEditor extends Editor<Payment> {
             }
         });
         
+        VoucherCategory tmpCategory = payment.getCategory();
         // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
@@ -428,6 +435,7 @@ public class PaymentEditor extends Editor<Payment> {
                 return element instanceof VoucherCategory ? CommonConverter.getCategoryName((VoucherCategory)element, "") : null;
             }
         });
+        payment.setCategory(tmpCategory);
 
         UpdateValueStrategy paymentCatModel2Target = new UpdateValueStrategy();
         paymentCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));

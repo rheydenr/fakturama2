@@ -3,11 +3,13 @@ package com.sebulli.fakturama.dao;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.UserProperty;
@@ -43,13 +45,26 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
      * @return value of that property
      */
     public Optional<String> findPropertyValue(String name) {
+        return findPropertyValue(name, false);
+    }
+    
+    /**
+     * Finds the value of an user specific property.
+     * 
+     * @param name property
+     * @param force forces read of database
+     * @return value of that property
+     */
+    public Optional<String> findPropertyValue(String name, boolean force) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
         Root<UserProperty> root = criteria.from(UserProperty.class);
         criteria.where(cb.equal(root.get(UserProperty_.name), name));
         Optional<String> retval = Optional.empty();
 		try {
-			UserProperty result = getEntityManager().createQuery(criteria).getSingleResult();
+			TypedQuery<UserProperty> query = getEntityManager().createQuery(criteria);
+			query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+			UserProperty result = query.getSingleResult();
 			retval = Optional.ofNullable(result.getValue());
 		} catch (NoResultException e) {
 			// ignore, retval is an empty Optional

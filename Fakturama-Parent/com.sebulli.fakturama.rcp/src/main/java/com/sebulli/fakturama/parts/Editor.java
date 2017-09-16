@@ -441,7 +441,7 @@ public abstract class Editor<T extends IEntity> {
 
 		// Get the next document number from the preferences, increased by one.
 		format = defaultValuePrefs.getString(prefStrFormat);
-		Optional<String> propVal = propertiesDao.findPropertyValue(prefStrNr);
+		Optional<String> propVal = propertiesDao.findPropertyValue(prefStrNr, true);
 		nextnr = Integer.parseInt(propVal.orElse("1")) + 1;
 
 		// Exit, if format is empty

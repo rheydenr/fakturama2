@@ -115,7 +115,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
      * @return ArrayList with all undeleted data sets
      */
 	public List<VAT> findVATPrefereCategory(String category) {
-	    VATCategory vATCategory = vatCategoriesDAO.findVATCategoryByName(category);
+	    VATCategory vATCategory = vatCategoriesDAO.findCategoryByName(category);
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
         Root<VAT> root = criteria.from(VAT.class);
@@ -136,7 +136,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
         VAT dummyVat = new VAT();
         dummyVat.setName(msg.widgetNovatproviderWithvatLabel);
         dummyVat.setTaxValue(Double.valueOf(0.0));
-	    VATCategory vATCategory = vatCategoriesDAO.findVATCategoryByName(msg.dataVatSalestax);
+	    VATCategory vATCategory = vatCategoriesDAO.findCategoryByName(msg.dataVatSalestax);
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
         Root<VAT> root = criteria.from(VAT.class);

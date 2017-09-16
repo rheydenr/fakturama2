@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.resources.core.Icon;
 
 //@Deprecated
 public class ReceiptVoucherEditor extends VoucherEditor {
@@ -38,6 +39,11 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     protected String getEditorTitle() {
     	return msg.receiptvoucherEditorTitle;
     }
+
+	protected String getEditorIconURI() {
+		return Icon.COMMAND_RECEIPT_VOUCHER.getIconURI();
+	}
+
 
 	/**
 	 * @return

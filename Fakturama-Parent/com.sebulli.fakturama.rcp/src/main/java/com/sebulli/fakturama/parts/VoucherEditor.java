@@ -84,7 +84,6 @@ import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListBuilder;
 import com.sebulli.fakturama.parts.voucheritems.VoucherItemListTable;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
-import com.sebulli.fakturama.resources.core.Icon;
 
 /**
  *
@@ -382,6 +381,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
         });
         
         // Add all categories to the combo
+        VoucherCategory tmpAccount = voucher.getAccount();
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
             @Override
@@ -389,6 +389,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
                 return element instanceof VoucherCategory ? CommonConverter.getCategoryName((VoucherCategory)element, "") : null;
             }
         });
+        voucher.setAccount(tmpAccount);
 
         UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
         vatCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
@@ -453,7 +454,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	@PostConstruct
 	public void init(Composite parent) {
 	    this.part = (MPart) parent.getData("modelElement");
-	    this.part.setIconURI(Icon.COMMAND_EXPENDITURE.getIconURI());
+	    this.part.setIconURI(getEditorIconURI());
 	    this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
 	
 	    String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
@@ -501,6 +502,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	    customerSupplier = getCustomerSupplierString();
 	    createPartControl(parent);
 	}
+	
+	abstract protected String getEditorIconURI();
+	
 	/**
 	 * Saves the contents of this part
 	 * 

@@ -18,7 +18,7 @@ import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ProductCategory_;
 
 @Creatable
-public class ProductCategoriesDAO extends AbstractDAO<ProductCategory> {
+public class ProductCategoriesDAO extends AbstractCategoriesDAO<ProductCategory> {
 
     protected Class<ProductCategory> getEntityClass() {
     	return ProductCategory.class;

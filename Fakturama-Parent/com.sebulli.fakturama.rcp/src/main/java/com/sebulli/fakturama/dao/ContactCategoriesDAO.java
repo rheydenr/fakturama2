@@ -2,18 +2,14 @@ package com.sebulli.fakturama.dao;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.ContactCategory_;
 
 @Creatable
 public class ContactCategoriesDAO extends AbstractCategoriesDAO<ContactCategory> {
@@ -97,7 +93,7 @@ public class ContactCategoriesDAO extends AbstractCategoriesDAO<ContactCategory>
             		continue;
             	}
                 category += "/" + splittedCategories[i];
-                ContactCategory searchCat = findContactCategoryByName(category);
+                ContactCategory searchCat = findCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
                     ContactCategory newCategory = new ContactCategory();

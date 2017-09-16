@@ -12,8 +12,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -53,7 +51,6 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.parts.CreditorEditor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
@@ -340,8 +337,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         return topicTreeViewer;
     }
     
-    @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(CreditorEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(String message) {
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change

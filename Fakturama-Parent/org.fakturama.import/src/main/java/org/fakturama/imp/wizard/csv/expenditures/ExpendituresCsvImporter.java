@@ -126,7 +126,7 @@ public class ExpendituresCsvImporter {
 	public void importCSV(final String fileName, boolean test) {
 
 		modelFactory = FakturamaModelPackage.MODELFACTORY;
-		VATCategory vatCategory = vatCategoriesDAO.findVATCategoryByName(msg.getPurchaseTaxString());
+		VATCategory vatCategory = vatCategoriesDAO.findCategoryByName(msg.getPurchaseTaxString());
 		try {
 			if(vatCategory == null) {
 				VAT newVat = modelFactory.createVAT();

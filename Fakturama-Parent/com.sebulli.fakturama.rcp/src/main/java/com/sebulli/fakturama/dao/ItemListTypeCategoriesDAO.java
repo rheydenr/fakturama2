@@ -2,21 +2,16 @@ package com.sebulli.fakturama.dao;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
-import com.sebulli.fakturama.model.ItemListTypeCategory_;
 
 @Creatable
-public class ItemListTypeCategoriesDAO extends AbstractDAO<ItemListTypeCategory> {
+public class ItemListTypeCategoriesDAO extends AbstractCategoriesDAO<ItemListTypeCategory> {
     
     protected Class<ItemListTypeCategory> getEntityClass() {
     	return ItemListTypeCategory.class;
@@ -32,47 +27,6 @@ public class ItemListTypeCategoriesDAO extends AbstractDAO<ItemListTypeCategory>
     	CriteriaQuery<ItemListTypeCategory> cq = cb.createQuery(ItemListTypeCategory.class);
     	CriteriaQuery<ItemListTypeCategory> selectQuery = cq.select(cq.from(ItemListTypeCategory.class));
     	return getEntityManager().createQuery(selectQuery).getResultList();
-    }
-    
-    /**
-     * Finds a {@link ItemListTypeCategory} by its name. Category in this case is a String separated by 
-     * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
-     * and then check the parent. 
-     * 
-     * @param vatCategory the Category to search
-     * @return {@link ItemListTypeCategory}
-     */
-    public ItemListTypeCategory findItemListTypeCategoryByName(String vatCategory) {
-        ItemListTypeCategory result = null;
-        if(StringUtils.isNotEmpty(vatCategory)) {
-        	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        	CriteriaQuery<ItemListTypeCategory> cq = cb.createQuery(getEntityClass());
-        	Root<ItemListTypeCategory> rootEntity = cq.from(getEntityClass());
-        	// extract the rightmost value
-            String[] splittedCategories = vatCategory.split("/");
-        	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
-    		CriteriaQuery<ItemListTypeCategory> selectQuery = cq.select(rootEntity)
-    		        .where(cb.and(
-        		                cb.equal(rootEntity.get(ItemListTypeCategory_.name), leafCategory) /*,
-        		                cb.equal(rootEntity.get(ItemListTypeCategory_.parent), ItemListTypeCategory.class)
-        		               ,
-        		                cb.equal(rootEntity.get(ItemListTypeCategory_.deleted), false)*/));
-            try {
-                List<ItemListTypeCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
-                // remove leading slash
-                String testCat = StringUtils.removeStart(vatCategory, "/");
-                for (ItemListTypeCategory vatCategory2 : tmpResultList) {
-                    if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
-                        result = vatCategory2;
-                        break;
-                    }
-                }
-            }
-            catch (NoResultException nre) {
-                // no result means we return a null value 
-            }
-        }
-        return result;
     }
     
  	/**
@@ -92,7 +46,7 @@ public class ItemListTypeCategoriesDAO extends AbstractDAO<ItemListTypeCategory>
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
-                ItemListTypeCategory searchCat = findItemListTypeCategoryByName(category);
+                ItemListTypeCategory searchCat = findCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
                     ItemListTypeCategory newCategory = modelFactory.createItemListTypeCategory();
