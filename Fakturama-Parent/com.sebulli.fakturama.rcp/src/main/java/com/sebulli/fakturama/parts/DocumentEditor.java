@@ -168,9 +168,6 @@ public class DocumentEditor extends Editor<Document> {
     private static final String TOOLITEM_COMMAND = "toolitem_command";
 
     @Inject
-    private ECommandService cmdService;
-
-    @Inject
     protected EHandlerService handlerService;
 
     @Inject
@@ -677,8 +674,130 @@ public class DocumentEditor extends Editor<Document> {
         	createDepositWarningIcon();
         }
         
+        bindModel();
+        
         // reset dirty flag
         setDirty(false);
+	}
+    
+    @Override
+    protected void bindModel() {
+    	int noOfMessageFields = getNumberOfMessageFields();
+		bindModelValue(document, txtName, Document_.name.getName(), 80);
+		bindModelValue(document, dtDate, Document_.documentDate.getName());
+		bindModelValue(document, comboNetGross, Document_.netGross.getName());
+		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
+		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
+		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
+		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
+		bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName());
+		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());		
+		bindModelValue(document, txtMessage, Document_.message.getName(), 10_000);
+		if (noOfMessageFields >= 2) {
+			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10_000);
+		}
+		if (noOfMessageFields >= 3) {
+			bindModelValue(document, txtMessage3, Document_.message3.getName(), 10_000);
+		}
+		if(itemsDiscount != null) {
+			bindModelValue(document, itemsDiscount, Document_.itemsRebate.getName(), 5);			
+		}
+		if(comboViewerShipping != null) {
+			fillAndBindShippingCombo();
+		}
+		if(documentType.canBePaid()) {
+			bindModelValue(document, bPaid, Document_.paid.getName());
+			fillAndBindPaidCombo();
+		}
+    }
+
+	private void fillAndBindPaidCombo() {
+		Payment tmpPayment = document.getPayment();
+        comboViewerPayment.setContentProvider(new EntityComboProvider());
+        comboViewerPayment.setLabelProvider(new EntityLabelProvider());
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboPayment);
+
+        // If a new payment is selected ...
+        comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
+
+        	// change the paymentId to the selected element
+        	public void selectionChanged(SelectionChangedEvent event) {
+
+        		// Get the selected element
+        		ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		if (!structuredSelection.isEmpty()) {
+        			// Get first selected element.
+        			Object firstElement = structuredSelection.getFirstElement();
+        			Payment dataSetPayment = (Payment) firstElement;
+        			usePayment(dataSetPayment);
+        		}
+        	}
+        });
+
+        // Fill the payment combo with the payments
+        List<Payment> allPayments = paymentsDao.findAll();
+        comboViewerPayment.setInput(allPayments);
+        document.setPayment(tmpPayment);
+        
+        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
+        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
+        
+        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
+        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+        // Set the combo
+        bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
+	}
+
+	private void fillAndBindShippingCombo() {
+		Shipping tmpShipping = document.getShipping();
+        comboViewerShipping.setContentProvider(new EntityComboProvider());
+        comboViewerShipping.setLabelProvider(new EntityLabelProvider());
+        comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
+           
+        	// If a new shipping is selected, recalculate the total
+        	// sum and update the shipping VAT.
+        	public void selectionChanged(SelectionChangedEvent event) {
+        		// Get the selected element.
+        		ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		if (!structuredSelection.isEmpty()) {
+        			// Get first selected element.
+        			shipping = (Shipping) structuredSelection.getFirstElement();
+        			clearManualShipping(document);
+        			document.setShipping(shipping);
+
+        			// Update the shipping VAT
+//						shippingVat = shipping.getShippingVat();
+//						shippingVatDescription = shippingVat.getDescription();
+//						shippingAutoVat = shipping.getAutoVat();
+        			calculate();
+        		}
+        	}
+
+			private void clearManualShipping(Document document) {
+				document.getAdditionalInfo().setShippingAutoVat(null);
+				document.getAdditionalInfo().setShippingDescription(null);
+				document.getAdditionalInfo().setShippingName(null);
+				document.getAdditionalInfo().setShippingValue(null);
+				document.getAdditionalInfo().setShippingVatDescription(null);
+				document.getAdditionalInfo().setShippingVatValue(null);
+			}
+        });
+
+        // Fill the shipping combo with the shipping values.
+        List<Shipping> allShippings = shippingsDAO.findAll();
+        comboViewerShipping.setInput(allShippings);
+        document.setShipping(tmpShipping);
+        
+        // Get the documents'shipping values.
+        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
+        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
+        
+        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
+        target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
+        // Set the combo
+        bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
 	}
 
 	/**
@@ -1563,7 +1682,6 @@ public class DocumentEditor extends Editor<Document> {
 			labelName.setToolTipText(msg.editorDocumentRefnumberTooltip);
 		}
 		
-
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		
 		// Container for the document number and the date
@@ -1580,8 +1698,6 @@ public class DocumentEditor extends Editor<Document> {
 			txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
 		}
 		txtName.setToolTipText(labelName.getToolTipText());
-
-		bindModelValue(document, txtName, Document_.name.getName(), 80);
 		GridDataFactory.swtDefaults().minSize(200, SWT.DEFAULT).grab(true, false).applyTo(txtName);
         
 		// Document date
@@ -1590,7 +1706,6 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelDate = new Label(nrDateNetGrossComposite, SWT.NONE);
 		labelDate.setText(msg.commonFieldDate);
 		labelDate.setToolTipText(msg.editorDocumentDateTooltip);
-		
 		GridDataFactory.swtDefaults().indent(15, 0).align(SWT.END, SWT.CENTER).applyTo(labelDate);
 
 		// Document date
@@ -1603,9 +1718,6 @@ public class DocumentEditor extends Editor<Document> {
 			    updateIssueDate();
 		}));
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
-		
-		// Set the dtDate widget to the documents date
-		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		
 		// combo list to select between net or gross
 		comboNetGross = new ComboViewer(documentType.hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
@@ -1638,8 +1750,6 @@ public class DocumentEditor extends Editor<Document> {
 				widgetSelected(e);
 			}
 		});
-		
-		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 	
 		// The titleComposite contains the title and the document icon
 		Composite titleComposite = new Composite(top, SWT.NONE);
@@ -1673,7 +1783,6 @@ public class DocumentEditor extends Editor<Document> {
 		// Customer reference 
 		txtCustomerRef = new Text(top, SWT.BORDER); 
 		txtCustomerRef.setToolTipText(labelCustomerRef.getToolTipText());
-		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
 	 	GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(txtCustomerRef);
 				
 		// The extra settings composite contains additional fields like
@@ -1693,7 +1802,6 @@ public class DocumentEditor extends Editor<Document> {
 		txtConsultant = new Text(xtraSettingsComposite, SWT.BORDER);
 		txtConsultant.setToolTipText(labelConsultant.getToolTipText());
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(txtConsultant);
-		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
 		
 		boolean useOrderDate = (documentType != DocumentType.ORDER);
 
@@ -1710,7 +1818,6 @@ public class DocumentEditor extends Editor<Document> {
 		dtServiceDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().minSize(80, SWT.DEFAULT).grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtServiceDate);
 		// Set the dtDate widget to the documents date
-		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 
 		// Order date
 		Label labelOrderDate = new Label(useOrderDate ? xtraSettingsComposite : invisible, SWT.NONE);
@@ -1731,8 +1838,6 @@ public class DocumentEditor extends Editor<Document> {
 		dtOrderDate.setToolTipText(labelOrderDate.getToolTipText());
 		dtOrderDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtOrderDate);
-		// Set the dtDate widget to the documents date
-		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
 
 		// If "orderdate" is not set, use "webshopdate"
 		Date orderDateString = document.getOrderDate() == null ? document.getWebshopDate() : document.getOrderDate();
@@ -1748,8 +1853,6 @@ public class DocumentEditor extends Editor<Document> {
 		dtVestingPeriodStart.setToolTipText(labelVestingPeriodStart.getToolTipText());
 		dtVestingPeriodStart.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtVestingPeriodStart);
-		// Set the dtDate widget to the documents date
-		bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName());
         
 		Label labelVestingPeriodEnd = new Label(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1 ? xtraSettingsComposite : invisible, SWT.NONE);
 		labelVestingPeriodEnd.setText(msg.editorDocumentFieldVestingperiodEnd);
@@ -1760,16 +1863,14 @@ public class DocumentEditor extends Editor<Document> {
 		dtVestingPeriodEnd.setToolTipText(labelVestingPeriodEnd.getToolTipText());
 		dtVestingPeriodEnd.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtVestingPeriodEnd);
-		// Set the dtDate widget to the documents date
-		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());		
 
 		// A reference to the invoice
 		Label labelInvoiceRef = new Label(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label in the document editor
 		labelInvoiceRef.setText(msg.editorDocumentFieldInvoice);
 		labelInvoiceRef.setToolTipText(msg.editorDocumentFieldInvoiceTooltip);
-
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(labelInvoiceRef);
+		
 		txtInvoiceRef = new Text(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.BORDER);
 		txtInvoiceRef.setToolTipText(labelInvoiceRef.getToolTipText());
 		Invoice invoiceId = document.getInvoiceReference();
@@ -2040,12 +2141,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		});
 
-		int noOfMessageFields = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES);
-		
-		if (noOfMessageFields < 1)
-			noOfMessageFields = 1;
-		if (noOfMessageFields > 3)
-			noOfMessageFields = 3;
+		int noOfMessageFields = getNumberOfMessageFields();
 		
 		// Container for 1..3 message fields
 		Composite messageFieldsComposite = new Composite(top,SWT.NONE );
@@ -2058,7 +2154,6 @@ public class DocumentEditor extends Editor<Document> {
 		
 		GridDataFactory.defaultsFor(txtMessage).minSize(80, 50).applyTo(txtMessage);
 //		GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage);
-		bindModelValue(document, txtMessage, Document_.message.getName(), 10_000);
 
 		if (noOfMessageFields >= 2) {
 			// Add a multi line text field for the message.
@@ -2068,7 +2163,6 @@ public class DocumentEditor extends Editor<Document> {
 			GridDataFactory.defaultsFor(txtMessage2).minSize(80, 50).applyTo(txtMessage2);
 			txtMessage2.setToolTipText(messageLabel.getToolTipText());
 //			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage2);
-			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10_000);
 		}
 		if (noOfMessageFields >= 3) {
 			// Add a multi line text field for the message.
@@ -2078,7 +2172,6 @@ public class DocumentEditor extends Editor<Document> {
 			
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
 //			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage3);
-			bindModelValue(document, txtMessage3, Document_.message3.getName(), 10_000);
 		}
 		
 		// Set the tab order
@@ -2136,6 +2229,18 @@ public class DocumentEditor extends Editor<Document> {
 		if(documentType != DocumentType.DUNNING) {
 			calculate();
 		}
+		
+		bindModel();
+	}
+
+	private int getNumberOfMessageFields() {
+		int noOfMessageFields = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_MESSAGES);
+		
+		if (noOfMessageFields < 1)
+			noOfMessageFields = 1;
+		if (noOfMessageFields > 3)
+			noOfMessageFields = 3;
+		return noOfMessageFields;
 	}
 
 	/**
@@ -2232,7 +2337,6 @@ public class DocumentEditor extends Editor<Document> {
     private void createPaidControls() {
         // The paid label
         bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
-        bindModelValue(document, bPaid, Document_.paid.getName());
         if (BooleanUtils.toBoolean(document.getDeposit())) {
         	// deposit means that not the whole amount is paid
         	bPaid.setGrayed(true);
@@ -2243,7 +2347,6 @@ public class DocumentEditor extends Editor<Document> {
         //T: Mark a paid document with this text.
         bPaid.setText(msg.documentOrderStatePaid);
         bPaid.setToolTipText(msg.editorDocumentCheckboxPaidTooltip);
-        
         GridDataFactory.swtDefaults().applyTo(bPaid);
 
         // Container for the payment and the paid state
@@ -2262,39 +2365,6 @@ public class DocumentEditor extends Editor<Document> {
         // Combo to select the payment
         comboPayment = new Combo(paidContainer, SWT.BORDER | SWT.READ_ONLY);
         comboViewerPayment = new ComboViewer(comboPayment);
-        comboViewerPayment.setContentProvider(new EntityComboProvider());
-        comboViewerPayment.setLabelProvider(new EntityLabelProvider());
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboPayment);
-
-        // If a new payment is selected ...
-        comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
-
-        	// change the paymentId to the selected element
-        	public void selectionChanged(SelectionChangedEvent event) {
-
-        		// Get the selected element
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-        		if (!structuredSelection.isEmpty()) {
-        			// Get first selected element.
-        			Object firstElement = structuredSelection.getFirstElement();
-        			Payment dataSetPayment = (Payment) firstElement;
-        			usePayment(dataSetPayment);
-        		}
-        	}
-        });
-
-        // Fill the payment combo with the payments
-        List<Payment> allPayments = paymentsDao.findAll();
-        comboViewerPayment.setInput(allPayments);
-
-        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-        
-        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
-        // Set the combo
-        bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
 
         // Create a default paid composite with the document's
         // state for "paid"
@@ -2338,7 +2408,6 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.setFormatter(new PercentFormatter());
             	itemsDiscount.setValue(document.getItemsRebate());
             	itemsDiscount.getControl().setToolTipText(discountLabel.getToolTipText());
-            	bindModelValue(document, itemsDiscount, Document_.itemsRebate.getName(), 5);
             	GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsDiscount.getControl());
     
             	// Set the tab order
@@ -2377,58 +2446,7 @@ public class DocumentEditor extends Editor<Document> {
             // Shipping combo
             comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
             comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-            comboViewerShipping.setContentProvider(new EntityComboProvider());
-            comboViewerShipping.setLabelProvider(new EntityLabelProvider());
             GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
-            comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
-               
-            	// If a new shipping is selected, recalculate the total
-            	// sum and update the shipping VAT.
-            	public void selectionChanged(SelectionChangedEvent event) {
-            		// Get the selected element.
-            		ISelection selection = event.getSelection();
-            		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-            		if (!structuredSelection.isEmpty()) {
-            			// Get first selected element.
-            			shipping = (Shipping) structuredSelection.getFirstElement();
-            			clearManualShipping(document);
-            			document.setShipping(shipping);
-    
-            			// Update the shipping VAT
-    //						shippingVat = shipping.getShippingVat();
-    //						shippingVatDescription = shippingVat.getDescription();
-    //						shippingAutoVat = shipping.getAutoVat();
-            			calculate();
-            		}
-            	}
-
-				private void clearManualShipping(Document document) {
-					document.getAdditionalInfo().setShippingAutoVat(null);
-					document.getAdditionalInfo().setShippingDescription(null);
-					document.getAdditionalInfo().setShippingName(null);
-					document.getAdditionalInfo().setShippingValue(null);
-					document.getAdditionalInfo().setShippingVatDescription(null);
-					document.getAdditionalInfo().setShippingVatValue(null);
-				}
-            });
-    
-            // Fill the shipping combo with the shipping values.
-            List<Shipping> allShippings = shippingsDAO.findAll();
-            comboViewerShipping.setInput(allShippings);
-    
-            // Get the documents'shipping values.
-    //        shipping = document.getShipping();
-    //			shippingVat = document.getShipping().getShippingVat();
-    //			shippingAutoVat = document.getShippingAutoVat();
-    //			shippingVatDescription = shippingVat.getDescription();
-    
-            UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
-            shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
-            
-            UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
-            target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
-            // Set the combo
-            bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
     
             // Shipping value field
             shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
@@ -2755,7 +2773,7 @@ public class DocumentEditor extends Editor<Document> {
             Map<String, Object> params) {
         
         ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-        final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
+        final ParameterizedCommand pCmd = commandService.createCommand(commandId, params);
         try {
             item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
             item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
@@ -2774,7 +2792,7 @@ public class DocumentEditor extends Editor<Document> {
             	BillingType targetType = BillingType.get((String) params.get(CallEditor.PARAM_CATEGORY));
             	if(!copyExists(document, targetType)) {            	
 	                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
-	                ParameterizedCommand pCmdCopy = cmdService.createCommand(commandId, params);
+	                ParameterizedCommand pCmdCopy = commandService.createCommand(commandId, params);
 	                if (handlerService.canExecute(pCmdCopy)) {
 	                    handlerService.executeHandler(pCmdCopy);
 	                } else {

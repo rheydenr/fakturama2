@@ -51,8 +51,6 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -119,8 +117,6 @@ public abstract class Editor<T extends IEntity> {
 	protected static final int NO_ERROR = 0;
 	protected static final int ERROR_NOT_NEXT_ID = 1;
     private DataBindingContext ctx = new DataBindingContext();
-
-    private FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
 
 	protected abstract MDirtyable getMDirtyablePart();
 
@@ -398,7 +394,7 @@ public abstract class Editor<T extends IEntity> {
 //			((IPersistentPreferenceStore)defaultValuePrefs).save();
 			UserProperty nextNumber = propertiesDao.findByName(prefStrNr);
 			if(nextNumber == null) {
-			    nextNumber = fakturamaModelFactory.createUserProperty();
+			    nextNumber = modelFactory.createUserProperty();
 			    nextNumber.setName(prefStrNr);
 			}
 			nextNumber.setValue(Integer.toString(nr));
@@ -406,7 +402,7 @@ public abstract class Editor<T extends IEntity> {
 			String entityName = "last_setnextnr_date_" + getEditorID().toLowerCase();
             UserProperty lastSetNextNrDate = propertiesDao.findByName(entityName);
             if(lastSetNextNrDate == null) {
-                lastSetNextNrDate = fakturamaModelFactory.createUserProperty();
+                lastSetNextNrDate = modelFactory.createUserProperty();
                 lastSetNextNrDate.setName(entityName);
             }
 			lastSetNextNrDate.setValue(now.format(DateTimeFormatter.ISO_DATE));
@@ -545,11 +541,8 @@ public abstract class Editor<T extends IEntity> {
         }    
         
         if(source instanceof Combo) {
-            ((Combo)source).addModifyListener(new ModifyListener() {
-                @Override
-                public void modifyText(ModifyEvent e) {
+            ((Combo)source).addModifyListener(e -> {
                     getMDirtyablePart().setDirty(true);
-                }
             });
         } else if(source instanceof CDateTime) {
             ((CDateTime)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
@@ -563,10 +556,6 @@ public abstract class Editor<T extends IEntity> {
         
         return retval;
     }
-    
-    protected void removeBinding(Binding binding) {
-    	getCtx().removeBinding(binding);
-    }
 	
     protected void bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         if (limit > 0) {
@@ -577,11 +566,8 @@ public abstract class Editor<T extends IEntity> {
         // else the setting of the initial value would fire a modification event
         bindModelValue(target, source, property, targetToModel, modelToTarget);
         
-        source.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
+        source.addModifyListener(e -> {
                 getMDirtyablePart().setDirty(true);
-            }
         });
     }	
 
@@ -601,9 +587,7 @@ public abstract class Editor<T extends IEntity> {
         IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
         getCtx().bindValue(uiWidget, model);
 
-        source.getControl().addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
+        source.getControl().addModifyListener(e -> {
                 /*
                  * If the widget is in "calculating" state we don't have to 
                  * update the dirty state, because this leads to a dirty editor
@@ -613,7 +597,6 @@ public abstract class Editor<T extends IEntity> {
                 if(((Text)e.getSource()).getData(CALCULATING_STATE) == null) {
                     getMDirtyablePart().setDirty(true);
                 }
-            }
         });
     }
 
@@ -624,11 +607,8 @@ public abstract class Editor<T extends IEntity> {
                 .observeSingleSelection(source);
         getCtx().bindValue(uiWidget, model);
         
-        source.getCombo().addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
+        source.getCombo().addModifyListener(e -> {
                 getMDirtyablePart().setDirty(true);
-            }
         });
          
     }
