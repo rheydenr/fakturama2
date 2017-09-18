@@ -2,6 +2,8 @@ package com.sebulli.fakturama.views.datatable.vats;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -24,8 +26,8 @@ final class VATMatcher implements Matcher<VAT> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
 	public VATMatcher(String pVatCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-		this.vatCategoryName = pVatCategoryName;
-		this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
+        this.vatCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pVatCategoryName : StringUtils.appendIfMissing(pVatCategoryName, "/");
+        this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
 		this.rootNodeName = "/" + rootNodeName + "/";
 	}
 
@@ -34,9 +36,7 @@ final class VATMatcher implements Matcher<VAT> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-			if(fullCategoryName.startsWith(vatCategoryName)) {
-				found = true;
-			}
+		    found = fullCategoryName.startsWith(vatCategoryName);
 		}
 		return isRootNode || found;
 	}

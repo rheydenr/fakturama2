@@ -16,6 +16,8 @@ package com.sebulli.fakturama.views.datatable.payments;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -36,7 +38,7 @@ public class PaymentMatcher implements Matcher<Payment> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
     public PaymentMatcher(String pPaymentCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-        this.paymentCategoryName = pPaymentCategoryName;
+        this.paymentCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pPaymentCategoryName : StringUtils.appendIfMissing(pPaymentCategoryName, "/");
         this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
         this.rootNodeName = "/" + rootNodeName + "/";
     }
@@ -46,9 +48,7 @@ public class PaymentMatcher implements Matcher<Payment> {
         boolean found = false;
         if(!isRootNode) {
             String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-            if(fullCategoryName.startsWith(paymentCategoryName)) {
-                found = true;
-            }
+            found = fullCategoryName.startsWith(paymentCategoryName);
         }
         return isRootNode || found;
     }

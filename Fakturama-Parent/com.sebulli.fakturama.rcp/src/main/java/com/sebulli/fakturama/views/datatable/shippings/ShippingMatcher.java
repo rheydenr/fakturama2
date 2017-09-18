@@ -2,6 +2,8 @@ package com.sebulli.fakturama.views.datatable.shippings;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -24,8 +26,8 @@ final class ShippingMatcher implements Matcher<Shipping> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
 	public ShippingMatcher(String pShippingCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-		this.shippingCategoryName = pShippingCategoryName;
-		this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
+        this.shippingCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pShippingCategoryName : StringUtils.appendIfMissing(pShippingCategoryName, "/");
+        this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
 		this.rootNodeName = "/" + rootNodeName + "/";
 	}
 
@@ -34,9 +36,7 @@ final class ShippingMatcher implements Matcher<Shipping> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getCategories(), rootNodeName);
-			if(fullCategoryName.startsWith(shippingCategoryName)) {
-				found = true;
-			}
+		    found = fullCategoryName.startsWith(shippingCategoryName);
 		}
 		return isRootNode || found;
 	}

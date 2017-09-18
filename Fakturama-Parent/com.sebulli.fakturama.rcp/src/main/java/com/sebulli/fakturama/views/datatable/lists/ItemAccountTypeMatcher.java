@@ -2,6 +2,8 @@ package com.sebulli.fakturama.views.datatable.lists;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -12,7 +14,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  *
  */
 final class ItemAccountTypeMatcher implements Matcher<ItemAccountType> {
-	final String vatCategoryName;
+	final String accountCategoryName;
 	final boolean isRootNode;
     private final String rootNodeName;
 	
@@ -24,8 +26,8 @@ final class ItemAccountTypeMatcher implements Matcher<ItemAccountType> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
 	public ItemAccountTypeMatcher(String pVatCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-		this.vatCategoryName = pVatCategoryName;
-		this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
+        this.accountCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pVatCategoryName : StringUtils.appendIfMissing(pVatCategoryName, "/");
+        this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
 		this.rootNodeName = "/" + rootNodeName + "/";
 	}
 
@@ -34,9 +36,7 @@ final class ItemAccountTypeMatcher implements Matcher<ItemAccountType> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-			if(fullCategoryName.startsWith(vatCategoryName)) {
-				found = true;
-			}
+			found = fullCategoryName.startsWith(accountCategoryName);
 		}
 		return isRootNode || found;
 	}

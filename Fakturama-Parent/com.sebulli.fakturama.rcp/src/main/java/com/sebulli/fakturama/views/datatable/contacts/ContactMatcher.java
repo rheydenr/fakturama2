@@ -16,6 +16,8 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -38,7 +40,7 @@ final public class ContactMatcher implements Matcher<Contact> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
     public ContactMatcher(String pContactCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-        this.contactCategoryName = pContactCategoryName;
+        this.contactCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pContactCategoryName : StringUtils.appendIfMissing(pContactCategoryName, "/");
         this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
         this.rootNodeName = "/" + rootNodeName + "/";
     }

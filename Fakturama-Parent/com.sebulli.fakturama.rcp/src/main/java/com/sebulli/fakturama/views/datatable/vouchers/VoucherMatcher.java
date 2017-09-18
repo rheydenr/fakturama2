@@ -2,6 +2,8 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -24,7 +26,7 @@ final class VoucherMatcher implements Matcher<Voucher> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
 	public VoucherMatcher(String pVoucherCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-		this.voucherCategoryName = pVoucherCategoryName;
+        this.voucherCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pVoucherCategoryName : StringUtils.appendIfMissing(pVoucherCategoryName, "/");
 		this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
 		this.rootNodeName = "/" + rootNodeName + "/";
 	}
@@ -34,9 +36,7 @@ final class VoucherMatcher implements Matcher<Voucher> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getAccount(), rootNodeName);
-			if(fullCategoryName.startsWith(voucherCategoryName)) {
-				found = true;
-			}
+		    found = fullCategoryName.startsWith(voucherCategoryName);
 		}
 		return isRootNode || found;
 	}
