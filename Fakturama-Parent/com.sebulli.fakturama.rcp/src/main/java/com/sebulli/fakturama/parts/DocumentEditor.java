@@ -2355,7 +2355,7 @@ public class DocumentEditor extends Editor<Document> {
             	// Recalculate, if the discount is modified.
             	itemsDiscount.getControl().addKeyListener(new KeyAdapter() {
             		public void keyPressed(KeyEvent e) {
-            			if (e.keyCode == 13) {
+            			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
             				calculate();
             			}
             		}

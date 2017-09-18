@@ -32,9 +32,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.money.CurrencyUnit;
+import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
-import javax.money.Monetary;
 import javax.money.RoundingQueryBuilder;
 import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
@@ -42,9 +42,7 @@ import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 import org.javamoney.moneta.RoundedMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
@@ -614,37 +612,34 @@ public class DataUtils {
     public MonetaryAmount CalculateGrossFromNet(MonetaryAmount netValue, Double vat) {
         return netValue.multiply(1 + vat);
     }
+    
+    public Double CalculateGrossFromNet(Double netValue, Double vat) {
+        return netValue * (1 + vat);
+    }
+    
 
     /**
      * Calculates the gross value based on a net value and the vat. Uses the net
      * value from a SWT text field and write the result into a gross SWT text
      * field
-     * 
-     * @param netText
-     *            SWT text field. This value is used as net value.
-     * @param grossText
-     *            SWT text field. This filed is modified.
      * @param vat
      *            Vat as double
      * @param netValue
      *            Net value as UniData. This is modified with the net value.
      */
-    public void CalculateGrossFromNet(FormattedText netText, FormattedText grossText, Double vat, MonetaryAmount netValue) {
+    private MonetaryAmount CalculateGrossFromNet(MonetaryAmount netVal, Double vat, MonetaryAmount netValue) {
     	MonetaryAmount s = null;
 
         // If there is a net SWT text field specified, its value is used
-        if (netText != null) {
-            s = CalculateGrossFromNet(Money.of((Double)netText.getValue(), getDefaultCurrencyUnit()), vat);
+        if (netVal != null) {
+            s = CalculateGrossFromNet(netVal, vat);
             // In the other case, the UniData netvalue is used
         }
         else {
             s = CalculateGrossFromNet(netValue, vat);
         }
-
-        // Fill the SWT text field "gross" with the result
-        if (grossText != null)
-            if (!grossText.getControl().isFocusControl())
-                grossText.setValue(s);
+        
+        return s;
     }
 
     /**
@@ -683,33 +678,16 @@ public class DataUtils {
      * text field
      * 
      * @param gross
-     *            SWT text field. This value is used as gross value.
-     * @param net
-     *            SWT text field. This filed is modified.
+     *            This value is used as gross value.
      * @param vat
      *            Vat as double
      * @param netvalue
      *            Net value as UniData. This is modified with the net value.
      */
-    public MonetaryAmount calculateNetFromGross(Text gross, Text net, Double vat, MonetaryAmount netvalue) {
-    	MonetaryAmount s = null;
-
-        // If there is a gross SWT text field specified, its value is used
-        if (gross != null) {
-            s = calculateNetFromGross(gross.getText(), vat);
-            // In the other case: do not convert. Just format the netvalue.
-        }
-        else {
-            s = netvalue;
-        }
-
-        // Fill the SWT text field "net" with the result
-        if (net != null)
-            if (!net.isFocusControl())
-                net.setText(s.toString());
-        
-        return s;
-
+    public MonetaryAmount calculateNetFromGross(String gross, Double vat, MonetaryAmount netvalue) {
+    	// If there is a gross SWT text field specified, its value is used
+    	// In the other case: do not convert. Just format the netvalue.
+        return gross != null ? calculateNetFromGross(gross, vat) : netvalue;
     }
     
     /**

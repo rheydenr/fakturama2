@@ -119,9 +119,9 @@ public class ShippingEditor extends Editor<Shipping> {
     private boolean useGross;
 
     // These are (non visible) values of the document
-    private Double net;
+//    private Double net;
 //    private Double vat = NumberUtils.DOUBLE_ZERO;
-    private VAT vat = null;
+//    private VAT vat = null;
     private ShippingVatType autoVat = ShippingVatType.SHIPPINGVATGROSS;
 
     /**
@@ -153,7 +153,7 @@ public class ShippingEditor extends Editor<Shipping> {
    		// Set the Shipping data
         // ... done through databinding...
         // except value (since it could be from gross or from net        
-        editorShipping.setShippingValue(netText.getNetValue().getNumber().doubleValue());
+//        editorShipping.setShippingValue(netText.getNetValue().getNumber().doubleValue());
 
    		// save the new or updated Shipping
         try {
@@ -245,6 +245,11 @@ public class ShippingEditor extends Editor<Shipping> {
             // Set the editor's data set to the editor's input
             editorShipping = shippingDao.findById(objId, true);
         }
+        
+        // Some of this editos's control elements can be hidden.
+        // Get the these settings from the preference store
+        useNet = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 2;
+        useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 1;
 
         // test, if the editor is opened to create a new data set. This is,
         // if there is no input set.
@@ -262,7 +267,7 @@ public class ShippingEditor extends Editor<Shipping> {
             editorShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
             editorShipping.setShippingValue(Double.valueOf(0.0));
             int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
-            vat = vatsDao.findById(vatId);  // initially set default VAT
+            VAT vat = vatsDao.findById(vatId);  // initially set default VAT
             editorShipping.setShippingVat(vat);
             
             editorShipping.setValidFrom(new Date());
@@ -275,11 +280,6 @@ public class ShippingEditor extends Editor<Shipping> {
             // Set the Editor's name to the Shipping name.
             part.setLabel(editorShipping.getName());
         }
-        
-        // Some of this editos's control elements can be hidden.
-        // Get the these settings from the preference store
-        useNet = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 2;
-        useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 1;
 
         // Get the auto VAT setting
         autoVat = editorShipping.getAutoVat();
@@ -290,7 +290,7 @@ public class ShippingEditor extends Editor<Shipping> {
 
         // Get the VAT ID
         // Get the VAT by the VAT ID
-        vat = editorShipping.getShippingVat();
+//        vat = editorShipping.getShippingVat();
 
         // Create the top Composite
         top = new Composite(parent, SWT.NONE);
@@ -341,7 +341,7 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
 
         // Variable to store the net value
-        net = editorShipping.getShippingValue();
+//        net = editorShipping.getShippingValue();
 
         // Create a composite that contains a widget for the net and gross value
         Composite netGrossComposite = new Composite(top, SWT.NONE);
@@ -364,20 +364,20 @@ public class ShippingEditor extends Editor<Shipping> {
         // Create a net text widget
         if (useNet) {
             netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
+            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), editorShipping.getShippingVat().getTaxValue());
         }
 
         // Create a gross text widget
         if (useGross) {
             grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(net, DataUtils.getInstance().getDefaultCurrencyUnit()), vat.getTaxValue());
+            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), editorShipping.getShippingVat().getTaxValue());
         }
 
         // If net and gross were created, link both together
         // so, if one is modified, the other will be recalculated.
         if (useNet && useGross) {
-            netText.setGrossText(grossText.getGrossText());
-            grossText.setNetText(netText.getNetText());
+            netText.setGrossText(grossText);
+            grossText.setNetText(netText);
         }
 
         // Apply the gross text widget
@@ -470,6 +470,15 @@ public class ShippingEditor extends Editor<Shipping> {
         }
         
         bindModel();
+        
+        // add listener always _after_ bind, else you would get a dirty editor instantly after opening
+        if(grossText != null) {
+            grossText.getGrossText().getControl().addModifyListener(e -> {setDirty(true);});
+        }
+        
+        if(netText != null) {
+            netText.getNetText().getControl().addModifyListener(e -> {setDirty(true);});
+        }
     }
 
 	private void fillAndBindVatCombo() {
@@ -492,23 +501,23 @@ public class ShippingEditor extends Editor<Shipping> {
                     // Get the selected VAT
                     VAT uds = (VAT) firstElement;
 
-                    // Store the old value
-                    Double oldVat = editorShipping.getShippingVat().getTaxValue();
-
-                    // Get the new value
-                    vat = uds;
-
-                    // Recalculate the price values if gross is selected,
-                    // So the gross value will stay constant.
-                    if (!useNet) {
-                        net = new Double(net * ((1 + oldVat) / (1 + vat.getTaxValue())));
-                    }
+//                    // Store the old value
+//                    Double oldVat = editorShipping.getShippingVat().getTaxValue();
+//
+//                    // Get the new value
+//                    vat = uds;
+//
+//                    // Recalculate the price values if gross is selected,
+//                    // So the gross value will stay constant.
+//                    if (!useNet) {
+////                        net = new Double(editorShipping.getShippingValue() * ((1 + oldVat) / (1 + vat.getTaxValue())));
+//                    }
 
                     // Update net and gross text widget
                     if (netText != null)
-                        netText.setVatValue(vat.getTaxValue());
+                        netText.setVatValue(uds.getTaxValue());
                     if (grossText != null)
-                        grossText.setVatValue(vat.getTaxValue());
+                        grossText.setVatValue(uds.getTaxValue());
 
                     // Check, if the document has changed.
 //                    checkDirty();
@@ -537,6 +546,12 @@ public class ShippingEditor extends Editor<Shipping> {
         bindModelValue(editorShipping, textDescription, Shipping_.description.getName(), 250);
         fillAndBindVatCombo();
         
+        if(useGross && !useNet) {
+            bindModelValue(editorShipping, grossText.getNetText().getNetText(), Shipping_.shippingValue.getName(), 64);
+        } else {
+            bindModelValue(editorShipping, netText.getNetText(), Shipping_.shippingValue.getName(), 64);
+        }
+        
         // On creating this editor, select the entry of the autoVat list,
         // that is set by the shipping.
         try {
@@ -546,7 +561,6 @@ public class ShippingEditor extends Editor<Shipping> {
         catch (IndexOutOfBoundsException e) {
             autoVat = ShippingVatType.SHIPPINGVATGROSS;
         }
-        
     }
 
     /**
@@ -598,16 +612,16 @@ public class ShippingEditor extends Editor<Shipping> {
         switch (autoVat) {
 
         // The gross value is based on the net value by using
-        // a constant Vat factor
+        // a constant VAT factor
         case SHIPPINGVATFIX:
             comboVat.setVisible(true);
             if (netText != null) {
                 netText.setVisible(true);
-                netText.setVatValue(vat.getTaxValue());
+                netText.setVatValue(editorShipping.getShippingVat().getTaxValue());
             }
             if (grossText != null) {
                 grossText.setVisible(true);
-                grossText.setVatValue(vat.getTaxValue());
+                grossText.setVatValue(editorShipping.getShippingVat().getTaxValue());
             }
             break;
 
@@ -641,16 +655,16 @@ public class ShippingEditor extends Editor<Shipping> {
         }
 
     }
-
-    @PreDestroy
-    public void beforeClose() {
-        // Refresh the table view of all Shippings. This is necessary because if you change an entity
-        // and don't save it, the list view gets updated (with the unsaved entity!). This call updates the
-        // list view from database.
-        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
-        editorShipping = null;
-        top = null;
-    }
+//
+//    @PreDestroy
+//    public void beforeClose() {
+//        // Refresh the table view of all Shippings. This is necessary because if you change an entity
+//        // and don't save it, the list view gets updated (with the unsaved entity!). This call updates the
+//        // list view from database.
+//        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
+//        editorShipping = null;
+//        top = null;
+//    }
    
     @Override
     protected String getDefaultEntryKey() {
@@ -661,7 +675,11 @@ public class ShippingEditor extends Editor<Shipping> {
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
-    
+        
+    public void setDirty(boolean isDirty) {
+    	getMDirtyablePart().setDirty(isDirty);
+    }
+
     @Override
     protected Class<Shipping> getModelClass() {
         return Shipping.class;

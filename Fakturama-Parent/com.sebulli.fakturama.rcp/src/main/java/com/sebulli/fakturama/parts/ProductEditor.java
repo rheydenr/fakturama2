@@ -694,8 +694,8 @@ public class ProductEditor extends Editor<Product> {
 				// If a net and gross column was created, link both together,
 				// so, if one is modified, the other will be recalculated.
 				if (useNet && useGross) {
-					netText[i].setGrossText(grossText[i].getGrossText());
-					grossText[i].setNetText(netText[i].getNetText());
+					netText[i].setGrossText(grossText[i]);
+					grossText[i].setNetText(netText[i]);
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = grossText[i].getGrossText().getControl();
 					}

@@ -21,6 +21,9 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
@@ -45,7 +48,7 @@ public class GrossText {
 	private Double vatValue;
 
 	// The corresponding text control that contains the net value
-	private FormattedText netText;
+	private NetText netText;
 
 	// The text control 
 	private FormattedText grossText;
@@ -77,15 +80,26 @@ public class GrossText {
 		grossText.getControl().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				if (grossText != null && grossText.getControl().isFocusControl()) {
-					netValue = DataUtils.getInstance().calculateNetFromGross(
-							grossText.getControl(), 
-							netText != null ? netText.getControl() : null, vatValue, netValue);
+					setNetValue(DataUtils.getInstance().calculateNetFromGross(
+							grossText.getControl().getText(), 
+							vatValue, netValue));
+
+			        // Fill the SWT text field "net" with the result
 					if(netText != null) {
-						netText.setValue(netValue);
+						netText.setNetValue(netValue);
 					}
 				}
 			}
 		});
+		
+    	// Focus out on Return key
+		grossText.getControl().addKeyListener(new KeyAdapter() {
+    		public void keyPressed(KeyEvent e) {
+    			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+    				grossText.getControl().notifyListeners(SWT.FocusOut, null);
+    			}
+    		}
+    	});
 	}
 	
 	@Inject
@@ -141,7 +155,7 @@ public class GrossText {
 	 * @param formattedText
 	 *            The net text widget
 	 */
-	public void setNetText(FormattedText formattedText) {
+	public void setNetText(NetText formattedText) {
 		this.netText = formattedText;
 	}
 
@@ -169,7 +183,7 @@ public class GrossText {
 	 * 
 	 * @return The net text widget.
 	 */
-	public FormattedText getNetText() {
+	public NetText getNetText() {
 		return netText;
 	}
 

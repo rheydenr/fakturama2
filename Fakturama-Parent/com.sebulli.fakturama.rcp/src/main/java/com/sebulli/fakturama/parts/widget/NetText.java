@@ -22,6 +22,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
@@ -40,7 +42,7 @@ import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 public class NetText {
 	
 	// The  net value
-	private MonetaryAmount netValue;
+//	private MonetaryAmount netValue;
 
 	// VAT value as factor
 	private Double vatValue;
@@ -49,7 +51,7 @@ public class NetText {
 	private FormattedText netText;
 
 	// The corresponding text control that contains the gross value
-	private FormattedText grossText;
+	private GrossText grossText;
 	
 	@Inject
 	public NetText(IEclipseContext context) {
@@ -62,7 +64,7 @@ public class NetText {
 	private NetText(Composite parent, int style, MonetaryAmount net, Double vat, IEclipseContext context) {
 
 		// Set the local variables
-		this.netValue = net;
+//		this.netValue = net;
 		this.vatValue = vat;
 
 		// Create the text widget
@@ -74,26 +76,35 @@ public class NetText {
 			formatter = new MoneyFormatter(null);
 		}
 		this.netText.setFormatter(formatter);
-		netText.setValue(netValue);
-
-//		// Set the text of the NetText, based on the GrossText's value.
-//		// Do this, if the text widget is selected (If "ENTER" is pressed).
-//		netText.getControl().addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-//			    System.out.println("INFO: " + netText.getValue() + "; " + netValue);
-////				netText.setValue(netValue);
-//		}));
+		netText.setValue(net);
 
 		// Set the text of the GrossText, based on the NetText's value
 		netText.getControl().addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 if (netText.getControl().isFocusControl()) {  
-                    DataUtils.getInstance().CalculateGrossFromNet(netText, grossText, vatValue, netValue);
-                    netValue = Money.of((Double)netText.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
+                	MonetaryAmount netAmount = Money.of((Double)netText.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
+					MonetaryAmount grossFromNet = DataUtils.getInstance().CalculateGrossFromNet(
+                    		netAmount, vatValue);
+
+                    // Fill the SWT text field "gross" with the result
+                    if (grossText != null && !grossText.getGrossText().getControl().isFocusControl()) {
+						grossText.setNetValue(netAmount);
+						grossText.getGrossText().setValue(grossFromNet);
+                    }
                 } else {
                     netText.getControl().notifyListeners(SWT.FocusOut, null);
                 }
 		    }
 		});
+	    
+    	// Focus out on Return key
+		netText.getControl().addKeyListener(new KeyAdapter() {
+    		public void keyPressed(KeyEvent e) {
+    			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+    				netText.getControl().notifyListeners(SWT.FocusOut, null);
+    			}
+    		}
+    	});
 
 	}
 
@@ -130,7 +141,7 @@ public class NetText {
 	 * 
 	 * @return The text widget.
 	 */
-	public FormattedText getGrossText() {
+	public GrossText getGrossText() {
 		return this.grossText;
 	}
 
@@ -138,9 +149,9 @@ public class NetText {
 	 * Set a reference to the gross text widget
 	 * 
 	 * @param formattedText
-	 *            The gtoss text widget
+	 *            The gross text widget
 	 */
-	public void setGrossText(FormattedText formattedText) {
+	public void setGrossText(GrossText formattedText) {
 		this.grossText = formattedText;
 	}
 
@@ -167,13 +178,13 @@ public class NetText {
 	 * @return the netValue
 	 */
 	public final MonetaryAmount getNetValue() {
-		return netValue;
+		return (MonetaryAmount) netText.getValue();
 	}
 
 	/**
 	 * @param netValue the netValue to set
 	 */
 	public final void setNetValue(MonetaryAmount netValue) {
-		this.netValue = netValue;
+		this.netText.setValue(netValue);
 	}
 }
