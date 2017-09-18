@@ -13,7 +13,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.util.Comparator;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -49,6 +48,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
@@ -305,19 +305,8 @@ public class VatEditor extends Editor<VAT> {
      * creates the combo box for the VAT category
      */
     private void fillAndBindCategoryCombo() {
-    	
-    	// doesn't work :-(
-//        if(bindModelValue != null) {
-//        	removeBinding(bindModelValue);
-//        }
-        
         // Collect all category strings as a sorted Set
-        final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new Comparator<VATCategory>() {
-            @Override
-            public int compare(VATCategory cat1, VATCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+        final TreeSet<VATCategory> categories = new TreeSet<VATCategory>(new CategoryComparator<>());
         categories.addAll(vatCategoriesDAO.findAll());
 
         ComboViewer viewer = new ComboViewer(comboCategory);

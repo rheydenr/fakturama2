@@ -235,7 +235,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
         
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        int col = 0;
+//        int col = 0;
 //        tableDataLayer.setColumnWidthPercentageByPosition(col++, 5);
 //        tableDataLayer.setColumnWidthPercentageByPosition(col++, 15);
 //        tableDataLayer.setColumnWidthPercentageByPosition(col++, 75);

@@ -17,7 +17,6 @@ package com.sebulli.fakturama.parts;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Comparator;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -49,6 +48,7 @@ import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -410,12 +410,7 @@ public class PaymentEditor extends Editor<Payment> {
      */
     private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
-            @Override
-            public int compare(VoucherCategory cat1, VoucherCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+        final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new CategoryComparator<>());
         categories.addAll(accountDAO.findAll());
 
         ComboViewer viewer = new ComboViewer(comboCategory);

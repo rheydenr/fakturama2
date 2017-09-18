@@ -14,11 +14,13 @@
  
 package com.sebulli.fakturama.views.datatable.products;
 
-import ca.odell.glazedlists.matchers.Matcher;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.matchers.Matcher;
 
 /**
  *
@@ -36,7 +38,7 @@ public class ProductMatcher implements Matcher<Product> {
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
     public ProductMatcher(String pProductCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
-        this.productCategoryName = pProductCategoryName;
+        this.productCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pProductCategoryName : StringUtils.appendIfMissing(pProductCategoryName, "/");
         this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
         this.rootNodeName = "/" + rootNodeName + "/";
     }
@@ -46,9 +48,7 @@ public class ProductMatcher implements Matcher<Product> {
         boolean found = false;
         if(!isRootNode) {
             String fullCategoryName = CommonConverter.getCategoryName(item.getCategories() == null/*.isEmpty()*/ ? null : item.getCategories()/*.get(0)*/, rootNodeName);
-            if(fullCategoryName.startsWith(productCategoryName)) {
-                found = true;
-            }
+            found = fullCategoryName.startsWith(productCategoryName);
         }
         return isRootNode || found;
     }

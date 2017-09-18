@@ -17,13 +17,11 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +58,7 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -568,12 +567,7 @@ public class ShippingEditor extends Editor<Shipping> {
      */
     private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<ShippingCategory> categories = new TreeSet<ShippingCategory>(new Comparator<ShippingCategory>() {
-            @Override
-            public int compare(ShippingCategory cat1, ShippingCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+        final TreeSet<ShippingCategory> categories = new TreeSet<ShippingCategory>(new CategoryComparator<>());
         categories.addAll(shippingCategoriesDAO.findAll());
 
         ComboViewer viewer = new ComboViewer(comboCategory);

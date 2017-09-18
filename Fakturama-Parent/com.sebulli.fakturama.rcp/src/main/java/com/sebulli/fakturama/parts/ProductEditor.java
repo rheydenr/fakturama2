@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +53,6 @@ import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -77,6 +74,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -101,7 +99,7 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
 public class ProductEditor extends Editor<Product> {
 	
 	/** The number of prices. */
-	private final int NUMBER_OF_PRICES = 5;
+	private static final int MAX_NUMBER_OF_PRICES = 5;
 
     @Inject
     protected VatsDAO vatDao;
@@ -126,9 +124,6 @@ public class ProductEditor extends Editor<Product> {
     private ProductsDAO productsDAO;
     
     @Inject
-    protected VatsDAO vatsDao;
-    
-    @Inject
     protected IEclipseContext context;
 
 	// SWT widgets of the editor
@@ -143,18 +138,17 @@ public class ProductEditor extends Editor<Product> {
 	private FormattedText textQuantity;
 	private FormattedText costPrice;
 	private Text textQuantityUnit;
-	private ComboViewer comboViewer;
 	private Combo comboCategory;
 	private FakturamaPictureControl labelProductPicture;
 	private Composite photoComposite;
 
 	// Widgets (and variables) for the scaled price.
-	private Label[] labelBlock = new Label[NUMBER_OF_PRICES];
-	private Text[] textBlock = new Text[NUMBER_OF_PRICES];
-	private NetText[] netText = new NetText[NUMBER_OF_PRICES];
-	private GrossText[] grossText = new GrossText[NUMBER_OF_PRICES];
+	private Label[] labelBlock = new Label[MAX_NUMBER_OF_PRICES];
+	private Text[] textBlock = new Text[MAX_NUMBER_OF_PRICES];
+	private NetText[] netText = new NetText[MAX_NUMBER_OF_PRICES];
+	private GrossText[] grossText = new GrossText[MAX_NUMBER_OF_PRICES];
 	private MonetaryAmount[] net;
-	private MonetaryAmount defaultPrice = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
+	private MonetaryAmount defaultPrice = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 	private int scaledPrices;
 	
 
@@ -176,6 +170,8 @@ public class ProductEditor extends Editor<Product> {
 
 	// defines, if the product is new created
 	private boolean newProduct;
+
+	private Map<Integer, PriceBlock> priceBlocks;
 
 	/**
 	 * Saves the contents of this part
@@ -278,6 +274,8 @@ public class ProductEditor extends Editor<Product> {
         // ...and "mark" it with current objectId (though it can be find by 
         // CallEditor if one tries to open it immediately from list view)
         part.getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(editorProduct.getId()));
+        
+        bindModel();
 
 		// Refresh the table view of all contacts
         evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
@@ -311,7 +309,7 @@ public class ProductEditor extends Editor<Product> {
 		}
 		
 		// initialize prices
-		net = new MonetaryAmount[NUMBER_OF_PRICES];
+		net = new MonetaryAmount[MAX_NUMBER_OF_PRICES];
 		Arrays.fill(net, defaultPrice);
 
 		// Test if the editor is opened to create a new data set. This is,
@@ -334,7 +332,7 @@ public class ProductEditor extends Editor<Product> {
 
 			// Set the vat to the standard value
             int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
-            VAT vat = vatsDao.findById(vatId);  // initially set default VAT
+            VAT vat = vatDao.findById(vatId);  // initially set default VAT
 			editorProduct.setVat(vat);
 
 			// Get the next item number
@@ -473,16 +471,16 @@ public class ProductEditor extends Editor<Product> {
 
 		// Some of these editor's control elements can be hidden.
 		// Get these settings from the preference store
-		useItemNr = defaultValuePrefs.getBoolean("PRODUCT_USE_ITEMNR");
-		useDescription = defaultValuePrefs.getBoolean("PRODUCT_USE_DESCRIPTION");
-		scaledPrices = defaultValuePrefs.getInt("PRODUCT_SCALED_PRICES");
-		useWeight = defaultValuePrefs.getBoolean("PRODUCT_USE_WEIGHT");
-		useNet = (defaultValuePrefs.getInt("PRODUCT_USE_NET_GROSS") != 2);
-		useGross = (defaultValuePrefs.getInt("PRODUCT_USE_NET_GROSS") != 1);
-		useVat = defaultValuePrefs.getBoolean("PRODUCT_USE_VAT");
-		usePicture = defaultValuePrefs.getBoolean("PRODUCT_USE_PICTURE");
-		useQuantity = defaultValuePrefs.getBoolean("PRODUCT_USE_QUANTITY");
-		useQuantityUnit = defaultValuePrefs.getBoolean("PRODUCT_USE_QUNIT");
+		useItemNr = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR);
+		useDescription = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_DESCRIPTION);
+		scaledPrices = defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES);
+		useWeight = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT);
+		useNet = (defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 2);
+		useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) != 1);
+		useVat = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_VAT);
+		usePicture = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_PICTURE);
+		useQuantity = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUANTITY);
+		useQuantityUnit = defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT);
 		
 		// Get the product VAT
 		//	done by databinding
@@ -531,7 +529,6 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		textName = new Text(productDescGroup, SWT.BORDER);
 		textName.setToolTipText(labelName.getToolTipText());
-		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
 		// Product category
@@ -540,7 +537,7 @@ public class ProductEditor extends Editor<Product> {
 		labelCategory.setToolTipText(msg.editorProductCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-		createCategoryCombo(productDescGroup);
+        comboCategory = new Combo(productDescGroup, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
         
         // GTIN
@@ -551,7 +548,6 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGtin);
 		textGtin = new Text(productDescGroup, SWT.BORDER);
 //		textGtin.setToolTipText(labelGtin.getToolTipText());
-		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textGtin);
 
 		// for correct tab-order (see FAK-465)
@@ -567,7 +563,6 @@ public class ProductEditor extends Editor<Product> {
 		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI);
 //		textDescription.setText(DataUtils.makeOSLineFeeds(editorProduct.getStringValueByKey("description")));
 		textDescription.setToolTipText(labelDescription.getToolTipText());
-		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 250);
 		GridDataFactory.fillDefaults().hint(10, 80).grab(true, false).applyTo(textDescription);
 
 		// Product quantity
@@ -582,7 +577,6 @@ public class ProductEditor extends Editor<Product> {
 		} else {
 			textQuantityUnit = new Text(invisible, SWT.BORDER);
 		}
-		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantityUnit);
 
 		
@@ -621,10 +615,10 @@ public class ProductEditor extends Editor<Product> {
 			labelGross.setText(msg.productDataGross);
 		}
 		
-		Map<Integer, PriceBlock> priceBlocks = createPriceBlocks();
+		createPriceBlocks();
 		
 		// Create a row for each entry of the scaled price table
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < MAX_NUMBER_OF_PRICES; i++) {
 			Object priceObj;
 			try {
 
@@ -645,7 +639,6 @@ public class ProductEditor extends Editor<Product> {
 				methodName = String.format("getBlock%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
 				textBlock[i].setText(Integer.toString((Integer) priceObj));
-				bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 15);
 				GridDataFactory.swtDefaults().hint(40, SWT.DEFAULT).applyTo(textBlock[i]);
 
 				// Create the net columns
@@ -655,14 +648,7 @@ public class ProductEditor extends Editor<Product> {
 					context.set(Constants.CONTEXT_NETVALUE, net[i]);
 					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					netText[i] = ContextInjectionFactory.make(NetText.class, context);
-					netText[i].getNetText().getControl().addModifyListener(new ModifyListener() {
-						
-						@Override
-						public void modifyText(ModifyEvent e) {
-							getMDirtyablePart().setDirty(true);
-						}
-					});
-//					bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+					
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = netText[i].getNetText().getControl();
@@ -676,14 +662,6 @@ public class ProductEditor extends Editor<Product> {
 					context.set(Constants.CONTEXT_NETVALUE, net[i]);
 					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					grossText[i] = ContextInjectionFactory.make(GrossText.class, context);
-					grossText[i].getGrossText().getControl().addModifyListener(new ModifyListener() {
-						
-						@Override
-						public void modifyText(ModifyEvent e) {
-							getMDirtyablePart().setDirty(true);							
-						}
-					});
-//						bindModelValue(editorProduct, grossText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT)
 							.applyTo(grossText[i].getGrossText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
@@ -715,7 +693,6 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCostPrice);
 		costPrice = new FormattedText(productDescGroup, SWT.BORDER);
 		costPrice.setFormatter(new MoneyFormatter());
-		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
 
 		// product VAT
@@ -728,8 +705,141 @@ public class ProductEditor extends Editor<Product> {
         // VAT combo list
         comboVat = new Combo(useVat ? productDescGroup : invisible, SWT.BORDER);
 		comboVat.setToolTipText(labelVat.getToolTipText());
-        List<VAT> allVATs = vatsDao.findAll();
-        comboViewer = new ComboViewer(comboVat);
+
+		// Product weight
+		Label labelWeight = new Label(useWeight ? productDescGroup : invisible, SWT.NONE);
+		//T: Product Editor - Label Product Weight with unit (kg)
+		labelWeight.setText(msg.exporterDataWeight);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWeight);
+		textWeight = new FormattedText(useWeight ? productDescGroup : invisible, SWT.BORDER);
+		textWeight.setFormatter(new DoubleFormatter());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(textWeight.getControl());
+
+		// Product quantity
+		Label labelQuantity = new Label(useQuantity ? productDescGroup : invisible, SWT.NONE);
+		//T: Product Editor - Label Product quantity
+		labelQuantity.setText(msg.commonFieldQuantity);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
+		if(useQuantity) {
+			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
+			nextWidget = textQuantityUnit;
+		} else {
+			textQuantity = new FormattedText(invisible, SWT.BORDER);
+		}
+		textQuantity.setFormatter(new DoubleFormatter(LocaleUtil.getInstance().getDefaultLocale()));
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
+
+		// user defined fields
+		// #1
+		Label udf01Lbl = new Label(productDescGroup, SWT.NONE);
+		udf01Lbl.setText(msg.editorProductFieldUdf01);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf01Lbl);
+		udf01 = new Text(productDescGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf01);
+		
+		// #2
+		Label udf02Lbl = new Label(productDescGroup, SWT.NONE);
+		udf02Lbl.setText(msg.editorProductFieldUdf02);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf02Lbl);
+		udf02 = new Text(productDescGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf02);
+
+		// #3
+		Label udf03Lbl = new Label(productDescGroup, SWT.NONE);
+		udf03Lbl.setText(msg.editorProductFieldUdf03);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf03Lbl);
+		udf03 = new Text(productDescGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf03);
+
+		
+		// Group: Product picture
+		Group productPictureGroup = new Group(usePicture ? top : invisible, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(productPictureGroup);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(productPictureGroup);
+		productPictureGroup.setText(msg.exporterDataPicture);
+
+		// The photo
+		photoComposite = new Composite(productPictureGroup, SWT.BORDER);
+		GridLayoutFactory.swtDefaults().margins(10, 10).numColumns(1).applyTo(photoComposite);
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(photoComposite);
+		photoComposite.setBackground(new Color(null, 255, 255, 255));
+
+		// The picture name label
+		labelProductPicture = new FakturamaPictureControl(photoComposite, defaultValuePrefs, msg);
+//		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelProductPicture);
+
+//		 The picture path
+//      ==> this is not longer necessary because we store the picture in database
+
+		// Load the picture from the picture path
+//		createPicturePathFromPictureName();		
+		setPicture();
+		
+		labelProductPicture.addPropertyChangeListener(FakturamaPictureControl.IMAGE_BYTEARRAY_PROPERTY,
+			    new PropertyChangeListener() {
+	        public void propertyChange(PropertyChangeEvent event) {
+	            byte[] newImage = (byte[]) event.getNewValue();
+	            // if image was deleted we use the default image
+	            if(newImage == null) {
+	            	editorProduct.setPicture(labelProductPicture.getImageByteArray());
+	            } else {
+	            	editorProduct.setPicture(newImage);
+	            }
+	            getMDirtyablePart().setDirty(true);
+	        }
+		});
+
+		bindModel();
+	}
+
+    private Map<Integer, PriceBlock> createPriceBlocks() {
+    	if(priceBlocks == null) {
+	    	int index = 0;
+			priceBlocks = new HashMap<>();
+			priceBlocks.put(index++, new PriceBlock(Product_.block1, Product_.price1));
+			priceBlocks.put(index++, new PriceBlock(Product_.block2, Product_.price2));
+			priceBlocks.put(index++, new PriceBlock(Product_.block3, Product_.price3));
+			priceBlocks.put(index++, new PriceBlock(Product_.block4, Product_.price4));
+			priceBlocks.put(index++, new PriceBlock(Product_.block5, Product_.price5));
+    	}
+		return priceBlocks;
+	}
+    
+    @Override
+    protected void bindModel() {
+		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
+		fillAndBindCategoryCombo();
+		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
+		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 250);
+		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
+		// bind the scaled prices widgets
+		for (int i = 0; i < grossText.length; i++) {
+			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 15);
+			if (useGross && !useNet) {
+				bindModelValue(editorProduct, grossText[i].getNetText().getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+			} else {
+				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+			}
+		}
+		
+		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
+		fillAndBindVatCombo();
+		bindModelValue(editorProduct, textWeight, Product_.weight.getName(), 16);
+		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
+		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
+		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
+		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
+    }
+
+	private void fillAndBindVatCombo() {
+		VAT tmpVat = editorProduct.getVat();
+        List<VAT> allVATs = vatDao.findAll();
+    	ComboViewer comboViewer = new ComboViewer(comboVat);
         comboViewer.setContentProvider(new EntityComboProvider());
         comboViewer.setLabelProvider(new EntityLabelProvider());
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -772,6 +882,7 @@ public class ProductEditor extends Editor<Product> {
 
 		// Create a JFace combo viewer for the VAT list
         comboViewer.setInput(allVATs);
+        editorProduct.setVat(tmpVat);
 
         UpdateValueStrategy vatModel2Target = new UpdateValueStrategy();
         vatModel2Target.setConverter(new EntityConverter<VAT>(VAT.class));
@@ -781,128 +892,17 @@ public class ProductEditor extends Editor<Product> {
 //		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboVat);
         bindModelValue(editorProduct, comboVat, Product_.vat.getName()/* + "." + VAT_.name.getName()*/,
                 target2VatModel, vatModel2Target);
-
-		// Product weight
-		Label labelWeight = new Label(useWeight ? productDescGroup : invisible, SWT.NONE);
-		//T: Product Editor - Label Product Weight with unit (kg)
-		labelWeight.setText(msg.exporterDataWeight);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWeight);
-		textWeight = new FormattedText(useWeight ? productDescGroup : invisible, SWT.BORDER);
-		textWeight.setFormatter(new DoubleFormatter());
-		bindModelValue(editorProduct, textWeight, Product_.weight.getName(), 16);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(textWeight.getControl());
-
-		// Product quantity
-		Label labelQuantity = new Label(useQuantity ? productDescGroup : invisible, SWT.NONE);
-		//T: Product Editor - Label Product quantity
-		labelQuantity.setText(msg.commonFieldQuantity);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
-		if(useQuantity) {
-			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
-			nextWidget = textQuantityUnit;
-		} else {
-			textQuantity = new FormattedText(invisible, SWT.BORDER);
-		}
-		textQuantity.setFormatter(new DoubleFormatter(LocaleUtil.getInstance().getDefaultLocale()));
-		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
-
-		// user defined fields
-		// #1
-		Label udf01Lbl = new Label(productDescGroup, SWT.NONE);
-		udf01Lbl.setText(msg.editorProductFieldUdf01);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf01Lbl);
-		udf01 = new Text(productDescGroup, SWT.BORDER);
-		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf01);
-		
-		// #2
-		Label udf02Lbl = new Label(productDescGroup, SWT.NONE);
-		udf02Lbl.setText(msg.editorProductFieldUdf02);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf02Lbl);
-		udf02 = new Text(productDescGroup, SWT.BORDER);
-		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf02);
-
-		// #3
-		Label udf03Lbl = new Label(productDescGroup, SWT.NONE);
-		udf03Lbl.setText(msg.editorProductFieldUdf03);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf03Lbl);
-		udf03 = new Text(productDescGroup, SWT.BORDER);
-		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf03);
-
-		
-		// Group: Product picture
-		Group productPictureGroup = new Group(usePicture ? top : invisible, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(productPictureGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(productPictureGroup);
-		productPictureGroup.setText(msg.exporterDataPicture);
-
-		// The photo
-		photoComposite = new Composite(productPictureGroup, SWT.BORDER);
-		GridLayoutFactory.swtDefaults().margins(10, 10).numColumns(1).applyTo(photoComposite);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(photoComposite);
-		photoComposite.setBackground(new Color(null, 255, 255, 255));
-
-		// The picture name label
-		labelProductPicture = new FakturamaPictureControl(photoComposite, defaultValuePrefs, msg);
-//		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelProductPicture);
-
-//		 The picture path
-//      ==> this is not longer necessary because we store the picture in database
-
-		// Load the picture from the picture path
-//		createPicturePathFromPictureName();		
-		setPicture();
-		
-		labelProductPicture.addPropertyChangeListener(FakturamaPictureControl.IMAGE_BYTEARRAY_PROPERTY,
-			    new PropertyChangeListener() {
-	        public void propertyChange(PropertyChangeEvent event) {
-	            byte[] newImage = (byte[]) event.getNewValue();
-	            // if image was deleted we use the default image
-	            if(newImage == null) {
-	            	editorProduct.setPicture(labelProductPicture.getImageByteArray());
-	            } else {
-	            	editorProduct.setPicture(newImage);
-	            }
-	            getMDirtyablePart().setDirty(true);
-	        }
-		});
-
-	}
-
-    private Map<Integer, PriceBlock> createPriceBlocks() {
-		Map<Integer, PriceBlock> priceBlocks = new HashMap<>();
-		int index = 0;
-		priceBlocks.put(index++, new PriceBlock(Product_.block1, Product_.price1));
-		priceBlocks.put(index++, new PriceBlock(Product_.block2, Product_.price2));
-		priceBlocks.put(index++, new PriceBlock(Product_.block3, Product_.price3));
-		priceBlocks.put(index++, new PriceBlock(Product_.block4, Product_.price4));
-		priceBlocks.put(index++, new PriceBlock(Product_.block5, Product_.price5));
-		return priceBlocks;
 	}
 
 	/**
      * creates the combo box for the Product category
      * @param parent 
      */
-    private void createCategoryCombo(Group parent) {
+    private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<ProductCategory> categories = new TreeSet<ProductCategory>(new Comparator<ProductCategory>() {
-            @Override
-            public int compare(ProductCategory cat1, ProductCategory cat2) {
-                return StringUtils.defaultString(cat1.getName()).compareTo(StringUtils.defaultString(cat2.getName()));
-            }
-        });
+        final TreeSet<ProductCategory> categories = new TreeSet<ProductCategory>(new CategoryComparator<>());
         categories.addAll(productCategoriesDAO.findAll());
 
-        comboCategory = new Combo(parent, SWT.BORDER);
         ComboViewer viewer = new ComboViewer(comboCategory);
         viewer.setContentProvider(new ArrayContentProvider() {
             @Override
@@ -911,6 +911,7 @@ public class ProductEditor extends Editor<Product> {
             }
         });
         
+        ProductCategory tmpCat = editorProduct.getCategories();
         // Add all categories to the combo
         viewer.setInput(categories);
         viewer.setLabelProvider(new LabelProvider() {
@@ -919,6 +920,7 @@ public class ProductEditor extends Editor<Product> {
                 return element instanceof ProductCategory ? CommonConverter.getCategoryName((ProductCategory)element, "") : null;
             }
         });
+        editorProduct.setCategories(tmpCat);
 
         UpdateValueStrategy productCatModel2Target = new UpdateValueStrategy();
         productCatModel2Target.setConverter(new CategoryConverter<ProductCategory>(ProductCategory.class));

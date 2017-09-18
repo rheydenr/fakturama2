@@ -117,13 +117,15 @@ class TreeObjectContentProvider<T extends AbstractCategory> implements ITreeCont
 	            TreeObject childNode = node.findNode(checkPath);
 	            if(childNode == null) {
 	                childNode = new TreeObject(entry.getName());
-	                childNode.setNodeType(TreeObjectType.DEFAULT_NODE);
 	                if(entry instanceof DummyStringCategory) {
 	                    childNode.setDocType(((DummyStringCategory)entry).getDocType());
 //	                    double totalSum = documentsDao.getTotalFor(entry);
 //	                    childNode.setToolTip(totalSum);
 	                }
 	                node.addChild(childNode);
+	            }
+	            if(childNode.getParent() != null && childNode.getParent().getNodeType() == TreeObjectType.LEAF_NODE) {
+	            	childNode.getParent().setNodeType(TreeObjectType.DEFAULT_NODE);
 	            }
 	            retval = childNode;
 	        }

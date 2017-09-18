@@ -31,9 +31,14 @@ public enum TreeObjectType {
 	CONTACTS_ROOTNODE("---"),
 	
 	/**
+	 * a normal parent node
+	 */
+	DEFAULT_NODE(""),
+	
+	/**
 	 * a normal parent or leaf node
 	 */
-	DEFAULT_NODE("");
+	LEAF_NODE("");
 	
 	private String defaultName;
 

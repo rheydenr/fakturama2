@@ -616,31 +616,6 @@ public class DataUtils {
     public Double CalculateGrossFromNet(Double netValue, Double vat) {
         return netValue * (1 + vat);
     }
-    
-
-    /**
-     * Calculates the gross value based on a net value and the vat. Uses the net
-     * value from a SWT text field and write the result into a gross SWT text
-     * field
-     * @param vat
-     *            Vat as double
-     * @param netValue
-     *            Net value as UniData. This is modified with the net value.
-     */
-    private MonetaryAmount CalculateGrossFromNet(MonetaryAmount netVal, Double vat, MonetaryAmount netValue) {
-    	MonetaryAmount s = null;
-
-        // If there is a net SWT text field specified, its value is used
-        if (netVal != null) {
-            s = CalculateGrossFromNet(netVal, vat);
-            // In the other case, the UniData netvalue is used
-        }
-        else {
-            s = CalculateGrossFromNet(netValue, vat);
-        }
-        
-        return s;
-    }
 
     /**
      * Convert a gross value to a net value.

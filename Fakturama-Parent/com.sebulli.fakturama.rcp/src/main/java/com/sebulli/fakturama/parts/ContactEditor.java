@@ -16,7 +16,6 @@ package com.sebulli.fakturama.parts;
 
 
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +80,7 @@ import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
@@ -1247,18 +1247,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
      */
     private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<ContactCategory> categories = new TreeSet<ContactCategory>(new Comparator<ContactCategory>() {
-            @Override
-            public int compare(ContactCategory cat1, ContactCategory cat2) {
-            	// oh no... the names could be equal in different branches,
-            	// therefore we have to compare with an another attribute
-            	int result = cat1.getName().compareTo(cat2.getName());
-            	if(result == 0) {
-            		result = CommonConverter.getCategoryName(cat1, "").compareTo(CommonConverter.getCategoryName(cat2, ""));
-            	}
-        		return result;
-            }
-        });
+        final TreeSet<ContactCategory> categories = new TreeSet<ContactCategory>(new CategoryComparator<>());
         categories.addAll(contactCategoriesDAO.findAll(true));
 
         ComboViewer viewer = new ComboViewer(comboCategory);

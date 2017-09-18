@@ -62,7 +62,8 @@ public class TreeObject {
         this.name = name;
         this.command = command;
         this.icon = icon;
-        nodeType = TreeObjectType.DEFAULT_NODE;
+//        nodeType = TreeObjectType.DEFAULT_NODE;
+        nodeType = TreeObjectType.LEAF_NODE;
     }
 
     /**

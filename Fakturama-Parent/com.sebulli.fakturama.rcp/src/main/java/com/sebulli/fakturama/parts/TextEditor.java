@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.parts;
 
-import java.util.Comparator;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -43,6 +42,7 @@ import com.sebulli.fakturama.dao.TextCategoriesDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.model.TextModule_;
@@ -255,12 +255,7 @@ public class TextEditor extends Editor<TextModule> {
      */
     private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<TextCategory> categories = new TreeSet<TextCategory>(new Comparator<TextCategory>() {
-            @Override
-            public int compare(TextCategory cat1, TextCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+        final TreeSet<TextCategory> categories = new TreeSet<TextCategory>(new CategoryComparator<>());
         categories.addAll(textCategoriesDAO.findAll());
 
         ComboViewer viewer = new ComboViewer(comboCategory);

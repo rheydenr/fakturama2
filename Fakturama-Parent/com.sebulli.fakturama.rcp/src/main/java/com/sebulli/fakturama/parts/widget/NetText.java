@@ -178,7 +178,7 @@ public class NetText {
 	 * @return the netValue
 	 */
 	public final MonetaryAmount getNetValue() {
-		return (MonetaryAmount) netText.getValue();
+		return Money.of((Double)netText.getValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 
 	/**

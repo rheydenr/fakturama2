@@ -16,7 +16,6 @@ package com.sebulli.fakturama.parts;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -73,6 +72,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -364,12 +364,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
      */
     private void fillAndBindCategoryCombo() {
         // Collect all category strings as a sorted Set
-        final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new Comparator<VoucherCategory>() {
-            @Override
-            public int compare(VoucherCategory cat1, VoucherCategory cat2) {
-                return cat1.getName().compareTo(cat2.getName());
-            }
-        });
+        final TreeSet<VoucherCategory> categories = new TreeSet<VoucherCategory>(new CategoryComparator<>());
         categories.addAll(voucherCategoriesDAO.findAll());
         
         ComboViewer viewer = new ComboViewer(comboCategory);
