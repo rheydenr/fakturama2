@@ -18,6 +18,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import com.sebulli.fakturama.misc.Constants;
+
 // import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -26,6 +28,7 @@ import org.osgi.framework.BundleContext;
  * @author Gerd Bartelt
  */
 public class Activator implements BundleActivator {
+
 
 	// The bundle ID (Bundle-SymbolicName)
     public static final String PLUGIN_ID = "com.sebulli.fakturama.rcp";
@@ -53,7 +56,10 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
         // background color for focused widgets
-        JFaceResources.getColorRegistry().put("bgyellow", new RGB(255, 255, 225));
+        JFaceResources.getColorRegistry().put(Constants.COLOR_BGYELLOW, new RGB(255, 255, 225));
+        
+        // background for Browser
+		JFaceResources.getColorRegistry().put(Constants.COLOR_WHITE, new RGB(0xff, 0xff, 0xff));
    }
 
     /*

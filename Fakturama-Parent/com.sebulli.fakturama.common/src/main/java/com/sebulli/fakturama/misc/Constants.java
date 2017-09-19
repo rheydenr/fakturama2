@@ -531,6 +531,8 @@ public class Constants {
 
 	public static final String PREFERENCES_OPENPDF = "OPENPDF";
 
+	public static final String COLOR_WHITE = "white";
+	public static final String COLOR_BGYELLOW = "bgyellow";
 
 
 }

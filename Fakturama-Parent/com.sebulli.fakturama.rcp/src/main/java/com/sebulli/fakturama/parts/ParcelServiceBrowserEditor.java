@@ -26,15 +26,16 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.browser.WindowEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.parcelservice.ParcelServiceFormFiller;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -101,10 +102,7 @@ public class ParcelServiceBrowserEditor {
 		// Create a new web browser control
 		try {
 			browser = new Browser(top, SWT.NONE);
-			Color color = new Color(null, 0xff, 0xff, 0xff);
-			browser.setBackground(color);
-			color.dispose();
-
+			browser.setBackground(JFaceResources.getColorRegistry().get(Constants.COLOR_WHITE));
 			browser.addProgressListener(new ProgressListener() {
 				@Override
 				public void completed(ProgressEvent event) {

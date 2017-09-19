@@ -72,14 +72,12 @@ public class OpenParcelServiceHandler {
 	
 	@CanExecute
     public boolean canExecute(final MApplication application, final EModelService modelService, @Active MPart activePage) {
-//		dataSetDocument = null;
 		documentEditor = null;
 		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
 		
-        return (activeBrowserEditor != null 
-        		|| documentEditor != null
+        return (documentEditor != null && (activeBrowserEditor != null 
         		|| parcelServiceBrowserEditor != null
-        		|| dataSetDocument != null
+        		|| dataSetDocument != null)
         		);
     }
 
@@ -159,7 +157,7 @@ public class OpenParcelServiceHandler {
 	 * @return 
 	 * 
 	 */
-	private BrowserEditor findActiveDocumentOrGetBrowser(MApplication application, EModelService modelService, MPart activePage) {
+	private BrowserEditor findActiveDocumentOrGetBrowser(final MApplication application, final EModelService modelService, final MPart activePage) {
 		BrowserEditor browserEditor = null;
 		MPart activePart = activePage;
 		
@@ -212,18 +210,18 @@ public class OpenParcelServiceHandler {
 			}
 			
 			// A web browser editor is active
-			if (activePart.getElementId().contentEquals(BrowserEditor.ID)) {
+			else if (activePart.getElementId().contentEquals(BrowserEditor.ID)) {
 				browserEditor = (BrowserEditor)activePart.getObject();
 				dataSetDocument = null;
 			}
 
 			// A parcel service browser editor is active
-			if (activePart.getElementId().contentEquals(ParcelServiceBrowserEditor.ID)) {
+			else if (activePart.getElementId().contentEquals(ParcelServiceBrowserEditor.ID)) {
 				parcelServiceBrowserEditor = (ParcelServiceBrowserEditor)activePart.getObject();
 				dataSetDocument = null;
 			}
 
-			if(activePart.getElementId().contentEquals(DocumentsListTable.ID)) {
+			else if(activePart.getElementId().contentEquals(DocumentsListTable.ID)) {
 				// Cast the part to ViewDataSetTable
 		        @SuppressWarnings("rawtypes")
 		        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
