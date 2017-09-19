@@ -15,9 +15,9 @@
 package com.sebulli.fakturama.log;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
+//import javax.inject.Provider;
 
-import org.eclipse.e4.core.services.statusreporter.StatusReporter;
+//import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.osgi.service.log.LogService;
 
 /**
@@ -30,9 +30,9 @@ public class FakturamaLogger implements ILogger {
     @Inject
 	private LogService delegate;  
     
-    // TODO prove to use this
-    @Inject
-    private Provider<StatusReporter> statusReporter;
+//    // TODO prove to use this
+//    @Inject
+//    private Provider<StatusReporter> statusReporter;
 
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.log.ILogger#debug(java.lang.String)

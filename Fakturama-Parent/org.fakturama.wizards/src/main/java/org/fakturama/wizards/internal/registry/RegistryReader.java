@@ -47,7 +47,7 @@ public abstract class RegistryReader {
         IExtension extension = element.getDeclaringExtension();
         StringBuffer buf = new StringBuffer();
         buf
-                .append("Plugin " + extension.getNamespace() + ", extension " + extension.getExtensionPointUniqueIdentifier());//$NON-NLS-2$//$NON-NLS-1$
+                .append("Plugin " + extension.getNamespaceIdentifier() + ", extension " + extension.getExtensionPointUniqueIdentifier());//$NON-NLS-2$//$NON-NLS-1$
         // look for an ID if available - this should help debugging
         String id = element.getAttribute("id"); //$NON-NLS-1$
         if (id != null) {
@@ -97,10 +97,10 @@ public abstract class RegistryReader {
         // dependent in the order listed in the XML file.
         IExtension[] sortedExtension = new IExtension[extensions.length];
         System.arraycopy(extensions, 0, sortedExtension, 0, extensions.length);
-        Comparator comparer = new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                String s1 = ((IExtension) arg0).getNamespace();
-                String s2 = ((IExtension) arg1).getNamespace();
+        Comparator<IExtension> comparer = new Comparator<IExtension>() {
+            public int compare(IExtension arg0, IExtension arg1) {
+                String s1 = arg0.getNamespaceIdentifier();
+                String s2 = arg1.getNamespaceIdentifier();
                 return s1.compareToIgnoreCase(s2);
             }
         };

@@ -55,7 +55,7 @@ import com.sebulli.fakturama.model.IEntity;
  * Abstract superclass for all DAOs. Used for finding, saving or updating certain entities.
  *
  */
-public abstract class AbstractDAO<T> {
+public abstract class AbstractDAO<T extends IEntity> {
 
     @Inject
     @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
@@ -416,10 +416,9 @@ em.joinTransaction();
 	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 	    CriteriaQuery<T> query = cb.createQuery(getEntityClass());
 	    Root<T> root = query.from(getEntityClass());
-//	    CriteriaQuery<T> cq = query.where(
-//	            cb.and(cb.notEqual(root.<Long>get("id"), entity.getId()),
-//	                   cb.equal(root.<String>get("name"), entity.getName())));
-//	    return !getEntityManager().createQuery(cq).getResultList().isEmpty();
-	    return false;
+	    CriteriaQuery<T> cq = query.where(
+	            cb.and(cb.notEqual(root.<Long>get("id"), entity.getId()),
+	                   cb.equal(root.<String>get("name"), entity.getName())));
+	    return !getEntityManager().createQuery(cq).getResultList().isEmpty();
 	}
 }

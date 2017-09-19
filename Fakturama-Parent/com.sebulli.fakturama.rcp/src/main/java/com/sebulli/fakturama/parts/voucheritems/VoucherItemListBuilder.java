@@ -28,7 +28,6 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -56,9 +55,8 @@ public class VoucherItemListBuilder {
     protected IEclipsePreferences preferences;
 
     private Composite parent;
-    private Voucher Voucher;
+    private Voucher voucher;
 
-    private VoucherCategory voucherCategory;
     private boolean useGross;
     private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
@@ -95,7 +93,7 @@ public class VoucherItemListBuilder {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
         
         itemListTable = ContextInjectionFactory.make(VoucherItemListTable.class, context);
-        Control tableComposite = itemListTable.createPartControl(parent, Voucher, useGross, netgross);
+        Control tableComposite = itemListTable.createPartControl(parent, voucher, useGross, netgross);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
         addButton.addMouseListener(new MouseAdapter() {
 
@@ -196,9 +194,8 @@ public class VoucherItemListBuilder {
         return this;
     }
 
-    public VoucherItemListBuilder withVoucher(Voucher Voucher) {
-        this.Voucher = Voucher;
-        this.voucherCategory = Voucher.getAccount();
+    public VoucherItemListBuilder withVoucher(Voucher voucher) {
+        this.voucher = voucher;
         return this;
     }
 

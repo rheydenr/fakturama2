@@ -7,6 +7,7 @@ import java.text.MessageFormat; // Can't use ICU, possible launch problem?
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
@@ -166,7 +167,7 @@ public class IniFileReader {
 			return null;
 
 		StringTokenizer tokens = new StringTokenizer(value, ","); //$NON-NLS-1$
-		ArrayList array = new ArrayList(10);
+		List<URL> array = new ArrayList<>(10);
 		while (tokens.hasMoreTokens()) {
 			String str = tokens.nextToken().trim();
 			array.add(FileLocator.find(bundle, new Path(str), null));
@@ -180,7 +181,7 @@ public class IniFileReader {
 	/**
 	 * Returns the feature plugin label, or <code>null</code>.
 	 * 
-	 * @return the feature plugin lable, or <code>null</code> if none.
+	 * @return the feature plugin label, or <code>null</code> if none.
 	 */
 	public String getFeaturePluginLabel() {
 		if (bundle == null)
@@ -341,7 +342,7 @@ public class IniFileReader {
 			}
 		}
 
-		ArrayList mappingsList = new ArrayList();
+		List<String> mappingsList = new ArrayList<>();
 		if (bundle != null) {
 			boolean found = true;
 			int i = 0;

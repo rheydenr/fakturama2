@@ -37,7 +37,6 @@ import org.odftoolkit.odfdom.type.Color;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
@@ -69,9 +68,6 @@ public class SalesExporter extends OOCalcExporter {
 	
 	@Inject
 	private DocumentsDAO documentsDao;
-
-    @Inject
-    private ExpendituresDAO expendituresDAO;
 
 	/**
 	 * Constructor Sets the begin and end date

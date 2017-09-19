@@ -24,7 +24,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
- *
+ * Utility class for handling {@link Locale}s. 
  */
 public class LocaleUtil {
     
@@ -163,6 +163,10 @@ public class LocaleUtil {
         return countryLocaleMap;
     }
 
+    /**
+     * Contains a {@link Map} with all country abbreviations and the according {@link Locale}.
+     * @return {@link Map} with all country abbreviations
+     */
     public Map<String, String> getLocaleCountryMap() {
         if(localeCountryMap == null) {
             Map<String, String> tmpMap =  countryLocaleMap.entrySet().stream().collect(
@@ -175,6 +179,11 @@ public class LocaleUtil {
         return localeCountryMap;
     }
     
+    /**
+     * The {@link Locale} for the currently selected currency. If no currency locale is found in preferences, 
+     * the default locale is returned. Note that the locales in preferences are stored with {@link Locale#US}.
+     * @return {@link Locale} for the currently selected currency
+     */
     public Locale getCurrencyLocale() {
         if(currencyLocale == null) {
             String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry());
@@ -191,6 +200,11 @@ public class LocaleUtil {
         return currencyLocale;
     }
     
+    /**
+     * Main method. For tests only.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         System.out.println(getInstance().findCodeByDisplayCountry("Deutschland"));
         Optional<Locale> code = getInstance().findByCode("LT");
@@ -219,6 +233,5 @@ public class LocaleUtil {
         if (locale.isPresent()) {
             System.out.println(locale.get());
         }
-
     }
 }

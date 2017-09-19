@@ -774,7 +774,7 @@ public class ZugferdExporter {
 	 */
 	private String determineQuantityUnit(String userdefinedQuantityUnit) {
 		String isoUnit = "";
-		if(StringUtils.isNotBlank(userdefinedQuantityUnit) && measureUnits!= null)	{
+		if(StringUtils.isNotBlank(userdefinedQuantityUnit))	{
 			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
 			isoUnit = code.isPresent() ? code.get().getCode() : "";
 		}
@@ -1226,16 +1226,11 @@ public class ZugferdExporter {
 		printDocument(doc, streamResult);
 	}
 	
-//	@Override
-//	public boolean isEnabled() {
-//	    return findSelectedInvoice() != null;
-//	}
-	
 	private Document findSelectedInvoice(EPartService partService) {
 		Document retval = null;
 		
 		// at first we try to use an open editor
-		if(partService != null && StringUtils.equalsIgnoreCase(partService.getActivePart().getElementId(), "com.sebulli.fakturama.editors.documentEditor")) {
+		if(partService != null && StringUtils.equalsIgnoreCase(partService.getActivePart().getElementId(), DocumentEditor.ID)) {
 			DocumentEditor editor = (DocumentEditor)partService.getActivePart().getObject();
 			retval = editor.getDocument();
 		} else if(selectionService != null && selectionService.getSelection() != null) {

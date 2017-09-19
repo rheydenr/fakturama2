@@ -114,7 +114,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 			viewer.setLabelProvider(new WorkbenchLabelProvider());
 	        viewer.setComparator(DataTransferWizardCollectionComparator.INSTANCE);
 	        
-	        List inputArray = new ArrayList();
+	        List<IE4WizardCategory> inputArray = new ArrayList<>();
 	        boolean expandTop = false;
 
 	        if (wizardCategories != null) {
@@ -322,7 +322,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 			return;
 		}
 
-        List categoriesToExpand = new ArrayList(expandedCategoryPaths.length);
+        List<IE4WizardCategory> categoriesToExpand = new ArrayList<>(expandedCategoryPaths.length);
 
         if (wizardCategories != null) {
             for (int i = 0; i < expandedCategoryPaths.length; i++) {
@@ -377,7 +377,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      */
     protected void storeExpandedCategories(String setting, TreeViewer viewer) {
         Object[] expandedElements = viewer.getExpandedElements();
-        List expandedElementPaths = new ArrayList(expandedElements.length);
+        List<String> expandedElementPaths = new ArrayList<>(expandedElements.length);
         for (int i = 0; i < expandedElements.length; ++i) {
             if (expandedElements[i] instanceof IE4WizardCategory) {
 				expandedElementPaths
@@ -386,7 +386,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 			}
         }
         getDialogSettings().put(setting,
-                (String[]) expandedElementPaths
+                expandedElementPaths
                         .toArray(new String[expandedElementPaths.size()]));
     }
 

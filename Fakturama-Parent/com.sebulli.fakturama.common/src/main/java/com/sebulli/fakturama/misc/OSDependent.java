@@ -14,13 +14,10 @@
 
 package com.sebulli.fakturama.misc;
 
-import java.awt.Desktop;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.eclipse.core.internal.registry.osgi.OSGIUtils;
 import org.eclipse.swt.SWT;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * These are the OS-dependent settings.

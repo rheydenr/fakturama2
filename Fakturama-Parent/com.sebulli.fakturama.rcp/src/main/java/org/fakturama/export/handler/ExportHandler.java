@@ -35,12 +35,6 @@ import com.sebulli.fakturama.resources.core.IconSize;
  */
 public class ExportHandler {
 
-    /**
-     * The name of the dialog settings file (value 
-     * <code>"dialog_settings.xml"</code>).
-     */
-    private static final String FN_DIALOG_SETTINGS = "dialog_settings.xml"; //$NON-NLS-1$
-
     private static final int SIZING_WIZARD_WIDTH = 470;
     private static final int SIZING_WIZARD_HEIGHT = 550;
 

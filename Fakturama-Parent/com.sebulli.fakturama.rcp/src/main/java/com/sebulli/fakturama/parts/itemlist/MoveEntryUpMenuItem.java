@@ -30,10 +30,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 
 /**
  * This action moves the selected entry up
@@ -48,14 +46,8 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
     @Inject
     protected IEventBroker evtBroker;
 
-    private EntityGridListLayer<? extends IEntity> gridListLayer;
-    
     public MoveEntryUpMenuItem() {
         // default constructor is only for ContextInjectionFactory
-    }
-
-    public MoveEntryUpMenuItem(EntityGridListLayer<? extends IEntity> gridListLayer) {
-        this.gridListLayer = gridListLayer;
     }
     
     @Override
@@ -91,14 +83,6 @@ public class MoveEntryUpMenuItem implements IMenuItemProvider {
                 // documentEditor.moveItem(uds, true);
             }
         });
-    }
-
-    /**
-     * @param gridListLayer
-     *            the gridListLayer to set
-     */
-    public void setGridListLayer(EntityGridListLayer<? extends IEntity> gridListLayer) {
-        this.gridListLayer = gridListLayer;
     }
 
 }

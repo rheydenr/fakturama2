@@ -18,8 +18,6 @@ import javax.money.format.AmountFormatContext;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryParseException;
 
-import org.javamoney.moneta.format.CurrencyStyle;
-
 import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {

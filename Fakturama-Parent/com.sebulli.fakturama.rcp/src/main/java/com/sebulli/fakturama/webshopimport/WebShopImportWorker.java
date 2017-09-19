@@ -498,7 +498,6 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today); //
-            int h = 1;
             String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
             address.setCountryCode(countryCode);
             
@@ -623,7 +622,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			 * The price and the prefix are ignored, since I don't know where I have to store it.
     			 * A model change is required.
     			 */
-    			Float attrPrice = NumberUtils.FLOAT_ZERO;
+//    			Float attrPrice = NumberUtils.FLOAT_ZERO;
     			StringBuilder prefixSb = new StringBuilder();
     			for (AttributeType attribute : itemType.getAttribute()) {
     				// Get all attributes
@@ -953,29 +952,29 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             }
             return null;
         }
-
-        /**
-         * Convert the payment method to a readable (and localized) text.
-         * 
-         * @param intext
-         *            order status
-         * @return payment method as readable (and localized) text
-         */
-        private String getPaymentMethodText(String intext) {
-        	String paymentstatustext = intext;
-        
-        	if (intext.equalsIgnoreCase("cod"))
-        		paymentstatustext = msg.importWebshopDataCashondelivery;
-        	else if (intext.equalsIgnoreCase("prepayment"))
-        		paymentstatustext = msg.importWebshopDataPrepayment;
-        	else if (intext.equalsIgnoreCase("creditcard"))
-        		paymentstatustext = msg.importWebshopDataCreditcard;
-        	else if (intext.equalsIgnoreCase("check"))
-        		paymentstatustext = msg.importWebshopDataCheque;
-        
-        	return paymentstatustext;
-        
-        }
+//
+//        /**
+//         * Convert the payment method to a readable (and localized) text.
+//         * 
+//         * @param intext
+//         *            order status
+//         * @return payment method as readable (and localized) text
+//         */
+//        private String getPaymentMethodText(String intext) {
+//        	String paymentstatustext = intext;
+//        
+//        	if (intext.equalsIgnoreCase("cod"))
+//        		paymentstatustext = msg.importWebshopDataCashondelivery;
+//        	else if (intext.equalsIgnoreCase("prepayment"))
+//        		paymentstatustext = msg.importWebshopDataPrepayment;
+//        	else if (intext.equalsIgnoreCase("creditcard"))
+//        		paymentstatustext = msg.importWebshopDataCreditcard;
+//        	else if (intext.equalsIgnoreCase("check"))
+//        		paymentstatustext = msg.importWebshopDataCheque;
+//        
+//        	return paymentstatustext;
+//        
+//        }
         
 	/**
 	 * Debug input stream.

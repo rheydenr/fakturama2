@@ -1,6 +1,7 @@
 package com.sebulli.fakturama.browser;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Extends the abstract browser support class by providing minimal support for
@@ -14,14 +15,14 @@ import java.util.Hashtable;
  */
 public class DefaultWorkbenchBrowserSupport extends
 		AbstractWorkbenchBrowserSupport {
-	private Hashtable browsers;
+	private Map<String, IWebBrowser> browsers;
 	private static final String DEFAULT_BROWSER_ID_BASE = "org.eclipse.ui.defaultBrowser"; //$NON-NLS-1$
 
 	/**
 	 * The default constructor.
 	 */
 	public DefaultWorkbenchBrowserSupport() {
-		browsers = new Hashtable();
+		browsers = new Hashtable<>();
 	}
 
 	void registerBrowser(IWebBrowser browser) {

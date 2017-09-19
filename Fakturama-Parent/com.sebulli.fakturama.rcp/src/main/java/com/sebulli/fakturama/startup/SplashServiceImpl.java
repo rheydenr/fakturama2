@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -18,15 +16,11 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
-
-import com.sebulli.fakturama.log.ILogger;
 
 public class SplashServiceImpl implements ISplashService {
 	private String pluginId = null;
@@ -42,9 +36,6 @@ public class SplashServiceImpl implements ISplashService {
 
 	private ProgressBar progressBar = null;
 	private int progress = 0;
-
-    @Inject
-    private ILogger logger;
 
 	@Override
 	public void setSplashPluginId(String pluginId) {

@@ -16,11 +16,8 @@ package com.sebulli.fakturama.parts.itemlist;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.Active;
-import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
@@ -35,11 +32,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
-import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 
 /**
  * This action moves the selected entry down
@@ -57,28 +51,12 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
     
     @Inject
     protected ESelectionService selectionService;
-
-    private EntityGridListLayer<? extends IEntity> gridListLayer;
     
     /**
      * 
      */
     public MoveEntryDownMenuItem() {
         // default constructor is only for ContextInjectionFactory
-    }
-
-    /**
-     * @param gridListLayer
-     */
-    public MoveEntryDownMenuItem(EntityGridListLayer<? extends IEntity> gridListLayer) {
-        this.gridListLayer = gridListLayer;
-    }
-    
-    @Execute
-    public void moveRowDown(@Active MPart activePart) {
-        @SuppressWarnings("rawtypes")
-		AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-        NatTable natTable = currentListtable.getNatTable();
     }
 
     @Override
@@ -119,13 +97,4 @@ public class MoveEntryDownMenuItem implements IMenuItemProvider {
             }
         });
     }
-
-    /**
-     * @param gridListLayer
-     *            the gridListLayer to set
-     */
-    public void setGridListLayer(EntityGridListLayer<? extends IEntity> gridListLayer) {
-        this.gridListLayer = gridListLayer;
-    }
-
 }

@@ -153,18 +153,6 @@ public enum DocumentType {
 		}
 		return retval;
 	}
-	
-	public static DocumentType findDocumentTypeByClass(Class clazz) {
-        DocumentType retval = DocumentType.NONE;
-        int typeCount = values().length;
-        for (int i = 0; i < typeCount; i++) {
-            if(getTypeAsString(i).equalsIgnoreCase(clazz.getSimpleName())) {
-                retval = findByKey(i);
-                break;
-            }
-        }
-        return retval;
-	}
 
 	/**
 	 * Convert from a document type String to the corresponding integer

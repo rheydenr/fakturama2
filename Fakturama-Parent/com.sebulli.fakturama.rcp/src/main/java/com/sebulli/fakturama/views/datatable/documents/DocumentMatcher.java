@@ -19,13 +19,14 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import ca.odell.glazedlists.matchers.Matcher;
-
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
+
+import ca.odell.glazedlists.matchers.Matcher;
 
 /**
  *
@@ -70,7 +71,7 @@ public class DocumentMatcher implements Matcher<Document> {
             } else if(treeObjectType == TreeObjectType.CONTACTS_ROOTNODE) {
                 found = documentCategoryName.contentEquals(NO_SELECTION_ROOT) || StringUtils.equals(item.getAddressFirstLine(), documentCategoryName);
             } else {
-                DocumentType docType = DocumentType.findDocumentTypeByClass(item.getClass());
+                DocumentType docType = DocumentTypeUtil.findByBillingType(item.getBillingType());
                 if (docType != null) {
                         String fullCategoryName = getCategory(item, docType); //CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
                         if(fullCategoryName.startsWith(documentCategoryName) || documentCategoryName.contentEquals(NO_SELECTION_ROOT)) {

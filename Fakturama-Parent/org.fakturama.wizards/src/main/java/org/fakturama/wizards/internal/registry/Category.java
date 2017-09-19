@@ -1,6 +1,7 @@
 package org.fakturama.wizards.internal.registry;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -35,7 +36,7 @@ public class Category implements IAdaptable {
 
     private String[] parentPath;
 
-    private ArrayList elements;
+    private List elements;
 
     private IConfigurationElement configurationElement;
 
@@ -198,7 +199,7 @@ public class Category implements IAdaptable {
      * 
      * @return the elements
      */
-    public ArrayList getElements() {
+    public List getElements() {
         return elements;
     }
 
@@ -250,7 +251,7 @@ public class Category implements IAdaptable {
      */
     public String getPluginId() {
         return configurationElement == null ? pluginId : configurationElement
-				.getNamespace();
+				.getNamespaceIdentifier();
     }
 
 	/**

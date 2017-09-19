@@ -24,6 +24,7 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  *
@@ -174,7 +175,7 @@ public class SpecialCellValueProvider {
         switch (descriptor) {
         // Fill the cell with the icon of the document type
         case ICON:
-            DocumentType obj = DocumentType.findDocumentTypeByClass(rowObject.getClass());
+            DocumentType obj = DocumentTypeUtil.findByBillingType(rowObject.getBillingType());
             if (obj != null) {
                 switch (obj) {
                 case LETTER:
@@ -204,7 +205,7 @@ public class SpecialCellValueProvider {
 
             // Fill the cell with the icon for status
             // e.g. "paid/unpaid" for invoices
-            obj = DocumentType.findDocumentTypeByClass(rowObject.getClass());
+            obj = DocumentTypeUtil.findByBillingType(rowObject.getBillingType());
             if (obj != null) {
                 switch (obj) {
                 case INVOICE:

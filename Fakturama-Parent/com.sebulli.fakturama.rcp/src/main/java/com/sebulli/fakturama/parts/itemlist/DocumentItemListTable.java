@@ -248,10 +248,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 		
 		// add NatTable menu items
 		MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
-		moveEntryUpHandler.setGridListLayer(gridListLayer);
 		
 		MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
-		moveEntryDownHandler.setGridListLayer(gridListLayer);
 		
 //		DeleteHandler deleteHandler = ContextInjectionFactory.make(DeleteHandler.class, context);
 		MenuManager menuManager = new MenuManager();

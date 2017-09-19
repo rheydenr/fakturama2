@@ -514,34 +514,34 @@ public class DataUtils {
                 Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
      
-	/**
-	 * @param currencyCheckboxEnabled
-	 */
-	private MonetaryAmountFormat buildMonetaryAmountFormat(Locale locale, CurrencySettingEnum currencySetting, boolean useSeparator) {
-
-        NumberFormat form = NumberFormat.getCurrencyInstance(currencyLocale);
-        form.setGroupingUsed(useThousandsSeparator);
-        if (currencyLocale.getCountry().equals("CH")) {
-            if(currencySetting != CurrencySettingEnum.NONE) {
-                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
-                mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                        .setCurrency(chf)
-                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
-                        .build());
-            }
-        }
-        monetaryAmountFormat = MonetaryFormats.getAmountFormat(
-                AmountFormatQueryBuilder.of(currencyLocale)
-	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
-                        .set(currencySetting)
-                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
-                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
-                        .build());
-        return monetaryAmountFormat;
-	}   
+//	/**
+//	 * @param currencyCheckboxEnabled
+//	 */
+//	private MonetaryAmountFormat buildMonetaryAmountFormat(Locale locale, CurrencySettingEnum currencySetting, boolean useSeparator) {
+//
+//        NumberFormat form = NumberFormat.getCurrencyInstance(currencyLocale);
+//        form.setGroupingUsed(useThousandsSeparator);
+//        if (currencyLocale.getCountry().equals("CH")) {
+//            if(currencySetting != CurrencySettingEnum.NONE) {
+//                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
+//                mro = Monetary.getRounding(RoundingQueryBuilder.of()
+//                        .setCurrency(chf)
+//                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+//                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
+//                        .build());
+//            }
+//        }
+//        monetaryAmountFormat = MonetaryFormats.getAmountFormat(
+//                AmountFormatQueryBuilder.of(currencyLocale)
+//	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
+//                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
+//                        .set(currencySetting)
+//                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
+//                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
+//                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
+//                        .build());
+//        return monetaryAmountFormat;
+//	}   
     
     
     /**

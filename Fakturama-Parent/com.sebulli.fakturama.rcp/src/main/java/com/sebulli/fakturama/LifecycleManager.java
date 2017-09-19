@@ -38,14 +38,12 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
-import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -474,25 +472,6 @@ public class LifecycleManager {
 		return dialogSettings;
 	}
 		
-    
-    @ProcessRemovals
-    public void createOneEditor(EModelService modelService, MApplication app) {
-        // if no editor is opened we create a Start Browser part
-        MPartStack documentPartStack = (MPartStack) modelService.find(Constants.DETAILPANEL_ID, app);
-        
-        // add another Savehandler
-        // FIXME doesn't  work at the moment. The WBWRenderer registers its own SaveHandler while creating the application window.
- //       mainMTrimmedWindow.getContext().set(ISaveHandler.class, ContextInjectionFactory.make(EditorSaveHandler.class, app.getContext()));
-		
-//        if(documentPartStack.getChildren().isEmpty()) {
-//        	EHandlerService handlerService = context.get(EHandlerService.class);
-//        	ECommandService commandService = context.get(ECommandService.class);
-//        	ParameterizedCommand command = commandService.createCommand("com.sebulli.fakturama.command.openBrowserEditor", null);
-//        	handlerService.executeHandler(command);
-//        }
-    	
-    }
-
 
     /**
      * Loads the dialog settings for this plug-in.
