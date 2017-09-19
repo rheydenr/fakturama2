@@ -418,7 +418,8 @@ em.joinTransaction();
 	    Root<T> root = query.from(getEntityClass());
 	    CriteriaQuery<T> cq = query.where(
 	            cb.and(cb.notEqual(root.<Long>get("id"), entity.getId()),
-	                   cb.equal(root.<String>get("name"), entity.getName())));
+	                   cb.equal(root.<String>get("name"), entity.getName()),
+	                   cb.isFalse(root.<Boolean>get("deleted"))));
 	    return !getEntityManager().createQuery(cq).getResultList().isEmpty();
 	}
 }

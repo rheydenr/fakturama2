@@ -865,8 +865,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Product"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="This entity represents a Product." name="Product" qualifiedClassName="com.sebulli.fakturama.model.Product" simpleClassName="Product" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
-        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>

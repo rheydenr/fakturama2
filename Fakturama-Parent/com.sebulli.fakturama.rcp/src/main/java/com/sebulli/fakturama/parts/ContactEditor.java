@@ -594,7 +594,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		else {
 			tabBank = new Composite(invisible, SWT.NONE);
 		}
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(tabBank);
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(tabBank);
 
 		// Create the miscellaneous tab
 		Composite tabMisc;
@@ -933,17 +933,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelAccountHolder.setText(msg.commonFieldAccountholder);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccountHolder);
 		txtAccountHolder = new Text(tabBank, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccountHolder);
-
-		// Account number
-		Label labelAccount = new Label(tabBank, SWT.NONE);
-		//T: Label in the contact editor
-		labelAccount.setText(msg.editorContactFieldAccountnumberName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
-		txtAccount = new Text(tabBank, SWT.BORDER);
-		txtAccount.setEnabled(false);
-		txtAccount.setToolTipText(msg.editorContactFieldAccountnumberDisabledinfo);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
+		GridDataFactory.fillDefaults().span(3, SWT.DEFAULT).grab(true, false).applyTo(txtAccountHolder);
 
 		// Bank code
 		Label labelBankCode = new Label(tabBank, SWT.NONE);
@@ -955,21 +945,23 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtBankCode.setEnabled(false);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankCode);
 
+		// Account number
+		Label labelAccount = new Label(tabBank, SWT.NONE);
+		//T: Label in the contact editor
+		labelAccount.setText(msg.editorContactFieldAccountnumberName);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAccount);
+		txtAccount = new Text(tabBank, SWT.BORDER);
+		txtAccount.setEnabled(false);
+		txtAccount.setToolTipText(msg.editorContactFieldAccountnumberDisabledinfo);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAccount);
+
 		// Name of the bank
 		Label labelBankName = new Label(tabBank, SWT.NONE);
 		//T: Label in the contact editor
 		labelBankName.setText(msg.editorContactFieldBankName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBankName);
 		txtBankName = new Text(tabBank, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBankName);
-
-		// IBAN Bank code
-		Label labelIBAN = new Label(tabBank, SWT.NONE);
-		//T: Bank code
-		labelIBAN.setText(msg.exporterDataIban);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelIBAN);
-		txtIBAN = new Text(tabBank, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtIBAN);
+		GridDataFactory.fillDefaults().span(3, SWT.DEFAULT).grab(true, false).applyTo(txtBankName);
 
 		// BIC
 		Label labelBIC = new Label(tabBank, SWT.NONE);
@@ -978,6 +970,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBIC);
 		txtBIC = new Text(tabBank, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtBIC);
+
+		// IBAN Bank code
+		Label labelIBAN = new Label(tabBank, SWT.NONE);
+		//T: Bank code
+		labelIBAN.setText(msg.exporterDataIban);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelIBAN);
+		txtIBAN = new Text(tabBank, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtIBAN);
         
         // Customer's Mandat reference
         Label labelMandate = new Label(tabBank, SWT.NONE);
@@ -985,7 +985,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         labelMandate.setText(msg.editorContactFieldMandaterefName);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelMandate);
         txtMandatRef = new Text(tabBank, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMandatRef); 
+        GridDataFactory.fillDefaults().span(3, SWT.DEFAULT).grab(true, false).applyTo(txtMandatRef); 
 
 		// Controls in tab "Misc"
 
