@@ -15,11 +15,10 @@
 package com.sebulli.fakturama.parts.converter;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
-
-import com.ibm.icu.util.Calendar;
 
 /**
  *
@@ -42,7 +41,11 @@ public class DateDisplayConverter extends DisplayConverter  {
 
     @Override
     public Object displayToCanonicalValue(Object displayValue) {
-    	return Calendar.getInstance().getTime();
+    	try {
+			return sdf.parse((String) displayValue);
+		} catch (ParseException e) {
+			return "00.00.0000";
+		}
     }
 
 }

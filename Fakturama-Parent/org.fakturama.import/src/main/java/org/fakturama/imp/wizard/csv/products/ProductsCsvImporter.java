@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +32,6 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
-import com.ibm.icu.text.MessageFormat;
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;

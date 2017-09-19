@@ -21,6 +21,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
@@ -61,7 +62,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
 //        if(editFormat.getMaximumFractionDigits() > 2) {
 //        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
 //        }
-        setPatterns(editFormatPattern, format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
 //        setFixedLengths(false, true);
     }
     

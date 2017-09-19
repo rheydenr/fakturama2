@@ -14,8 +14,7 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.equinox.ds;bundle-version="1.4.300",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
  org.eclipse.nebula.widgets.formattedtext;bundle-version="1.0.0",
- org.eclipse.nebula.widgets.cdatetime;bundle-version="1.0.0",
- com.ibm.icu;bundle-version="56.1.0"
+ org.eclipse.nebula.widgets.cdatetime;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,

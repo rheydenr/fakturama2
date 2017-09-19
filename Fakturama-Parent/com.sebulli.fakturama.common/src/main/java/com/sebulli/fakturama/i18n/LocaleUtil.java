@@ -53,7 +53,14 @@ public class LocaleUtil {
     		instance = new LocaleUtil("en_US");
     	}
         if(instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
+        	/*
+        	 * If a two-letter locale is given try to interpret it (because we need it later for determining currency etc.)
+        	 */
+        	if(lang.length() < 3) {
+        		instance = new LocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
+        	} else {        	
         		instance = new LocaleUtil(lang);
+        	}
         }
         return instance;
     }
