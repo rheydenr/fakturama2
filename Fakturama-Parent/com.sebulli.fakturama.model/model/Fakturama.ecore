@@ -209,7 +209,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="depositText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Product" eSuperTypes="#//IEntity">
+  <eClassifiers xsi:type="ecore:EClass" name="Product" eSuperTypes="#//IDescribableEntity">
     <eAnnotations source="http://www.fakturama.org/JavaBean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="block1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"
         defaultValueLiteral="1"/>
@@ -223,7 +223,6 @@
         defaultValueLiteral="10000"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="categories" ordered="false"
         eType="#//ProductCategory"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
         eType="#//ProductOptions"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="picture" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EByteArray"/>
