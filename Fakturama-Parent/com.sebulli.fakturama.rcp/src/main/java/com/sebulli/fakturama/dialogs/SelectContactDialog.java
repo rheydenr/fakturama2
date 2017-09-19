@@ -122,7 +122,8 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(debitorListTable.getSelectedObject().getId()));
             setResult(debitorListTable.getSelectedObject());
-            
+            // inform the DocumentEditor (or any other Editor) about the selection
+            evtBroker.post("DialogSelection/Contact", eventParams);
             // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
         }
         super.okPressed();

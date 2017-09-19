@@ -478,10 +478,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
 	}
 
-	/**
-	 * Copy all the address data to the delivery address
-	 */
-	private void copyAddressToDeliveryAdress() {
+//	/**
+//	 * Copy all the address data to the delivery address
+//	 */
+//	private void copyAddressToDeliveryAdress() {
 ////		comboDeliveryGender.select(comboGender.getSelectionIndex());
 //		txtDeliveryTitle.setText(txtTitle.getText());
 //		txtDeliveryFirstname.setText(txtFirstname.getText());
@@ -491,7 +491,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //		txtDeliveryZip.setText(txtZip.getText());
 //		txtDeliveryCity.setText(txtCity.getText());
 ////		txtDeliveryCountry.setText(comboCountry.getText());
-	}
+//	}
 	
     /**
      * If an entity is deleted via list view we have to close a possibly open

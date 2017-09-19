@@ -1602,7 +1602,7 @@ public class DocumentEditor extends Editor<Document> {
 		addressAndIconComposite.layout(true);
 		updateUseGross(true);
 		
-		setDirty(false);
+//		setDirty(true);
 	}
 	
 	/**
@@ -2001,11 +2001,7 @@ public class DocumentEditor extends Editor<Document> {
 			    context.set(DOCUMENT_ID, document.getName());
 			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    dlg.open();
-			    Collection<Contact> result = dlg.getResult();
-			    if(result != null) {
-			    	setAddress(result.iterator().next());
-			    	setDirty(true);
-			    }
+			    // the result is set via event DialogSelection/Contact
 			}
 		});
 
@@ -2621,11 +2617,11 @@ public class DocumentEditor extends Editor<Document> {
             String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
             if(!StringUtils.equals(targetDocumentName, document.getName())) {
-                // silently ignore this event
+                // silently ignore this event if it's not for this document
                 return; 
             }
             
-            boolean isChanged = true;
+            boolean isChanged = false;
             String topic = StringUtils.defaultString(event.getTopic());
             String subTopic = "";
             String[] topicName = topic.split("/");
@@ -2644,6 +2640,7 @@ public class DocumentEditor extends Editor<Document> {
                 // If a Contact is selected the manualAddress field has to be set to null!
 //                document.getBillingContact().getAddress().setManualAddress(null);
 //                document.setBillingContact(contact);
+                isChanged = true;
                 break;
             case "Product":
                 // select a product (for an item entry)
@@ -2653,6 +2650,7 @@ public class DocumentEditor extends Editor<Document> {
                 if(!selectedIds.isEmpty()) {
 	                List<Product> selectedProducts = productsDAO.findSelectedProducts(selectedIds);
 	                addItemsToItemList(selectedProducts);
+	                isChanged = true;
                 }
                 break;
             case "Delivery":
@@ -2697,6 +2695,7 @@ public class DocumentEditor extends Editor<Document> {
 //                    if (newItem!= null)
 //                        tableViewerItems.reveal(newItem);
                 calculate();
+                isChanged = selectedDeliveries.length > 0;
                 break;
             case "TextModule":
                 Long textModuleId = (Long) event.getProperty(TextListTable.SELECTED_TEXT_ID);
@@ -2713,6 +2712,7 @@ public class DocumentEditor extends Editor<Document> {
 
                       selectedMessageField.setText(String.format("%s%s%s", s1, s2, s.substring(end, s.length())));
                       selectedMessageField.setSelection(s1.length() + s2.length());
+                      isChanged = true;
                   }
                 break;
             default:
