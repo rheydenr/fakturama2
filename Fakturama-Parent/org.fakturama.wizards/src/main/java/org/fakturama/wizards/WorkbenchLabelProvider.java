@@ -1,4 +1,4 @@
-package org.fakturama.export.wizard;
+package org.fakturama.wizards;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;

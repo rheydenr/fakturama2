@@ -11,7 +11,7 @@
  * Contributors:
  *     The Fakturama Team - initial API and implementation
  */
-package org.fakturama.export.wizard;
+package org.fakturama.wizard;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -23,8 +23,10 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.Wizard;
-import org.fakturama.imp.wizard.ImportPage;
+import org.fakturama.wizard.export.ExportPage;
+import org.fakturama.wizard.imp.ImportPage;
 import org.fakturama.wizards.IFakturamaWizardService;
+import org.fakturama.wizards.ImportExportPage;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;

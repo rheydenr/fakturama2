@@ -1,4 +1,4 @@
-package org.fakturama.imp.wizard;
+package org.fakturama.wizard.imp;
 
 import javax.inject.Inject;
 
@@ -9,10 +9,10 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.fakturama.export.wizard.ImportExportPage;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWizardRegistry;
+import org.fakturama.wizards.ImportExportPage;
 import org.fakturama.wizards.ImportWizardRegistry;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

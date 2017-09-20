@@ -1,4 +1,4 @@
-package org.fakturama.export.wizard;
+package org.fakturama.wizards;
 
 import java.util.ArrayList;
 import java.util.List;

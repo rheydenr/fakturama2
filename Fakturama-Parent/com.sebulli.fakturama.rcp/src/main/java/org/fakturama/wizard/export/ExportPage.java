@@ -1,4 +1,4 @@
-package org.fakturama.export.wizard;
+package org.fakturama.wizard.export;
 
 import javax.inject.Inject;
 
@@ -13,6 +13,8 @@ import org.fakturama.wizards.ExportWizardRegistry;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWizardRegistry;
+import org.fakturama.wizards.ImportExportPage;
+import org.fakturama.wizards.ImportExportPage.CategorizedWizardSelectionTree;
 
 import com.sebulli.fakturama.i18n.Messages;
 
