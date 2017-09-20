@@ -87,7 +87,7 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
                 update(prop);
             }
             else {
-                prop = new UserProperty();
+            	prop = modelFactory.createUserProperty();
                 prop.setName(key);
                 prop.setValue(value);
                 prop.setUser(System.getProperty("user.name", "(unknown)"));

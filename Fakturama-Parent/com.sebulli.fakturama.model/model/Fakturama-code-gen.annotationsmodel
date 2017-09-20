@@ -1218,11 +1218,19 @@
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//UserProperty/value"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="value" getter="getValue" defaultValue="null" setter="setValue" validJavaMemberName="value" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.28/@eClassAnnotations.0"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The current value of this property." name="value" getter="getValue" defaultValue="null" setter="setValue" validJavaMemberName="value" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.28/@eClassAnnotations.0"/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//UserProperty/user"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="user name for which this property belongs to. Later on we should make a reference to the User entity, but for the moment a simple String value is sufficient."/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="User name for which this property belongs to. Later on we should make a reference to the User entity, but for the moment a simple String value is sufficient."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//UserProperty/default"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The default value of this property."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//UserProperty/global"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Set this to TRUE if this setting is a global one. Global settings can't be overwritten by users."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">

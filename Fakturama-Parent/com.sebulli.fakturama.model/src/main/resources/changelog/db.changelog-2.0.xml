@@ -162,6 +162,8 @@
             <column name="NETGROSS" type="INT"/>
             <column name="ODTPATH" type="VARCHAR(255)"/>
             <column name="ORDERDATE" type="date"/>
+            <column name="VESTINGPERIODSTART" type="date"/>
+            <column name="VESTINGPERIODEND" type="date"/>
             <column defaultValueNumeric="0" name="PAID" type="BIT"/>
             <column name="PAIDVALUE" type="DOUBLE"/>
             <column name="PAYDATE" type="date"/>
@@ -497,6 +499,8 @@
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
             <column name="T_VALUE" type="VARCHAR(255)"/>
+            <column name="T_DEFAULT" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="T_GLOBAL" type="BIT"/>
         </createTable>
     </changeSet>
     <changeSet author="rheydenr (generated)" id="1489873806573-29" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
@@ -918,12 +922,5 @@
     <changeSet author="rheydenr (generated)" id="1489873806573-119" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>
-
-	<changeSet author="rheydenr" id="20170821-2344-120">
-	    <addColumn tableName="FKT_DOCUMENT">
-	        <column name="VESTINGPERIODSTART" type="date"/>
-	        <column name="VESTINGPERIODEND" type="date"/>
-	    </addColumn>
-	</changeSet>
     
 </databaseChangeLog>

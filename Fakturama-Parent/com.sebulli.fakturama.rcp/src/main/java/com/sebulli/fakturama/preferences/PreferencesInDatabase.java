@@ -16,6 +16,7 @@ package com.sebulli.fakturama.preferences;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -26,7 +27,6 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.PropertiesDAO;
-import com.sebulli.fakturama.model.UserProperty;
 
 
 /**
@@ -57,10 +57,10 @@ public class PreferencesInDatabase {
 	 *            The key of the preference value
 	 */
 	private void loadPreferenceValue(String key) {
-	    UserProperty property = propertiesDAO.findByName(key);
-	    if(property != null) {
-	        preferences.setValue(property.getName(), property.getValue());
-	        pref.put(property.getName(), property.getValue());
+	    Optional<String> property = propertiesDAO.findPropertyValue(key);
+	    if(property.isPresent()) {
+	        preferences.setValue(key, property.get());
+	        pref.put(key, property.get());
 	    }
 	}
 

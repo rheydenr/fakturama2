@@ -116,6 +116,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 	 *            TRUE: Write to the data base
 	 */
 	public void syncWithPreferencesFromDatabase(boolean write) {
+		// since path is only locally we don't have to put it into the database
 //		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PATH, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, write);
