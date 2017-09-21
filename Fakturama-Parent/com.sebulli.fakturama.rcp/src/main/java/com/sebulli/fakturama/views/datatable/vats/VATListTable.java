@@ -237,7 +237,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         searchColumns[1] = "description";
         searchColumns[2] = "value";
  */
-        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText, 
+        final MatcherEditor<VAT> textMatcherEditor = new TextWidgetMatcherEditor<VAT>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(VAT.class, VAT_.name.getName(), VAT_.description.getName()));
         
         // Filtered list for Search text field filter

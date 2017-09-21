@@ -251,7 +251,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         searchColumns[3] = "discountdays";
         searchColumns[4] = "netdays";
  */
-        final MatcherEditor<Payment> textMatcherEditor = new TextWidgetMatcherEditor<Payment>(searchText, GlazedLists.textFilterator(Payment.class,
+        final MatcherEditor<Payment> textMatcherEditor = new TextWidgetMatcherEditor<Payment>(searchText.getTextControl(), GlazedLists.textFilterator(Payment.class,
                 Payment_.name.getName(), Payment_.description.getName()));
         
         // Filtered list for Search text field filter

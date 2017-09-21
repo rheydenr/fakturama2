@@ -441,7 +441,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         searchColumns[2] = "addressfirstline";
         searchColumns[3] = "total";
  */
-        final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText, GlazedLists.textFilterator(Document.class,
+        final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText.getTextControl(), GlazedLists.textFilterator(Document.class,
                 Document_.name.getName(), Document_.addressFirstLine.getName()));
         
         // Filtered list for Search text field filter

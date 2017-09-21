@@ -215,7 +215,7 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
         searchColumns[0] = "name";
         searchColumns[1] = "value";
  */
-        final MatcherEditor<ItemAccountType> textMatcherEditor = new TextWidgetMatcherEditor<ItemAccountType>(searchText, 
+        final MatcherEditor<ItemAccountType> textMatcherEditor = new TextWidgetMatcherEditor<ItemAccountType>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(ItemAccountType.class, ItemAccountType_.name.getName(), ItemAccountType_.value.getName()));
         
         // Filtered list for Search text field filter

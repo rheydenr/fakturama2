@@ -345,7 +345,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         searchColumns[1] = "description";
         searchColumns[2] = "value";
  */
-        final MatcherEditor<Product> textMatcherEditor = new TextWidgetMatcherEditor<Product>(searchText, 
+        final MatcherEditor<Product> textMatcherEditor = new TextWidgetMatcherEditor<Product>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(Product.class, Product_.itemNumber.getName(), Product_.name.getName(), Product_.description.getName()));
         
         // Filtered list for Search text field filter

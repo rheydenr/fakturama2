@@ -82,6 +82,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.parts.widget.search.TextSearchControl;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -145,7 +146,9 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 
 	// Filter the table 
 	protected Label filterLabel;
-	protected Text searchText;
+	
+	protected TextSearchControl searchText;
+//	protected Text searchText;
 
 	// The topic tree viewer displays the categories of the UniDataSets
 	protected TopicTreeViewer<C> topicTreeViewer;
@@ -503,7 +506,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         Label searchLabel = new Label(searchComposite, SWT.NONE);
         searchLabel.setText(msg.commonLabelSearchfield);
         GridDataFactory.swtDefaults().applyTo(searchLabel);
-        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
+        
+        searchText = new TextSearchControl(searchComposite, false);
+//        
+//        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
         return searchAndTableComposite;
     }

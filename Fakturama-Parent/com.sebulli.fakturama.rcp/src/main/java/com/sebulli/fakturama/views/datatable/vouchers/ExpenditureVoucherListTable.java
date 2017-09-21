@@ -220,7 +220,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
         searchColumns[2] = "documentnr";
         searchColumns[3] = "date";
  */
-        final MatcherEditor<Voucher> textMatcherEditor = new TextWidgetMatcherEditor<Voucher>(searchText, 
+        final MatcherEditor<Voucher> textMatcherEditor = new TextWidgetMatcherEditor<Voucher>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(Voucher.class, Voucher_.name.getName(), Voucher_.voucherNumber.getName(),
                         Voucher_.voucherDate.getName(), Voucher_.documentNumber.getName()));
         

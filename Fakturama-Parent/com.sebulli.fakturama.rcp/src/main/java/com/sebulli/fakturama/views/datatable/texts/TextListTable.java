@@ -235,7 +235,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
         searchColumns[0] = "name";
         searchColumns[1] = "text";
  */
-        final MatcherEditor<TextModule> textMatcherEditor = new TextWidgetMatcherEditor<TextModule>(searchText, 
+        final MatcherEditor<TextModule> textMatcherEditor = new TextWidgetMatcherEditor<TextModule>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(TextModule.class, TextModule_.name.getName(), TextModule_.text.getName()));
         
         // Filtered list for Search text field filter

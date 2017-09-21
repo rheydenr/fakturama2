@@ -80,7 +80,7 @@ public class CreditorListTable extends ContactListTable<Creditor> {
         searchColumns[4] = "zip";
         searchColumns[5] = "city";
  */
-        return new TextWidgetMatcherEditor<Creditor>(searchText, 
+        return new TextWidgetMatcherEditor<Creditor>(searchText.getTextControl(), 
                 GlazedLists.textFilterator(Creditor.class, 
                         Creditor_.customerNumber.getName(),
                         Creditor_.firstName.getName(),

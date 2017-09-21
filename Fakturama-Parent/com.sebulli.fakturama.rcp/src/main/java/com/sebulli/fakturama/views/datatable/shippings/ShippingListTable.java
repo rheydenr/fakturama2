@@ -193,7 +193,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         searchColumns[1] = "description";
         searchColumns[2] = "value";
  */
-        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText, GlazedLists.textFilterator(Shipping.class,
+        final MatcherEditor<Shipping> textMatcherEditor = new TextWidgetMatcherEditor<Shipping>(searchText.getTextControl(), GlazedLists.textFilterator(Shipping.class,
                 Shipping_.name.getName(), Shipping_.description.getName()));
         
         // Filtered list for Search text field filter
