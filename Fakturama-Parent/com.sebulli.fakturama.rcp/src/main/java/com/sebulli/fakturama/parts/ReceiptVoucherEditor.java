@@ -37,7 +37,7 @@ public class ReceiptVoucherEditor extends VoucherEditor {
      */
     @Override
     protected String getEditorTitle() {
-    	return msg.receiptvoucherEditorTitle;
+    	return msg.editorVoucherReceiptTitle;
     }
 
 	protected String getEditorIconURI() {
@@ -49,7 +49,7 @@ public class ReceiptVoucherEditor extends VoucherEditor {
 	 * @return
 	 */
 	protected String getCustomerSupplierString() {
-		return msg.receiptvoucherFieldCustomer;
+		return msg.editorVoucherReceiptFieldCustomer;
 	}
 
     /* (non-Javadoc)
@@ -59,7 +59,11 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     protected VoucherType getVoucherType() {
     	return VoucherType.RECEIPTVOUCHER;
     }
-
+    
+    @Override
+    protected String[] getNameProposals() {
+    	return receiptVouchersDAO.getVoucherNames();
+    }
 
     @Override
     protected ReceiptVouchersDAO getModelRepository() {

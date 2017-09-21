@@ -167,7 +167,7 @@ public class AccountSummaryCalculator {
 	public void collectEntries(String account) {
 		
 		accountEntries = new ArrayList<AccountEntry>();
-		VoucherCategory category = accountDAO.findVoucherCategoryByName(account);
+		VoucherCategory category = accountDAO.findCategoryByName(account);
 
 		// collectDocuments( account, Data.INSTANCE.getDocuments(), Data.INSTANCE.getPayments());
 		Date endDate = null;

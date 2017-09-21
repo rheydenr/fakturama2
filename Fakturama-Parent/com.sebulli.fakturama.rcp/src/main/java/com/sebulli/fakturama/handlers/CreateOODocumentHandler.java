@@ -173,7 +173,7 @@ public class CreateOODocumentHandler {
 						public void handleEvent(Event e) {
 							// save the document and open the exporter
 							documentEditor.doSave(null);
-							openOODocument(documentEditor.getDocument(), (Path) e.widget.getData(), shell);
+							openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell);
 							// documentEditor.markAsPrinted();
 						}
 					});
@@ -191,7 +191,7 @@ public class CreateOODocumentHandler {
 			} else if (templates.size() == 1) {
 				// Save the document and open the exporter
 				documentEditor.doSave(null);
-				openOODocument(documentEditor.getDocument(), templates.get(0), shell);
+				openOODocument(documentEditor.getDocument(true), templates.get(0), shell);
 				// documentEditor.markAsPrinted();
 			} else {
 				// Show an information dialog if no template was found

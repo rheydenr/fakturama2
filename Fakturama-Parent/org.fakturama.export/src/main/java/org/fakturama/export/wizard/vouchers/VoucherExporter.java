@@ -114,12 +114,12 @@ public class VoucherExporter extends OOCalcExporter {
 		
 		switch (type) {
 		case SUPPLIER:
-			customerSupplier = msg.expenditurevoucherFieldSupplier;
+			customerSupplier = msg.editorVoucherExpenditureFieldSupplier;
 			vouchers.addAll(expendituresDAO.findVouchersInDateRange(startDate, endDate));
 			outputFileName = msg.commandExpenditurevouchersName;
 			break;
 		default:
-			customerSupplier = msg.receiptvoucherFieldCustomer;
+			customerSupplier = msg.editorVoucherReceiptFieldCustomer;
 			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
 			outputFileName = msg.commandReceiptvouchersName;
 			break;

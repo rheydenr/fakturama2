@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.persistence.TypedQuery;
@@ -120,20 +121,30 @@ public class ReceiptVouchersDAO extends AbstractDAO<Voucher> {
 		return resultList;
 	}
 
-/**
-* Gets the all visible properties of this {@link Voucher} object.
-* 
-* @return String[] of visible {@link Voucher} properties
-*/
-public String[] getVisibleProperties() {
-   return new String[] { Voucher_.doNotBook.getName(), 
-           Voucher_.voucherDate.getName(), 
-           Voucher_.voucherNumber.getName(), 
-           Voucher_.documentNumber.getName(),
-           Voucher_.name.getName(), 
-           Voucher_.paidValue.getName() 
-           };
-}
+	/**
+	* Gets the all visible properties of this {@link Voucher} object.
+	* 
+	* @return String[] of visible {@link Voucher} properties
+	*/
+	public String[] getVisibleProperties() {
+	   return new String[] { Voucher_.doNotBook.getName(), 
+	           Voucher_.voucherDate.getName(), 
+	           Voucher_.voucherNumber.getName(), 
+	           Voucher_.documentNumber.getName(),
+	           Voucher_.name.getName(), 
+	           Voucher_.paidValue.getName() 
+	           };
+	}
+	
+	/**
+	 * Get all {@link Voucher} names as String array. Used for content proposals.
+	 * 
+	 * @return array of voucher names.
+	 */
+	public String[] getVoucherNames() {
+		List<Voucher> allVouchers = findAll(true);
+		return allVouchers.stream().map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[]{});
+	}
 
     @PreDestroy
     public void destroy() {

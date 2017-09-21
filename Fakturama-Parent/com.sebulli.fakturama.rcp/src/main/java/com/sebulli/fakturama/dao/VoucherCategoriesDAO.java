@@ -16,17 +16,13 @@ package com.sebulli.fakturama.dao;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.model.VATCategory_;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.Voucher_;
@@ -35,7 +31,7 @@ import com.sebulli.fakturama.model.Voucher_;
  *
  */
 @Creatable
-public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
+public class VoucherCategoriesDAO extends AbstractCategoriesDAO<VoucherCategory> {
 
     protected Class<VoucherCategory> getEntityClass() {
         return VoucherCategory.class;
@@ -58,48 +54,6 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
         return getEntityManager().createQuery(selectQuery).getResultList();
 //      return getEntityManager().createQuery("select p from VoucherCategory p", VoucherCategory.class).getResultList();
     }
-    
-    /**
-     * Finds a {@link VoucherCategory} by its name. Category in this case is a String separated by 
-     * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
-     * and then check the parent. 
-     * 
-     * @param voucherCategory the Category to search
-     * @return {@link VoucherCategory}
-     */
-    public VoucherCategory findVoucherCategoryByName(String voucherCategory) {
-        VoucherCategory result = null;
-        if(StringUtils.isNotEmpty(voucherCategory)) {
-            CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-            CriteriaQuery<VoucherCategory> cq = cb.createQuery(getEntityClass());
-            Root<VoucherCategory> rootEntity = cq.from(getEntityClass());
-            // extract the rightmost value
-            String[] splittedCategories = voucherCategory.split("/");
-            String leafCategory = splittedCategories[splittedCategories.length - 1];        
-            CriteriaQuery<VoucherCategory> selectQuery = cq.select(rootEntity)
-                    .where(cb.and(
-                                cb.equal(rootEntity.get(VATCategory_.name), leafCategory) /*,
-                                cb.equal(rootEntity.get(VATCategory_.parent), VoucherCategory.class)
-                               ,
-                                cb.equal(rootEntity.get(VATCategory_.deleted), false)*/));
-            try {
-                List<VoucherCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
-                // remove leading slash
-                String testCat = StringUtils.stripStart(voucherCategory, "/");
-                for (VoucherCategory vatCategory2 : tmpResultList) {
-                    if(StringUtils.equals(CommonConverter.getCategoryName(vatCategory2, ""), testCat)) {
-                        result = vatCategory2;
-                        break;
-                    }
-                }
-            }
-            catch (NoResultException nre) {
-                // no result means we return a null value 
-            }
-        }
-        return result;
-    }
-    
 
     /**
      * Find a {@link VoucherCategory} by its name. If one of the part categories doesn't exist we create it 
@@ -121,7 +75,7 @@ public class VoucherCategoriesDAO extends AbstractDAO<VoucherCategory> {
                 if(category.contentEquals("/")) {
                 	continue;
                 }
-                VoucherCategory searchCat = findVoucherCategoryByName(category);
+                VoucherCategory searchCat = findCategoryByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
                     VoucherCategory newCategory = new VoucherCategory();

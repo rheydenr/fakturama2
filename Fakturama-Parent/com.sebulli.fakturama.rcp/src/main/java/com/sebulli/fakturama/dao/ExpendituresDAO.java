@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -166,6 +167,18 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
+	
+	
+	/**
+	 * Get all {@link Voucher} names as String array. Used for content proposals.
+	 * 
+	 * @return array of voucher names.
+	 */
+	public String[] getVoucherNames() {
+		List<Voucher> allVouchers = findAll(true);
+		return allVouchers.stream().map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[]{});
+	}
+	
   
     /**
     * Gets the all visible properties of this Voucher object.

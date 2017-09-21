@@ -38,14 +38,14 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 	 * @return
 	 */
 	protected String getCustomerSupplierString() {
-		return msg.expenditurevoucherFieldSupplier;
+		return msg.editorVoucherExpenditureFieldSupplier;
 	}
 	
 	/**
 	 * @return
 	 */
 	protected String getEditorTitle() {
-		return msg.expenditurevoucherEditorTitle;
+		return msg.editorVoucherExpenditureTitle;
 	}
 
 	/**
@@ -66,6 +66,11 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 	protected String getEditorId() {
 		return EDITOR_ID;
 	}
+    
+    @Override
+    protected String[] getNameProposals() {
+    	return expendituresDAO.getVoucherNames();
+    }
 
     @Override
     protected ExpendituresDAO getModelRepository() {

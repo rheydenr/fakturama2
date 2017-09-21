@@ -2488,8 +2488,7 @@
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_voucher"/><title>Editor Einnahmen- oder Ausgabebeleg</title>
 		<para>Alle Einahmen/Ausgaben können in Belegen erfasst und später tabellarisch und sortiert als OpenOffice Calc Tabelle exportiert werden.</para>
-		<!-- TODO nochmal checken, ob das geht -->
-		<!-- para>Viele Felder des Beleges sind mit einer Autovervollständigung ausgestattet. Diese wird automatisch für das Feld abgeschaltet, sobald einmal der Wert korrigiert wurde.</para -->
+		<para>Viele Felder des Beleges sind mit einer Autovervollständigung ausgestattet. Diese wird automatisch für das Feld abgeschaltet, sobald einmal der Wert korrigiert wurde.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">

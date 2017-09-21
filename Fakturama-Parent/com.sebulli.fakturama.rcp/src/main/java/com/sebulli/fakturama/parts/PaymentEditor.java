@@ -143,7 +143,7 @@ public class PaymentEditor extends Editor<Payment> {
 			newPayment = false;
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
-                VoucherCategory newCat = accountDAO.findVoucherCategoryByName(category);
+                VoucherCategory newCat = accountDAO.findCategoryByName(category);
                 payment.setCategory(newCat);
             }
 			stdComposite.stdButton.setEnabled(true);
@@ -199,7 +199,7 @@ public class PaymentEditor extends Editor<Payment> {
 			payment = new Payment();
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
-                VoucherCategory newCat = accountDAO.findVoucherCategoryByName(category);
+                VoucherCategory newCat = accountDAO.findCategoryByName(category);
                 payment.setCategory(newCat);
             }
 			

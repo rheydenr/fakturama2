@@ -1098,6 +1098,15 @@ public class DocumentEditor extends Editor<Document> {
 		return document;
 	}
 
+	public Document getDocument(boolean refresh) {
+		if(refresh && document != null && document.getId() != 0L) {
+			// refresh document (some associations could have been changed)
+			document = documentsDAO.findById(document.getId(), refresh);
+//			bindModel();
+		}
+		return document;
+	}
+	
 	/**
 	 * Returns the document type
 	 * 

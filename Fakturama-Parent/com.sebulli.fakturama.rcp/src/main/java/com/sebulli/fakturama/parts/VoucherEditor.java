@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.parts;
 
+import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,10 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.AutoCompleteField;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -51,6 +56,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -86,7 +92,7 @@ import com.sebulli.fakturama.parts.voucheritems.VoucherItemListTable;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
- *
+ * Editor for various kinds of vouchers. Has to be overwritten by concrete implementations.
  */
 public abstract class VoucherEditor extends Editor<Voucher>{
 	
@@ -95,20 +101,26 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 
 	@Inject
 	protected VoucherCategoriesDAO voucherCategoriesDAO;
+	
 	@Inject
 	protected IPreferenceStore preferences;
+	
 	@Inject
 	protected EHandlerService handlerService;
+	
 	@Inject
 	protected ECommandService commandService;
+	
 	@Inject
 	protected EPartService partService;
 	protected MPart part;
 	protected Composite top;
 	protected Combo comboCategory;
 	protected CDateTime dtDate;
+	
 	@Inject
 	protected VoucherItemsDAO voucherItemsDAO;
+	
 	@Inject
 	protected IEclipseContext context;
 	protected Text textName;
@@ -254,16 +266,27 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        Label labelName = new Label(top, SWT.NONE);
 	
 	        labelName.setText(customerSupplier);
-	        labelName.setToolTipText(msg.voucherFieldCustomersupplierName + " " + customerSupplier.toLowerCase());
+	        labelName.setToolTipText(MessageFormat.format(msg.voucherFieldCustomersupplierName, getCustomerSupplierString()));
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 	        textName = new Text(top, SWT.BORDER);
 	        textName.setToolTipText(labelName.getToolTipText());
-	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
-	
+	        
 	        // Add the suggestion listener
-	//      textName.addVerifyListener(new Suggestion(textName, getVouchers().getStrings("name")));
-	
+	        String[] nameProposals = getNameProposals();
+	        if(nameProposals.length > 0) {
+		        ControlDecoration decoration = new ControlDecoration(textName, SWT.LEFT | SWT.TOP);
+		        Image hintImage = FieldDecorationRegistry.getDefault()
+		        		.getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL).getImage();
+		        		decoration.setImage(hintImage);	        
+		        decoration.setImage(hintImage);
+		        decoration.setDescriptionText(msg.voucherFieldCustomersupplierHint);
+		        decoration.setShowOnlyOnFocus(true);
+		        decoration.setShowHover(true);
+	        	new AutoCompleteField(textName, new TextContentAdapter(), nameProposals);
+	        }
+	        
+	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);	
 	
 	/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 	            VoucherItemListBuilder itemListBuilder = ContextInjectionFactory.make(VoucherItemListBuilder.class, context);
@@ -656,5 +679,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
     protected MDirtyable getMDirtyablePart() {
         return part;
     }
-
+    
+	protected abstract String[] getNameProposals();
 }
