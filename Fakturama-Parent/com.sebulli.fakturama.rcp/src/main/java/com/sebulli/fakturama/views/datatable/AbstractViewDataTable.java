@@ -510,7 +510,8 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         searchLabel.setText(msg.commonLabelSearchfield);
         GridDataFactory.swtDefaults().applyTo(searchLabel);
         
-        searchText = new TextSearchControl(searchComposite, false);
+        searchText = new TextSearchControl(searchComposite, false, msg);
+
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
         return searchAndTableComposite;
     }

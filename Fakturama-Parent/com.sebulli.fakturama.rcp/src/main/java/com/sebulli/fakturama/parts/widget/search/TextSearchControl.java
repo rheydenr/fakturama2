@@ -23,6 +23,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
+import com.sebulli.fakturama.i18n.Messages;
+
 /**
  * @author Shawn Minto
  */
@@ -46,12 +48,6 @@ public class TextSearchControl extends Composite {
 	 */
 	private static final String FIND_ICON = "org.eclipse.ui.internal.dialogs.FIND_ICON"; //$NON-NLS-1$
 
-	/* SWT STYLE BIT AVAILABLE ON 3.5 AND HIGHER */
-	public static final int ICON_SEARCH = 1 << 9;
-
-	/* SWT STYLE BIT AVAILABLE ON 3.5 AND HIGHER */
-	public static final int ICON_CANCEL = 1 << 8;
-
 	/**
 	 * Get image descriptors for the clear button.
 	 */
@@ -68,12 +64,11 @@ public class TextSearchControl extends Composite {
 	}
 
 	private final Text textControl;
-
 	private Control clearControl;
-
 	private Control findControl;
-
+	
 	private final boolean automaticFind;
+	private final Messages msg;
 
 	private final Set<SelectionListener> selectionListeners = new HashSet<SelectionListener>();
 
@@ -83,17 +78,18 @@ public class TextSearchControl extends Composite {
 
 	private static Boolean useNativeSearchField;
 
-	public TextSearchControl(Composite parent, boolean automaticFind) {
+	public TextSearchControl(Composite parent, boolean automaticFind, Messages msg) {
 		super(parent, getCompositeStyle(automaticFind, parent));
 		this.automaticFind = automaticFind;
-
+		this.msg = msg;
+		
 		int textStyle = SWT.SINGLE;
 		int numColumns = 1;
 		if (useNativeSearchField(automaticFind, parent)) {
 			if (automaticFind) {
-				textStyle |= SWT.SEARCH | ICON_CANCEL;
+				textStyle |= SWT.SEARCH | SWT.ICON_CANCEL;
 			} else {
-				textStyle |= SWT.SEARCH | ICON_SEARCH | ICON_CANCEL;
+				textStyle |= SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 			}
 		} else {
 			super.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
@@ -113,10 +109,10 @@ public class TextSearchControl extends Composite {
 
 		if (useNativeSearchField == null || !useNativeSearchField) {
 			findControl = createLabelButtonControl(this, textControl,
-					JFaceResources.getImageRegistry().getDescriptor(FIND_ICON), "Find", /* main.menu.help.search */"", ICON_SEARCH);
+					JFaceResources.getImageRegistry().getDescriptor(FIND_ICON), "Find", /* main.menu.help.search */"", SWT.ICON_SEARCH);
 			clearControl = createLabelButtonControl(this, textControl,
-					JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON), "Tooltip", // FilteredTree_AccessibleListenerClearButton,
-					"", ICON_CANCEL);
+					JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON), "Tooltip", 
+					this.msg.mainMenuEditDeleteName, SWT.ICON_CANCEL);
 			addModifyListener(new ModifyListener() {
 
 				public void modifyText(ModifyEvent e) {
@@ -138,7 +134,7 @@ public class TextSearchControl extends Composite {
 		addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				if (textControl != null && !textControl.isDisposed()) {
 					addToSearchHistory(textControl.getText());
-					System.out.println("SUCHE läuft! (selected)");
+//					System.out.println("SUCHE läuft! (selected)");
 					// TODO: Suche auslösen!
 				}
 		}));
@@ -148,7 +144,7 @@ public class TextSearchControl extends Composite {
 			public void focusLost(FocusEvent e) {
 				if (textControl != null && !textControl.isDisposed()) {
 					addToSearchHistory(textControl.getText());
-System.out.println("SUCHE läuft! (Focus.out)");
+//System.out.println("SUCHE läuft! (Focus.out)");
 					// TODO: Suche auslösen!
 				}
 			}
@@ -168,13 +164,13 @@ System.out.println("SUCHE läuft! (Focus.out)");
 				useNativeSearchField = Boolean.FALSE;
 				Text testText = null;
 				try {
-					int style = SWT.SEARCH | ICON_CANCEL;
+					int style = SWT.SEARCH | SWT.ICON_CANCEL;
 					if (automaticFind) {
-						style |= ICON_SEARCH;
+						style |= SWT.ICON_SEARCH;
 					}
 					testText = new Text(parent, style);
-					useNativeSearchField = new Boolean((testText.getStyle() & ICON_CANCEL) != 0
-							&& (!automaticFind || (testText.getStyle() & ICON_SEARCH) != 0));
+					useNativeSearchField = new Boolean((testText.getStyle() & SWT.ICON_CANCEL) != 0
+							&& (!automaticFind || (testText.getStyle() & SWT.ICON_SEARCH) != 0));
 				} finally {
 					if (testText != null) {
 						testText.dispose();

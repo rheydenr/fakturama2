@@ -178,11 +178,11 @@
             <itemizedlist>
                 <listitem>
                     <para>
-                        <emphasis role="bold">Nur die Kunden-ID</emphasis>  Es werden nur die Rechnungen verwendet, die unter der gleichen Kundennummer angelegt wurden.</para>
+                        <emphasis role="bold">Nur die Kunden-ID</emphasis> Es werden nur die Rechnungen verwendet, die unter der gleichen Kundennummer angelegt wurden.</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">auch das Adressfeld</emphasis>  Es werden auch die Rechnungen mit gleicher oder sehr ähnlicher Adresse verwendet</para>
+                        <emphasis role="bold">auch das Adressfeld</emphasis> Es werden auch die Rechnungen mit gleicher oder sehr ähnlicher Adresse verwendet</para>
                 </listitem>
             </itemizedlist>
         </section>
@@ -463,6 +463,7 @@
         <title>Nummernkreise</title>
         <para>Beim Anlegen eines neuen Kunden, eines Produktes oder eines Dokumentes wird automatisch die Kunden-, Artikel- oder Dokumentennummer hochgezählt.</para>
         <para>Auf dieser Seite wird angezeigt, wie die nächste Nummer lautet, die vergeben wird. Ebenso kann diese geändert werden, falls die Zählreihenfolge nicht mehr stimmt oder geändert werden soll.</para>
+		<warning>Diese Option sollte im Mehrbenutzerbetrieb mit großer Vorsicht verwendet werden, da beispielsweise Rechnungsnummern programmweit eindeutig und fortlaufend sein müssen. Ändern also zwei Nutzer diese Einstellung, wird es Lücken in der Numerierung geben.</warning>
         <informalfigure>
             <mediaobject>
                 <imageobject role="html">
@@ -476,37 +477,37 @@
         <para>Für folgende Daten werden automatisch Nummern vergeben:</para>
         <itemizedlist spacing="compact">
             <listitem>
-                <para> Kundennummer</para>
+                <para>Kundennummer</para>
             </listitem>
             <listitem>
-                <para> Lieferantennummer</para>
+                <para>Lieferantennummer</para>
             </listitem>
             <listitem>
-                <para> Artikelnummer</para>
+                <para>Artikelnummer</para>
             </listitem>
             <listitem>
-                <para> Rechnungsnummer</para>
+                <para>Rechnungsnummer</para>
             </listitem>
             <listitem>
-                <para> Lieferscheinnummer</para>
+                <para>Lieferscheinnummer</para>
             </listitem>
             <listitem>
-                <para> Angebotsnummer</para>
+                <para>Angebotsnummer</para>
             </listitem>
             <listitem>
-                <para> Auftragsnummer</para>
+                <para>Auftragsnummer</para>
             </listitem>
             <listitem>
-                <para> Auftragsbestätigungsnummer</para>
+                <para>Auftragsbestätigungsnummer</para>
             </listitem>
             <listitem>
-                <para> Rechnungskorrekturnummer</para>
+                <para>Rechnungskorrekturnummer</para>
             </listitem>
             <listitem>
-                <para> Mahnungsnummer</para>
+                <para>Mahnungsnummer</para>
             </listitem>
             <listitem>
-                <para> Proforma-Rechnungsnummer</para>
+                <para>Proforma-Rechnungsnummer</para>
             </listitem>
         </itemizedlist>
     </section>
@@ -528,7 +529,7 @@
         <section>
             <title>Fortlaufende Nummerierung</title>
             <para>Als Platzhalter für die Nummer dient die Zeichensequenz: {Xnr}</para>
-            <para> Das X ist durch die Anzahl der Stellen zu ersetzen. Die Zahl wird mit Nullen aufgefüllt, bis die Anzahl der Stellen erreicht ist.</para>
+            <para>Das X ist durch die Anzahl der Stellen zu ersetzen. Die Zahl wird mit Nullen aufgefüllt, bis die Anzahl der Stellen erreicht ist.</para>
             <para>Beispiel:</para>
             <programlisting>RE{5nr}</programlisting>
             <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
@@ -583,37 +584,37 @@
             <para>Für folgende Daten kann das Format vorgegeben werden:</para>
             <itemizedlist spacing="compact">
                 <listitem>
-                    <para> Kundennummer</para>
+                    <para>Kundennummer</para>
                 </listitem>
 				<listitem>
-					<para> Lieferantennummer</para>
+					<para>Lieferantennummer</para>
 				</listitem>
                 <listitem>
-                    <para> Artikelnummer</para>
+                    <para>Artikelnummer</para>
                 </listitem>
                 <listitem>
-                    <para> Rechnungsnummer</para>
+                    <para>Rechnungsnummer</para>
                 </listitem>
                 <listitem>
-                    <para> Lieferscheinnummer</para>
+                    <para>Lieferscheinnummer</para>
                 </listitem>
                 <listitem>
-                    <para> Angebotsnummer</para>
+                    <para>Angebotsnummer</para>
                 </listitem>
                 <listitem>
-                    <para> Bestellungsnummer</para>
+                    <para>Bestellungsnummer</para>
                 </listitem>
                 <listitem>
-                    <para> Auftragsbestätigungsnummer</para>
+                    <para>Auftragsbestätigungsnummer</para>
                 </listitem>
 				<listitem>
-					<para> Rechnungskorrekturnummer</para>
+					<para>Rechnungskorrekturnummer</para>
 				</listitem>
 				<listitem>
-					<para> Mahnungsnummer</para>
+					<para>Mahnungsnummer</para>
 				</listitem>
 				<listitem>
-					<para> Proforma-Rechnungsnummer</para>
+					<para>Proforma-Rechnungsnummer</para>
 				</listitem>
             </itemizedlist>
          </section>
@@ -667,44 +668,44 @@
             <itemizedlist>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{docname}</emphasis>  Name des Dokumentes</para>
+                        <emphasis role="bold">{docname}</emphasis> Name des Dokumentes</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{doctype}</emphasis>  Art des Dokumentes, z.B. <emphasis role="bold">Rechnungen</emphasis>
+                        <emphasis role="bold">{doctype}</emphasis> Art des Dokumentes, z.B. <emphasis role="bold">Rechnungen</emphasis>
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{docref}</emphasis>  Kundenreferenz</para>
+                        <emphasis role="bold">{docref}</emphasis> Kundenreferenz</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{address}</emphasis>  Adresse des Kunden (1. Zeile)</para>
+                        <emphasis role="bold">{address}</emphasis> Adresse des Kunden (1. Zeile)</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{name}</emphasis>  Name des Kunden</para>
+                        <emphasis role="bold">{name}</emphasis> Name des Kunden</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{Xnr}</emphasis>  Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
+                        <emphasis role="bold">{Xnr}</emphasis> Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{yyyy}</emphasis>  Jahr (4-stellig)</para>
+                        <emphasis role="bold">{yyyy}</emphasis> Jahr (4-stellig)</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{yy}</emphasis>  Jahr (2-stellig)</para>
+                        <emphasis role="bold">{yy}</emphasis> Jahr (2-stellig)</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{mm}</emphasis>  Monat</para>
+                        <emphasis role="bold">{mm}</emphasis> Monat</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{dd}</emphasis>  Tag</para>
+                        <emphasis role="bold">{dd}</emphasis> Tag</para>
                 </listitem>
             </itemizedlist>
             <para>Siehe auch <link linkend="application_mainmenu_extras">Hauptmenü Extras</link>
@@ -924,19 +925,19 @@
             <itemizedlist>
                 <listitem>
                     <para>
-                        <emphasis role="bold">http://forum.fakturama.info/</emphasis>  Fakturama Forum</para>
+                        <emphasis role="bold">http://forum.fakturama.info/</emphasis> Fakturama Forum</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">file:///home/USER/Bilder/logo.jpg</emphasis>  Eigenes Logo</para>
+                        <emphasis role="bold">file:///home/USER/Bilder/logo.jpg</emphasis> Eigenes Logo</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">-</emphasis>  (Minus-Symbol) keine Startseite anzeigen</para>
+                        <emphasis role="bold">-</emphasis> (Minus-Symbol) keine Startseite anzeigen</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold"/>  (Feld bleibt leer) Startseite <emphasis role="bold">Vorlagen/Start/start.html</emphasis> anzeigen</para>
+                        <emphasis role="bold"/> (Feld bleibt leer) Startseite <emphasis role="bold">Vorlagen/Start/start.html</emphasis> anzeigen</para>
                 </listitem>
             </itemizedlist>
             <para>Siehe <link linkend="editor_editor_browser">Webbrowser</link>
