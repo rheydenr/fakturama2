@@ -68,7 +68,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.AbstractDAO;
@@ -147,8 +146,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	// Filter the table 
 	protected Label filterLabel;
 	
+	/**
+	 * a new sophisticated search control which displays a magnifying glass and an eraser icon.
+	 * This is the default under Linux and Mac OS, but not under Windows. Here we have a nice
+	 * widget for all platforms.
+	 */
 	protected TextSearchControl searchText;
-//	protected Text searchText;
 
 	// The topic tree viewer displays the categories of the UniDataSets
 	protected TopicTreeViewer<C> topicTreeViewer;
@@ -508,8 +511,6 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         GridDataFactory.swtDefaults().applyTo(searchLabel);
         
         searchText = new TextSearchControl(searchComposite, false);
-//        
-//        searchText = new Text(searchComposite, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
         return searchAndTableComposite;
     }
