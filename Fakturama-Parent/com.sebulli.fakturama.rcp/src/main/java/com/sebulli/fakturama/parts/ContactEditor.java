@@ -1065,7 +1065,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelPayment.setToolTipText(msg.editorContactFieldPaymentTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPayment);
-		comboPaymentViewer = new ComboViewer(tabMisc, SWT.BORDER);
+		comboPaymentViewer = new ComboViewer(tabMisc, SWT.BORDER | SWT.READ_ONLY);
 		comboPaymentViewer.getCombo().setToolTipText(labelPayment.getToolTipText());
 		allPayments = paymentsDao.findAll();
 		comboPaymentViewer.setContentProvider(new EntityComboProvider());
@@ -1077,7 +1077,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		//T: Label in the contact editor
 		labelReliability.setText(msg.editorContactFieldReliabilityName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelReliability);
-		comboReliability = new ComboViewer(tabMisc, SWT.BORDER);
+		comboReliability = new ComboViewer(tabMisc, SWT.BORDER | SWT.READ_ONLY);
 		comboReliability.setContentProvider(ArrayContentProvider.getInstance());
 		comboReliability.setInput(ReliabilityType.values());
 		comboReliability.setLabelProvider(new LabelProvider() {
@@ -1134,7 +1134,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		//T: Label in the contact editor
 		labelNetGross.setText(msg.editorContactFieldNetgrossName);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNetGross);
-		comboUseNetGross = new ComboViewer(tabMisc, SWT.BORDER);
+		comboUseNetGross = new ComboViewer(tabMisc, SWT.BORDER | SWT.READ_ONLY);
 		comboUseNetGross.setContentProvider(ArrayContentProvider.getInstance());
 		comboUseNetGross.setInput(new Short[]{0, 1, 2});
 		comboUseNetGross.setLabelProvider(new LabelProvider() {

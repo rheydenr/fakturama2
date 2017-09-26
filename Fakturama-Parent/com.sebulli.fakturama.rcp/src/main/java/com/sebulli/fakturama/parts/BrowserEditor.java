@@ -304,18 +304,18 @@ public class BrowserEditor {
 					if (showURLbar){
 						if (urlText != null) {
 						    
-							String startUrl = "file://" +
-				                    StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
-				                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
-				                    "Start/start.html";
-
-							if (! browserURL.equals(startUrl)  ){
+//							String startUrl = "file://" +
+//				                    StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
+//				                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
+//				                    "Start/start.html";
+//
+//							if (! browserURL.equals(startUrl)  ){
 								if (isValidURL)
 									urlText.setText(browserURL);
-							}
-							else {
-								urlText.setText("http://");
-							}
+//							}
+//							else {
+//								urlText.setText("http://");
+//							}
 						}
 					}
 				}

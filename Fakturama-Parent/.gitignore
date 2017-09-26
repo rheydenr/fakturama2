@@ -1,11 +1,11 @@
-*/bin
-*/target
-*/User
+*/bin/
+*/target/
+*/User/
 .apt_generated
 .factorypath
 .classpath
 */src-gen
-.DS_Store
+.DS_Store/
 */archive/
 */test-output/
 workspace/
