@@ -132,5 +132,14 @@
             class="com.sebulli.fakturama.preferences.DefaultValuesInitializer">
       </initializer>
    </extension>
+   <extension
+         id="MainAppModel"
+         point="org.eclipse.e4.workbench.model">
+      <processor
+            apply="always"
+            beforefragment="false"
+            class="com.sebulli.fakturama.handlers.CopyPerspectiveSnippetProcessor">
+      </processor>
+   </extension>
 
 </plugin>

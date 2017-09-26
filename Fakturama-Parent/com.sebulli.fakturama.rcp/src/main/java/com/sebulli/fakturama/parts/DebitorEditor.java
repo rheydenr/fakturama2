@@ -23,6 +23,7 @@ import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -50,7 +51,9 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 
 	@Override
 	protected Debitor createNewContact(FakturamaModelFactory modelFactory) {
-		return modelFactory.createDebitor();
+		Debitor debitor = modelFactory.createDebitor();
+		debitor.setContactType(ContactType.BILLING);
+		return debitor;
 	}
 	
 	protected String getEditorIconURI() {

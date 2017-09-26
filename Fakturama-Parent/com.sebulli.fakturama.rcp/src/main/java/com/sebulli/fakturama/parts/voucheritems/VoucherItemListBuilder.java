@@ -76,20 +76,20 @@ public class VoucherItemListBuilder {
         // Items label
         Label labelItems = new Label(addButtonComposite, SWT.NONE | SWT.RIGHT);
         //T: VoucherEditor - Label Items
-        labelItems.setText(msg.voucherFieldItemsName);
+        labelItems.setText(msg.editorVoucherFieldItemsName);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(labelItems);
 
         // Item add button
         Label addButton = new Label(addButtonComposite, SWT.NONE);
             addButton.setImage(Icon.COMMAND_PLUS.getImage(IconSize.DefaultIconSize));
-            addButton.setToolTipText(msg.voucherFieldItemsNewposTooltip);
+            addButton.setToolTipText(msg.editorVoucherFieldItemsNewposTooltip);
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addButton);
 
         // Item delete button
         Label deleteButton = new Label(addButtonComposite, SWT.NONE);
         deleteButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
-        deleteButton.setToolTipText(msg.voucherFieldItemsDeleteposTooltip);
+        deleteButton.setToolTipText(msg.editorVoucherFieldItemsDeleteposTooltip);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
         
         itemListTable = ContextInjectionFactory.make(VoucherItemListTable.class, context);

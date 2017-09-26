@@ -195,8 +195,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	//        bindModelValue(voucher, bBook, Voucher_.doNotBook.getName());
 	
 	        //T: Label voucher editor
-	        bBook.setText(msg.voucherFieldBookName);
-	        bBook.setToolTipText(msg.voucherFieldBookTooltip);
+	        bBook.setText(msg.editorVoucherFieldBookName);
+	        bBook.setToolTipText(msg.editorVoucherFieldBookTooltip);
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(bBook);
 	        
@@ -204,8 +204,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        bBook.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 	                if (!bBook.getSelection()) {
 	                    //T: Dialog in the voucher editor to uncheck the book field 
-	                    if (MessageDialog.openConfirm(parent.getShell(), msg.voucherDialogBookConfirmHeader,
-	                            msg.voucherDialogBookConfirmWarning)) {
+	                    if (MessageDialog.openConfirm(parent.getShell(), msg.editorVoucherDialogBookConfirmHeader,
+	                            msg.editorVoucherDialogBookConfirmWarning)) {
 	                        bBook.setSelection(false);
 	                        getMDirtyablePart().setDirty(true);
 	                    }
@@ -230,7 +230,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        Label labelDate = new Label(top, SWT.NONE);
 	        //T: Label in the voucher editor
 	        labelDate.setText(msg.commonFieldDate);
-	        labelDate.setToolTipText(msg.voucherFieldDateTooltip);
+	        labelDate.setToolTipText(msg.editorVoucherFieldDateTooltip);
 	
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDate);
 	
@@ -243,8 +243,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // Number
 	        Label labelNr = new Label(top, SWT.NONE);
 	        //T: Label in the voucher editor
-	        labelNr.setText(msg.voucherFieldNumberName);
-	        labelNr.setToolTipText(msg.voucherFieldNumberTooltip);
+	        labelNr.setText(msg.editorVoucherFieldNumberName);
+	        labelNr.setToolTipText(msg.editorVoucherFieldNumberTooltip);
 	
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
 	        textNr = new Text(top, SWT.BORDER);
@@ -254,19 +254,19 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // Document number
 	        Label labelDocumentNr = new Label(top, SWT.NONE);
 	        //T: Label in the voucher editor
-	        labelDocumentNr.setText(msg.voucherFieldDocumentnumberName);
-	        labelDocumentNr.setToolTipText(msg.voucherFieldDocumentnumberTooltip);
+	        labelDocumentNr.setText(msg.editorVoucherFieldDocumentnumberName);
+	        labelDocumentNr.setToolTipText(msg.editorVoucherFieldDocumentnumberTooltip);
 	
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDocumentNr);
 	        textDocumentNr = new Text(top, SWT.BORDER);
-	        textDocumentNr.setToolTipText(msg.voucherFieldDocumentnumberTooltip);
+	        textDocumentNr.setToolTipText(msg.editorVoucherFieldDocumentnumberTooltip);
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textDocumentNr);
 	
 	        // Supplier name
 	        Label labelName = new Label(top, SWT.NONE);
 	
 	        labelName.setText(customerSupplier);
-	        labelName.setToolTipText(MessageFormat.format(msg.voucherFieldCustomersupplierName, getCustomerSupplierString()));
+	        labelName.setToolTipText(MessageFormat.format(msg.editorVoucherFieldCustomersupplierName, getCustomerSupplierString()));
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 	        textName = new Text(top, SWT.BORDER);
@@ -280,7 +280,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 		        		.getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL).getImage();
 		        		decoration.setImage(hintImage);	        
 		        decoration.setImage(hintImage);
-		        decoration.setDescriptionText(msg.voucherFieldCustomersupplierHint);
+		        decoration.setDescriptionText(msg.editorVoucherFieldCustomersupplierHint);
 		        decoration.setShowOnlyOnFocus(true);
 		        decoration.setShowHover(true);
 	        	new AutoCompleteField(textName, new TextContentAdapter(), nameProposals);
@@ -307,8 +307,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // The paid label
 	        bPaidWithDiscount = new Button(bottom, SWT.CHECK | SWT.RIGHT);
 	        //T: Mark a voucher, if the paid value is not equal to the total value.
-	        bPaidWithDiscount.setText(msg.voucherFieldWithdiscountName);
-	        bPaidWithDiscount.setToolTipText(msg.voucherFieldWithdiscountTooltip);
+	        bPaidWithDiscount.setText(msg.editorVoucherFieldWithdiscountName);
+	        bPaidWithDiscount.setToolTipText(msg.editorVoucherFieldWithdiscountTooltip);
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(bPaidWithDiscount);
 	
 	        // If the bPaidWithDiscount check box is selected ...
@@ -331,8 +331,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        
 	        labelPaidValue = new Label(bottom, SWT.NONE);
 	        //T: Label in the voucher editor
-	        labelPaidValue.setText(msg.voucherFieldPaidvalueName + ":");
-	        labelPaidValue.setToolTipText(msg.voucherFieldPaidvalueTooltip);
+	        labelPaidValue.setText(msg.editorVoucherFieldPaidvalueName + ":");
+	        labelPaidValue.setToolTipText(msg.editorVoucherFieldPaidvalueTooltip);
 	        labelPaidValue.setVisible(bPaidWithDiscount.getSelection());
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPaidValue);
 	
@@ -347,9 +347,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // Total value
 	        Label labelTotalValue = new Label(bottom, SWT.NONE);
 	        //T: Label in the voucher editor
-	        labelTotalValue.setText(msg.voucherFieldTotalvalueName + ":");
+	        labelTotalValue.setText(msg.editorVoucherFieldTotalvalueName + ":");
 	        //T: Tool Tip Text
-	        labelTotalValue.setToolTipText(msg.voucherFieldTotalvalueTooltip);
+	        labelTotalValue.setToolTipText(msg.editorVoucherFieldTotalvalueTooltip);
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTotalValue);
 	
 	        totalValue = Money.of(java.util.Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), currencyUnit);
