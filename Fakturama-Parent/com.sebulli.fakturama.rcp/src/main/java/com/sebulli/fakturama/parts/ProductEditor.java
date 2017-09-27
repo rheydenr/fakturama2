@@ -649,7 +649,7 @@ public class ProductEditor extends Editor<Product> {
 					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					netText[i] = ContextInjectionFactory.make(NetText.class, context);
 					
-					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
+					GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = netText[i].getNetText().getControl();
 					}
@@ -662,8 +662,7 @@ public class ProductEditor extends Editor<Product> {
 					context.set(Constants.CONTEXT_NETVALUE, net[i]);
 					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					grossText[i] = ContextInjectionFactory.make(GrossText.class, context);
-					GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT)
-							.applyTo(grossText[i].getGrossText().getControl());
+					GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(grossText[i].getGrossText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = grossText[i].getGrossText().getControl();
 					}
@@ -692,7 +691,8 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCostPrice);
 		costPrice = new FormattedText(productDescGroup, SWT.BORDER);
-		costPrice.setFormatter(new MoneyFormatter());
+		MoneyFormatter costPriceFormatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
+		costPrice.setFormatter(costPriceFormatter);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
 
 		// product VAT
@@ -703,7 +703,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVat);
 //		
         // VAT combo list
-        comboVat = new Combo(useVat ? productDescGroup : invisible, SWT.BORDER);
+        comboVat = new Combo(useVat ? productDescGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboVat.setToolTipText(labelVat.getToolTipText());
 
 		// Product weight
@@ -821,7 +821,8 @@ public class ProductEditor extends Editor<Product> {
 		for (int i = 0; i < grossText.length; i++) {
 			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 15);
 			if (useGross && !useNet) {
-				bindModelValue(editorProduct, grossText[i].getNetText().getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+				// TODO check it if it's correct!
+				bindModelValue(editorProduct, grossText[i].getGrossText(), priceBlocks.get(i).getPrice().getName(), 6);
 			} else {
 				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
 			}
