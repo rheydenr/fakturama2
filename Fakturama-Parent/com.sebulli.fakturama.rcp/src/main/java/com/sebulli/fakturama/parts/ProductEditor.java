@@ -53,6 +53,8 @@ import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -518,6 +520,7 @@ public class ProductEditor extends Editor<Product> {
 		labelItemNr.setText(msg.exporterDataItemnumber);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelItemNr);
 		textItemNr = new Text(useItemNr ? productDescGroup : invisible, SWT.BORDER);
+		textItemNr.addKeyListener(new ReturnKeyAdapter(textItemNr));
 		bindModelValue(editorProduct, textItemNr, Product_.itemNumber.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textItemNr);
 
@@ -529,6 +532,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		textName = new Text(productDescGroup, SWT.BORDER);
 		textName.setToolTipText(labelName.getToolTipText());
+		textName.addKeyListener(new ReturnKeyAdapter(textName));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textName);
 
 		// Product category
@@ -548,6 +552,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGtin);
 		textGtin = new Text(productDescGroup, SWT.BORDER);
 //		textGtin.setToolTipText(labelGtin.getToolTipText());
+		textGtin.addKeyListener(new ReturnKeyAdapter(textGtin));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textGtin);
 
 		// for correct tab-order (see FAK-465)
@@ -563,6 +568,7 @@ public class ProductEditor extends Editor<Product> {
 		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI);
 //		textDescription.setText(DataUtils.makeOSLineFeeds(editorProduct.getStringValueByKey("description")));
 		textDescription.setToolTipText(labelDescription.getToolTipText());
+		textDescription.addKeyListener(new ReturnKeyAdapter(textDescription));
 		GridDataFactory.fillDefaults().hint(10, 80).grab(true, false).applyTo(textDescription);
 
 		// Product quantity
@@ -573,6 +579,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantityUnit);
 		if(useQuantityUnit) {
 			textQuantityUnit = new Text(productDescGroup, SWT.BORDER);
+			textQuantityUnit.addKeyListener(new ReturnKeyAdapter(textQuantityUnit));
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantityUnit = new Text(invisible, SWT.BORDER);
@@ -618,6 +625,8 @@ public class ProductEditor extends Editor<Product> {
 		createPriceBlocks();
 		
 		// Create a row for each entry of the scaled price table
+		context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
+		context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 		for (int i = 0; i < MAX_NUMBER_OF_PRICES; i++) {
 			Object priceObj;
 			try {
@@ -639,16 +648,14 @@ public class ProductEditor extends Editor<Product> {
 				methodName = String.format("getBlock%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
 				textBlock[i].setText(Integer.toString((Integer) priceObj));
+//				textBlock[i].addKeyListener(textBlock[i].addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
 				GridDataFactory.swtDefaults().hint(40, SWT.DEFAULT).applyTo(textBlock[i]);
 
 				// Create the net columns
+				context.set(Constants.CONTEXT_NETVALUE, net[i]);
+				context.set(Constants.CONTEXT_CANVAS, (i < scaledPrices) ? pricetable : invisible);
 				if (useNet) {
-					context.set(Constants.CONTEXT_CANVAS, (i < scaledPrices) ? pricetable : invisible);
-					context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
-					context.set(Constants.CONTEXT_NETVALUE, net[i]);
-					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					netText[i] = ContextInjectionFactory.make(NetText.class, context);
-					
 					GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = netText[i].getNetText().getControl();
@@ -657,10 +664,6 @@ public class ProductEditor extends Editor<Product> {
 
 				// Create the gross columns
 				if (useGross) {
-					context.set(Constants.CONTEXT_CANVAS, (i < scaledPrices) ? pricetable : invisible);
-					context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
-					context.set(Constants.CONTEXT_NETVALUE, net[i]);
-					context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
 					grossText[i] = ContextInjectionFactory.make(GrossText.class, context);
 					GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(grossText[i].getGrossText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
@@ -693,6 +696,7 @@ public class ProductEditor extends Editor<Product> {
 		costPrice = new FormattedText(productDescGroup, SWT.BORDER);
 		MoneyFormatter costPriceFormatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		costPrice.setFormatter(costPriceFormatter);
+		costPrice.getControl().addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
 
 		// product VAT
@@ -714,6 +718,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWeight);
 		textWeight = new FormattedText(useWeight ? productDescGroup : invisible, SWT.BORDER);
 		textWeight.setFormatter(new DoubleFormatter());
+		textWeight.getControl().addKeyListener(new ReturnKeyAdapter(textWeight.getControl()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textWeight.getControl());
 
 		// Product quantity
@@ -724,6 +729,7 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
 		if(useQuantity) {
 			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
+			textQuantity.getControl().addKeyListener(new ReturnKeyAdapter(textQuantity.getControl()));
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
@@ -738,6 +744,7 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf01Lbl);
 		udf01 = new Text(productDescGroup, SWT.BORDER);
+		udf01.addKeyListener(new ReturnKeyAdapter(udf01));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf01);
 		
 		// #2
@@ -746,6 +753,7 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf02Lbl);
 		udf02 = new Text(productDescGroup, SWT.BORDER);
+		udf02.addKeyListener(new ReturnKeyAdapter(udf02));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf02);
 
 		// #3
@@ -754,6 +762,7 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(udf03Lbl);
 		udf03 = new Text(productDescGroup, SWT.BORDER);
+		udf03.addKeyListener(new ReturnKeyAdapter(udf03));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(udf03);
 
 		
@@ -988,7 +997,20 @@ public class ProductEditor extends Editor<Product> {
     	return "Product";
     }
 
-    /**
+    private final class ReturnKeyAdapter extends KeyAdapter {
+    	private final Text control;
+		public ReturnKeyAdapter(Text control) {
+			this.control = control;
+		}
+
+		public void keyPressed(KeyEvent e) {
+			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+				control.traverse(SWT.TRAVERSE_TAB_NEXT);
+			}
+		}
+	}
+
+	/**
      * Helper class for connecting blocks with prices in a correct order.
      * 
      */
