@@ -5,9 +5,10 @@
 .factorypath
 .classpath
 */src-gen
-.DS_Store/
 */archive/
 */test-output/
 .settings/
 workspace/
 *.metaprops
+/*/.DS_Store
+/.DS_Store
