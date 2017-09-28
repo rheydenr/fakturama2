@@ -18,18 +18,15 @@ import java.io.File;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.OSDependent;
@@ -52,8 +49,6 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 
     private OfficeStarter ooStarter;
   
-    private Shell shell;
-	
 	/**
 	 * Creates a file field editor.
 	 * 
@@ -73,9 +68,8 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 	}
 	
 	@PostConstruct
-	public void preInit(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+	public void preInit() {
         ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
-        this.shell = shell;
 	}
 
 	/**
