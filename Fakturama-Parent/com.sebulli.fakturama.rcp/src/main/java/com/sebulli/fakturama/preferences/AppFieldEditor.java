@@ -69,7 +69,7 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 		setErrorMessage(JFaceResources.getString("FileFieldEditor.errorMessage"));
 		setChangeButtonText(JFaceResources.getString("openBrowse"));
 		setValidateStrategy(VALIDATE_ON_FOCUS_LOST);
-		createControl(shell.getParent());
+		createControl(parents);
 	}
 	
 	@PostConstruct
