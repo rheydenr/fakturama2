@@ -8,4 +8,6 @@
 .DS_Store/
 */archive/
 */test-output/
+.settings/
 workspace/
+*.metaprops
