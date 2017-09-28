@@ -226,25 +226,22 @@ public class ProductEditor extends Editor<Product> {
 		// Set the product data
         // ... done through databinding...
 
-		int i;
-		MonetaryAmount lastScaledPrice = Money.from(defaultPrice);
-
 		try {
-			// Set all of the scaled prices (according to the count of possible scales from settings)
+			int i;
+			Double lastScaledPrice = Double.valueOf(0.0);
+	
+			// fill all remaining prices with last scaled price
 			for (i = 0; i < scaledPrices; i++) {
-				lastScaledPrice = useNet ? netText[i].getNetValue() : grossText[i].getNetValue();
-				String methodName = String.format("setPrice%d", i+1);
-				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice.getNumber().doubleValue());
-//				String methodName = String.format("getPrice%d", i+1);
-//				Object obj = MethodUtils.invokeExactMethod(editorProduct, methodName);
-//				methodName = String.format("setPrice%d", i+1);
-//				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice);
+				// at first look for the highest scaled price...
+				String methodName = String.format("getPrice%d", i+1);
+				Object obj = MethodUtils.invokeExactMethod(editorProduct, methodName);
+				lastScaledPrice = (Double)obj;
 			}
 		
-		// if not all 5 scales are set we set the remaining prices to the last scaled price
+   		    // if not all 5 scales are set we set the remaining prices to the last scaled price
 			for (; i < 5; i++) {
 				String methodName = String.format("setPrice%d", i+1);
-				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice.getNumber().doubleValue());
+				MethodUtils.invokeExactMethod(editorProduct, methodName, lastScaledPrice);
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
@@ -284,7 +281,6 @@ public class ProductEditor extends Editor<Product> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
-
 	}
 
 	/**
@@ -709,6 +705,7 @@ public class ProductEditor extends Editor<Product> {
         // VAT combo list
         comboVat = new Combo(useVat ? productDescGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboVat.setToolTipText(labelVat.getToolTipText());
+//		GridDataFactory.swtDefaults().grab(true, false).applyTo(comboVat);
 
 		// Product weight
 		Label labelWeight = new Label(useWeight ? productDescGroup : invisible, SWT.NONE);
@@ -828,12 +825,12 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
 		// bind the scaled prices widgets
 		for (int i = 0; i < grossText.length; i++) {
-			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 15);
+			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 8);
 			if (useGross && !useNet) {
 				// TODO check it if it's correct!
-				bindModelValue(editorProduct, grossText[i].getGrossText(), priceBlocks.get(i).getPrice().getName(), 6);
+				bindModelValue(editorProduct, grossText[i].getGrossText(), priceBlocks.get(i).getPrice().getName(), 16);
 			} else {
-				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 6);
+				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 16);
 			}
 		}
 		

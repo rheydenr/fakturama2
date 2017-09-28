@@ -101,7 +101,7 @@ public class NetText {
 		netText.getControl().addKeyListener(new KeyAdapter() {
     		public void keyPressed(KeyEvent e) {
     			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
-    				netText.getControl().notifyListeners(SWT.FocusOut, null);
+    				netText.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
     			}
     		}
     	});
