@@ -123,12 +123,16 @@ public class BrowserEditor {
             url = getPreferences().getString(Constants.PREFERENCES_GENERAL_WEBBROWSER_URL);
 
             // In case of an empty URL: use the start page
-            if (url.isEmpty() || url.equals(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)) {
-                url = "file://" +
-                    StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
-                    StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
-                    "Start/start.html";
-            }
+            if (StringUtils.isBlank(getPreferences().getString(Constants.GENERAL_WORKSPACE))) {
+				url = "-";
+			} else {
+				if (url.isEmpty() || url.equals(OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL)) {
+				    url = "file://" +
+				        StringUtils.appendIfMissing(getPreferences().getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/"), "/") +
+				        StringUtils.appendIfMissing(msg.configWorkspaceTemplatesName, "/") +  
+				        "Start/start.html";
+				}
+			}
         }
 
         // In case of an URL with only "-" do not show an editor
