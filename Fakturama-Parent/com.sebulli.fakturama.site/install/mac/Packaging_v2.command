@@ -9,20 +9,20 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2_0_0-RC4
+VERSION=2_0_0-RC6
 # prepare the correct directory structure
 tar -xzvf Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
 
-# mv Fakturama.app $APP_NAME.app
+# mv Fakturama2.app/Contents/MacOS/Fakturama Fakturama2.app/Contents/MacOS/Fakturama2
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # cp ../${DMG_BACKGROUND_IMG} .
 
 # you should not need to change these
-APP_EXE="${APP_NAME}.app/Contents/MacOS/${APP_NAME}"
+APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
 
 VOL_NAME="${APP_NAME}_macosx_${VERSION}"   # volume name will be "Fakturama2_macosx_2_0_0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
@@ -76,7 +76,7 @@ popd
 
 #  assumes our contents are at least 1M!
 SIZE=`du -sh "${STAGING_DIR}" | sed 's/\([0-9\.]*\)M\(.*\)/\1/'  | sed 's/,/\./'` 
-SIZE=`echo "${SIZE} + 1.0" | bc | awk '{print int($1+0.5)}'`
+SIZE=`echo "${SIZE} + 2.0" | bc | awk '{print int($1+0.5)}'`
 
 echo "INFO:  SIZE=$SIZE"
 
@@ -140,10 +140,10 @@ hdiutil detach "${DEVICE}"
 echo "Creating compressed image"
 hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FINAL}"
 
-# clean up
+echo 'clean up...'
 rm -rf "${DMG_TMP}"
 rm -rf "${STAGING_DIR}"
-
+rm -rf "${APP_NAME}.app"
 echo 'Done.'
 
 exit
