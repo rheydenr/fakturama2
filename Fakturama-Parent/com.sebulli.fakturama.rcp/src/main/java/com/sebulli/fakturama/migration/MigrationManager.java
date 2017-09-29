@@ -1181,6 +1181,7 @@ public class MigrationManager {
 		for (OldPayments oldPayment : oldDao.findAllPayments()) {
 			try {
 				Payment payment = modelFactory.createPayment();
+				payment.setCode(Constants.TAX_DEFAULT_CODE);
 				payment.setName(oldPayment.getName());
 				payment.setPaidText(oldPayment.getPaidtext());
 				payment.setUnpaidText(oldPayment.getUnpaidtext());

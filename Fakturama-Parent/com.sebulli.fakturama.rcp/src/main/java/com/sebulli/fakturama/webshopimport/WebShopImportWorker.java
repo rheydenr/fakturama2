@@ -742,6 +742,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			if (paymentType != null) {
     			// Add the payment to the data base, if it's a new one
     			Payment payment = fakturamaModelFactory.createPayment();
+    			payment.setCode(Constants.TAX_DEFAULT_CODE);
     			payment.setName(paymentType.getName());
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);

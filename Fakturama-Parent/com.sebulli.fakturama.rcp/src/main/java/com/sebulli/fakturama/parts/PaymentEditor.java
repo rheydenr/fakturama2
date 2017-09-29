@@ -49,6 +49,8 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CategoryComparator;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.model.VoucherCategory;
@@ -196,7 +198,8 @@ public class PaymentEditor extends Editor<Payment> {
 		if (newPayment) {
 
 			// Create a new data set
-			payment = new Payment();
+			payment = FakturamaModelPackage.MODELFACTORY.createPayment();
+			payment.setCode(Constants.TAX_DEFAULT_CODE);
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VoucherCategory newCat = accountDAO.findCategoryByName(category);

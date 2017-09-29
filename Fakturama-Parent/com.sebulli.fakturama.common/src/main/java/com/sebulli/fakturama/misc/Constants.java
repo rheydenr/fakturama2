@@ -534,5 +534,7 @@ public class Constants {
 	public static final String COLOR_WHITE = "white";
 	public static final String COLOR_BGYELLOW = "bgyellow";
 
+	public static final String TAX_DEFAULT_CODE = "VAT";
+
 
 }

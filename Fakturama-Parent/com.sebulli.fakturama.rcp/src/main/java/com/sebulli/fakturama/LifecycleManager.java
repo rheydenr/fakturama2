@@ -259,6 +259,7 @@ public class LifecycleManager {
 
     	if(eclipsePrefs.getBoolean("isreinit", false) || eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
 	        Payment defaultPayment = modelFactory.createPayment();
+	        defaultPayment.setCode(Constants.TAX_DEFAULT_CODE);
 	        defaultPayment.setName(msg.dataDefaultPayment);
 	        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
 	        defaultPayment.setDiscountValue(Double.valueOf(0.0));
