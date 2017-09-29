@@ -25,9 +25,9 @@ public enum ExpenditureListDescriptor {
     
     DONOTBOOK(Voucher_.doNotBook.getName(), null, 0, 20),
     DATE(Voucher_.voucherDate.getName(), "common.field.date", 1, 80),
-    VOUCHER(Voucher_.voucherNumber.getName(), "receiptvoucher.field.voucher", 2, 100),
+    VOUCHER(Voucher_.voucherNumber.getName(), "editor.voucher.receipt.field.voucher", 2, 100),
     DOCUMENT(Voucher_.documentNumber.getName(), "partdesc.docview", 3, 150),
-    SUPPLIER(Voucher_.name.getName(), "expenditurevoucher.field.supplier", 4, 200),
+    SUPPLIER(Voucher_.name.getName(), "editor.voucher.expenditure.field.supplier", 4, 200),
     TOTAL(Voucher_.totalValue.getName(), "common.field.total", 5, 80)
     ;
 
