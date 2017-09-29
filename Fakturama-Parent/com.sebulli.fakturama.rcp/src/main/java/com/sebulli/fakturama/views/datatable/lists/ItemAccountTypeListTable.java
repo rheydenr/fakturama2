@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -286,7 +286,7 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
      * @param message an incoming message
      */
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(ListEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@UIEventTopic(ListEditor.EDITOR_ID) String message) {
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change

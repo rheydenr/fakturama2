@@ -25,8 +25,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -520,7 +520,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
      */
     @Inject
     @Optional
-    public void handleRefreshEvent(@EventTopic(DocumentEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@UIEventTopic(DocumentEditor.EDITOR_ID) String message) {
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT)) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change

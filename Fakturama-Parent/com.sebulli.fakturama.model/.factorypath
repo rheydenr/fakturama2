@@ -1,5 +1,5 @@
 <factorypath>
-    <factorypathentry kind="EXTJAR" id="/Users/vagrant/Projects/eclipselink/jlib/eclipselink.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="/Users/vagrant/Projects/eclipselink/jlib/jpa/javax.persistence_2.2.0.v201708071007.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="/Users/vagrant/Projects/eclipselink/jlib/jpa/org.eclipse.persistence.jpa.modelgen_2.7.0.v20170811-d680af5.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/vagrant/Projects/eclipselink/jlib/eclipselink.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/vagrant/Projects/eclipselink/jlib/jpa/javax.persistence_2.2.0.v201708071007.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/home/vagrant/Projects/eclipselink/jlib/jpa/org.eclipse.persistence.jpa.modelgen_2.7.0.v20170811-d680af5.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

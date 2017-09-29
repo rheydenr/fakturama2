@@ -6,7 +6,7 @@ package com.sebulli.fakturama.views.datatable.contacts;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
+import org.eclipse.e4.ui.di.UIEventTopic;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
@@ -50,7 +50,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     
     
     @Inject @Optional
-    public void handleRefreshEvent(@EventTopic(DebitorEditor.EDITOR_ID) String message) {
+    public void handleRefreshEvent(@UIEventTopic(DebitorEditor.EDITOR_ID) String message) {
     	super.handleRefreshEvent(message);
     }
 
