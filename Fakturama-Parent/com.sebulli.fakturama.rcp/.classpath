@@ -8,6 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src-gen/main/java"/>
-	<classpathentry kind="lib" path="C:/JavaLibs/apache-sonstige/commons-logging-1.1.1/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/vagrant/Projects/commons-logging-1.2/commons-logging-1.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

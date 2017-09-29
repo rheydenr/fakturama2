@@ -715,7 +715,7 @@ public class DocumentEditor extends Editor<Document> {
 		Payment tmpPayment = document.getPayment();
         comboViewerPayment.setContentProvider(new EntityComboProvider());
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(comboPayment);
+        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
 
         // If a new payment is selected ...
         comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1034,10 +1034,10 @@ public class DocumentEditor extends Editor<Document> {
      * Creates a copy of the given {@link Document}.
      * 
      * @param parentDoc the source document
-     * @param pDocumentType
+     * @param pTargetType
      * @return a copy of the source document
      */
-	private Document copyFromSourceDocument(Document parentDoc, DocumentType pDocumentType) {
+	private Document copyFromSourceDocument(Document parentDoc, DocumentType pTargetType) {
 		Document retval = DocumentTypeUtil.createDocumentByType(documentType);
 		retval.setSourceDocument(parentDoc);
 		retval.setShipping(parentDoc.getShipping());
@@ -1053,11 +1053,11 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setDeposit(parentDoc.getDeposit());
 		
 		// for delivery documents we have to switch between delivery address and billing address
-		retval.setBillingContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
-		retval.setDeliveryContact(pDocumentType == DocumentType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
+		retval.setBillingContact(parentDoc.getBillingType() == BillingType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
+		retval.setDeliveryContact(parentDoc.getBillingType() == BillingType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
-		retval.setAddressFirstLine(pDocumentType == DocumentType.DELIVERY 
+		retval.setAddressFirstLine(pTargetType == DocumentType.DELIVERY 
 				? parentDoc.getDeliveryContact() != null 
 					? contactUtil.getNameWithCompany(parentDoc.getDeliveryContact()) 
 					: parentDoc.getAddressFirstLine()
@@ -1398,9 +1398,10 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays.setMaximum(365);
 //			spDueDays.setSelection(duedays);
 			spDueDays.setIncrement(1);
+//			spDueDays.setSize(70, SWT.DEFAULT);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
-			GridDataFactory.swtDefaults().hint(50, SWT.DEFAULT).applyTo(spDueDays);
+			GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
 
 			// If the spinner's value changes, add the due days to the
 			// day of today.
@@ -1433,7 +1434,7 @@ public class DocumentEditor extends Editor<Document> {
 			dtIssueDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
 			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
-			GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
+			GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 					// Calculate the difference between the date of the
 					// issue date widget and the documents date,
@@ -1482,7 +1483,7 @@ public class DocumentEditor extends Editor<Document> {
 		dtPaidDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 		dtPaidDate.setToolTipText(paidDateLabel.getToolTipText());
 		dtPaidDate.setFormat(CDT.DATE_MEDIUM);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(dtPaidDate);
+		GridDataFactory.swtDefaults().hint(130, SWT.DEFAULT).applyTo(dtPaidDate);
 
 		// Set the paid date to the documents "paydate" parameter
 		bindModelValue(document, dtPaidDate, Document_.payDate.getName());
@@ -2451,7 +2452,7 @@ public class DocumentEditor extends Editor<Document> {
             // Shipping combo
             comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
             comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-            GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
+            GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
     
             // Shipping value field
             shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
