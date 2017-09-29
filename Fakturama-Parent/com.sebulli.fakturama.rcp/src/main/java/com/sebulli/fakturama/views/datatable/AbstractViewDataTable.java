@@ -700,4 +700,14 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	protected void setEclipsePrefs(IPreferenceStore eclipsePrefs) {
 		this.eclipsePrefs = eclipsePrefs;
 	}
+
+
+	protected String createRootNodeDescriptor(String filter) {
+		String rootNode = ""; 
+		String[] splittedString = filter.split("/");
+		if(splittedString.length > 1) {
+			rootNode = splittedString[1];
+		}
+		return rootNode;
+	}
 }

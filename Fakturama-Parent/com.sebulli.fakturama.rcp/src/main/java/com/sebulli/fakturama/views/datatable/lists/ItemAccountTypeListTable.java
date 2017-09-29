@@ -306,7 +306,7 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new ItemAccountTypeMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName());
+        currentFilter = new ItemAccountTypeMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...

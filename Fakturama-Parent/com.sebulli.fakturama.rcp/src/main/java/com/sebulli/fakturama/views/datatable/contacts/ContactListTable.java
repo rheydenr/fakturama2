@@ -57,7 +57,6 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -352,7 +351,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new ContactMatcher(filter, treeObjectType,((TreeObject)topicTreeViewer.getTree().getTopItem().getData()).getName());
+        currentFilter = new ContactMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
     }
 

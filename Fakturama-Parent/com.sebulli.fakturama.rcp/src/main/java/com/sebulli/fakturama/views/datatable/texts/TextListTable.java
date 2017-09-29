@@ -70,7 +70,6 @@ import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -117,6 +116,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<TextModule> treeFilteredIssues;
+
+	private TextModuleMatcher currentFilter;
 
 
     @PostConstruct
@@ -323,6 +324,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
 	        GlazedLists.replaceAll(textListData, GlazedLists.eventList(textsDAO.findAll(true)), false);
 	        GlazedLists.replaceAll(categories, GlazedLists.eventList(textCategoriesDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
 	        sync.syncExec(() -> top.setRedraw(true));
     	}
     }
@@ -401,10 +403,15 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
      */
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        treeFilteredIssues.setMatcher(new TextModuleMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
+        // Reset transaction and contact filter, set category filter
+    	currentFilter = new TextModuleMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
+		treeFilteredIssues.setMatcher(currentFilter);
+
+        //Refresh is done automagically...
+//        treeFilteredIssues.setMatcher(new TextModuleMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName()));
     }
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.AbstractViewDataTable#isHeaderLabelEnabled()
      */
     @Override

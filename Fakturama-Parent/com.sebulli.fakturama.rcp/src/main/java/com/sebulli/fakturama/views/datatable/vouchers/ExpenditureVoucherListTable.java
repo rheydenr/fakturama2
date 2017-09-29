@@ -57,7 +57,6 @@ import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -308,7 +307,7 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
      *            the {@link TreeObjectType}
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new VoucherMatcher(filter, treeObjectType, ((TreeObject) topicTreeViewer.getTree().getTopItem().getData()).getName());
+        currentFilter = new VoucherMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...

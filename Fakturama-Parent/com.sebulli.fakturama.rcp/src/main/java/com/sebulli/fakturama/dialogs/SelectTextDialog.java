@@ -38,8 +38,10 @@ import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.TextCategory;
 import com.sebulli.fakturama.model.TextModule;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 
 /**
@@ -61,7 +63,7 @@ public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
     @Inject
     private IEclipseContext context;
     
-    private TextListTable textListTable;
+    private AbstractViewDataTable<TextModule, TextCategory> textListTable;
     
     private Control top;
 

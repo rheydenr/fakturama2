@@ -434,12 +434,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
-    	String rootNode = ""; 
-		String[] splittedString = filter.split("/");
-		if(splittedString.length > 1) {
-			rootNode = splittedString[1];
-		}
-    	currentFilter = new ProductMatcher(filter, treeObjectType, rootNode);
+    	currentFilter = new ProductMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
