@@ -176,7 +176,7 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 	 */
 	public String[] getVoucherNames() {
 		List<Voucher> allVouchers = findAll(true);
-		return allVouchers.stream().map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[]{});
+		return allVouchers.stream().filter(v -> v.getName() != null).map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[]{});
 	}
 	
   
