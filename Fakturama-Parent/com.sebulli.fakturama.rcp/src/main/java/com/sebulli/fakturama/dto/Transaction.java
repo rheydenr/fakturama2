@@ -51,11 +51,15 @@ public class Transaction {
 	 */
 	public Transaction of(Document document) {
 		
+		if(document == null) {
+			return null;
+		}
+		
 		// Get the transaction number
 		transaction = document.getTransactionId();
 
 		// Exit, if there is no number
-		if (transaction == -1)
+		if (transaction == null || transaction == -1)
 			return null;
 
 		// Create a new list

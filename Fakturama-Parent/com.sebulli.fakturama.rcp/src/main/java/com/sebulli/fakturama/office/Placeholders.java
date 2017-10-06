@@ -724,16 +724,27 @@ public class Placeholders {
 		// Get the reference string to other documents
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
 			Transaction transaction = ContextInjectionFactory.make(Transaction.class, context).of(document);
-			if (key.equals("DOCUMENT.REFERENCE.OFFER")) return transaction.getReference(DocumentType.OFFER);
-			if (key.equals("DOCUMENT.REFERENCE.ORDER")) return transaction.getReference(DocumentType.ORDER);
-			if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION")) return transaction.getReference(DocumentType.CONFIRMATION);
-			if (key.equals("DOCUMENT.REFERENCE.INVOICE")) return transaction.getReference(DocumentType.INVOICE);
-			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DATE")) return transaction.getFirstReferencedDocumentDate(DocumentType.INVOICE);
-//			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DUEDATE")) return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
-			if (key.equals("DOCUMENT.REFERENCE.DELIVERY")) return transaction.getReference(DocumentType.DELIVERY);
-			if (key.equals("DOCUMENT.REFERENCE.CREDIT")) return transaction.getReference(DocumentType.CREDIT);
-			if (key.equals("DOCUMENT.REFERENCE.DUNNING")) return transaction.getReference(DocumentType.DUNNING);
-			if (key.equals("DOCUMENT.REFERENCE.PROFORMA")) return transaction.getReference(DocumentType.PROFORMA);
+			if (transaction != null) {
+				if (key.equals("DOCUMENT.REFERENCE.OFFER"))
+					return transaction.getReference(DocumentType.OFFER);
+				if (key.equals("DOCUMENT.REFERENCE.ORDER"))
+					return transaction.getReference(DocumentType.ORDER);
+				if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION"))
+					return transaction.getReference(DocumentType.CONFIRMATION);
+				if (key.equals("DOCUMENT.REFERENCE.INVOICE"))
+					return transaction.getReference(DocumentType.INVOICE);
+				if (key.equals("DOCUMENT.REFERENCE.INVOICE.DATE"))
+					return transaction.getFirstReferencedDocumentDate(DocumentType.INVOICE);
+				//			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DUEDATE")) return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
+				if (key.equals("DOCUMENT.REFERENCE.DELIVERY"))
+					return transaction.getReference(DocumentType.DELIVERY);
+				if (key.equals("DOCUMENT.REFERENCE.CREDIT"))
+					return transaction.getReference(DocumentType.CREDIT);
+				if (key.equals("DOCUMENT.REFERENCE.DUNNING"))
+					return transaction.getReference(DocumentType.DUNNING);
+				if (key.equals("DOCUMENT.REFERENCE.PROFORMA"))
+					return transaction.getReference(DocumentType.PROFORMA);
+			}
 
 		}
 		
