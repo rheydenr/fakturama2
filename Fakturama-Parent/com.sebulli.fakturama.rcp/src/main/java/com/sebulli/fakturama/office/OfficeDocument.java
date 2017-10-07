@@ -324,12 +324,14 @@ public class OfficeDocument {
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
-                // perhaps we should open the filled document in Openoffice (if wanted)
-        		try {
-					Desktop.getDesktop().open(documentPath.toFile());
-				} catch (IOException | IllegalArgumentException e) {
-	                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
-				}
+                if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD)) {
+	                // perhaps we should open the filled document in Openoffice (if wanted)
+	        		try {
+						Desktop.getDesktop().open(documentPath.toFile());
+					} catch (IOException | IllegalArgumentException e) {
+		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
+					}
+                }
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
             }
@@ -1125,6 +1127,10 @@ public class OfficeDocument {
      *      True, if both filenames are equal
      */
     private boolean filesAreEqual(String fileName1, Path template) {
+    	
+    	if(fileName1 == null) {
+    		return false;
+    	}
         
         // Test, if also the absolute path is equal
         if (fileName1.equals(template.toString()))
