@@ -15,6 +15,8 @@
 package com.sebulli.fakturama.parts;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,6 +35,7 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -708,6 +711,11 @@ public class DocumentEditor extends Editor<Document> {
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
 			fillAndBindPaidCombo();
+			
+			// value is set by dueDays variable, not directly by binding
+			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
+					new UpdateValueStrategy(),
+					new UpdateValueStrategy());
 		}
     }
 
@@ -1413,11 +1421,6 @@ public class DocumentEditor extends Editor<Document> {
 					dtIssueDate.setSelection(calendar.getTime());
 					setDirty(true);
 			}));
-			
-			// value is set by dueDays variable, not directly by binding
-			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
-					new UpdateValueStrategy(),
-					new UpdateValueStrategy());
 
 			// Create the issue date label
 			Label issueDateLabel = new Label(paidDataContainer, SWT.NONE);
@@ -1447,7 +1450,10 @@ public class DocumentEditor extends Editor<Document> {
 //					duedays = days;
 					spDueDays.setSelection(days);
 			}));
-
+			if(document.getDueDays() != null && document.getDocumentDate() != null) {
+				dtIssueDate.setSelection(DateUtils.addDays(document.getDocumentDate(), document.getDueDays()));
+			}
+			
 			updateIssueDate();
 		}
 

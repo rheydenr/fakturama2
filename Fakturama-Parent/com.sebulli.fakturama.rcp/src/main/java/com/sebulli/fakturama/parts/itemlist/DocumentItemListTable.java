@@ -512,6 +512,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     if (priceString.contains((msg.productDataGross).toLowerCase())) {
                         useGross = true;
                     }
+                    
+                    if(priceString.startsWith(",")) {
+                    	priceString = "0" + priceString;
+                    }
 
                     // Set the price as gross or net value.
                     // If the editor displays gross values, calculate the net value,
