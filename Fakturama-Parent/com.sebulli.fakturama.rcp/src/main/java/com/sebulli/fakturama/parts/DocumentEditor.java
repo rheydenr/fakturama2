@@ -15,8 +15,6 @@
 package com.sebulli.fakturama.parts;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -659,6 +657,8 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
+            // update address in model
+            addressId = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
