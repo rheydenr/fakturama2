@@ -46,7 +46,7 @@ public class DocumentSummaryCalculator {
         MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
         return calculate(null, dataSetDocument.getItems(), Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(Double.valueOf(0.0)), 
         		dataSetDocument.getShipping() != null ? dataSetDocument.getShipping().getShippingVat() : null, 
-                dataSetDocument.getShipping() != null ? dataSetDocument.getShipping().getAutoVat() : null, 
+                dataSetDocument.getShipping() != null ? dataSetDocument.getShipping().getAutoVat() : dataSetDocument.getShippingAutoVat(), 
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(Double.valueOf(0.0)), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
@@ -140,8 +140,7 @@ public class DocumentSummaryCalculator {
 		
 		// Gross value is the sum of net and VAT value
 		retval.setTotalNet(retval.getItemsNet());
-		retval.setItemsGross(retval.getItemsNet());
-		retval.setItemsGross(retval.getItemsGross().add(retval.getTotalVat()));
+		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()));
 		
 		// round to full gross cents
 		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {

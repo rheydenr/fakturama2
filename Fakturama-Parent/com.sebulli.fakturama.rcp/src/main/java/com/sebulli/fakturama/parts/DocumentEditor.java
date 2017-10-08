@@ -929,7 +929,10 @@ public class DocumentEditor extends Editor<Document> {
 //				shippingVatDescription = shipping.getDescription();
 				
 				document.setShipping(shipping);
-				if(shipping != null) {
+				if(shipping == null) {
+					// set a default
+					document.setShippingAutoVat(ShippingVatType.SHIPPINGVATGROSS);
+				} else {
 					document.setShippingAutoVat(shipping.getAutoVat());
 				}
 				
@@ -1186,18 +1189,18 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-        if(document.getShipping() != null) {
-			documentSummary = documentSummaryCalculator.calculate(null, docItems,
-	                document.getShipping().getShippingValue(),
-	                document.getShipping().getShippingVat(), 
-	                document.getShipping().getAutoVat(), 
-	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
-        } else {
+        if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
     				document.getShippingValue()/* * sign*/,
                     null, 
                     document.getShippingAutoVat(), 
                     rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+        } else {
+			documentSummary = documentSummaryCalculator.calculate(null, docItems,
+	                document.getShipping().getShippingValue(),
+	                document.getShipping().getShippingVat(), 
+	                document.getShipping().getAutoVat(), 
+	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         }
 
 		// Get the total result
