@@ -34,7 +34,7 @@
             id="com.sebulli.fakturama.importer.csv.contacts.importWizard"
             name="%wizard.import.csv.contacts.name">
          <description>
-            %wizard.import.csv.contacts.description
+            %wizard.import.csv.orders.description
          </description>
       </wizard>
    </extension>

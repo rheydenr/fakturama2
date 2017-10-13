@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="418">
+<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="419">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
@@ -106,23 +106,6 @@
 <repository location="http://download.eclipse.org/tools/gef/updates/releases-pre-legacy/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.7.0.v20170515-1617"/>
-<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.0.v20170612-1255"/>
-<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.0.v20170612-1255"/>
-<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.4.0.v20170516-2248"/>
-<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
-<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.13.7.v20170516-2248"/>
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group" version="3.13.7.v20170516-2248"/>
-<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
-<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
-<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.4.0.v20170518-1049"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.7.0.v20170531-1133"/>
-<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.4.0.v20170524-1345"/>
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.0.v20170531-1133"/>
-<unit id="org.eclipse.platform.feature.group" version="4.7.0.v20170612-1255"/>
-<repository location="http://download.eclipse.org/releases/oxygen"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.0.v20170811-d680af5"/>
 <repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
 </location>
@@ -141,6 +124,24 @@
 <unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.7.0.v20170819060001"/>
 <unit id="org.eclipse.babel.nls_modeling.emf_de.feature.group" version="4.7.0.v20170819060001"/>
 <repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.0/oxygen"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.platform.feature.group" version="4.7.1.v20171009-0410"/>
+<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.4.0.v20170516-2248"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group" version="3.13.8.v20170715-2257"/>
+<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.4.1.v20170928-1405"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.1.v20170928-1405"/>
+<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
+<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.1.v20170928-1359"/>
+<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.7.0.v20170515-1617"/>
+<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.1.v20170928-1359"/>
+<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.7.0.v20170515-1617"/>
+<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.4.1.v20170928-1321"/>
+<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
+<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.13.8.v20170715-2257"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.7.1.v20170928-1359"/>
+<unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
+<repository location="http://download.eclipse.org/releases/oxygen"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

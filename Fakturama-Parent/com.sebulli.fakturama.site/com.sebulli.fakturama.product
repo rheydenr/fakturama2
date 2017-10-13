@@ -25,6 +25,7 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
+      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -36,7 +37,6 @@
             winExtraLargeHigh="app/app_256.bmp"/>
       </win>
    </launcher>
-
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
@@ -250,12 +250,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.persistence.jpa"/>
       <feature id="org.slf4j.osgi.feature"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
-      <feature id="org.eclipse.ecf.core.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.babel.nls_eclipse_de" version="4.7.0.v20170819060001"/>
       <feature id="org.eclipse.babel.nls_eclipse_es" version="4.7.0.v20170819060001"/>
       <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.7.0.v20170819060001"/>
@@ -267,6 +267,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.7.0.v20170819060001"/>
       <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.7.0.v20170819060001"/>
       <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.7.0.v20170819060001"/>
+      <feature id="org.fakturama.import.feature" version="2.0.0.qualifier"/>
    </features>
 
    <configurations>

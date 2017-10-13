@@ -300,7 +300,7 @@ public class ContactsCsvImporter {
 			result += NL + importMessages.wizardImportErrorOpenfile;
 		}
 		catch (FakturamaStoringException e) {
-			log.error("can't save or update imported expenditure");
+			log.error("can't save or update imported contact");
 		}
 	}
 

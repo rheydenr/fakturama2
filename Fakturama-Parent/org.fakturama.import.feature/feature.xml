@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.fakturama.import.feature"
-      label="Fakturama Exporter Feature"
+      label="Fakturama Importer Feature"
       version="2.0.0.qualifier"
       provider-name="Fakturama.org">
 
@@ -133,6 +133,14 @@ This Agreement is governed by the laws of the State of New York and the intellec
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.fakturama.import.extra"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>

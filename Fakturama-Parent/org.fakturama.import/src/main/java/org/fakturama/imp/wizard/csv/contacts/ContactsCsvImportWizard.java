@@ -64,7 +64,7 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
     protected IEventBroker evtBroker;
 
 	// The wizard pages
-	ImportOptionPage optionPage;
+	private ImportOptionPage optionPage;
 
 	/*
 	 * (non-Javadoc)
