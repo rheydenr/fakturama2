@@ -2746,17 +2746,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
     private void addItemsToItemList(Collection<Product> selectedProducts) {
 		for (Product product : selectedProducts) {
-		    DocumentItem newItem = modelFactory.createDocumentItem();
-		    newItem.setName(product.getName());
-		    newItem.setProduct(product);
-		    newItem.setItemNumber(product.getItemNumber());
-		    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
-		    newItem.setQuantityUnit(product.getQuantityUnit());
-		    newItem.setDescription(product.getDescription());
-		    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
-		    newItem.setItemVat(product.getVat());
-		    newItem.setPicture(product.getPicture());
-		    newItem.setWeight(product.getWeight());
+			DocumentItem newItem = productUtil.from(product, documentType);
 
 		    // Use the products description, or clear it
 		    if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {

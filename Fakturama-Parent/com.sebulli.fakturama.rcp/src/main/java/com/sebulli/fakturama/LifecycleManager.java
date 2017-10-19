@@ -353,7 +353,6 @@ public class LifecycleManager {
 		
         PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
 		if (preferencesInDatabase != null) {
-        	// TODO at the moment this is EXTREMELY slow, therefore we have to comment out that
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
 

@@ -10,6 +10,10 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
 
 /**
@@ -22,7 +26,9 @@ public final class ProductUtil {
     @Inject
     @Preference//(nodePath="/instance/com.sebulli.fakturama.rcp")
     private IEclipsePreferences eclipsePrefs;
-    
+
+    protected FakturamaModelFactory modelFactory =  FakturamaModelPackage.MODELFACTORY;
+
     /**
      * Create the picture name based on the product's item number Remove illegal
      * characters and add an ".jpg"
@@ -58,6 +64,28 @@ public final class ProductUtil {
         pictureName += ".jpg";
 
         return pictureName;
+    }
+    
+    /**
+     * Creates a new {@link DocumentItem} from a given {@link Product} and DocumentType.
+     * 
+     * @param product
+     * @param documentType 
+     * @return
+     */
+    public DocumentItem from(Product product, DocumentType documentType) {
+	    DocumentItem newItem = modelFactory.createDocumentItem();
+	    newItem.setName(product.getName());
+	    newItem.setProduct(product);
+	    newItem.setItemNumber(product.getItemNumber());
+	    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
+	    newItem.setQuantityUnit(product.getQuantityUnit());
+	    newItem.setDescription(product.getDescription());
+	    newItem.setPrice(getPriceByQuantity(product, newItem.getQuantity()));
+	    newItem.setItemVat(product.getVat());
+	    newItem.setPicture(product.getPicture());
+	    newItem.setWeight(product.getWeight());
+	    return newItem;
     }
     
 

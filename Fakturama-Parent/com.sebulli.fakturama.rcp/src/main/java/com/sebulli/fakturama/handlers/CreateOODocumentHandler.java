@@ -77,9 +77,6 @@ public class CreateOODocumentHandler {
     @Inject
     private ILogger log;
 
-    private List<Path> templates = new ArrayList<>();
-    private DocumentEditor documentEditor;
-
     //T: Text of the action
     public final static String ACTIONTEXT = "Print as OO document";
 
@@ -121,7 +118,8 @@ public class CreateOODocumentHandler {
      * @param templatePath
      *            path which is scanned
      */
-    private void scanPathForTemplates(Path templatePath) {
+    private List<Path> scanPathForTemplates(Path templatePath) {
+		List<Path> templates = new ArrayList<>();
         try {
             if(Files.exists(templatePath)) {
                 templates = Files.list(templatePath).filter(f -> f.getFileName().toString().toLowerCase().endsWith(OO_TEMPLATE_FILEEXTENSION))
@@ -131,6 +129,25 @@ public class CreateOODocumentHandler {
         } catch (IOException e) {
             log.error(e, "Error while scanning the templates directory: " + templatePath.toString());
         }
+        return templates;
+    }
+    
+    /**
+     * Collects all templates for a given {@link DocumentType}.
+     * @return List of template paths
+     */
+    public List<Path> collectTemplates(DocumentType documentType) {
+			String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+			Path templatePath1 = Paths.get(workspace, getRelativeFolder(documentType));
+			Path templatePath2 = Paths.get(workspace, getLocalizedRelativeFolder(documentType));
+
+			// If the name of the localized folder is equal to "Templates",
+			// don't search 2 times.
+			List<Path> templates = scanPathForTemplates(templatePath1);
+			if (!templatePath1.equals(templatePath2))
+				templates.addAll(scanPathForTemplates(templatePath2));
+			
+    	return templates;
     }
 
 	/**
@@ -145,21 +162,9 @@ public class CreateOODocumentHandler {
 		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
 			// Search in the folder "Templates" and also in the folder with the
 			// localized name
-			documentEditor = (DocumentEditor) activePart.getObject();
-
-			String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-			Path templatePath1 = Paths.get(workspace, getRelativeFolder(documentEditor.getDocumentType()));
-			Path templatePath2 = Paths.get(workspace, getLocalizedRelativeFolder(documentEditor.getDocumentType()));
-
-			// Clear the list before adding new entries
-			templates.clear();
-
-			// If the name of the localized folder is equal to "Templates",
-			// don't search 2 times.
-			scanPathForTemplates(templatePath1);
-			if (!templatePath1.equals(templatePath2))
-				scanPathForTemplates(templatePath2);
-
+			DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
+			List<Path> templates = collectTemplates(documentEditor.getDocumentType());
+			
 			// If more than 1 template is found, show a pup up menu
 			if (templates.size() > 1) {
 				Menu menu = new Menu(shell, SWT.POP_UP);
@@ -196,7 +201,7 @@ public class CreateOODocumentHandler {
 			} else {
 				// Show an information dialog if no template was found
 				MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
-						MessageFormat.format(msg.dialogPrintooNotemplate, templatePath1));
+						MessageFormat.format(msg.dialogPrintooNotemplate, new Object[]{getRelativeFolder(documentEditor.getDocumentType())}));
 			}
 		}
 	}
