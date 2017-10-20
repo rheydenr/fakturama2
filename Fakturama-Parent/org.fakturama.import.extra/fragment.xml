@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.fakturama.wizards.importWizards">
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="org.fakturama.imp.wizard.csv.orders.OrderImportWizard"
+            icon="icons/16/order.png"
+            id="org.fakturama.importer.csv.orders.importWizard"
+            name="%wizard.import.csv.orders.name">
+         <description>
+            %wizard.import.csv.orders.description
+         </description>
+      </wizard>
+   </extension>
+
+</fragment>
