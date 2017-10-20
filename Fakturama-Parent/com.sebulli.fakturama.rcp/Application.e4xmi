@@ -556,7 +556,11 @@
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId=""/>
   </commands>
-  <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
+  <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
+    <parameters xmi:id="_xsk48LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Document Parameter"/>
+    <parameters xmi:id="_6ctR0LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.templatepath" name="Template Path Parameter"/>
+    <parameters xmi:id="_0x1ZsLUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Silent mode Parameter"/>
+  </commands>
   <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="%main.menu.file.save" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_RmrPQCTQEeS9z6SQNducwg" elementId="org.eclipse.ui.file.close" commandName="%main.menu.file.close" description="close active document" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_pBm00CvEEeSxtNFFgqSUpw" elementId="org.eclipse.ui.file.closeAll" commandName="%main.menu.file.closeall" description="close all open documents"/>

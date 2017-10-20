@@ -656,11 +656,11 @@ public class MigrationManager {
 				} else {
 					// use the previous filled Contact hashmap
 					Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
-//					if (newContactIdDerivedFromOld == null) {
-//						migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
-//						OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
-//						
-//					} else {
+					if (newContactIdDerivedFromOld == null) {
+						migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
+						OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
+						
+					} else {
 						Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
 						if(contact != null) {
 						    // delivery documents are slightly different...
@@ -672,7 +672,7 @@ public class MigrationManager {
 		                        document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
 						    }
 						}
-//					}
+					}
 				}
 				document.setAddressFirstLine(oldDocument.getAddressfirstline());
 				document.setBillingType(billingType);

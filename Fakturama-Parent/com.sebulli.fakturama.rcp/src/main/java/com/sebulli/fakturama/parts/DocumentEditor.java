@@ -139,6 +139,7 @@ import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.ContactUtil;
+import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
@@ -297,6 +298,7 @@ public class DocumentEditor extends Editor<Document> {
 	private List<Long> importedDeliveryNotes = new ArrayList<>();
 
     private ProductUtil productUtil;
+    private DocumentItemUtil documentItemUtil;
     private DocumentItemListTable itemListTable;
     private CurrencyUnit currencyUnit;
     private DocumentSummary documentSummary;
@@ -840,6 +842,7 @@ public class DocumentEditor extends Editor<Document> {
         this.part = (MPart) parent.getData("modelElement");
 //        this.context = part.getContext();
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+        this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
         pendingDeliveryMerges = new ArrayList<>();
@@ -2746,7 +2749,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
     private void addItemsToItemList(Collection<Product> selectedProducts) {
 		for (Product product : selectedProducts) {
-			DocumentItem newItem = productUtil.from(product, documentType);
+			DocumentItem newItem = documentItemUtil.from(product, documentType);
 
 		    // Use the products description, or clear it
 		    if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG)) {

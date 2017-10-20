@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -79,6 +81,21 @@ public class CreateOODocumentHandler {
 
     //T: Text of the action
     public final static String ACTIONTEXT = "Print as OO document";
+
+    /**
+     * Parameter identifier for the document
+     */
+	public static final String PARAM_DOCUMENT = "org.fakturama.command.printoo.document";
+	
+	/**
+	 * Parameter identifier for the silent mode
+	 */
+	public static final String PARAM_SILENTMODE = "org.fakturama.command.printoo.document";
+
+	/**
+	 * Parameter identifier for the template path.
+	 */
+	public static final String PARAM_TEMPLATEPATH = "org.fakturama.command.printoo.templatepath";
 
     //	/**
     //	 * default constructor
@@ -151,13 +168,27 @@ public class CreateOODocumentHandler {
     }
 
 	/**
-	 * Run the action Search for all available templates. If there is more than
+	 * <p>Run the action Search for all available templates. If there is more than
 	 * one, display a menu to select one template. The content of the editor is
-	 * saved before exporting it.
+	 * saved before exporting it.</p>
+	 * <p>If a {@link Document} is given and the handler is called with "silent mode" the template selection dialog 
+	 * and all other dialogs are suppressed
+	 * and the {@link Document} is printed immediately. You have to provide a template in this case.
+	 * </p>
 	 */
 	@Execute
-	public void run(Shell shell, EPartService partService) throws InvocationTargetException, InterruptedException {
+	public void run(Shell shell, EPartService partService, @Optional @Named(PARAM_DOCUMENT) Document doc,
+			 @Optional @Named(PARAM_TEMPLATEPATH) Path templatePath,
+			@Optional @Named(PARAM_SILENTMODE) Boolean silentMode) throws InvocationTargetException, InterruptedException {
 		Path template;
+		if(BooleanUtils.isTrue(silentMode)) {
+			if (doc == null || templatePath == null) {
+				log.warn("Silent flag set but no template or document given. Aborting.");
+				return;
+			} else {
+				openOODocument(doc, templatePath, shell);				
+			}
+		}
     	MPart activePart = partService.getActivePart();
 		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
 			// Search in the folder "Templates" and also in the folder with the
