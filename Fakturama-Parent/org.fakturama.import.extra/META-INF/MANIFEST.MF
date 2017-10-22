@@ -7,5 +7,4 @@ Bundle-Vendor: Fakturama.org
 Fragment-Host: org.fakturama.import;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: OSGI-INF/l10n/orderimport
-Import-Package: org.eclipse.e4.core.commands,
- org.eclipse.e4.core.services.log
+Require-Bundle: org.eclipse.e4.core.commands

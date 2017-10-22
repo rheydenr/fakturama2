@@ -122,7 +122,7 @@ public class CoolbarViewPart {
 		 */
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP));
-		createToolItem(toolBar1, "org.eclipse.ui.file.print"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
+		createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
 

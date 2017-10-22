@@ -749,7 +749,13 @@ public class Placeholders {
 		}
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
-		if (key.equals("PAYMENT.DESCRIPTION")) return document.getPayment().getDescription();
+		if (key.equals("PAYMENT.DESCRIPTION")) {
+			if(document.getPayment() != null) {
+				return document.getPayment().getDescription();
+			} else {
+				return document.getAdditionalInfo().getPaymentDescription();
+			}
+		}
 		if (key.equals("PAYMENT.PAID.VALUE")) return DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue());
 		if (key.equals("PAYMENT.PAID.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate());
 		if (key.equals("PAYMENT.DUE.DAYS")) return Integer.toString(document.getDueDays());

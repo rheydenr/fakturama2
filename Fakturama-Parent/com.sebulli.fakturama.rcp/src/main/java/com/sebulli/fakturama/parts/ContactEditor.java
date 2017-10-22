@@ -252,7 +252,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		if (newContact) {
 
 			// Check, if the contact number is the next one
-			int result = setNextNr(txtNr.getText(), Contact_.customerNumber.getName());
+			int result = setNextFreeNumberInPrefStore(txtNr.getText(), Contact_.customerNumber.getName());
 
 			// It's not the next free ID
 			if (result == ERROR_NOT_NEXT_ID) {

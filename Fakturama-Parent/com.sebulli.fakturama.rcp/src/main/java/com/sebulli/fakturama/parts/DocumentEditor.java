@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
@@ -157,6 +158,8 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
 public class DocumentEditor extends Editor<Document> {
 
 	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
+	public static final String PARAM_SILENT_MODE = "org.fakturama.documenteditor.silentmode";
+	
     /** Editor's ID */
     public static final String EDITOR_ID = "DocumentEditor";
 	public static final String ID = "com.sebulli.fakturama.editors.documentEditor";
@@ -366,7 +369,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 			// Check if the document number is the next one
 			if (documentType != DocumentType.LETTER) {
-				int result = setNextNr(txtName.getText(), Document_.name.getName());
+				int result = setNextFreeNumberInPrefStore(txtName.getText(), Document_.name.getName());
 
 				// It's not the next free ID
 				if (result == ERROR_NOT_NEXT_ID) {
@@ -838,8 +841,17 @@ public class DocumentEditor extends Editor<Document> {
 	 *            The editor's parent Composite
 	 */
     @PostConstruct
-    public void init(Composite parent) {
-        this.part = (MPart) parent.getData("modelElement");
+    public void init(Composite parent, @Optional @Named(PARAM_SILENT_MODE) Boolean silentMode) {
+        String tmpObjId;
+		String tmpDuplicate;
+    	if(BooleanUtils.isTrue(silentMode)) {
+    		tmpObjId = (String) context.get(CallEditor.PARAM_OBJ_ID);
+    		tmpDuplicate = (String) context.get(CallEditor.PARAM_DUPLICATE);
+    	} else {
+    		this.part = (MPart) parent.getData("modelElement");
+    		tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+    		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
+    	}
 //        this.context = part.getContext();
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
@@ -847,7 +859,6 @@ public class DocumentEditor extends Editor<Document> {
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
         pendingDeliveryMerges = new ArrayList<>();
         
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             Long objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
@@ -859,7 +870,6 @@ public class DocumentEditor extends Editor<Document> {
 		Document parentDoc = document;
 		// the parents document type
 		DocumentType documentTypeParent = DocumentType.NONE;
-		String tmpDuplicate =  (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
 		boolean duplicated = BooleanUtils.toBoolean(tmpDuplicate);
 
 		// The document is new, if there is no document, or if the
@@ -870,7 +880,12 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 
 			// .. get the document type (=the category) to ..
-			String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+			String category;
+			if(BooleanUtils.isTrue(silentMode)) {
+				category = (String) context.get(CallEditor.PARAM_CATEGORY);
+			} else {
+				category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+			}
 			BillingType billingType = BillingType.get(category);
 			documentType = DocumentType.findByKey(billingType.getValue());
 			if (documentType == DocumentType.NONE) {
@@ -880,7 +895,9 @@ public class DocumentEditor extends Editor<Document> {
 			// if this document should be a copy of an existing document, create it
 			if (duplicated) {
 				document = copyFromSourceDocument(parentDoc, documentType);
-				setDirty(true);
+				if(BooleanUtils.isNotTrue(silentMode)) {
+					setDirty(true);
+				}
 			} else {
 				// create a blank new document
 				document = DocumentTypeUtil.createDocumentByType(documentType);
@@ -1032,7 +1049,9 @@ public class DocumentEditor extends Editor<Document> {
 						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
 		}
 
-        showOrderStatisticDialog(parent);
+		if(BooleanUtils.isNotTrue(silentMode)) {
+			showOrderStatisticDialog(parent);
+		}
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
@@ -1040,8 +1059,18 @@ public class DocumentEditor extends Editor<Document> {
         } else { 
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
-  
-        createPartControl(parent);
+        
+        // in silent mode we don't need a UI, just saving and exiting
+        if(BooleanUtils.isTrue(silentMode)) {
+        	try {
+        		calculate();
+				documentsDAO.save(document);
+            } catch (FakturamaStoringException e) {
+                log.error(e);
+			}
+        } else {
+        	createPartControl(parent);
+        }
 	}
 
     /**

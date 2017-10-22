@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -11,6 +12,8 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Product_;
@@ -78,4 +81,25 @@ public class ProductsDAO extends AbstractDAO<Product> {
                 Product_.price1.getName(), 
                 Product_.vat.getName() };
     }
+
+	public Product findByItemNumber(String itemNo) {
+		Product result = null;
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Product> query = cb.createQuery(getEntityClass());
+        Root<Product> product = query.from(getEntityClass());
+        query.select(product).where(
+        		cb.and(
+        				cb.equal(product.get(Product_.itemNumber), itemNo),
+        				cb.not(product.get(Product_.deleted)))
+        		);
+        TypedQuery<Product> q = getEntityManager().createQuery(query);
+        q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+        q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		try {
+			result = q.getSingleResult();
+		} catch (Exception e) {
+			// no result means we return a null value
+		}
+		return result;
+	}
 }

@@ -128,15 +128,19 @@ public class OfficeDocument {
 	private Path template;	
 	
 	private List<String> allPlaceholders;
-
     private DocumentSummary documentSummary;
-
     private Placeholders placeholders;
-
     private FileOrganizer fo;
-    
     private Shell shell;
     
+    /**
+     * background processing, default is FALSE
+     */
+    private boolean silentMode = false;
+    
+    /**
+     * Default constructor
+     */
     public OfficeDocument() {}
 	
     @PostConstruct
@@ -324,7 +328,7 @@ public class OfficeDocument {
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
-                if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD)) {
+                if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && !silentMode) {
 	                // perhaps we should open the filled document in Openoffice (if wanted)
 	        		try {
 						Desktop.getDesktop().open(documentPath.toFile());
@@ -363,7 +367,7 @@ public class OfficeDocument {
             // open the pdf if needed
         	if(generatedPdf != null) {
         		wasSaved = true;
-        		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+        		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && !silentMode) {
 	        		try {
 						Desktop.getDesktop().open(generatedPdf.toFile());
 					} catch (IOException | IllegalArgumentException e) {
@@ -1174,5 +1178,19 @@ public class OfficeDocument {
     public void setTemplate(Path template) {
         this.template = template;
     }
+
+	/**
+	 * @return the silentMode
+	 */
+	public boolean isSilentMode() {
+		return silentMode;
+	}
+
+	/**
+	 * @param silentMode the silentMode to set
+	 */
+	public void setSilentMode(boolean silentMode) {
+		this.silentMode = silentMode;
+	}
 
 }

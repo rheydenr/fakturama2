@@ -93,6 +93,27 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         return q.getResultList();
     }
     
+    public Debitor findByDebitorNumber(String debNo) {
+        Debitor result = null;
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
+        Root<Debitor> debitor = query.from(getEntityClass());
+        query.select(debitor).where(
+        		cb.and(
+        				cb.equal(debitor.get(Debitor_.customerNumber), debNo),
+        				cb.not(debitor.get(Debitor_.deleted)))
+        		);
+        TypedQuery<Debitor> q = getEntityManager().createQuery(query);
+        q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+        q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		try {
+			result = q.getSingleResult();
+		} catch (Exception e) {
+			// no result means we return a null value
+		}
+		return result;
+    }
+    
     @Override
     public List<Debitor> findAll(boolean forceRead) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

@@ -204,7 +204,7 @@ public class ProductEditor extends Editor<Product> {
 
 		if (newProduct) {
 			// Check, if the item number is the next one
-			if (setNextNr(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
+			if (setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
 				// It's not the next free ID
 				// Display an error message
 				MessageDialog.openError(top.getShell(),

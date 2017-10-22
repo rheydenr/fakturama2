@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
@@ -75,6 +76,9 @@ public class CreateOODocumentHandler {
 
     @Inject @Optional
     private IPreferenceStore preferences;
+    
+    @Inject
+    private DocumentsDAO documentsDao;
 
     @Inject
     private ILogger log;
@@ -90,7 +94,7 @@ public class CreateOODocumentHandler {
 	/**
 	 * Parameter identifier for the silent mode
 	 */
-	public static final String PARAM_SILENTMODE = "org.fakturama.command.printoo.document";
+	public static final String PARAM_SILENTMODE = "org.fakturama.command.printoo.silentmode";
 
 	/**
 	 * Parameter identifier for the template path.
@@ -123,9 +127,9 @@ public class CreateOODocumentHandler {
     //	}
     
     @CanExecute
-    public boolean canExecute(EPartService partService) {
+    public boolean canExecute(EPartService partService, @Optional @Named(PARAM_SILENTMODE) String silentMode) {
     	MPart activePart = partService.getActivePart();
-        return activePart != null && activePart.getElementId().contentEquals(DocumentEditor.ID);
+        return BooleanUtils.toBoolean(silentMode) || activePart != null && activePart.getElementId().contentEquals(DocumentEditor.ID);
     }
 
     /**
@@ -177,16 +181,19 @@ public class CreateOODocumentHandler {
 	 * </p>
 	 */
 	@Execute
-	public void run(Shell shell, EPartService partService, @Optional @Named(PARAM_DOCUMENT) Document doc,
-			 @Optional @Named(PARAM_TEMPLATEPATH) Path templatePath,
-			@Optional @Named(PARAM_SILENTMODE) Boolean silentMode) throws InvocationTargetException, InterruptedException {
+	public void run(Shell shell, EPartService partService, 
+			@Optional @Named(PARAM_DOCUMENT) String docId,
+			@Optional @Named(PARAM_TEMPLATEPATH) String templatePathString,
+			@Optional @Named(PARAM_SILENTMODE) String silentModeString) throws InvocationTargetException, InterruptedException {
 		Path template;
-		if(BooleanUtils.isTrue(silentMode)) {
-			if (doc == null || templatePath == null) {
+		boolean silentMode = BooleanUtils.toBoolean(silentModeString);
+		if(silentMode) {
+			if (docId == null || templatePathString == null) {
 				log.warn("Silent flag set but no template or document given. Aborting.");
 				return;
 			} else {
-				openOODocument(doc, templatePath, shell);				
+				Document doc = documentsDao.findById(Long.parseLong(docId));
+				openOODocument(doc, Paths.get(templatePathString), shell, silentMode);				
 			}
 		}
     	MPart activePart = partService.getActivePart();
@@ -209,7 +216,7 @@ public class CreateOODocumentHandler {
 						public void handleEvent(Event e) {
 							// save the document and open the exporter
 							documentEditor.doSave(null);
-							openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell);
+							openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
 							// documentEditor.markAsPrinted();
 						}
 					});
@@ -227,7 +234,7 @@ public class CreateOODocumentHandler {
 			} else if (templates.size() == 1) {
 				// Save the document and open the exporter
 				documentEditor.doSave(null);
-				openOODocument(documentEditor.getDocument(true), templates.get(0), shell);
+				openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
 				// documentEditor.markAsPrinted();
 			} else {
 				// Show an information dialog if no template was found
@@ -259,8 +266,13 @@ public class CreateOODocumentHandler {
         return new String[]{msg.configWorkspaceTemplatesName, msg.getMessageFromKey(DocumentType.getString(doctype))};
     }
 
-    private void openOODocument(final Document document, final Path template, Shell shell) {
+    private void openOODocument(final Document document, final Path template, Shell shell, boolean silentMode) {
         OfficeDocument od = ContextInjectionFactory.make(OfficeDocument.class, context);
+        od.setSilentMode(silentMode);
+        
+        // add silent mode flag (don't put this in context because it couldn't be removed after finishing
+        // which leads to unwanted side effects)
+        
         try {
 			if (od.testOpenAsExisting(document, template)) {
 			    // Show an information dialog if the document was already printed

@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -295,6 +296,7 @@ public abstract class Editor<T extends IEntity> {
 	 * Get the next document number
 	 * 
 	 * @return The next document number
+	 * @deprecated use {@link NumberGenerator#getNextNr(String)}
 	 */
 	protected String getNextNr() {
 		// Create the string of the preference store for format and number
@@ -384,6 +386,12 @@ public abstract class Editor<T extends IEntity> {
 		return nextNr;
 	}
 
+	/**
+	 * 
+	 * @param prefStrNr
+	 * @param nr
+	 * @deprecated use {@link NumberGenerator#setNextNumber(String, int, String)}
+	 */
 	protected void setNextNumber(String prefStrNr, int nr) {
 //		defaultValuePrefs.setValue(prefStrNr, nr);
 
@@ -423,8 +431,9 @@ public abstract class Editor<T extends IEntity> {
 	 *            The document number as string.
 	 * @return Errorcode, if the document number is correctly set to the next
 	 *         free number.
+	 * @deprecated use {@link NumberGenerator#setNextFreeNumberInPrefStore(String, String, String)}
 	 */
-	protected int setNextNr(String value, String key) {
+	protected int setNextFreeNumberInPrefStore(String value, String key) {
 
 		// Create the string of the preference store for format and number
 		String prefStrFormat = "NUMBERRANGE_" + getEditorID().toUpperCase() + "_FORMAT";

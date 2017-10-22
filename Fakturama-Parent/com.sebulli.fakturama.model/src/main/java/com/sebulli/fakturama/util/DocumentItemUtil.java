@@ -13,6 +13,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.ItemType;
 import com.sebulli.fakturama.model.Product;
 
 /**
@@ -43,6 +44,7 @@ public class DocumentItemUtil {
 	    newItem.setName(product.getName());
 	    newItem.setProduct(product);
 	    newItem.setItemNumber(product.getItemNumber());
+	    newItem.setItemType(ItemType.POSITION);
 	    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
 	    newItem.setQuantityUnit(product.getQuantityUnit());
 	    newItem.setDescription(product.getDescription());

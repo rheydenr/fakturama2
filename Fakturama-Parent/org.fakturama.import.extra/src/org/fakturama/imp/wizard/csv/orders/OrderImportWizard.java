@@ -6,6 +6,7 @@ package org.fakturama.imp.wizard.csv.orders;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +22,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.FileDialog;
@@ -30,10 +30,9 @@ import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
-import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.handlers.CreateOODocumentHandler;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Shipping;
-import com.sebulli.fakturama.parts.ProductEditor;
-import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -42,9 +41,7 @@ import com.sebulli.fakturama.util.ContactUtil;
 public class OrderImportWizard extends Wizard implements IImportWizard {
 	
 	public static final String ORDERS_CSV_IMPORT_SHIPPING = "ORDERS_CSV_IMPORT_SHIPPING";
-
 	public static final String ORDERS_CSV_IMPORT_ORDERTEMPLATE = "ORDERS_CSV_IMPORT_ORDERTEMPLATE";
-
 	public static final String ORDERS_CSV_IMPORT_DELIVERYTEMPLATE = "ORDERS_CSV_IMPORT_DELIVERYTEMPLATE";
 
 	@Inject
@@ -54,9 +51,6 @@ public class OrderImportWizard extends Wizard implements IImportWizard {
 	@Inject
 	@Translation
 	protected ImportOrdersMessages importOrdersMessages;
-	
-	@Inject
-	private ITemplateResourceManager resourceManager;
 
 	@Inject
 	private ECommandService cmdService;
@@ -123,17 +117,11 @@ public class OrderImportWizard extends Wizard implements IImportWizard {
 //			
 //			MessageDialog.openInformation(this.getShell(), "Info", "Hier käme dann der Bestellungsimport.");
 //			
-			csvImporter.importCSV(selectedFile, false, optionPage.getSelectedShipping().get());
+			List<Document> importedDocuments = csvImporter.importCSV(selectedFile, false, optionPage.getSelectedShipping().get(), optionPage.getSelectedOrderTemplate(), optionPage.getSelectedDeliveryTemplate());
 
 			ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 			dialog.setStatusText(csvImporter.getResult());
-//, optionPage.getSelectedOrderTemplate(), optionPage.getSelectedDeliveryTemplate()
-	        Map<String, Object> params = new HashMap<>();
-	        params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
-	        final ParameterizedCommand pCmd = cmdService.createCommand("org.eclipse.ui.file.print", params);
-			if (handlerService.canExecute(pCmd)) {
-				handlerService.executeHandler(pCmd);
-			}
+			dialog.open();
 
 			// Refresh the table view of all contacts
 		    evtBroker.post("DocumentEditor", "update");

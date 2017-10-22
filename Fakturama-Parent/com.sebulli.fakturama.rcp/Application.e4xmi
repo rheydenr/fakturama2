@@ -11,7 +11,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_RmPTsetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="%main.menu.file.save" iconURI="icon://COMMAND_SAVE" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Yew2kPo0EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.saveAll" label="%main.menu.file.saveall" iconURI="icon://COMMAND_SAVEALL" command="_jH3nYCTLEeS9z6SQNducwg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.2"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.print" label="%main.menu.file.print" iconURI="icon://COMMAND_PRINT" tooltip="%main.menu.file.print.tooltip" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_UW4eYPo4EeKmVtv93KLoRw" elementId="org.fakturama.print.oofile" label="%main.menu.file.print" iconURI="icon://COMMAND_PRINT" tooltip="%main.menu.file.print.tooltip" enabled="false" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iKbb4Po6EeKmVtv93KLoRw" elementId="menu:main.menu.file.handleselectworkspace" label="%command.selectworkspace.name" enabled="false" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_RjR8sEgIEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.0"/>
@@ -163,7 +163,7 @@
       <children xsi:type="menu:ToolControl" xmi:id="_9hiIgEvfEeOlALHF9EqnUg" elementId="com.sebulli.fakturama.main.coolbar.control" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.parts.CoolbarViewPart"/>
     </trimBars>
   </children>
-  <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CreateOODocumentHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+  <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CreateOODocumentHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
   <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.handler.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_xRyIYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.handler.file.saveAll" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveAllHandler" command="_jH3nYCTLEeS9z6SQNducwg"/>
   <handlers xmi:id="_HpX4IMn6EeWTOb3yCbo1Ow" elementId="main.menu.file.export.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/org.fakturama.wizard.export.handler.ExportHandler" command="_RAuAAEf5EeO7mNzAwIZUXQ"/>
@@ -208,7 +208,7 @@
       <parameters xmi:id="_QC3lkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.57" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
       <parameters xmi:id="_YDkFkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.58" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
     </bindings>
-    <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.eclipse.ui.file.print.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
+    <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.fakturama.print.oofile.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
     <bindings xmi:id="_JrWiQOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.close" keySequence="M1+W" command="_RmrPQCTQEeS9z6SQNducwg"/>
     <bindings xmi:id="_ff0UIOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.closeall" keySequence="M1+SHIFT+W" command="_pBm00CvEEeSxtNFFgqSUpw"/>
   </bindingTables>
@@ -556,10 +556,10 @@
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId=""/>
   </commands>
-  <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.eclipse.ui.file.print" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
-    <parameters xmi:id="_xsk48LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Document Parameter"/>
+  <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
+    <parameters xmi:id="_xsk48LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Document parameter"/>
     <parameters xmi:id="_6ctR0LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.templatepath" name="Template Path Parameter"/>
-    <parameters xmi:id="_0x1ZsLUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Silent mode Parameter"/>
+    <parameters xmi:id="_0x1ZsLUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.silentmode" name="Silent mode Parameter"/>
   </commands>
   <commands xmi:id="_RmPT0etOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" commandName="%main.menu.file.save" description="%main.menu.file.save" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <commands xmi:id="_RmrPQCTQEeS9z6SQNducwg" elementId="org.eclipse.ui.file.close" commandName="%main.menu.file.close" description="close active document" category="_ck9sUCTREeS9z6SQNducwg"/>
