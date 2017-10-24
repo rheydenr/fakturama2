@@ -39,41 +39,47 @@ public class DocumentTypeUtil {
      */
     public static DocumentType findByBillingType(BillingType billingType) {
         DocumentType retval = DocumentType.NONE;
-        switch (billingType) {
-        case ORDER:
-            retval = DocumentType.ORDER;
-            break;
-        case OFFER:
-            retval = DocumentType.OFFER;
-            break;
-        case INVOICE:
-            retval = DocumentType.INVOICE;
-            break;
-        case PROFORMA:
-            retval = DocumentType.PROFORMA;
-            break;
-        case DUNNING:
-            retval = DocumentType.DUNNING;
-            break;
-        case CONFIRMATION:
-            retval = DocumentType.CONFIRMATION;
-            break;
-        case CREDIT:
-            retval = DocumentType.CREDIT;
-            break;
-        case DELIVERY:
-            retval = DocumentType.DELIVERY;
-            break;
-        case LETTER:
-            retval = DocumentType.LETTER;
-            break;
-        default:
-            break;
+        if(billingType != null) {
+	        switch (billingType) {
+	        case ORDER:
+	            retval = DocumentType.ORDER;
+	            break;
+	        case OFFER:
+	            retval = DocumentType.OFFER;
+	            break;
+	        case INVOICE:
+	            retval = DocumentType.INVOICE;
+	            break;
+	        case PROFORMA:
+	            retval = DocumentType.PROFORMA;
+	            break;
+	        case DUNNING:
+	            retval = DocumentType.DUNNING;
+	            break;
+	        case CONFIRMATION:
+	            retval = DocumentType.CONFIRMATION;
+	            break;
+	        case CREDIT:
+	            retval = DocumentType.CREDIT;
+	            break;
+	        case DELIVERY:
+	            retval = DocumentType.DELIVERY;
+	            break;
+	        case LETTER:
+	            retval = DocumentType.LETTER;
+	            break;
+	        default:
+	            break;
+	        }
         }
         return retval;
     }
-
-    public static Document createDocumentByType(DocumentType documentType) {
+    public static Document createDocumentByBillingType(BillingType documentType) {
+    	DocumentType targetType = findByBillingType(documentType);
+    	return createDocumentByDocumentType(targetType);
+    }
+    
+    public static Document createDocumentByDocumentType(DocumentType documentType) {
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
         Document document = null;
         // create a new data set with this document type
@@ -111,6 +117,7 @@ public class DocumentTypeUtil {
         }
         // some initializations
         document.setTransactionId(getNewTransactionId());
+        document.setBillingType(BillingType.getByName(documentType.name()));
         document.setValidFrom(Date.from(Instant.now()));
         return document;
     }

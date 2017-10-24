@@ -142,7 +142,6 @@ import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
-import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
@@ -300,7 +299,6 @@ public class DocumentEditor extends Editor<Document> {
 	// document is saved. Because the the  document has an id to reference to.
 	private List<Long> importedDeliveryNotes = new ArrayList<>();
 
-    private ProductUtil productUtil;
     private DocumentItemUtil documentItemUtil;
     private DocumentItemListTable itemListTable;
     private CurrencyUnit currencyUnit;
@@ -423,8 +421,8 @@ public class DocumentEditor extends Editor<Document> {
             	Address address = modelFactory.createAddress();
             	addressId.setAddress(address);
             	document.setDeliveryContact(addressId);
+            	document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             }
-			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 
 			// Use the delivery address if the billing address is empty
 			if (billingAddress.isEmpty()) {
@@ -853,7 +851,6 @@ public class DocumentEditor extends Editor<Document> {
     		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
     	}
 //        this.context = part.getContext();
-        this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
@@ -868,8 +865,6 @@ public class DocumentEditor extends Editor<Document> {
 		// If the document is a duplicate of an other document,
 		// the input is the parent document.
 		Document parentDoc = document;
-		// the parents document type
-		DocumentType documentTypeParent = DocumentType.NONE;
 		boolean duplicated = BooleanUtils.toBoolean(tmpDuplicate);
 
 		// The document is new, if there is no document, or if the
@@ -894,13 +889,13 @@ public class DocumentEditor extends Editor<Document> {
 			
 			// if this document should be a copy of an existing document, create it
 			if (duplicated) {
-				document = copyFromSourceDocument(parentDoc, documentType);
+				document = copyFromSourceDocument(parentDoc, billingType);
 				if(BooleanUtils.isNotTrue(silentMode)) {
 					setDirty(true);
 				}
 			} else {
 				// create a blank new document
-				document = DocumentTypeUtil.createDocumentByType(documentType);
+				document = DocumentTypeUtil.createDocumentByDocumentType(documentType);
 			}
             document.setBillingType(billingType);
             // a new document is always dirty...
@@ -914,15 +909,13 @@ public class DocumentEditor extends Editor<Document> {
 				document.setMessage3("");
 			}
 
-			// get the parents document type
-			if (parentDoc != null) {
-				documentTypeParent = DocumentTypeUtil.findByBillingType(parentDoc.getBillingType());
-			}
-
 			// If it's a dunning, increase the dunning level by 1
 			if (documentType == DocumentType.DUNNING) {
+				// get the parents document type
+				DocumentType documentTypeParent = parentDoc != null ? DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()) : DocumentType.NONE;
+				
 				if (documentTypeParent == DocumentType.DUNNING) {
-					dunningLevel = ((Dunning)document).getDunningLevel() + 1;
+					dunningLevel = ((Dunning)parentDoc).getDunningLevel() + 1;
 				} else {
 					dunningLevel = 1;
 				}
@@ -1043,7 +1036,7 @@ public class DocumentEditor extends Editor<Document> {
 			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
 					? document.getBillingContact() : document.getDeliveryContact());
 		} else {
-	        billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
+	        billingAddress = contactUtil.getAddressAsString(addressId);
 			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
 					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
 						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
@@ -1080,13 +1073,16 @@ public class DocumentEditor extends Editor<Document> {
      * @param pTargetType
      * @return a copy of the source document
      */
-	private Document copyFromSourceDocument(Document parentDoc, DocumentType pTargetType) {
-		Document retval = DocumentTypeUtil.createDocumentByType(documentType);
+	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
+		Contact billingContact, deliveryContact;
+		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
+		// what about additionalInfo?
 		retval.setShipping(parentDoc.getShipping());
 		retval.setShippingValue(parentDoc.getShipping() != null ? parentDoc.getShipping().getShippingValue() : parentDoc.getShippingValue());
 		retval.setShippingAutoVat(parentDoc.getShippingAutoVat());
 		retval.setPayment(parentDoc.getPayment());
+		
 		retval.setTotalValue(parentDoc.getTotalValue());
 		retval.setPaidValue(parentDoc.getPaidValue());
 		retval.setPaid(parentDoc.getPaid());
@@ -1096,15 +1092,19 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setDeposit(parentDoc.getDeposit());
 		
 		// for delivery documents we have to switch between delivery address and billing address
-		retval.setBillingContact(parentDoc.getBillingType() == BillingType.DELIVERY ? parentDoc.getDeliveryContact() : parentDoc.getBillingContact());
-		retval.setDeliveryContact(parentDoc.getBillingType() == BillingType.DELIVERY ? parentDoc.getBillingContact() : parentDoc.getDeliveryContact());
+		if(parentDoc.getBillingType().isDELIVERY()) {
+			billingContact = parentDoc.getDeliveryContact();
+			deliveryContact = parentDoc.getBillingContact();
+		} else {
+			billingContact = parentDoc.getBillingContact();
+			deliveryContact = parentDoc.getDeliveryContact();
+		}
+		retval.setBillingContact(retval.getBillingType().isDELIVERY() ? deliveryContact : billingContact);
+		retval.setDeliveryContact(retval.getBillingType().isDELIVERY() ? billingContact : deliveryContact);
+		
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
-		retval.setAddressFirstLine(pTargetType == DocumentType.DELIVERY 
-				? parentDoc.getDeliveryContact() != null 
-					? contactUtil.getNameWithCompany(parentDoc.getDeliveryContact()) 
-					: parentDoc.getAddressFirstLine()
-				: parentDoc.getAddressFirstLine());
+		retval.setAddressFirstLine(contactUtil.getNameWithCompany(billingContact));
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setConsultant(parentDoc.getConsultant());
@@ -2855,9 +2855,17 @@ public class DocumentEditor extends Editor<Document> {
      */
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
-		if(document != null && document.getTransactionId() != null && targetype != null) {
-			// lookup for a document with the same transaction id and the given target type
-			Document copyDoc = documentsDAO.findByTransactionIdAndDBillingType(document.getTransactionId(), targetype);
+		if(document != null && document.getTransactionId() != null) {
+			Document copyDoc = null;
+			// dunning is an extra case
+			if(targetype.isDUNNING()) {
+				// if the given document is also a dunning, increase the dunning level
+				int lookupDunningLevel = (document.getBillingType().isDUNNING()) ? ((Dunning)document).getDunningLevel() + 1 : 1;
+				copyDoc = documentsDAO.findDunningByTransactionId(document.getTransactionId(), lookupDunningLevel);
+			} else {
+				// lookup for a document with the same transaction id and the given target type
+				copyDoc = documentsDAO.findByTransactionIdAndBillingType(document.getTransactionId(), targetype);
+			}
 			if(copyDoc != null) {
 				// the retval has to be inverted because the question asks if you want to create another copy
 				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));

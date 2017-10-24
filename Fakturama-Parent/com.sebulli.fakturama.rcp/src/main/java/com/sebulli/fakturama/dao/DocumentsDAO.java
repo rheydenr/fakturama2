@@ -656,24 +656,48 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    TypedQuery<Document> query = getEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
+	
+	public Document findDunningByTransactionId(Integer transactionId, int dunninglevel) {
+		Document retval = null;
+		if(transactionId != null) {
+	        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	        CriteriaQuery<Dunning> criteria = cb.createQuery(Dunning.class);
+	        Root<Dunning> root = criteria.from(Dunning.class);
+	        CriteriaQuery<Dunning> cq = criteria.where(
+	        		cb.and(
+							cb.equal(root.<Integer>get(Dunning_.transactionId), transactionId),
+							cb.equal(root.<BillingType>get(Dunning_.billingType), BillingType.DUNNING),
+						// check for dunnings
+							cb.equal(root.<Integer>get(Dunning_.dunningLevel), (dunninglevel > 0) ? dunninglevel : Integer.valueOf(1))));
+	        try {
+				retval = getEntityManager().createQuery(cq).getSingleResult();
+			} catch (NoResultException e) {
+				// is ok, we have to return a null value
+			}
+		}
+		return retval;
+	}
+	
 
 	/**
 	 * Finds a document by its transaction id and billing type. Returns <code>null</code> if none is found. 
 	 * 
 	 * @param transactionId the transaction id to which the document belongs
 	 * @param targetype the type of document which is to be searched
+	 * @param dunninglevel the dunning level to prove
 	 */
-	public Document findByTransactionIdAndDBillingType(Integer transactionId, BillingType targetype) {
+	public Document findByTransactionIdAndBillingType(Integer transactionId, BillingType targetype) {
 		Document retval = null;
 		if(transactionId != null && targetype != null) {
 	        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-	        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
-	        Root<Document> root = criteria.from(Document.class);
-	        CriteriaQuery<Document> cq = criteria.where(
-	        		cb.and(
-	        				cb.equal(root.<Integer>get(Document_.transactionId), transactionId),
-	        				cb.equal(root.<BillingType>get(Document_.billingType), targetype)
-	        			));
+	        CriteriaQuery<Document> criteria = cb.createQuery(getEntityClass());
+	        Root<Document> root = criteria.from(getEntityClass());
+	        Predicate whereClause = cb.and(
+					cb.equal(root.<Integer>get(Document_.transactionId), transactionId),
+					cb.equal(root.<BillingType>get(Document_.billingType), targetype)
+				);
+			CriteriaQuery<Document> cq = criteria.where(
+	        		whereClause);
 	        try {
 				retval = getEntityManager().createQuery(cq).getSingleResult();
 			} catch (NoResultException e) {
