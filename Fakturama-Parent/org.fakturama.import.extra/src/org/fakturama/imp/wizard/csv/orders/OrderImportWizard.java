@@ -5,14 +5,11 @@ package org.fakturama.imp.wizard.csv.orders;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -30,7 +27,6 @@ import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
-import com.sebulli.fakturama.handlers.CreateOODocumentHandler;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -80,7 +76,7 @@ public class OrderImportWizard extends Wizard implements IImportWizard {
 //		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.IMPORT_CONTACTS2);
 		ctx.set(IFakturamaWizardService.WIZARD_TITLE, importOrdersMessages.wizardImportCsvOrders);
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, importMessages.wizardImportOptionsSet);
-//		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
+		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, null);
 		optionPage = ContextInjectionFactory.make(ImportOrdersOptionPage.class, ctx);
 		optionPage.setPageComplete(true);
 		addPage(optionPage);

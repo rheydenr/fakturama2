@@ -29,12 +29,22 @@
       </wizard>
       <wizard
             category="com.sebulli.fakturama.importWizards.csv"
-            class="org.fakturama.imp.wizard.csv.contacts.ContactsCsvImportWizard"
+            class="org.fakturama.imp.wizard.csv.contacts.DebtorCsvImportWizard"
             icon="icons/16/contact_16.png"
-            id="com.sebulli.fakturama.importer.csv.contacts.importWizard"
-            name="%wizard.import.csv.contacts.name">
+            id="com.sebulli.fakturama.importer.csv.debtors.importWizard"
+            name="%wizard.import.csv.debtors.name">
          <description>
-            %wizard.import.csv.orders.description
+            %wizard.import.csv.debtors.description
+         </description>
+      </wizard>
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="org.fakturama.imp.wizard.csv.contacts.CreditorsCsvImportWizard"
+            icon="icons/16/vendor.png"
+            id="com.sebulli.fakturama.importer.csv.creditors.importWizard"
+            name="%wizard.import.csv.creditors.name">
+         <description>
+            %wizard.import.csv.creditors.description
          </description>
       </wizard>
    </extension>

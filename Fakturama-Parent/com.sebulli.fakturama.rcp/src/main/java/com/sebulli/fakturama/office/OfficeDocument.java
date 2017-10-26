@@ -44,6 +44,7 @@ import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -283,11 +284,15 @@ public class OfficeDocument {
 
 //			// Save the document
 			if(saveOODocument(textdoc)) {
-			    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				if(!silentMode) {
+					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				}
 			    
 			    // TODO open Doc in OO if necessary
 			} else {
-                MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
+				if(!silentMode) {
+					MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
+				}
 			}
 
 			// Print and close the OpenOffice document
@@ -317,7 +322,7 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
 		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
-		Path origFileName = documentPath.getFileName();;
+		Path origFileName = documentPath.getFileName();
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
             // Create the directories, if they don't exist.
@@ -409,7 +414,7 @@ public class OfficeDocument {
             }
 
             try {
-                documentsDAO.update(document);                
+            	document = documentsDAO.update(document);                
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -1088,7 +1093,7 @@ public class OfficeDocument {
 				FileOrganizer.WITH_EXTENSION, 
 				FileOrganizer.ODT, document);
 
-		return (Files.exists(oODocumentFile) && document.getPrinted() &&
+		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
 				filesAreEqual(document.getPrintTemplate(),template));
 	}
 

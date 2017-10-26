@@ -102,20 +102,11 @@ public abstract class AbstractDAO<T extends IEntity> {
 @PersistenceUnit EntityManagerFactory factory;
 protected void doPost(HttpServlet req, ...) {
 EntityManager em = factory.createEntityManager();
-Order order order = ...;
+Order order = ...;
 em.persist(order);
 
-
-TODO (in den einzelnen Entities:
+TODO (in den einzelnen Entities:)
 @Version Timestamp timestamp;
-
-use TypedQuery<Employee>
-
-CriteriaQuery<Order> o = cb.createQuery(Order.class);
-Root<Order> ord = o.from(Order.class);
-o.select(ord).where(cb.gt(ord.get(Order_.total), 100));
-TypeQuery<Order.class> q = en.createQuery(o);
-List<Person> result = q.getResultList();
 
 bei read-only-entities (results): @TransactionAttribute(NOT_SUPPORTED)
 

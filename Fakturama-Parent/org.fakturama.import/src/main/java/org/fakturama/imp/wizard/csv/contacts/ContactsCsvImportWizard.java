@@ -17,7 +17,6 @@ package org.fakturama.imp.wizard.csv.contacts;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -33,19 +32,16 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
-import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IFakturamaWizardService;
-import org.fakturama.wizards.IImportWizard;
 
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
-import com.sebulli.fakturama.util.ContactUtil;
 
 /**
  * A wizard to import tables in CSV file format
  * 
  */
-public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
+public abstract class ContactsCsvImportWizard extends Wizard {
 	
 	@Inject
 	@Translation
@@ -55,7 +51,7 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
 	private ITemplateResourceManager resourceManager;
 	
 	@Inject
-	private IEclipseContext ctx;
+	protected IEclipseContext ctx;
     
     /**
      * Event Broker for sending update events to the list table
@@ -70,12 +66,10 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
 	 */
-	@PostConstruct
-	@Override
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(importMessages.wizardImportCsv);
-		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.IMPORT_CONTACTS2);
-		ctx.set(IFakturamaWizardService.WIZARD_TITLE, importMessages.wizardImportCsvContacts);
+		Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS_CSV);  // CSV example image
+		ctx.set(IFakturamaWizardService.WIZARD_TITLE, getWizardTitle());
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, importMessages.wizardImportOptionsSet);
 		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
 		optionPage = ContextInjectionFactory.make(ImportOptionPage.class, ctx);
@@ -83,6 +77,8 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
 		addPage(optionPage);
 		setNeedsProgressMonitor(true);
 	}
+
+	protected abstract String getWizardTitle();
 
 	/**
 	 * Performs any actions appropriate in response to the user having pressed
@@ -112,22 +108,12 @@ public class ContactsCsvImportWizard extends Wizard implements IImportWizard {
 
 			// Import the selected file
 			if (!selectedFile.isEmpty()) {
-
-				ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
-				ctx.set(ContactUtil.class, contactUtil);
-				ContactsCsvImporter csvImporter = ContextInjectionFactory.make(ContactsCsvImporter.class, ctx);
-				csvImporter.importCSV(selectedFile, false,optionPage.getUpdateExisting(), optionPage.getUpdateWithEmptyValues());
-
-				ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
-				dialog.setStatusText(csvImporter.getResult());
-
-				// Refresh the table view of all contacts
-		        evtBroker.post("ContactEditor", "update");
-
-				return (dialog.open() == ImportProgressDialog.OK);
+				return doImport(selectedFile, optionPage.getUpdateExisting(), optionPage.getUpdateWithEmptyValues());
 			}
 		}
 		return false;
 	}
+
+	protected abstract boolean doImport(final String fileName, boolean updateExisting, boolean importEmptyValues);
 
 }

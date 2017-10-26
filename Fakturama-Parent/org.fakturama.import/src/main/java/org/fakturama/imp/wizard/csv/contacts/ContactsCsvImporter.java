@@ -117,14 +117,14 @@ public class ContactsCsvImporter {
 	 * 
 	 * @param fileName
 	 *            Name of the file to import
-	 * @param test
-	 *            if <code>true</code>, the datasets are not imported (currently not used)
+	 * @param classifier
+	 *            the contact classifier (used from {@link FakturamaModelPackage})
 	 * @param updateExisting
 	 *            if <code>true</code>, also existing entries will be updated
 	 * @param importEmptyValues
 	 *            if <code>true</code>, also empty values will be updated
 	 */
-	public void importCSV(final String fileName, boolean test, boolean updateExisting, boolean importEmptyValues) {
+	public void importCSV(final String fileName, int classifier, boolean updateExisting, boolean importEmptyValues) {
 		modelFactory = FakturamaModelPackage.MODELFACTORY;
 
 		// Result string
@@ -162,7 +162,18 @@ public class ContactsCsvImporter {
 			while ((cells = csvr.readNext()) != null) {
 				lineNr++;
 
-				Contact contact =  modelFactory.createDebitor();
+				Contact contact;
+				switch (classifier) {
+				case FakturamaModelPackage.DEBITOR_CLASSIFIER_ID:
+					contact = modelFactory.createDebitor();
+					break;
+				case FakturamaModelPackage.CREDITOR_CLASSIFIER_ID:
+					contact = modelFactory.createCreditor();
+					break;
+				default:
+					contact = modelFactory.createDebitor();
+					break;
+				}
 				Properties prop = new Properties();
 
 				// Dispatch all the cells into a property

@@ -113,10 +113,10 @@ public class OrdersCsvImporter {
 
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { CSV_PROP_LASTNAME,CSV_PROP_FIRSTNAME,CSV_PROP_COMPANY,
-			"anzahl1","artikelnr1","artikel1","anzahl2","artikelnr2","artikel2",
-			"anzahl3","artikelnr3","artikel3","anzahl4","artikelnr4","artikel4",
-			"anzahl5","artikelnr5","artikel5","anzahl6","artikelnr6","artikel6",
-			"anzahl7","artikelnr7","artikel7" };
+			"anzahl1","artikelnr1","anzahl2","artikelnr2",
+			"anzahl3","artikelnr3","anzahl4","artikelnr4",
+			"anzahl5","artikelnr5","anzahl6","artikelnr6",
+			"anzahl7","artikelnr7" };
 
 	// The result string
 	String result = "";
@@ -160,8 +160,7 @@ public class OrdersCsvImporter {
 		result = String.format("%s %s", importMessages.wizardImportProgressinfo, fileName);
 
 		// Count the imported orders
-		int[] importedOrders = new int[1];
-		importedOrders[0] = 0;
+		Set<Long> documentIds = new HashSet<>();
 
 		// Count the line of the import file
 		int lineNr = 0;
@@ -274,7 +273,7 @@ public class OrdersCsvImporter {
 					
 					order.setItems(itemsList);
 					// TODO calculate!
-					order.setTotalValue(0.0);
+					order.setTotalValue(Double.valueOf(0.0));
 					
 					// cache the results
 					resultList.add(order);
@@ -283,16 +282,8 @@ public class OrdersCsvImporter {
 			if(!resultList.isEmpty()) {
 				// Add the order to the data base and store the ID for later processing
 				// (the order of these IDs is not relevant)
-				final Set<Long> documentIds = new HashSet<>();
-				resultList.forEach(doc -> {
-					try {
-						Document currentDocument = documentsDAO.save(doc);
-						importedOrders[0]++;
-						documentIds.add(currentDocument.getId());
-					} catch (FakturamaStoringException e) {
-						log.error(e, "can't save imported order, address first line is: '" + doc.getAddressFirstLine() + "'");
-					}
-				});
+				documentIds = documentsDAO.saveBatch(resultList);
+				Set<Long> deliveries = new HashSet<>();
 				
 				// now try to create delivery documents from orders
 				context.set(CallEditor.PARAM_CATEGORY, BillingType.DELIVERY.name());
@@ -300,59 +291,56 @@ public class OrdersCsvImporter {
 				context.set(DocumentEditor.PARAM_SILENT_MODE, Boolean.TRUE);
 				documentIds.forEach(id -> {
 					context.set(CallEditor.PARAM_OBJ_ID, Long.toString(id));
-	                ContextInjectionFactory.make(DocumentEditor.class, context);
+	                DocumentEditor tmpEditor = ContextInjectionFactory.make(DocumentEditor.class, context);
+	                deliveries.add(tmpEditor.getDocument() != null ? tmpEditor.getDocument().getId() : Long.valueOf(0L));
 				});
 				
+				createDocuments(documentIds, orderTemplate);
 				
-				
-		        Map<String, Object> params = new HashMap<>();
-		        Iterator<Long> docIdIterator = documentIds.iterator();
-				while(docIdIterator.hasNext()) {
-					Long nextDocId = docIdIterator.next();
-					// create order documents
-					params.put(CreateOODocumentHandler.PARAM_TEMPLATEPATH, orderTemplate.orElse(Paths.get("")).toString());
-					params.put(CreateOODocumentHandler.PARAM_SILENTMODE, Boolean.toString(true));
-					params.put(CreateOODocumentHandler.PARAM_DOCUMENT, nextDocId.toString());
-					ParameterizedCommand pCmd = cmdService.createCommand("org.fakturama.print.oofile", params);
-					if (handlerService.canExecute(pCmd)) {
-						handlerService.executeHandler(pCmd);
-					}
-
-					// create delivery documents from order docs
-					params.clear();
-//					params.put(CreateOODocumentHandler.PARAM_TEMPLATEPATH, deliveryTemplate.get());
-//					params.put(CreateOODocumentHandler.PARAM_SILENTMODE, Boolean.TRUE);
-//					params.put(CreateOODocumentHandler.PARAM_DOCUMENT, document);
-//					pCmd = cmdService.createCommand("org.fakturama.print.oofile", params);
-//					if (handlerService.canExecute(pCmd)) {
-//						handlerService.executeHandler(pCmd);
-//					}
-				}
-				
-				
+				createDocuments(deliveries, deliveryTemplate);
 			}
 			
 			// The result string
 			//T: Message: xx Orders have been imported 
-			result += NL + MessageFormat.format(importOrdersMessages.wizardImportInfoOrdersimported, importedOrders[0]);
+			result += NL + MessageFormat.format(importOrdersMessages.wizardImportInfoOrdersimported, documentIds.size());
+		} catch (FakturamaStoringException e) {/*, address first line is: '" + doc.getAddressFirstLine() + "'*/
+			log.error(e, "can't save imported order");
 		}
-		
 		catch (UnsupportedEncodingException e) {
 			log.error(e, "Unsupported UTF-8 encoding");
 			result += NL + "Unsupported UTF-8 encoding";
 			return resultList;
 		}
 		catch (FileNotFoundException e) {
-			//T: Error message
 			result += NL + importMessages.wizardImportErrorFilenotfound;
 			return resultList;
 		}
 		catch (IOException e) {
-			//T: Error message
 			result += NL + importMessages.wizardImportErrorOpenfile;
+		} finally {
+			// rewind numbers
+//			currentDebtorNumber
+			// currentOrderNumber
 		}
 		return resultList;
 	}
+
+	private void createDocuments(Set<Long> documentIds, Optional<Path> orderTemplate) {
+        Map<String, Object> params = new HashMap<>();
+        Iterator<Long> docIdIterator = documentIds.iterator();
+		while(docIdIterator.hasNext()) {
+			Long nextDocId = docIdIterator.next();
+			// create order documents
+			params.put(CreateOODocumentHandler.PARAM_TEMPLATEPATH, orderTemplate.orElse(Paths.get("")).toString());
+			params.put(CreateOODocumentHandler.PARAM_SILENTMODE, Boolean.toString(true));
+			params.put(CreateOODocumentHandler.PARAM_DOCUMENT, nextDocId.toString());
+			ParameterizedCommand pCmd = cmdService.createCommand("org.fakturama.print.oofile", params);
+			if (handlerService.canExecute(pCmd)) {
+				handlerService.executeHandler(pCmd);
+			}
+		}
+	}
+
 
 	public String getResult() {
 		return result;

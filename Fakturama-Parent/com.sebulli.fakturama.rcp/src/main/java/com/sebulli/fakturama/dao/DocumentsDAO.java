@@ -1,15 +1,19 @@
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -24,11 +28,14 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
 import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -706,6 +713,34 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 		}
 		return retval;
 	}
+
+	public Set<Long> saveBatch(List<Document> resultList) throws FakturamaStoringException {
+		Set<Long> documentIds = new HashSet<>();
+		Set<Document> docSet = new HashSet<>();
+		Document lastSuccessfulObject = null;
+		try {
+			checkConnection();
+			EntityManager entityManager = getEntityManager();
+			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
+			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
+			EntityTransaction trx = entityManager.getTransaction();
+			trx.begin();
+			for (Document doc : resultList) {
+				lastSuccessfulObject = entityManager.merge(doc);
+				getEntityManager().persist(lastSuccessfulObject);
+				// documentIds.add(currentDocument.getId());
+				System.out.println("t");
+				docSet.add(lastSuccessfulObject);
+			}
+			trx.commit();
+		} catch (SQLException e) {
+			throw new FakturamaStoringException("Error saving to the database.", e, lastSuccessfulObject);
+		}
+		documentIds = docSet.stream().map(d -> d.getId()).collect(Collectors.toSet());
+		return documentIds;
+	}
+	
+	
 	
 	
 }

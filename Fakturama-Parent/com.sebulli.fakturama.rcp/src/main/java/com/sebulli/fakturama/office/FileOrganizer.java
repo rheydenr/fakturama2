@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -155,7 +156,7 @@ public class FileOrganizer {
 		String address = document.getAddressFirstLine();
 		address = replaceIllegalCharacters(address);
 
-		String name = StringUtils.defaultString(document.getBillingContact().getName());
+		String name = StringUtils.defaultString(Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact()).getName());
 		name = replaceIllegalCharacters(name);
 
 		// Replace the placeholders

@@ -256,6 +256,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    params.put(CallEditor.PARAM_DUPLICATE, null);  // could be set from a previous call
                     params.putAll(getAdditionalParameters());
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);

@@ -859,7 +859,7 @@ public class DocumentEditor extends Editor<Document> {
         if (StringUtils.isNumeric(tmpObjId)) {
             Long objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
-            this.document = documentsDAO.findById(objId);
+            this.document = documentsDAO.findById(objId, true);
         }
 
 		// If the document is a duplicate of an other document,
@@ -1057,7 +1057,7 @@ public class DocumentEditor extends Editor<Document> {
         if(BooleanUtils.isTrue(silentMode)) {
         	try {
         		calculate();
-				documentsDAO.save(document);
+        		document = documentsDAO.save(document);
             } catch (FakturamaStoringException e) {
                 log.error(e);
 			}

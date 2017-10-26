@@ -26,7 +26,8 @@ public class ImportMessages {
 	public String wizardCommonTitle;
 	public String wizardCommonTitleSelectSource;
 	public String wizardImportCsv;
-	public String wizardImportCsvContacts;
+	public String wizardImportCsvDebtors;
+	public String wizardImportCsvCreditors;
 	public String wizardImportCsvInfo;
 	public String wizardImportCsvProducts;
 	public String wizardImportDialogChooseImportSource;

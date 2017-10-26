@@ -274,7 +274,7 @@ public class CreateOODocumentHandler {
         // which leads to unwanted side effects)
         
         try {
-			if (od.testOpenAsExisting(document, template)) {
+			if (!silentMode && od.testOpenAsExisting(document, template)) {
 			    // Show an information dialog if the document was already printed
 			    String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
 			    MessageDialog md = new MessageDialog(shell, msg.dialogMessageboxTitleInfo, null, msg.dialogPrintooDocumentalreadycreated,
