@@ -653,6 +653,7 @@ public class Messages {
 	public String preferencesGeneralThousandseparator;
 	public String preferencesGeneralCurrencyDecimalplaces;
 	public String preferencesGeneralQuantityDecimalplaces;
+	public String preferencesGeneralDatabase;
 	public String preferencesNumberrangeFormatConfirmationoLabel;
 	public String preferencesNumberrangeFormatConfirmationoValue;
 	public String preferencesNumberrangeFormatCreditnoLabel;

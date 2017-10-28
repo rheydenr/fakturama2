@@ -40,18 +40,21 @@ public class DocumentItemUtil {
      * @return
      */
     public DocumentItem from(Product product, DocumentType documentType) {
-	    DocumentItem newItem = modelFactory.createDocumentItem();
-	    newItem.setName(product.getName());
-	    newItem.setProduct(product);
-	    newItem.setItemNumber(product.getItemNumber());
-	    newItem.setItemType(ItemType.POSITION);
-	    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
-	    newItem.setQuantityUnit(product.getQuantityUnit());
-	    newItem.setDescription(product.getDescription());
-	    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
-	    newItem.setItemVat(product.getVat());
-	    newItem.setPicture(product.getPicture());
-	    newItem.setWeight(product.getWeight());
+	    DocumentItem newItem = null;
+	    if(product != null) {
+	    	newItem = modelFactory.createDocumentItem();
+		    newItem.setName(product.getName());
+		    newItem.setProduct(product);
+		    newItem.setItemNumber(product.getItemNumber());
+		    newItem.setItemType(ItemType.POSITION);
+		    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
+		    newItem.setQuantityUnit(product.getQuantityUnit());
+		    newItem.setDescription(product.getDescription());
+		    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
+		    newItem.setItemVat(product.getVat());
+		    newItem.setPicture(product.getPicture());
+		    newItem.setWeight(product.getWeight());
+	    }
 	    return newItem;
     }
     

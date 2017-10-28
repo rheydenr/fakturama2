@@ -220,7 +220,7 @@ public class OrdersCsvImporter {
 					if(debtorIdentifier.length > 1) {
 						contact = debitorsDAO.findByDebitorNumber(StringUtils.trim(debtorIdentifier[2]));
 						if(contact == null) {
-							result += NL + "no debtor found with Number " + debtorIdentifier[2] + " in line " + csvr.getLinesRead();
+							result += NL + "no debtor found or multiple results found with Number " + debtorIdentifier[2] + " in line " + csvr.getLinesRead();
 							continue; // don't create an order since it's useless without a debtor.
 						}
 					} else {

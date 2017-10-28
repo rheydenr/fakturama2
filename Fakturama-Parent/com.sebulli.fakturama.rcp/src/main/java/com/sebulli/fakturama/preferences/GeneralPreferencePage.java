@@ -44,6 +44,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -73,7 +74,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private PreferencesInDatabase preferencesInDatabase;
 
     private ComboFieldEditor currencyLocaleCombo;
-    private Text example;
+    private Text example, dbConnectionInfo;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
@@ -120,7 +121,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         Label exampleLabel = new Label(getFieldEditorParent(), SWT.NONE);
         exampleLabel.setText(msg.preferencesGeneralCurrencyExample);
         example = new Text(getFieldEditorParent(), SWT.BORDER);
-        example.setEnabled(false);
+        example.setEditable(false);
         example.setText(calculateExampleCurrencyFormatString(
         		super.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE), 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR), 
@@ -154,7 +155,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         
         generalDecimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, msg.preferencesGeneralQuantityDecimalplaces, getFieldEditorParent());
         generalDecimalPlaces.setValidRange(0, 5);     
-        addField(generalDecimalPlaces); 
+        addField(generalDecimalPlaces);
+
+        // Info: DB connection string
+        Label dbConnectionLabel = new Label(getFieldEditorParent(), SWT.NONE);
+        dbConnectionLabel.setText(msg.preferencesGeneralDatabase);
+        dbConnectionInfo = new Text(getFieldEditorParent(), SWT.BORDER);
+        dbConnectionInfo.setEditable(false);
+        dbConnectionInfo.setText(getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL));
+        GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(dbConnectionInfo);
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {

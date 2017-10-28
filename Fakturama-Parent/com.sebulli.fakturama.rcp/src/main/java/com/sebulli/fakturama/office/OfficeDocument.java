@@ -209,7 +209,8 @@ public class OfficeDocument {
 	        Set<String> processedTables = new HashSet<>();
 
 			// Get the items of the UniDataSet document
-			List<DocumentItem> itemDataSets = document.getItems();
+			List<DocumentItem> itemDataSets = document.getItems().stream().sorted((i1, i2) -> {return i1.getPosNr().compareTo(i2.getPosNr());})
+					.collect(Collectors.toList());
 			Set<Node> nodesMarkedForRemoving = new HashSet<>();
 			
 	        for (PlaceholderNode placeholderNode : placeholderNodes) {

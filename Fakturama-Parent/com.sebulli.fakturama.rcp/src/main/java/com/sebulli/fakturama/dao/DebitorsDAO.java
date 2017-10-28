@@ -8,6 +8,8 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -108,8 +110,10 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 		try {
 			result = q.getSingleResult();
-		} catch (Exception e) {
+		} catch (NoResultException e) {
 			// no result means we return a null value
+		} catch (NonUniqueResultException nurex) {
+			// not so good - we prefer to not return any data...
 		}
 		return result;
     }

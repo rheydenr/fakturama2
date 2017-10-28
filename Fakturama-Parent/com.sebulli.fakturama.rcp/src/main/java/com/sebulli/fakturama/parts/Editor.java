@@ -392,7 +392,7 @@ public abstract class Editor<T extends IEntity> {
 	 * @param nr
 	 * @deprecated use {@link NumberGenerator#setNextNumber(String, int, String)}
 	 */
-	protected void setNextNumber(String prefStrNr, int nr) {
+	private void setNextNumber(String prefStrNr, int nr) {
 //		defaultValuePrefs.setValue(prefStrNr, nr);
 
 		// Store the date of now to a property

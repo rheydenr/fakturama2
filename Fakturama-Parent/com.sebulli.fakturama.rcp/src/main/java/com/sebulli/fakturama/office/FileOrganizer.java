@@ -357,6 +357,8 @@ public class FileOrganizer {
 				document.setOdtPath(newFile.toAbsolutePath().toString());
 			}
 			changed = true;
+		} else {
+			log.warn(String.format("File '%s' couldn't be found or exists in target path. Source document is '%s'.", oldFile, document.getName()));
 		}
 
 		return changed;

@@ -713,12 +713,17 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
+			if(dtPaidDate != null && !dtPaidDate.isDisposed()) {
+				bindModelValue(document, dtPaidDate, Document_.payDate.getName());
+			}
 			fillAndBindPaidCombo();
 			
-			// value is set by dueDays variable, not directly by binding
-			bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
-					new UpdateValueStrategy(),
-					new UpdateValueStrategy());
+			if(spDueDays != null && !spDueDays.isDisposed()) {
+				// value is set by dueDays variable, not directly by binding
+				bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
+						new UpdateValueStrategy(),
+						new UpdateValueStrategy());
+			}
 		}
     }
 
@@ -963,7 +968,19 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			else {
 				payment = document.getPayment();
-				shipping = document.getShipping();
+				if(payment == null) {
+					// Default payment
+					int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+	                payment = paymentsDao.findById(paymentId);
+	                document.setPayment(payment);
+				}
+				
+				if (document.getShipping() != null)
+					shipping = document.getShipping();
+				else {
+					shipping = lookupDefaultShippingValue();
+					document.setShipping(shipping);
+				}
 				total = Money.of(document.getTotalValue(), currencyUnit);
 				
 				if(documentType == DocumentType.DUNNING) {
@@ -1474,16 +1491,18 @@ public class DocumentEditor extends Editor<Document> {
 			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
 			GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-					// Calculate the difference between the date of the
-					// issue date widget and the documents date,
-					// calculate is in "days" and set the due day spinner
-					Date calendarIssue = dtIssueDate.getSelection();
-					Date calendarDocument = java.util.Optional.ofNullable(dtDate.getSelection()).orElse(Calendar.getInstance().getTime());
-					long difference = calendarIssue.getTime() - calendarDocument.getTime();
-					// Calculate from milliseconds to days
-					int days = (int) (difference / (1000 * 60 * 60 * 24));
+				// Calculate the difference between the date of the
+				// issue date widget and the documents date,
+				// calculate is in "days" and set the due day spinner
+				Date calendarIssue = dtIssueDate.getSelection();
+				Date calendarDocument = java.util.Optional.ofNullable(dtDate.getSelection()).orElse(Calendar.getInstance().getTime());
+				long difference = calendarIssue.getTime() - calendarDocument.getTime();
+				// Calculate from milliseconds to days
+				int days = (int) (difference / (1000 * 60 * 60 * 24));
 //					duedays = days;
-					spDueDays.setSelection(days);
+				spDueDays.setSelection(days);
+				// spinner doesn't throw an event if updating...
+				document.setDueDays(spDueDays.getSelection());
 			}));
 			if(document.getDueDays() != null && document.getDocumentDate() != null) {
 				dtIssueDate.setSelection(DateUtils.addDays(document.getDocumentDate(), document.getDueDays()));
@@ -1526,9 +1545,6 @@ public class DocumentEditor extends Editor<Document> {
 		dtPaidDate.setFormat(CDT.DATE_MEDIUM);
 		GridDataFactory.swtDefaults().hint(130, SWT.DEFAULT).applyTo(dtPaidDate);
 
-		// Set the paid date to the documents "paydate" parameter
-		bindModelValue(document, dtPaidDate, Document_.payDate.getName());
-
 		// Create the widget for the value
 		Label paidValueLabel = new Label(paidDataContainer, SWT.NONE);
 		
@@ -1538,6 +1554,8 @@ public class DocumentEditor extends Editor<Document> {
 		FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
+		
+		// TODO bind later!
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
 		txtPayValue.getControl().addFocusListener(new FocusAdapter() {
 			@Override

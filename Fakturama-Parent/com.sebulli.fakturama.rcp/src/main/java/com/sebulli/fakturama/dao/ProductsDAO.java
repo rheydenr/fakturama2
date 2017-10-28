@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -97,8 +98,10 @@ public class ProductsDAO extends AbstractDAO<Product> {
         q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 		try {
 			result = q.getSingleResult();
-		} catch (Exception e) {
+		} catch (NoResultException e) {
 			// no result means we return a null value
+		} catch (Exception e) {
+			// multiple results mean we have a problem with numbering of products
 		}
 		return result;
 	}
