@@ -755,6 +755,12 @@
     </linuxDeb>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="24" />
+    <mediaSet refId="45" />
+    <mediaSet refId="53" />
+    <mediaSet refId="59" />
+    <mediaSet refId="119" />
+    <mediaSet refId="120" />
     <mediaSet refId="123" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />

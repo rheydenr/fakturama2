@@ -11,7 +11,7 @@ fi
 
 VERSION=2_0_0-RC6
 # prepare the correct directory structure
-tar -xzvf Fakturama.ID-macosx.cocoa.x86_64.tar.gz
+tar -xzvf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"

@@ -5,6 +5,7 @@ package com.sebulli.fakturama.i18n;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Locale.Builder;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
 
@@ -48,22 +50,33 @@ public class LocaleUtil {
      * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
      * @return a {@link LocaleUtil} instance
      */
-    public static LocaleUtil getInstance(String lang) {
-    	if(lang == null) {
-    		instance = new LocaleUtil("en_US");
-    	}
-        if(instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
-        	/*
-        	 * If a two-letter locale is given try to interpret it (because we need it later for determining currency etc.)
-        	 */
-        	if(lang.length() < 3) {
-        		instance = new LocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
-        	} else {        	
-        		instance = new LocaleUtil(lang);
-        	}
-        }
-        return instance;
-    }
+	public static LocaleUtil getInstance(String lang) {
+		if (lang == null) {
+			instance = new LocaleUtil("en_US");
+		}
+		// We have to track different language settings (e.g., from command line) which
+		// aren't equal to the default locale.
+		if (instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
+			/*
+			 * If a two-letter locale is given try to interpret it (because we need it later
+			 * for determining currency etc.)
+			 */
+			if (lang.length() < 3) {
+				List<Locale> countriesByLanguage = LocaleUtils.countriesByLanguage(lang);
+				// try to get the locale from language, use the first fitting country
+				if (!countriesByLanguage.isEmpty()) {
+					Locale tmpLocale = countriesByLanguage.get(0);
+					instance = new LocaleUtil(String.format("%s_%s", tmpLocale.getCountry(), tmpLocale.getLanguage()));
+				} else {
+					// if none found, try to guess it from country code (very uncertain!)
+					instance = new LocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
+				}
+			} else {
+				instance = new LocaleUtil(lang);
+			}
+		}
+		return instance;
+	}
     
     /**
      * hidden constructor.
