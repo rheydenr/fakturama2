@@ -136,4 +136,16 @@ public class DocumentItemDTO implements IEntity {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Integer getVersion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setVersion(Integer newVersion) {
+		// TODO Auto-generated method stub
+		
+	}
 }
