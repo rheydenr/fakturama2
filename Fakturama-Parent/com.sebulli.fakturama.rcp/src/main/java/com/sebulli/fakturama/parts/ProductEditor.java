@@ -601,7 +601,12 @@ public class ProductEditor extends Editor<Product> {
 
 		// Create a container composite for the scaled price
 		Composite pricetable = new Composite(productDescGroup, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 0).numColumns((scaledPrices > 1) ? (useNet && useGross) ? 4 : 3 : 2).applyTo(pricetable);
+		GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(
+				(scaledPrices > 1) 
+				? (useNet && !useGross) 
+						? 3 
+						: 4 
+				: 3).applyTo(pricetable);
 
 		// If there is a net and gross column, and 2 columns for the quantity
 		// there are 2 cells in the top left corner, that are empty
@@ -660,7 +665,14 @@ public class ProductEditor extends Editor<Product> {
 
 				// Create the gross columns
 				if (useGross) {
+					if(!useNet) {
+						// create hidden net field if no one is given
+						netText[i] = ContextInjectionFactory.make(NetText.class, context);
+						netText[i].getNetText().getControl().setVisible(false);
+						GridDataFactory.swtDefaults().hint(0, SWT.DEFAULT).applyTo(netText[i].getNetText().getControl());
+					}
 					grossText[i] = ContextInjectionFactory.make(GrossText.class, context);
+					grossText[i].setNetText(netText[i]);
 					GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(grossText[i].getGrossText().getControl());
 					if(i == 0 && nextWidget == null) { // only for the first iteration
 						nextWidget = grossText[i].getGrossText().getControl();
@@ -828,7 +840,7 @@ public class ProductEditor extends Editor<Product> {
 			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 8);
 			if (useGross && !useNet) {
 				// TODO check it if it's correct!
-				bindModelValue(editorProduct, grossText[i].getGrossText(), priceBlocks.get(i).getPrice().getName(), 16);
+				bindModelValue(editorProduct, grossText[i].getNetText().getNetText(), priceBlocks.get(i).getPrice().getName(), 16);
 			} else {
 				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 16);
 			}
