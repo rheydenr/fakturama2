@@ -638,13 +638,13 @@ public class ProductEditor extends Editor<Product> {
 				net[i] = (priceObj != null) ? Money.of((Double)priceObj, DataUtils.getInstance().getDefaultCurrencyUnit()) : Money.from(defaultPrice);
 
 				// Create the columns for the quantity
-				labelBlock[i] = new Label(((i < scaledPrices) && (scaledPrices >= 2)) ? pricetable : invisible,
+				labelBlock[i] = new Label(i < scaledPrices && scaledPrices >= 2 ? pricetable : invisible,
 						SWT.NONE);
 				// T: Product Editor - Label Scaled Prices "from" .. Quantity
 				// the price is ..
 				labelBlock[i].setText(msg.editorProductLabelFrom);
 
-				textBlock[i] = new Text(((i < scaledPrices) && (scaledPrices >= 2)) ? pricetable : invisible,
+				textBlock[i] = new Text(i < scaledPrices && scaledPrices >= 2 ? pricetable : invisible,
 						SWT.BORDER | SWT.RIGHT);
 				methodName = String.format("getBlock%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
@@ -839,7 +839,6 @@ public class ProductEditor extends Editor<Product> {
 		for (int i = 0; i < grossText.length; i++) {
 			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 8);
 			if (useGross && !useNet) {
-				// TODO check it if it's correct!
 				bindModelValue(editorProduct, grossText[i].getNetText().getNetText(), priceBlocks.get(i).getPrice().getName(), 16);
 			} else {
 				bindModelValue(editorProduct, netText[i].getNetText(), priceBlocks.get(i).getPrice().getName(), 16);

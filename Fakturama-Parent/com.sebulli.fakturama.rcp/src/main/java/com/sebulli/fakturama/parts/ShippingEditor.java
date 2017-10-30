@@ -23,10 +23,13 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -92,6 +95,9 @@ public class ShippingEditor extends Editor<Shipping> {
     
     @Inject
     private EPartService partService;
+    
+    @Inject
+    protected IEclipseContext context;
 
     // Editor's ID
     public static final String EDITOR_ID = "ShippingEditor";
@@ -118,7 +124,7 @@ public class ShippingEditor extends Editor<Shipping> {
     private boolean useGross;
 
     // These are (non visible) values of the document
-//    private Double net;
+    private MonetaryAmount net;
 //    private Double vat = NumberUtils.DOUBLE_ZERO;
 //    private VAT vat = null;
     private ShippingVatType autoVat = ShippingVatType.SHIPPINGVATGROSS;
@@ -337,14 +343,14 @@ public class ShippingEditor extends Editor<Shipping> {
         // Shipping value
         Label labelValue = new Label(top, SWT.NONE);
         labelValue.setText(msg.commonFieldValue);
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelValue);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(labelValue);
 
         // Variable to store the net value
-//        net = editorShipping.getShippingValue();
+		net = Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
 
         // Create a composite that contains a widget for the net and gross value
         Composite netGrossComposite = new Composite(top, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns((useNet && useGross) ? 2 : 1).applyTo(netGrossComposite);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns((useNet && !useGross) ? 4 : 2).applyTo(netGrossComposite);
 
         // Create a net label
         if (useNet) {
@@ -360,16 +366,25 @@ public class ShippingEditor extends Editor<Shipping> {
             GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(grossValueLabel);
         }
 
+		context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
+		context.set(Constants.CONTEXT_VATVALUE, editorShipping.getShippingVat().getTaxValue());
+		context.set(Constants.CONTEXT_CANVAS, netGrossComposite);
+		context.set(Constants.CONTEXT_NETVALUE, net);
         // Create a net text widget
         if (useNet) {
-            netText = new NetText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), editorShipping.getShippingVat().getTaxValue());
+            netText = ContextInjectionFactory.make(NetText.class, context);
         }
 
         // Create a gross text widget
         if (useGross) {
-            grossText = new GrossText(netGrossComposite, SWT.BORDER | SWT.RIGHT, 
-            		Money.of(editorShipping.getShippingValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), editorShipping.getShippingVat().getTaxValue());
+			if(!useNet) {
+				// create hidden net field if no one is given
+				netText = ContextInjectionFactory.make(NetText.class, context);
+				netText.getNetText().getControl().setVisible(false);
+				GridDataFactory.swtDefaults().hint(0, SWT.DEFAULT).applyTo(netText.getNetText().getControl());
+			}
+			grossText = ContextInjectionFactory.make(GrossText.class, context);
+			grossText.setNetText(netText);
         }
 
         // If net and gross were created, link both together
@@ -381,11 +396,11 @@ public class ShippingEditor extends Editor<Shipping> {
 
         // Apply the gross text widget
         if (useGross) {
-            GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(grossText.getGrossText().getControl());
+            GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).align(SWT.CENTER, SWT.TOP).applyTo(grossText.getGrossText().getControl());
         }
         // Apply the net text widget
         if (useNet) {
-            GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(netText.getNetText().getControl());
+            GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).align(SWT.CENTER, SWT.TOP).applyTo(netText.getNetText().getControl());
         }
         
         // VAT Label
@@ -609,7 +624,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // a constant VAT factor
         case SHIPPINGVATFIX:
             comboVat.setVisible(true);
-            if (netText != null) {
+            if (useNet && netText != null) {
                 netText.setVisible(true);
                 netText.setVatValue(editorShipping.getShippingVat().getTaxValue());
             }

@@ -68,7 +68,9 @@ public class GrossText {
 			formatter = new MoneyFormatter(null);
 		}
 		this.grossText.setFormatter(formatter);
-		grossText.setValue(netValue.multiply(1 + vat));
+		if(netValue != null) {
+			grossText.setValue(netValue.multiply(1 + vat));
+		}
 
 		// Set the text of the GrossText, based on the NetText's value.
 		// Do this, if the text widget is selected (If "ENTER" is pressed).
