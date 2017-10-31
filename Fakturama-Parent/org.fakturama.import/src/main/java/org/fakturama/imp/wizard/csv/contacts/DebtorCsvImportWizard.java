@@ -9,6 +9,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IImportWizard;
 
@@ -35,11 +36,13 @@ public class DebtorCsvImportWizard extends ContactsCsvImportWizard implements II
 	}
 	
 	@Override
-	protected boolean doImport(final String fileName, boolean updateExisting, boolean importEmptyValues) {
+	protected boolean doImport(final String fileName, ImportOptions options) {
 		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
 		ctx.set(ContactUtil.class, contactUtil);
 		ContactsCsvImporter csvImporter = ContextInjectionFactory.make(ContactsCsvImporter.class, ctx);
-		csvImporter.importCSV(fileName, FakturamaModelPackage.DEBITOR_CLASSIFIER_ID, updateExisting, importEmptyValues);
+		csvImporter.setQuoteChar(options.getQuoteChar().charAt(0));
+		csvImporter.setSeparator(options.getSeparator().charAt(0));
+		csvImporter.importCSV(fileName, FakturamaModelPackage.DEBITOR_CLASSIFIER_ID, options.getUpdateExisting(), options.getUpdateWithEmptyValues());
 
 		ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 		dialog.setStatusText(csvImporter.getResult());

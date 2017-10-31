@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.wizards.IFakturamaWizardService;
 
@@ -55,6 +56,7 @@ public class ImportOptionPage extends WizardPage {
 	private Button buttonUpdateExisting;
 	private Button buttonUpdateWithEmptyValues;
 	private Image previewImage = null;
+	private Text quoteChar, separator;
 	
 	/**
 	 * Constructor Create the page and set title and message.
@@ -78,7 +80,7 @@ public class ImportOptionPage extends WizardPage {
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(WIZARD_TITLE));
-		setMessage((String) ctx.get(WIZARD_DESCRIPTION));
+//		setMessage((String) ctx.get(WIZARD_DESCRIPTION));
 		this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
 	}
 
@@ -93,7 +95,7 @@ public class ImportOptionPage extends WizardPage {
 
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(top);
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(top);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
 		setControl(top);
 
@@ -101,7 +103,7 @@ public class ImportOptionPage extends WizardPage {
 		if (previewImage != null) {
 			Label preview = new Label(top, SWT.BORDER);
 			preview.setText(importMessages.wizardCommonPreviewLabel);
-			GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
+			GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
 			try {
 				preview.setImage(previewImage);
 			}
@@ -115,13 +117,28 @@ public class ImportOptionPage extends WizardPage {
 		
 		//T: Import Wizard Page 1 - Long description.
 		labelDescription.setText(importMessages.wizardImportOptionsSet);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+		GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
 
 		buttonUpdateExisting = new Button (top, SWT.CHECK);
 		buttonUpdateExisting.setText(importMessages.wizardImportOptionsUpdate);
+		GridDataFactory.swtDefaults().span(2, 1).applyTo(buttonUpdateExisting);
 
 		buttonUpdateWithEmptyValues = new Button (top, SWT.CHECK);
 		buttonUpdateWithEmptyValues.setText(importMessages.wizardImportOptionsEmptyupdate);
+		GridDataFactory.swtDefaults().span(2, 1).applyTo(buttonUpdateWithEmptyValues);
+		
+		Label quoteCharLbl = new Label(top, SWT.NONE);
+		quoteCharLbl.setText(importMessages.wizardImportOptionsQuotechar);
+		GridDataFactory.swtDefaults().hint(190, SWT.DEFAULT).grab(false, false).applyTo(quoteCharLbl);
+		
+		quoteChar = new Text(top, SWT.BORDER);
+		quoteChar.setText("\"");
+		GridDataFactory.swtDefaults().hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
+		Label separatorLbl = new Label(top, SWT.NONE);
+		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
+		separator = new Text(top, SWT.BORDER);
+		separator.setText(";");
+		GridDataFactory.swtDefaults().hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
 	}
 
 	/**
@@ -142,5 +159,42 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	public boolean getUpdateWithEmptyValues() {
 		return buttonUpdateWithEmptyValues.getSelection();
+	}
+
+	/**
+	 * @return the quoteChar
+	 */
+	public String getQuoteChar() {
+		return quoteChar.getText();
+	}
+
+	/**
+	 * @param quoteChar the quoteChar to set
+	 */
+	public void setQuoteChar(String quoteChar) {
+		this.quoteChar.setText(quoteChar);
+	}
+
+	/**
+	 * @return the separator
+	 */
+	public String getSeparator() {
+		return separator.getText();
+	}
+
+	/**
+	 * @param separator the separator to set
+	 */
+	public void setSeparator(String separator) {
+		this.separator.setText(separator);
+	}
+	
+	public ImportOptions getImportOptions() {
+		return ImportOptions.importOptions()
+			.withQuoteChar(getQuoteChar())
+			.withSeparator(getSeparator())
+			.withUpdateExisting(getUpdateExisting())
+			.withUpdateWithEmptyValues(getUpdateWithEmptyValues())
+			.build();
 	}
 }

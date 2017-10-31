@@ -65,6 +65,8 @@ public class ExportWizardUnpaid extends Wizard implements IExportWizard {
 	@Override
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
+		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, null);
+
 		ctx.set(IFakturamaWizardService.WIZARD_TITLE, exportMessages.wizardExportSalesUnpaidTitle);
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportSalesUnpaidLongdescription);
 		ctx.set(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD, Boolean.TRUE);

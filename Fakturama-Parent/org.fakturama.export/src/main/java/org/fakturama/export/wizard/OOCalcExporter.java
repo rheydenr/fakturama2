@@ -14,6 +14,7 @@
 
 package org.fakturama.export.wizard;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -402,6 +403,11 @@ public class OOCalcExporter {
 	protected void setCellValueAsBoolean( int row, int column, Boolean b) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setBooleanValue(BooleanUtils.isTrue(b));
+	}
+	
+	protected void setCellValueAsDate( int row, int column, Calendar c) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		cell.setDateValue(c);
 	}
 	
 	/**

@@ -46,5 +46,7 @@ public class ImportMessages {
 	public String wizardImportOptionsEmptyupdate;
 	public String wizardImportOptionsSet;
 	public String wizardImportOptionsUpdate;
+	public String wizardImportOptionsQuotechar;
+	public String wizardImportOptionsSeparator;
 	public String wizardImportProgressinfo;
 }

@@ -73,7 +73,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		//T: Title of the Accounts Export Wizard Page 1
 		setTitle(title);
 		//T: Text of the Accounts Export Wizard Page 1
-		setMessage(exportMessages.wizardExportDateselectTitle);
+//		setMessage(exportMessages.wizardExportDateselectTitle);
 		this.label = label;
 		this.doNotUseTimePeriod = doNotUseTimePeriod;
 	}
@@ -93,7 +93,6 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
-		setMessage(exportMessages.wizardExportDateselectTitle);
 		this.label = (String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION);
 		this.doNotUseTimePeriod = (Boolean) ctx.get(WIZARD_DATESELECT_DONTUSETIMEPERIOD);
 		this.singlePage = Optional.ofNullable((Boolean)ctx.get(WIZARD_SINGLEPAGE)).orElse(Boolean.FALSE);

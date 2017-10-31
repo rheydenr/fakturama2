@@ -75,6 +75,7 @@ public class AccountsExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
 		setWindowTitle(msg.pageExport);
+		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, null);
 
 		ctx.set(IFakturamaWizardService.WIZARD_TITLE, exportMessages.wizardExportAccountsTableTitle);
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportAccountsTableDescription);

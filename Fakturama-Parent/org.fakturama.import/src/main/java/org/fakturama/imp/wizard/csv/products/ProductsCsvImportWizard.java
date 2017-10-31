@@ -112,6 +112,8 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
 			if (!selectedFile.isEmpty()) {
 
 				ProductsCsvImporter csvImporter = ContextInjectionFactory.make(ProductsCsvImporter.class, ctx);
+//				csvImporter.setQuoteChar(options.getQuoteChar().charAt(0));
+//				csvImporter.setSeparator(options.getSeparator().charAt(0));
 				csvImporter.importCSV(selectedFile, false,optionPage.getUpdateExisting(), optionPage.getUpdateWithEmptyValues());
 
 				ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);

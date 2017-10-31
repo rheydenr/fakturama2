@@ -16,6 +16,7 @@ package org.fakturama.export.wizard.contacts;
 
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -75,7 +76,8 @@ public class AddressListExport extends OOCalcExporter {
 		String deliveryAddress = " ("+msg.commonFieldDeliveryaddress+")";
 
 		//T: Used as heading of a table. Keep the word short.
-		setCellTextInBold(row, col++, "ID");
+//		setCellTextInBold(row, col++, "ID");
+		setCellTextInBold(row, col++, msg.editorContactFieldNumberName);
 		setCellTextInBold(row, col++, "TYPE");
 		setCellTextInBold(row, col++, msg.commonFieldCategory);
 		setCellTextInBold(row, col++, msg.commonFieldGender);
@@ -102,7 +104,6 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.editorContactFieldBankName);
 		setCellTextInBold(row, col++, msg.exporterDataIban);
 		setCellTextInBold(row, col++, msg.exporterDataBic);
-		setCellTextInBold(row, col++, msg.editorContactFieldNumberName);
 		setCellTextInBold(row, col++, msg.editorContactLabelNotice);
 		setCellTextInBold(row, col++, msg.commonFieldDate);
 		setCellTextInBold(row, col++, msg.editorContactFieldPaymentName);
@@ -118,8 +119,8 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.editorContactFieldBirthdayName);
 		
 		// Draw a horizontal line
-		for (col = 0; col < 39; col++) {
-			setBorder(row, col, Color.BLACK, false, false, true, false);
+		for (int c = 0; c < col; c++) {
+			setBorder(row, c, Color.BLACK, false, false, true, false);
 		}
 		row++;
 		
@@ -182,7 +183,6 @@ public class AddressListExport extends OOCalcExporter {
 				col += 6;
 			}
 			
-			setCellText(row, col++, contact.getCustomerNumber());
 			setCellText(row, col++, contact.getNote());
 			setCellText(row, col++, DateFormat.getDateInstance().format(contact.getDateAdded()));
 			
@@ -207,7 +207,11 @@ public class AddressListExport extends OOCalcExporter {
 			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
 			setCellValueAsPercent(row, col++, contact.getDiscount());
 			if(contact.getBirthday() != null) {
-				setCellText(row, col++, contact.getBirthday().toString());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(contact.getBirthday());
+				setCellValueAsDate(row, col++, cal);
+			} else {
+				col++;
 			} 
 
 			// Alternate the background color

@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
+import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -108,12 +109,12 @@ public abstract class ContactsCsvImportWizard extends Wizard {
 
 			// Import the selected file
 			if (!selectedFile.isEmpty()) {
-				return doImport(selectedFile, optionPage.getUpdateExisting(), optionPage.getUpdateWithEmptyValues());
+				return doImport(selectedFile, optionPage.getImportOptions());
 			}
 		}
 		return false;
 	}
 
-	protected abstract boolean doImport(final String fileName, boolean updateExisting, boolean importEmptyValues);
+	protected abstract boolean doImport(final String fileName, ImportOptions options);
 
 }

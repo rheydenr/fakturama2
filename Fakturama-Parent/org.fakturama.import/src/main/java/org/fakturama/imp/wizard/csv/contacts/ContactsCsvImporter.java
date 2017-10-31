@@ -79,6 +79,7 @@ public class ContactsCsvImporter {
     @Inject
     private PaymentsDAO paymentsDAO;
 
+    private char quoteChar, separator;
     
 	/**
 	 * the model factory
@@ -143,7 +144,7 @@ public class ContactsCsvImporter {
 		// Open the existing file
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
 			 BufferedReader in = new BufferedReader(isr);
-			 CSVReader csvr = new CSVReader(in, ';');	) {
+			 CSVReader csvr = new CSVReader(in, separator, quoteChar);) {
 			
 			// Read next CSV line
 			columns = csvr.readNext();
@@ -317,6 +318,22 @@ public class ContactsCsvImporter {
 
 	public String getResult() {
 		return result;
+	}
+
+
+	/**
+	 * @param quoteChar the quoteChar to set
+	 */
+	public final void setQuoteChar(char quoteChar) {
+		this.quoteChar = quoteChar;
+	}
+
+
+	/**
+	 * @param separator the separator to set
+	 */
+	public final void setSeparator(char separator) {
+		this.separator = separator;
 	}
 
 }
