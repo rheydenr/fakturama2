@@ -169,6 +169,7 @@ public class Messages {
 	public String dataReceiptvoucherItems;
 	public String dataVatPurchasetax;
 	public String dataVatSalestax;
+	public String dataTaxSalesequalizationtax;
 	public String dialogAboutTitle;
 	public String dialogCustomerStatisticsPart1;
 	public String dialogDeletedatasetMessage;
@@ -633,6 +634,7 @@ public class Messages {
 	public String preferencesDocumentUsediscountsingle;
 	public String preferencesDocumentUsenetgross;
 	public String preferencesDocumentUsepos;
+	public String preferencesDocumentUsesalesequalizationtax;
 	public String preferencesDocumentUsevestingperiod;
 	public String preferencesDocumentUsevestingperiodNone;
 	public String preferencesDocumentUsevestingperiodOnlystart;

@@ -536,5 +536,7 @@ public class Constants {
 
 	public static final String TAX_DEFAULT_CODE = "VAT";
 
+	public static final String PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX = "PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX";
+
 
 }

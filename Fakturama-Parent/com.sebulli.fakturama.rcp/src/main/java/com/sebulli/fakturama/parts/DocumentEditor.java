@@ -240,7 +240,9 @@ public class DocumentEditor extends Editor<Document> {
 	private FormattedText itemsSum;
 	private FormattedText itemsDiscount;
 	private ComboViewer comboViewerShipping;
+	private ComboViewer comboViewerSalesEqualizationTax;
 	private FormattedText shippingValue;
+	private FormattedText salesEqualizationTaxValue;
 	//private Text depositValue;
 	private FormattedText vatValue;
 	private FormattedText totalValue;
@@ -711,6 +713,9 @@ public class DocumentEditor extends Editor<Document> {
 		if(comboViewerShipping != null) {
 			fillAndBindShippingCombo();
 		}
+		if(comboViewerSalesEqualizationTax != null) {
+			fillAndBindSalesEqualizationTaxCombo();
+		}
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
 			if(dtPaidDate != null && !dtPaidDate.isDisposed()) {
@@ -726,6 +731,57 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
     }
+
+	private void fillAndBindSalesEqualizationTaxCombo() {
+//		Shipping tmpShipping = document.getAdditionalInfo().;
+		comboViewerSalesEqualizationTax.setContentProvider(new EntityComboProvider());
+		comboViewerSalesEqualizationTax.setLabelProvider(new EntityLabelProvider());
+		comboViewerSalesEqualizationTax.addSelectionChangedListener(new ISelectionChangedListener() {
+           
+        	// If a new shipping is selected, recalculate the total
+        	// sum and update the shipping VAT.
+        	public void selectionChanged(SelectionChangedEvent event) {
+        		// Get the selected element.
+        		ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		if (!structuredSelection.isEmpty()) {
+        			// Get first selected element.
+        			VAT firstElement = (VAT) structuredSelection.getFirstElement();
+//        			clearManualShipping(document);
+//        			document.setShipping(shipping);
+
+        			// Update the shipping VAT
+//						shippingVat = shipping.getShippingVat();
+//						shippingVatDescription = shippingVat.getDescription();
+//						shippingAutoVat = shipping.getAutoVat();
+//        			calculate();
+        		}
+        	}
+//
+//			private void clearManualShipping(Document document) {
+//				document.getAdditionalInfo().setShippingAutoVat(null);
+//				document.getAdditionalInfo().setShippingDescription(null);
+//				document.getAdditionalInfo().setShippingName(null);
+//				document.getAdditionalInfo().setShippingValue(null);
+//				document.getAdditionalInfo().setShippingVatDescription(null);
+//				document.getAdditionalInfo().setShippingVatValue(null);
+//			}
+        });
+
+        // Fill the shipping combo with the shipping values.
+        List<VAT> allSalesEqualizationTaxes = vatDao.findAll();
+        comboViewerSalesEqualizationTax.setInput(allSalesEqualizationTaxes);
+//        document.setShipping(tmpShipping);
+        
+        // Get the documents'shipping values.
+        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
+        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
+        
+        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
+        target2ShippingModel.setConverter(new StringToEntityConverter<VAT>(allSalesEqualizationTaxes, VAT.class, true));
+//        // Set the combo
+//        bindModelValue(document, comboViewerSalesEqualizationTax.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
+	}
 
 	private void fillAndBindPaidCombo() {
 		Payment tmpPayment = document.getPayment();
@@ -2496,62 +2552,7 @@ public class DocumentEditor extends Editor<Document> {
             	});
             }
         
-            // Shipping composite contains label and combo.
-            Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
-            GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(shippingComposite);
-            GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(shippingComposite);
-    
-            // Shipping label
-            Label shippingLabel = new Label(shippingComposite, SWT.NONE);
-            //T: Document Editor - Label shipping 
-            shippingLabel.setText(msg.editorDocumentFieldShipping);
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
-            shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
-    
-            // Shipping combo
-            comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
-            comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-            GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.BEGINNING, SWT.CENTER).applyTo(comboViewerShipping.getCombo());
-    
-            // Shipping value field
-            shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
-            shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
-            shippingValue.setFormatter(new MoneyFormatter());
-            shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
-            
-            // since the shipping value can be changed also by comboNetGross we have to store
-            // the shipping value "manually"
-//            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
-            GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
-    
-            // Recalculate, if the discount field looses the focus.
-            /*
-             * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
-             * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
-             */
-            Listener[] originFocusOutListener = shippingValue.getControl().getListeners(SWT.FocusOut);
-            for (Listener listener2 : originFocusOutListener) {
-            	shippingValue.getControl().removeListener(SWT.FocusOut, listener2);
-			}
-            shippingValue.getControl().addFocusListener(new FocusAdapter() {
-    
-            	public void focusLost(FocusEvent e) {
-            		changeShippingValue();
-            	}
-            });
-            for (Listener listener : originFocusOutListener) {
-            	shippingValue.getControl().addListener(SWT.FocusOut, listener);
-			}
-    
-            // Recalculate, if the shipping is modified
-            shippingValue.getControl().addKeyListener(new KeyAdapter() {
-            	public void keyPressed(KeyEvent e) {
-            		if (e.keyCode == SWT.KEYPAD_CR || e.keyCode == 13) {
-            			changeShippingValue();
-            			shippingValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
-            		}
-            	}
-            });
+            createShippingInfoFields(totalComposite);
     
             // VAT label
             Label vatLabel = new Label(totalComposite, SWT.NONE);
@@ -2566,6 +2567,11 @@ public class DocumentEditor extends Editor<Document> {
     //			vatValue.setText("---");
 // TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
+            
+            // sales equalization tax
+            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX)) {
+            	createSalesequalizationtaxFields(totalComposite);
+            }
         }
 
         // Total label
@@ -2580,6 +2586,120 @@ public class DocumentEditor extends Editor<Document> {
         totalValue.getControl().setEditable(false);
         GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(totalValue.getControl());
     }
+
+	private void createShippingInfoFields(Composite totalComposite) {
+        // Shipping composite contains label and combo.
+        Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(shippingComposite);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(shippingComposite);
+
+		// Shipping label
+		Label shippingLabel = new Label(shippingComposite, SWT.NONE);
+		//T: Document Editor - Label shipping 
+		shippingLabel.setText(msg.editorDocumentFieldShipping);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
+		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+   
+		// Shipping combo
+		comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
+		comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboViewerShipping.getCombo());
+   
+		// Shipping value field
+		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
+		shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
+		shippingValue.setFormatter(new MoneyFormatter());
+		shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
+		
+		// since the shipping value can be changed also by comboNetGross we have to store
+		// the shipping value "manually"
+//            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
+		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
+   
+		// Recalculate, if the discount field looses the focus.
+		/*
+		 * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
+		 * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
+		 */
+		Listener[] originFocusOutListener = shippingValue.getControl().getListeners(SWT.FocusOut);
+		for (Listener listener2 : originFocusOutListener) {
+			shippingValue.getControl().removeListener(SWT.FocusOut, listener2);
+		}
+		shippingValue.getControl().addFocusListener(new FocusAdapter() {
+   
+			public void focusLost(FocusEvent e) {
+				changeShippingValue();
+			}
+		});
+		for (Listener listener : originFocusOutListener) {
+			shippingValue.getControl().addListener(SWT.FocusOut, listener);
+		}
+   
+		// Recalculate, if the shipping is modified
+		shippingValue.getControl().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.KEYPAD_CR || e.keyCode == 13) {
+					changeShippingValue();
+					shippingValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
+				}
+			}
+		});
+	}
+	
+	private void createSalesequalizationtaxFields(Composite totalComposite) {
+        // Sales equalization tax composite contains label and combo.
+        Composite salesEqualizationTaxComposite = new Composite(totalComposite, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(salesEqualizationTaxComposite);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(salesEqualizationTaxComposite);
+
+        // Sales equalization tax  label
+		Label salesEqualizationTaxLabel = new Label(salesEqualizationTaxComposite, SWT.NONE);
+		//T: Document Editor - Label shipping 
+		salesEqualizationTaxLabel.setText(msg.dataTaxSalesequalizationtax);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(salesEqualizationTaxLabel);
+//		salesEqualizationTaxLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		
+		// Sales equalization tax  combo
+		comboViewerSalesEqualizationTax = new ComboViewer(salesEqualizationTaxComposite, SWT.BORDER | SWT.READ_ONLY);
+//		comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboViewerSalesEqualizationTax.getCombo());
+		
+		// Sales equalization tax  value field
+		salesEqualizationTaxValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
+//		salesEqualizationTaxValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
+		salesEqualizationTaxValue.setFormatter(new MoneyFormatter());
+		salesEqualizationTaxValue.getControl().setToolTipText(salesEqualizationTaxLabel.getToolTipText());
+		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(salesEqualizationTaxValue.getControl());
+//		
+//		// Recalculate, if the discount field looses the focus.
+//		/*
+//		 * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
+//		 * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
+//		 */
+//		Listener[] originFocusOutListener = shippingValue.getControl().getListeners(SWT.FocusOut);
+//		for (Listener listener2 : originFocusOutListener) {
+//			shippingValue.getControl().removeListener(SWT.FocusOut, listener2);
+//		}
+//		shippingValue.getControl().addFocusListener(new FocusAdapter() {
+//			
+//			public void focusLost(FocusEvent e) {
+//				changeShippingValue();
+//			}
+//		});
+//		for (Listener listener : originFocusOutListener) {
+//			shippingValue.getControl().addListener(SWT.FocusOut, listener);
+//		}
+//		
+//		// Recalculate, if the shipping is modified
+//		shippingValue.getControl().addKeyListener(new KeyAdapter() {
+//			public void keyPressed(KeyEvent e) {
+//				if (e.keyCode == SWT.KEYPAD_CR || e.keyCode == 13) {
+//					changeShippingValue();
+//					shippingValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
+//				}
+//			}
+//		});
+	}
 
     /**
      * 
