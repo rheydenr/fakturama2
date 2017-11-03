@@ -107,7 +107,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 			 }, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow, getFieldEditorParent()));
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, msg.preferencesDocumentUsesalesequalizationtax, getFieldEditorParent()));
+//		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, msg.preferencesDocumentUsesalesequalizationtax, getFieldEditorParent()));
 	}
 
     /* (non-Javadoc)
@@ -133,7 +133,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, write);
-		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, write);
+//		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, write);
@@ -167,7 +167,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, "0");
-		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, false);
+//		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true);

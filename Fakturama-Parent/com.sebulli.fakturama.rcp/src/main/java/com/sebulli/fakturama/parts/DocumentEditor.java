@@ -2569,9 +2569,9 @@ public class DocumentEditor extends Editor<Document> {
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
             
             // sales equalization tax
-            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX)) {
-            	createSalesequalizationtaxFields(totalComposite);
-            }
+//            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX)) {
+//            	createSalesequalizationtaxFields(totalComposite);
+//            }
         }
 
         // Total label
