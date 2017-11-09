@@ -29,6 +29,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -66,6 +67,9 @@ public class VatEditor extends Editor<VAT> {
 
     @Inject
     protected VatCategoriesDAO vatCategoriesDAO;
+    
+    @Inject
+    private IPreferenceStore preferences;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.vatEditor";
@@ -76,7 +80,7 @@ public class VatEditor extends Editor<VAT> {
     private Composite top;
     private Text textName;
     private Text textDescription;
-    private FormattedText textValue;
+    private FormattedText textValue, textSalesEqTax;
     private Combo comboCategory;
 
     // defines if the vat is just created
@@ -266,6 +270,18 @@ public class VatEditor extends Editor<VAT> {
         textValue.getControl().setLayoutData(data);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textValue.getControl());
 
+        if(preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+	        // sales equalization tax
+	        Label salesEqTaxValue = new Label(top, SWT.NONE);
+	        salesEqTaxValue.setText(msg.dataTaxSalesequalizationtax);
+	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(salesEqTaxValue);
+	
+	        textSalesEqTax = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
+	        textSalesEqTax.setFormatter(new PercentFormatter());
+	        textSalesEqTax.getControl().setLayoutData(data);
+	        GridDataFactory.fillDefaults().grab(true, false).applyTo(textSalesEqTax.getControl());
+        }
+        
         // Create the composite to make this VAT to the standard VAT. 
         Label labelStdVat = new Label(top, SWT.NONE);
         labelStdVat.setText(msg.commonLabelDefault);
@@ -299,6 +315,9 @@ public class VatEditor extends Editor<VAT> {
         fillAndBindCategoryCombo();
         bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
         bindModelValue(editorVat, textValue, VAT_.taxValue.getName(), 16);
+        if(textSalesEqTax != null) {
+        	bindModelValue(editorVat, textSalesEqTax, VAT_.salesEqualizationTax.getName(), 16);
+        }
     }
 
     /**

@@ -267,14 +267,14 @@ public class DocumentEditor extends Editor<Document> {
 	private String noVatName;
 //	private String noVatDescription;
 	private Payment payment;
-//	private MonetaryAmount paidValue = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
+//	private MonetaryAmount paidValue = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private int shippingId;
 	private Shipping shipping = null;
 //	private VAT shippingVat = null;
 //	private String shippingVatDescription = "";
 //	private ShippingVatType shippingAutoVat = ShippingVatType.SHIPPINGVATGROSS;
-	private MonetaryAmount total = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
-	private MonetaryAmount deposit = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
+	private MonetaryAmount total =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
+	private MonetaryAmount deposit =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private MonetaryAmount finalPayment = FastMoney.MIN_VALUE;
 	private int dunningLevel = Integer.valueOf(0);
 //	private int duedays;
@@ -525,7 +525,7 @@ public class DocumentEditor extends Editor<Document> {
 //                document.setPaid(Boolean.TRUE);
                 //				document.setPayDate(dtPaidDate.getSelection());   // done by databinding
                 //				document.setPaidValue(paidValue.getNumber().doubleValue());   // done by databinding
-                deposit = Money.of(Double.valueOf(0.0), currencyUnit);
+                deposit =  Money.zero(currencyUnit);
 				// check if the paid value is only a deposit or the whole invoice amount
 				// not: a discount could decrease the invoice amount!
 				
@@ -533,6 +533,7 @@ public class DocumentEditor extends Editor<Document> {
                     deposit = Money.of(document.getPaidValue(), currencyUnit);
                     document.setDeposit(Boolean.TRUE);
                     document.setPaid(Boolean.FALSE);
+                    bPaid.setGrayed(true);
                 } else {
             		// set the deposit flag
            			document.setDeposit(Boolean.FALSE);
@@ -718,6 +719,10 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
+			if(isInvoiceDeposited()) {
+				bPaid.setSelection(true);
+				bPaid.setGrayed(true);
+			}
 			if(dtPaidDate != null && !dtPaidDate.isDisposed()) {
 				bindModelValue(document, dtPaidDate, Document_.payDate.getName());
 			}
@@ -1084,7 +1089,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
 		
-//		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) : Money.of(Double.valueOf(0.0), currencyUnit);
+//		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) :  Money.zero(currencyUnit);
 		if (dunningLevel <= 0) {
             if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1478,7 +1483,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Create the new paid container
 		paidDataContainer = new Composite(paidContainer, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(6).applyTo(paidDataContainer);
+		GridLayoutFactory.swtDefaults().margins(0, 5).numColumns(6).applyTo(paidDataContainer);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BOTTOM).applyTo(paidDataContainer);
 
 		// Should this container have the widgets for the state "paid" ?
@@ -1486,7 +1491,7 @@ public class DocumentEditor extends Editor<Document> {
 			createDepositContainer(clickedByUser);
 		} else if (isDeposit) {
 			createDepositContainer(clickedByUser);
-			
+//			bPaid.setGrayed(true);
 			createDepositWarningIcon();
 		}
 		// The container is created with the widgets that are shown
@@ -1494,7 +1499,7 @@ public class DocumentEditor extends Editor<Document> {
 		else {
 
 			// Reset the paid value to 0
-//			paidValue = Money.of(Double.valueOf(0.0), currencyUnit);
+//			paidValue =  Money.zero(currencyUnit);
 		    document.setPaidValue(Double.valueOf(0.0));
 
 			// Create the due days label
@@ -1576,12 +1581,17 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 */
 	private void createDepositWarningIcon() {
-		if(!paidDataContainer.isDisposed() && (warningDepositIcon == null || warningDepositIcon.getImage() == null)) { // if the editor is about to close...
-			// Add the attention sign if its a deposit
-			warningDepositIcon = new Label(paidDataContainer, SWT.NONE);
-			warningDepositIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
-			warningDepositText = new Label(paidDataContainer, SWT.NONE);
-			warningDepositText.setText(msg.editorDocumentFieldDeposit);
+		if(!paidDataContainer.isDisposed()) {
+			if (warningDepositIcon == null || warningDepositIcon.isDisposed() || warningDepositIcon.getImage() == null) { // if the editor is about to close...
+				// Add the attention sign if its a deposit
+				warningDepositIcon = new Label(paidDataContainer, SWT.NONE);
+				warningDepositIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
+				warningDepositText = new Label(paidDataContainer, SWT.NONE);
+				warningDepositText.setText(msg.editorDocumentFieldDeposit);
+			} else {
+				warningDepositText.setVisible(true);
+				warningDepositIcon.setVisible(true);
+			}
 		}
 	}
 
@@ -1607,7 +1617,7 @@ public class DocumentEditor extends Editor<Document> {
 		paidValueLabel.setText(msg.commonFieldValue);
 		paidValueLabel.setToolTipText(msg.editorDocumentPaidvalue);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidValueLabel);
-		FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
+		final FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 		txtPayValue.setFormatter(new MoneyFormatter());
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		
@@ -1622,12 +1632,23 @@ public class DocumentEditor extends Editor<Document> {
 					paidContainer.layout();
 					paidContainer.pack();
 				} else {
-					warningDepositIcon.setVisible(false);
-					warningDepositText.setVisible(false);
-					bPaid.setSelection(true);   // has no effect :-(
+					if(!warningDepositIcon.isDisposed()) {
+						warningDepositIcon.setVisible(false);
+						warningDepositText.setVisible(false);
+					}
+					bPaid.setSelection(true);
 				}
+				bPaid.setGrayed(isInvoiceDeposited());
 			}
 		});
+		
+		txtPayValue.getControl().addKeyListener(new KeyAdapter() {
+    		public void keyPressed(KeyEvent e) {
+    			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+    				txtPayValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
+    			}
+    		}
+    	});
 		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
 
 		// If it's the first time that this document is marked as paid
@@ -1638,6 +1659,9 @@ public class DocumentEditor extends Editor<Document> {
 			
 			// FIXME This is only because the CDateTime widget doesn't fire an event on setSelection
 			document.setPayDate(dtPaidDate.getSelection());
+		}
+		if(document.getPayDate() != null) {
+			dtPaidDate.setSelection(document.getPayDate());
 		}
 	}
 	
@@ -2460,8 +2484,8 @@ public class DocumentEditor extends Editor<Document> {
         bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
         if (BooleanUtils.toBoolean(document.getDeposit())) {
         	// deposit means that not the whole amount is paid
+//        	bPaid.setSelection(true);
         	bPaid.setGrayed(true);
-        	bPaid.setSelection(true);
         	deposit = Money.of(document.getPaidValue(), currencyUnit);
         }
         
@@ -2567,11 +2591,6 @@ public class DocumentEditor extends Editor<Document> {
     //			vatValue.setText("---");
 // TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
-            
-            // sales equalization tax
-            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX)) {
-            	createSalesequalizationtaxFields(totalComposite);
-            }
         }
 
         // Total label
@@ -2644,61 +2663,6 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			}
 		});
-	}
-	
-	private void createSalesequalizationtaxFields(Composite totalComposite) {
-        // Sales equalization tax composite contains label and combo.
-        Composite salesEqualizationTaxComposite = new Composite(totalComposite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(salesEqualizationTaxComposite);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(salesEqualizationTaxComposite);
-
-        // Sales equalization tax  label
-		Label salesEqualizationTaxLabel = new Label(salesEqualizationTaxComposite, SWT.NONE);
-		//T: Document Editor - Label shipping 
-		salesEqualizationTaxLabel.setText(msg.dataTaxSalesequalizationtax);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(salesEqualizationTaxLabel);
-//		salesEqualizationTaxLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		
-		// Sales equalization tax  combo
-		comboViewerSalesEqualizationTax = new ComboViewer(salesEqualizationTaxComposite, SWT.BORDER | SWT.READ_ONLY);
-//		comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboViewerSalesEqualizationTax.getCombo());
-		
-		// Sales equalization tax  value field
-		salesEqualizationTaxValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
-//		salesEqualizationTaxValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
-		salesEqualizationTaxValue.setFormatter(new MoneyFormatter());
-		salesEqualizationTaxValue.getControl().setToolTipText(salesEqualizationTaxLabel.getToolTipText());
-		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(salesEqualizationTaxValue.getControl());
-//		
-//		// Recalculate, if the discount field looses the focus.
-//		/*
-//		 * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
-//		 * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
-//		 */
-//		Listener[] originFocusOutListener = shippingValue.getControl().getListeners(SWT.FocusOut);
-//		for (Listener listener2 : originFocusOutListener) {
-//			shippingValue.getControl().removeListener(SWT.FocusOut, listener2);
-//		}
-//		shippingValue.getControl().addFocusListener(new FocusAdapter() {
-//			
-//			public void focusLost(FocusEvent e) {
-//				changeShippingValue();
-//			}
-//		});
-//		for (Listener listener : originFocusOutListener) {
-//			shippingValue.getControl().addListener(SWT.FocusOut, listener);
-//		}
-//		
-//		// Recalculate, if the shipping is modified
-//		shippingValue.getControl().addKeyListener(new KeyAdapter() {
-//			public void keyPressed(KeyEvent e) {
-//				if (e.keyCode == SWT.KEYPAD_CR || e.keyCode == 13) {
-//					changeShippingValue();
-//					shippingValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
-//				}
-//			}
-//		});
 	}
 
     /**

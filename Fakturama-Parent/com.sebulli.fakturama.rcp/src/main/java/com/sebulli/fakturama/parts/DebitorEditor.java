@@ -19,11 +19,17 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -38,6 +44,7 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 
 	@Inject
 	private DebitorsDAO contactDAO;
+	Button sqtButton;
 
 	@Override
 	protected Class<Debitor> getModelClass() {
@@ -54,6 +61,22 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 		Debitor debitor = modelFactory.createDebitor();
 		debitor.setContactType(ContactType.BILLING);
 		return debitor;
+	}
+	
+	@Override
+	protected void createAdditionalFields(Composite tabMisc) {
+		if (preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+			/*Label emptyLbl = */new Label(tabMisc, SWT.NONE);
+			sqtButton = new Button(tabMisc, SWT.CHECK);
+			sqtButton.setText(msg.editorContactFieldSalesequalizationtaxName);
+		}
+	}
+	
+	@Override
+	protected void bindAdditionalValues(Debitor editorContact) {
+		if (preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+			bindModelValue(editorContact, sqtButton, Contact_.useSalesEqualizationTax.getName());
+		}
 	}
 	
 	protected String getEditorIconURI() {

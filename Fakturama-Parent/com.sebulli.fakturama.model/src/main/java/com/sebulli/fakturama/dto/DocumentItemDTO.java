@@ -115,25 +115,21 @@ public class DocumentItemDTO implements IEntity {
 
 	@Override
 	public Date getValidFrom() {
-		// TODO Auto-generated method stub
-		return null;
+		return documentItem.getValidFrom();
 	}
 
 	@Override
 	public void setValidFrom(Date newValidFrom) {
-		// TODO Auto-generated method stub
-		
+		documentItem.setValidFrom(newValidFrom);
 	}
 
 	@Override
 	public Date getValidTo() {
-		// TODO Auto-generated method stub
-		return null;
+		return documentItem.getValidTo();
 	}
 
 	@Override
 	public void setValidTo(Date newValidTo) {
-		// TODO Auto-generated method stub
-		
+		documentItem.setValidTo(newValidTo);
 	}
 }
