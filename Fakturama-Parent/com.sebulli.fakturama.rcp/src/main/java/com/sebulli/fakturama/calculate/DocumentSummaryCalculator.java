@@ -10,6 +10,7 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -29,17 +30,33 @@ import com.sebulli.fakturama.model.VAT;
  *
  */
 public class DocumentSummaryCalculator {
+
+    /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
 	private CurrencyUnit currencyCode;
 	
 	public DocumentSummaryCalculator() {
-	    currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+	    this(false, DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
 	}
-
+	
+	public DocumentSummaryCalculator(Document document) {
+		this(document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
+				DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+	}
+	
 	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {
+		this(false, currencyCode);
+	}
+	
+	public DocumentSummaryCalculator(boolean useSET, CurrencyUnit currencyCode) {
+		this.useSET = useSET;
 		this.currencyCode = currencyCode;
 	}
 	
     public DocumentSummary calculate(Document dataSetDocument) {
+        this.useSET = dataSetDocument != null && dataSetDocument.getBillingContact() != null && BooleanUtils.isTrue(dataSetDocument.getBillingContact().getUseSalesEqualizationTax());
         Double scaleFactor = Double.valueOf(1.0);
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
@@ -107,7 +124,7 @@ public class DocumentSummaryCalculator {
 			VAT itemVat = getItemVat(item);
 			vatDescription = itemVat.getDescription();
 			vatPercent = itemVat.getTaxValue();
-			Price price = new Price(item, scaleFactor);  // scaleFactor was always 1.0 in the old application, hence we could omit this
+			Price price = new Price(item, scaleFactor, useSET);  // scaleFactor was always 1.0 in the old application, hence we could omit this
 			MonetaryAmount itemVatAmount = price.getTotalVat();
 
 			// Add the total net value of this item to the sum of net items
@@ -128,7 +145,7 @@ public class DocumentSummaryCalculator {
 
 			// Add the VAT summary item to the ... 
 			VatSummaryItem vatSummaryItem = new VatSummaryItem(vatDescription, vatPercent, price.getTotalNet(), itemVatAmount);
-			if(itemVat != null && itemVat.getSalesEqualizationTax() != null) {
+			if(itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
 				vatSummaryItem.setSalesEqTaxPercent(itemVat.getSalesEqualizationTax());
 				retval.setTotalSET(retval.getTotalSET().add(vatSummaryItem.getSalesEqTax()));
 			}
@@ -216,7 +233,7 @@ public class DocumentSummaryCalculator {
 
 				VatSummaryItem discountVatSummaryItem = new VatSummaryItem(discountVatDescription, discountVatPercent, discountPart.getUnitNet(),
 						discountPart.getUnitVat());
-				if(vatSummaryItem.getSalesEqTax() != null) {
+				if(this.useSET && vatSummaryItem.getSalesEqTax() != null) {
 					discountVatSummaryItem.setSalesEqTax(vatSummaryItem.getSalesEqTax());
 				}
 

@@ -829,7 +829,8 @@ public class DocumentEditor extends Editor<Document> {
     private boolean isInvoiceDeposited() {
     	// see FAK-485
     	double discount = 1 - document.getPayment().getDiscountValue();
-    	return document.getPaidValue() > Double.valueOf(0) && document.getPaidValue() < total.multiply(discount * 100).divide(100.0).getNumber().doubleValue();
+    	MonetaryAmount paidValue = Money.of(document.getPaidValue(), currencyUnit);
+		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply(discount).with(DataUtils.getInstance().getDefaultRounding()));
     }
 
 	/**
@@ -1242,7 +1243,7 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document);
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
     				document.getShippingValue()/* * sign*/,

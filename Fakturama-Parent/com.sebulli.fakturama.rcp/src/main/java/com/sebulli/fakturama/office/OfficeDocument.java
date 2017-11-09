@@ -135,6 +135,11 @@ public class OfficeDocument {
     private Shell shell;
     
     /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
+
+    /**
      * background processing, default is FALSE
      */
     private boolean silentMode = false;
@@ -171,10 +176,13 @@ public class OfficeDocument {
 			// Stop here and do not fill the document's placeholders, if it's an existing document
 			if (openExisting)
 				return;
+			
+			// check if we have to use sales equalization tax
+	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 
 			// remove previous images            
             cleanup();
-			
+            
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
 
@@ -570,7 +578,7 @@ public class OfficeDocument {
 		// Get all items
 		int cellCount = pRowTemplate.getCellCount();
 		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
-			if(skipIfEmpty && (vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
+			if(skipIfEmpty && (!this.useSET || vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
 				continue;
 			}
 			
@@ -683,7 +691,7 @@ public class OfficeDocument {
 		// with the VAT description or with the VAT value
 		String textValue = "";
 
-		if (vatSummaryItem.getSalesEqTax() != null) {
+		if (this.useSET && vatSummaryItem.getSalesEqTax() != null) {
 			if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
 				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getSalesEqTax());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
@@ -768,7 +776,7 @@ public class OfficeDocument {
 		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
 		String key = placeholder.split("\\$")[0];
 
-		Price price = new Price(item);
+		Price price = new Price(item, useSET);
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
@@ -842,7 +850,7 @@ public class OfficeDocument {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
 		}
 		
-		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT")) {
+		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
 		}
 		
@@ -1224,6 +1232,7 @@ public class OfficeDocument {
      */
     public void setDocument(Document document) {
         this.document = document;
+        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
     }
 
     /**
