@@ -204,7 +204,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     private PaymentsDAO paymentsDao;
     
     @Inject
-    private IPreferenceStore preferences;
+	protected IPreferenceStore preferences;
     
     @Inject
     private IEclipseContext context;
@@ -1154,6 +1154,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
             }
         });
 		
+		createAdditionalFields(tabMisc);
+		
 		// If the value is -1, use 0 instead
 		if (editorContact.getUseNetGross() == null || editorContact.getUseNetGross() < 0) {
 			editorContact.setUseNetGross((short) 0);
@@ -1183,7 +1185,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 	}
 	
-    protected void bindModel() {
+	/**
+	 * Hook method for creating additional fields, should be overwritten.
+	 * @param tabMisc the parent widget
+	 */
+    protected void createAdditionalFields(Composite tabMisc) {
+		// default is empty
+	}
+
+	protected void bindModel() {
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
@@ -1232,10 +1242,22 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
+		
+		bindAdditionalValues(editorContact);
 
     }	
 
-    /**
+	/**
+	 * Binds additional values. Should be overwritten by subclasses.
+	 * 
+	 * @param editorContact2 contact editor object
+	 */
+    protected void bindAdditionalValues(C editorContact2) {
+		// default is empty
+		
+	}
+
+	/**
      * Gets the delivery contact. This is the additional contact if the billing address differs from delivery address.
      *
      * @return the delivery contact

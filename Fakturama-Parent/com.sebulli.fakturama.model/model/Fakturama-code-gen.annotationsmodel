@@ -127,6 +127,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//VoucherItem/accountType"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="A category for an individual item on a voucher (expenditure or receipt). This is not the same as the VoucherCategory."/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_ACCOUNTTYPE"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//VoucherItem/itemVoucherType"/>
@@ -380,6 +383,10 @@
         <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
           <basic enumerated="ORDINAL"/>
         </eAttributeAnnotations>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Contact/useSalesEqualizationTax"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This contact has to pay a sales equalization tax."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
@@ -834,7 +841,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Payment/category"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategory" defaultValue="null" setter="setCategory" validJavaMemberName="category" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="false"/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" description="The Payment Category."/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" description="The Payment Category.">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/paidText"/>
@@ -898,9 +907,12 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Product/categories"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="null" setter="setCategories" validJavaMemberName="categories" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.17/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="false"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Product/description"/>
+        <eAttribute href="Fakturama.ecore#//IDescribableEntity/description"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.17/@eClassAnnotations.0"/>
         <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
           <basic>
@@ -1132,6 +1144,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Shipping/categories"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="null" setter="setCategories" validJavaMemberName="categories" useList="true" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.23/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="false"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Shipping/code"/>
@@ -1175,6 +1190,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//TextModule/categories"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="categories" getter="getCategories" defaultValue="null" setter="setCategories" validJavaMemberName="categories" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.26/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
@@ -1200,6 +1218,12 @@
           <oneToMany>
             <joinColumn name="FK_USER"/>
           </oneToMany>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//User/tenant"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_TENANT"/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
@@ -1257,6 +1281,13 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//VAT/category"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" name="category" getter="getCategory" defaultValue="null" setter="setCategory" validJavaMemberName="category" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.29/@eClassAnnotations.0" generateSafeManyAccess="true" generateBidirectionalAssociationSupport="true"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//VAT/salesEqualizationTax"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="Sales equalization tax for this VAT which has to be paid by a contact (debtor)."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">

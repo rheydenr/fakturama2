@@ -145,7 +145,7 @@ public class Messages {
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
-	
+	public String editorContactFieldSalesequalizationtaxName;
 	
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;

@@ -187,8 +187,10 @@ public class OfficeDocument {
             PlaceholderNavigation navi = new PlaceholderNavigation()
                             .of(textdoc)
                             .withDelimiters(true)
-                            .withTableIdentifiers(PlaceholderTableType.ITEMS_TABLE, 
-                                    PlaceholderTableType.VATLIST_TABLE)
+                            .withTableIdentifiers(
+                            		PlaceholderTableType.ITEMS_TABLE, 
+                                    PlaceholderTableType.VATLIST_TABLE, 
+                                    PlaceholderTableType.SALESEQUALIZATIONTAX_TABLE)
                             .build();
             List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
 
@@ -259,9 +261,14 @@ public class OfficeDocument {
                           // Get the VAT summary of the UniDataSet document
                           VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
                           vatSummarySetManager.add(this.document, 1.0);
-                          fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate);
+                          fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), false);
                           break;
-//                        	
+                          
+                        case SALESEQUALIZATIONTAX_TABLE:
+							vatSummarySetManager = new VatSummarySetManager();
+							vatSummarySetManager.add(this.document, 1.0);
+							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);
+                        	break;
                         default:
                             break;
                         }
@@ -555,43 +562,60 @@ public class OfficeDocument {
 	 * @param vatSummarySetManager the vat summary set manager
 	 * @param pTable the p table
 	 * @param pRowTemplate the p row template
+	 * @param placeholderTableType current placeholder type
+	 * @param skipIfEmpty skips the row creation if value of sales equalization tax is empty (only for this case!)
 	 */
-	private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager,Table pTable, Row pRowTemplate) {
-        // Get all items
-        int cellCount = pRowTemplate.getCellCount();
-        for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
-//               clone one row from template
-                TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
-                // we always insert only ONE row to the table
-                Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
-                pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
-                Row newRow = Row.getInstance(newRowElement);
-                // find all placeholders within row
-                for (int j = 0; j < cellCount; j++) {
-//                    System.out.print(".");
-                    // a template cell
-                    Cell currentCell = newRow.getCellByIndex(j);
-                    // make a copy of the template cell
-                    Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+	private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager, Table pTable, Row pRowTemplate,
+			PlaceholderTableType placeholderTableType, boolean skipIfEmpty) {
+		// Get all items
+		int cellCount = pRowTemplate.getCellCount();
+		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
+			if(skipIfEmpty && (vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
+				continue;
+			}
+			
+			// clone one row from template
+			TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+			// we always insert only ONE row to the table
+			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+			pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+			Row newRow = Row.getInstance(newRowElement);
+			// find all placeholders within row
+			for (int j = 0; j < cellCount; j++) {
+				// System.out.print(".");
+				// a template cell
+				Cell currentCell = newRow.getCellByIndex(j);
+				// make a copy of the template cell
+				Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
-                    // find all placeholders in a cell
-                    NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+				// find all placeholders in a cell
+				NodeList cellPlaceholders = cellNode
+						.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 
-                    /*
-                     * The appended row only has default cells (without styles etc.). Therefore we have to take
-                     * the template cell and replace the current cell with it.
-                     */
-                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
-                    // replace placeholders in this cell with current content
-                    int countOfPlaceholders = cellPlaceholders.getLength();
-                    for (int k = 0; k < countOfPlaceholders; k++) {
-                      Node item = cellPlaceholders.item(0);
-                      PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
-                      fillVatTableWithData(vatSummaryItem, cellPlaceholder);
-                    }
-                }
-//                System.out.println();
-            }
+				/*
+				 * The appended row only has default cells (without styles
+				 * etc.). Therefore we have to take the template cell and
+				 * replace the current cell with it.
+				 */
+				newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+				// replace placeholders in this cell with current content
+				int countOfPlaceholders = cellPlaceholders.getLength();
+				for (int k = 0; k < countOfPlaceholders; k++) {
+					Node item = cellPlaceholders.item(0);
+					PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+					switch (placeholderTableType) {
+					case VATLIST_TABLE:
+						fillVatTableWithData(vatSummaryItem, cellPlaceholder);
+						break;
+					case SALESEQUALIZATIONTAX_TABLE:
+						fillSalesEqualizationTaxTableWithData(vatSummaryItem, cellPlaceholder);
+					default:
+						break;
+					}
+				}
+			}
+			// System.out.println();
+		}
 	}
 
 	/**
@@ -620,8 +644,8 @@ public class OfficeDocument {
 		String value = DataUtils.getInstance().formatCurrency(vatSummaryItem.getVat());
 		// Get the text of the column. This is to determine, if it is the column
 		// with the VAT description or with the VAT value
-		String textValue;
-
+		String textValue = "";
+	
 		// It's the VAT description
 		if (placeholder.equals("VATLIST.DESCRIPTIONS")) {
 			textValue = key;
@@ -639,7 +663,7 @@ public class OfficeDocument {
 		else {
 			return null;
 		}
-		
+
 		// Set the text
 		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
 
@@ -647,6 +671,32 @@ public class OfficeDocument {
 		// Writer document.
 //		addUserTextField(textKey, textValue, index);
 
+	}
+	
+
+	private Node fillSalesEqualizationTaxTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
+
+		String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+
+		// Get the text of the column. This is to determine, if it is the column
+		// with the VAT description or with the VAT value
+		String textValue = "";
+
+		if (vatSummaryItem.getSalesEqTax() != null) {
+			if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
+				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getSalesEqTax());
+			} else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
+				textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
+			} else if (placeholder.equals("SALESEQUALIZATIONTAX.SUBTOTAL")) {
+				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+			} else {
+				return null;
+			}
+		}
+
+		// Set the text
+		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
 	}
 
 	/**
@@ -791,6 +841,11 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.VAT.PERCENT")) {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
 		}
+		
+		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT")) {
+			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
+		}
+		
 
 		// Get the item's VAT name
 		else if (key.equals("ITEM.VAT.NAME")) {

@@ -35,7 +35,12 @@ public class PlaceholderNode extends Selection {
 	}
 
 	public enum PlaceholderTableType {
-		ITEMS_TABLE("ITEM."), VATLIST_TABLE("VATLIST."), DISCOUNT_TABLE("ITEMS.DISCOUNT."), DEPOSIT_TABLE("DOCUMENT.DEPOSIT."), NO_TABLE("");
+		ITEMS_TABLE("ITEM."), 
+		VATLIST_TABLE("VATLIST."), 
+		SALESEQUALIZATIONTAX_TABLE("SALESEQUALIZATIONTAX."), 
+		DISCOUNT_TABLE("ITEMS.DISCOUNT."), 
+		DEPOSIT_TABLE("DOCUMENT.DEPOSIT."), 
+		NO_TABLE("");
 		
 		private String key;
 		private PlaceholderTableType(String key) {

@@ -88,6 +88,7 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Contact" - Label checkbox "Use Country Field"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_COUNTRY, msg.preferencesContactUsecountry, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, msg.preferencesDocumentUsesalesequalizationtax, getFieldEditorParent()));
 
 	}
 
@@ -107,6 +108,7 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_NAME_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COMPANY, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, write);
 	}
     
     @Override
@@ -133,5 +135,6 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_CONTACT_NAME_FORMAT, "0");
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COMPANY, true);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COUNTRY, true);
+		node.setDefault(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, false);
 	}
 }

@@ -20,9 +20,6 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.misc.DataUtils;
-
 /**
  * Calculates the tax, gross and sum of one document. This is the central
  * calculation used by the document editors and the export functions.
@@ -58,6 +55,7 @@ hier klingt vor allem das interessant:
 	// total sum
 	private MonetaryAmount totalNet;
 	private MonetaryAmount totalVat;
+	private MonetaryAmount totalSET;  // Sales Equalization Tax
 	private MonetaryAmount totalGross;
 	private double   	   totalQuantity;
 
@@ -79,8 +77,8 @@ hier klingt vor allem das interessant:
 	/**
 	 * Default constructor. Resets all value to 0.
 	 */
-	public DocumentSummary() {
-	    currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+	public DocumentSummary(CurrencyUnit currencyCode) {
+	    this.currencyCode = currencyCode;
 		resetValues();
 	}
 
@@ -88,18 +86,19 @@ hier klingt vor allem das interessant:
 	 * Reset all values to 0
 	 */
 	private void resetValues() {
-		itemsNet = Money.of(Double.valueOf(0.0), currencyCode);
-		itemsGross = Money.of(Double.valueOf(0.0), currencyCode);
-		totalNet = Money.of(Double.valueOf(0.0), currencyCode);
-		totalVat = Money.of(Double.valueOf(0.0), currencyCode);
-		totalGross = Money.of(Double.valueOf(0.0), currencyCode);
-		discountNet = Money.of(Double.valueOf(0.0), currencyCode);
-		discountGross = Money.of(Double.valueOf(0.0), currencyCode);
-		shippingNet = Money.of(Double.valueOf(0.0), currencyCode);
-		shippingVat = Money.of(Double.valueOf(0.0), currencyCode);
-		shippingGross = Money.of(Double.valueOf(0.0), currencyCode);
-		deposit = Money.of(Double.valueOf(0.0), currencyCode);
-		finalPayment = Money.of(Double.valueOf(0.0), currencyCode);
+		itemsNet = Money.zero(currencyCode);
+		itemsGross = Money.zero(currencyCode);
+		totalNet = Money.zero(currencyCode);
+		totalVat = Money.zero(currencyCode);
+		totalSET = Money.zero(currencyCode);
+		totalGross = Money.zero(currencyCode);
+		discountNet = Money.zero(currencyCode);
+		discountGross = Money.zero(currencyCode);
+		shippingNet = Money.zero(currencyCode);
+		shippingVat = Money.zero(currencyCode);
+		shippingGross = Money.zero(currencyCode);
+		deposit = Money.zero(currencyCode);
+		finalPayment = Money.zero(currencyCode);
 	}
 
 	/**
@@ -163,6 +162,20 @@ hier klingt vor allem das interessant:
 	 */
 	public MonetaryAmount getTotalVat() {
 		return this.totalVat;
+	}
+
+	/**
+	 * @return the totalSET
+	 */
+	public final MonetaryAmount getTotalSET() {
+		return totalSET;
+	}
+
+	/**
+	 * @param totalSET the totalSET to set
+	 */
+	public final void setTotalSET(MonetaryAmount totalSET) {
+		this.totalSET = totalSET;
 	}
 
 	/**

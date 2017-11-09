@@ -26,14 +26,15 @@ public enum DocumentItemListDescriptor {
     QUNIT("quantityUnit", "editor.document.field.qunit", 3, 10),
     ITEMNUMBER("itemNumber", "product.field.itemno", 4, 20),
     PICTURE("pictureName", "common.field.picture", 5, 20), // $ProductPictureSmall
-    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingperiod.start.short", 5, 20),
-    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingperiod.end.short", 5, 20),
-    NAME("name", "common.field.name", 6, 0),
-    DESCRIPTION("description", "common.field.description", 7, 0),
-    VAT("itemVat", "common.field.vat", 8, 10), // $ItemVatPercent
-    UNITPRICE("price", "common.field.unitprice", 9, 10), // was $ItemGrossPrice if $useGross is set, else "price"
-    DISCOUNT("itemRebate", "common.field.discount", 10, 5),
-    TOTALPRICE("", "common.field.price", 11, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
+    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingperiod.start.short", 6, 20),
+    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingperiod.end.short", 7, 20),
+    NAME("name", "common.field.name", 8, 3),
+    DESCRIPTION("description", "common.field.description", 9, 3),
+    VAT("itemVat", "common.field.vat", 10, 10), // $ItemVatPercent
+    SALESEQUALIZATIONTAX("itemVat.salesEqualizationTax", "data.tax.salesequalizationtax", 11, 3),
+    UNITPRICE("price", "common.field.unitprice", 12, 10), // was $ItemGrossPrice if $useGross is set, else "price"
+    DISCOUNT("itemRebate", "common.field.discount", 13, 5),
+    TOTALPRICE("", "common.field.price", 14, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
     ;
 
     private String propertyName, messageKey;

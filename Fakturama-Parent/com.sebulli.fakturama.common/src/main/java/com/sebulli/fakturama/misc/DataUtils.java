@@ -332,8 +332,21 @@ public class DataUtils {
      * @return Rounded value
      */
     public Double round(Double d) {
-        return (Math.round((d + EPSILON) * 100.0)) / 100.0;
+        return round(d, 2);
     }
+    
+    public Double round(Double d, int scale) {
+    	Double floorValue;
+    	double factor = Math.pow(10, scale);
+        if (d >= 0)
+            floorValue = Math.floor(d * factor + EPSILON) / factor;
+        else
+            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+
+        return floorValue;
+    }
+    
+   
 
     /**
      * Convert a double to a formatted string value. If the value has parts of a
@@ -351,12 +364,7 @@ public class DataUtils {
         // Calculate the floor cent value.
         // for negative values, use the ceil
         if(d != null) {
-        	Double floorValue;
-        	double factor = Math.pow(10, scale);
-	        if (d >= 0)
-	            floorValue = Math.floor(d * factor + EPSILON) / factor;
-	        else
-	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+        	Double floorValue = round(d, scale);
         
 	        // Format as "0.00"
 	        NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -417,6 +425,7 @@ public class DataUtils {
 		String retval = "";
 		if (d != null) {
 			NumberFormat percentageFormat = NumberFormat.getPercentInstance();
+			percentageFormat.setMinimumFractionDigits(1);
 			retval = percentageFormat.format(d);
 		}
 		return retval;

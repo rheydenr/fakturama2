@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-    <changeSet author="rheydenr (generated)" id="1489873806573-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ADDRESS">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -20,7 +20,7 @@
             <column name="ZIP" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-2" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-2" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_BANKACCOUNT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -39,7 +39,7 @@
             <column name="VALIDTO" type="date"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-3" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-3" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CATEGORY">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -55,7 +55,7 @@
             <column name="ABSTRACTCATEGORY_PARENT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-4" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-4" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CEFACTCODE">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -74,14 +74,14 @@
             <column name="VALIDTO" type="date"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-5" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-5" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CONFIRMATION">
             <column name="CONFIRMATION_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-6" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-6" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CONTACT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -110,6 +110,7 @@
             <column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
             <column name="TITLE" type="VARCHAR(255)"/>
             <column name="USENETGROSS" type="SMALLINT"/>
+            <column defaultValueNumeric="0" name="USESALESEQUALIZATIONTAX" type="BIT"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
             <column name="VATNUMBER" type="VARCHAR(255)"/>
@@ -123,21 +124,21 @@
             <column name="FK_PAYMENT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-7" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-7" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_CREDIT">
             <column name="CREDIT_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-8" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-8" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DELIVERY">
             <column name="DELIVERY_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-9" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-9" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DOCUMENT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -162,8 +163,6 @@
             <column name="NETGROSS" type="INT"/>
             <column name="ODTPATH" type="VARCHAR(255)"/>
             <column name="ORDERDATE" type="date"/>
-            <column name="VESTINGPERIODSTART" type="date"/>
-            <column name="VESTINGPERIODEND" type="date"/>
             <column defaultValueNumeric="0" name="PAID" type="BIT"/>
             <column name="PAIDVALUE" type="DOUBLE"/>
             <column name="PAYDATE" type="date"/>
@@ -178,6 +177,8 @@
             <column name="TRANSACTIONID" type="INT"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
+            <column name="VESTINGPERIODEND" type="date"/>
+            <column name="VESTINGPERIODSTART" type="date"/>
             <column name="WEBSHOPDATE" type="date"/>
             <column name="WEBSHOPID" type="VARCHAR(255)"/>
             <column name="FK_INDIVIDUALINFO" type="BIGINT"/>
@@ -190,7 +191,7 @@
             <column name="FK_SRCDOCUMENT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-10" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-10" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DOCUMENTITEM">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -223,7 +224,7 @@
             <column name="FK_DOCUMENT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-11" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-11" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_DUNNING">
             <column name="DUNNING_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
@@ -231,7 +232,7 @@
             <column name="DUNNINGLEVEL" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-12" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-12" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_INDIVIDUALDOCUMENTINFO">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -256,14 +257,14 @@
             <column name="VALIDTO" type="date"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-13" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-13" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_INVOICE">
             <column name="INVOICE_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-14" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-14" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ITEMACCOUNTTYPE">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -279,28 +280,28 @@
             <column name="ITEMACCOUNTTYPE_CATEGORY" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-15" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-15" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_LETTER">
             <column name="LETTER_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-16" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-16" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_OFFER">
             <column name="OFFER_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-17" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-17" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ORDER">
             <column name="ORDER_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-18" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-18" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PAYMENT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -320,10 +321,10 @@
             <column name="UNPAIDTEXT" type="VARCHAR(1024)"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="PAYMENT_CATEGORY" type="BIGINT"/>
+            <column name="FK_CATEGORY" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-19" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-19" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PRODUCT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -358,11 +359,11 @@
             <column name="VALIDTO" type="date"/>
             <column name="WEBSHOPID" type="BIGINT"/>
             <column name="WEIGHT" type="DOUBLE"/>
-            <column name="PRODUCT_CATEGORIES" type="BIGINT"/>
+            <column name="FK_CATEGORY" type="BIGINT"/>
             <column name="FK_VAT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-20" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-20" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PRODUCTBLOCKPRICE">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -379,7 +380,7 @@
             <column name="FK_PRODUCT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-21" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-21" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PRODUCTOPTIONS">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -396,14 +397,14 @@
             <column name="FK_PRODUCT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-22" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-22" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_PROFORMA">
             <column name="PROFORMA_PARENT_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-23" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-23" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ROLE">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -418,7 +419,7 @@
             <column name="FK_USER" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-24" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-24" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_SHIPPING">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -427,18 +428,18 @@
             <column name="CODE" type="VARCHAR(255)"/>
             <column name="DATEADDED" type="date"/>
             <column defaultValueNumeric="0" name="DELETED" type="BIT"/>
-            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="LONGTEXT"/>
             <column name="MODIFIED" type="date"/>
             <column name="MODIFIEDBY" type="VARCHAR(255)"/>
             <column name="NAME" type="VARCHAR(255)"/>
             <column name="SHIPPINGVALUE" type="DOUBLE"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="SHIPPING_CATEGORIES" type="BIGINT"/>
+            <column name="FK_CATEGORY" type="BIGINT"/>
             <column name="FK_VAT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-25" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-25" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_TENANT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -452,7 +453,7 @@
             <column name="VALIDTO" type="date"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-26" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-26" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_TEXTMODULE">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -465,10 +466,10 @@
             <column name="T_TEXT" type="LONGTEXT"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="TEXTMODULE_CATEGORIES" type="BIGINT"/>
+            <column name="FK_CATEGORY" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-27" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-27" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_USER">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -482,16 +483,18 @@
             <column name="USERNAME" type="VARCHAR(255)"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="USER_TENANT" type="BIGINT"/>
+            <column name="FK_TENANT" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-28" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-28" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_USERPROPERTY">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="DATEADDED" type="date"/>
+            <column name="T_DEFAULT" type="VARCHAR(255)"/>
             <column defaultValueNumeric="0" name="DELETED" type="BIT"/>
+            <column defaultValueNumeric="0" name="T_GLOBAL" type="BIT"/>
             <column name="MODIFIED" type="date"/>
             <column name="MODIFIEDBY" type="VARCHAR(255)"/>
             <column name="NAME" type="VARCHAR(255)"/>
@@ -499,11 +502,9 @@
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
             <column name="T_VALUE" type="VARCHAR(255)"/>
-            <column name="T_DEFAULT" type="VARCHAR(255)"/>
-            <column defaultValueNumeric="0" name="T_GLOBAL" type="BIT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-29" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-29" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VAT">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -514,13 +515,14 @@
             <column name="MODIFIED" type="date"/>
             <column name="MODIFIEDBY" type="VARCHAR(255)"/>
             <column name="NAME" type="VARCHAR(255)"/>
+            <column name="SALESEQUALIZATIONTAX" type="DOUBLE"/>
             <column name="TAXVALUE" type="DOUBLE"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="VAT_CATEGORY" type="BIGINT"/>
+            <column name="FK_CATEGORY" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-30" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-30" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VOUCHERITEMS">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -535,12 +537,12 @@
             <column name="PRICE" type="DOUBLE"/>
             <column name="VALIDFROM" type="date"/>
             <column name="VALIDTO" type="date"/>
-            <column name="VOUCHERITEM_ACCOUNTTYPE" type="BIGINT"/>
+            <column name="FK_ACCOUNTTYPE" type="BIGINT"/>
             <column name="FK_VAT" type="BIGINT"/>
             <column name="FK_VOUCHER" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-31" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-31" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_VOUCHERS">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -563,7 +565,7 @@
             <column name="FK_CATEGORY" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-32" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-32" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_WEBSHOP">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -579,7 +581,7 @@
             <column name="WEBSHOPVERSION" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-33" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-33" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_WEBSHOPSTATEMAPPING">
             <column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -596,331 +598,330 @@
             <column name="FK_WEBSHOP" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-34" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-34" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="CONFIRMATION_PARENT_ID" constraintName="PRIMARY_FKT_CONFIRMATION" tableName="FKT_CONFIRMATION"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-35" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-35" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="CREDIT_PARENT_ID" constraintName="PRIMARY_FKT_CREDIT" tableName="FKT_CREDIT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-36" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-36" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="DELIVERY_PARENT_ID" constraintName="PRIMARY_FKT_DELIVERY" tableName="FKT_DELIVERY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-37" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-37" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="DUNNING_PARENT_ID" constraintName="PRIMARY_FKT_DUNNING" tableName="FKT_DUNNING"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-38" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-38" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="INVOICE_PARENT_ID" constraintName="PRIMARY_FKT_INVOICE" tableName="FKT_INVOICE"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-39" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-39" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="LETTER_PARENT_ID" constraintName="PRIMARY_FKT_LETTER" tableName="FKT_LETTER"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-40" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-40" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="OFFER_PARENT_ID" constraintName="PRIMARY_FKT_OFFER" tableName="FKT_OFFER"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-41" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-41" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="ORDER_PARENT_ID" constraintName="PRIMARY_FKT_ORDER" tableName="FKT_ORDER"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-42" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-42" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addPrimaryKey columnNames="PROFORMA_PARENT_ID" constraintName="PRIMARY_FKT_PROFORMA" tableName="FKT_PROFORMA"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-43" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-43" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CATEGORY_ABSTRACTCATEGORY_PARENT" tableName="FKT_CATEGORY">
             <column name="ABSTRACTCATEGORY_PARENT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-44" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-44" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CONTACT_FK_ADDRESS" tableName="FKT_CONTACT">
             <column name="FK_ADDRESS"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-45" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-45" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CONTACT_FK_ALTERNATECONTACT" tableName="FKT_CONTACT">
             <column name="FK_ALTERNATECONTACT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-46" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-46" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CONTACT_FK_BANKACCOUNT" tableName="FKT_CONTACT">
             <column name="FK_BANKACCOUNT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-47" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-47" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CONTACT_FK_CATEGORY" tableName="FKT_CONTACT">
             <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-48" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-48" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_CONTACT_FK_PAYMENT" tableName="FKT_CONTACT">
             <column name="FK_PAYMENT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-49" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-49" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT" tableName="FKT_DOCUMENTITEM">
             <column name="FK_DOCUMENT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-50" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-50" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_PRODUCT" tableName="FKT_DOCUMENTITEM">
             <column name="FK_PRODUCT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-51" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-51" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_VAT" tableName="FKT_DOCUMENTITEM">
             <column name="FK_VAT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-52" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-52" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" tableName="FKT_DOCUMENT">
             <column name="DOCUMENT_INVOICEREFERENCE"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-53" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-53" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_CONTACT" tableName="FKT_DOCUMENT">
             <column name="FK_CONTACT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-54" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-54" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_DELIVERYCONTACT" tableName="FKT_DOCUMENT">
             <column name="FK_DELIVERYCONTACT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-55" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-55" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO" tableName="FKT_DOCUMENT">
             <column name="FK_INDIVIDUALINFO"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-56" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-56" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_NOVATREF" tableName="FKT_DOCUMENT">
             <column name="FK_NOVATREF"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-57" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-57" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_PAYMENT" tableName="FKT_DOCUMENT">
             <column name="FK_PAYMENT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-58" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-58" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_SHIPPING" tableName="FKT_DOCUMENT">
             <column name="FK_SHIPPING"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-59" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-59" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" tableName="FKT_DOCUMENT">
             <column name="FK_SRCDOCUMENT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-60" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-60" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_ITEMACCOUNTTYPE_ITEMACCOUNTTYPE_CATEGORY" tableName="FKT_ITEMACCOUNTTYPE">
             <column name="ITEMACCOUNTTYPE_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-61" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_PAYMENT_PAYMENT_CATEGORY" tableName="FKT_PAYMENT">
-            <column name="PAYMENT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-61" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_PAYMENT_FK_CATEGORY" tableName="FKT_PAYMENT">
+            <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-62" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-62" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_PRODUCTBLOCKPRICE_FK_PRODUCT" tableName="FKT_PRODUCTBLOCKPRICE">
             <column name="FK_PRODUCT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-63" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-63" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_PRODUCTOPTIONS_FK_PRODUCT" tableName="FKT_PRODUCTOPTIONS">
             <column name="FK_PRODUCT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-64" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-64" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_PRODUCT_FK_CATEGORY" tableName="FKT_PRODUCT">
+            <column name="FK_CATEGORY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1510081018595-65" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_PRODUCT_FK_VAT" tableName="FKT_PRODUCT">
             <column name="FK_VAT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-65" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_PRODUCT_PRODUCT_CATEGORIES" tableName="FKT_PRODUCT">
-            <column name="PRODUCT_CATEGORIES"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-66" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-66" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_ROLE_FK_USER" tableName="FKT_ROLE">
             <column name="FK_USER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-67" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-67" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_SHIPPING_FK_CATEGORY" tableName="FKT_SHIPPING">
+            <column name="FK_CATEGORY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1510081018595-68" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_SHIPPING_FK_VAT" tableName="FKT_SHIPPING">
             <column name="FK_VAT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-68" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_SHIPPING_SHIPPING_CATEGORIES" tableName="FKT_SHIPPING">
-            <column name="SHIPPING_CATEGORIES"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-69" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_TEXTMODULE_FK_CATEGORY" tableName="FKT_TEXTMODULE">
+            <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-69" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_TEXTMODULE_TEXTMODULE_CATEGORIES" tableName="FKT_TEXTMODULE">
-            <column name="TEXTMODULE_CATEGORIES"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-70" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_USER_FK_TENANT" tableName="FKT_USER">
+            <column name="FK_TENANT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-70" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_USER_USER_TENANT" tableName="FKT_USER">
-            <column name="USER_TENANT"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-71" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_VAT_FK_CATEGORY" tableName="FKT_VAT">
+            <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-71" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_VAT_VAT_CATEGORY" tableName="FKT_VAT">
-            <column name="VAT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-72" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_ACCOUNTTYPE" tableName="FKT_VOUCHERITEMS">
+            <column name="FK_ACCOUNTTYPE"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-72" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-73" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_VAT" tableName="FKT_VOUCHERITEMS">
             <column name="FK_VAT"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-73" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-74" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_VOUCHER" tableName="FKT_VOUCHERITEMS">
             <column name="FK_VOUCHER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-74" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <createIndex indexName="FK_FKT_VOUCHERITEMS_VOUCHERITEM_ACCOUNTTYPE" tableName="FKT_VOUCHERITEMS">
-            <column name="VOUCHERITEM_ACCOUNTTYPE"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-75" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-75" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_VOUCHERS_FK_CATEGORY" tableName="FKT_VOUCHERS">
             <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-76" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-76" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createIndex indexName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" tableName="FKT_WEBSHOPSTATEMAPPING">
             <column name="FK_WEBSHOP"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-77" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-77" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="ABSTRACTCATEGORY_PARENT" baseTableName="FKT_CATEGORY" constraintName="FK_FKT_CATEGORY_ABSTRACTCATEGORY_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-78" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-78" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="CONFIRMATION_PARENT_ID" baseTableName="FKT_CONFIRMATION" constraintName="FK_FKT_CONFIRMATION_CONFIRMATION_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-79" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-79" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_ADDRESS" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_ADDRESS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ADDRESS"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-80" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-80" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_ALTERNATECONTACT" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_ALTERNATECONTACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-81" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-81" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_BANKACCOUNT" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_BANKACCOUNT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_BANKACCOUNT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-82" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-82" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-83" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-83" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_PAYMENT" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_PAYMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PAYMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-84" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-84" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="CREDIT_PARENT_ID" baseTableName="FKT_CREDIT" constraintName="FK_FKT_CREDIT_CREDIT_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-85" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-85" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="DELIVERY_PARENT_ID" baseTableName="FKT_DELIVERY" constraintName="FK_FKT_DELIVERY_DELIVERY_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-86" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-86" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_DOCUMENT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-87" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-87" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-88" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-88" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-89" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-89" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="DOCUMENT_INVOICEREFERENCE" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-90" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-90" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_CONTACT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_CONTACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-91" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-91" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_DELIVERYCONTACT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_DELIVERYCONTACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-92" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-92" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_INDIVIDUALINFO" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_INDIVIDUALDOCUMENTINFO"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-93" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-93" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_NOVATREF" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_NOVATREF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-94" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-94" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_PAYMENT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_PAYMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PAYMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-95" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-95" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_SHIPPING" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_SHIPPING" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_SHIPPING"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-96" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-96" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_SRCDOCUMENT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-97" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-97" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="DUNNING_PARENT_ID" baseTableName="FKT_DUNNING" constraintName="FK_FKT_DUNNING_DUNNING_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-98" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-98" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="INVOICE_PARENT_ID" baseTableName="FKT_INVOICE" constraintName="FK_FKT_INVOICE_INVOICE_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-99" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-99" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="ITEMACCOUNTTYPE_CATEGORY" baseTableName="FKT_ITEMACCOUNTTYPE" constraintName="FK_FKT_ITEMACCOUNTTYPE_ITEMACCOUNTTYPE_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-100" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-100" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="LETTER_PARENT_ID" baseTableName="FKT_LETTER" constraintName="FK_FKT_LETTER_LETTER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-101" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-101" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="OFFER_PARENT_ID" baseTableName="FKT_OFFER" constraintName="FK_FKT_OFFER_OFFER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-102" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-102" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="ORDER_PARENT_ID" baseTableName="FKT_ORDER" constraintName="FK_FKT_ORDER_ORDER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-103" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="PAYMENT_CATEGORY" baseTableName="FKT_PAYMENT" constraintName="FK_FKT_PAYMENT_PAYMENT_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-103" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_PAYMENT" constraintName="FK_FKT_PAYMENT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-104" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-104" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_PRODUCTBLOCKPRICE" constraintName="FK_FKT_PRODUCTBLOCKPRICE_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-105" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-105" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_PRODUCTOPTIONS" constraintName="FK_FKT_PRODUCTOPTIONS_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-106" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-106" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_PRODUCT" constraintName="FK_FKT_PRODUCT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1510081018595-107" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_PRODUCT" constraintName="FK_FKT_PRODUCT_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-107" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="PRODUCT_CATEGORIES" baseTableName="FKT_PRODUCT" constraintName="FK_FKT_PRODUCT_PRODUCT_CATEGORIES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
-    </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-108" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-108" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="PROFORMA_PARENT_ID" baseTableName="FKT_PROFORMA" constraintName="FK_FKT_PROFORMA_PROFORMA_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-109" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-109" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_USER" baseTableName="FKT_ROLE" constraintName="FK_FKT_ROLE_FK_USER" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_USER"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-110" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-110" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_SHIPPING" constraintName="FK_FKT_SHIPPING_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenr (generated)" id="1510081018595-111" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_SHIPPING" constraintName="FK_FKT_SHIPPING_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-111" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="SHIPPING_CATEGORIES" baseTableName="FKT_SHIPPING" constraintName="FK_FKT_SHIPPING_SHIPPING_CATEGORIES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-112" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_TEXTMODULE" constraintName="FK_FKT_TEXTMODULE_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-112" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="TEXTMODULE_CATEGORIES" baseTableName="FKT_TEXTMODULE" constraintName="FK_FKT_TEXTMODULE_TEXTMODULE_CATEGORIES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-113" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_TENANT" baseTableName="FKT_USER" constraintName="FK_FKT_USER_FK_TENANT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_TENANT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-113" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="USER_TENANT" baseTableName="FKT_USER" constraintName="FK_FKT_USER_USER_TENANT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_TENANT"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-114" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_VAT" constraintName="FK_FKT_VAT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-114" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="VAT_CATEGORY" baseTableName="FKT_VAT" constraintName="FK_FKT_VAT_VAT_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    <changeSet author="rheydenr (generated)" id="1510081018595-115" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <addForeignKeyConstraint baseColumnNames="FK_ACCOUNTTYPE" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_ACCOUNTTYPE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ITEMACCOUNTTYPE"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-115" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-116" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-116" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-117" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_VOUCHER" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_VOUCHER" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VOUCHERS"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-117" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-        <addForeignKeyConstraint baseColumnNames="VOUCHERITEM_ACCOUNTTYPE" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_VOUCHERITEM_ACCOUNTTYPE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ITEMACCOUNTTYPE"/>
-    </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-118" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-118" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_VOUCHERS" constraintName="FK_FKT_VOUCHERS_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
     </changeSet>
-    <changeSet author="rheydenr (generated)" id="1489873806573-119" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet author="rheydenr (generated)" id="1510081018595-119" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>
-    
 </databaseChangeLog>
