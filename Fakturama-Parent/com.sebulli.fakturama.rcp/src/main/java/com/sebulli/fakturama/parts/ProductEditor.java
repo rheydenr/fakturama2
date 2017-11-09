@@ -606,7 +606,7 @@ public class ProductEditor extends Editor<Product> {
 				? (useNet && !useGross) 
 						? 3 
 						: 4 
-				: 3).applyTo(pricetable);
+				: 2).applyTo(pricetable);
 
 		// If there is a net and gross column, and 2 columns for the quantity
 		// there are 2 cells in the top left corner, that are empty
@@ -705,7 +705,7 @@ public class ProductEditor extends Editor<Product> {
 		MoneyFormatter costPriceFormatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		costPrice.setFormatter(costPriceFormatter);
 		costPrice.getControl().addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
+		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(costPrice.getControl());
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);
