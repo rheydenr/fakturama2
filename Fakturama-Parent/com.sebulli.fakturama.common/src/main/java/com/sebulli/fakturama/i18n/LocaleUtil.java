@@ -114,7 +114,7 @@ public class LocaleUtil {
 //        }
         // fill some helper maps
         for (Locale locale : availableLocales) {
-            if(locale != null && StringUtils.length(locale.getCountry()) > 0) {
+            if(locale != null && StringUtils.length(locale.getCountry()) > 0 && localeLookUp.get(locale.getCountry()) == null) {
                 localeLookUp.put(locale.getCountry(), locale);
                 countryLocaleMap.put(locale.getDisplayCountry(defaultLocale), locale);
 //            System.out.println("Country Code = " + obj.getCountry() + ", Country Name = " + obj.getDisplayCountry(defaultLocale));
@@ -189,10 +189,10 @@ public class LocaleUtil {
      */
     public Map<String, String> getLocaleCountryMap() {
         if(localeCountryMap == null) {
-            Map<String, String> tmpMap =  countryLocaleMap.entrySet().stream().collect(
+            Map<String, String> tmpMap = countryLocaleMap.entrySet().stream().collect(
                     Collectors.toMap((Entry<String, Locale> e) -> e.getValue().getCountry(), 
                                      (Entry<String, Locale> e) -> e.getKey()));
-            ValueComparator bvc = new ValueComparator(tmpMap);
+            ValueComparator bvc = new ValueComparator(tmpMap, defaultLocale);
             localeCountryMap = new TreeMap<>(bvc);
             localeCountryMap.putAll(tmpMap);
         }
