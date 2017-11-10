@@ -739,6 +739,7 @@ public class ProductEditor extends Editor<Product> {
 		if(useQuantity) {
 			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
 			textQuantity.getControl().addKeyListener(new ReturnKeyAdapter(textQuantity.getControl()));
+			textQuantity.getControl().setToolTipText(msg.commonFieldQuantityTooltip);
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);

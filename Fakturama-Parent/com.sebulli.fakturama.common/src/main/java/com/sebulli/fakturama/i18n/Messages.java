@@ -121,6 +121,7 @@ public class Messages {
 	public String commonFieldPrice;
 	public String commonFieldPrinted;
 	public String commonFieldQuantity;
+	public String commonFieldQuantityTooltip;
 	public String commonFieldQuantityShort;
 	public String commonFieldSalutation;
 	public String commonFieldState;
