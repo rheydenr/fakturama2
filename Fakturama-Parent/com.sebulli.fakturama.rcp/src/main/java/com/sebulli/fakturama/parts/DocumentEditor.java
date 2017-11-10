@@ -1686,10 +1686,12 @@ public class DocumentEditor extends Editor<Document> {
 		if (paymentid != null) {
 			//Use the payment method of the customer
 			if (comboPayment != null) {
-				comboPayment.setText(paymentid.getDescription());
+				document.setPayment(paymentid);
+//				comboViewerPayment.getCombo().getItems()getText();
+				comboPayment.setText(paymentid.getName());
 			}
 
-			usePayment(contact.getPayment());
+			usePayment(paymentid);
 		}
 		
 		showHideWarningIcon();
@@ -1702,8 +1704,7 @@ public class DocumentEditor extends Editor<Document> {
 	/**
 	 * Use this payment and update the duedays
 	 * 
-	 * @param dataSetPayment
-	 * 	ID of the payment
+	 * @param dataSetPayment the payment
 	 */
 	private void usePayment(Payment dataSetPayment) {
 		
@@ -1712,8 +1713,6 @@ public class DocumentEditor extends Editor<Document> {
 			return;
 		
 		payment = dataSetPayment;
-		
-//		Payment payment = paymentsDAO.findById(dataSetPayment);
 
 		// Get the due days and description of this payment
 //		duedays = payment.getNetDays();
