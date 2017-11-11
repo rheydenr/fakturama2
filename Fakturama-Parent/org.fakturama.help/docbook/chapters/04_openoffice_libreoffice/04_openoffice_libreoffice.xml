@@ -1109,7 +1109,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>VATLIST.DESCRIPTIONS</entry>
-						<entry>Liste mit allen Steuersätzen (Beschreibung).</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Beschreibung).</entry>
 					</row>
 					<row>
 						<entry>VATLIST.VALUES</entry>
@@ -1120,7 +1120,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>VATLIST.PERCENT</entry>
-						<entry>Liste mit allen Steuersätzen (Prozent).</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Prozent).</entry>
 					</row>
 					<row>
 						<entry>VATLIST.VATSUBTOTAL</entry>
@@ -1129,7 +1129,23 @@ id="04_openoffice_libreoffice">
 							<para>
 								<emphasis role="italic">Beispiel</emphasis> bei unterschiedlichen Mehrwertsteuersätzen: </para>
 							<para> Zuzügl. &lt;VATLIST.DESCRIPTIONS&gt; auf &lt;VATLIST.VATSUBTOTAL&gt; &lt;VATLIST.VALUES&gt; </para>
-							<para> Bitte für jeden der Platzhalter eine einzelne Tabellenzelle in ein und derselben Zeile verwenden!</para>
+						</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.VALUES</entry>
+						<entry>
+							<para>Liste mit allen Ausgleichsteuern (Werte). Nur aktiv, wenn das auch in den (<link linkend="preferences_contact">Einstellungen</link>) hinterlegt wurde.</para>
+							<para>Dieser Platzhalter hat die Besonderheit, dass für jeden weiteren Steuersatz eine neue Zeile der Tabelle angelegt wird. Nicht verwendete Ausgleichsteuerätze werden nicht mit aufgeführt (keine Nullwerte).</para>
+						</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.PERCENT</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Prozent) für die Ausgleichsteuer.</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.VATSUBTOTAL</entry>
+						<entry>
+							<para>Liste aller zum jeweiligen Ausgleichsteuersatz gehörenden Nettowerte (Zwischensummen).</para>
 						</entry>
 					</row>
 					<row>
@@ -1163,7 +1179,7 @@ id="04_openoffice_libreoffice">
 					</tbody>
 				</tgroup>
 			</informaltable>
-							<important>Die Platzhalter müssen in eine zweispaltige Tabelle gesetzt werden. Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Preferences eingestellt werden: </important>
+							<important>Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Preferences eingestellt werden: </important>
 							<para>
 								<inlinemediaobject>
 									<imageobject role="html">

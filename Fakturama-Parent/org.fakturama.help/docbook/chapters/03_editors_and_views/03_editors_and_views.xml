@@ -1892,17 +1892,17 @@
 		</sect2>
 		<sect2>
 			<title>Zahlungsart</title>
-			<para>Auswahl der Zahlungsart. Je nach Zahlungsart wird auf die Rechnung der entsprechende Text gedruckt.</para>
+			<para>Auswahl der Zahlungsart. Je nach Zahlungsart wird auf die Rechnung der entsprechende Text gedruckt. Wenn ein Kontakt ausgewählt wurde, bei dem bereits eine bestimmte Zahlungsart hinterlegt wurde, wird diese hier vorausgewählt.</para>
 			<para>Siehe <link linkend="editor_editor_payment">Editor Zahlungsart</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>zahlbar in</title>
-			<para>Anzahl der Tage, innerhalb derer die Rechnung bezahlt werden muss. Beim Ändern wird automatisch das Datum angepasst.</para>
+			<para>Anzahl der Tage, innerhalb derer die Rechnung bezahlt werden muss. Beim Ändern der Anzahl wird automatisch das Datum angepasst.</para>
 		</sect2>
 		<sect2>
 			<title>Tagen bis zum</title>
-			<para>Datum, bis zu dem die Rechnung bezahlt werden muss. Beim Ändern wird automatisch die Anzahl der Tage angepasst.</para>
+			<para>Datum, bis zu dem die Rechnung bezahlt werden muss. Beim Ändern des Datums wird automatisch die Anzahl der Tage angepasst.</para>
 		</sect2>
 		<sect2>
 			<title>am</title>
@@ -1910,8 +1910,7 @@
 		</sect2>
 		<sect2>
 			<title>Wert</title>
-			<para>Tatsächlicher Geldeingang. Zieht ein Kunde einen Skontobetrag ab, wird dies hier berücksichtigt. Es ist auch möglich, Teilzahlungen zu erfassen. Dann trägt man den bereits bezahlten Wert hier ein. Es erscheint ein Warnsymbol mit dem Hinweis "Anzahlung". Der Status der Rechnung bleibt "unbezahlt". 
-			
+			<para>Tatsächlicher Geldeingang. Zieht ein Kunde einen Skontobetrag ab, wird dies hier berücksichtigt. Es ist auch möglich, Teilzahlungen zu erfassen. Dann trägt man den bereits bezahlten Wert hier ein. Es erscheint ein Warnsymbol mit dem Hinweis "Anzahlung". Der Status der Rechnung bleibt "unbezahlt", die Checkbox "bezahlt" ändert allerdings ihren Status auf "unbestimmt" ("grayed"). 			
 				<mediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/document_deposit.png" format="PNG" scalefit="1"/>
@@ -1938,7 +1937,7 @@
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
-			<para>Anteil der Mehrwertsteuer. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
+			<para>Anteil der Mehrwertsteuer. Darin enthalten ist auch die Mehrwertsteuer, die bei den Versandkosten evtl. hinterlegt wurde. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
 			</para>
 		</sect2>
 		<sect2>
@@ -2109,7 +2108,7 @@
 		</sect3>
 		<sect3>
 			<title>Bonität</title>
-			<para>Angabe über die Bonität (Kreditwürdigkeit) eines Kunden. Dieser Wert ist nur zur Information.</para>
+			<para>Angabe über die Bonität (Kreditwürdigkeit) eines Kunden. Dieser Wert dient nur zur Information.</para>
 		</sect3>
 		<sect3>
 			<title>Rabatt</title>
@@ -2118,6 +2117,9 @@
 		<sect3>
 			<title>Netto oder Brutto</title>
 			<para>Normalerweise wird im Dokumenteneditor der Preis als Netto- oder als Bruttopreis angezeigt, abhängig davon, welche Einstellung programmweit vorgenommen wurde. Für bestimmte Kunden lässt sich unabhängig davon eine andere Einstellung festlegen. Der Dokumenteneditor öffnet sich dann mit den hier eingestellten Preisen.</para>
+		</sect3>
+		<sect3><title>Ausgleichsteuer verwenden</title>
+		<para>Diese Einstellung sorgt dafür, dass bei der Berechnung der Bruttopreise eine Ausgleichsteuer berücksichtigt wird (nur für einige Länder relevant).</para>
 		</sect3>
 		<sect2>
 			<title>Reiter Notiz</title>
@@ -2373,10 +2375,11 @@
 					<imagedata fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="275%" fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="80%" fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
+		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
 		<sect2>
 			<title>Name</title>
 			<para>Eindeutiger Name des Steuersatzes. Dies ist auch die Kennung, die vom Shopsystem verwendet wird. Der Name sollte dann nicht verändert werden. Stattdessen sollte der Text <emphasis role="bold">Beschreibung</emphasis> angepasst werden.</para>
@@ -2421,6 +2424,11 @@
 		<sect2>
 			<title>Standard</title>
 			<para>Zeigt den Namen desjenigen Steuersatzes, der momentan der Standardsteuersatz ist.</para>
+		</sect2>
+		<sect2>
+			<title>Ausgleichsteuer</title>
+			<para>In verschiedenen Ländern wird zusätzlich zur Umsatzsteuer eine Ausgleichsteuer erhoben. Die Höhe dieser Ausgleichsteuer ist an die Umsatzsteuer gekoppelt. Die Steuer wird jedoch nur berechnet, wenn dies in den Kundendaten beim jeweiligen Kontakt eingestellt wird (siehe <link linkend="editor_editor_contact">Kontakteditor</link>). Außerdem muss die entsprechende Einstellung im Kontakteditor aktiviert werden (siehe <link linkend="preferences_contact">Einstellungen Kontakte</link>).
+			</para>
 		</sect2>
 		<sect2>
 			<title>zum Standard machen</title>
