@@ -121,7 +121,7 @@ public class ContactUtil {
      * @return Gender as String
      */
     public String getGenderString(Contact contact) {
-        return getGenderString(contact.getGender());
+        return getSalutationString(contact.getGender());
     }
 
     /**
@@ -146,8 +146,8 @@ public class ContactUtil {
      *            Gender number
      * @return Gender as string
      */
-    public String getGenderString(int i) {
-        return getGenderString(i, true);
+    public String getSalutationString(int i) {
+        return getSalutationString(i, true);
     }
 
 
@@ -160,7 +160,7 @@ public class ContactUtil {
      *            <code>true</code> if the string should be translated
      * @return Gender as string
      */
-    public String getGenderString(int i, boolean translate) {
+    public String getSalutationString(int i, boolean translate) {
     	// TODO: Check why it is not an enum (why Integers are stored?)
         switch (i) {
         case 0:
@@ -188,7 +188,7 @@ public class ContactUtil {
     public int getGenderID(String s) {
         // Test all strings
         for (int i = 0;i <= MAX_SALUTATION_COUNT ; i++) {
-            if (getGenderString(i,false).equalsIgnoreCase(s)) return i;
+            if (getSalutationString(i,false).equalsIgnoreCase(s)) return i;
 //            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
         }
         // Default = "---"
