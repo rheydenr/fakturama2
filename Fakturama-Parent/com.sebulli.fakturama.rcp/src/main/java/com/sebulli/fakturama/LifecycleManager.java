@@ -59,6 +59,8 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
+import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
@@ -71,6 +73,8 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -79,6 +83,7 @@ import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.core.TemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.startup.ISplashService;
+import com.sebulli.fakturama.util.ContactUtil;
 
 /**
  * The LifecycleManager controls the start and the end of an application.
@@ -166,6 +171,8 @@ public class LifecycleManager {
                     context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
                     context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
                     context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
+                    context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
+                    context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
                     log.debug("start DAOs - end");
                     return Status.OK_STATUS;
                 }
@@ -224,6 +231,9 @@ public class LifecycleManager {
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
+        ItemListTypeCategoriesDAO itemListTypeCategoriesDAO = context.get(ItemListTypeCategoriesDAO.class);
+        ItemAccountTypeDAO itemAccountTypeDAO = context.get(ItemAccountTypeDAO.class);
+        
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
@@ -275,11 +285,28 @@ public class LifecycleManager {
         
     	splashService.worked(1);
        // init UN/CEFACT codes
-        if(Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
+        if(eclipsePrefs.getBoolean("isreinit", false) || Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
         	initializeCodes(unCefactCodeDAO, modelFactory);
         } 
     	splashService.worked(1);
-        
+    	
+    	// init salutations TODO activate!
+    	if(false) {
+	        if(eclipsePrefs.getBoolean("isreinit", false) || Long.valueOf(0L).compareTo(itemAccountTypeDAO.getCountOf("data.list.salutations")) == 0) {
+	        	ItemListTypeCategory salutationCategory = itemListTypeCategoriesDAO.getCategory("data.list.salutations", true);
+	        	ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+	        	
+	    		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
+		        	ItemAccountType salutation = modelFactory.createItemAccountType();
+		        	salutation.setCategory(salutationCategory);
+		        	salutation.setName(msg.commonFieldSalutation + " " + contactUtil.getSalutationString(i));
+		        	salutation.setValue(contactUtil.getSalutationString(i));
+		        	itemAccountTypeDAO.save(salutation);
+	    		} 
+	        } 
+	    	splashService.worked(1);
+    	}
+    	
         try {
 			eclipsePrefs.flush();
 		} catch (BackingStoreException e) {

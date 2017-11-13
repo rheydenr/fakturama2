@@ -167,6 +167,7 @@ public class Messages {
 	public String dataDefaultVatDescription;
 	public String dataExpenditureItems;
 	public String dataListAccountnumbers;
+	public String dataListSalutations;
 	public String dataReceiptvoucherItems;
 	public String dataVatPurchasetax;
 	public String dataVatSalestax;

@@ -73,6 +73,7 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -123,7 +124,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     private TabFolder tabFolder;
 	private Text textNote;
-	private ComboViewer comboGender;
+	private ComboViewer comboSalutationViewer;
 	private Text txtTitle;
 	private Text txtFirstname;
 	private Text txtName;
@@ -174,7 +175,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private boolean useBank;
 	private boolean useMisc;
 	private boolean useNote;
-	private boolean useGender;
+	private boolean useSalutation;
 	private boolean useTitle;
 	private boolean useLastNameFirst;
 	private boolean useCompany;
@@ -193,9 +194,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-//	
-//	@Inject
-//	private ContactsDAO contactDAO;
+	
+	@Inject
+	private ItemAccountTypeDAO itemListTypeDao;
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
@@ -526,7 +527,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		useBank = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
 		useMisc = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC);
 		useNote = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE);
-		useGender = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER);
+		useSalutation = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER);
 		useTitle = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE);
 		useLastNameFirst = (preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT) == 1);
 		useCompany = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY);
@@ -535,9 +536,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// now do some helpful initializations (needed for combo boxes)
         Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
 		
-		Map<Integer, String> genderList = new HashMap<>();
+		Map<Integer, String> salutationList = new HashMap<>();
 		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
-		    genderList.put(i, contactUtil.getGenderString(i));
+		    salutationList.put(i, contactUtil.getSalutationString(i));
 		} 
 
 
@@ -662,11 +663,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Controls in the group "address"
 
 		// The title and gender's label
-		Label labelTitle = new Label((useGender || useTitle) ? addressGroup : invisible, SWT.NONE);
-		if (useGender) {
+		Label labelTitle = new Label((useSalutation || useTitle) ? addressGroup : invisible, SWT.NONE);
+		if (useSalutation) {
 			labelTitle.setText(msg.commonFieldGender);
 		}
-		if (useGender && useTitle) {
+		if (useSalutation && useTitle) {
 			labelTitle.setText(labelTitle.getText() + ", ");
 		}
 		if (useTitle) {
@@ -675,16 +676,22 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		}
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
 
-		// Gender
-		comboGender = new ComboViewer(useGender ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboGender.setContentProvider(new HashMapContentProvider<Integer, String>());
-		comboGender.setInput(genderList);
-		comboGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboGender.getControl());
+		// Salutation
+		comboSalutationViewer = new ComboViewer(useSalutation ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
+/*
+		allSalutations = itemListTypeDao.findAllSalutations();
+		comboSalutationViewer.setContentProvider(new EntityComboProvider());
+		comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
+		comboSalutationViewer.setInput(allSalutations);
+ */
+		comboSalutationViewer.setInput(salutationList);
+		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
+		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
 
 		// Title
 		txtTitle = new Text(useTitle ? addressGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtTitle);
+		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
 
 		// First and last name		
 		Label labelName = new Label(addressGroup, SWT.NONE);
@@ -821,10 +828,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Controls in the group "Delivery"
 
 		// Delivery gender and title's label
-		Label labelDeliveryTitle = new Label((useGender || useTitle) ? deliveryGroup : invisible, SWT.NONE);
-		if (useGender)
+		Label labelDeliveryTitle = new Label((useSalutation || useTitle) ? deliveryGroup : invisible, SWT.NONE);
+		if (useSalutation)
 			labelDeliveryTitle.setText(msg.commonFieldGender);
-		if (useGender && useTitle)
+		if (useSalutation && useTitle)
 			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + ", ");
 		if (useTitle)
 			//T: "Title" (part of an address)
@@ -832,15 +839,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
 
 		// Delivery Gender
-		comboDeliveryGender = new ComboViewer(useGender ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboDeliveryGender = new ComboViewer(useSalutation ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
-        comboDeliveryGender.setInput(genderList);
-        comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(genderList));
+        comboDeliveryGender.setInput(salutationList);
+        comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
 		
 		// Delivery Title
 		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useGender ? 1 : 2, 1).applyTo(txtDeliveryTitle);
+		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtDeliveryTitle);
 
 		// Delivery first and last name
 		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
@@ -1195,7 +1202,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	protected void bindModel() {
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
-		bindModelValue(editorContact, comboGender, Contact_.gender.getName());
+		bindModelValue(editorContact, comboSalutationViewer, Contact_.gender.getName());
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);

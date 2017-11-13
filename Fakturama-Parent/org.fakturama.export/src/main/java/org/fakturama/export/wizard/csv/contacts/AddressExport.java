@@ -135,7 +135,7 @@ public class AddressExport {
 					stringBuffer.append(ExporterHelper.inQuotes(contact.getCategories().getName()));
 				}
 				stringBuffer.append(";")
-					.append(ExporterHelper.inQuotes(contactUtil.getGenderString(contact.getGender()))).append(";")
+					.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
 					.append(ExporterHelper.inQuotes(contact.getTitle())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getFirstName())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getName())).append(";")
@@ -157,7 +157,7 @@ public class AddressExport {
 				} else {
 					deliveryContact = contact;
 				}
-				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getGenderString(deliveryContact.getGender()))).append(";")
+				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(deliveryContact.getGender()))).append(";")
 				   .append(ExporterHelper.inQuotes(deliveryContact.getTitle())).append(";")
 				   .append(ExporterHelper.inQuotes(deliveryContact.getFirstName())).append(";")
 				   .append(ExporterHelper.inQuotes(deliveryContact.getName())).append(";")
