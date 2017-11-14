@@ -20,6 +20,7 @@ import java.util.Optional;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -55,7 +56,10 @@ public class VatSummarySetManager {
 		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-		new DocumentSummaryCalculator().calculate(vatSummarySet, document.getItems(), 
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
+        boolean useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+		documentSummaryCalculator.setUseSET(useSET);
+		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
 				Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
 				document.getShippingAutoVat(), Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), document.getNoVatReference(),

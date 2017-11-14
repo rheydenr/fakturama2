@@ -302,7 +302,9 @@ public class CreateOODocumentHandler {
 			}
 		} catch (FakturamaStoringException e) {
 			log.error(e, "Dokument konnte nicht erstellt werden!");
-			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+			if(!silentMode) {
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+			}
 		}
     }
 }

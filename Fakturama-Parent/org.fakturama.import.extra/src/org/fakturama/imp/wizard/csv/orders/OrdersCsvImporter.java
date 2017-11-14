@@ -36,10 +36,12 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
 import com.opencsv.CSVReader;
+import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CreateOODocumentHandler;
@@ -166,6 +168,12 @@ public class OrdersCsvImporter {
 		int lineNr = 0;
 		final java.util.Date today = Calendar.getInstance().getTime();
 		String[] columns;
+		boolean doRewind = false;
+
+		// save current counters for debtor number and order number 
+		// (if the process should be rolled back)
+		int currentDebtorNumber = numberGenerator.getCurrentNumber("Debtor");
+		int currentOrderNumber = numberGenerator.getCurrentNumber(DocumentType.ORDER.getTypeAsString());
 		
 		// Open the existing file
 		try (BufferedReader in = Files.newBufferedReader(Paths.get(fileName), Charset.forName("UTF-8"));
@@ -179,11 +187,6 @@ public class OrdersCsvImporter {
 				result += NL + importMessages.wizardImportErrorFirstline;
 				return resultList;
 			}
-
-			// save current counters for debtor number and order number 
-			// (if the process should be rolled back)
-			int currentDebtorNumber = numberGenerator.getCurrentNumber("Debtor");
-			int currentOrderNumber = numberGenerator.getCurrentNumber(DocumentType.ORDER.getTypeAsString());
 			
 		// Read the existing file and store it in a buffer
 		// with a fix size. Only the newest lines are kept.
@@ -220,7 +223,7 @@ public class OrdersCsvImporter {
 					if(debtorIdentifier.length > 1) {
 						contact = debitorsDAO.findByDebitorNumber(StringUtils.trim(debtorIdentifier[2]));
 						if(contact == null) {
-							result += NL + "no debtor found or multiple results found with Number " + debtorIdentifier[2] + " in line " + csvr.getLinesRead();
+							result += NL + "no debtor found or multiple results found with number " + debtorIdentifier[2] + " in line " + csvr.getLinesRead();
 							continue; // don't create an order since it's useless without a debtor.
 						}
 					} else {
@@ -239,8 +242,7 @@ public class OrdersCsvImporter {
 					order.setShipping(shipping);
 					order.setBillingContact(contact);
 					order.setAddressFirstLine(contactUtil.getNameWithCompany(contact));
-					String nextOrderNumber = numberGenerator.getNextNr(DocumentType.ORDER.getTypeAsString());
-					order.setName(nextOrderNumber);
+					order.setName(numberGenerator.getNextNr(DocumentType.ORDER.getTypeAsString()));
 					order.setOrderDate(today);
 					order.setDocumentDate(today);
 					order.setServiceDate(today);
@@ -255,11 +257,11 @@ public class OrdersCsvImporter {
 						DocumentItem item = modelFactory.createDocumentItem();
 						if(prop.getProperty("artikelnr"+i) != null) {
 							Product product = productsDAO.findByItemNumber(StringUtils.trim(prop.getProperty("artikelnr"+i)));
-							item = documentItemUtil.from(product, DocumentType.ORDER);
-							if(item == null) {
+							if(product == null) {
 								result += NL + "no product found with Number " + prop.getProperty("artikelnr"+i) + " in line " + csvr.getLinesRead();
 								continue; // no item? doesn't work! 
 							}
+							item = documentItemUtil.from(product, DocumentType.ORDER);
 							item.setPosNr(i);
 						}
 						String quantityProp = prop.getProperty("anzahl"+i);
@@ -272,11 +274,13 @@ public class OrdersCsvImporter {
 					}
 					
 					order.setItems(itemsList);
-					// TODO calculate!
-					order.setTotalValue(Double.valueOf(0.0));
+					DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(order);
+					DocumentSummary documentSummary = documentSummaryCalculator.calculate(order);
+					order.setTotalValue(documentSummary.getTotalGross().getNumber().doubleValue());
 					
 					// cache the results
 					resultList.add(order);
+					numberGenerator.setNextFreeNumberInPrefStore(order.getName(), "name", DocumentType.ORDER.getTypeAsString());
 				}
 			}
 			if(!resultList.isEmpty()) {
@@ -305,22 +309,26 @@ public class OrdersCsvImporter {
 			result += NL + MessageFormat.format(importOrdersMessages.wizardImportInfoOrdersimported, documentIds.size());
 		} catch (FakturamaStoringException e) {/*, address first line is: '" + doc.getAddressFirstLine() + "'*/
 			log.error(e, "can't save imported order");
+			doRewind = true;
 		}
 		catch (UnsupportedEncodingException e) {
 			log.error(e, "Unsupported UTF-8 encoding");
 			result += NL + "Unsupported UTF-8 encoding";
-			return resultList;
+			doRewind = true;
 		}
 		catch (FileNotFoundException e) {
 			result += NL + importMessages.wizardImportErrorFilenotfound;
-			return resultList;
+			doRewind = true;
 		}
 		catch (IOException e) {
 			result += NL + importMessages.wizardImportErrorOpenfile;
+			doRewind = true;
 		} finally {
 			// rewind numbers
-//			currentDebtorNumber
-			// currentOrderNumber
+			if(doRewind) {
+				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentOrderNumber), "name", DocumentType.ORDER.getTypeAsString());
+				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentDebtorNumber), "name", "Debtor");
+			}
 		}
 		return resultList;
 	}

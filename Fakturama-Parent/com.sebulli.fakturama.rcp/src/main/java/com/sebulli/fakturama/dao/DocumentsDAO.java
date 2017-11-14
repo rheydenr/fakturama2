@@ -729,7 +729,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 				lastSuccessfulObject = entityManager.merge(doc);
 				getEntityManager().persist(lastSuccessfulObject);
 				// documentIds.add(currentDocument.getId());
-				System.out.println("t");
+//				System.out.println("t");
 				docSet.add(lastSuccessfulObject);
 			}
 			trx.commit();

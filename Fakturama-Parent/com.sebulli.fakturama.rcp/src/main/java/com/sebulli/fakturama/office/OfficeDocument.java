@@ -186,6 +186,10 @@ public class OfficeDocument {
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
 
+			// Get the VAT summary of the UniDataSet document
+			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
+
             /* Get the placeholders of the OpenOffice template.
              * The scanning of all placeholders to find the item and the vat table
              * is also done here.
@@ -265,16 +269,10 @@ public class OfficeDocument {
     	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
                         case VATLIST_TABLE:
-                            
-                          // Get the VAT summary of the UniDataSet document
-                          VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
-                          vatSummarySetManager.add(this.document, 1.0);
                           fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), false);
                           break;
                           
                         case SALESEQUALIZATIONTAX_TABLE:
-							vatSummarySetManager = new VatSummarySetManager();
-							vatSummarySetManager.add(this.document, 1.0);
 							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);
                         	break;
                         default:
@@ -305,10 +303,6 @@ public class OfficeDocument {
 				}
 			    
 			    // TODO open Doc in OO if necessary
-			} else {
-				if(!silentMode) {
-					MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
-				}
 			}
 
 			// Print and close the OpenOffice document
@@ -327,7 +321,7 @@ public class OfficeDocument {
      * @param textdoc
      *            The document
      */
-	private boolean saveOODocument(TextDocument textdoc) {
+	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
 		Path generatedPdf = null;
 		Set<PathOption> pathOptions = new HashSet<>();
 		pathOptions.add(PathOption.WITH_FILENAME);
@@ -429,11 +423,7 @@ public class OfficeDocument {
                 document.setPdfPath(generatedPdf.toString());
             }
 
-            try {
-            	document = documentsDAO.update(document);                
-            } catch (FakturamaStoringException e) {
-                log.error(e);
-            }
+        	document = documentsDAO.update(document);                
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
@@ -494,7 +484,7 @@ public class OfficeDocument {
 
 		    // Save the document
 		    OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
-		    Path ooPath = ooStarter.getCheckedOOPath();
+		    Path ooPath = ooStarter.getCheckedOOPath(silentMode);
 			if (ooPath != null ) {
 
 				// now, if the file name templates are different, we have to
@@ -527,7 +517,11 @@ public class OfficeDocument {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
 				}
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
+				if(!silentMode){
+					MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
+				} else {
+					log.warn("Can't create PDF! Did you set the right OpenOffice path?");
+				}
 			}
 		} catch (FileSystemException e) {
 			System.err.println("is nich!");

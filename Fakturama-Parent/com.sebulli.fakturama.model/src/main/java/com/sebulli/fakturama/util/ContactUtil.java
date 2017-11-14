@@ -185,7 +185,7 @@ public class ContactUtil {
      * @return
      *          The number
      */
-    public int getGenderID(String s) {
+    public int getSalutationID(String s) {
         // Test all strings
         for (int i = 0;i <= MAX_SALUTATION_COUNT ; i++) {
             if (getSalutationString(i,false).equalsIgnoreCase(s)) return i;

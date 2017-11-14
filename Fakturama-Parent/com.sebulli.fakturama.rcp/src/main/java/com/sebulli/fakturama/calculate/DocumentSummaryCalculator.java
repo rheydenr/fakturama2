@@ -445,4 +445,18 @@ public class DocumentSummaryCalculator {
         return retval;
     }
 
+	/**
+	 * @return the useSET
+	 */
+	public final boolean isUseSET() {
+		return useSET;
+	}
+
+	/**
+	 * @param useSET the useSET to set
+	 */
+	public final void setUseSET(boolean useSET) {
+		this.useSET = useSET;
+	}
+
 }

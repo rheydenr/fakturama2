@@ -172,6 +172,7 @@ public class Messages {
 	public String dataVatPurchasetax;
 	public String dataVatSalestax;
 	public String dataTaxSalesequalizationtax;
+	public String dataTaxSalesequalizationtaxShort;
 	public String dialogAboutTitle;
 	public String dialogCustomerStatisticsPart1;
 	public String dialogDeletedatasetMessage;

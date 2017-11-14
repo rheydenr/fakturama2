@@ -1081,6 +1081,7 @@ public class DocumentEditor extends Editor<Document> {
         	try {
         		calculate();
         		document = documentsDAO.save(document);
+        		setNextFreeNumberInPrefStore(document.getName(), Document_.name.getName());
             } catch (FakturamaStoringException e) {
                 log.error(e);
 			}
