@@ -158,9 +158,9 @@ public class DocumentSummaryCalculator {
 		// *** round sum of items
 		
 		// round to full net cents
-		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
-		    retval.setItemsNet(retval.getItemsNet()/*.with(rounding)*/);
-		} 
+//		if (netGross == DocumentSummary.ROUND_NET_VALUES) {
+//		    retval.setItemsNet(retval.getItemsNet()/*.with(rounding)*/);
+//		} 
 		
 		// Gross value is the sum of net and VAT and sales equalization tax value 
 		retval.setTotalNet(retval.getItemsNet());

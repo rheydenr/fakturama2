@@ -60,10 +60,12 @@ public class VatSummarySetManager {
         boolean useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 		documentSummaryCalculator.setUseSET(useSET);
 		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
-				Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
+				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
-				document.getShippingAutoVat(), Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), document.getNoVatReference(),
- 			        scaleFactor, document.getNetGross(), deposit);
+				document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
+				Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), 
+				document.getNoVatReference(),
+ 			    scaleFactor, document.getNetGross(), deposit);
 	}
 	
 	

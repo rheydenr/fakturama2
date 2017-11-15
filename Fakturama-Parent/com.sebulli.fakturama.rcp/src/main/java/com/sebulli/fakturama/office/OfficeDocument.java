@@ -344,12 +344,14 @@ public class OfficeDocument {
                 textdoc.save(fs);
                 wasSaved = true;
                 if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && !silentMode) {
-	                // perhaps we should open the filled document in Openoffice (if wanted)
-	        		try {
-						Desktop.getDesktop().open(documentPath.toFile());
-					} catch (IOException | IllegalArgumentException e) {
-		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
-					}
+        			final Path odtPath = documentPath;
+        			sync.asyncExec(() -> {
+        				try {
+							Desktop.getDesktop().open(odtPath.toFile());
+						} catch (IOException e) {
+			                log.error(e, MessageFormat.format("Error opening the ODT document {0}: {1}", odtPath.toString(), e.getMessage()));
+						}
+        			});
                 }
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
@@ -383,11 +385,14 @@ public class OfficeDocument {
         	if(generatedPdf != null) {
         		wasSaved = true;
         		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && !silentMode) {
-	        		try {
-						Desktop.getDesktop().open(generatedPdf.toFile());
-					} catch (IOException | IllegalArgumentException e) {
-		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
-					}
+        			final Path pdfPath = generatedPdf;
+        			sync.asyncExec(() -> {
+		        		try {
+							Desktop.getDesktop().open(pdfPath.toFile());
+						} catch (IOException | IllegalArgumentException e) {
+			                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", pdfPath.toString(), e.getMessage()));
+						}
+        			});
         		}
         	}
         }

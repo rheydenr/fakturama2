@@ -411,10 +411,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
-	                        retval = rowObject.getPrice().getTotalGrossRounded();
+	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
 	                    } else { // "$ItemNetTotal"
 	                        // Fill the cell with the total net value of the item
-	                        retval = rowObject.getPrice().getTotalNetRounded();
+	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
 	                    }
 	                    break;
 	                default:

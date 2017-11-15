@@ -50,10 +50,18 @@ public class DocumentItemDTO implements IEntity {
      * @return the price
      */
     public Price getPrice() {
-        return new Price(documentItem);
+        return getPrice(false);
     }
 
-    @Override
+    /**
+     * 
+     * @param useSET use sales equalization tax, if any
+     * @return the price
+     */
+     public Price getPrice(boolean useSET) {
+        return new Price(documentItem, 1.0, useSET);
+    }
+   @Override
     public String getName() {
         return documentItem.getName();
     }
