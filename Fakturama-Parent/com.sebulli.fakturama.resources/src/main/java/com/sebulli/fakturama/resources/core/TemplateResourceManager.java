@@ -13,6 +13,7 @@
  */
 package com.sebulli.fakturama.resources.core;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,43 +70,44 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         }
 
         // Exit, if the workspace path is not valid
-        Path workspacePath = Paths.get(workspace, templateFolderName);
+        Path workspacePath = Paths.get(StringUtils.removeEnd(workspace, String.valueOf(File.separatorChar)), templateFolderName);
         if (!Files.isDirectory(workspacePath)) {
             // Create and fill the template folder, if it does not exist.
             try {
                 Files.createDirectories(workspacePath);
+                final String workspacePathString = workspacePath.toString();
                 // Copy the document templates from the resources to the file system
                 for (DocumentType doctype : DocumentType.values()) {
-                    switch (doctype) {
+					switch (doctype) {
                     case NONE:
                         // do nothing!
                         break;
                     case DELIVERY:
                         resourceCopy("Templates/Delivery/Document.ott",
-                                Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
+                                Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     default:
                         resourceCopy("Templates/Invoice/Document.ott",
-                                Paths.get(workspace, templateFolderName, translate(doctype.getSingularKey()), "Document.ott"));
+                                Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     }
                 }
     
                 // Create the start page, if it does not exist.
-                Path startPage = Paths.get(workspace, templateFolderName, START_DOC_PATH, START_DOC_HTML);
+                Path startPage = Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML);
                 if (Files.notExists(startPage)) {
-                    resourceCopy("Templates/Start/start.html", Paths.get(workspace, templateFolderName, START_DOC_PATH, START_DOC_HTML));
-                    resourceCopy("Templates/Start/logo.png", Paths.get(workspace, templateFolderName,  START_DOC_PATH, "logo.png"));
+                    resourceCopy("Templates/Start/start.html", Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML));
+                    resourceCopy("Templates/Start/logo.png", Paths.get(workspacePathString,  START_DOC_PATH, "logo.png"));
                 }
         
                 // Copy the parcel service templates
-                String translatedServiceString = translate("page.parcelservice");
-				Path parcelServiceFolder = Paths.get(workspace, templateFolderName, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
+                String translatedServiceString = StringUtils.trim(translate("page.parcelservice"));
+				Path parcelServiceFolder = Paths.get(workspacePathString, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
                 if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "DHL_de.txt"));
-                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "eFILIALE_de.txt"));
-                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "myHermes_de.txt"));
-                    resourceCopy("Templates/ParcelService/UPS_de.txt", Paths.get(workspace, templateFolderName, translatedServiceString, "UPS_de.txt"));
+                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspacePathString, translatedServiceString, "DHL_de.txt"));
+                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE_de.txt"));
+                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes_de.txt"));
+                    resourceCopy("Templates/ParcelService/UPS_de.txt", Paths.get(workspacePathString, translatedServiceString, "UPS_de.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");

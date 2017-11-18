@@ -584,7 +584,8 @@ public class OfficeDocument {
 			// clone one row from template
 			TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
 			// we always insert only ONE row to the table
-			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+//			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+			Row tmpRow = pTable.appendRow();
 			pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
 			Row newRow = Row.getInstance(newRowElement);
 			// find all placeholders within row
