@@ -239,7 +239,7 @@ public class DocumentEditor extends Editor<Document> {
 	private CDateTime dtPaidDate;
 	private FormattedText itemsSum;
 	private FormattedText itemsDiscount;
-	private ComboViewer comboViewerShipping;
+	private Combo comboShipping;
 	private FormattedText shippingValue;
 	//private Text depositValue;
 	private FormattedText vatValue;
@@ -709,7 +709,7 @@ public class DocumentEditor extends Editor<Document> {
 		if(itemsDiscount != null) {
 			bindModelValue(document, itemsDiscount, Document_.itemsRebate.getName(), 5);			
 		}
-		if(comboViewerShipping != null) {
+		if(comboShipping != null) {
 			fillAndBindShippingCombo();
 		}
 		if(documentType.canBePaid()) {
@@ -772,6 +772,7 @@ public class DocumentEditor extends Editor<Document> {
 
 	private void fillAndBindShippingCombo() {
 		Shipping tmpShipping = document.getShipping();
+        ComboViewer comboViewerShipping = new ComboViewer(comboShipping);
         comboViewerShipping.setContentProvider(new EntityComboProvider());
         comboViewerShipping.setLabelProvider(new EntityLabelProvider());
         comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -2568,10 +2569,10 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
-		// Shipping combo
-		comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
-		comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboViewerShipping.getCombo());
+		// Shipping combo		
+		comboShipping = new Combo(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
+		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    
 		// Shipping value field
 		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
