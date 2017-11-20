@@ -280,7 +280,7 @@ public class OrdersCsvImporter {
 					
 					// cache the results
 					resultList.add(order);
-					numberGenerator.setNextFreeNumberInPrefStore(order.getName(), "name", DocumentType.ORDER.getTypeAsString());
+					numberGenerator.setNextFreeNumberInPrefStore(order.getName(), DocumentType.ORDER.getTypeAsString());
 				}
 			}
 			if(!resultList.isEmpty()) {
@@ -326,8 +326,8 @@ public class OrdersCsvImporter {
 		} finally {
 			// rewind numbers
 			if(doRewind) {
-				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentOrderNumber), "name", DocumentType.ORDER.getTypeAsString());
-				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentDebtorNumber), "name", "Debtor");
+				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentOrderNumber), DocumentType.ORDER.getTypeAsString());
+				numberGenerator.setNextFreeNumberInPrefStore(Integer.toString(currentDebtorNumber), "Debtor");
 			}
 		}
 		return resultList;

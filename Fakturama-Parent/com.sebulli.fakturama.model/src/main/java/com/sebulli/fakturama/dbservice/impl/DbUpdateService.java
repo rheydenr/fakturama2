@@ -117,6 +117,7 @@ public class DbUpdateService implements IDbUpdateService {
 					ServiceReference<IActivateDbServer> serviceDbRef;
 					serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
+					prop.put("encoding", "UTF-8");
 					if(currentService != null) {
 						try {
 							currentService.stopServer();
