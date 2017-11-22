@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -67,6 +68,7 @@ import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.EditorSaveHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -180,7 +182,7 @@ public class LifecycleManager {
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
             
         	splashService.worked(5);
-            
+        	
             // register event handler for saving and closing editors before shutdown
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
                 new EventHandler() {
@@ -447,6 +449,8 @@ public class LifecycleManager {
 
         } else {
 			try {
+	            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
+	            		new AppStartupCompleteEventHandler(context, false, modelService, app));
 				fillWithInitialData(splashService);
 			}
 			catch (FakturamaStoringException sqlex) {
@@ -476,15 +480,30 @@ public class LifecycleManager {
     private static final class AppStartupCompleteEventHandler implements EventHandler {
         private final IEclipseContext _context;
         private final boolean restartApplication;
+        private final EModelService modelService;
+        private final MApplication app;
 
         AppStartupCompleteEventHandler(final IEclipseContext context, boolean restartApplication) {
-            _context = context;
-            this.restartApplication = restartApplication;
+            this(context, restartApplication, null, null);
+        }
+        
+        AppStartupCompleteEventHandler(final IEclipseContext context, boolean restartApplication, EModelService modelService, MApplication app) {
+        	_context = context;
+        	this.restartApplication = restartApplication;
+        	this.modelService = modelService;
+        	this.app = app;
         }
 
         @Override
         public void handleEvent(final Event event) {
-            IWorkbench workbench = _context.get(IWorkbench.class);
+        	// TODO implement an appropriate SaveDialog for this, then enable this code again
+//        	if(modelService != null) {
+//	            MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
+//	        	ISaveHandler saveHandler = ContextInjectionFactory.make(EditorSaveHandler.class, mainMTrimmedWindow.getContext());
+//	        	mainMTrimmedWindow.getContext().set(ISaveHandler.class, saveHandler);
+//        	}
+        	
+        	IWorkbench workbench = _context.get(IWorkbench.class);
             if (restartApplication) {
                 workbench.restart();
             }
