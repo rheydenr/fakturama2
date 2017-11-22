@@ -298,7 +298,7 @@ public abstract class Editor<T extends IEntity> {
 	 */
 	protected String getNextNr() {
 		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.getNextNr(editorID);
+		return numberGenerator.getNextNr(getEditorID());
 	}
 
 	/**
@@ -313,7 +313,7 @@ public abstract class Editor<T extends IEntity> {
 	 */
 	protected int setNextFreeNumberInPrefStore(String value, String key) {
 		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.setNextFreeNumberInPrefStore(value, editorID);
+		return numberGenerator.setNextFreeNumberInPrefStore(value, getEditorID());
 	}
 	
     /**
