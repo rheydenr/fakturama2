@@ -262,7 +262,7 @@ public class ZugferdExporter {
 			// 2. create XML file
 			CrossIndustryDocument root = createInvoiceFromDataset(invoice);
 
-			testOutput(root);
+//			testOutput(root);
 			
 			// 3. merge XML & PDF/A-1 to PDF/A-3
 			boolean result = createPdf(invoice, root);
