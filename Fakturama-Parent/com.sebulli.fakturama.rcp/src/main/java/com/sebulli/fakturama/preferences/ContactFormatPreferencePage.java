@@ -143,7 +143,7 @@ public class ContactFormatPreferencePage extends FieldEditorPreferencePage imple
 		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_COMPANY, msg.dataDefaultContactFormatSalutation);
 		
 		//T: Preference page "Contact Format" - Example format Strings (Address format)
-		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS, "{company}<br>{title} {firstname} {lastname}<br>{street}<br>{countrycode}{zip} {city}<br>{country}");
+		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS, "{company}<br>{title} {firstname} {lastname}<br>{street}<br>{countrycode}-{zip} {city}<br>{country}");
 		
 		node.setDefault(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES, msg.dataDefaultContactFormatExcludedcountries);
 	}

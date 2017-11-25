@@ -701,7 +701,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	        Root<Document> root = criteria.from(getEntityClass());
 	        Predicate whereClause = cb.and(
 					cb.equal(root.<Integer>get(Document_.transactionId), transactionId),
-					cb.equal(root.<BillingType>get(Document_.billingType), targetype)
+					cb.equal(root.<BillingType>get(Document_.billingType), targetype),
+					cb.not(root.<Boolean>get(Document_.deleted))
 				);
 			CriteriaQuery<Document> cq = criteria.where(
 	        		whereClause);

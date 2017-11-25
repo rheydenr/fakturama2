@@ -264,7 +264,7 @@ public class DocumentEditor extends Editor<Document> {
 	private boolean noVat;
 	private String noVatName;
 //	private String noVatDescription;
-	private Payment payment;
+//	private Payment payment;
 //	private MonetaryAmount paidValue = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private int shippingId;
 	private Shipping shipping = null;
@@ -413,7 +413,7 @@ public class DocumentEditor extends Editor<Document> {
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
 		if (documentType == DocumentType.DELIVERY) {
-            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
+            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
             if(document.getDeliveryContact() == null) {
@@ -497,8 +497,7 @@ public class DocumentEditor extends Editor<Document> {
 				msg.editorDocumentErrorWrongcontactTitle,
 				
 				//T: Text of the dialog that appears if the document is assigned to  an other address.
-				msg.editorDocumentErrorWrongcontactMsg1 + "\n\n" + addressById + "\n\n" + 
-				msg.editorDocumentErrorWrongcontactMsg2);
+				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
 				return;
 			}
 		}
@@ -511,6 +510,7 @@ public class DocumentEditor extends Editor<Document> {
 		// If this document contains no payment widgets, but..
 //		else {
 			// the customer changed and so there is a new payment. Set it.
+		// TODO Check it! The payment *cannot* be changed manually!
 			if (!newPaymentDescription.isEmpty()) {
 				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
 			}
@@ -577,6 +577,8 @@ public class DocumentEditor extends Editor<Document> {
                 }
 			}
 		}
+		
+		calculate(true);		//test only
 		
 		document.setTotalValue(total.getNumber().doubleValue());
 		
@@ -963,7 +965,7 @@ public class DocumentEditor extends Editor<Document> {
 				
 				// Default payment
 				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
-                payment = paymentsDao.findById(paymentId);
+                Payment payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
                 if(payment != null) {
                 	document.setDueDays(payment.getNetDays());
@@ -974,11 +976,10 @@ public class DocumentEditor extends Editor<Document> {
 				document.setNetGross(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS));
 			}
 			else {
-				payment = document.getPayment();
-				if(payment == null) {
+				if(document.getPayment() == null) {
 					// Default payment
 					int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
-	                payment = paymentsDao.findById(paymentId);
+	                Payment payment = paymentsDao.findById(paymentId);
 	                document.setPayment(payment);
 				}
 				
@@ -1012,7 +1013,7 @@ public class DocumentEditor extends Editor<Document> {
 			documentType =  DocumentTypeUtil.findByBillingType(document.getBillingType());
 			setEditorID(documentType.getTypeAsString());
 
-			payment = document.getPayment();
+//			payment = document.getPayment();
 			shipping = document.getShipping();
 
 			// and the editor's part name
@@ -1214,8 +1215,8 @@ public class DocumentEditor extends Editor<Document> {
 		// Get the sign of this document ( + or -)
 //		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
-		// Get the discount value from the control element
-		Double rebate = Double.valueOf(0.0);
+		// Get the discount value from the document or (if exists) from control element
+		Double rebate = java.util.Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0));
 		if (itemsDiscount != null) {
 	        // Convert it to negative values
 	        rebate = (Double)itemsDiscount.getValue();
@@ -1640,12 +1641,14 @@ public class DocumentEditor extends Editor<Document> {
 
         if (documentType == DocumentType.DELIVERY) {
             hasDifferentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
+            // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
+            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, billingAddress.replaceAll("&", "&&")));
         } else {
             hasDifferentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
+            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, deliveryAddress.replaceAll("&", "&&")));
         }
 
+        
         if (hasDifferentDeliveryAddress) {
             // Show the icon
             GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
@@ -1714,15 +1717,15 @@ public class DocumentEditor extends Editor<Document> {
 		if (dataSetPayment == null)
 			return;
 		
-		payment = dataSetPayment;
+//		payment = dataSetPayment;
 
 		// Get the due days and description of this payment
 //		duedays = payment.getNetDays();
 //		newPayment = dataSetPayment;
-		newPaymentDescription = payment.getDescription();
+		newPaymentDescription = dataSetPayment.getDescription();
 
 		if (spDueDays !=null && !spDueDays.isDisposed()) {
-			spDueDays.setSelection(payment.getNetDays().intValue());
+			spDueDays.setSelection(dataSetPayment.getNetDays().intValue());
 			updateIssueDate();
 		}
 	}
