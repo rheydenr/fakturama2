@@ -14,8 +14,8 @@
  
 package com.sebulli.fakturama.util;
 
-import java.sql.Date;
 import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 import com.sebulli.fakturama.misc.DocumentType;
@@ -74,6 +74,7 @@ public class DocumentTypeUtil {
         }
         return retval;
     }
+    
     public static Document createDocumentByBillingType(BillingType documentType) {
     	DocumentType targetType = findByBillingType(documentType);
     	return createDocumentByDocumentType(targetType);

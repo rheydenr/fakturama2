@@ -260,7 +260,7 @@ public class DocumentEditor extends Editor<Document> {
 	/*
 	 * Since the contact could be either a delivery or a billing contact we have to use an extra field for it.
 	 */
-	private Contact addressId = null;
+	private Contact displayAddress = null;
 	private boolean noVat;
 	private String noVatName;
 //	private String noVatDescription;
@@ -395,7 +395,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
 
-		// Set the document type
+		// Set the document type TODO check if it could be omitted since we set it in init method
 		document.setBillingType(BillingType.get(documentType.getKey()));
 
 		// If this is an order, use the date as order date
@@ -417,10 +417,10 @@ public class DocumentEditor extends Editor<Document> {
 				addressModified = true;
 			}
             if(document.getDeliveryContact() == null) {
-            	addressId = modelFactory.createDebitor();
+            	displayAddress = modelFactory.createDebitor();
             	Address address = modelFactory.createAddress();
-            	addressId.setAddress(address);
-            	document.setDeliveryContact(addressId);
+            	displayAddress.setAddress(address);
+            	document.setDeliveryContact(displayAddress);
             	document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             }
 
@@ -428,9 +428,9 @@ public class DocumentEditor extends Editor<Document> {
 			if (billingAddress.isEmpty()) {
 				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-			if (addressId != null && addressId.getCustomerNumber() != null) {
+			if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-    			document.setDeliveryContact(addressId);
+    			document.setDeliveryContact(displayAddress);
 			} else {
 			    /*
 			     * If no addressId was given (no contact selected) then we use
@@ -456,25 +456,25 @@ public class DocumentEditor extends Editor<Document> {
 			* Else it could be a newly selected contact from the contact list.
 			*/
 			// TODO check FAK-276 if it is working! 
-			if(addressModified && (addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
-			       || addressId.getCustomerNumber() == null)) {
+			if(addressModified && (displayAddress.getCustomerNumber() != null && document.getBillingContact().getId() == displayAddress.getId()
+			       || displayAddress.getCustomerNumber() == null)) {
 				// before we change an address we have to check for delivery addresses and save it...
 				if(document.getDeliveryContact() == null && document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) {
 					document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
 				}
-			    addressId = modelFactory.createDebitor();
+			    displayAddress = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
 			    address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			    addressId.setAddress(address);
+			    displayAddress.setAddress(address);
 			    try {
-                    addressId = contactDAO.save(addressId);
+                    displayAddress = contactDAO.save(displayAddress);
                 } catch (FakturamaStoringException e) {
                     log.error(e);
                 }
 			}
 
-			if (addressId.getCustomerNumber() != null) {
-				addressById = contactUtil.getAddressAsString(addressId);
+			if (displayAddress.getCustomerNumber() != null) {
+				addressById = contactUtil.getAddressAsString(displayAddress);
 				/* If the previous address was a manual entry it has to be deleted, because
 				 * else a lot of orphans could be created (manual addresses without a 
 				 * reference to a document).
@@ -484,12 +484,12 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			}
             // set the new contact
-            document.setBillingContact(addressId);
+            document.setBillingContact(displayAddress);
 		}
 
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
-		if (addressId.getCustomerNumber() != null && addressModified) {
+		if (displayAddress.getCustomerNumber() != null && addressModified) {
 			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
@@ -622,8 +622,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
-		if (addressId != null && addressId.getCustomerNumber() != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(addressId));
+		if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
+			document.setAddressFirstLine(contactUtil.getNameWithCompany(displayAddress));
 		}
 		else {
 			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
@@ -664,7 +664,7 @@ public class DocumentEditor extends Editor<Document> {
         try {
             document = documentsDAO.save(document);
             // update address in model
-            addressId = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
+            displayAddress = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -1026,7 +1026,7 @@ public class DocumentEditor extends Editor<Document> {
 //		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
 		
 		// the address is either the delivery address (if the document is a delivery note) or the billing address
-		addressId = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
+		displayAddress = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
@@ -1061,7 +1061,7 @@ public class DocumentEditor extends Editor<Document> {
 			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
 					? document.getBillingContact() : document.getDeliveryContact());
 		} else {
-	        billingAddress = contactUtil.getAddressAsString(addressId);
+	        billingAddress = contactUtil.getAddressAsString(displayAddress);
 			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
 					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
 						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
@@ -1138,6 +1138,8 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setOrderDate(parentDoc.getOrderDate());
 		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);
+		} else if(parentDoc.getInvoiceReference() != null) {
+			retval.setInvoiceReference(parentDoc.getInvoiceReference());
 		}
 
 		// copy items
@@ -1316,12 +1318,12 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Use the customers settings instead, if they are set
-		if (addressId != null && address_changed) {
+		if (displayAddress != null && address_changed) {
 			// useNetGross can be null (from database!)
-			if (addressId.getUseNetGross() != null && addressId.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			if (displayAddress.getUseNetGross() != null && displayAddress.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-			} else if (addressId.getUseNetGross() == null || addressId.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+			} else if (displayAddress.getUseNetGross() == null || displayAddress.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1679,7 +1681,7 @@ public class DocumentEditor extends Editor<Document> {
 	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
     	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
-		this.addressId = contact;
+		this.displayAddress = contact;
 
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());

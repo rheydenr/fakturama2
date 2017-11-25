@@ -318,7 +318,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
 
-        if (documentType.hasPrice()) {
+        if (documentType.hasPrice() 
+        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
 	        
 	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
