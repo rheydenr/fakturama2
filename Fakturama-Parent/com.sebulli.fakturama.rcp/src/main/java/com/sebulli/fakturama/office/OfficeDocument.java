@@ -310,8 +310,8 @@ public class OfficeDocument {
 //			textDocument.getFrame().getDispatch(GlobalCommands.PRINT_DOCUMENT_DIRECT).dispatch();
 		}
 		catch (Exception e) {
-		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
-		    throw new FakturamaStoringException("Error starting OpenOffice from " + template.getFileName(), e);
+		    log.error(e, "Error starting OpenOffice with " + template.getFileName());
+		    throw new FakturamaStoringException("Error starting OpenOffice with " + template.getFileName(), e);
 		}
 	}
 
@@ -478,8 +478,9 @@ public class OfficeDocument {
 	 * @param origFileName 
 	 * @param targetFormat 
 	 * @return <code>true</code> if the creation was successful
+	 * @throws FakturamaStoringException 
 	 */
-	private Path createPdf(Path documentPath, Path origFileName, TargetFormat targetFormat) {
+	private Path createPdf(Path documentPath, Path origFileName, TargetFormat targetFormat) throws FakturamaStoringException {
 		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
@@ -529,7 +530,7 @@ public class OfficeDocument {
 				}
 			}
 		} catch (FileSystemException e) {
-			System.err.println("is nich!");
+			throw new FakturamaStoringException("kann PDF nicht schreiben. Ist die Datei evtl. geöffnet?", e);
 		} catch (IOException e) {
 		    log.error(e, "Error moving the PDF document");
 		} catch (InterruptedException e) {

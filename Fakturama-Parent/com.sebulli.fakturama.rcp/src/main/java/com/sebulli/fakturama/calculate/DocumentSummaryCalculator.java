@@ -270,7 +270,7 @@ public class DocumentSummaryCalculator {
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
 		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : Double.valueOf(0.0);
-		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : "";
+		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : ""; // TODO or get it from additional document info???
 
 		// If shippingAutoVat is not fix, the shipping vat is 
 		// an average value of the vats of the items.
@@ -311,7 +311,11 @@ public class DocumentSummaryCalculator {
 	// 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatItem.getNet());
 	// 			});
 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatSummaryItem.getNet());
+			}
 
+			// at this point we have all relevant VATs (discounted items)
+			// and store them into a separate container.
+			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
 				// Get the data from each entry
 				shippingVatDescription = vatSummaryItem.getVatName();
 				shippingVatPercent = vatSummaryItem.getVatPercent();

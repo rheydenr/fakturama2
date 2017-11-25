@@ -36,6 +36,7 @@ public class VatDisplayConverter extends DisplayConverter {
         if (vatValue != null /*&& vatValue instanceof VAT*/) {
             Double percentageValue = vatValue.getTaxValue();
             if (percentageValue != null) {
+            	nf.setMinimumFractionDigits(1);
                 retval = nf.format(percentageValue);
                 if (vatValue.getName() != null) {
                     retval = String.format("%s (%s)", vatValue.getName(), retval);

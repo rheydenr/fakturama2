@@ -618,9 +618,6 @@ public class Placeholders {
 
 		if (document == null)
 			return null;
-		
-		// Get the contact of the UniDataSet document
-		Contact contact = document.getBillingContact();
 
 		if (key.equals("DOCUMENT.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate());
 		if (key.equals("DOCUMENT.ADDRESSES.EQUAL")) {
@@ -716,7 +713,7 @@ public class Placeholders {
 		if (key.equals("SHIPPING.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingVat());
 		if (key.equals("SHIPPING.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingGross());
 //		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
-		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : "";
+		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();
 
@@ -784,6 +781,9 @@ public class Placeholders {
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
+		// Get the contact of the UniDataSet document
+		Contact contact = document.getBillingContact();
+	
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
 		if (contact != null) {
 		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -842,9 +842,6 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
-			if(document.getBillingContact().getAlternateContacts() != null) {
-			    contact = document.getBillingContact().getAlternateContacts();
-			}
 			if(document.getDeliveryContact() != null) {
 			    contact = document.getDeliveryContact();
 			    // if no delivery contact is available, use billing contact
@@ -869,10 +866,10 @@ public class Placeholders {
     			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
     			Optional<Locale> locale = LocaleUtil.getInstance().findByCode(address.getCountryCode());
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
-   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : LocaleUtil.getInstance().getDefaultLocale().getDisplayCountry();
+   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
             }
 		}
 		// There is no reference - Try to get the information from the address field
@@ -892,10 +889,10 @@ public class Placeholders {
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
             Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
-				return locale.isPresent() ? locale.get().getCountry() : "??";
+				return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
 			}
 			if (key2.equals("ADDRESS.COUNTRY.CODE3")) {
-				return locale.isPresent() ? locale.get().getISO3Country() : "???";
+				return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
 			}
 
 			if (key2.equals("ADDRESS.GREETING")) return contactUtil.getCommonGreeting();

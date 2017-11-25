@@ -25,7 +25,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         if (canonicalValue != null) {
             double percentageValue = ((Number) canonicalValue).doubleValue();
             double displayInt = percentageValue * 100;
-            return String.valueOf(displayInt) + "%"; //$NON-NLS-1$
+            return String.format("%.1f %%", displayInt);
         }
         return ""; //$NON-NLS-1$
 	}

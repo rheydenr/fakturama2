@@ -578,8 +578,6 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 		
-		calculate(true);		//test only
-		
 		document.setTotalValue(total.getNumber().doubleValue());
 		
 		// Set the dunning level
@@ -800,19 +798,42 @@ public class DocumentEditor extends Editor<Document> {
         	}
 
 			private void clearManualShipping(Document document) {
-				document.getAdditionalInfo().setShippingAutoVat(null);
+//				document.getAdditionalInfo().setShippingAutoVat(null);
 				document.getAdditionalInfo().setShippingDescription(null);
-				document.getAdditionalInfo().setShippingName(null);
-				document.getAdditionalInfo().setShippingValue(null);
-				document.getAdditionalInfo().setShippingVatDescription(null);
-				document.getAdditionalInfo().setShippingVatValue(null);
+//				document.getAdditionalInfo().setShippingName(null);
+//				document.getAdditionalInfo().setShippingValue(null);
+//				document.getAdditionalInfo().setShippingVatDescription(null);
+//				document.getAdditionalInfo().setShippingVatValue(null);
 			}
         });
+        
+      comboShipping.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				// if the shipping combo box value is changed manually we have to cut off the shipping from document
+				// and set it to the additionalinfos object
+				if(e != null) {
+					ISelection selection = comboViewerShipping.getSelection();
+					// an empty selection signals that the user has typed an own value
+					if(selection.isEmpty()) {						
+						// set additional infos
+						document.getAdditionalInfo().setShippingDescription(((Combo)e.getSource()).getText());
+						// cut off shipping
+						document.setShipping(null);
+					}
+				}
+			}
+		});
+      
 
         // Fill the shipping combo with the shipping values.
         List<Shipping> allShippings = shippingsDAO.findAll();
         comboViewerShipping.setInput(allShippings);
-        document.setShipping(tmpShipping);
+        	document.setShipping(tmpShipping);
+        if(tmpShipping == null && document.getAdditionalInfo().getShippingDescription() != null) {
+        	// shipping was set manually => we have to do some magic :-)
+        	comboShipping.setText(document.getAdditionalInfo().getShippingDescription());
+        }
         
         // Get the documents'shipping values.
         UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
@@ -1243,8 +1264,8 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Do the calculation
-		// if - for what reason ever - the shipping has no value, I've decided to set it to default shipping.
-		if(shipping == null) {
+		// if - for what reason ever - the document shipping has no value, I've decided to set it to default shipping.
+		if(shipping == null && document.getShippingValue() == null && document.getAdditionalInfo().getShippingValue() == null) {
 			shipping = lookupDefaultShippingValue();
 		}
 		
@@ -1403,7 +1424,7 @@ public class DocumentEditor extends Editor<Document> {
 		// If the shipping value has changed:
 		// Set the shippingAutoVat to net or gross, depending on the
 		// settings of this editor.
-		if (!DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
+		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
 		}
 
@@ -1411,6 +1432,9 @@ public class DocumentEditor extends Editor<Document> {
 //		shipping = newShippingValue;
 		document.setShippingValue(newShippingValue);
 		document.setShipping(null);   // because we changed the Shipping value manually
+		
+		// now the document gets dirty
+		getMDirtyablePart().setDirty(true);
 		calculate();
 	}
 
@@ -2517,7 +2541,6 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
             			calculate();
-    
             		}
             	});
     
@@ -2525,7 +2548,7 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addKeyListener(new KeyAdapter() {
             		public void keyPressed(KeyEvent e) {
             			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
-            				calculate();
+            				itemsDiscount.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
             			}
             		}
             	});
@@ -2575,7 +2598,7 @@ public class DocumentEditor extends Editor<Document> {
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
+		comboShipping = new Combo(shippingComposite, SWT.BORDER/* | SWT.READ_ONLY*/);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
 		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    
@@ -2590,7 +2613,7 @@ public class DocumentEditor extends Editor<Document> {
 //            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
 		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
    
-		// Recalculate, if the discount field looses the focus.
+		// Recalculate, if the shipping field looses the focus.
 		/*
 		 * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
 		 * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 
