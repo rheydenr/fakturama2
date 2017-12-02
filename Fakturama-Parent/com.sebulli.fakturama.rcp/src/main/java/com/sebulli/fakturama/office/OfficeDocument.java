@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.office;
 
-import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,6 +53,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
@@ -346,11 +346,8 @@ public class OfficeDocument {
                 if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && !silentMode) {
         			final Path odtPath = documentPath;
         			sync.asyncExec(() -> {
-        				try {
-							Desktop.getDesktop().open(odtPath.toFile());
-						} catch (IOException e) {
-			                log.error(e, MessageFormat.format("Error opening the ODT document {0}: {1}", odtPath.toString(), e.getMessage()));
-						}
+        				Program.launch(odtPath.toString());
+//							Desktop.getDesktop().open(odtPath.toFile());
         			});
                 }
             } catch (Exception e) {
@@ -388,8 +385,9 @@ public class OfficeDocument {
         			final Path pdfPath = generatedPdf;
         			sync.asyncExec(() -> {
 		        		try {
-							Desktop.getDesktop().open(pdfPath.toFile());
-						} catch (IOException | IllegalArgumentException e) {
+		        			Program.launch(pdfPath.toString());
+//							Desktop.getDesktop().open(pdfPath.toFile());
+						} catch (IllegalArgumentException e) {
 			                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", pdfPath.toString(), e.getMessage()));
 						}
         			});
