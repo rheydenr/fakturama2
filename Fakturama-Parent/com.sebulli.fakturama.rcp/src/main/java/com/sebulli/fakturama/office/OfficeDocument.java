@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -143,6 +142,10 @@ public class OfficeDocument {
      * background processing, default is FALSE
      */
     private boolean silentMode = false;
+
+	private Path documentPath;
+
+	private Path generatedPdf;
     
     /**
      * Default constructor
@@ -174,8 +177,12 @@ public class OfficeDocument {
 			}
 
 			// Stop here and do not fill the document's placeholders, if it's an existing document
-			if (openExisting)
+			if (openExisting) {
+				documentPath = Paths.get(document.getOdtPath());
+				generatedPdf = Paths.get(document.getPdfPath());
+				openDocument();
 				return;
+			}
 			
 			// check if we have to use sales equalization tax
 	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
@@ -296,22 +303,35 @@ public class OfficeDocument {
 				removeNode.getParentNode().removeChild(removeNode);
 			}
 
-//			// Save the document
+			// Save the document
 			if(saveOODocument(textdoc)) {
-				if(!silentMode) {
-					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
-				}
-			    
-			    // TODO open Doc in OO if necessary
+				openDocument();
 			}
-
-			// Print and close the OpenOffice document
-			
-//			textDocument.getFrame().getDispatch(GlobalCommands.PRINT_DOCUMENT_DIRECT).dispatch();
 		}
 		catch (Exception e) {
 		    log.error(e, "Error starting OpenOffice with " + template.getFileName());
 		    throw new FakturamaStoringException("Error starting OpenOffice with " + template.getFileName(), e);
+		}
+	}
+
+	/**
+	 * Opens the finally created document(s). Depends on preferences (ODT, PDF or both of them).
+	 */
+	private void openDocument() {
+		if(!silentMode) {
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD)) {
+				sync.asyncExec(() -> {
+					Program.launch(documentPath.toString());
+				});
+			} else {
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+			}
+			
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+				sync.asyncExec(() -> {
+					Program.launch(generatedPdf.toString());
+				});
+			}
 		}
 	}
 
@@ -322,7 +342,7 @@ public class OfficeDocument {
      *            The document
      */
 	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
-		Path generatedPdf = null;
+		generatedPdf = null;
 		Set<PathOption> pathOptions = new HashSet<>();
 		pathOptions.add(PathOption.WITH_FILENAME);
 		pathOptions.add(PathOption.WITH_EXTENSION);
@@ -331,7 +351,7 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setCreator(msg.applicationName);
         textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
-		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 		Path origFileName = documentPath.getFileName();
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
@@ -343,13 +363,6 @@ public class OfficeDocument {
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
-                if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && !silentMode) {
-        			final Path odtPath = documentPath;
-        			sync.asyncExec(() -> {
-        				Program.launch(odtPath.toString());
-//							Desktop.getDesktop().open(odtPath.toFile());
-        			});
-                }
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
             }
@@ -381,17 +394,6 @@ public class OfficeDocument {
             // open the pdf if needed
         	if(generatedPdf != null) {
         		wasSaved = true;
-        		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && !silentMode) {
-        			final Path pdfPath = generatedPdf;
-        			sync.asyncExec(() -> {
-		        		try {
-		        			Program.launch(pdfPath.toString());
-//							Desktop.getDesktop().open(pdfPath.toFile());
-						} catch (IllegalArgumentException e) {
-			                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", pdfPath.toString(), e.getMessage()));
-						}
-        			});
-        		}
         	}
         }
         
