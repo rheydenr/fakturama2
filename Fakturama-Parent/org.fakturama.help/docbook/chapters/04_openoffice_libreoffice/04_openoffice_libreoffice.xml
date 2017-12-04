@@ -793,7 +793,7 @@ id="04_openoffice_libreoffice">
 						<entry>FORMAT</entry>
 						<entry>
 							<para>Das Format kann bei Zahlenangaben festgelegt werden.</para>
-							<para>Beispiele:</para>
+							<para>Beispiele:
 							<itemizedlist spacing="compact">
 								<listitem>
 									<para>
@@ -803,7 +803,15 @@ id="04_openoffice_libreoffice">
 									<para>
 										<emphasis role="bold">$FORMAT:0</emphasis>  Die Menge 3.1 wird ohne Nachkommastellen als 3 dargestellt</para>
 								</listitem>
-							</itemizedlist>
+							</itemizedlist></para>
+						</entry>
+					</row>
+					<row>
+						<entry>DFORMAT</entry>
+						<entry><para>Datumsangaben können mit diesem Formatparameter angepasst werden. Als Format können gültige Platzhalter aus <link xl:href="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</link> verwendet werden.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">DOCUMENT.SERVICEDATE$DFORMAT:MMMM YYYY</emphasis> November 2017</para>
 						</entry>
 					</row>
 					<row>
@@ -818,7 +826,6 @@ id="04_openoffice_libreoffice">
 				</tbody>
 			</tgroup>
 		</informaltable>
-
 
 		<section>
 			<title>Sonderzeichen</title>

@@ -15,11 +15,14 @@
 package com.sebulli.fakturama.office;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -46,6 +49,7 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -416,8 +420,20 @@ public class Placeholders {
 					Double parsedDouble = localizedNumberFormat.parse(value).doubleValue();
 					value = DataUtils.getInstance().DoubleToDecimalFormatedValue(parsedDouble, par);
 				}
-				catch (Exception e) {
-					// TODO implement!
+				catch (ParseException e) {
+					value = "### NVL ###";
+				}
+			}
+
+			// Parameter "DFORMAT"
+			par = extractParam(placeholder, "DFORMAT");
+			if (!par.isEmpty()) {
+				try {
+					GregorianCalendar checkDate = DataUtils.getInstance().getCalendarFromDateString(value);
+					SimpleDateFormat sdf = new SimpleDateFormat(par);
+					value = sdf.format(checkDate.getTime());
+				} catch (IllegalArgumentException e) {
+					value = "### NVL ###";
 				}
 			}
 		}

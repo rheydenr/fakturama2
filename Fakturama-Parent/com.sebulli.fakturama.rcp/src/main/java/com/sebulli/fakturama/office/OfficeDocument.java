@@ -1099,7 +1099,7 @@ public class OfficeDocument {
 		// Extract parameters
 		for (String placeholder : allPlaceholders) {
 			if ( (placeholder.equals(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+ PlaceholderNavigation.PLACEHOLDER_SUFFIX)) || 
-					( (placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$")) && (placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX)) ) ) {
+					placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$") && placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX) ) {
 
 				// Set the placeholder
 				properties.setProperty(placeholder.toUpperCase(), placeholders.interpretParameters(placeholder, value));
