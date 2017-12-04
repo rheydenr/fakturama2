@@ -49,7 +49,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CategoryComparator;
-import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
@@ -397,6 +396,8 @@ public class PaymentEditor extends Editor<Payment> {
     
     @Override
     protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+		
         bindModelValue(payment, textName, Payment_.name.getName(), 32);
         fillAndBindCategoryCombo();
         bindModelValue(payment, textDescription, Payment_.description.getName(), 64);
@@ -406,6 +407,8 @@ public class PaymentEditor extends Editor<Payment> {
         bindModelValue(payment, textPaid, Payment_.paidText.getName(), 500);
         bindModelValue(payment, textDepositPaid, Payment_.depositText.getName(), 500);
         bindModelValue(payment, textUnpaid, Payment_.unpaidText.getName(), 500);
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
 
     /**

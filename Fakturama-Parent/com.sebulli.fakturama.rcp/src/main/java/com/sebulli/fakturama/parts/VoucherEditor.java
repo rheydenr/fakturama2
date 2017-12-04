@@ -365,7 +365,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	@Override
 	protected void bindModel() {
-    	fillAndBindCategoryCombo();
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
+		fillAndBindCategoryCombo();
         bindModelValue(voucher, dtDate, Voucher_.voucherDate.getName());
         bindModelValue(voucher, textNr, Voucher_.voucherNumber.getName(), 32);
         bindModelValue(voucher, textDocumentNr, Voucher_.documentNumber.getName(), 32);
@@ -373,6 +375,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
         bindModelValue(voucher, bPaidWithDiscount, Voucher_.discounted.getName());
         bindModelValue(voucher, textPaidValue, Voucher_.paidValue.getName(), 32);
         bindModelValue(voucher, textTotalValue, Voucher_.totalValue.getName(), 32);
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
 	}
 	
 		/**

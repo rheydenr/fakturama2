@@ -311,6 +311,8 @@ public class VatEditor extends Editor<VAT> {
     }
     
     protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+		
         bindModelValue(editorVat, textName, VAT_.name.getName(), 64);
         fillAndBindCategoryCombo();
         bindModelValue(editorVat, textDescription, VAT_.description.getName(), 250);
@@ -318,6 +320,9 @@ public class VatEditor extends Editor<VAT> {
         if(textSalesEqTax != null) {
         	bindModelValue(editorVat, textSalesEqTax, VAT_.salesEqualizationTax.getName(), 16);
         }
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
+
     }
 
     /**
