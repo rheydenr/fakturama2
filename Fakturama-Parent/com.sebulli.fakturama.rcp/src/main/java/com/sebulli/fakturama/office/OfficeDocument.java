@@ -321,7 +321,10 @@ public class OfficeDocument {
 		if(!silentMode) {
 			if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && documentPath != null) {
 				sync.asyncExec(() -> {
-					Program.launch(documentPath.toString());
+					boolean wasLaunched = Program.launch(documentPath.toString());
+					if(!wasLaunched) {
+						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for OpenOffice document.");
+					}
 				});
 			} else {
 				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
@@ -329,7 +332,10 @@ public class OfficeDocument {
 			
 			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && generatedPdf != null) {
 				sync.asyncExec(() -> {
-					Program.launch(generatedPdf.toString());
+					boolean wasLaunched = Program.launch(generatedPdf.toString());
+					if(!wasLaunched) {
+						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+					}
 				});
 			}
 		}
