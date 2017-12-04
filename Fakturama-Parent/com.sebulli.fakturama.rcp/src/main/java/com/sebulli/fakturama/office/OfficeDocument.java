@@ -319,7 +319,7 @@ public class OfficeDocument {
 	 */
 	private void openDocument() {
 		if(!silentMode) {
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD)) {
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && documentPath != null) {
 				sync.asyncExec(() -> {
 					Program.launch(documentPath.toString());
 				});
@@ -327,7 +327,7 @@ public class OfficeDocument {
 				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
 			}
 			
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && generatedPdf != null) {
 				sync.asyncExec(() -> {
 					Program.launch(generatedPdf.toString());
 				});
