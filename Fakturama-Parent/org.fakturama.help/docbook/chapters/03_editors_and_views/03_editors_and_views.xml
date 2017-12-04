@@ -849,14 +849,13 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_mainmenu_window"/><title>Hauptmenü Fenster</title>
-		<!-- section>
-			<title>Perspektive zurücksetzen</title>
-			<listitem><para>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</para></listitem>
-		</section -->
 		<variablelist>
+		<varlistentry>
+				<term>Perspektive zurücksetzen</term>
+			<listitem>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</listitem>
+		</varlistentry>
 			<varlistentry>
 				<term>
-
 					<inlinemediaobject>
 						<imageobject role="html">
 							<imagedata fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
@@ -939,12 +938,12 @@
 			<para>Zeigt das Willkommensfenster (Intro), wie es auch beim erstmaligen Start von Fakturama präsentiert wurde.</para>
 			<para>Siehe auch <link linkend="install_start">Start von Fakturama</link>
 			</para>
-		</varlistentry>
+		</varlistentry -->
 		<varlistentry>
 			<term>Nach Updates suchen</term>
-			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
+			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall, kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
 		</varlistentry>
-		<varlistentry>
+		<!--varlistentry>
 			<term>Neue Software installieren</term>
 			<para>Fakturama besteht aus vielen einzelnen Modulen, sogenannten PlugIns. Über einen Dialog können weitere PlugIns angewählt und installiert werden.</para>
 		</varlistentry -->
@@ -996,7 +995,7 @@
 			so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
 			<para>Über den Einstellungsdialog kann man steuern, ob nur OpenOffice-Dokumente oder PDF-Dokumente erstellt werden sollen oder beide Formate.
 			Für die Erzeugung der PDF-Dokumente ist zwingend eine LibreOffice/OpenOffice-Installation erforderlich (das Programm wird im Hintergrund aufgerufen). Die Version
-			spielt allerdings keine Rolle mehr.</para>
+			spielt allerdings keine Rolle.</para>
 			<para>Siehe auch <link linkend="openoffice_main">OpenOffice.org</link>
 			</para>
 		</sect2>
@@ -1011,6 +1010,7 @@
 					</imageobject>
 			</inlinemediaobject> Speichern</title>
 			<para>Speichert das Dokument, die Kontaktadresse, das Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Aktivieren des Buttons einmal in das Editorfenster klicken, falls er nicht aktiv ist. Ein geänderter Editor-Inhalt ist am Sternchen neben dem Tab oben erkennbar.</para>
+			<hint>Zur Zeit funktioniert diese Anzeige auf Linux-Systemen noch nicht zuverlässig. Beim Klick auf "Speichern" wird das Dokument zwar gespeichert, das Sternchen bleibt jedoch bestehen.</hint>
 		</sect2>
 		<sect2>
 			<title> 
@@ -1298,7 +1298,7 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_navigationbar_import"/><title>Navigationsleiste Gruppe Importieren</title>
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1311,11 +1311,11 @@
 			<para>Stellt eine Verbindung mit dem Webshop her. Eingegangene Bestellungen werden abgerufen, neue Produkte werden importiert und Preise aktualisiert. Kontaktadressen werden ebenfalls geladen und zu den Adressdaten hinzugefügt, falls diese noch nicht existieren.</para>
 			<para>Siehe auch <link linkend="webshop_webshop">Webshop</link>
 			</para>
-		</section>
+		</sect2>
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_navigationbar_data"/><title>Navigationsleiste Gruppe Daten</title>
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1328,8 +1328,8 @@
 			<para>Öffnet eine Liste mit allen Dokumenten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1342,8 +1342,8 @@
 			<para>Öffnet eine Liste mit allen Produkten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1356,9 +1356,9 @@
 			<para>Öffnet eine Liste mit allen Debitoradressen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 						<imageobject role="html">
@@ -1371,9 +1371,9 @@
 			<para>Öffnet eine Liste mit allen Kreditoradressen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 
-		<section>
+		<sect2>
 			<title>
 				<inlinemediaobject>
 						<imageobject role="html">
@@ -1386,8 +1386,8 @@
 			<para>Öffnet eine Liste mit allen Zahlungsarten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 				<inlinemediaobject>
 					<imageobject role="html">
@@ -1400,8 +1400,8 @@
 			<para>Öffnet eine Liste mit allen Versandarten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1414,8 +1414,8 @@
 			<para>Öffnet eine Liste mit allen Steuersätzen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1428,7 +1428,7 @@
 			<para>Öffnet eine Liste mit allen vordefinierten Texten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 		<section>
 			<title>
 			<inlinemediaobject>
@@ -1931,7 +1931,7 @@
 		</sect2>
 		<sect2>
 			<title>Versand</title>
-			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, den Betrag nachträglich von Hand zu ändern. Versandkosten werden als Netto- oder Bruttowert angezeigt.</para>
+			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, die Beschreibung und auch den Betrag nachträglich von Hand zu ändern. Die Umsatzsteuer wird jedoch immer vom ursprünglich ausgewählten Eintrag verwendet. Die Versandkosten werden als Netto- oder Bruttowert angezeigt, je nach Einstellung.</para>
 			<para>Siehe <link linkend="editor_editor_shipping">Editor Versandart</link>
 			</para>
 		</sect2>
