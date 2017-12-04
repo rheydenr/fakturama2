@@ -1201,6 +1201,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	}
 
 	protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		bindModelValue(editorContact, comboSalutationViewer, Contact_.gender.getName());
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
@@ -1251,6 +1253,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
 		
 		bindAdditionalValues(editorContact);
+		
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
 
     }	
 

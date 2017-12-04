@@ -32,6 +32,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -83,6 +84,8 @@ public abstract class Editor<T extends IEntity> {
 	 */
 	public static final String UPDATE_EVENT = "update";
 
+	public static final String BIND_MODE_INDICATOR = "IS_IN_BIND_MODE";
+
     @Inject
     protected IPreferenceStore defaultValuePrefs;
 
@@ -115,7 +118,8 @@ public abstract class Editor<T extends IEntity> {
 	private String editorID = "";
 	protected static final int NO_ERROR = 0;
 	protected static final int ERROR_NOT_NEXT_ID = 1;
-    private DataBindingContext ctx = new DataBindingContext();
+
+	private DataBindingContext ctx = new DataBindingContext();
 
 	protected abstract MDirtyable getMDirtyablePart();
 
@@ -365,15 +369,23 @@ public abstract class Editor<T extends IEntity> {
         
         if(source instanceof Combo) {
             ((Combo)source).addModifyListener(e -> {
-                    getMDirtyablePart().setDirty(true);
+            	// because of the Linux event fireworks bug :-(
+            	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
+            			&& ((Combo)source).getSelectionIndex() != ((Combo)e.getSource()).getSelectionIndex()) {
+				    getMDirtyablePart().setDirty(true);
+				}
             });
         } else if(source instanceof CDateTime) {
             ((CDateTime)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
+            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
                     getMDirtyablePart().setDirty(true);
+            	}
             }));
         } else if(source instanceof Button) {
         	((Button)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
+            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
         			getMDirtyablePart().setDirty(true);
+            	}
         	}));
         }
         
@@ -390,7 +402,9 @@ public abstract class Editor<T extends IEntity> {
         bindModelValue(target, source, property, targetToModel, modelToTarget);
         
         source.addModifyListener(e -> {
+        	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
                 getMDirtyablePart().setDirty(true);
+        	}
         });
     }	
 

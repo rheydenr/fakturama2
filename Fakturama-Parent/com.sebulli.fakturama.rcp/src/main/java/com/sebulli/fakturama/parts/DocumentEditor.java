@@ -689,6 +689,10 @@ public class DocumentEditor extends Editor<Document> {
     
     @Override
     protected void bindModel() {
+		
+		// for the (very ugly!) Linux bug which posts an event after each binding
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+    	
     	int noOfMessageFields = getNumberOfMessageFields();
 		bindModelValue(document, txtName, Document_.name.getName(), 80);
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
@@ -730,6 +734,10 @@ public class DocumentEditor extends Editor<Document> {
 						new UpdateValueStrategy());
 			}
 		}
+        
+        // now remove the "bind mode" from part
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
+        
     }
 
 	private void fillAndBindPaidCombo() {
@@ -771,6 +779,7 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	private void fillAndBindShippingCombo() {
+		
 		Shipping tmpShipping = document.getShipping();
         ComboViewer comboViewerShipping = new ComboViewer(comboShipping);
         comboViewerShipping.setContentProvider(new EntityComboProvider());

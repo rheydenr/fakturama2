@@ -245,9 +245,13 @@ public class TextEditor extends Editor<TextModule> {
 	
 	@Override
 	protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
 		bindModelValue(editorText, textName, TextModule_.name.getName(), 64);
         fillAndBindCategoryCombo();
         bindModelValue(editorText, textText, TextModule_.text.getName(), 10000);
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
 	}
 
     /**

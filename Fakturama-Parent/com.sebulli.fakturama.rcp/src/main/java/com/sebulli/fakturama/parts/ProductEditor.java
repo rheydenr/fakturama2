@@ -830,6 +830,8 @@ public class ProductEditor extends Editor<Product> {
     
     @Override
     protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
@@ -852,6 +854,8 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
 		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
 		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
+		
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
 
 	private void fillAndBindVatCombo() {
