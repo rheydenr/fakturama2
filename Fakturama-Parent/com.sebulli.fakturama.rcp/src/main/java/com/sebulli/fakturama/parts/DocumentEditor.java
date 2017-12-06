@@ -614,7 +614,7 @@ public class DocumentEditor extends Editor<Document> {
 			    .map(dto -> dto.getDocumentItem())
 			    .sorted(Comparator.comparing(DocumentItem::getPosNr))
 			    .collect(Collectors.toList());
-			document.setItems(new ArrayList<>(items));
+			document.setItems(items);
 		}
 
 		// Set the "addressfirstline" value to the first line of the
@@ -832,6 +832,7 @@ public class DocumentEditor extends Editor<Document> {
 						document.getAdditionalInfo().setShippingDescription(((Combo)e.getSource()).getText());
 						// cut off shipping
 						document.setShipping(null);
+						getMDirtyablePart().setDirty(true);
 					}
 				}
 			}
@@ -1426,7 +1427,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * The shipping value has changed. So take the absolute value and
 	 * recalculate the document's total sum.
 	 */
-	private void changeShippingValue() {
+	protected void changeShippingValue() {
 
 		// Get the new value and take the absolute value
 		Double newShippingValue = (Double) shippingValue.getValue();

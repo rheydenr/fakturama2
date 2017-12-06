@@ -4,7 +4,7 @@
 	<title>Paketdienst</title>
 	<section>
 		<title>Ausfüllen des Formulars der Paketdienst-Webseite</title>
-		<para>Aus einem Lieferschein kann ein Formular eines Paketdienstes automatisch ausgefüllt werden.
+		<para>Aus einem Lieferschein kann ein Formular eines Paketdienstes automatisch ausgefüllt werden.</para>
 			<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/parcelservice/parcel_service_32.png" format="PNG" scalefit="1"/>
@@ -13,24 +13,24 @@
 						<imagedata contentdepth="50%" fileref="../images/parcelservice/parcel_service_32.png" format="PNG" scalefit="1" width="100%"/>
 					</imageobject>
 			</inlinemediaobject>
-       Die Webseite des Paketdienstes wird aufgerufen und die entsprechenden Formularfelder mit den Inhalten gefüllt. </para>
+       <para>Die Webseite des Paketdienstes wird aufgerufen und die entsprechenden Formularfelder mit den Inhalten gefüllt.</para>
 	</section>
 	<section>
 		<title>Vorlagen</title>
 		<para>Die URL des Paketdienstes sowie die Informationen darüber, welche Felder wie gefüllt werden, sind in den Vorlagen des Paketdienstes beschrieben. Dies sind Textdateien, die editiert und ggf. um neue Paketdienste erweitert werden können.</para>
-		<para>Siehe auch <link linkend="parcelservice_templates">Paketdienst-Vorlagen</link>und <link linkend="editor_editor_parcelservice">Paketdienst-Editor</link>
+		<para>Siehe auch <link linkend="parcelservice_templates">Paketdienst-Vorlagen</link> und <link linkend="editor_editor_parcelservice">Paketdienst-Editor</link>
 		</para>
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="parcelservice_templates"/>
 		<title>Erstellen von Paketdienst-Vorlagen</title>
-		<section>
+		<sect3>
 			<title>Ordner für Vorlagen</title>
 			<para>Vorlagen für Paketdienste werden im Arbeitsverzeichnis im Ordner <filename class='directory'>Vorlagen</filename> und dort im Unterordner <filename class='directory'>Paketdienst</filename> abgelegt.</para>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 			</para>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>Aufbau einer Vorlage</title>
 			<programlisting> 
         # Kommentar:
@@ -39,28 +39,28 @@
         # Fields:
         formModel.sender.name = YOURCOMPANY.COMPANY
         formModel.sender.addressExt = YOURCOMPANY.OWNER</programlisting>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>Kommentare</title>
 			<para>Kommentarzeilen werden durch ein <emphasis role="bold">#</emphasis> eingeleitet.</para>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>Name des Paketdienstes</title>
 			<para>Der Name des Paketdienstes wird zu Beginn mit dem Schlüssel <emphasis role="bold">name = </emphasis> angegeben.</para>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>URL des Paketdienstes</title>
 			<para>Die URL des Paketdienstes wird mit dem Schlüssel <emphasis role="bold">url = </emphasis> festgelegt. Es muss nicht unbedingt die Seite sein, in der sich das Formular mit den Adressdaten befindet.</para>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>Platzhalter des Adressformulares</title>
 			<para>Die HTML-Formularelemente der Paketdienstseite können mit Platzhaltern belegt werden. Dazu ist der Name des Formularelementes gefolgt von einem <emphasis role="bold">=</emphasis>, gefolgt vom Platzhalter anzugeben.</para>
 			<para>Als Platzhalter können die gleichen wie auch bei OpenOffice/LibreOffice-Vorlagen benutzt werden.</para>
-		</section>
-		<section>
+		</sect3>
+		<sect3>
 			<title>Name der Formularfelder bestimmen</title>
 			<para>Um den Namen der Formularfelder zu bestimmen, kann entweder ein Webbrowser benutzt werden, in dem der Quelltext der Seite analysiert wird, oder man öffnet die Seite in einem Fakturama-Webbrowser-Editor und startet dann den Paketdienst. Jetzt werden die Formularfelder analysiert und der Name im Feld selbst bzw. als Kommentartext beim Überfahren mit der Maus angezeigt.</para>
 			<para>Siehe auch <link linkend="openoffice_placeholders_common">Platzhalter</link>.</para>
-		</section>
+		</sect3>
 	</section>
 </chapter>

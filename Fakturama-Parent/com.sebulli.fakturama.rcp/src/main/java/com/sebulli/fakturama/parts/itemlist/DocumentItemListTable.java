@@ -793,6 +793,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         if (documentTypeParent == DocumentType.OFFER) {
             getDocumentItemsListData().forEach(item -> item.getDocumentItem().setOptional(Boolean.FALSE));
         }
+        
+        // set vesting period if this field is empty
+        if(getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+        	getDocumentItemsListData().stream()
+        		.filter(item -> item.getDocumentItem().getVestingPeriodStart() == null || item.getDocumentItem().getVestingPeriodEnd() == null)
+        		.forEach(item -> {
+        			if(item.getDocumentItem().getVestingPeriodStart() == null) item.getDocumentItem().setVestingPeriodStart(new Date());
+        			if(item.getDocumentItem().getVestingPeriodEnd() == null) item.getDocumentItem().setVestingPeriodEnd(new Date());
+        		});
+        }
 
         // Show the column "optional" if at least one item
         // with this property set was found

@@ -69,6 +69,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -1040,14 +1041,11 @@ public class OfficeDocument {
 			value = "";
 		}
 		
-		else
-			return null;
-
-		// Get the item's category
-		if (item.getProduct() != null) {
+		else if (item.getProduct() != null) {
 			Product product = item.getProduct();
+			// Get the item's category
 			if(key.equals("ITEM.UNIT.CATEGORY")) {
-				value = product.getCategories().getName();
+				value = CommonConverter.getCategoryName(product.getCategories(), "/");
 			} else if(key.equals("ITEM.UNIT.UDF01")) {
 				value = product.getCdf01();
 			} else if(key.equals("ITEM.UNIT.UDF02")) {
@@ -1055,6 +1053,8 @@ public class OfficeDocument {
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
 			}
+		} else {
+			value = "";
 		}
 
 		// Interpret all parameters

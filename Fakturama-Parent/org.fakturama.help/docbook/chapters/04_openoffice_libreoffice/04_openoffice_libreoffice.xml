@@ -445,7 +445,7 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
-						<entry>DELIVERY.ADDRESS.entry</entry>
+						<entry>DELIVERY.ADDRESS.TITLE</entry>
 						<entry>Titel (Lieferadresse)</entry>
 					</row>
 					<row>
@@ -508,14 +508,14 @@ id="04_openoffice_libreoffice">
 						<entry>ADDRESS.BANK.ACCOUNT.HOLDER</entry>
 						<entry>Kontoinhaber</entry>
 					</row>
-					<row>
+					<!--row>
 						<entry>ADDRESS.BANK.ACCOUNT</entry>
 						<entry>Kontonummer</entry>
 					</row>
 					<row>
 						<entry>ADDRESS.BANK.CODE</entry>
 						<entry>Bankleitzahl</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>ADDRESS.BANK.NAME</entry>
 						<entry>Name der Bank</entry>
@@ -688,18 +688,18 @@ id="04_openoffice_libreoffice">
 						<entry>YOURCOMPANY.TAXOFFICE</entry>
 						<entry>Finanzamtbezeichnung</entry>
 					</row>
-					<row>
+					<!-- row>
 						<entry>YOURCOMPANY.BANKACCOUNTNR</entry>
 						<entry>Kontonummer</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>YOURCOMPANY.BANK</entry>
 						<entry>Bezeichnung der Bank</entry>
 					</row>
-					<row>
+					<!-- row>
 						<entry>YOURCOMPANY.BANKCODE</entry>
 						<entry>BLZ</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>YOURCOMPANY.IBAN</entry>
 						<entry>IBAN</entry>
