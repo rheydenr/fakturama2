@@ -1010,7 +1010,6 @@
 					</imageobject>
 			</inlinemediaobject> Speichern</title>
 			<para>Speichert das Dokument, die Kontaktadresse, das Produkt&#x2026; des aktiven Editors. Ist das Icon ausgegraut, so ist kein Speichern notwendig oder kein Editor ausgewählt. Zum Aktivieren des Buttons einmal in das Editorfenster klicken, falls er nicht aktiv ist. Ein geänderter Editor-Inhalt ist am Sternchen neben dem Tab oben erkennbar.</para>
-			<hint>Zur Zeit funktioniert diese Anzeige auf Linux-Systemen noch nicht zuverlässig. Beim Klick auf "Speichern" wird das Dokument zwar gespeichert, das Sternchen bleibt jedoch bestehen.</hint>
 		</sect2>
 		<sect2>
 			<title> 

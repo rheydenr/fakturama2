@@ -445,7 +445,9 @@ public abstract class Editor<T extends IEntity> {
         getCtx().bindValue(uiWidget, model);
         
         source.getCombo().addModifyListener(e -> {
+        	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
                 getMDirtyablePart().setDirty(true);
+        	}
         });
          
     }

@@ -274,7 +274,8 @@ public class OrdersCsvImporter {
 					}
 					
 					order.setItems(itemsList);
-					DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(order);
+					// in this case, no SET is used per default
+					DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(order, false);
 					DocumentSummary documentSummary = documentSummaryCalculator.calculate(order);
 					order.setTotalValue(documentSummary.getTotalGross().getNumber().doubleValue());
 					

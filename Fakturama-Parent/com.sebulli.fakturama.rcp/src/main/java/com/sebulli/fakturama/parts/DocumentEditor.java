@@ -231,7 +231,6 @@ public class DocumentEditor extends Editor<Document> {
 	private Composite paidContainer;
 	private Composite paidDataContainer = null;
 	private Combo comboPayment;
-	private ComboViewer comboViewerPayment;
 	private Label warningDepositIcon;
 	private Label warningDepositText;
 	private Spinner spDueDays;
@@ -725,7 +724,7 @@ public class DocumentEditor extends Editor<Document> {
 			if(dtPaidDate != null && !dtPaidDate.isDisposed()) {
 				bindModelValue(document, dtPaidDate, Document_.payDate.getName());
 			}
-			fillAndBindPaidCombo();
+			fillAndBindPaymentCombo();
 			
 			if(spDueDays != null && !spDueDays.isDisposed()) {
 				// value is set by dueDays variable, not directly by binding
@@ -740,8 +739,10 @@ public class DocumentEditor extends Editor<Document> {
         
     }
 
-	private void fillAndBindPaidCombo() {
+	private void fillAndBindPaymentCombo() {
 		Payment tmpPayment = document.getPayment();
+		ComboViewer comboViewerPayment;
+        comboViewerPayment = new ComboViewer(comboPayment);
         comboViewerPayment.setContentProvider(new EntityComboProvider());
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
         GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
@@ -761,6 +762,7 @@ public class DocumentEditor extends Editor<Document> {
         			Payment dataSetPayment = (Payment) firstElement;
         			usePayment(dataSetPayment);
         		}
+        		getMDirtyablePart().setDirty(true);
         	}
         });
 
@@ -797,6 +799,7 @@ public class DocumentEditor extends Editor<Document> {
         			shipping = (Shipping) structuredSelection.getFirstElement();
         			clearManualShipping(document);
         			document.setShipping(shipping);
+        			getMDirtyablePart().setDirty(true);
 
         			// Update the shipping VAT
 //						shippingVat = shipping.getShippingVat();
@@ -1278,7 +1281,8 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document);
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document,
+				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
     				document.getShippingValue()/* * sign*/,
@@ -2497,7 +2501,6 @@ public class DocumentEditor extends Editor<Document> {
 
         // Combo to select the payment
         comboPayment = new Combo(paidContainer, SWT.BORDER | SWT.READ_ONLY);
-        comboViewerPayment = new ComboViewer(comboPayment);
 
         // Create a default paid composite with the document's
         // state for "paid"

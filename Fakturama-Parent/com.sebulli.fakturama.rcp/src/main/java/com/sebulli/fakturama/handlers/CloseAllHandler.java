@@ -81,5 +81,13 @@ public class CloseAllHandler {
                 }
             }
         }
+        
+//        // the error stack can also be closed
+        // TODO doesn't work at the moment
+//        MPartStack errorViewStack = (MPartStack) modelService.find("com.sebulli.fakturama.errorview.partstack", application);
+//        if(errorViewStack != null) {
+//        	errorViewStack.setVisible(false);
+//        }
+        
     }
 }

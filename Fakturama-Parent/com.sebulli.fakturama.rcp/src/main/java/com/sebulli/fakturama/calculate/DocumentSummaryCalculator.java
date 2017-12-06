@@ -41,8 +41,8 @@ public class DocumentSummaryCalculator {
 	    this(false, DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
 	}
 	
-	public DocumentSummaryCalculator(Document document) {
-		this(document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
+	public DocumentSummaryCalculator(Document document, boolean useSET) {
+		this(useSET && document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
 				DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
 	}
 	

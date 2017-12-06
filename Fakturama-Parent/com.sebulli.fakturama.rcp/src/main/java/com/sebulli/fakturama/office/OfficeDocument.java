@@ -371,6 +371,7 @@ public class OfficeDocument {
                 wasSaved = true;
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
+    		    throw new FakturamaStoringException("Error saving the OpenOffice document with template " + template.getFileName() + ". Check if target file is opened.", e);
             }
         } else {
 	    	// create a temporary document because the user doesn't want an ODT
@@ -383,6 +384,7 @@ public class OfficeDocument {
                 textdoc.save(fs);
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
+    		    throw new FakturamaStoringException("Error saving the temporary OpenOffice document with template " + template.getFileName() + ". Check if target file is opened.", e);
             } finally {
             	if(fs != null) {
             		try {
@@ -879,7 +881,7 @@ public class OfficeDocument {
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
 		}
 
 		// Get the item gross value
