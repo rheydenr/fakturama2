@@ -1747,7 +1747,7 @@
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
-			<para>Erzeugt aus dem aktuellen Dokument eines neues. Dabei werden die Daten soweit wie möglich aus dem aktuellen Dokument übernommen.</para>
+			<para>Erzeugt aus dem aktuellen Dokument eines neues. Dabei werden die Daten soweit wie möglich aus dem aktuellen Dokument übernommen. Wenn bereits ein Dokument mit derselben Transaktionsnummer existiert gibt Fakturama eine entsprechende Warnung aus.</para>
 		</sect2>
 		<sect2>
 			<title>Artikel</title>
@@ -1824,14 +1824,14 @@
 				<anchor xreflabel="" xml:id="editor_document_previewpicture"/>In der Artikelliste kann zusätzlich ein Vorschaubild angezeigt werden. Ein Klick auf dieses öffnet eine vergrößerte Ansicht des Produktbildes.</para>
 			<para>Siehe auch <link linkend="preferences_document_previewpicture">Einstellungen Dokument Vorschaubild</link>
 			</para>
-			<para>Bei einem Angebot kann ein Artikel als optionaler Artikel (Bedarfspostion) markiert werden. Er wird auf dem Angebot markiert und wird bei der Berechnung der Gesamtsumme nicht verwendet.</para>
+			<para>Bei einem Angebot kann ein Artikel als optionaler Artikel (Bedarfspostion) markiert werden. Er wird auf dem Angebot markiert und wird bei der Berechnung der Gesamtsumme nicht verwendet. Um einen Artikel als "optional" zu kennzeichnen muss man in der "Opt."-Spalte einmal klicken. Wenn der Fokus in der Zelle gesetzt ist funktioniert an dieser Stelle auch die Leertaste für die Umschaltmöglichkeit.</para>
 			<informalfigure>
 				<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="70%" fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="60%" fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</inlinemediaobject>
 			</informalfigure>
@@ -1851,7 +1851,7 @@
 			<para>Eine Position kann ebenfalls verschoben werden, indem man die Zeile im Bereich der Positionsnummer anklickt, die Maustaste gedrückt hält und die komplette Zeile an die neue Position verschiebt.</para>
 			<tip>
 				<para>Sind alle Preise in Brutto, kann ein Preis dennoch als Nettowert eingegeben werden. Dazu bei der Eingabe des Preises ein <emphasis role="bold">netto</emphasis> anfügen. Bei Bruttopreisen ein <emphasis role="bold">brutto</emphasis> anfügen.</para>
-				<para>Beispiel:<emphasis role="bold">7,00€ netto</emphasis>
+				<para>Beispiel:<emphasis role="bold"> 7,00€ netto</emphasis>
 				</para>
 				<para>Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
 				</para>
@@ -1860,10 +1860,9 @@
 		<sect2>
 			<title>Bemerkung</title>
 			<para>Feld für eine zusätzliche Bemerkung, die auf Rechnung oder Lieferschein gedruckt wird.
-			Es können bis zu 3 Felder für Bemerkungen eingeblendet werden </para>
-			<para>Siehe auch <link linkend="preferences_document_messagefields">Einstellungen Dokument Felder "Bemerkung"</link>
-			Siehe auch <olink xlink:role="http://docbook.org/xlink/role/olink" xlink:href="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"
-</olink >
+			Es können bis zu 3 Felder für Bemerkungen eingeblendet werden.</para>
+			<para>Siehe auch <link linkend="preferences_document_messagefields">Einstellungen Dokument Felder "Bemerkung"</link></para>
+			<para>Siehe auch <link linkend="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"</link>
 			</para>
 			<variablelist>
 				<varlistentry>
@@ -1936,12 +1935,12 @@
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
-			<para>Anteil der Mehrwertsteuer. Darin enthalten ist auch die Mehrwertsteuer, die bei den Versandkosten evtl. hinterlegt wurde. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
+			<para>Anteil der Mehrwertsteuer. Darin enthalten ist auch die Mehrwertsteuer, die bei den Versandkosten evtl. hinterlegt wurde. Die Ausgleichsteuer ist jedoch hier nicht mit aufgeführt. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>Gesamt</title>
-			<para>Gesamtsumme (Brutto) des Dokumentes incl. Mehrwertsteuer. Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
+			<para>Gesamtsumme (Brutto) des Dokumentes incl. Mehrwertsteuer. Diese Summe beinhaltet (wenn eingestellt) auch eine eventuelle Ausgleichsteuer. Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
 			</para>
 		</sect2>
 	</section>

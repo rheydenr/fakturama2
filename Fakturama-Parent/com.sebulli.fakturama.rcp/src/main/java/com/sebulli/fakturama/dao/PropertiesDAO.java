@@ -3,6 +3,7 @@ package com.sebulli.fakturama.dao;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -68,6 +69,8 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
 			retval = Optional.ofNullable(result.getValue());
 		} catch (NoResultException e) {
 			// ignore, retval is an empty Optional
+		} catch (NonUniqueResultException nuex) {
+			log.error(nuex, "non-unique result found for property " + name);
 		}
         return retval;
     }

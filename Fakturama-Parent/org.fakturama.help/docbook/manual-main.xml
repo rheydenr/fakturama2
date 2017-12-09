@@ -169,15 +169,14 @@
 
 
   </appendix -->
-	<!-- glossary>
-    <glossentry id="DomainName">
-      <glossterm>Domain name</glossterm>
+	<glossary>
+    <glossentry id="Transaktionsnummer">
+      <glossterm>Transaktionsnummer</glossterm>
       <glossdef>
-        <para>First part of a network address.</para>
-        <glossseealso otherterm="NetAddr"/>
+        <para>Die Transaktionsnummer ist eine über alle Dokumente desselben Vorganges einheitliche Nummer. Diese Nummer wird beispielsweise verwendet um zu prüfen, welche Mahnungen zu einer Rechnung gehören oder ob bereits ein Folgedokument für diesen Arbeitsablauf existiert.</para>
       </glossdef>
     </glossentry>
-    <glossentry>
+    <!-- glossentry>
       <glossterm>Machine address</glossterm>
       <glosssee otherterm="NetAddr">network address</glosssee>
     </glossentry>
@@ -194,7 +193,7 @@
         <para>Software component that converts an XSL-FO document into a
           formatted document.</para>
       </glossdef>
-    </glossentry>
+    </glossentry -->
   </glossary>
-	<index/ -->
+	<!--index/-->
 </book>

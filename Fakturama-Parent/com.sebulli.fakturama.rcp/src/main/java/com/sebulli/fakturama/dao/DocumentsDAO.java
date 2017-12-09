@@ -674,6 +674,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	        		cb.and(
 							cb.equal(root.<Integer>get(Dunning_.transactionId), transactionId),
 							cb.equal(root.<BillingType>get(Dunning_.billingType), BillingType.DUNNING),
+							cb.not(root.<Boolean>get(Dunning_.deleted)),
 						// check for dunnings
 							cb.equal(root.<Integer>get(Dunning_.dunningLevel), (dunninglevel > 0) ? dunninglevel : Integer.valueOf(1))));
 	        try {

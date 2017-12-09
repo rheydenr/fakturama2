@@ -68,7 +68,7 @@ public abstract class AbstractDAO<T extends IEntity> {
     private EntityManager em;
     
     @Inject
-    private ILogger log;
+    protected ILogger log;
     
     protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
     
