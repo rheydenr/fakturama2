@@ -11,6 +11,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -57,22 +58,22 @@ public class DocumentSummaryCalculator {
 	
     public DocumentSummary calculate(Document dataSetDocument) {
         this.useSET = dataSetDocument != null && dataSetDocument.getBillingContact() != null && BooleanUtils.isTrue(dataSetDocument.getBillingContact().getUseSalesEqualizationTax());
-        Double scaleFactor = Double.valueOf(1.0);
+        Double scaleFactor = NumberUtils.DOUBLE_ONE;
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
         MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
         Shipping shipping = dataSetDocument.getShipping();
 		return calculate(null, dataSetDocument.getItems(), 
-        		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(Double.valueOf(0.0)), 
+        		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
         		shipping != null ? shipping.getShippingVat() : null, 
                 shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
-                Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(Double.valueOf(0.0)), noVatReference, 
+                Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
     
     public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
             int netGross, MonetaryAmount deposit) {
-        return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, Double.valueOf(1.0), netGross, deposit);
+        return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, NumberUtils.DOUBLE_ONE, netGross, deposit);
     }
 	/**
 	 * Calculates the tax, gross and sum of a document
@@ -188,22 +189,22 @@ public class DocumentSummaryCalculator {
 		final MonetaryAmount zero = Money.zero(currencyCode);
 
 		// Calculate discount
-		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, Double.valueOf(0.0))) {
+		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, NumberUtils.DOUBLE_ZERO)) {
 
 			// Calculate the vat value in percent from the gross value of all items
 			// and the net value of all items. So the discount's vat is the average 
 			// value of the item's vat
 			Double discountVatPercent;
 			if (!itemsNet.isZero()) {
-				discountVatPercent = itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - Double.valueOf(1.0);
+				discountVatPercent = itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - NumberUtils.DOUBLE_ONE;
 			} else {
 				// do not divide by zero
-				discountVatPercent = Double.valueOf(0.0);
+				discountVatPercent = NumberUtils.DOUBLE_ZERO;
 			}
 			
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
-				discountVatPercent = Double.valueOf(0.0);
+				discountVatPercent = NumberUtils.DOUBLE_ZERO;
 			}
 
 			// Reduce all the VAT entries in the VAT Summary Set by the discount 
@@ -215,7 +216,7 @@ public class DocumentSummaryCalculator {
 				// If noVat is set, the VAT is 0%
 				if (noVatReference != null) {
 					discountVatDescription = noVatReference.getDescription();
-					discountVatPercent = Double.valueOf(0.0);
+					discountVatPercent = NumberUtils.DOUBLE_ZERO;
 				} else {
     			    discountVatDescription = vatSummaryItem.getVatName();
     				discountVatPercent = vatSummaryItem.getVatPercent();
@@ -228,8 +229,8 @@ public class DocumentSummaryCalculator {
 					discountNetPart = discountNet.multiply(vatSummaryItem.getNet().divide(itemsNet.getNumber()).getNumber());
 
 				// Add discountNetPart to the sum "discountVatValue"  
-				Price discountPart = new Price(discountNetPart, discountVatPercent);
-				discountVatValue = discountVatValue.add(discountPart.getUnitVat());
+				Price discountPart = new Price(discountNetPart, discountVatPercent, Optional.ofNullable(vatSummaryItem.getSalesEqTaxPercent()).orElse(NumberUtils.DOUBLE_ZERO));
+				discountVatValue = discountVatValue.add(discountPart.getUnitVat()).add(discountPart.getTotalSalesEqTax());
 
 				VatSummaryItem discountVatSummaryItem = new VatSummaryItem(discountVatDescription, discountVatPercent, discountPart.getUnitNet(),
 						discountPart.getUnitVat());
@@ -246,22 +247,21 @@ public class DocumentSummaryCalculator {
 			retval.setTotalNet(retval.getTotalNet().add(discountNet));
 			
 			// round to full net cents
-			if (netGross == DocumentSummary.ROUND_NET_VALUES) {
+//			if (netGross == DocumentSummary.ROUND_NET_VALUES) {
 //			    retval.setDiscountNet(retval.getDiscountNet().round());
 //			    retval.setTotalNet(retval.getTotalNet().round());
-			} 
+//			} 
 			
 			if (netGross != DocumentSummary.ROUND_GROSS_VALUES) {
-				retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat()));
-			}
+				retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat().add(retval.getTotalSET())));
+			} else {
 			
 			// round to full gross cents
-			if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //				this.discountGross.round();
 			    retval.setTotalGross(retval.getTotalGross().add(retval.getDiscountGross()));
 //				this.totalGross.round();
 			    retval.setDiscountNet(retval.getDiscountGross().subtract(discountVatValue));
-			    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()));
+			    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()).subtract(retval.getTotalSET()));
 			}
 		}
 
@@ -269,7 +269,7 @@ public class DocumentSummaryCalculator {
 
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
-		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : Double.valueOf(0.0);
+		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : NumberUtils.DOUBLE_ZERO;
 		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : ""; // TODO or get it from additional document info???
 
 		// If shippingAutoVat is not fix, the shipping vat is 
@@ -294,7 +294,7 @@ public class DocumentSummaryCalculator {
 
 			// Use the average vat of all the items.
 			if (itemsNet.isEqualTo(zero)) {
-				shippingVatPercent = Double.valueOf(0.0);
+				shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 			} else {
 				shippingVatPercent = itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - 1;
 			}
@@ -323,7 +323,7 @@ public class DocumentSummaryCalculator {
 				// If noVat is set, the VAT is 0%
 				if (noVatReference != null) {
 					shippingVatDescription = noVatReference.getDescription();
-					shippingVatPercent = Double.valueOf(0.0);
+					shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 				}
 
 				// Calculate the ratio of this vat summary item and all items.
@@ -353,7 +353,7 @@ public class DocumentSummaryCalculator {
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
 				shippingVatDescription = noVatReference.getDescription();
-				shippingVatPercent = Double.valueOf(0.0);
+				shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 			}
 
 			// use shippingVatPercent as fix percent value for the shipping

@@ -161,6 +161,10 @@ public class Price {
 		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false);
 	}
 
+	public Price(MonetaryAmount net, Double vatPercent, Double salesEqualizationTax) {
+		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false, salesEqualizationTax);
+	}
+	
 	/**
 	 * Constructor Create a price value from a value where value can be a net or
 	 * a gross value
@@ -195,7 +199,7 @@ public class Price {
 	 * @param asGross
 	 *            <code>true</code> if price is a gross value
 	 * @param salesEqualizationTax
-	 *            the sales equalization tax, if any
+	 *            the sales equalization tax in %, if any
 	 */
 	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
 

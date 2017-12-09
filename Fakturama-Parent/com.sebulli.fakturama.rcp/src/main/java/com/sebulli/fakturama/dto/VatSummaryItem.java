@@ -324,7 +324,10 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	
     @Override
     public String toString() {
-        return new StringBuilder("[Amount (net): ").append(net).append("; VAT: ")
-                .append(vat).append(" (").append(vatPercent*100).append("%) - ").append(StringUtils.defaultIfBlank(vatName, "(no name)")).append(']').toString();
+        return new StringBuilder("[Amount (net): ").append(net)
+        		.append("; VAT: ").append(vat).append(" (").append(vatPercent*100).append("%) - ")
+        		.append(StringUtils.defaultIfBlank(vatName, "(no name)"))
+        		.append("; SET: ").append(salesEqTaxPercent != null ? salesEqTaxPercent : "0").append("%").append(salesEqTax != null ? " (" + salesEqTax + ")" : "")
+        		.append(']').toString();
     }
 }
