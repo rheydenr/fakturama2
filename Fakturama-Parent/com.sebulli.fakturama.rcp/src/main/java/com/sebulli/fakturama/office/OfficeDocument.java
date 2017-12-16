@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -320,18 +319,22 @@ public class OfficeDocument {
 	 */
 	private void openDocument() {
 		if(!silentMode) {
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && documentPath != null) {
-				sync.asyncExec(() -> {
-					boolean wasLaunched = Program.launch(documentPath.toString());
-					if(!wasLaunched) {
-						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for OpenOffice document.");
-					}
-				});
-			} else {
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+			if(preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
+				if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) 
+				&& documentPath != null) {
+					sync.asyncExec(() -> {
+						boolean wasLaunched = Program.launch(documentPath.toString());
+						if(!wasLaunched) {
+							MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for OpenOffice document.");
+						}
+					});
+				} else {
+					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				}
 			}
 			
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && generatedPdf != null) {
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) 
+			&& preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && generatedPdf != null) {
 				sync.asyncExec(() -> {
 					boolean wasLaunched = Program.launch(generatedPdf.toString());
 					if(!wasLaunched) {
@@ -594,8 +597,8 @@ public class OfficeDocument {
 			// clone one row from template
 			TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
 			// we always insert only ONE row to the table
-//			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
-			Row tmpRow = pTable.appendRow();
+			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+//			Row tmpRow = pTable.appendRow();  // don't know yet why the row was appended instead of inserted...
 			pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
 			Row newRow = Row.getInstance(newRowElement);
 			// find all placeholders within row
@@ -683,7 +686,7 @@ public class OfficeDocument {
 		}
 
 		// Set the text
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
+		return cellPlaceholder.replaceWith(textValue);//Matcher.quoteReplacement(textValue)
 
 		// And also add it to the user defined text fields in the OpenOffice
 		// Writer document.
@@ -714,7 +717,7 @@ public class OfficeDocument {
 		}
 
 		// Set the text
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
+		return cellPlaceholder.replaceWith(textValue);  //Matcher.quoteReplacement(textValue)
 	}
 
 	/**
@@ -1070,8 +1073,8 @@ public class OfficeDocument {
 //		}
 		
 		// Set the text of the cell
-		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
+//		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
+		return cellPlaceholder.replaceWith(value); // Matcher.quoteReplacement(value) ???
 
 		// And also add it to the user defined text fields in the OpenOffice
 		// Writer document.

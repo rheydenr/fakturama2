@@ -358,8 +358,8 @@ public class Placeholders {
 			String twoStrings[] = part.split(",");
 			if (twoStrings.length == 2) {
 				
-				//Escape sequence "%COMMA" for ","
-				twoStrings[0] = twoStrings[0].replace("%COMMA", ",");
+				//Escape sequences...
+				twoStrings[0] = encodeEntities(twoStrings[0]);
 			    
 				// Replace the value, if it is equal to the entry
 				if (DataUtils.getInstance().replaceAllAccentedChars(value).equalsIgnoreCase(
@@ -536,6 +536,8 @@ public class Placeholders {
 		s = s.replaceAll("%NL", "\n");
 		s = s.replaceAll("%TAB", "\t");
 		s = s.replaceAll("%DOLLAR", Matcher.quoteReplacement("$"));
+		s = s.replaceAll("%COMMA", Matcher.quoteReplacement(","));
+		s = s.replaceAll("%EURO", Matcher.quoteReplacement("€"));
 		s = s.replaceAll("%A_GRAVE", Matcher.quoteReplacement("À"));
 		s = s.replaceAll("%A_ACUTE", Matcher.quoteReplacement("Á"));
 		s = s.replaceAll("%A_CIRC", Matcher.quoteReplacement("Â"));

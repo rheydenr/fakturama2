@@ -840,6 +840,8 @@ id="04_openoffice_libreoffice">
 						<row><entry>%NL</entry><entry>Neue Zeile</entry></row>
 						<row><entry>%TAB</entry><entry>Tabspace</entry></row>
 						<row><entry>%DOLLAR</entry><entry>$</entry></row>
+						<row><entry>%COMMA</entry><entry>,</entry></row>
+						<row><entry>%EURO</entry><entry>€</entry></row>
 						<row><entry>%A_GRAVE</entry><entry>À</entry></row>
 						<row><entry>%A_ACUTE</entry><entry>Á</entry></row>
 						<row><entry>%A_CIRC</entry><entry>Â</entry></row>
