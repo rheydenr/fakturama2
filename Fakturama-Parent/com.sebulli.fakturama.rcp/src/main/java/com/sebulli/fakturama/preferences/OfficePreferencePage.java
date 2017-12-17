@@ -79,7 +79,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 			defaultValue = String.format(" (%s %s)",  msg.preferencesOfficeExampleshort, defaultValue);
 
 		if (OSDependent.isOOApp()) {
-		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent());
+		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp + defaultValue, getFieldEditorParent());
 			//T: Preference page "Office" - Label: Office App
 			addField(appFieldEditor);
 		} else {

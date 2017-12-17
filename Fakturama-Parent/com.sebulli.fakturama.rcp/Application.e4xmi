@@ -505,11 +505,6 @@
       </children>
     </windows>
   </snippets>
-  <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">
-    <children xsi:type="menu:ToolBar" xmi:id="_2aO0MN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.documentitemslist.toolbar">
-      <children xsi:type="menu:HandledToolItem" xmi:id="_-6rLQN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.rcp.handledtoolitem.0" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_epsVUMUQEeShSO-6QzwVpg"/>
-    </children>
-  </snippets>
   <commands xmi:id="_Gp8DIKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.command.openDocuments" commandName="%command.documents.name" description="%command.documents.tooltip"/>
   <commands xmi:id="_OkPpoCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openProducts" commandName="%page.products" description="%command.products.tooltip" category="_ck9sUCTREeS9z6SQNducwg">
     <parameters xmi:id="_K1ImYFQCEeW3ufIjNR4o7Q" elementId="com.sebulli.fakturama.lists.viewtype" name="View Type" optional="false"/>
