@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -359,11 +360,11 @@ public class Placeholders {
 			if (twoStrings.length == 2) {
 				
 				//Escape sequences...
-				twoStrings[0] = encodeEntities(twoStrings[0]);
+				twoStrings[0] = encodeEntities(removeQuotationMarks(twoStrings[0]));
 			    
 				// Replace the value, if it is equal to the entry
-				if (DataUtils.getInstance().replaceAllAccentedChars(value).equalsIgnoreCase(
-				        DataUtils.getInstance().replaceAllAccentedChars(removeQuotationMarks(twoStrings[0])))) {
+				if (DataUtils.getInstance().replaceAllAccentedChars(encodeEntities(value)).equalsIgnoreCase(
+				        DataUtils.getInstance().replaceAllAccentedChars(twoStrings[0]))) {
 					value = removeQuotationMarks(twoStrings[1]);
 					return value;
 				}
@@ -699,7 +700,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
-		if (key.equals("ITEMS.DISCOUNT.PERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
+		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
 		if (key.equals("ITEMS.DISCOUNT.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountNet());
 		if (key.equals("ITEMS.DISCOUNT.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountGross());
 
@@ -735,7 +736,6 @@ public class Placeholders {
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();
 
-
 		// Get the reference string to other documents
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
 			Transaction transaction = ContextInjectionFactory.make(Transaction.class, context).of(document);
@@ -760,7 +760,6 @@ public class Placeholders {
 				if (key.equals("DOCUMENT.REFERENCE.PROFORMA"))
 					return transaction.getReference(DocumentType.PROFORMA);
 			}
-
 		}
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
