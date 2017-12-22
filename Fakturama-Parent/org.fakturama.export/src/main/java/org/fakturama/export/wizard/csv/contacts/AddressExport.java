@@ -118,7 +118,7 @@ public class AddressExport {
 					"\"website\";"+
 					"\"vatnr\";"+
 					"\"vatnrvalid\";"+
-					"\"discount\""+
+					"\"discount\";"+
 					"\"birthday\""+
 					NEW_LINE);
 		
@@ -207,7 +207,8 @@ public class AddressExport {
 				
 				if(contact.getBirthday() != null) {
 					stringBuffer.append(sdf.format(contact.getBirthday()));
-				} 
+				}				
+				stringBuffer.append(";");
 
 				bos.write(stringBuffer.toString() + NEW_LINE);
 			}
