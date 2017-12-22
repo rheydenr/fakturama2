@@ -838,7 +838,7 @@
         </section>
         <section>
             <title>Mengenangaben benutzen</title>
-            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
+            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Menge' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -867,71 +867,6 @@
             </para>
         </section>
     </section>
-    <!-- section>
-                 <anchor xreflabel="" xml:id="preferences_columnwidth"/>
-       <title>Einstellungen Spaltenbreite Tabellen</title>
-        <para>Die Spaltenbreite der Tabellen können geändert werden. Damit lassen sich diese auf die eigenen Bedürfnisse anpassen.</para>
-        <para>Zu beachten ist, dass einige Spalten feste Breite haben. Andere ändern ihre Breite beim Vergrößern des Fensters.</para>
-        <section>
-            <title>Artikel Dokumenteneditor</title>
-            <para>Ändert die Spaltenbreite der Artikelliste im Dokumenteneditor.</para>
-        </section>
-        <section>
-            <title>Ausgaben</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Ausgaben.</para>
-        </section>
-        <section>
-            <title>Ausgabebelege</title>
-            <para>Ändert die Spaltenbreite der Liste der einzelnen Positionen im Editor eines Ausgabebeleges.</para>
-        </section>
-        <section>
-            <title>Dokumente</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Dokumente.</para>
-        </section>
-        <section>
-            <title>Kontaktdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Kontakt ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Kontakte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Kontakte.</para>
-        </section>
-        <section>
-            <title>Listen</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Listeneinträge.</para>
-        </section>
-        <section>
-            <title>Produktdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neues Produkt ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Produkte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Produkte.</para>
-        </section>
-        <section>
-            <title>Steuersätze</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Steuersätze.</para>
-        </section>
-        <section>
-            <title>Textdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Text ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Texte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Texte.</para>
-        </section>
-        <section>
-            <title>Versandarten</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Versandarten.</para>
-        </section>
-        <section>
-            <title>Zahlungsarten</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Zahlungsarten.</para>
-            <para>
-                <anchor xreflabel="" xml:id="preferences_toolbar"/>
-            </para>
-        </section>
-    </section -->
     <section>
         <anchor xreflabel="" xml:id="preferences_browser"/>
         <title>Webbrowser / Startseite</title>
