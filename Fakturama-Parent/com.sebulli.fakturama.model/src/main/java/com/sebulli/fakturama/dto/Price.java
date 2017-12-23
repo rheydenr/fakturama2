@@ -79,6 +79,10 @@ public class Price {
 	private MonetaryAmount totalVatRounded;
 	private MonetaryAmount totalSalesEqTaxRounded;
 	private MonetaryAmount totalGrossRounded;
+	
+	public Price(DocumentItem item) {
+		this(item, false);
+	}
 
 	/**
 	 * Create a price value from an item. Remember: Each item's price is given as net value.
@@ -86,10 +90,10 @@ public class Price {
 	 * @param item
 	 *            Item as DocumentItem
 	 */
-	public Price(DocumentItem item) {
+	public Price(DocumentItem item, boolean useSET) {
 		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
 		        Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), 
-		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false, item.getItemVat().getSalesEqualizationTax());
+		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false, useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
 
 	/**
@@ -101,14 +105,14 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
-    public Price(DocumentItem item, Double scaleFactor) {
+    public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
         this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
         	 Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), 
         	 item.getItemVat().getTaxValue(), 
         	 item.getItemRebate(), 
         	 BooleanUtils.toBoolean(item.getNoVat()), 
         	 false,
-        	 item.getItemVat().getSalesEqualizationTax());
+        	 useSET ? item.getItemVat().getSalesEqualizationTax() : null);
     }
 
 //	/**
@@ -157,6 +161,10 @@ public class Price {
 		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false);
 	}
 
+	public Price(MonetaryAmount net, Double vatPercent, Double salesEqualizationTax) {
+		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false, salesEqualizationTax);
+	}
+	
 	/**
 	 * Constructor Create a price value from a value where value can be a net or
 	 * a gross value
@@ -191,7 +199,7 @@ public class Price {
 	 * @param asGross
 	 *            <code>true</code> if price is a gross value
 	 * @param salesEqualizationTax
-	 *            the sales equalization tax, if any
+	 *            the sales equalization tax in %, if any
 	 */
 	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
 

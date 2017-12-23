@@ -48,6 +48,7 @@ import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.LocaleUtil;
@@ -71,7 +72,6 @@ import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.DebitorEditor;
-import com.sebulli.fakturama.parts.NumberProvider;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -505,12 +505,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             contactItem = this.webShopImportManager.getContactsDAO().findOrCreate(contactItem);
             // Attention: If the contact is new then we have to create a new number for it!
             if(StringUtils.isBlank(contactItem.getCustomerNumber())) {
-                NumberProvider numberProvider = ContextInjectionFactory.make(NumberProvider.class, this.webShopImportManager.getContext());
+        		NumberGenerator numberProvider = ContextInjectionFactory.make(NumberGenerator.class, this.webShopImportManager.getContext());
                 numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
                 String nextNr = numberProvider.getNextNr();
                 contactItem.setCustomerNumber(nextNr);
                 contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
-                numberProvider.setNextNr(nextNr);
+                numberProvider.setNextFreeNumberInPrefStore(nextNr);
             }
 //            contactItem.setSupplierNumber(contact.get???); ==> is not transferred from connector!!!
 
@@ -742,7 +742,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			if (paymentType != null) {
     			// Add the payment to the data base, if it's a new one
     			Payment payment = fakturamaModelFactory.createPayment();
-    			payment.setCode(Constants.TAX_DEFAULT_CODE);
+//    			payment.setCode(Constants.TAX_DEFAULT_CODE);
     			payment.setName(paymentType.getName());
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);

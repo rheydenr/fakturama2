@@ -428,7 +428,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
                                msg.startMigrationWarning);
                     if(answer) {
                         preferences.put(ConfigurationManager.MIGRATE_OLD_DATA, selectedDirectory);
-                        txtOldWorkdir.setText(selectedDirectory);
+//                        txtOldWorkdir.setText(selectedDirectory);
                     }
                     alreadyCheckedDirs.add(selectedDirectory);
                 }
@@ -478,7 +478,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 
 		public void widgetSelected(SelectionEvent event) {
 			DirectoryDialog directoryDialog = new DirectoryDialog(selectionField.getShell(), SWT.OPEN);
-			directoryDialog.setFilterPath(System.getProperty("user.home"));				
+			directoryDialog.setFilterPath(StringUtils.defaultIfBlank(selectionField.getText(), System.getProperty("user.home")));				
 			//T: Title of the dialog to select the working directory
 			directoryDialog.setText(forOldVersion ? msg.commandSelectoldworkspaceName : msg.commandSelectworkspaceName);
 			//T: Text of the dialog to select the working directory

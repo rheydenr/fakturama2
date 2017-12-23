@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.office;
 
-import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,14 +28,12 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +51,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Shell;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
@@ -70,6 +68,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -135,9 +134,18 @@ public class OfficeDocument {
     private Shell shell;
     
     /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
+
+    /**
      * background processing, default is FALSE
      */
     private boolean silentMode = false;
+
+	private Path documentPath;
+
+	private Path generatedPdf;
     
     /**
      * Default constructor
@@ -169,14 +177,25 @@ public class OfficeDocument {
 			}
 
 			// Stop here and do not fill the document's placeholders, if it's an existing document
-			if (openExisting)
+			if (openExisting) {
+				documentPath = Paths.get(document.getOdtPath());
+				generatedPdf = Paths.get(document.getPdfPath());
+				openDocument();
 				return;
+			}
+			
+			// check if we have to use sales equalization tax
+	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 
 			// remove previous images            
             cleanup();
-			
+            
             // Recalculate the sum of the document before exporting
 			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+
+			// Get the VAT summary of the UniDataSet document
+			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.
              * The scanning of all placeholders to find the item and the vat table
@@ -257,16 +276,10 @@ public class OfficeDocument {
     	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
                         case VATLIST_TABLE:
-                            
-                          // Get the VAT summary of the UniDataSet document
-                          VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
-                          vatSummarySetManager.add(this.document, 1.0);
                           fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), false);
                           break;
                           
                         case SALESEQUALIZATIONTAX_TABLE:
-							vatSummarySetManager = new VatSummarySetManager();
-							vatSummarySetManager.add(this.document, 1.0);
 							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);
                         	break;
                         default:
@@ -290,26 +303,45 @@ public class OfficeDocument {
 				removeNode.getParentNode().removeChild(removeNode);
 			}
 
-//			// Save the document
+			// Save the document
 			if(saveOODocument(textdoc)) {
-				if(!silentMode) {
-					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
-				}
-			    
-			    // TODO open Doc in OO if necessary
-			} else {
-				if(!silentMode) {
-					MessageDialog.openError(shell, msg.viewErrorlogName, msg.dialogPrintooCantprint);
-				}
+				openDocument();
 			}
-
-			// Print and close the OpenOffice document
-			
-//			textDocument.getFrame().getDispatch(GlobalCommands.PRINT_DOCUMENT_DIRECT).dispatch();
 		}
 		catch (Exception e) {
-		    log.error(e, "Error starting OpenOffice from " + template.getFileName());
-		    throw new FakturamaStoringException("Error starting OpenOffice from " + template.getFileName(), e);
+		    log.error(e, "Error starting OpenOffice with " + template.getFileName());
+		    throw new FakturamaStoringException("Error starting OpenOffice with " + template.getFileName(), e);
+		}
+	}
+
+	/**
+	 * Opens the finally created document(s). Depends on preferences (ODT, PDF or both of them).
+	 */
+	private void openDocument() {
+		if(!silentMode) {
+			if(preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
+				if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) 
+				&& documentPath != null) {
+					sync.asyncExec(() -> {
+						boolean wasLaunched = Program.launch(documentPath.toString());
+						if(!wasLaunched) {
+							MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for OpenOffice document.");
+						}
+					});
+				} else {
+					MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				}
+			}
+			
+			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) 
+			&& preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && generatedPdf != null) {
+				sync.asyncExec(() -> {
+					boolean wasLaunched = Program.launch(generatedPdf.toString());
+					if(!wasLaunched) {
+						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+					}
+				});
+			}
 		}
 	}
 
@@ -319,8 +351,8 @@ public class OfficeDocument {
      * @param textdoc
      *            The document
      */
-	private boolean saveOODocument(TextDocument textdoc) {
-		Path generatedPdf = null;
+	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
+		generatedPdf = null;
 		Set<PathOption> pathOptions = new HashSet<>();
 		pathOptions.add(PathOption.WITH_FILENAME);
 		pathOptions.add(PathOption.WITH_EXTENSION);
@@ -329,7 +361,7 @@ public class OfficeDocument {
         textdoc.getOfficeMetadata().setCreator(msg.applicationName);
         textdoc.getOfficeMetadata().setTitle(String.format("%s - %s", document.getBillingType().getName(), document.getName()));
 
-		Path documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 		Path origFileName = documentPath.getFileName();
         if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
 
@@ -341,16 +373,9 @@ public class OfficeDocument {
                 // Save the document
                 textdoc.save(fs);
                 wasSaved = true;
-                if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) && !silentMode) {
-	                // perhaps we should open the filled document in Openoffice (if wanted)
-	        		try {
-						Desktop.getDesktop().open(documentPath.toFile());
-					} catch (IOException | IllegalArgumentException e) {
-		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
-					}
-                }
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
+    		    throw new FakturamaStoringException("Error saving the OpenOffice document with template " + template.getFileName() + ". Check if target file is opened.", e);
             }
         } else {
 	    	// create a temporary document because the user doesn't want an ODT
@@ -363,6 +388,7 @@ public class OfficeDocument {
                 textdoc.save(fs);
             } catch (Exception e) {
                 log.error(e, "Error saving the OpenOffice document");
+    		    throw new FakturamaStoringException("Error saving the temporary OpenOffice document with template " + template.getFileName() + ". Check if target file is opened.", e);
             } finally {
             	if(fs != null) {
             		try {
@@ -380,13 +406,6 @@ public class OfficeDocument {
             // open the pdf if needed
         	if(generatedPdf != null) {
         		wasSaved = true;
-        		if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) && !silentMode) {
-	        		try {
-						Desktop.getDesktop().open(generatedPdf.toFile());
-					} catch (IOException | IllegalArgumentException e) {
-		                log.error(e, MessageFormat.format("Error opening the PDF document {0}: {1}", documentPath.toString(), e.getMessage()));
-					}
-        		}
         	}
         }
         
@@ -421,11 +440,7 @@ public class OfficeDocument {
                 document.setPdfPath(generatedPdf.toString());
             }
 
-            try {
-            	document = documentsDAO.update(document);                
-            } catch (FakturamaStoringException e) {
-                log.error(e);
-            }
+        	document = documentsDAO.update(document);                
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
@@ -475,8 +490,9 @@ public class OfficeDocument {
 	 * @param origFileName 
 	 * @param targetFormat 
 	 * @return <code>true</code> if the creation was successful
+	 * @throws FakturamaStoringException 
 	 */
-	private Path createPdf(Path documentPath, Path origFileName, TargetFormat targetFormat) {
+	private Path createPdf(Path documentPath, Path origFileName, TargetFormat targetFormat) throws FakturamaStoringException {
 		Path pdfFilename = null;
 
 		// Create the directories, if they don't exist.
@@ -486,7 +502,7 @@ public class OfficeDocument {
 
 		    // Save the document
 		    OfficeStarter ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
-		    Path ooPath = ooStarter.getCheckedOOPath();
+		    Path ooPath = ooStarter.getCheckedOOPath(silentMode);
 			if (ooPath != null ) {
 
 				// now, if the file name templates are different, we have to
@@ -519,10 +535,14 @@ public class OfficeDocument {
 					pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
 				}
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
+				if(!silentMode){
+					MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
+				} else {
+					log.warn("Can't create PDF! Did you set the right OpenOffice path?");
+				}
 			}
 		} catch (FileSystemException e) {
-			System.err.println("is nich!");
+			throw new FakturamaStoringException("kann PDF nicht schreiben. Ist die Datei evtl. geöffnet?", e);
 		} catch (IOException e) {
 		    log.error(e, "Error moving the PDF document");
 		} catch (InterruptedException e) {
@@ -570,7 +590,7 @@ public class OfficeDocument {
 		// Get all items
 		int cellCount = pRowTemplate.getCellCount();
 		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
-			if(skipIfEmpty && (vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
+			if(skipIfEmpty && (!this.useSET || vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
 				continue;
 			}
 			
@@ -578,6 +598,7 @@ public class OfficeDocument {
 			TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
 			// we always insert only ONE row to the table
 			Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+//			Row tmpRow = pTable.appendRow();  // don't know yet why the row was appended instead of inserted...
 			pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
 			Row newRow = Row.getInstance(newRowElement);
 			// find all placeholders within row
@@ -665,7 +686,7 @@ public class OfficeDocument {
 		}
 
 		// Set the text
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
+		return cellPlaceholder.replaceWith(textValue);//Matcher.quoteReplacement(textValue)
 
 		// And also add it to the user defined text fields in the OpenOffice
 		// Writer document.
@@ -683,7 +704,7 @@ public class OfficeDocument {
 		// with the VAT description or with the VAT value
 		String textValue = "";
 
-		if (vatSummaryItem.getSalesEqTax() != null) {
+		if (this.useSET && vatSummaryItem.getSalesEqTax() != null) {
 			if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
 				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getSalesEqTax());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
@@ -696,7 +717,7 @@ public class OfficeDocument {
 		}
 
 		// Set the text
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(textValue));
+		return cellPlaceholder.replaceWith(textValue);  //Matcher.quoteReplacement(textValue)
 	}
 
 	/**
@@ -768,7 +789,7 @@ public class OfficeDocument {
 		String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
 		String key = placeholder.split("\\$")[0];
 
-		Price price = new Price(item);
+		Price price = new Price(item, useSET);
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
@@ -842,7 +863,7 @@ public class OfficeDocument {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
 		}
 		
-		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT")) {
+		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
 		}
 		
@@ -864,7 +885,7 @@ public class OfficeDocument {
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
+			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
 		}
 
 		// Get the item gross value
@@ -1023,14 +1044,11 @@ public class OfficeDocument {
 			value = "";
 		}
 		
-		else
-			return null;
-
-		// Get the item's category
-		if (item.getProduct() != null) {
+		else if (item.getProduct() != null) {
 			Product product = item.getProduct();
+			// Get the item's category
 			if(key.equals("ITEM.UNIT.CATEGORY")) {
-				value = product.getCategories().getName();
+				value = CommonConverter.getCategoryName(product.getCategories(), "/");
 			} else if(key.equals("ITEM.UNIT.UDF01")) {
 				value = product.getCdf01();
 			} else if(key.equals("ITEM.UNIT.UDF02")) {
@@ -1038,6 +1056,8 @@ public class OfficeDocument {
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
 			}
+		} else {
+			value = "";
 		}
 
 		// Interpret all parameters
@@ -1053,8 +1073,8 @@ public class OfficeDocument {
 //		}
 		
 		// Set the text of the cell
-		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
-		return cellPlaceholder.replaceWith(Matcher.quoteReplacement(value));
+//		placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
+		return cellPlaceholder.replaceWith(value); // Matcher.quoteReplacement(value) ???
 
 		// And also add it to the user defined text fields in the OpenOffice
 		// Writer document.
@@ -1084,7 +1104,7 @@ public class OfficeDocument {
 		// Extract parameters
 		for (String placeholder : allPlaceholders) {
 			if ( (placeholder.equals(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+ PlaceholderNavigation.PLACEHOLDER_SUFFIX)) || 
-					( (placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$")) && (placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX)) ) ) {
+					placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$") && placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX) ) {
 
 				// Set the placeholder
 				properties.setProperty(placeholder.toUpperCase(), placeholders.interpretParameters(placeholder, value));
@@ -1224,6 +1244,7 @@ public class OfficeDocument {
      */
     public void setDocument(Document document) {
         this.document = document;
+        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
     }
 
     /**

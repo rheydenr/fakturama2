@@ -231,7 +231,6 @@ public class DocumentEditor extends Editor<Document> {
 	private Composite paidContainer;
 	private Composite paidDataContainer = null;
 	private Combo comboPayment;
-	private ComboViewer comboViewerPayment;
 	private Label warningDepositIcon;
 	private Label warningDepositText;
 	private Spinner spDueDays;
@@ -239,10 +238,8 @@ public class DocumentEditor extends Editor<Document> {
 	private CDateTime dtPaidDate;
 	private FormattedText itemsSum;
 	private FormattedText itemsDiscount;
-	private ComboViewer comboViewerShipping;
-	private ComboViewer comboViewerSalesEqualizationTax;
+	private Combo comboShipping;
 	private FormattedText shippingValue;
-	private FormattedText salesEqualizationTaxValue;
 	//private Text depositValue;
 	private FormattedText vatValue;
 	private FormattedText totalValue;
@@ -262,11 +259,11 @@ public class DocumentEditor extends Editor<Document> {
 	/*
 	 * Since the contact could be either a delivery or a billing contact we have to use an extra field for it.
 	 */
-	private Contact addressId = null;
+	private Contact displayAddress = null;
 	private boolean noVat;
 	private String noVatName;
 //	private String noVatDescription;
-	private Payment payment;
+//	private Payment payment;
 //	private MonetaryAmount paidValue = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 //	private int shippingId;
 	private Shipping shipping = null;
@@ -397,7 +394,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
 
-		// Set the document type
+		// Set the document type TODO check if it could be omitted since we set it in init method
 		document.setBillingType(BillingType.get(documentType.getKey()));
 
 		// If this is an order, use the date as order date
@@ -415,14 +412,14 @@ public class DocumentEditor extends Editor<Document> {
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
 		if (documentType == DocumentType.DELIVERY) {
-            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
+            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
             if(document.getDeliveryContact() == null) {
-            	addressId = modelFactory.createDebitor();
+            	displayAddress = modelFactory.createDebitor();
             	Address address = modelFactory.createAddress();
-            	addressId.setAddress(address);
-            	document.setDeliveryContact(addressId);
+            	displayAddress.setAddress(address);
+            	document.setDeliveryContact(displayAddress);
             	document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             }
 
@@ -430,9 +427,9 @@ public class DocumentEditor extends Editor<Document> {
 			if (billingAddress.isEmpty()) {
 				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
 			}
-			if (addressId != null && addressId.getCustomerNumber() != null) {
+			if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-    			document.setDeliveryContact(addressId);
+    			document.setDeliveryContact(displayAddress);
 			} else {
 			    /*
 			     * If no addressId was given (no contact selected) then we use
@@ -458,25 +455,25 @@ public class DocumentEditor extends Editor<Document> {
 			* Else it could be a newly selected contact from the contact list.
 			*/
 			// TODO check FAK-276 if it is working! 
-			if(addressModified && (addressId.getCustomerNumber() != null && document.getBillingContact().getId() == addressId.getId()
-			       || addressId.getCustomerNumber() == null)) {
+			if(addressModified && (displayAddress.getCustomerNumber() != null && document.getBillingContact().getId() == displayAddress.getId()
+			       || displayAddress.getCustomerNumber() == null)) {
 				// before we change an address we have to check for delivery addresses and save it...
 				if(document.getDeliveryContact() == null && document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) {
 					document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
 				}
-			    addressId = modelFactory.createDebitor();
+			    displayAddress = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
 			    address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			    addressId.setAddress(address);
+			    displayAddress.setAddress(address);
 			    try {
-                    addressId = contactDAO.save(addressId);
+                    displayAddress = contactDAO.save(displayAddress);
                 } catch (FakturamaStoringException e) {
                     log.error(e);
                 }
 			}
 
-			if (addressId.getCustomerNumber() != null) {
-				addressById = contactUtil.getAddressAsString(addressId);
+			if (displayAddress.getCustomerNumber() != null) {
+				addressById = contactUtil.getAddressAsString(displayAddress);
 				/* If the previous address was a manual entry it has to be deleted, because
 				 * else a lot of orphans could be created (manual addresses without a 
 				 * reference to a document).
@@ -486,12 +483,12 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			}
             // set the new contact
-            document.setBillingContact(addressId);
+            document.setBillingContact(displayAddress);
 		}
 
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
-		if (addressId.getCustomerNumber() != null && addressModified) {
+		if (displayAddress.getCustomerNumber() != null && addressModified) {
 			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
@@ -499,8 +496,7 @@ public class DocumentEditor extends Editor<Document> {
 				msg.editorDocumentErrorWrongcontactTitle,
 				
 				//T: Text of the dialog that appears if the document is assigned to  an other address.
-				msg.editorDocumentErrorWrongcontactMsg1 + "\n\n" + addressById + "\n\n" + 
-				msg.editorDocumentErrorWrongcontactMsg2);
+				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
 				return;
 			}
 		}
@@ -513,6 +509,7 @@ public class DocumentEditor extends Editor<Document> {
 		// If this document contains no payment widgets, but..
 //		else {
 			// the customer changed and so there is a new payment. Set it.
+		// TODO Check it! The payment *cannot* be changed manually!
 			if (!newPaymentDescription.isEmpty()) {
 				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
 			}
@@ -617,13 +614,13 @@ public class DocumentEditor extends Editor<Document> {
 			    .map(dto -> dto.getDocumentItem())
 			    .sorted(Comparator.comparing(DocumentItem::getPosNr))
 			    .collect(Collectors.toList());
-			document.setItems(new ArrayList<>(items));
+			document.setItems(items);
 		}
 
 		// Set the "addressfirstline" value to the first line of the
 		// contact address
-		if (addressId != null && addressId.getCustomerNumber() != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(addressId));
+		if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
+			document.setAddressFirstLine(contactUtil.getNameWithCompany(displayAddress));
 		}
 		else {
 			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
@@ -664,7 +661,7 @@ public class DocumentEditor extends Editor<Document> {
         try {
             document = documentsDAO.save(document);
             // update address in model
-            addressId = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
+            displayAddress = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -691,6 +688,10 @@ public class DocumentEditor extends Editor<Document> {
     
     @Override
     protected void bindModel() {
+		
+		// for the (very ugly!) Linux bug which posts an event after each binding
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+    	
     	int noOfMessageFields = getNumberOfMessageFields();
 		bindModelValue(document, txtName, Document_.name.getName(), 80);
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
@@ -711,11 +712,8 @@ public class DocumentEditor extends Editor<Document> {
 		if(itemsDiscount != null) {
 			bindModelValue(document, itemsDiscount, Document_.itemsRebate.getName(), 5);			
 		}
-		if(comboViewerShipping != null) {
+		if(comboShipping != null) {
 			fillAndBindShippingCombo();
-		}
-		if(comboViewerSalesEqualizationTax != null) {
-			fillAndBindSalesEqualizationTaxCombo();
 		}
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
@@ -726,7 +724,7 @@ public class DocumentEditor extends Editor<Document> {
 			if(dtPaidDate != null && !dtPaidDate.isDisposed()) {
 				bindModelValue(document, dtPaidDate, Document_.payDate.getName());
 			}
-			fillAndBindPaidCombo();
+			fillAndBindPaymentCombo();
 			
 			if(spDueDays != null && !spDueDays.isDisposed()) {
 				// value is set by dueDays variable, not directly by binding
@@ -735,61 +733,16 @@ public class DocumentEditor extends Editor<Document> {
 						new UpdateValueStrategy());
 			}
 		}
+        
+        // now remove the "bind mode" from part
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
+        
     }
 
-	private void fillAndBindSalesEqualizationTaxCombo() {
-//		Shipping tmpShipping = document.getAdditionalInfo().;
-		comboViewerSalesEqualizationTax.setContentProvider(new EntityComboProvider());
-		comboViewerSalesEqualizationTax.setLabelProvider(new EntityLabelProvider());
-		comboViewerSalesEqualizationTax.addSelectionChangedListener(new ISelectionChangedListener() {
-           
-        	// If a new shipping is selected, recalculate the total
-        	// sum and update the shipping VAT.
-        	public void selectionChanged(SelectionChangedEvent event) {
-        		// Get the selected element.
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-        		if (!structuredSelection.isEmpty()) {
-        			// Get first selected element.
-        			VAT firstElement = (VAT) structuredSelection.getFirstElement();
-//        			clearManualShipping(document);
-//        			document.setShipping(shipping);
-
-        			// Update the shipping VAT
-//						shippingVat = shipping.getShippingVat();
-//						shippingVatDescription = shippingVat.getDescription();
-//						shippingAutoVat = shipping.getAutoVat();
-//        			calculate();
-        		}
-        	}
-//
-//			private void clearManualShipping(Document document) {
-//				document.getAdditionalInfo().setShippingAutoVat(null);
-//				document.getAdditionalInfo().setShippingDescription(null);
-//				document.getAdditionalInfo().setShippingName(null);
-//				document.getAdditionalInfo().setShippingValue(null);
-//				document.getAdditionalInfo().setShippingVatDescription(null);
-//				document.getAdditionalInfo().setShippingVatValue(null);
-//			}
-        });
-
-        // Fill the shipping combo with the shipping values.
-        List<VAT> allSalesEqualizationTaxes = vatDao.findAll();
-        comboViewerSalesEqualizationTax.setInput(allSalesEqualizationTaxes);
-//        document.setShipping(tmpShipping);
-        
-        // Get the documents'shipping values.
-        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
-        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
-        
-        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
-        target2ShippingModel.setConverter(new StringToEntityConverter<VAT>(allSalesEqualizationTaxes, VAT.class, true));
-//        // Set the combo
-//        bindModelValue(document, comboViewerSalesEqualizationTax.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
-	}
-
-	private void fillAndBindPaidCombo() {
+	private void fillAndBindPaymentCombo() {
 		Payment tmpPayment = document.getPayment();
+		ComboViewer comboViewerPayment;
+        comboViewerPayment = new ComboViewer(comboPayment);
         comboViewerPayment.setContentProvider(new EntityComboProvider());
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
         GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
@@ -809,6 +762,7 @@ public class DocumentEditor extends Editor<Document> {
         			Payment dataSetPayment = (Payment) firstElement;
         			usePayment(dataSetPayment);
         		}
+        		getMDirtyablePart().setDirty(true);
         	}
         });
 
@@ -827,7 +781,9 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	private void fillAndBindShippingCombo() {
+		
 		Shipping tmpShipping = document.getShipping();
+        ComboViewer comboViewerShipping = new ComboViewer(comboShipping);
         comboViewerShipping.setContentProvider(new EntityComboProvider());
         comboViewerShipping.setLabelProvider(new EntityLabelProvider());
         comboViewerShipping.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -843,6 +799,7 @@ public class DocumentEditor extends Editor<Document> {
         			shipping = (Shipping) structuredSelection.getFirstElement();
         			clearManualShipping(document);
         			document.setShipping(shipping);
+        			getMDirtyablePart().setDirty(true);
 
         			// Update the shipping VAT
 //						shippingVat = shipping.getShippingVat();
@@ -853,19 +810,43 @@ public class DocumentEditor extends Editor<Document> {
         	}
 
 			private void clearManualShipping(Document document) {
-				document.getAdditionalInfo().setShippingAutoVat(null);
+//				document.getAdditionalInfo().setShippingAutoVat(null);
 				document.getAdditionalInfo().setShippingDescription(null);
-				document.getAdditionalInfo().setShippingName(null);
-				document.getAdditionalInfo().setShippingValue(null);
-				document.getAdditionalInfo().setShippingVatDescription(null);
-				document.getAdditionalInfo().setShippingVatValue(null);
+//				document.getAdditionalInfo().setShippingName(null);
+//				document.getAdditionalInfo().setShippingValue(null);
+//				document.getAdditionalInfo().setShippingVatDescription(null);
+//				document.getAdditionalInfo().setShippingVatValue(null);
 			}
         });
+        
+      comboShipping.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				// if the shipping combo box value is changed manually we have to cut off the shipping from document
+				// and set it to the additionalinfos object
+				if(e != null) {
+					ISelection selection = comboViewerShipping.getSelection();
+					// an empty selection signals that the user has typed an own value
+					if(selection.isEmpty()) {						
+						// set additional infos
+						document.getAdditionalInfo().setShippingDescription(((Combo)e.getSource()).getText());
+						// cut off shipping
+						document.setShipping(null);
+						getMDirtyablePart().setDirty(true);
+					}
+				}
+			}
+		});
+      
 
         // Fill the shipping combo with the shipping values.
         List<Shipping> allShippings = shippingsDAO.findAll();
         comboViewerShipping.setInput(allShippings);
-        document.setShipping(tmpShipping);
+        	document.setShipping(tmpShipping);
+        if(tmpShipping == null && document.getAdditionalInfo().getShippingDescription() != null) {
+        	// shipping was set manually => we have to do some magic :-)
+        	comboShipping.setText(document.getAdditionalInfo().getShippingDescription());
+        }
         
         // Get the documents'shipping values.
         UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
@@ -885,7 +866,8 @@ public class DocumentEditor extends Editor<Document> {
     private boolean isInvoiceDeposited() {
     	// see FAK-485
     	double discount = 1 - document.getPayment().getDiscountValue();
-    	return document.getPaidValue() < Math.round(total.multiply(discount * 100).getNumber().doubleValue())/100.0;
+    	MonetaryAmount paidValue = Money.of(document.getPaidValue(), currencyUnit);
+		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply(discount).with(DataUtils.getInstance().getDefaultRounding()));
     }
 
 	/**
@@ -1017,7 +999,7 @@ public class DocumentEditor extends Editor<Document> {
 				
 				// Default payment
 				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
-                payment = paymentsDao.findById(paymentId);
+                Payment payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
                 if(payment != null) {
                 	document.setDueDays(payment.getNetDays());
@@ -1028,11 +1010,10 @@ public class DocumentEditor extends Editor<Document> {
 				document.setNetGross(defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS));
 			}
 			else {
-				payment = document.getPayment();
-				if(payment == null) {
+				if(document.getPayment() == null) {
 					// Default payment
 					int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
-	                payment = paymentsDao.findById(paymentId);
+	                Payment payment = paymentsDao.findById(paymentId);
 	                document.setPayment(payment);
 				}
 				
@@ -1066,7 +1047,7 @@ public class DocumentEditor extends Editor<Document> {
 			documentType =  DocumentTypeUtil.findByBillingType(document.getBillingType());
 			setEditorID(documentType.getTypeAsString());
 
-			payment = document.getPayment();
+//			payment = document.getPayment();
 			shipping = document.getShipping();
 
 			// and the editor's part name
@@ -1079,7 +1060,7 @@ public class DocumentEditor extends Editor<Document> {
 //		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
 		
 		// the address is either the delivery address (if the document is a delivery note) or the billing address
-		addressId = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
+		displayAddress = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
 		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
@@ -1114,7 +1095,7 @@ public class DocumentEditor extends Editor<Document> {
 			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
 					? document.getBillingContact() : document.getDeliveryContact());
 		} else {
-	        billingAddress = contactUtil.getAddressAsString(addressId);
+	        billingAddress = contactUtil.getAddressAsString(displayAddress);
 			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
 					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
 						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
@@ -1136,6 +1117,7 @@ public class DocumentEditor extends Editor<Document> {
         	try {
         		calculate();
         		document = documentsDAO.save(document);
+        		setNextFreeNumberInPrefStore(document.getName(), Document_.name.getName());
             } catch (FakturamaStoringException e) {
                 log.error(e);
 			}
@@ -1190,6 +1172,8 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setOrderDate(parentDoc.getOrderDate());
 		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);
+		} else if(parentDoc.getInvoiceReference() != null) {
+			retval.setInvoiceReference(parentDoc.getInvoiceReference());
 		}
 
 		// copy items
@@ -1267,8 +1251,8 @@ public class DocumentEditor extends Editor<Document> {
 		// Get the sign of this document ( + or -)
 //		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
-		// Get the discount value from the control element
-		Double rebate = Double.valueOf(0.0);
+		// Get the discount value from the document or (if exists) from control element
+		Double rebate = java.util.Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0));
 		if (itemsDiscount != null) {
 	        // Convert it to negative values
 	        rebate = (Double)itemsDiscount.getValue();
@@ -1293,12 +1277,13 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Do the calculation
-		// if - for what reason ever - the shipping has no value, I've decided to set it to default shipping.
-		if(shipping == null) {
+		// if - for what reason ever - the document shipping has no value, I've decided to set it to default shipping.
+		if(shipping == null && document.getShippingValue() == null && document.getAdditionalInfo().getShippingValue() == null) {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document,
+				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
     				document.getShippingValue()/* * sign*/,
@@ -1368,12 +1353,12 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Use the customers settings instead, if they are set
-		if (addressId != null && address_changed) {
+		if (displayAddress != null && address_changed) {
 			// useNetGross can be null (from database!)
-			if (addressId.getUseNetGross() != null && addressId.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			if (displayAddress.getUseNetGross() != null && displayAddress.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-			} else if (addressId.getUseNetGross() == null || addressId.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+			} else if (displayAddress.getUseNetGross() == null || displayAddress.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1442,7 +1427,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * The shipping value has changed. So take the absolute value and
 	 * recalculate the document's total sum.
 	 */
-	private void changeShippingValue() {
+	protected void changeShippingValue() {
 
 		// Get the new value and take the absolute value
 		Double newShippingValue = (Double) shippingValue.getValue();
@@ -1453,7 +1438,7 @@ public class DocumentEditor extends Editor<Document> {
 		// If the shipping value has changed:
 		// Set the shippingAutoVat to net or gross, depending on the
 		// settings of this editor.
-		if (!DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
+		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
 		}
 
@@ -1461,6 +1446,9 @@ public class DocumentEditor extends Editor<Document> {
 //		shipping = newShippingValue;
 		document.setShippingValue(newShippingValue);
 		document.setShipping(null);   // because we changed the Shipping value manually
+		
+		// now the document gets dirty
+		getMDirtyablePart().setDirty(true);
 		calculate();
 	}
 
@@ -1693,12 +1681,14 @@ public class DocumentEditor extends Editor<Document> {
 
         if (documentType == DocumentType.DELIVERY) {
             hasDifferentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentaddress + '\n' + billingAddress);
+            // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
+            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, billingAddress.replaceAll("&", "&&")));
         } else {
             hasDifferentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
-            differentDeliveryAddressIcon.setToolTipText(msg.editorDocumentWarningDifferentdeliveryaddress + '\n' + deliveryAddress);
+            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, deliveryAddress.replaceAll("&", "&&")));
         }
 
+        
         if (hasDifferentDeliveryAddress) {
             // Show the icon
             GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
@@ -1729,7 +1719,7 @@ public class DocumentEditor extends Editor<Document> {
 	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
     	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
-		this.addressId = contact;
+		this.displayAddress = contact;
 
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
@@ -1741,10 +1731,12 @@ public class DocumentEditor extends Editor<Document> {
 		if (paymentid != null) {
 			//Use the payment method of the customer
 			if (comboPayment != null) {
-				comboPayment.setText(paymentid.getDescription());
+				document.setPayment(paymentid);
+//				comboViewerPayment.getCombo().getItems()getText();
+				comboPayment.setText(paymentid.getName());
 			}
 
-			usePayment(contact.getPayment());
+			usePayment(paymentid);
 		}
 		
 		showHideWarningIcon();
@@ -1757,8 +1749,7 @@ public class DocumentEditor extends Editor<Document> {
 	/**
 	 * Use this payment and update the duedays
 	 * 
-	 * @param dataSetPayment
-	 * 	ID of the payment
+	 * @param dataSetPayment the payment
 	 */
 	private void usePayment(Payment dataSetPayment) {
 		
@@ -1766,17 +1757,15 @@ public class DocumentEditor extends Editor<Document> {
 		if (dataSetPayment == null)
 			return;
 		
-		payment = dataSetPayment;
-		
-//		Payment payment = paymentsDAO.findById(dataSetPayment);
+//		payment = dataSetPayment;
 
 		// Get the due days and description of this payment
 //		duedays = payment.getNetDays();
 //		newPayment = dataSetPayment;
-		newPaymentDescription = payment.getDescription();
+		newPaymentDescription = dataSetPayment.getDescription();
 
 		if (spDueDays !=null && !spDueDays.isDisposed()) {
-			spDueDays.setSelection(payment.getNetDays().intValue());
+			spDueDays.setSelection(dataSetPayment.getNetDays().intValue());
 			updateIssueDate();
 		}
 	}
@@ -2503,13 +2492,16 @@ public class DocumentEditor extends Editor<Document> {
         bPaid.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 	        	// ... Recreate the paid composite
         		createPaidComposite(bPaid.getSelection(), bPaid.getSelection(), true);
+        		if(!bPaid.getSelection()) {
+        			// remove previously set values
+        			document.setPaidValue(null);
+        		}
         		// remove the grayed state
         		bPaid.setGrayed(false);
         }));
 
         // Combo to select the payment
         comboPayment = new Combo(paidContainer, SWT.BORDER | SWT.READ_ONLY);
-        comboViewerPayment = new ComboViewer(comboPayment);
 
         // Create a default paid composite with the document's
         // state for "paid"
@@ -2562,7 +2554,6 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
             			calculate();
-    
             		}
             	});
     
@@ -2570,7 +2561,7 @@ public class DocumentEditor extends Editor<Document> {
             	itemsDiscount.getControl().addKeyListener(new KeyAdapter() {
             		public void keyPressed(KeyEvent e) {
             			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
-            				calculate();
+            				itemsDiscount.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
             			}
             		}
             	});
@@ -2619,10 +2610,10 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
-		// Shipping combo
-		comboViewerShipping = new ComboViewer(shippingComposite, SWT.BORDER | SWT.READ_ONLY);
-		comboViewerShipping.getCombo().setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboViewerShipping.getCombo());
+		// Shipping combo		
+		comboShipping = new Combo(shippingComposite, SWT.BORDER/* | SWT.READ_ONLY*/);
+		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    
 		// Shipping value field
 		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
@@ -2635,7 +2626,7 @@ public class DocumentEditor extends Editor<Document> {
 //            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
 		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
    
-		// Recalculate, if the discount field looses the focus.
+		// Recalculate, if the shipping field looses the focus.
 		/*
 		 * Note: We have to re-sort the FocusOut listeners because otherwise the display value isn't updated.
 		 * (The origin listener gets "overwritten" by the new one, although it isn't. Crazy.) 

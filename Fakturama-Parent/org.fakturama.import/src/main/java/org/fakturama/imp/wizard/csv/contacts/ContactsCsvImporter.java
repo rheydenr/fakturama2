@@ -214,7 +214,7 @@ public class ContactsCsvImporter {
 					}
 					// work further with testcontact
 					testContact.setCategories(category);
-					testContact.setGender(contactUtil.getGenderID(prop.getProperty("gender")));
+					testContact.setGender(contactUtil.getSalutationID(prop.getProperty("gender")));
 
 					testContact.setTitle(prop.getProperty("title"));
 					testContact.setCompany(prop.getProperty("company"));
@@ -230,7 +230,7 @@ public class ContactsCsvImporter {
 					testContact.setAddress(address);
 
 					Debitor deliveryContact = testContact.getAlternateContacts() != null ? (Debitor) testContact.getAlternateContacts() : modelFactory.createDebitor();
-					deliveryContact.setGender(contactUtil.getGenderID(prop.getProperty("delivery_gender")));
+					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
 					deliveryContact.setTitle(prop.getProperty("delivery_title"));
 					deliveryContact.setFirstName(prop.getProperty("delivery_firstname"));
 					deliveryContact.setName(prop.getProperty("delivery_name"));

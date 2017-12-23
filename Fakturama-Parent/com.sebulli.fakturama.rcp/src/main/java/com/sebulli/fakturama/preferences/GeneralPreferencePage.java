@@ -104,14 +104,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.SECONDARY);
         List<Locale> currencyLocaleList = Arrays.stream(locales)
-                .filter(distinctByKey(l->l.getDisplayCountry()))
                 .filter(l -> l.getCountry().length() != 0)
                 .sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
+                // distinguish different Locales by country AND language! 
+                .filter(distinctByKey(l -> l.getDisplayCountry() + l.getDisplayLanguage()))
                 .collect(Collectors.toList());
         String[][] currencyLocales = new String[currencyLocaleList.size()][2];
         for (Locale locale : currencyLocaleList) {
-            currencyLocales[index][0] = locale.getDisplayCountry() + " (" + locale.getDisplayLanguage() + ")";
-            currencyLocales[index][1] = locale.getLanguage() + "/"+locale.getCountry();
+            currencyLocales[index][0] = String.format("%s (%s)", locale.getDisplayCountry(), locale.getDisplayLanguage());
+            currencyLocales[index][1] = String.format("%s/%s", locale.getLanguage(), locale.getCountry());
             index++;
         }
         

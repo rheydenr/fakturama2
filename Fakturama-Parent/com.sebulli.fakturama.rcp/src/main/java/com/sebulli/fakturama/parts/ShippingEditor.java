@@ -487,11 +487,19 @@ public class ShippingEditor extends Editor<Shipping> {
         
         // add listener always _after_ bind, else you would get a dirty editor instantly after opening
         if(grossText != null) {
-            grossText.getGrossText().getControl().addModifyListener(e -> {setDirty(true);});
+            grossText.getGrossText().getControl().addModifyListener(e -> {
+            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+            		setDirty(true);
+            	}
+            });
         }
         
         if(netText != null) {
-            netText.getNetText().getControl().addModifyListener(e -> {setDirty(true);});
+            netText.getNetText().getControl().addModifyListener(e -> {
+            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+            		setDirty(true);
+            	}
+            });
         }
     }
 
@@ -555,7 +563,9 @@ public class ShippingEditor extends Editor<Shipping> {
 	}
     
     protected void bindModel() {
-        bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
+		bindModelValue(editorShipping, textName, Shipping_.name.getName(), 64);
         fillAndBindCategoryCombo();
         bindModelValue(editorShipping, textDescription, Shipping_.description.getName(), 250);
         fillAndBindVatCombo();
@@ -575,6 +585,8 @@ public class ShippingEditor extends Editor<Shipping> {
         catch (IndexOutOfBoundsException e) {
             autoVat = ShippingVatType.SHIPPINGVATGROSS;
         }
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
 
     /**

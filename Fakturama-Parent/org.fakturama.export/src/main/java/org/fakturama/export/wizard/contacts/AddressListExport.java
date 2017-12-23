@@ -137,7 +137,7 @@ public class AddressListExport extends OOCalcExporter {
 			} else {
 				col++;
 			}
-			setCellText(row, col++, contactUtil.getGenderString(contact.getGender()));
+			setCellText(row, col++, contactUtil.getSalutationString(contact.getGender()));
 			setCellText(row, col++, contact.getTitle());
 			setCellText(row, col++, contact.getFirstName());
 			setCellText(row, col++, contact.getName());
@@ -158,7 +158,7 @@ public class AddressListExport extends OOCalcExporter {
 			} else {
 				deliveryContact = contact;
 			}
-			setCellText(row, col++, contactUtil.getGenderString(deliveryContact.getGender()));
+			setCellText(row, col++, contactUtil.getSalutationString(deliveryContact.getGender()));
 			setCellText(row, col++, deliveryContact.getTitle());
 			setCellText(row, col++, deliveryContact.getFirstName());
 			setCellText(row, col++, deliveryContact.getName());

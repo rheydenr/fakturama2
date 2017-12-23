@@ -30,6 +30,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemAccountType_;
+import com.sebulli.fakturama.model.ItemListTypeCategory_;
 import com.sebulli.fakturama.model.VATCategory;
 
 /**
@@ -42,17 +43,20 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
         return ItemAccountType.class;
     }
     
+    
     /**
-     * Get all {@link ItemAccountType}s from Database.
-     *
-     * @return List<ItemAccountType> 
+     * Collect all salutations from list item table 
+     * @return list of salutations
      */
-    public List<ItemAccountType> findAll() {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<ItemAccountType> cq = cb.createQuery(ItemAccountType.class);
-        CriteriaQuery<ItemAccountType> selectQuery = cq.select(cq.from(ItemAccountType.class));
+    public List<ItemAccountType> findAllSalutations() {
+    	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<ItemAccountType> cq = cb.createQuery(getEntityClass());
+        Root<ItemAccountType> rootEntity = cq.from(ItemAccountType.class);
+        CriteriaQuery<ItemAccountType> selectQuery = cq.select(rootEntity)
+                .where(cb.and(
+                            cb.equal(rootEntity.get(ItemAccountType_.category).get(ItemListTypeCategory_.name), "salutations"),
+                            cb.isFalse(rootEntity.get(ItemAccountType_.deleted))));
         return getEntityManager().createQuery(selectQuery).getResultList();
-//      return getEntityManager().createQuery("select p from ItemAccountType p", ItemAccountType.class).getResultList();
     }
     
     /**
@@ -62,15 +66,16 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
      * @param account the Category to search
      * @return {@link ItemAccountType}
      */
-    public ItemAccountType findItemAccountTypeByName(String account) {
+    public ItemAccountType findItemListTypeByName(String account) {
         ItemAccountType result = null;
         if(StringUtils.isNotEmpty(account)) {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-            CriteriaQuery<ItemAccountType> cq = cb.createQuery(ItemAccountType.class);
+            CriteriaQuery<ItemAccountType> cq = cb.createQuery(getEntityClass());
             Root<ItemAccountType> rootEntity = cq.from(ItemAccountType.class);
             CriteriaQuery<ItemAccountType> selectQuery = cq.select(rootEntity)
                     .where(cb.and(
-                                cb.equal(rootEntity.get(ItemAccountType_.name), account)));
+                                cb.equal(rootEntity.get(ItemAccountType_.name), account),
+                                cb.isFalse(rootEntity.get(ItemAccountType_.deleted))));
             try {
                 result = getEntityManager().createQuery(selectQuery).getSingleResult();
             }
@@ -79,8 +84,7 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
             }
         }
         return result;
-    }
-    
+    }     
 
     /**
      * Find a {@link VATCategory} by its name. If one of the part categories doesn't exist we create it 
@@ -99,7 +103,7 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
         try {
             for (int i = 0; i < splittedCategories.length; i++) {
                 category += "/" + splittedCategories[i];
-                ItemAccountType searchCat = findItemAccountTypeByName(category);
+                ItemAccountType searchCat = findByName(category);
                 if (searchCat == null) {
                     // not found? Then create a new one.
                     ItemAccountType newCategory = modelFactory.createItemAccountType();
@@ -133,4 +137,21 @@ public class ItemAccountTypeDAO extends AbstractDAO<ItemAccountType> {
     public String[] getVisibleProperties() {
         return new String[] { ItemAccountType_.name.getName(), ItemAccountType_.value.getName()};
     }
+
+    /**
+     * Gets the count of items with the given category.
+     * 
+     * @param category
+     * @return
+     */
+	public Long getCountOf(String category) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<ItemAccountType> rootEntity = cq.from(getEntityClass());
+        cq.select(cb.count(rootEntity))
+          .where(cb.and(cb.equal(rootEntity.get(ItemAccountType_.category).get(ItemListTypeCategory_.name), category),
+                        cb.isFalse(rootEntity.get(ItemAccountType_.deleted))));
+        
+        return getEntityManager().createQuery(cq).getSingleResult();
+	}
 }

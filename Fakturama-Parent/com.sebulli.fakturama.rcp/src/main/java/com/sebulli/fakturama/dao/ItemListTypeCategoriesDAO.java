@@ -37,7 +37,7 @@ public class ItemListTypeCategoriesDAO extends AbstractCategoriesDAO<ItemListTyp
 	 * @param withPersistOption persist a (part) category if it doesn't exist
 	 * @return found category
 	 */
-    public ItemListTypeCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
+    public ItemListTypeCategory getCategory(String testCat, boolean withPersistOption) {
         // to find the complete category we have to start with the topmost category
         // and then lookup each of the child categories in the given path
         String[] splittedCategories = testCat.split("/");

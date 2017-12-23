@@ -123,10 +123,8 @@ public class LogbackAdapter implements LogListener {
 		}		
 
 		// Show the error view (only if it is not just an information message)
-		if (log.getLevel() == LogService.LOG_ERROR) {
-			if(!showErrorView(log)) {
-			    logger.error(Activator.BUNDLE_MARKER, "Can't show the error message in Error View because no EventBroker is available!");
-			}
+		if (log.getLevel() == LogService.LOG_ERROR && !showErrorView(log)) {
+		    logger.error(Activator.BUNDLE_MARKER, "Can't show the error message in Error View because no EventBroker is available!");
 		}
 
 		// If there is an exception available, use it, otherwise just log 

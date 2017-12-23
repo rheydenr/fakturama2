@@ -31,7 +31,7 @@ public enum DocumentItemListDescriptor {
     NAME("name", "common.field.name", 8, 3),
     DESCRIPTION("description", "common.field.description", 9, 3),
     VAT("itemVat", "common.field.vat", 10, 10), // $ItemVatPercent
-    SALESEQUALIZATIONTAX("itemVat.salesEqualizationTax", "data.tax.salesequalizationtax", 11, 3),
+    SALESEQUALIZATIONTAX("itemVat.salesEqualizationTax", "data.tax.salesequalizationtax.short", 11, 3),
     UNITPRICE("price", "common.field.unitprice", 12, 10), // was $ItemGrossPrice if $useGross is set, else "price"
     DISCOUNT("itemRebate", "common.field.discount", 13, 5),
     TOTALPRICE("", "common.field.price", 14, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal

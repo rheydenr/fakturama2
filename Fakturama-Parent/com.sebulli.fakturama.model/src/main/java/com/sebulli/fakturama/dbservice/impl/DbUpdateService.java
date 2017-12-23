@@ -31,6 +31,7 @@ import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 
+import liquibase.CatalogAndSchema;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -67,11 +68,16 @@ public class DbUpdateService implements IDbUpdateService {
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		try (java.sql.Connection connection = openConnection(context);) {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
+//				System.err.println("dropping old database schema for workspace request");
+//				CatalogAndSchema cat = new CatalogAndSchema("", database.getDefaultSchemaName());
+//				database.dropDatabaseObjects(cat);
+//			}
 			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
 			liquibase.update(new Contexts(), new LabelExpression());
-		} catch (LiquibaseException | SQLException ex) {
+		} catch (LiquibaseException | SQLException | NullPointerException ex) {
 			ex.printStackTrace();
 			retval = false;
 		}
@@ -117,6 +123,7 @@ public class DbUpdateService implements IDbUpdateService {
 					ServiceReference<IActivateDbServer> serviceDbRef;
 					serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
+					prop.put("encoding", "UTF-8");
 					if(currentService != null) {
 						try {
 							currentService.stopServer();

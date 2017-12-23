@@ -97,6 +97,7 @@ public class EditorSaveHandler implements ISaveHandler {
 
 	@Override
 	public Save promptToSave(MPart dirtyPart) {
+		//TODO implement an appropriate SaveDialog! see SaveablePartPromptDialog
 		return Save.YES;
 	}
 

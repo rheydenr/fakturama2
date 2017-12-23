@@ -5,7 +5,6 @@ package org.fakturama.imp.wizard.csv.orders;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,7 +26,6 @@ import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
-import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -110,10 +108,8 @@ public class OrderImportWizard extends Wizard implements IImportWizard {
 			ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
 			ctx.set(ContactUtil.class, contactUtil);
 			OrdersCsvImporter csvImporter = ContextInjectionFactory.make(OrdersCsvImporter.class, ctx);
-//			
-//			MessageDialog.openInformation(this.getShell(), "Info", "Hier käme dann der Bestellungsimport.");
-//			
-			List<Document> importedDocuments = csvImporter.importCSV(selectedFile, false, optionPage.getSelectedShipping().get(), optionPage.getSelectedOrderTemplate(), optionPage.getSelectedDeliveryTemplate());
+			
+			/*List<Document> importedDocuments = */csvImporter.importCSV(selectedFile, false, optionPage.getSelectedShipping().get(), optionPage.getSelectedOrderTemplate(), optionPage.getSelectedDeliveryTemplate());
 
 			ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 			dialog.setStatusText(csvImporter.getResult());

@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.handlers;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -239,7 +240,7 @@ public class CreateOODocumentHandler {
 			} else {
 				// Show an information dialog if no template was found
 				MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
-						MessageFormat.format(msg.dialogPrintooNotemplate, new Object[]{getRelativeFolder(documentEditor.getDocumentType())}));
+						MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
 			}
 		}
 	}
@@ -300,8 +301,13 @@ public class CreateOODocumentHandler {
 			    od.createDocument(false);
 			}
 		} catch (FakturamaStoringException e) {
-			log.error(e, "Dokument konnte nicht erstellt werden!");
-			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+			log.error(e, "Dokument konnte nicht erstellt werden! Grund: " + e.getDescription());
+			if(e.getException() != null && e instanceof FakturamaStoringException) {
+				log.warn("Caused by: " + ((FakturamaStoringException)e.getException()).getDescription());
+			}
+			if(!silentMode) {
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+			}
 		}
     }
 }

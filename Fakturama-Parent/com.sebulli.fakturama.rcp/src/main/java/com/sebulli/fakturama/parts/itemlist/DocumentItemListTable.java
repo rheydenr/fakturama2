@@ -32,6 +32,7 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -205,6 +206,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private SelectionLayer selectionLayer;
     
     private ProductUtil productUtil;
+
+    /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
     
     /**
      * Entry point for this class. Here the whole Composite is built.
@@ -222,7 +228,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
-        
+        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
@@ -236,6 +242,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //        hookDoubleClickCommand(natTable, gridLayer);
         return top;
     }
+    
 
 	/**
 	 * Create the default context menu
@@ -311,10 +318,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
 
-        if (documentType.hasPrice()) {
+        if (documentType.hasPrice() 
+        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
 	        
-	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
 	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
 	        }        
             
@@ -395,8 +403,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                case UNITPRICE:
 	                	MonetaryAmount amount;
 	                	amount = container.getUseGross() 
-	                			? new Price(rowObject.getDocumentItem()).getUnitGrossRounded() 
-	                			: new Price(rowObject.getDocumentItem()).getUnitNetRounded();
+	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
+	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
 	                	retval = amount.getNumber().doubleValue();
 	                	
 	                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
@@ -404,10 +412,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
-	                        retval = rowObject.getPrice().getTotalGrossRounded();
+	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
 	                    } else { // "$ItemNetTotal"
 	                        // Fill the cell with the total net value of the item
-	                        retval = rowObject.getPrice().getTotalNetRounded();
+	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
 	                    }
 	                    break;
 	                default:
@@ -784,6 +792,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 .getValue()) : DocumentType.NONE;
         if (documentTypeParent == DocumentType.OFFER) {
             getDocumentItemsListData().forEach(item -> item.getDocumentItem().setOptional(Boolean.FALSE));
+        }
+        
+        // set vesting period if this field is empty
+        if(getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+        	getDocumentItemsListData().stream()
+        		.filter(item -> item.getDocumentItem().getVestingPeriodStart() == null || item.getDocumentItem().getVestingPeriodEnd() == null)
+        		.forEach(item -> {
+        			if(item.getDocumentItem().getVestingPeriodStart() == null) item.getDocumentItem().setVestingPeriodStart(new Date());
+        			if(item.getDocumentItem().getVestingPeriodEnd() == null) item.getDocumentItem().setVestingPeriodEnd(new Date());
+        		});
         }
 
         // Show the column "optional" if at least one item

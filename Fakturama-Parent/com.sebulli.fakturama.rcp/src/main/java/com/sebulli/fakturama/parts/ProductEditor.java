@@ -561,10 +561,9 @@ public class ProductEditor extends Editor<Product> {
 		labelDescription.setToolTipText(msg.editorProductAdddescriptionTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
-		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI);
+		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 //		textDescription.setText(DataUtils.makeOSLineFeeds(editorProduct.getStringValueByKey("description")));
 		textDescription.setToolTipText(labelDescription.getToolTipText());
-		textDescription.addKeyListener(new ReturnKeyAdapter(textDescription));
 		GridDataFactory.fillDefaults().hint(10, 80).grab(true, false).applyTo(textDescription);
 
 		// Product quantity
@@ -606,7 +605,7 @@ public class ProductEditor extends Editor<Product> {
 				? (useNet && !useGross) 
 						? 3 
 						: 4 
-				: 3).applyTo(pricetable);
+				: 2).applyTo(pricetable);
 
 		// If there is a net and gross column, and 2 columns for the quantity
 		// there are 2 cells in the top left corner, that are empty
@@ -705,7 +704,7 @@ public class ProductEditor extends Editor<Product> {
 		MoneyFormatter costPriceFormatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		costPrice.setFormatter(costPriceFormatter);
 		costPrice.getControl().addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(costPrice.getControl());
+		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(costPrice.getControl());
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);
@@ -739,6 +738,7 @@ public class ProductEditor extends Editor<Product> {
 		if(useQuantity) {
 			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
 			textQuantity.getControl().addKeyListener(new ReturnKeyAdapter(textQuantity.getControl()));
+			textQuantity.getControl().setToolTipText(msg.commonFieldQuantityTooltip);
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
@@ -830,6 +830,8 @@ public class ProductEditor extends Editor<Product> {
     
     @Override
     protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
@@ -852,6 +854,8 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
 		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
 		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
+		
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
 
 	private void fillAndBindVatCombo() {

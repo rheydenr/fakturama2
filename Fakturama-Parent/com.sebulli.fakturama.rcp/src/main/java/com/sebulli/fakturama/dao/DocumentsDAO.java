@@ -674,6 +674,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	        		cb.and(
 							cb.equal(root.<Integer>get(Dunning_.transactionId), transactionId),
 							cb.equal(root.<BillingType>get(Dunning_.billingType), BillingType.DUNNING),
+							cb.not(root.<Boolean>get(Dunning_.deleted)),
 						// check for dunnings
 							cb.equal(root.<Integer>get(Dunning_.dunningLevel), (dunninglevel > 0) ? dunninglevel : Integer.valueOf(1))));
 	        try {
@@ -701,7 +702,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	        Root<Document> root = criteria.from(getEntityClass());
 	        Predicate whereClause = cb.and(
 					cb.equal(root.<Integer>get(Document_.transactionId), transactionId),
-					cb.equal(root.<BillingType>get(Document_.billingType), targetype)
+					cb.equal(root.<BillingType>get(Document_.billingType), targetype),
+					cb.not(root.<Boolean>get(Document_.deleted))
 				);
 			CriteriaQuery<Document> cq = criteria.where(
 	        		whereClause);
@@ -729,7 +731,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 				lastSuccessfulObject = entityManager.merge(doc);
 				getEntityManager().persist(lastSuccessfulObject);
 				// documentIds.add(currentDocument.getId());
-				System.out.println("t");
+//				System.out.println("t");
 				docSet.add(lastSuccessfulObject);
 			}
 			trx.commit();

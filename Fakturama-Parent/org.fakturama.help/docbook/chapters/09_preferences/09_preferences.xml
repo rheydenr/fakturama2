@@ -37,10 +37,15 @@
         </section>
         <section>
             <title>Währungsland</title>
-            <para>Legt fest, in welcher Währung die Geldbeträge erscheinen sollen. Ein Wechsel des Währungslandes ändert nicht den Wert.</para>
-            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, dass sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen Locale-Einstellungen greifen.</para>
+            <para>Legt fest, in welcher Währung die Geldbeträge erscheinen sollen. Ein Wechsel des Währungslandes ändert nicht den Wert, sondern nur die Währungseinheit.</para>
+            <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch einen ISO-Code wie 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, dass sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen länderspezifischen Einstellungen greifen.</para>
 			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, dass alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
-			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen und anderen Zahlen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
+		</section>
+		<section><title>Anzahl der Nachkommastellen (Währung)</title>
+			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
+        </section>
+		<section><title>Anzahl der Nachkommastellen</title>
+			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei allen Zahlen angezeigt und gedruckt werden sollen, die keine Währung darstellen (Mengen, Gewichte usw.). Die maximale Anzahl ist derzeit 5.</para>
         </section>
         <section>
             <title>Zahlen mit Tausenderpunkt darstellen</title>
@@ -81,7 +86,7 @@
         </section>
         <section>
             <title>Beschreibung aus Produktauswahl-Dialog übernehmen</title>
-            <para>In den Dokumenten kann ein neuer Artikel über den Produktauswahl-Dialog eingefügt werden. Diese Einstellung legt fest, ob die Produktbeschreibung mit übernommen wird. Oftmals ist die Produktbeschreibung ein längerer Text und nicht geeignet für die Artikelliste eines Dokumentes. Ist diese Option nicht ausgewählt bleibt das Feld 'Beschreibung' der Artikelliste leer und kann mit zusätzlicher Information wie 'Farbe: rot' versehen werden.</para>
+            <para>In den Dokumenten kann ein neuer Artikel über den Produktauswahl-Dialog eingefügt werden. Diese Einstellung legt fest, ob die Produktbeschreibung mit übernommen wird. Oftmals ist die Produktbeschreibung ein längerer Text und nicht geeignet für die Artikelliste eines Dokumentes. Ist diese Option nicht ausgewählt bleibt das Feld 'Beschreibung' der Artikelliste leer und kann mit zusätzlichen Informationen wie 'Farbe: rot' versehen werden.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -373,6 +378,20 @@
             <title>Länderfeld benutzen</title>
             <para>Das Feld für das Land eines Kontaktes kann ein- oder ausgeblendet werden. Zusätzlich kann unter dem Punkt <link linkend="preferences_contactformat">Format des Adressfeldes</link> festgelegt werden, welche Länder bei der Ausgabe nicht mit aufgeführt werden sollen.</para>
 		</section>
+		<sect2><title>Ausgleichsteuer verwenden</title>
+		<para>Aktiviert die Verwendung der Ausgleichsteuer. Dazu muss gleichzeitig auch der Tab "Sonstiges" aktiv sein, da die Einstellung im Kontakteditor auf dieser Seite vorgenommen wird.</para>
+		<para>Die Einstellung bewirkt, dass im <link linkend="editor_editor_vat">Editor für die Steuersätze</link> ein weiteres Eingabefeld angezeigt wird, in das man die Ausgleichsteuer eingeben kann. Des weiteren erscheint im <link linkend="editor_editor_contact">Kontakteditor</link> im Tab "Sonstiges" eine neue Checkbox, mit der man die Berechnung der Ausgleichsteuer für diesen Kontakt aktivieren kann. Im <link linkend="editor_editor_document">Dokumenteneditor</link> wird eine zusätzliche Spalte eingeblendet, aus der die prozentuale Höhe der Ausgleichsteuer ersichtlich wird. Sämtliche Preisberechnungen beinhalten in diesem Fall die zusätzliche Steuer, wenn der Rechnungsempfänger entsprechend gekennzeichnet wurde.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/use_sales_equalizationtax.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="100%" fileref="../images/preferences/use_sales_equalizationtax.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
+		</sect2>
     </section>
     <section>
         <anchor xreflabel="" xml:id="preferences_contactformat"/>
@@ -819,7 +838,7 @@
         </section>
         <section>
             <title>Mengenangaben benutzen</title>
-            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
+            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Menge' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -848,71 +867,6 @@
             </para>
         </section>
     </section>
-    <!-- section>
-                 <anchor xreflabel="" xml:id="preferences_columnwidth"/>
-       <title>Einstellungen Spaltenbreite Tabellen</title>
-        <para>Die Spaltenbreite der Tabellen können geändert werden. Damit lassen sich diese auf die eigenen Bedürfnisse anpassen.</para>
-        <para>Zu beachten ist, dass einige Spalten feste Breite haben. Andere ändern ihre Breite beim Vergrößern des Fensters.</para>
-        <section>
-            <title>Artikel Dokumenteneditor</title>
-            <para>Ändert die Spaltenbreite der Artikelliste im Dokumenteneditor.</para>
-        </section>
-        <section>
-            <title>Ausgaben</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Ausgaben.</para>
-        </section>
-        <section>
-            <title>Ausgabebelege</title>
-            <para>Ändert die Spaltenbreite der Liste der einzelnen Positionen im Editor eines Ausgabebeleges.</para>
-        </section>
-        <section>
-            <title>Dokumente</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Dokumente.</para>
-        </section>
-        <section>
-            <title>Kontaktdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Kontakt ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Kontakte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Kontakte.</para>
-        </section>
-        <section>
-            <title>Listen</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Listeneinträge.</para>
-        </section>
-        <section>
-            <title>Produktdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neues Produkt ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Produkte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Produkte.</para>
-        </section>
-        <section>
-            <title>Steuersätze</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Steuersätze.</para>
-        </section>
-        <section>
-            <title>Textdialog</title>
-            <para>Ändert die Spaltenbreite der Tabelle im Dialog, der sich öffnet, wenn im Dokumenteditor ein neuer Text ausgewählt wird.</para>
-        </section>
-        <section>
-            <title>Texte</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Texte.</para>
-        </section>
-        <section>
-            <title>Versandarten</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Versandarten.</para>
-        </section>
-        <section>
-            <title>Zahlungsarten</title>
-            <para>Ändert die Spaltenbreite der Tabelle aller Zahlungsarten.</para>
-            <para>
-                <anchor xreflabel="" xml:id="preferences_toolbar"/>
-            </para>
-        </section>
-    </section -->
     <section>
         <anchor xreflabel="" xml:id="preferences_browser"/>
         <title>Webbrowser / Startseite</title>

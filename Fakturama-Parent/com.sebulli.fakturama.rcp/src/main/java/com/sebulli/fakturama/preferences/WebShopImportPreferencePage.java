@@ -72,35 +72,24 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		//T: Preference page "Web Shop Import" - Label checkbox "web shop enabled"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_ENABLED, msg.preferencesWebshopEnabled, getFieldEditorParent()));
 		
-		//T: Preference page "Web Shop Import" - Label
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_URL, msg.preferencesWebshopUrl, getFieldEditorParent()));
 
-		//T: Preference page "Web Shop Import" - Label
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_USER, msg.preferencesWebshopUser, getFieldEditorParent()));
 
-		//T: Preference page "Web Shop Import" - Label
 		StringFieldEditor passwordEditor = new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_PASSWORD, msg.startFirstSelectDbCredentialsPassword, getFieldEditorParent());
 		passwordEditor.getTextControl(getFieldEditorParent()).setEchoChar('*');
 		addField(passwordEditor);
 
-		//T: Preference page "Web Shop Import" - Label
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY, msg.preferencesWebshopLabelProductsincategory, getFieldEditorParent()));
 
-		//T: Preference page "Web Shop Import" - Label
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY, msg.preferencesWebshopLabelCustomersincategory, getFieldEditorParent()));
 
-		//T: Preference page "Web Shop Import" - Label
 		addField(new StringFieldEditor(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY, msg.preferencesWebshopLabelShippingsincategory, getFieldEditorParent()));
 
-		//T: Preference page "Web Shop Import" - Label
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_PROCESSING, msg.preferencesWebshopNotifycustomerOnprogress, getFieldEditorParent()));
-		//T: Preference page "Web Shop Import" - Label
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_NOTIFY_SHIPPED, msg.preferencesWebshopNotifycustomerOnshipped, getFieldEditorParent()));
-		//T: Preference page "Web Shop Import" - Label
 		addField(new IntegerFieldEditor(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS, msg.preferencesWebshopMaxproducts, getFieldEditorParent()));
-		//T: Preference page "Web Shop Import" - Label
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS, msg.preferencesWebshopModifiedproducts, getFieldEditorParent()));
-		//T: Preference page "Web Shop Import" - Label
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR, msg.preferencesWebshopEanasitemno, getFieldEditorParent()));
 
 		Button b = new Button(getFieldEditorParent(), SWT.PUSH);

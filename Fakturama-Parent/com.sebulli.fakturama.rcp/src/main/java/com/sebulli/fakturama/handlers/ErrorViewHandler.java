@@ -19,7 +19,10 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.osgi.service.log.LogEntry;
@@ -35,20 +38,32 @@ public class ErrorViewHandler {
 
     @Inject
     @Execute
-    public void execute(final EPartService partService, @Optional @UIEventTopic("Log/Error") LogEntry errorLogEntry) {
+    public void execute(final EPartService partService, 	
+    		EModelService modelService,
+    		final MApplication application,
+    		@Optional @UIEventTopic("Log/Error") LogEntry errorLogEntry) {
         String declaringClass = "";
         String lineNumber = "";
         String methodName = "";
         String exceptionMessage = "";
         String newErrorString = "";
+        
+        // if no message is given, return
+        
+        /*
+         * FIXME
+         * At the moment the error view doesn't work because the finding of the error view is a bit buggy. 
+         * Therefore we've taken out this piece.
+         */
+        if(true || errorLogEntry == null) {
+        	return;
+        }
 
         // Find the error view
-        // in the very beginning this throws an IllegalStateException
-        // we've to catch it and silently ignore it...
         try {
-            MPart errorPart = partService.findPart(ErrorView.ID);
- //           errorPart = partService.createPart(ErrorView.ID);
-            if(errorPart != null) {
+            // at first we look for an existing Part
+            MPartStack errorViewStack = (MPartStack) modelService.find("com.sebulli.fakturama.errorview.partstack", application);
+            if(errorViewStack != null) {
                 // prepare the error string
                 if (errorLogEntry.getException() != null) {
 
@@ -65,8 +80,10 @@ public class ErrorViewHandler {
                     }
 
                     // Generate the exception message.
-                    exceptionMessage = errorLogEntry.getMessage() + " : " + ((Exception) errorLogEntry.getException()).getLocalizedMessage() + " in: "
-                            + declaringClass + "/" + methodName + "(" + lineNumber + ")";
+					exceptionMessage = errorLogEntry.getMessage() + " : "
+							+ ((Exception) errorLogEntry.getException()).getLocalizedMessage()
+							+ " in: " + (declaringClass != null ? declaringClass + "/" : "" )
+							+ methodName + "(" + lineNumber + ")";
 
                     // Generate the error string
                     newErrorString += exceptionMessage;
@@ -76,23 +93,22 @@ public class ErrorViewHandler {
                     newErrorString += errorLogEntry.getMessage();
                 }
                 
-                if (errorPart.isVisible()) {
-                    partService.showPart(errorPart,
-                            PartState.VISIBLE);
-                }
-                else {
-                    errorPart.setVisible(true);
+                MPart errorPart = partService.findPart(ErrorView.ID);
+                if (!errorViewStack.isVisible()) {
                     // otherwise no content is rendered :-(
-                    errorPart.setToBeRendered(true);
+                	errorViewStack.setToBeRendered(true);
+                	errorViewStack.setVisible(true);
                     partService.showPart(errorPart,
                             PartState.ACTIVATE);
                 }
-                ((ErrorView)errorPart.getObject()).setErrorText(newErrorString);
+                if(errorPart.getObject() != null) {
+                	((ErrorView)errorPart.getObject()).setErrorText(newErrorString);
+                }
             }
         }
         catch (IllegalStateException ise) {
             // TODO Auto-generated catch block
-//            ise.printStackTrace();
+            ise.printStackTrace();
         }
     }
 }

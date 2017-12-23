@@ -26,6 +26,7 @@
 		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende 
 		Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.
 		</para>
+		<warning>Bitte beachten Sie, dass Java 9 derzeit noch nicht untersützt wird.</warning>
 	</section>
 	
 	<section><title>Allgemeine Installationshinweise</title>
@@ -33,9 +34,7 @@
         OpenOffice (bzw. LibreOffice) nach einer Installation ein erstes Mal. Es werden einige Daten wie Name und Namenskürzel abgefragt.
         Sie benötigen das Programm, um Vorlagen bearbeiten zu können bzw. aus Fakturama heraus PDFs erzeugen zu können.</para>
         <para>Sollten Sie sich für den Einsatz einer MySQL- oder MariaDB entscheiden (z. B. wegen des Mehrbenutzerzugriffes), 
-        müssen Sie diese ebenfalls bereits 
-        installiert haben. Für den Zugriff konfigurieren Sie zu dieser Datenbank einen Nutzer, der
-        die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
+        müssen Sie diese ebenfalls bereits installiert haben. Für den Betrieb von Fakturama erzeugen Sie bitte eine leere Datenbank und konfigurieren Sie zu dieser Datenbank einen Nutzer, der die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
         Es wird <emphasis role="bold">nicht</emphasis> empfohlen, den <computeroutput>root</computeroutput>-Benutzer für den Zugriff zu verwenden.</para>
 	</section>
 	<section>
@@ -50,11 +49,11 @@
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</inlinemediaobject>(Installer_Fakturama_windows-x64_x_x_x.exe bzw. Installer_Fakturama_windows-32Bit_x_x_x.exe) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter.</para>
-		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
-		sind für die Installation Administratorrechte notwendig.</para>
 		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden die Firmendatenbank und alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
+		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
+		sind für die Installation Administratorrechte notwendig.</para>
 		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
@@ -153,7 +152,7 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise im Dokument "Migration einer bestehenden Installation". Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://fakturama.atlassian.net/wiki/spaces/FAK/blog/2015/05/05/11763718/Migration+der+Altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -228,62 +227,49 @@
 			<para>Folgende Länder und Sprachen werden unterstützt:</para>
 			<itemizedlist>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl en_US</emphasis> Englisch (keine Hilfe verfügbar)</para>
+						<emphasis role="bold">-nl en_US</emphasis> Englisch (keine Hilfe verfügbar)
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl de_DE</emphasis> Deutsch, Deutschland</para>
+						<emphasis role="bold">-nl de_DE</emphasis> Deutsch, Deutschland
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl de_AT</emphasis> Deutsch, Österreich</para>
+						<emphasis role="bold">-nl de_AT</emphasis> Deutsch, Österreich
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl de_CH</emphasis> Deutsch, Schweiz</para>
+						<emphasis role="bold">-nl de_CH</emphasis> Deutsch, Schweiz
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl de_LI</emphasis> Deutsch, Liechtenstein</para>
+						<emphasis role="bold">-nl de_LI</emphasis> Deutsch, Liechtenstein
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl ru_RU</emphasis> Russisch</para>
+						<emphasis role="bold">-nl ru_RU</emphasis> Russisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl ro_RO</emphasis> Rumänisch</para>
+						<emphasis role="bold">-nl ro_RO</emphasis> Rumänisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl uk_UK</emphasis> Ukrainisch</para>
+						<emphasis role="bold">-nl uk_UK</emphasis> Ukrainisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl hu_HU</emphasis> Ungarisch</para>
+						<emphasis role="bold">-nl hu_HU</emphasis> Ungarisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl es_ES</emphasis> Spanisch</para>
+						<emphasis role="bold">-nl es_ES</emphasis> Spanisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl eu_EU</emphasis> Baskisch</para>
+						<emphasis role="bold">-nl eu_EU</emphasis> Baskisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl fr_FR</emphasis> Französisch</para>
+						<emphasis role="bold">-nl fr_FR</emphasis> Französisch
 				</listitem>
 				<listitem>
-					<para>
-						<emphasis role="bold">-nl pl_PL</emphasis> Polnisch</para>
+						<emphasis role="bold">-nl pl_PL</emphasis> Polnisch
 				</listitem>
                 <listitem>
-                    <para>
-                        <emphasis role="bold">-nl tr_TR</emphasis> Türkisch</para>
+                        <emphasis role="bold">-nl tr_TR</emphasis> Türkisch
                 </listitem>
 			</itemizedlist>
+			<warning>Leider ist es aufgrund von Problemen mit dem türkischen Zeichensatz nicht möglich, Fakturama in der türkischen Sprache zu starten. Die Datenbank kann in dieser Konstellation nicht korrekt erzeugt werden, was zum Absutrz des Programms führt. Wir arbeiten hier an einer entsprechenden Lösung. Als Umgehungslösung können Sie Fakturama vorläufig in der englischen Lokalisierung starten (oder jeder beliebigen anderen).</warning>
 		</sect2>
 	</section>
 </chapter>

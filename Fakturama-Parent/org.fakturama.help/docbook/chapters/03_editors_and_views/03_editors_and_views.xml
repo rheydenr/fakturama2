@@ -849,14 +849,13 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_mainmenu_window"/><title>Hauptmenü Fenster</title>
-		<!-- section>
-			<title>Perspektive zurücksetzen</title>
-			<listitem><para>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</para></listitem>
-		</section -->
 		<variablelist>
+		<varlistentry>
+				<term>Perspektive zurücksetzen</term>
+			<listitem>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</listitem>
+		</varlistentry>
 			<varlistentry>
 				<term>
-
 					<inlinemediaobject>
 						<imageobject role="html">
 							<imagedata fileref="../images/application/calculator_16.png" format="PNG" scalefit="1"/>
@@ -939,12 +938,12 @@
 			<para>Zeigt das Willkommensfenster (Intro), wie es auch beim erstmaligen Start von Fakturama präsentiert wurde.</para>
 			<para>Siehe auch <link linkend="install_start">Start von Fakturama</link>
 			</para>
-		</varlistentry>
+		</varlistentry -->
 		<varlistentry>
 			<term>Nach Updates suchen</term>
-			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
+			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall, kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
 		</varlistentry>
-		<varlistentry>
+		<!--varlistentry>
 			<term>Neue Software installieren</term>
 			<para>Fakturama besteht aus vielen einzelnen Modulen, sogenannten PlugIns. Über einen Dialog können weitere PlugIns angewählt und installiert werden.</para>
 		</varlistentry -->
@@ -996,7 +995,7 @@
 			so ist kein Drucken möglich oder kein Editor ausgewählt. Zum Auswählen einmal in das Editorfenster klicken.</para>
 			<para>Über den Einstellungsdialog kann man steuern, ob nur OpenOffice-Dokumente oder PDF-Dokumente erstellt werden sollen oder beide Formate.
 			Für die Erzeugung der PDF-Dokumente ist zwingend eine LibreOffice/OpenOffice-Installation erforderlich (das Programm wird im Hintergrund aufgerufen). Die Version
-			spielt allerdings keine Rolle mehr.</para>
+			spielt allerdings keine Rolle.</para>
 			<para>Siehe auch <link linkend="openoffice_main">OpenOffice.org</link>
 			</para>
 		</sect2>
@@ -1298,7 +1297,7 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_navigationbar_import"/><title>Navigationsleiste Gruppe Importieren</title>
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1311,11 +1310,11 @@
 			<para>Stellt eine Verbindung mit dem Webshop her. Eingegangene Bestellungen werden abgerufen, neue Produkte werden importiert und Preise aktualisiert. Kontaktadressen werden ebenfalls geladen und zu den Adressdaten hinzugefügt, falls diese noch nicht existieren.</para>
 			<para>Siehe auch <link linkend="webshop_webshop">Webshop</link>
 			</para>
-		</section>
+		</sect2>
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="application_navigationbar_data"/><title>Navigationsleiste Gruppe Daten</title>
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1328,8 +1327,8 @@
 			<para>Öffnet eine Liste mit allen Dokumenten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1342,8 +1341,8 @@
 			<para>Öffnet eine Liste mit allen Produkten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1356,9 +1355,9 @@
 			<para>Öffnet eine Liste mit allen Debitoradressen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 
-		<section>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 						<imageobject role="html">
@@ -1371,9 +1370,9 @@
 			<para>Öffnet eine Liste mit allen Kreditoradressen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 
-		<section>
+		<sect2>
 			<title>
 				<inlinemediaobject>
 						<imageobject role="html">
@@ -1386,8 +1385,8 @@
 			<para>Öffnet eine Liste mit allen Zahlungsarten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 				<inlinemediaobject>
 					<imageobject role="html">
@@ -1400,8 +1399,8 @@
 			<para>Öffnet eine Liste mit allen Versandarten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1414,8 +1413,8 @@
 			<para>Öffnet eine Liste mit allen Steuersätzen im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
-		<section>
+		</sect2>
+		<sect2>
 			<title>
 			<inlinemediaobject>
 					<imageobject role="html">
@@ -1428,7 +1427,7 @@
 			<para>Öffnet eine Liste mit allen vordefinierten Texten im Übersichtsfenster.</para>
 			<para>Siehe auch <link linkend="application_overview">Übersichtsfenster</link>
 			</para>
-		</section>
+		</sect2>
 		<section>
 			<title>
 			<inlinemediaobject>
@@ -1748,7 +1747,7 @@
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
-			<para>Erzeugt aus dem aktuellen Dokument eines neues. Dabei werden die Daten soweit wie möglich aus dem aktuellen Dokument übernommen.</para>
+			<para>Erzeugt aus dem aktuellen Dokument eines neues. Dabei werden die Daten soweit wie möglich aus dem aktuellen Dokument übernommen. Wenn bereits ein Dokument mit derselben Transaktionsnummer existiert gibt Fakturama eine entsprechende Warnung aus.</para>
 		</sect2>
 		<sect2>
 			<title>Artikel</title>
@@ -1825,14 +1824,14 @@
 				<anchor xreflabel="" xml:id="editor_document_previewpicture"/>In der Artikelliste kann zusätzlich ein Vorschaubild angezeigt werden. Ein Klick auf dieses öffnet eine vergrößerte Ansicht des Produktbildes.</para>
 			<para>Siehe auch <link linkend="preferences_document_previewpicture">Einstellungen Dokument Vorschaubild</link>
 			</para>
-			<para>Bei einem Angebot kann ein Artikel als optionaler Artikel (Bedarfspostion) markiert werden. Er wird auf dem Angebot markiert und wird bei der Berechnung der Gesamtsumme nicht verwendet.</para>
+			<para>Bei einem Angebot kann ein Artikel als optionaler Artikel (Bedarfspostion) markiert werden. Er wird auf dem Angebot markiert und wird bei der Berechnung der Gesamtsumme nicht verwendet. Um einen Artikel als "optional" zu kennzeichnen muss man in der "Opt."-Spalte einmal klicken. Wenn der Fokus in der Zelle gesetzt ist funktioniert an dieser Stelle auch die Leertaste für die Umschaltmöglichkeit.</para>
 			<informalfigure>
 				<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="70%" fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="60%" fileref="../images/editor/editor_document_optional_item.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</inlinemediaobject>
 			</informalfigure>
@@ -1852,7 +1851,7 @@
 			<para>Eine Position kann ebenfalls verschoben werden, indem man die Zeile im Bereich der Positionsnummer anklickt, die Maustaste gedrückt hält und die komplette Zeile an die neue Position verschiebt.</para>
 			<tip>
 				<para>Sind alle Preise in Brutto, kann ein Preis dennoch als Nettowert eingegeben werden. Dazu bei der Eingabe des Preises ein <emphasis role="bold">netto</emphasis> anfügen. Bei Bruttopreisen ein <emphasis role="bold">brutto</emphasis> anfügen.</para>
-				<para>Beispiel:<emphasis role="bold">7,00€ netto</emphasis>
+				<para>Beispiel:<emphasis role="bold"> 7,00€ netto</emphasis>
 				</para>
 				<para>Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
 				</para>
@@ -1861,10 +1860,9 @@
 		<sect2>
 			<title>Bemerkung</title>
 			<para>Feld für eine zusätzliche Bemerkung, die auf Rechnung oder Lieferschein gedruckt wird.
-			Es können bis zu 3 Felder für Bemerkungen eingeblendet werden </para>
-			<para>Siehe auch <link linkend="preferences_document_messagefields">Einstellungen Dokument Felder "Bemerkung"</link>
-			Siehe auch <olink xlink:role="http://docbook.org/xlink/role/olink" xlink:href="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"
-</olink >
+			Es können bis zu 3 Felder für Bemerkungen eingeblendet werden.</para>
+			<para>Siehe auch <link linkend="preferences_document_messagefields">Einstellungen Dokument Felder "Bemerkung"</link></para>
+			<para>Siehe auch <link linkend="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"</link>
 			</para>
 			<variablelist>
 				<varlistentry>
@@ -1892,17 +1890,17 @@
 		</sect2>
 		<sect2>
 			<title>Zahlungsart</title>
-			<para>Auswahl der Zahlungsart. Je nach Zahlungsart wird auf die Rechnung der entsprechende Text gedruckt.</para>
+			<para>Auswahl der Zahlungsart. Je nach Zahlungsart wird auf die Rechnung der entsprechende Text gedruckt. Wenn ein Kontakt ausgewählt wurde, bei dem bereits eine bestimmte Zahlungsart hinterlegt wurde, wird diese hier vorausgewählt.</para>
 			<para>Siehe <link linkend="editor_editor_payment">Editor Zahlungsart</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>zahlbar in</title>
-			<para>Anzahl der Tage, innerhalb derer die Rechnung bezahlt werden muss. Beim Ändern wird automatisch das Datum angepasst.</para>
+			<para>Anzahl der Tage, innerhalb derer die Rechnung bezahlt werden muss. Beim Ändern der Anzahl wird automatisch das Datum angepasst.</para>
 		</sect2>
 		<sect2>
 			<title>Tagen bis zum</title>
-			<para>Datum, bis zu dem die Rechnung bezahlt werden muss. Beim Ändern wird automatisch die Anzahl der Tage angepasst.</para>
+			<para>Datum, bis zu dem die Rechnung bezahlt werden muss. Beim Ändern des Datums wird automatisch die Anzahl der Tage angepasst.</para>
 		</sect2>
 		<sect2>
 			<title>am</title>
@@ -1910,8 +1908,7 @@
 		</sect2>
 		<sect2>
 			<title>Wert</title>
-			<para>Tatsächlicher Geldeingang. Zieht ein Kunde einen Skontobetrag ab, wird dies hier berücksichtigt. Es ist auch möglich, Teilzahlungen zu erfassen. Dann trägt man den bereits bezahlten Wert hier ein. Es erscheint ein Warnsymbol mit dem Hinweis "Anzahlung". Der Status der Rechnung bleibt "unbezahlt". 
-			
+			<para>Tatsächlicher Geldeingang. Zieht ein Kunde einen Skontobetrag ab, wird dies hier berücksichtigt. Es ist auch möglich, Teilzahlungen zu erfassen. Dann trägt man den bereits bezahlten Wert hier ein. Es erscheint ein Warnsymbol mit dem Hinweis "Anzahlung". Der Status der Rechnung bleibt "unbezahlt", die Checkbox "bezahlt" ändert allerdings ihren Status auf "unbestimmt" ("grayed"). 			
 				<mediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/document_deposit.png" format="PNG" scalefit="1"/>
@@ -1932,18 +1929,18 @@
 		</sect2>
 		<sect2>
 			<title>Versand</title>
-			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, den Betrag nachträglich von Hand zu ändern. Versandkosten werden als Netto- oder Bruttowert angezeigt.</para>
+			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, die Beschreibung und auch den Betrag nachträglich von Hand zu ändern. Die Umsatzsteuer wird jedoch immer vom ursprünglich ausgewählten Eintrag verwendet. Die Versandkosten werden als Netto- oder Bruttowert angezeigt, je nach Einstellung.</para>
 			<para>Siehe <link linkend="editor_editor_shipping">Editor Versandart</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
-			<para>Anteil der Mehrwertsteuer. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
+			<para>Anteil der Mehrwertsteuer. Darin enthalten ist auch die Mehrwertsteuer, die bei den Versandkosten evtl. hinterlegt wurde. Die Ausgleichsteuer ist jedoch hier nicht mit aufgeführt. Siehe <link linkend="editor_editor_vat">Editor Steuersatz</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>Gesamt</title>
-			<para>Gesamtsumme (Brutto) des Dokumentes incl. Mehrwertsteuer. Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
+			<para>Gesamtsumme (Brutto) des Dokumentes incl. Mehrwertsteuer. Diese Summe beinhaltet (wenn eingestellt) auch eine eventuelle Ausgleichsteuer. Siehe auch <link linkend="preferences_document">Einstellungen Dokument</link>
 			</para>
 		</sect2>
 	</section>
@@ -2109,7 +2106,7 @@
 		</sect3>
 		<sect3>
 			<title>Bonität</title>
-			<para>Angabe über die Bonität (Kreditwürdigkeit) eines Kunden. Dieser Wert ist nur zur Information.</para>
+			<para>Angabe über die Bonität (Kreditwürdigkeit) eines Kunden. Dieser Wert dient nur zur Information.</para>
 		</sect3>
 		<sect3>
 			<title>Rabatt</title>
@@ -2118,6 +2115,9 @@
 		<sect3>
 			<title>Netto oder Brutto</title>
 			<para>Normalerweise wird im Dokumenteneditor der Preis als Netto- oder als Bruttopreis angezeigt, abhängig davon, welche Einstellung programmweit vorgenommen wurde. Für bestimmte Kunden lässt sich unabhängig davon eine andere Einstellung festlegen. Der Dokumenteneditor öffnet sich dann mit den hier eingestellten Preisen.</para>
+		</sect3>
+		<sect3><title>Ausgleichsteuer verwenden</title>
+		<para>Diese Einstellung sorgt dafür, dass bei der Berechnung der Bruttopreise eine Ausgleichsteuer berücksichtigt wird (nur für einige Länder relevant).</para>
 		</sect3>
 		<sect2>
 			<title>Reiter Notiz</title>
@@ -2373,10 +2373,11 @@
 					<imagedata fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="275%" fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="80%" fileref="../images/editor/editor_vat.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
+		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
 		<sect2>
 			<title>Name</title>
 			<para>Eindeutiger Name des Steuersatzes. Dies ist auch die Kennung, die vom Shopsystem verwendet wird. Der Name sollte dann nicht verändert werden. Stattdessen sollte der Text <emphasis role="bold">Beschreibung</emphasis> angepasst werden.</para>
@@ -2421,6 +2422,11 @@
 		<sect2>
 			<title>Standard</title>
 			<para>Zeigt den Namen desjenigen Steuersatzes, der momentan der Standardsteuersatz ist.</para>
+		</sect2>
+		<sect2>
+			<title>Ausgleichsteuer</title>
+			<para>In verschiedenen Ländern wird zusätzlich zur Umsatzsteuer eine Ausgleichsteuer erhoben. Die Höhe dieser Ausgleichsteuer ist an die Umsatzsteuer gekoppelt. Die Steuer wird jedoch nur berechnet, wenn dies in den Kundendaten beim jeweiligen Kontakt eingestellt wird (siehe <link linkend="editor_editor_contact">Kontakteditor</link>). Außerdem muss die entsprechende Einstellung im Kontakteditor aktiviert werden (siehe <link linkend="preferences_contact">Einstellungen Kontakte</link>).
+			</para>
 		</sect2>
 		<sect2>
 			<title>zum Standard machen</title>

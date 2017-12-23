@@ -27,8 +27,7 @@
 	</sect2>
 	<sect2>
 		<title>OpenOffice.org / LibreOffice Vorlagen</title>
-		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an. Eine Standardvorlage finden Sie im Verzeichnis <emphasis role="bold">Vorlagen</emphasis> Ihres Arbeitsverzeichnisses. Wählen Sie bitte auch in den Einstellungen das 
-		Programmverzeichnis von LibreOffice/OpenOffice aus, falls Sie PDF-Dateien erzeugen möchten.</para>
+		<para>Passen Sie die Dokumentenvorlagen an Ihr Design an. Eine Standardvorlage finden Sie im Verzeichnis <emphasis role="bold">Vorlagen</emphasis> Ihres Arbeitsverzeichnisses. Viele weitere Vorlagen finden Sie in unserem <link xl:href="http://vorlagen.fakturama.info">Vorlagenportal</link>. Wählen Sie bitte auch in den Einstellungen das Programmverzeichnis von LibreOffice/OpenOffice aus, falls Sie PDF-Dateien erzeugen möchten.</para>
 		<para>Siehe auch <link linkend="openoffice_templates">OpenOffice.org/LibreOffice Vorlagen</link>
 		</para>
 	</sect2>

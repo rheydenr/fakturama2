@@ -55,11 +55,9 @@ public class CloseHandler {
         MPartStack documentPartStack = (MPartStack) modelService.find(FAKTURAMA_DETAILPANEL, application);
         MPart activePart = (MPart)documentPartStack.getSelectedElement();
         // ask before closing
-        if(activePart != null) {
-            // the parts are removed when they are hidden
-            if (partService.savePart(activePart, true)) {
-                partService.hidePart(activePart, true);
-            }
-        }
+        // the parts are removed when they are hidden
+        if (activePart != null && partService.savePart(activePart, true)) {
+		    partService.hidePart(activePart, true);
+		}
     }
 }
