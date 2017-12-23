@@ -70,6 +70,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="bankAccount" eType="#//BankAccount"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="contactType" eType="#//ContactType"
         defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="useSalesEqualizationTax"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBooleanObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ContactCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="Creditor" eSuperTypes="#//Contact"/>
@@ -317,6 +319,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="taxValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="category" ordered="false"
         eType="#//VATCategory"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="salesEqualizationTax" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDoubleObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="VATCategory" eSuperTypes="#//AbstractCategory"/>
   <eClassifiers xsi:type="ecore:EClass" name="ItemListTypeCategory" eSuperTypes="#//AbstractCategory"/>

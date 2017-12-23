@@ -20,8 +20,8 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.javamoney.moneta.Money;
-import org.javamoney.moneta.RoundedMoney;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -38,22 +38,26 @@ public class Price {
 
 	private Double quantity;
 	private Double vatPercent;
+	private Double salesEqTaxPercent;
 	private Double discount;
 
 	// unit values
 	private MonetaryAmount unitPrice;
 	private MonetaryAmount unitNet;
 	private MonetaryAmount unitVat;
+	private MonetaryAmount unitSalesEqTax;
 	private MonetaryAmount unitGross;
 
 	// unit values but with discount
 	private MonetaryAmount unitNetDiscounted;
 	private MonetaryAmount unitVatDiscounted;
+	private MonetaryAmount unitSalesEqTaxDiscounted;
 	private MonetaryAmount unitGrossDiscounted;
 
 	// total values
 	private MonetaryAmount totalNet;
 	private MonetaryAmount totalVat;
+	private MonetaryAmount totalSalesEqTax;
 	private MonetaryAmount totalGross;
 	
 	private DataUtils dataUtils;
@@ -61,17 +65,24 @@ public class Price {
 	// unit values rounded
 	private MonetaryAmount unitNetRounded;
 	private MonetaryAmount unitVatRounded;
+	private MonetaryAmount unitSalesEqTaxRounded;
 	private MonetaryAmount unitGrossRounded;
 	
 	// unit values but with discount rounded
 	private MonetaryAmount unitNetDiscountedRounded;
 	private MonetaryAmount unitVatDiscountedRounded;
+	private MonetaryAmount unitSalesEqTaxDiscountedRounded;
 	private MonetaryAmount unitGrossDiscountedRounded;
 	
 	// total values rounded
 	private MonetaryAmount totalNetRounded;
 	private MonetaryAmount totalVatRounded;
+	private MonetaryAmount totalSalesEqTaxRounded;
 	private MonetaryAmount totalGrossRounded;
+	
+	public Price(DocumentItem item) {
+		this(item, false);
+	}
 
 	/**
 	 * Create a price value from an item. Remember: Each item's price is given as net value.
@@ -79,10 +90,10 @@ public class Price {
 	 * @param item
 	 *            Item as DocumentItem
 	 */
-	public Price(DocumentItem item) {
+	public Price(DocumentItem item, boolean useSET) {
 		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
 		        Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), 
-		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false);
+		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false, useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
 
 	/**
@@ -94,9 +105,14 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
-    public Price(DocumentItem item, Double scaleFactor) {
-        this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), item
-                .getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false);
+    public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
+        this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
+        	 Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), 
+        	 item.getItemVat().getTaxValue(), 
+        	 item.getItemRebate(), 
+        	 BooleanUtils.toBoolean(item.getNoVat()), 
+        	 false,
+        	 useSET ? item.getItemVat().getSalesEqualizationTax() : null);
     }
 
 //	/**
@@ -145,6 +161,10 @@ public class Price {
 		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false);
 	}
 
+	public Price(MonetaryAmount net, Double vatPercent, Double salesEqualizationTax) {
+		this(Double.valueOf(1.0), net, vatPercent, Double.valueOf(0.0), false, false, salesEqualizationTax);
+	}
+	
 	/**
 	 * Constructor Create a price value from a value where value can be a net or
 	 * a gross value
@@ -178,8 +198,10 @@ public class Price {
 	 *            <code>true</code> if VAT is 0.0
 	 * @param asGross
 	 *            <code>true</code> if price is a gross value
+	 * @param salesEqualizationTax
+	 *            the sales equalization tax in %, if any
 	 */
-	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross) {
+	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
 
 		// if noVat is set, the vat value is set to 0.0
         if (noVat) {
@@ -191,11 +213,19 @@ public class Price {
 		this.quantity = quantity != null ? quantity : Double.valueOf(0);
 		this.unitPrice = unitPrice;
 		this.discount = discount;
+		
+		if(salesEqualizationTax != null) {
+			this.salesEqTaxPercent = salesEqualizationTax;
+		}
 
 		// do the calculation
 		calculate(asGross);
 	}
 
+	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross) {
+		this(quantity, unitPrice, vatPercent, discount, noVat, asGross, null);
+	}
+	
 	/**
 	 * Calculate the price and round all values
 	 * 
@@ -210,16 +240,23 @@ public class Price {
 		// Calculate net from gross
 		if (asGross) {
 			this.unitGross = this.unitPrice;
-			this.unitNet = this.unitPrice.divide(1 + vatPercent);
+			this.unitNet = this.unitPrice.divide(1 + vatPercent + (salesEqTaxPercent != null ? salesEqTaxPercent : 0));
 		}
 		// or gross from net
 		else {
-			this.unitGross = this.unitPrice.multiply(1 + vatPercent);
+			this.unitGross = this.unitPrice.multiply(1 + vatPercent + (salesEqTaxPercent != null ? salesEqTaxPercent : 0));
 			this.unitNet = this.unitPrice;
 		}
 
 		// Calculate the absolute VAT value from net value and VAT in percent
 		this.unitVat = this.unitNet.multiply(vatPercent);
+		
+		// SalesEqTax
+		if(salesEqTaxPercent != null) {
+			this.unitSalesEqTax = this.unitNet.multiply(salesEqTaxPercent);
+		} else {
+			this.unitSalesEqTax = Money.zero(currencyUnit);
+		}
 
 		// Calculate the discount factor.
 		// Discount factor is a value between 0.0 and 1.0.
@@ -234,43 +271,50 @@ public class Price {
 		// Calculate the discounted values and use the quantity
 		this.unitNetDiscounted = this.unitNet.multiply(discountFactor);
 		this.unitVatDiscounted =  this.unitVat.multiply(discountFactor);
+		this.unitSalesEqTaxDiscounted =  this.unitSalesEqTax.multiply(discountFactor);
 		this.unitGrossDiscounted =  this.unitGross.multiply(discountFactor);
 
 		// Calculate the total values and use the quantity
 		this.totalNet = this.unitNet.multiply(discountFactor).multiply(this.quantity);
 		this.totalVat = this.unitVat.multiply(this.quantity * discountFactor);
+		this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
 		this.totalGross = this.unitGross.multiply(this.quantity * discountFactor);
 
-		// Normally, the vat and gross value is rounded,
+		// Normally, the VAT and gross value is rounded,
 		// and the net value is the difference.
 		// But only if the Net value is still a rounded value and the gross is not,
-		// then the rounded gross value is calculated from rounded net and vat. 
-		if (!asGross) {
-		    
-			this.unitNetRounded = unitNet.with(rounding);
-			this.unitVatRounded = unitVat.with(rounding);
-			this.unitGrossRounded = this.unitNetRounded.add(this.unitVatRounded);
-
-			this.unitNetDiscountedRounded = unitNetDiscounted.with(rounding);
-			this.unitVatDiscountedRounded = unitVatDiscounted.with(rounding);
-			this.unitGrossDiscountedRounded = this.unitNetDiscountedRounded.add(this.unitVatDiscountedRounded);
-
-			this.totalNetRounded = totalNet.with(rounding);
-			this.totalVatRounded = totalVat.with(rounding);
-			this.totalGrossRounded = this.totalNetRounded.add(this.totalVatRounded).with(rounding);
-		}
-		else {
+		// then the rounded gross value is calculated from rounded net and VAT. 
+		if (asGross) {
 			this.unitGrossRounded = unitGross.with(rounding);
 			this.unitVatRounded = unitVat.with(rounding);
-			this.unitNetRounded = this.unitGrossRounded.subtract(this.unitVatRounded);
+			this.unitSalesEqTaxRounded = unitSalesEqTax.with(rounding);
+			this.unitNetRounded = this.unitGross.subtract(this.unitVat).subtract(this.unitSalesEqTax).with(rounding);
 
 			this.unitGrossDiscountedRounded = unitGrossDiscounted.with(rounding);
 			this.unitVatDiscountedRounded = unitVatDiscounted.with(rounding);
-			this.unitNetDiscountedRounded = this.unitGrossDiscountedRounded.subtract(this.unitVatDiscountedRounded).with(rounding);
+			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(rounding);
+			this.unitNetDiscountedRounded = this.unitGrossDiscounted.subtract(this.unitVatDiscounted).subtract(this.unitSalesEqTaxDiscounted).with(rounding);
 
 			this.totalGrossRounded = totalGross.with(rounding);
 			this.totalVatRounded = totalVat.with(rounding);
-			this.totalNetRounded = this.totalGrossRounded.subtract(this.totalVatRounded).with(rounding);
+			this.totalSalesEqTaxRounded = totalSalesEqTax.with(rounding);
+			this.totalNetRounded = this.totalGross.subtract(this.totalVat).subtract(totalSalesEqTax).with(rounding);
+		} else {
+		    
+			this.unitNetRounded = unitNet.with(rounding);
+			this.unitVatRounded = unitVat.with(rounding);
+			this.unitSalesEqTaxRounded = unitSalesEqTax.with(rounding);
+			this.unitGrossRounded = this.unitNet.add(this.unitVat).add(this.totalSalesEqTax).with(rounding);
+
+			this.unitNetDiscountedRounded = unitNetDiscounted.with(rounding);
+			this.unitVatDiscountedRounded = unitVatDiscounted.with(rounding);
+			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(rounding);
+			this.unitGrossDiscountedRounded = this.unitNetDiscounted.add(this.unitVatDiscounted).add(this.unitSalesEqTaxDiscounted).with(rounding);
+
+			this.totalNetRounded = totalNet.with(rounding);
+			this.totalVatRounded = totalVat.with(rounding);
+			this.totalSalesEqTaxRounded = totalSalesEqTax.with(rounding);
+			this.totalGrossRounded = this.totalNet.add(this.totalVat).add(totalSalesEqTax).with(rounding);
 		}
 	}
 
@@ -370,7 +414,7 @@ public class Price {
 	 * @return Net value as PriceValue
 	 */
 	public MonetaryAmount getUnitNetRounded() {
-		return RoundedMoney.from(unitNet);
+		return this.unitNetRounded;
 	}
 
 	/**
@@ -379,7 +423,7 @@ public class Price {
 	 * @return VAT value as PriceValue
 	 */
 	public MonetaryAmount getUnitVatRounded() {
-		return RoundedMoney.from(unitVat);
+		return this.unitVatRounded;
 	}
 
 	/**
@@ -388,7 +432,7 @@ public class Price {
 	 * @return Gross value as PriceValue
 	 */
 	public MonetaryAmount getUnitGrossRounded() {
-		return RoundedMoney.from(unitGross);
+		return this.unitGrossRounded;
 	}
 
 	/**
@@ -397,7 +441,7 @@ public class Price {
 	 * @return discounted Net value as PriceValue
 	 */
 	public MonetaryAmount getUnitNetDiscountedRounded() {
-		return RoundedMoney.from(unitNetDiscounted);
+		return this.unitNetDiscountedRounded;
 	}
 
 	/**
@@ -406,7 +450,7 @@ public class Price {
 	 * @return discounted VAT value as PriceValue
 	 */
 	public MonetaryAmount getUnitVatDiscountedRounded() {
-		return RoundedMoney.from(unitVatDiscounted);
+		return this.unitVatDiscountedRounded;
 	}
 
 	/**
@@ -415,7 +459,7 @@ public class Price {
 	 * @return discounted gross value as PriceValue
 	 */
 	public MonetaryAmount getUnitGrossDiscountedRounded() {
-		return RoundedMoney.from(unitGrossDiscounted);
+		return this.unitGrossDiscountedRounded;
 	}
 
 	/**
@@ -424,7 +468,7 @@ public class Price {
 	 * @return Net value as PriceValue
 	 */
 	public MonetaryAmount getTotalNetRounded() {
-		return RoundedMoney.from(totalNet);
+		return this.totalNetRounded;
 	}
 
 	/**
@@ -433,7 +477,7 @@ public class Price {
 	 * @return Vat value as PriceValue
 	 */
 	public MonetaryAmount getTotalVatRounded() {
-		return RoundedMoney.from(totalVat);
+		return this.totalVatRounded;
 	}
 
 	/**
@@ -442,13 +486,111 @@ public class Price {
 	 * @return Gross value as PriceValue
 	 */
 	public MonetaryAmount getTotalGrossRounded() {
-		return RoundedMoney.from(totalGross);
+		return this.totalGrossRounded;
 	}
 
     /**
+	 * @return the salesEqTaxPercent
+	 */
+	public final Double getSalesEqTaxPercent() {
+		return salesEqTaxPercent;
+	}
+
+	/**
+	 * @param salesEqTaxPercent the salesEqTaxPercent to set
+	 */
+	public final void setSalesEqTaxPercent(Double salesEqTaxPercent) {
+		this.salesEqTaxPercent = salesEqTaxPercent;
+	}
+
+	/**
+	 * @return the unitSalesEqTax
+	 */
+	public final MonetaryAmount getUnitSalesEqTax() {
+		return unitSalesEqTax;
+	}
+
+	/**
+	 * @param unitSalesEqTax the unitSalesEqTax to set
+	 */
+	public final void setUnitSalesEqTax(MonetaryAmount unitSalesEqTax) {
+		this.unitSalesEqTax = unitSalesEqTax;
+	}
+
+	/**
+	 * @return the unitSalesEqTaxDiscounted
+	 */
+	public final MonetaryAmount getUnitSalesEqTaxDiscounted() {
+		return unitSalesEqTaxDiscounted;
+	}
+
+	/**
+	 * @param unitSalesEqTaxDiscounted the unitSalesEqTaxDiscounted to set
+	 */
+	public final void setUnitSalesEqTaxDiscounted(MonetaryAmount unitSalesEqTaxDiscounted) {
+		this.unitSalesEqTaxDiscounted = unitSalesEqTaxDiscounted;
+	}
+
+	/**
+	 * @return the totalSalesEqTax
+	 */
+	public final MonetaryAmount getTotalSalesEqTax() {
+		return totalSalesEqTax;
+	}
+
+	/**
+	 * @param totalSalesEqTax the totalSalesEqTax to set
+	 */
+	public final void setTotalSalesEqTax(MonetaryAmount totalSalesEqTax) {
+		this.totalSalesEqTax = totalSalesEqTax;
+	}
+
+	/**
+	 * @return the unitSalesEqTaxRounded
+	 */
+	public final MonetaryAmount getUnitSalesEqTaxRounded() {
+		return unitSalesEqTaxRounded;
+	}
+
+	/**
+	 * @param unitSalesEqTaxRounded the unitSalesEqTaxRounded to set
+	 */
+	public final void setUnitSalesEqTaxRounded(MonetaryAmount unitSalesEqTaxRounded) {
+		this.unitSalesEqTaxRounded = unitSalesEqTaxRounded;
+	}
+
+	/**
+	 * @return the unitSalesEqTaxDiscountedRounded
+	 */
+	public final MonetaryAmount getUnitSalesEqTaxDiscountedRounded() {
+		return unitSalesEqTaxDiscountedRounded;
+	}
+
+	/**
+	 * @param unitSalesEqTaxDiscountedRounded the unitSalesEqTaxDiscountedRounded to set
+	 */
+	public final void setUnitSalesEqTaxDiscountedRounded(MonetaryAmount unitSalesEqTaxDiscountedRounded) {
+		this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscountedRounded;
+	}
+
+	/**
+	 * @return the totalSalesEqTaxRounded
+	 */
+	public final MonetaryAmount getTotalSalesEqTaxRounded() {
+		return totalSalesEqTaxRounded;
+	}
+
+	/**
+	 * @param totalSalesEqTaxRounded the totalSalesEqTaxRounded to set
+	 */
+	public final void setTotalSalesEqTaxRounded(MonetaryAmount totalSalesEqTaxRounded) {
+		this.totalSalesEqTaxRounded = totalSalesEqTaxRounded;
+	}
+
+	/**
      * @return the dataUtils
      */
-    public DataUtils getDataUtils() {
+    private DataUtils getDataUtils() {
         if(dataUtils == null) {
             dataUtils = DataUtils.getInstance();
         }
@@ -462,4 +604,8 @@ public class Price {
         this.dataUtils = dataUtils;
     }
 
+    @Override
+    public String toString() {
+    	return ToStringBuilder.reflectionToString(this);
+    }
 }

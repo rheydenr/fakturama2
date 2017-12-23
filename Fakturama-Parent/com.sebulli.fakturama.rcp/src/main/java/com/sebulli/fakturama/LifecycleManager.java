@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -59,18 +60,23 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
+import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.EditorSaveHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -79,6 +85,7 @@ import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.core.TemplateResourceManager;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.startup.ISplashService;
+import com.sebulli.fakturama.util.ContactUtil;
 
 /**
  * The LifecycleManager controls the start and the end of an application.
@@ -166,6 +173,8 @@ public class LifecycleManager {
                     context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
                     context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
                     context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
+                    context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
+                    context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
                     log.debug("start DAOs - end");
                     return Status.OK_STATUS;
                 }
@@ -173,7 +182,7 @@ public class LifecycleManager {
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
             
         	splashService.worked(5);
-            
+        	
             // register event handler for saving and closing editors before shutdown
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
                 new EventHandler() {
@@ -224,6 +233,9 @@ public class LifecycleManager {
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
+        ItemListTypeCategoriesDAO itemListTypeCategoriesDAO = context.get(ItemListTypeCategoriesDAO.class);
+        ItemAccountTypeDAO itemAccountTypeDAO = context.get(ItemAccountTypeDAO.class);
+        
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
         IPreferenceStore defaultValuesNode = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
@@ -259,7 +271,7 @@ public class LifecycleManager {
 
     	if(eclipsePrefs.getBoolean("isreinit", false) || eclipsePrefs.getLong(Constants.DEFAULT_PAYMENT, Long.valueOf(0)) == 0L) {
 	        Payment defaultPayment = modelFactory.createPayment();
-	        defaultPayment.setCode(Constants.TAX_DEFAULT_CODE);
+//	        defaultPayment.setCode(Constants.TAX_DEFAULT_CODE);
 	        defaultPayment.setName(msg.dataDefaultPayment);
 	        defaultPayment.setDescription(msg.dataDefaultPaymentDescription);
 	        defaultPayment.setDiscountValue(Double.valueOf(0.0));
@@ -275,11 +287,28 @@ public class LifecycleManager {
         
     	splashService.worked(1);
        // init UN/CEFACT codes
-        if(Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
+        if(eclipsePrefs.getBoolean("isreinit", false) || Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {
         	initializeCodes(unCefactCodeDAO, modelFactory);
         } 
     	splashService.worked(1);
-        
+    	
+    	// init salutations TODO activate!
+    	if(false) {
+	        if(eclipsePrefs.getBoolean("isreinit", false) || Long.valueOf(0L).compareTo(itemAccountTypeDAO.getCountOf("data.list.salutations")) == 0) {
+	        	ItemListTypeCategory salutationCategory = itemListTypeCategoriesDAO.getCategory("data.list.salutations", true);
+	        	ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+	        	
+	    		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
+		        	ItemAccountType salutation = modelFactory.createItemAccountType();
+		        	salutation.setCategory(salutationCategory);
+		        	salutation.setName(msg.commonFieldSalutation + " " + contactUtil.getSalutationString(i));
+		        	salutation.setValue(contactUtil.getSalutationString(i));
+		        	itemAccountTypeDAO.save(salutation);
+	    		} 
+	        } 
+	    	splashService.worked(1);
+    	}
+    	
         try {
 			eclipsePrefs.flush();
 		} catch (BackingStoreException e) {
@@ -420,6 +449,8 @@ public class LifecycleManager {
 
         } else {
 			try {
+	            eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
+	            		new AppStartupCompleteEventHandler(context, false, modelService, app));
 				fillWithInitialData(splashService);
 			}
 			catch (FakturamaStoringException sqlex) {
@@ -449,15 +480,30 @@ public class LifecycleManager {
     private static final class AppStartupCompleteEventHandler implements EventHandler {
         private final IEclipseContext _context;
         private final boolean restartApplication;
+        private final EModelService modelService;
+        private final MApplication app;
 
         AppStartupCompleteEventHandler(final IEclipseContext context, boolean restartApplication) {
-            _context = context;
-            this.restartApplication = restartApplication;
+            this(context, restartApplication, null, null);
+        }
+        
+        AppStartupCompleteEventHandler(final IEclipseContext context, boolean restartApplication, EModelService modelService, MApplication app) {
+        	_context = context;
+        	this.restartApplication = restartApplication;
+        	this.modelService = modelService;
+        	this.app = app;
         }
 
         @Override
         public void handleEvent(final Event event) {
-            IWorkbench workbench = _context.get(IWorkbench.class);
+        	// TODO implement an appropriate SaveDialog for this, then enable this code again
+//        	if(modelService != null) {
+//	            MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
+//	        	ISaveHandler saveHandler = ContextInjectionFactory.make(EditorSaveHandler.class, mainMTrimmedWindow.getContext());
+//	        	mainMTrimmedWindow.getContext().set(ISaveHandler.class, saveHandler);
+//        	}
+        	
+        	IWorkbench workbench = _context.get(IWorkbench.class);
             if (restartApplication) {
                 workbench.restart();
             }

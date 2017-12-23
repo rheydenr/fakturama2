@@ -19,6 +19,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.StringUtils;
+import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -30,12 +31,16 @@ import com.sebulli.fakturama.model.ItemAccountType;
  * 
  * @author Gerd Bartelt
  */
-public class VatSummaryItem implements Comparable<Object> {
+public class VatSummaryItem implements Comparable<VatSummaryItem> {
 
 	// Absolute Net and Vat value
 	// This can be the sum of more than one item
 	private MonetaryAmount net;
 	private MonetaryAmount vat;
+	
+	// sales equalization tax (could be zero)
+	private MonetaryAmount salesEqTax;
+	private Double salesEqTaxPercent;
 
 	// Rounding errors
 	private Double netRoundingError;
@@ -85,6 +90,7 @@ public class VatSummaryItem implements Comparable<Object> {
 		this.vatPercent = vatPercent;
 		this.net = net;
 		this.vat = vat;
+		this.salesEqTax = Money.zero(net.getCurrency());
 //		this.netRoundingError = 0.0;
 //		this.vatRoundingError = 0.0;
 		this.description = description;
@@ -95,6 +101,7 @@ public class VatSummaryItem implements Comparable<Object> {
 		this.vatPercent = vatPercent;
  		this.net = totalNet;
 		this.vat = itemVat;
+		this.salesEqTax = Money.zero(net.getCurrency());
 		this.accountType = accountType;
 		this.description = accountType.getName();
    }
@@ -105,7 +112,12 @@ public class VatSummaryItem implements Comparable<Object> {
 	 * @param vatSummaryItem
 	 */
 	public static VatSummaryItem of(VatSummaryItem vatSummaryItem) {
-	    return new VatSummaryItem(vatSummaryItem.getVatName(), vatSummaryItem.getVatPercent(), vatSummaryItem.getNet(), vatSummaryItem.getVat(), vatSummaryItem.getDescription());
+	    VatSummaryItem vatSummaryItemCopy = new VatSummaryItem(vatSummaryItem.getVatName(), vatSummaryItem.getVatPercent(), vatSummaryItem.getNet(), vatSummaryItem.getVat(), vatSummaryItem.getDescription());
+	    if(vatSummaryItem.getSalesEqTaxPercent() != null) {
+	    	vatSummaryItemCopy.setSalesEqTax(vatSummaryItem.getSalesEqTax());
+	    	vatSummaryItemCopy.setSalesEqTaxPercent(vatSummaryItem.getSalesEqTaxPercent());
+	    }
+		return vatSummaryItemCopy;
 //		this.netRoundingError = 0.0;
 //		this.vatRoundingError = 0.0;
 	}
@@ -119,6 +131,7 @@ public class VatSummaryItem implements Comparable<Object> {
 	public void add(VatSummaryItem other) {
 	    this.net = this.net.add(other.net);
 	    this.vat = this.vat.add(other.vat);
+	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
 	}
 
 	/**
@@ -247,6 +260,39 @@ public class VatSummaryItem implements Comparable<Object> {
 	}
 
 	/**
+	 * @return the salesEqTax
+	 */
+	public final MonetaryAmount getSalesEqTax() {
+		return salesEqTax;
+	}
+
+	/**
+	 * @param salesEqTax the salesEqTax to set
+	 */
+	public final void setSalesEqTax(MonetaryAmount salesEqTax) {
+		this.salesEqTax = salesEqTax;
+	}
+
+	/**
+	 * @return the salesEqTaxPercent
+	 */
+	public final Double getSalesEqTaxPercent() {
+		return salesEqTaxPercent;
+	}
+
+	/**
+	 * @param salesEqTaxPercent the salesEqTaxPercent to set
+	 */
+	public final void setSalesEqTaxPercent(Double salesEqTaxPercent) {
+		this.salesEqTaxPercent = salesEqTaxPercent;
+		
+		// recalculate Sales Equalization Tax
+		if(this.net != null && salesEqTaxPercent != null) {
+			this.salesEqTax = this.net.multiply(this.salesEqTaxPercent);
+		}
+	}
+
+	/**
 	 * Compares this VatSummaryItem with an other Compares vat percent value and
 	 * vat name.
 	 * 
@@ -255,8 +301,8 @@ public class VatSummaryItem implements Comparable<Object> {
 	 * @return result of the comparison
 	 */
 	@Override
-	public int compareTo(Object o) {
-		VatSummaryItem other = (VatSummaryItem) o;
+	public int compareTo(VatSummaryItem other) {
+//		VatSummaryItem other = (VatSummaryItem) o;
 
 		// First compare the vat value in percent
 		if (this.vatPercent < other.vatPercent) {
@@ -278,7 +324,10 @@ public class VatSummaryItem implements Comparable<Object> {
 	
     @Override
     public String toString() {
-        return new StringBuilder("[Amount (net): ").append(net).append("; VAT: ")
-                .append(vat).append(" (").append(vatPercent*100).append("%) - ").append(StringUtils.defaultIfBlank(vatName, "(no name)")).append(']').toString();
+        return new StringBuilder("[Amount (net): ").append(net)
+        		.append("; VAT: ").append(vat).append(" (").append(vatPercent*100).append("%) - ")
+        		.append(StringUtils.defaultIfBlank(vatName, "(no name)"))
+        		.append("; SET: ").append(salesEqTaxPercent != null ? salesEqTaxPercent : "0").append("%").append(salesEqTax != null ? " (" + salesEqTax + ")" : "")
+        		.append(']').toString();
     }
 }

@@ -15,11 +15,14 @@
 package com.sebulli.fakturama.office;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -28,6 +31,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -46,6 +50,7 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -354,12 +359,12 @@ public class Placeholders {
 			String twoStrings[] = part.split(",");
 			if (twoStrings.length == 2) {
 				
-				//Escape sequence "%COMMA" for ","
-				twoStrings[0] = twoStrings[0].replace("%COMMA", ",");
+				//Escape sequences...
+				twoStrings[0] = encodeEntities(removeQuotationMarks(twoStrings[0]));
 			    
 				// Replace the value, if it is equal to the entry
-				if (DataUtils.getInstance().replaceAllAccentedChars(value).equalsIgnoreCase(
-				        DataUtils.getInstance().replaceAllAccentedChars(removeQuotationMarks(twoStrings[0])))) {
+				if (DataUtils.getInstance().replaceAllAccentedChars(encodeEntities(value)).equalsIgnoreCase(
+				        DataUtils.getInstance().replaceAllAccentedChars(twoStrings[0]))) {
 					value = removeQuotationMarks(twoStrings[1]);
 					return value;
 				}
@@ -416,8 +421,20 @@ public class Placeholders {
 					Double parsedDouble = localizedNumberFormat.parse(value).doubleValue();
 					value = DataUtils.getInstance().DoubleToDecimalFormatedValue(parsedDouble, par);
 				}
-				catch (Exception e) {
-					// TODO implement!
+				catch (ParseException e) {
+					value = "### NVL ###";
+				}
+			}
+
+			// Parameter "DFORMAT"
+			par = extractParam(placeholder, "DFORMAT");
+			if (!par.isEmpty()) {
+				try {
+					GregorianCalendar checkDate = DataUtils.getInstance().getCalendarFromDateString(value);
+					SimpleDateFormat sdf = new SimpleDateFormat(par);
+					value = sdf.format(checkDate.getTime());
+				} catch (IllegalArgumentException e) {
+					value = "### NVL ###";
 				}
 			}
 		}
@@ -520,6 +537,8 @@ public class Placeholders {
 		s = s.replaceAll("%NL", "\n");
 		s = s.replaceAll("%TAB", "\t");
 		s = s.replaceAll("%DOLLAR", Matcher.quoteReplacement("$"));
+		s = s.replaceAll("%COMMA", Matcher.quoteReplacement(","));
+		s = s.replaceAll("%EURO", Matcher.quoteReplacement("€"));
 		s = s.replaceAll("%A_GRAVE", Matcher.quoteReplacement("À"));
 		s = s.replaceAll("%A_ACUTE", Matcher.quoteReplacement("Á"));
 		s = s.replaceAll("%A_CIRC", Matcher.quoteReplacement("Â"));
@@ -618,9 +637,6 @@ public class Placeholders {
 
 		if (document == null)
 			return null;
-		
-		// Get the contact of the UniDataSet document
-		Contact contact = document.getBillingContact();
 
 		if (key.equals("DOCUMENT.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate());
 		if (key.equals("DOCUMENT.ADDRESSES.EQUAL")) {
@@ -684,7 +700,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
-		if (key.equals("ITEMS.DISCOUNT.PERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
+		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
 		if (key.equals("ITEMS.DISCOUNT.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountNet());
 		if (key.equals("ITEMS.DISCOUNT.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountGross());
 
@@ -716,10 +732,9 @@ public class Placeholders {
 		if (key.equals("SHIPPING.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingVat());
 		if (key.equals("SHIPPING.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingGross());
 //		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
-		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : "";
+		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();
-
 
 		// Get the reference string to other documents
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
@@ -745,7 +760,6 @@ public class Placeholders {
 				if (key.equals("DOCUMENT.REFERENCE.PROFORMA"))
 					return transaction.getReference(DocumentType.PROFORMA);
 			}
-
 		}
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
@@ -784,6 +798,9 @@ public class Placeholders {
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
+		// Get the contact of the UniDataSet document
+		Contact contact = document.getBillingContact();
+	
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
 		if (contact != null) {
 		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -842,9 +859,6 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
-			if(document.getBillingContact().getAlternateContacts() != null) {
-			    contact = document.getBillingContact().getAlternateContacts();
-			}
 			if(document.getDeliveryContact() != null) {
 			    contact = document.getDeliveryContact();
 			    // if no delivery contact is available, use billing contact
@@ -869,10 +883,10 @@ public class Placeholders {
     			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
     			Optional<Locale> locale = LocaleUtil.getInstance().findByCode(address.getCountryCode());
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
-   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : LocaleUtil.getInstance().getDefaultLocale().getDisplayCountry();
+   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
             }
 		}
 		// There is no reference - Try to get the information from the address field
@@ -892,10 +906,10 @@ public class Placeholders {
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
             Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
-				return locale.isPresent() ? locale.get().getCountry() : "??";
+				return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
 			}
 			if (key2.equals("ADDRESS.COUNTRY.CODE3")) {
-				return locale.isPresent() ? locale.get().getISO3Country() : "???";
+				return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
 			}
 
 			if (key2.equals("ADDRESS.GREETING")) return contactUtil.getCommonGreeting();

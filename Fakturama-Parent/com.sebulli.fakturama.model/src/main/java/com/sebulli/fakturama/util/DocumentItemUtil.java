@@ -54,6 +54,7 @@ public class DocumentItemUtil {
 		    newItem.setItemVat(product.getVat());
 		    newItem.setPicture(product.getPicture());
 		    newItem.setWeight(product.getWeight());
+		    newItem.setGtin(product.getGtin());
 	    }
 	    return newItem;
     }

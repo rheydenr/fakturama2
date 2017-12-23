@@ -209,9 +209,13 @@ public class ListEditor extends Editor<ItemAccountType> {
     }
 
 	protected void bindModel() {
+		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+
 		bindModelValue(editorListEntry, textName, ItemAccountType_.name.getName(), 64);
 		fillAndBindCategoryCombo();
         bindModelValue(editorListEntry, textValue, ItemAccountType_.value.getName(), 250);
+        
+		part.getTransientData().remove(BIND_MODE_INDICATOR);
 	}
 
     /**

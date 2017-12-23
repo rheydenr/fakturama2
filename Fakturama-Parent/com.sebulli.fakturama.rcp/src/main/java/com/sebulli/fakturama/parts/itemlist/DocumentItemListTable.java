@@ -32,6 +32,7 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -205,6 +206,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private SelectionLayer selectionLayer;
     
     private ProductUtil productUtil;
+
+    /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
     
     /**
      * Entry point for this class. Here the whole Composite is built.
@@ -222,7 +228,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
-        
+        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
@@ -236,6 +242,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //        hookDoubleClickCommand(natTable, gridLayer);
         return top;
     }
+    
 
 	/**
 	 * Create the default context menu
@@ -311,8 +318,13 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
 
-        if (documentType.hasPrice()) {
+        if (documentType.hasPrice() 
+        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+	        
+	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
+	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
+	        }        
             
             // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
             propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
@@ -343,69 +355,76 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 } else {
                 	descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 }
-				switch (descriptor) {
-                case POSITION:
-//                    retval = eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS) ? rowObject.getDocumentItem().getPosNr() : -1.0;
-                	// we ALWAYS use a position number!
-                    retval = rowObject.getDocumentItem().getPosNr();
-                    break;
-                case QUANTITY:
-                    retval = DataUtils.getInstance().doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
-                    break;
-                case OPTIONAL:
-                case QUNIT:
-                case ITEMNUMBER:
-                case NAME:
-                case DESCRIPTION:
-                case DISCOUNT:
-                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    break;
-                case VESTINGDATESTART:
-                case VESTINGDATEEND:
-                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                	if(retval == null) {
-                		retval = Calendar.getInstance().getTime();
-                	}
-                    break;
-                case PICTURE:
-                    // we have to build the picture path
-                    // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
-//                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-//                    if (StringUtils.isNotBlank(imgPath)) {
-//                        String picturePath = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
-//                        retval = picturePath + imgPath;
-//                    } else {
-//                        retval = null;
-//                    }
-                	retval = rowObject.getDocumentItem().getPicture();
-                    break;
-                case VAT:
-                    retval = noVatReference != null ? noVatReference 
-                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    break;
-                case UNITPRICE:
-                	MonetaryAmount amount;
-                	if(container.getUseGross()) {
-                		amount = new Price(rowObject.getDocumentItem()).getUnitGrossRounded();
-                	} else {
-                		amount = new Price(rowObject.getDocumentItem()).getUnitNetRounded();
-                	}
-                	retval = amount.getNumber().doubleValue();
-                	
-                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-                    break;
-                case TOTALPRICE:
-                    if (container.getUseGross()) { // "$ItemGrossTotal"
-                        // Fill the cell with the total gross value of the item
-                        retval = rowObject.getPrice().getTotalGrossRounded();
-                    } else { // "$ItemNetTotal"
-                        // Fill the cell with the total net value of the item
-                        retval = rowObject.getPrice().getTotalNetRounded();
-                    }
-                    break;
-                default:
-                    retval = "???";
-                    break;
+                try {
+					switch (descriptor) {
+	                case POSITION:
+	//                    retval = eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS) ? rowObject.getDocumentItem().getPosNr() : -1.0;
+	                	// we ALWAYS use a position number!
+	                    retval = rowObject.getDocumentItem().getPosNr();
+	                    break;
+	                case QUANTITY:
+	                    retval = DataUtils.getInstance().doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
+	                    break;
+	                case OPTIONAL:
+	                case QUNIT:
+	                case ITEMNUMBER:
+	                case NAME:
+	                case DESCRIPTION:
+	                case DISCOUNT:
+	                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	                    break;
+	                case VESTINGDATESTART:
+	                case VESTINGDATEEND:
+	                    retval = columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	                	if(retval == null) {
+	                		retval = Calendar.getInstance().getTime();
+	                	}
+	                    break;
+	                case PICTURE:
+	                    // we have to build the picture path
+	                    // opening the picture dialog (preview) occurs in the PictureViewEditor (via configuration)
+	//                    String imgPath = (String) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	//                    if (StringUtils.isNotBlank(imgPath)) {
+	//                        String picturePath = eclipsePrefs.getString(Constants.GENERAL_WORKSPACE) + Constants.PRODUCT_PICTURE_FOLDER;
+	//                        retval = picturePath + imgPath;
+	//                    } else {
+	//                        retval = null;
+	//                    }
+	                	retval = rowObject.getDocumentItem().getPicture();
+	                    break;
+	                case VAT:
+	                    retval = noVatReference != null ? noVatReference 
+	                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	                    break;
+	                case SALESEQUALIZATIONTAX:
+	                	Double tmpVat = (Double)columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
+	                	break;
+	                case UNITPRICE:
+	                	MonetaryAmount amount;
+	                	amount = container.getUseGross() 
+	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
+	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
+	                	retval = amount.getNumber().doubleValue();
+	                	
+	                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+	                    break;
+	                case TOTALPRICE:
+	                    if (container.getUseGross()) { // "$ItemGrossTotal"
+	                        // Fill the cell with the total gross value of the item
+	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
+	                    } else { // "$ItemNetTotal"
+	                        // Fill the cell with the total net value of the item
+	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
+	                    }
+	                    break;
+	                default:
+	                    retval = "???";
+	                    break;
+	                }
+                } catch (Exception ex) {
+                	retval = "ERROR!";
+            		log.error("Error while displaying a value from DocumentItem (name=["+rowObject.getDocumentItem().getName()+"]) at column position ["+columnIndex+"]. Reason: " + ex.getMessage());
                 }
                 return retval;
             }
@@ -616,6 +635,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.PICTURE, PICTURE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VAT, VAT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.SALESEQUALIZATIONTAX, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DISCOUNT, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.UNITPRICE, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.TOTALPRICE, TOTAL_MONEYVALUE_CELL_LABEL);
@@ -772,6 +792,16 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 .getValue()) : DocumentType.NONE;
         if (documentTypeParent == DocumentType.OFFER) {
             getDocumentItemsListData().forEach(item -> item.getDocumentItem().setOptional(Boolean.FALSE));
+        }
+        
+        // set vesting period if this field is empty
+        if(getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+        	getDocumentItemsListData().stream()
+        		.filter(item -> item.getDocumentItem().getVestingPeriodStart() == null || item.getDocumentItem().getVestingPeriodEnd() == null)
+        		.forEach(item -> {
+        			if(item.getDocumentItem().getVestingPeriodStart() == null) item.getDocumentItem().setVestingPeriodStart(new Date());
+        			if(item.getDocumentItem().getVestingPeriodEnd() == null) item.getDocumentItem().setVestingPeriodEnd(new Date());
+        		});
         }
 
         // Show the column "optional" if at least one item

@@ -68,7 +68,7 @@ public abstract class AbstractDAO<T extends IEntity> {
     private EntityManager em;
     
     @Inject
-    private ILogger log;
+    protected ILogger log;
     
     protected FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
     
@@ -216,7 +216,10 @@ em.joinTransaction();
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
-        CriteriaQuery<T> cq = criteria.where(cb.equal(root.<String> get("name"), entityName));
+        CriteriaQuery<T> cq = criteria.where(
+        		cb.and(
+        				cb.equal(root.<String> get("name"), entityName),
+        				cb.isFalse(root.<Boolean>get("deleted"))));
         T result = null;
         try {
             result = getEntityManager().createQuery(cq).getSingleResult();

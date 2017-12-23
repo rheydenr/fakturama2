@@ -30,7 +30,6 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.convert.PercentageDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -63,6 +62,7 @@ import com.sebulli.fakturama.model.VATCategory;
 import com.sebulli.fakturama.model.VAT_;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
@@ -401,7 +401,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 					TAXVALUE_CELL_LABEL ); 
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER,
-					new PercentageDisplayConverter(),
+					new DoublePercentageDisplayConverter(),
 					DisplayMode.NORMAL,
 					TAXVALUE_CELL_LABEL);
             // have a little space between cell border and value

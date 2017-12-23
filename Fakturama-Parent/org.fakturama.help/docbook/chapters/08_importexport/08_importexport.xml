@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" id="importexport" xml:lang="de">
 	<anchor xreflabel="" xml:id="importexport_main"/>
-	
 		<title>Import und Export von Daten</title>
-		<section><para>Fakturama bietet verschiedene Filter, um Daten zu importieren und zu exportieren. Damit lassen sich Produkte, Kontakte und Umsätze mit anderen Programmen austauschen oder Zusammenfassungen erstellen.</para>
+		<section>
+		<anchor xreflabel="" xml:id="import_data"/>
+		<title>Import von Daten</title><para>Fakturama bietet verschiedene Filter, um Daten zu importieren und zu exportieren. Damit lassen sich Produkte, Kontakte und Umsätze mit anderen Programmen austauschen oder Zusammenfassungen erstellen.</para>
 		<para>Import von Daten:</para>
 		<informalfigure>
 			<mediaobject>

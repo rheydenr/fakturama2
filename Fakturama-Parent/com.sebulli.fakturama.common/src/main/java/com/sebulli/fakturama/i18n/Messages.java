@@ -121,6 +121,7 @@ public class Messages {
 	public String commonFieldPrice;
 	public String commonFieldPrinted;
 	public String commonFieldQuantity;
+	public String commonFieldQuantityTooltip;
 	public String commonFieldQuantityShort;
 	public String commonFieldSalutation;
 	public String commonFieldState;
@@ -145,7 +146,7 @@ public class Messages {
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
-	
+	public String editorContactFieldSalesequalizationtaxName;
 	
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
@@ -166,14 +167,17 @@ public class Messages {
 	public String dataDefaultVatDescription;
 	public String dataExpenditureItems;
 	public String dataListAccountnumbers;
+	public String dataListSalutations;
 	public String dataReceiptvoucherItems;
 	public String dataVatPurchasetax;
 	public String dataVatSalestax;
 	public String dataTaxSalesequalizationtax;
+	public String dataTaxSalesequalizationtaxShort;
 	public String dialogAboutTitle;
 	public String dialogCustomerStatisticsPart1;
 	public String dialogDeletedatasetMessage;
 	public String dialogDeletedatasetTitle;
+	public String dialogSavechangesQuestion;
 	
 	public String dialogItemdescriptionHeader;
 	public String dialogItemdescriptionHint;
@@ -266,8 +270,7 @@ public class Messages {
 	public String editorDocumentDuedaysTooltip;
 	public String editorDocumentErrorDocnumberNotnextfree;
 	public String editorDocumentErrorDocnumberTitle;
-	public String editorDocumentErrorWrongcontactMsg1;
-	public String editorDocumentErrorWrongcontactMsg2;
+	public String editorDocumentErrorWrongcontactMsg;
 	public String editorDocumentErrorWrongcontactTitle;
 	public String editorDocumentFieldCommentTooltip;
 	public String editorDocumentFieldConsultant;

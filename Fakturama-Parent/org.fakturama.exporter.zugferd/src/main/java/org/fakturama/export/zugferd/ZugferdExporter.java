@@ -351,7 +351,6 @@ public class ZugferdExporter {
 				fileSelected = dialog.open();
 			}
 			if (fileSelected != null) {
-				fileSelected += File.separator + "ZF-" + fileName;
 				pdfa3.save(fileSelected);
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled
@@ -410,6 +409,9 @@ public class ZugferdExporter {
 				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP),
 				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY),
 				preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR));
+		if(StringUtils.isBlank(owner)) {
+			owner = "(unknown)";
+		}
 
 		note.getContent().add(createText(owner));
 		note.setSubjectCode(createCode("REG"));
@@ -711,7 +713,7 @@ public class ZugferdExporter {
 	private TradePriceType createTradePrice(DocumentItem item, PriceType priceType) {
 		Price price = new Price(item);
 		TradePriceType retval = null;
-//		String qunit = determineQuantityUnit(item.getStringValueByKey("qunit"));
+		String qunit = determineQuantityUnit(item.getQuantityUnit());
 		double discount = item.getItemRebate();
 		switch (priceType) {
 		case GROSS_PRICE:
@@ -720,7 +722,7 @@ public class ZugferdExporter {
 				// Preis nach Bruttokalkulation *ohne* Umsatzsteuer(!!!) 
 				.withChargeAmount(createAmount(price.getUnitNet(), DEFAULT_AMOUNT_SCALE))
 				// TODO Preisbasismenge??? (1, 10, 100,...)
-// EXTENDED				.withBasisQuantity(createQuantity(1d, item.getStringValueByKey("qunit")))
+// EXTENDED				.withBasisQuantity(createQuantity(1d, qunit))
 				;
 				if(discount != 0) {
 					// Rabatt / Zuschlag auf Positionsebene
@@ -734,7 +736,7 @@ public class ZugferdExporter {
 			.withChargeAmount(createAmount(Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
 					DEFAULT_AMOUNT_SCALE))
 			// TODO Preisbasismenge??? (1, 10, 100,...)
-//			.withBasisQuantity(createQuantity(1d, item.getStringValueByKey("qunit")))
+//			.withBasisQuantity(createQuantity(1d, qunit))
 			;
 //			if(discount != 0) {
 //				// Rabatt / Zuschlag auf Positionsebene
@@ -749,7 +751,7 @@ public class ZugferdExporter {
 				// nach Nettokalkulation;
 				.withChargeAmount(createAmount(price.getUnitNetDiscounted(), DEFAULT_AMOUNT_SCALE))
 				// TODO Preisbasismenge??? (1, 10, 100,...)
-				.withBasisQuantity(createQuantity(1d, item.getQuantityUnit()))
+				.withBasisQuantity(createQuantity(1d, qunit))
 				;
 //			if(discount != 0) {
 //				// Rabatt / Zuschlag auf Positionsebene
@@ -1141,6 +1143,9 @@ public class ZugferdExporter {
 	private CountryIDType createCountry(String value) {
 		if(StringUtils.length(value) > 2) {
 			value = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
+			if(value == null) {
+				value = "DE"; // null values aren't allowed!
+			}
 		}
 		return factory.createCountryIDType().withValue(value);
 	}
@@ -1198,7 +1203,11 @@ public class ZugferdExporter {
 	 * @return
 	 */
 	private TextType createText(String text) {
-		return factory.createTextType().withValue(text);
+		TextType retval = null;
+		if(!StringUtils.isBlank(text)) {
+			retval = factory.createTextType().withValue(text);
+		}
+		return retval;
 	}
 	
 	private IDType createIdFromString(String idString) {

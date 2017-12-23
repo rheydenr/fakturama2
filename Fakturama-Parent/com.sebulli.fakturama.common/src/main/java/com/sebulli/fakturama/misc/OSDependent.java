@@ -88,20 +88,20 @@ public class OSDependent {
 	public static String getOODefaultPath() {
 
 		if (isMacOSX())
-			return getProgramFolder() + "LibreOffice.org.app";
+			return getProgramFolder() + "LibreOffice.app";
 
 		if (isLinux())
 			return getProgramFolder() + "libreoffice";
 
 		if (isWin())
-			return getProgramFolder() + "LibreOffice.org 5";
+			return getProgramFolder() + "LibreOffice 5";
 
 		return "";
 
 	}
 
 	/**
-	 * Returns the OpenOffice binary-
+	 * Returns the OpenOffice binary
 	 * 
 	 * @param path
 	 *            of the OpenOffice folder
@@ -117,21 +117,21 @@ public class OSDependent {
 		    retval = Paths.get(path, "/program/soffice");
 
 		if (isWin())
-		    retval = Paths.get(path, "\\program\\soffice.exe");
+		    retval = Paths.get(path, "program", "soffice.exe");
 
 		return retval;
 	}
-
-	/**
-	 * Test, if it is allowed to add an about menu to the menu bar. In some OS
-	 * the about menu is set to the menu bar by the OS. So, it is not necessary
-	 * to add it twice.
-	 * 
-	 * @return TRUE, if it is necessary
-	 */
-	public static boolean canAddAboutMenuItem() {
-		return !isMacOSX();
-	}
+//
+//	/**
+//	 * Test, if it is allowed to add an about menu to the menu bar. In some OS
+//	 * the about menu is set to the menu bar by the OS. So, it is not necessary
+//	 * to add it twice.
+//	 * 
+//	 * @return TRUE, if it is necessary
+//	 */
+//	public static boolean canAddAboutMenuItem() {
+//		return !isMacOSX();
+//	}
 
 	/**
 	 * Test, if it is allowed to add an preference menu to the menu bar. In some

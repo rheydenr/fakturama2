@@ -50,10 +50,18 @@ public class DocumentItemDTO implements IEntity {
      * @return the price
      */
     public Price getPrice() {
-        return new Price(documentItem);
+        return getPrice(false);
     }
 
-    @Override
+    /**
+     * 
+     * @param useSET use sales equalization tax, if any
+     * @return the price
+     */
+     public Price getPrice(boolean useSET) {
+        return new Price(documentItem, 1.0, useSET);
+    }
+   @Override
     public String getName() {
         return documentItem.getName();
     }
@@ -115,25 +123,21 @@ public class DocumentItemDTO implements IEntity {
 
 	@Override
 	public Date getValidFrom() {
-		// TODO Auto-generated method stub
-		return null;
+		return documentItem.getValidFrom();
 	}
 
 	@Override
 	public void setValidFrom(Date newValidFrom) {
-		// TODO Auto-generated method stub
-		
+		documentItem.setValidFrom(newValidFrom);
 	}
 
 	@Override
 	public Date getValidTo() {
-		// TODO Auto-generated method stub
-		return null;
+		return documentItem.getValidTo();
 	}
 
 	@Override
 	public void setValidTo(Date newValidTo) {
-		// TODO Auto-generated method stub
-		
+		documentItem.setValidTo(newValidTo);
 	}
 }

@@ -79,12 +79,14 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 			defaultValue = String.format(" (%s %s)",  msg.preferencesOfficeExampleshort, defaultValue);
 
 		if (OSDependent.isOOApp()) {
-		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp, getFieldEditorParent());
+		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeApp + defaultValue, getFieldEditorParent());
 			//T: Preference page "Office" - Label: Office App
 			addField(appFieldEditor);
 		} else {
+//		    appFieldEditor.prepare(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeFolder + defaultValue, getFieldEditorParent());
 			//T: Preference page "Office" - Label: Office folder
 			addField(new DirectoryFieldEditor(Constants.PREFERENCES_OPENOFFICE_PATH, msg.preferencesOfficeFolder + defaultValue, getFieldEditorParent()));
+//			addField(appFieldEditor);
 		}
 		
 		//T: Preference page "Office" - Label: Export documents as ODT or as PDF / only ODT/PDF or both
@@ -149,17 +151,18 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		
 		// Set the default value
 		// Search for the Office installation only if there is no path set.
-//		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
-//		String defaultOOHome = "";
-//
-//		if (oOHome.isEmpty()) {
-//			// defaultOOHome = OfficeStarter.getHome();
-//			if (defaultOOHome.isEmpty())
-//				defaultOOHome = OSDependent.getOODefaultPath();
-//		} else {
-//			defaultOOHome = OSDependent.getOODefaultPath();
-//		}
-//		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
+		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
+		String defaultOOHome = "";
+
+		if (oOHome.isEmpty()) {
+//			defaultOOHome = OfficeStarter.getHome();
+			if (defaultOOHome.isEmpty()) {
+				defaultOOHome = OSDependent.getOODefaultPath();
+			}
+		} else {
+			defaultOOHome = OSDependent.getOODefaultPath();
+		}
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_PATH, defaultOOHome);
 	}
 
     public void loadOrSaveUserValuesFromDB(IEclipseContext context) {

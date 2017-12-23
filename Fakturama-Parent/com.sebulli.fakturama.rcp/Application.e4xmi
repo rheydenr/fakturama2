@@ -234,8 +234,8 @@
     <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTpetOEeKo5Ms1QUgPTw" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="10000" horizontal="true">
       <children xsi:type="basic:PartSashContainer" xmi:id="_OJDuMG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.rcp.partsashcontainer.0" containerData="2000">
         <children xsi:type="basic:Part" xmi:id="_RmPTp-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.navigationView" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.NavigationView" label="Navigation View" tooltip=""/>
-        <children xsi:type="basic:PartStack" xmi:id="_n4EDAG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.errorview.partstack" toBeRendered="false" containerData="2000">
-          <children xsi:type="basic:Part" xmi:id="_QYYFcG0kEeSXL4Yk4alD9Q" elementId="part:com.sebulli.fakturama.views.errorView" visible="false" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.ErrorView" label="%view.errorlog.name" iconURI="icon://COMMAND_ERROR" tooltip="" closeable="true"/>
+        <children xsi:type="basic:PartStack" xmi:id="_n4EDAG0kEeSXL4Yk4alD9Q" elementId="com.sebulli.fakturama.errorview.partstack" visible="false" containerData="2000">
+          <children xsi:type="basic:Part" xmi:id="_QYYFcG0kEeSXL4Yk4alD9Q" elementId="part:com.sebulli.fakturama.views.errorView" containerData="2000" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.ErrorView" label="%view.errorlog.name" iconURI="icon://COMMAND_ERROR" tooltip="" closeable="true"/>
         </children>
       </children>
       <children xsi:type="basic:PartSashContainer" xmi:id="_RmPTqOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.rcp.datapanel" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" containerData="8000" selectedElement="_VxkroOtOEeKo5Ms1QUgPTw">
@@ -504,11 +504,6 @@
         <properties key="fakturama.datatable.texts.clickhandler" value="com.sebulli.fakturama.command.selectitem"/>
       </children>
     </windows>
-  </snippets>
-  <snippets xsi:type="basic:TrimBar" xmi:id="_z6fbUN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.snippets" side="Left">
-    <children xsi:type="menu:ToolBar" xmi:id="_2aO0MN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.documentitemslist.toolbar">
-      <children xsi:type="menu:HandledToolItem" xmi:id="_-6rLQN7sEeSZCeT1N8qpDw" elementId="com.sebulli.fakturama.rcp.handledtoolitem.0" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.contact.tooltip" command="_epsVUMUQEeShSO-6QzwVpg"/>
-    </children>
   </snippets>
   <commands xmi:id="_Gp8DIKAaEeSCTeF-q1OtSg" elementId="com.sebulli.fakturama.command.openDocuments" commandName="%command.documents.name" description="%command.documents.tooltip"/>
   <commands xmi:id="_OkPpoCY8EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openProducts" commandName="%page.products" description="%command.products.tooltip" category="_ck9sUCTREeS9z6SQNducwg">

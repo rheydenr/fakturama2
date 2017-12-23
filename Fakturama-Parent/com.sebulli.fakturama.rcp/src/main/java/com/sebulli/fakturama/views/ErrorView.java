@@ -87,6 +87,8 @@ public class ErrorView {
 		// fill the rest of the view with the text field
 		errorText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(errorText);
+		
+		parent.setVisible(false);
 	}
 
 	/**

@@ -445,7 +445,7 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
-						<entry>DELIVERY.ADDRESS.entry</entry>
+						<entry>DELIVERY.ADDRESS.TITLE</entry>
 						<entry>Titel (Lieferadresse)</entry>
 					</row>
 					<row>
@@ -508,14 +508,14 @@ id="04_openoffice_libreoffice">
 						<entry>ADDRESS.BANK.ACCOUNT.HOLDER</entry>
 						<entry>Kontoinhaber</entry>
 					</row>
-					<row>
+					<!--row>
 						<entry>ADDRESS.BANK.ACCOUNT</entry>
 						<entry>Kontonummer</entry>
 					</row>
 					<row>
 						<entry>ADDRESS.BANK.CODE</entry>
 						<entry>Bankleitzahl</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>ADDRESS.BANK.NAME</entry>
 						<entry>Name der Bank</entry>
@@ -688,18 +688,18 @@ id="04_openoffice_libreoffice">
 						<entry>YOURCOMPANY.TAXOFFICE</entry>
 						<entry>Finanzamtbezeichnung</entry>
 					</row>
-					<row>
+					<!-- row>
 						<entry>YOURCOMPANY.BANKACCOUNTNR</entry>
 						<entry>Kontonummer</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>YOURCOMPANY.BANK</entry>
 						<entry>Bezeichnung der Bank</entry>
 					</row>
-					<row>
+					<!-- row>
 						<entry>YOURCOMPANY.BANKCODE</entry>
 						<entry>BLZ</entry>
-					</row>
+					</row -->
 					<row>
 						<entry>YOURCOMPANY.IBAN</entry>
 						<entry>IBAN</entry>
@@ -793,7 +793,7 @@ id="04_openoffice_libreoffice">
 						<entry>FORMAT</entry>
 						<entry>
 							<para>Das Format kann bei Zahlenangaben festgelegt werden.</para>
-							<para>Beispiele:</para>
+							<para>Beispiele:
 							<itemizedlist spacing="compact">
 								<listitem>
 									<para>
@@ -803,7 +803,15 @@ id="04_openoffice_libreoffice">
 									<para>
 										<emphasis role="bold">$FORMAT:0</emphasis>  Die Menge 3.1 wird ohne Nachkommastellen als 3 dargestellt</para>
 								</listitem>
-							</itemizedlist>
+							</itemizedlist></para>
+						</entry>
+					</row>
+					<row>
+						<entry>DFORMAT</entry>
+						<entry><para>Datumsangaben können mit diesem Formatparameter angepasst werden. Als Format können gültige Platzhalter aus <link xl:href="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</link> verwendet werden.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">DOCUMENT.SERVICEDATE$DFORMAT:MMMM YYYY</emphasis> November 2017</para>
 						</entry>
 					</row>
 					<row>
@@ -819,7 +827,6 @@ id="04_openoffice_libreoffice">
 			</tgroup>
 		</informaltable>
 
-
 		<section>
 			<title>Sonderzeichen</title>
 			<para>Um in den Parametern auch spezielle Sonderzeichen verwenden zu können, werden diese extra codiert:</para>
@@ -833,6 +840,8 @@ id="04_openoffice_libreoffice">
 						<row><entry>%NL</entry><entry>Neue Zeile</entry></row>
 						<row><entry>%TAB</entry><entry>Tabspace</entry></row>
 						<row><entry>%DOLLAR</entry><entry>$</entry></row>
+						<row><entry>%COMMA</entry><entry>,</entry></row>
+						<row><entry>%EURO</entry><entry>€</entry></row>
 						<row><entry>%A_GRAVE</entry><entry>À</entry></row>
 						<row><entry>%A_ACUTE</entry><entry>Á</entry></row>
 						<row><entry>%A_CIRC</entry><entry>Â</entry></row>
@@ -1109,7 +1118,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>VATLIST.DESCRIPTIONS</entry>
-						<entry>Liste mit allen Steuersätzen (Beschreibung).</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Beschreibung).</entry>
 					</row>
 					<row>
 						<entry>VATLIST.VALUES</entry>
@@ -1120,7 +1129,7 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>VATLIST.PERCENT</entry>
-						<entry>Liste mit allen Steuersätzen (Prozent).</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Prozent).</entry>
 					</row>
 					<row>
 						<entry>VATLIST.VATSUBTOTAL</entry>
@@ -1129,7 +1138,23 @@ id="04_openoffice_libreoffice">
 							<para>
 								<emphasis role="italic">Beispiel</emphasis> bei unterschiedlichen Mehrwertsteuersätzen: </para>
 							<para> Zuzügl. &lt;VATLIST.DESCRIPTIONS&gt; auf &lt;VATLIST.VATSUBTOTAL&gt; &lt;VATLIST.VALUES&gt; </para>
-							<para> Bitte für jeden der Platzhalter eine einzelne Tabellenzelle in ein und derselben Zeile verwenden!</para>
+						</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.VALUES</entry>
+						<entry>
+							<para>Liste mit allen Ausgleichsteuern (Werte). Nur aktiv, wenn das auch in den (<link linkend="preferences_contact">Einstellungen</link>) hinterlegt wurde.</para>
+							<para>Dieser Platzhalter hat die Besonderheit, dass für jeden weiteren Steuersatz eine neue Zeile der Tabelle angelegt wird. Nicht verwendete Ausgleichsteuerätze werden nicht mit aufgeführt (keine Nullwerte).</para>
+						</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.PERCENT</entry>
+						<entry>Liste mit allen im Dokument verwendeten Steuersätzen (Prozent) für die Ausgleichsteuer.</entry>
+					</row>
+					<row>
+						<entry>SALESEQUALIZATIONTAX.VATSUBTOTAL</entry>
+						<entry>
+							<para>Liste aller zum jeweiligen Ausgleichsteuersatz gehörenden Nettowerte (Zwischensummen).</para>
 						</entry>
 					</row>
 					<row>
@@ -1163,7 +1188,7 @@ id="04_openoffice_libreoffice">
 					</tbody>
 				</tgroup>
 			</informaltable>
-							<important>Die Platzhalter müssen in eine zweispaltige Tabelle gesetzt werden. Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Preferences eingestellt werden: </important>
+							<important>Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Einstellungen hinterlegt werden: </important>
 							<para>
 								<inlinemediaobject>
 									<imageobject role="html">
