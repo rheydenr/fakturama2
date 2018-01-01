@@ -6,7 +6,6 @@ package org.odftoolkit.simple.common.navigation;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
@@ -185,9 +184,8 @@ public class PlaceholderNode extends Selection {
         }
         
         // make every line break a separate paragraph
-        StringTokenizer st = new StringTokenizer(StringUtils.defaultString(newText), "\r");
-        while (st.hasMoreTokens()) {
-            String s = st.nextToken();
+        String[] st = StringUtils.splitByWholeSeparatorPreserveAllTokens(StringUtils.defaultString(newText), "\r");
+        for (String s : st) {
             // create a "template node" by cloning the original node
             Node templateNode = parentNode.cloneNode(false);
             templateNode.setTextContent(s);
