@@ -197,7 +197,7 @@ public class FileOrganizer {
 		}
 
 		Instant calendar = document.getDocumentDate().toInstant();
-		LocalDateTime docDateTime = LocalDateTime.ofInstant(calendar, ZoneId.of("Z"));
+		LocalDateTime docDateTime = LocalDateTime.ofInstant(calendar, ZoneId.systemDefault());
 
 		int yyyy = docDateTime.getYear();
 		// Replace the date information
