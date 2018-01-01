@@ -1147,7 +1147,9 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setPaidValue(parentDoc.getPaidValue());
 		retval.setPaid(parentDoc.getPaid());
 		retval.setPayDate(parentDoc.getPayDate());
-		retval.setTransactionId(parentDoc.getTransactionId());
+		if(parentDoc.getTransactionId() != null) {
+			retval.setTransactionId(parentDoc.getTransactionId());
+		}
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
 		
