@@ -44,7 +44,11 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -85,6 +89,7 @@ import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
@@ -152,7 +157,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtBIC;
     private Text txtMandatRef;
 	private Text txtNr;
-	private ComboViewer comboPaymentViewer;
+	private Combo comboPayment;
 	private ComboViewer comboReliability;
 	private Text txtPhone;
 	private Text txtFax;
@@ -1072,12 +1077,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelPayment.setToolTipText(msg.editorContactFieldPaymentTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPayment);
-		comboPaymentViewer = new ComboViewer(tabMisc, SWT.BORDER | SWT.READ_ONLY);
-		comboPaymentViewer.getCombo().setToolTipText(labelPayment.getToolTipText());
-		allPayments = paymentsDao.findAll();
-		comboPaymentViewer.setContentProvider(new EntityComboProvider());
-		comboPaymentViewer.setLabelProvider(new EntityLabelProvider());
-		comboPaymentViewer.setInput(allPayments);
+        // Combo to select the payment
+        comboPayment = new Combo(tabMisc, SWT.BORDER | SWT.READ_ONLY);
 
 		// Reliability
 		Label labelReliability = new Label(tabMisc, SWT.NONE);
@@ -1228,6 +1229,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         bindModelValue(editorContact,txtMandatRef, Contact_.mandateReference.getName(), 32);
 
 		fillAndBindCategoryCombo();
+		fillAndBindPaymentCombo();
 		
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		bindModelValue(editorContact, txtEmail, Contact_.email.getName(), 64);
@@ -1236,14 +1238,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtMobile, Contact_.mobile.getName(), 32);
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
-
-        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPaymentViewer.getCombo());
-        bindModelValue(editorContact, comboPaymentViewer.getCombo(), Contact_.payment.getName(),
-                target2PaymentModel, paymentModel2Target);
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
@@ -1255,8 +1249,43 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindAdditionalValues(editorContact);
 		
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
+    }
+	
+	private void fillAndBindPaymentCombo() {
+		Payment tmpPayment = editorContact.getPayment();
+		ComboViewer comboViewerPayment;
+        comboViewerPayment = new ComboViewer(comboPayment);
+        comboViewerPayment.setContentProvider(new EntityComboProvider());
+        comboViewerPayment.setLabelProvider(new EntityLabelProvider());
+//        comboViewerPayment.getCombo().setToolTipText(labelPayment.getToolTipText());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPayment);
+//        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboViewerPayment.getCombo());
+        
+        // If a new payment is selected ...
+        comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
 
-    }	
+        	// change the paymentId to the selected element
+        	public void selectionChanged(SelectionChangedEvent event) {
+        		getMDirtyablePart().setDirty(true);
+        	}
+        });
+
+        // Fill the payment combo with the payments
+        List<Payment> allPayments = paymentsDao.findAll();
+        comboViewerPayment.setInput(allPayments);
+        editorContact.setPayment(tmpPayment);
+
+        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
+        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
+
+        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
+        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+
+        // Set the combo
+        bindModelValue(editorContact, comboPayment, Contact_.payment.getName(),
+                target2PaymentModel, paymentModel2Target);
+	}
+	
 
 	/**
 	 * Binds additional values. Should be overwritten by subclasses.

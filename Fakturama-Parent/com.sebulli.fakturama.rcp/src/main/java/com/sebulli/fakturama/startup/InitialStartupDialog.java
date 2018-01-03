@@ -371,7 +371,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
     			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
     			
     			// for default DB setting we use the workdir as DB store
-    			if(btnUseDefaultDb.getSelection()) {
+    			if(btnUseDefaultDb.getSelection()) {//;hsqldb.lob_compressed=true
     			    String jdbcUrl = String.format("jdbc:hsqldb:file:%s/Database/Database;shutdown=true", workspace);
     			    preferences.put(PersistenceUnitProperties.JDBC_URL, jdbcUrl);
     			    preferences.put(PersistenceUnitProperties.JDBC_USER, "sa");

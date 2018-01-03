@@ -1732,9 +1732,8 @@ public class DocumentEditor extends Editor<Document> {
 		
 		if (paymentid != null) {
 			//Use the payment method of the customer
+			document.setPayment(paymentid);
 			if (comboPayment != null) {
-				document.setPayment(paymentid);
-//				comboViewerPayment.getCombo().getItems()getText();
 				comboPayment.setText(paymentid.getName());
 			}
 
