@@ -298,11 +298,11 @@ public class MigrationManager {
 		}
 		eclipsePrefs.put("OLD_JDBC_URL", hsqlConnectionString);
 		eclipsePrefs.flush();
-		
-		initMigLog(oldWorkDir);
 
 		// old entities only have one DAO for all entities
 		oldDao = ContextInjectionFactory.make(OldEntitiesDAO.class, context);
+		
+		initMigLog(oldWorkDir);
 		
 		// hide splash screen
 		appContext.applicationRunning();
