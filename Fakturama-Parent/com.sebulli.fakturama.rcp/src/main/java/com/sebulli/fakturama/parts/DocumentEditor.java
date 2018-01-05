@@ -116,6 +116,8 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Creditor;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -2138,8 +2140,16 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
-			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-			    dlg.open();
+		        // FIXME Workaround (quick & dirty), please use enums or an extra button
+			    if((e.stateMask & SWT.CTRL) != 0) {
+				    context.set("CONTACT_TYPE", "CREDITOR");
+				    SelectContactDialog<Creditor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+				    dlg.open();
+			    } else {
+			    	context.set("CONTACT_TYPE", "DEBITOR");
+			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+			    	dlg.open();
+			    }
 			    // the result is set via event DialogSelection/Contact
 			}
 		});
