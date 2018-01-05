@@ -40,7 +40,9 @@ public class CopyDir extends SimpleFileVisitor<Path> {
 	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) {
 		try {
 			Path newDir = targetDir.resolve(sourceDir.relativize(dir));
-			Files.createDirectory(newDir);
+			if(Files.notExists(newDir)) {
+				Files.createDirectory(newDir);
+			}
 		} catch (IOException ex) {
 			System.err.println(ex);
 		}
