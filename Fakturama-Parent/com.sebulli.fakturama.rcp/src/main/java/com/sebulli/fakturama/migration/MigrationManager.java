@@ -71,6 +71,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.persistence.queries.CursoredStream;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -482,56 +483,64 @@ public class MigrationManager {
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
-		for (OldProducts oldProduct : oldDao.findAllProducts()) {
-			try {
-				Product product = modelFactory.createProduct();
-				addPriceBlock(product, oldProduct.getBlock1(), roundValue(oldProduct.getPrice1()));
-				addPriceBlock(product, oldProduct.getBlock2(), roundValue(oldProduct.getPrice2()));
-				addPriceBlock(product, oldProduct.getBlock3(), roundValue(oldProduct.getPrice3()));
-				addPriceBlock(product, oldProduct.getBlock4(), roundValue(oldProduct.getPrice4()));
-				addPriceBlock(product, oldProduct.getBlock5(), roundValue(oldProduct.getPrice5()));
-				product.setBlock1(oldProduct.getBlock1());
-				product.setBlock2(oldProduct.getBlock2());
-				product.setBlock3(oldProduct.getBlock3());
-				product.setBlock4(oldProduct.getBlock4());
-				product.setBlock5(oldProduct.getBlock5());
-				product.setDateAdded(getSaveParsedDate(oldProduct.getDateAdded()));
-				product.setDeleted(oldProduct.isDeleted());
-				product.setDescription(oldProduct.getDescription());
-				if(StringUtils.isNotBlank(oldProduct.getCategory()) && productCategories.containsKey(oldProduct.getCategory())) {
-					// add it to the new entity
-					//product.addToCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
-					product.setCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
-				}
-				product.setItemNumber(oldProduct.getItemnr());
-				product.setName(oldProduct.getName());
-				// copy the old product picture into the new workspace
-				copyProductPicture(product, oldProduct);
-				product.setPrice1(roundValue(oldProduct.getPrice1()));
-				product.setPrice2(roundValue(oldProduct.getPrice2()));
-				product.setPrice3(roundValue(oldProduct.getPrice3()));
-				product.setPrice4(roundValue(oldProduct.getPrice4()));
-				product.setPrice5(roundValue(oldProduct.getPrice5()));
-				product.setQuantity(oldProduct.getQuantity());
-				product.setQuantityUnit(oldProduct.getQunit());
-				product.setSellingUnit(oldProduct.getUnit());
+		CursoredStream cs = oldDao.findAllProducts();
+		try {
+			while(cs.hasNext()) {
+				OldProducts oldProduct = (OldProducts) cs.next();
+				try {
+					Product product = modelFactory.createProduct();
+					addPriceBlock(product, oldProduct.getBlock1(), roundValue(oldProduct.getPrice1()));
+					addPriceBlock(product, oldProduct.getBlock2(), roundValue(oldProduct.getPrice2()));
+					addPriceBlock(product, oldProduct.getBlock3(), roundValue(oldProduct.getPrice3()));
+					addPriceBlock(product, oldProduct.getBlock4(), roundValue(oldProduct.getPrice4()));
+					addPriceBlock(product, oldProduct.getBlock5(), roundValue(oldProduct.getPrice5()));
+					product.setBlock1(oldProduct.getBlock1());
+					product.setBlock2(oldProduct.getBlock2());
+					product.setBlock3(oldProduct.getBlock3());
+					product.setBlock4(oldProduct.getBlock4());
+					product.setBlock5(oldProduct.getBlock5());
+					product.setDateAdded(getSaveParsedDate(oldProduct.getDateAdded()));
+					product.setDeleted(oldProduct.isDeleted());
+					product.setDescription(oldProduct.getDescription());
+					if(StringUtils.isNotBlank(oldProduct.getCategory()) && productCategories.containsKey(oldProduct.getCategory())) {
+						// add it to the new entity
+						//product.addToCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
+						product.setCategories(productCategoriesDAO.getCategory(oldProduct.getCategory(), true));
+					}
+					product.setItemNumber(oldProduct.getItemnr());
+					product.setName(oldProduct.getName());
+					// copy the old product picture into the new workspace
+					copyProductPicture(product, oldProduct);
+					product.setPrice1(roundValue(oldProduct.getPrice1()));
+					product.setPrice2(roundValue(oldProduct.getPrice2()));
+					product.setPrice3(roundValue(oldProduct.getPrice3()));
+					product.setPrice4(roundValue(oldProduct.getPrice4()));
+					product.setPrice5(roundValue(oldProduct.getPrice5()));
+					product.setQuantity(oldProduct.getQuantity());
+					product.setQuantityUnit(oldProduct.getQunit());
+					product.setSellingUnit(oldProduct.getUnit());
 //				product.setProductCode(oldProduct.gProductCode());
-				// find the VAT entry
-				Long vatId = newVats.get(oldProduct.getVatid());
-				if(vatId != null) {
-				    VAT newVat = vatsDAO.findById(vatId);
-				    product.setVat(newVat);
+					// find the VAT entry
+					Long vatId = newVats.get(oldProduct.getVatid());
+					if(vatId != null) {
+					    VAT newVat = vatsDAO.findById(vatId);
+					    product.setVat(newVat);
+					}
+					product.setWebshopId(new Long(oldProduct.getWebshopid()));
+					product.setWeight(oldProduct.getWeight());
+					product.setValidFrom(new Date());
+					
+					product = productsDAO.save(product, true);
+					newProducts.put(oldProduct.getId(), product.getId());
+					subMonitor.worked(1);
 				}
-				product.setWebshopId(new Long(oldProduct.getWebshopid()));
-				product.setWeight(oldProduct.getWeight());
-				product.setValidFrom(new Date());
-				
-				product = productsDAO.save(product, true);
-				newProducts.put(oldProduct.getId(), product.getId());
-				subMonitor.worked(1);
+				catch (FakturamaStoringException e) {
+					log.error("error while migrating Product. (old) ID=" + oldProduct.getId() + "; Message: " + e.getMessage());
+				}
 			}
-			catch (FakturamaStoringException e) {
-				log.error("error while migrating Product. (old) ID=" + oldProduct.getId() + "; Message: " + e.getMessage());
+		} finally {
+			if(cs != null) {
+				cs.close();
 			}
 		}
 		subMonitor.done();
@@ -583,207 +592,215 @@ public class MigrationManager {
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		Map<Integer, Document> invoiceRelevantDocuments = new HashMap<>();
 		Map<Integer, Invoice> invoiceDocuments = new HashMap<>();
-		for (OldDocuments oldDocument : oldDao.findAllDocuments()) {
-			try {
-				BillingType billingType = BillingType.get(oldDocument.getCategory());
-                switch (billingType) {
-                case INVOICE:
-                    document = modelFactory.createInvoice();
-                    break;
-                case LETTER:
-                    document = modelFactory.createLetter();
-                    break;
-                case ORDER:
-                    document = modelFactory.createOrder();
-                    break;
-                case OFFER:
-                    document = modelFactory.createOffer();
-                    break;
-                case CONFIRMATION:
-                    document = modelFactory.createConfirmation();
-                    break;
-                case CREDIT:
-                    document = modelFactory.createCredit();
-                    break;
-                case DUNNING:
-                    document = modelFactory.createDunning();
-                    ((Dunning)document).setDunningLevel(oldDocument.getDunninglevel());
-                    break;
-                case DELIVERY:
-                    document = modelFactory.createDelivery();
-                    break;
-                case PROFORMA:
-                    document = modelFactory.createProforma();
-                    break;
-                default:
-                    document = modelFactory.createOrder();
-                    break;
-                }
-				if(oldDocument.getAddressid() < 0) {
-					/* manually edited address => store in the data container!
-					 * perhaps we have to check additionally if the address stored in document
-					 * is equal to the address stored in the database :-(
-					 */
-					// at first we try to interpret the address data
-					Contact contact = modelFactory.createDebitor();
-					// there is NO Customer No. since we extracted it from a plain String.
-					Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
-					contact.setAddress(address);
-					// try to get the name
-					String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME);
-					if(name.isEmpty()) {
-						name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_NAME);
-					}
-					contact.setName(name);
-					contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
+		CursoredStream cs = oldDao.findAllDocuments();
+		try {
+			while(cs.hasNext()) {
+				OldDocuments oldDocument = (OldDocuments) cs.next();
+				try {
+					BillingType billingType = BillingType.get(oldDocument.getCategory());
+			        switch (billingType) {
+			        case INVOICE:
+			            document = modelFactory.createInvoice();
+			            break;
+			        case LETTER:
+			            document = modelFactory.createLetter();
+			            break;
+			        case ORDER:
+			            document = modelFactory.createOrder();
+			            break;
+			        case OFFER:
+			            document = modelFactory.createOffer();
+			            break;
+			        case CONFIRMATION:
+			            document = modelFactory.createConfirmation();
+			            break;
+			        case CREDIT:
+			            document = modelFactory.createCredit();
+			            break;
+			        case DUNNING:
+			            document = modelFactory.createDunning();
+			            ((Dunning)document).setDunningLevel(oldDocument.getDunninglevel());
+			            break;
+			        case DELIVERY:
+			            document = modelFactory.createDelivery();
+			            break;
+			        case PROFORMA:
+			            document = modelFactory.createProforma();
+			            break;
+			        default:
+			            document = modelFactory.createOrder();
+			            break;
+			        }
+					if(oldDocument.getAddressid() < 0) {
+						/* manually edited address => store in the data container!
+						 * perhaps we have to check additionally if the address stored in document
+						 * is equal to the address stored in the database :-(
+						 */
+						// at first we try to interpret the address data
+						Contact contact = modelFactory.createDebitor();
+						// there is NO Customer No. since we extracted it from a plain String.
+						Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
+						contact.setAddress(address);
+						// try to get the name
+						String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME);
+						if(name.isEmpty()) {
+							name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_NAME);
+						}
+						contact.setName(name);
+						contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
 //					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
-					document.setBillingContact(contact);
-					
-					Contact deliveryContact = modelFactory.createDebitor();
-					Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
-					deliveryContact.setAddress(deliveryAddress);
-					String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
-					if(deliveryName.isEmpty()) {
-						deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
-					}
-					deliveryContact.setName(deliveryName);
+						document.setBillingContact(contact);
+						
+						Contact deliveryContact = modelFactory.createDebitor();
+						Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
+						deliveryContact.setAddress(deliveryAddress);
+						String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
+						if(deliveryName.isEmpty()) {
+							deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
+						}
+						deliveryContact.setName(deliveryName);
 //					deliveryContact.setName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname"));
-					deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
+						deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
 //					if(!deliveryContact.isSameAs(contact)) {
-						document.setDeliveryContact(deliveryContact);
+							document.setDeliveryContact(deliveryContact);
 //					}
 //					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
-				} else {
-					// use the previous filled Contact hashmap
-					Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
-					if (newContactIdDerivedFromOld == null) {
-						migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
-						OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
-						
 					} else {
-						Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
-						if(contact != null) {
-						    // delivery documents are slightly different...
-						    if(document.getBillingType() == BillingType.DELIVERY) {
-		                        document.setBillingContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-		                        document.setDeliveryContact(contact);
-						    } else {
-		                        document.setBillingContact(contact);
-		                        document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-						    }
+						// use the previous filled Contact hashmap
+						Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
+						if (newContactIdDerivedFromOld == null) {
+							migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
+							OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
+							
+						} else {
+							Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
+							if(contact != null) {
+							    // delivery documents are slightly different...
+							    if(document.getBillingType() == BillingType.DELIVERY) {
+			                        document.setBillingContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
+			                        document.setDeliveryContact(contact);
+							    } else {
+			                        document.setBillingContact(contact);
+			                        document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
+							    }
+							}
 						}
 					}
-				}
-				document.setAddressFirstLine(oldDocument.getAddressfirstline());
-				document.setBillingType(billingType);
-				document.setCustomerRef(oldDocument.getCustomerref());
-				document.setValidFrom(getSaveParsedDate(oldDocument.getDate()));
-				document.setDeleted(oldDocument.isDeleted());
-				// delivery address? got from contact? Assume that it's equal to contact address 
-				// as long there's no delivery address stored 
-				document.setDueDays(oldDocument.getDuedays());
-				// each Document has its own items
-				if(StringUtils.isNotBlank(oldDocument.getItems())) {
-					String[] itemRefs = oldDocument.getItems().split(",");
-					createItems(document, itemRefs);
-				}
-				document.setItemsRebate(oldDocument.getItemsdiscount());
-				document.setMessage(oldDocument.getMessage());
-				document.setMessage2(oldDocument.getMessage2());
-				document.setMessage3(oldDocument.getMessage3());
-				// The document number is the document name
-				document.setName(oldDocument.getName());
-				document.setNetGross(oldDocument.getNetgross());
-				if(oldDocument.isNovat()) {
-					// find the VAT entry
-					VAT noVatRef = vatsDAO.findByName(oldDocument.getNovatname());
-					if(noVatRef == null) {
-						log.error("no entry for " + oldDocument.getNovatname() + " found. (old) document ID=" + oldDocument.getId());
-					} else {
-						document.setNoVatReference(noVatRef);
+					document.setAddressFirstLine(oldDocument.getAddressfirstline());
+					document.setBillingType(billingType);
+					document.setCustomerRef(oldDocument.getCustomerref());
+					document.setValidFrom(getSaveParsedDate(oldDocument.getDate()));
+					document.setDeleted(oldDocument.isDeleted());
+					// delivery address? got from contact? Assume that it's equal to contact address 
+					// as long there's no delivery address stored 
+					document.setDueDays(oldDocument.getDuedays());
+					// each Document has its own items
+					if(StringUtils.isNotBlank(oldDocument.getItems())) {
+						String[] itemRefs = oldDocument.getItems().split(",");
+						createItems(document, itemRefs);
+					}
+					document.setItemsRebate(oldDocument.getItemsdiscount());
+					document.setMessage(oldDocument.getMessage());
+					document.setMessage2(oldDocument.getMessage2());
+					document.setMessage3(oldDocument.getMessage3());
+					// The document number is the document name
+					document.setName(oldDocument.getName());
+					document.setNetGross(oldDocument.getNetgross());
+					if(oldDocument.isNovat()) {
+						// find the VAT entry
+						VAT noVatRef = vatsDAO.findByName(oldDocument.getNovatname());
+						if(noVatRef == null) {
+							log.error("no entry for " + oldDocument.getNovatname() + " found. (old) document ID=" + oldDocument.getId());
+						} else {
+							document.setNoVatReference(noVatRef);
+						}
+						
+						// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
 					}
 					
-					// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
-				}
-				
-				// if either the ODT or the PDF field is filled we can assume that the document was ed.
-				// Therefore we needn't the "printed" flag.
-				document.setOdtPath(oldDocument.getOdtpath());
-				document.setPdfPath(oldDocument.getPdfpath());
-				document.setPrintTemplate(oldDocument.getPrintedtemplate());
-				
-				document.setConsultant(oldDocument.getConsultant());
-				document.setPrinted(oldDocument.isPrinted());
-				document.setDeposit(oldDocument.isIsdeposit());
-				document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
-				document.setOrderDate(getSaveParsedDate(oldDocument.getOrderdate()));
-				document.setServiceDate(getSaveParsedDate(oldDocument.getServicedate()));
-				// if "paydate" is set and *NOT* 2000-01-01 then the document is paid
-				// the "Mark as paid" command could change this state, too. Therefore we need an extra attribute.
-				document.setPaid(oldDocument.isPaid());
-				document.setPaidValue(oldDocument.getPayvalue());
-				Date payDate = getSaveParsedDate(oldDocument.getPaydate());
-				if(payDate.compareTo(zeroDate.getTime()) != 0) {
-					document.setPayDate(payDate);
-				}
-				
-				// get payment reference
-				Long paymentId = newPayments.get(oldDocument.getPaymentid());
-				if(paymentId != null) {
-                    Payment newPayment = paymentsDAO.findById(paymentId);
-    				document.setPayment(newPayment);
-				}
-				document.setTotalValue(roundValue(oldDocument.getTotal()));
-				document.setTransactionId(new Integer(oldDocument.getTransaction()));
-				document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
-				document.setWebshopId(oldDocument.getWebshopid());
-				document.setProgress(oldDocument.getProgress());
-				
-				// find the Shipping entry
-				Shipping newShipping = shippingsDAO.findById(newShippings.get(oldDocument.getShippingid()));
-				document.setShipping(newShipping);
-                document.setShippingAutoVat(ShippingVatType.get(oldDocument.getShippingautovat()));
-                document.setShippingValue(oldDocument.getShipping());
+					// if either the ODT or the PDF field is filled we can assume that the document was ed.
+					// Therefore we needn't the "printed" flag.
+					document.setOdtPath(oldDocument.getOdtpath());
+					document.setPdfPath(oldDocument.getPdfpath());
+					document.setPrintTemplate(oldDocument.getPrintedtemplate());
+					
+					document.setConsultant(oldDocument.getConsultant());
+					document.setPrinted(oldDocument.isPrinted());
+					document.setDeposit(oldDocument.isIsdeposit());
+					document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
+					document.setOrderDate(getSaveParsedDate(oldDocument.getOrderdate()));
+					document.setServiceDate(getSaveParsedDate(oldDocument.getServicedate()));
+					// if "paydate" is set and *NOT* 2000-01-01 then the document is paid
+					// the "Mark as paid" command could change this state, too. Therefore we need an extra attribute.
+					document.setPaid(oldDocument.isPaid());
+					document.setPaidValue(oldDocument.getPayvalue());
+					Date payDate = getSaveParsedDate(oldDocument.getPaydate());
+					if(payDate.compareTo(zeroDate.getTime()) != 0) {
+						document.setPayDate(payDate);
+					}
+					
+					// get payment reference
+					Long paymentId = newPayments.get(oldDocument.getPaymentid());
+					if(paymentId != null) {
+			            Payment newPayment = paymentsDAO.findById(paymentId);
+						document.setPayment(newPayment);
+					}
+					document.setTotalValue(roundValue(oldDocument.getTotal()));
+					document.setTransactionId(new Integer(oldDocument.getTransaction()));
+					document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
+					document.setWebshopId(oldDocument.getWebshopid());
+					document.setProgress(oldDocument.getProgress());
+					
+					// find the Shipping entry
+					Shipping newShipping = shippingsDAO.findById(newShippings.get(oldDocument.getShippingid()));
+					document.setShipping(newShipping);
+			        document.setShippingAutoVat(ShippingVatType.get(oldDocument.getShippingautovat()));
+			        document.setShippingValue(oldDocument.getShipping());
 
-                document = documentDAO.save(document, true);
-                // store the pair for later processing
-                // if the old Document has an InvoiceId and that ID is the same as the Document's ID
-                // then we have to store it for further processing.
-                // if the Invoice Id is the same as the document's id then it's the invoice itself
-                if(oldDocument.getInvoiceid() >= 0) {
-                    if (oldDocument.getId() != oldDocument.getInvoiceid()) {
-                        invoiceRelevantDocuments.put(oldDocument.getId(), document);
-                    } else {
-                        if(!(document instanceof Invoice)) {
-                            migLogUser.warning("!!! the document no. " + document.getName() + " is of type " + document.getBillingType() +
-                                    " and has itself as invoice reference. This doesn't fit!");
-                        } else {
-                            invoiceDocuments.put(oldDocument.getId(), (Invoice) document);
-                        }
-                    }
-                }
-				subMonitor.worked(1);
-			}
-			catch (FakturamaStoringException | NumberFormatException e) {
-				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
-			}
-		}
-		// second pass...
-		
-		// the reference to the source document cannot be set before all documents are stored
-		for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
-			try {
-				// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
-				document = invoiceRelevantDocuments.get(oldDocument.getId());
-				// now find the corresponding NEW document
-				Invoice relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
-				if (relatedDocument != null) {
-					document.setInvoiceReference(relatedDocument);
-					documentDAO.save(document, true);
+			        document = documentDAO.save(document, true);
+			        // store the pair for later processing
+			        // if the old Document has an InvoiceId and that ID is the same as the Document's ID
+			        // then we have to store it for further processing.
+			        // if the Invoice Id is the same as the document's id then it's the invoice itself
+			        if(oldDocument.getInvoiceid() >= 0) {
+			            if (oldDocument.getId() != oldDocument.getInvoiceid()) {
+			                invoiceRelevantDocuments.put(oldDocument.getId(), document);
+			            } else {
+			                if(!(document instanceof Invoice)) {
+			                    migLogUser.warning("!!! the document no. " + document.getName() + " is of type " + document.getBillingType() +
+			                            " and has itself as invoice reference. This doesn't fit!");
+			                } else {
+			                    invoiceDocuments.put(oldDocument.getId(), (Invoice) document);
+			                }
+			            }
+			        }
+					subMonitor.worked(1);
+				}
+				catch (FakturamaStoringException | NumberFormatException e) {
+					log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
 				}
 			}
-			catch (FakturamaStoringException e) {
-				log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
+			// second pass...
+			
+			// the reference to the source document cannot be set before all documents are stored
+			for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
+				try {
+					// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
+					document = invoiceRelevantDocuments.get(oldDocument.getId());
+					// now find the corresponding NEW document
+					Invoice relatedDocument = invoiceDocuments.get(oldDocument.getInvoiceid());
+					if (relatedDocument != null) {
+						document.setInvoiceReference(relatedDocument);
+						documentDAO.save(document, true);
+					}
+				}
+				catch (FakturamaStoringException e) {
+					log.error("error while migrating Document. (old) ID=" + oldDocument.getId()+"; Message: " + e.getMessage());
+				}
+			}
+		} finally {
+			if(cs != null) {
+				cs.close();
 			}
 		}
 	}
@@ -869,61 +886,71 @@ public class MigrationManager {
 		// use a HashMap as a simple cache
 		CategoryBuilder<ContactCategory> catBuilder = new CategoryBuilder<>(log); 
 		Map<String, ContactCategory> contactCategories = catBuilder.buildCategoryMap(oldDao.findAllContactCategories(), ContactCategory.class);
-		for (OldContacts oldContact : oldDao.findAllContacts()) {
-			try {
-				Contact contact = createBaseContactFromOldContact(false, oldContact);
-                if (StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
-                    BankAccount bankAccount = modelFactory.createBankAccount();
-                    bankAccount.setName(oldContact.getAccount());
-                    bankAccount.setAccountHolder(oldContact.getAccountHolder());
-
-                    bankAccount.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", ""))); // could run into trouble if bankCode contains spaces
-                    bankAccount.setBankName(oldContact.getBankName());
-                    bankAccount.setIban(oldContact.getIban());
-                    bankAccount.setBic(oldContact.getBic());
-                    bankAccount.setValidFrom(new Date());
-                    contact.setBankAccount(bankAccount);
-                }
-				if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
-					// add it to the new entity
-//					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
-                    contact.setCategories(contactCategoriesDAO.getCategory(oldContact.getCategory(), true));
+		CursoredStream cs = oldDao.findAllContacts();
+		try {
+			while(cs.hasNext()) {
+				OldContacts oldContact = (OldContacts) cs.next();
+				try {
+					Contact contact = createBaseContactFromOldContact(false, oldContact);
+	                if (StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
+	                    BankAccount bankAccount = modelFactory.createBankAccount();
+	                    bankAccount.setName(oldContact.getAccount());
+	                    bankAccount.setAccountHolder(oldContact.getAccountHolder());
+	
+	                    if(StringUtils.isNotBlank(oldContact.getBankCode())) {
+	                    	bankAccount.setBankCode(Integer.parseInt(oldContact.getBankCode().replaceAll(" ", "")));
+	                    }
+	                    bankAccount.setBankName(oldContact.getBankName());
+	                    bankAccount.setIban(oldContact.getIban());
+	                    bankAccount.setBic(oldContact.getBic());
+	                    bankAccount.setValidFrom(new Date());
+	                    contact.setBankAccount(bankAccount);
+	                }
+					if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
+						// add it to the new entity
+	//					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
+	                    contact.setCategories(contactCategoriesDAO.getCategory(oldContact.getCategory(), true));
+					}
+					contact.setCustomerNumber(oldContact.getNr());
+					contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
+					if(!isAddressEqualToDeliveryAdress(oldContact)) {
+	    				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
+	    //				contact.getAlternateContacts().add(deliveryContact);
+	                    contact.setAlternateContacts(deliveryContact);
+					}
+					/*
+					 * This is crucial, since there could be (undeleted) documents which have references to deleted contacts!
+					 */
+					contact.setDeleted(oldContact.isDeleted());
+					contact.setDiscount(oldContact.getDiscount());
+					contact.setEmail(oldContact.getEmail());
+					contact.setFax(oldContact.getFax());
+					contact.setMobile(oldContact.getMobile());
+					contact.setNote(oldContact.getNote());
+					if(oldContact.getPayment() > -1) {
+					    contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
+					}
+					contact.setPhone(oldContact.getPhone());
+					contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
+					contact.setSupplierNumber(oldContact.getSuppliernumber());
+					contact.setUseNetGross(Integer.valueOf(oldContact.getUseNetGross()).shortValue());
+					contact.setVatNumber(oldContact.getVatnr());
+					contact.setVatNumberValid(BooleanUtils.toBooleanObject(oldContact.getVatnrvalid()));
+					contact.setWebsite(oldContact.getWebsite());
+					contact.setMandateReference(oldContact.getMandatRef());
+					contact = contactDAO.save(contact, true);
+					
+					// store it for further using (only ID for memory saving)
+					newContacts.put(oldContact.getId(), contact.getId());
+					subMonitor.worked(1);
 				}
-				contact.setCustomerNumber(oldContact.getNr());
-				contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
-				if(!isAddressEqualToDeliveryAdress(oldContact)) {
-    				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-    //				contact.getAlternateContacts().add(deliveryContact);
-                    contact.setAlternateContacts(deliveryContact);
+				catch (FakturamaStoringException | RuntimeException e) {
+					migLogUser.warning("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
 				}
-				/*
-				 * This is crucial, since there could be (undeleted) documents which have references to deleted contacts!
-				 */
-				contact.setDeleted(oldContact.isDeleted());
-				contact.setDiscount(oldContact.getDiscount());
-				contact.setEmail(oldContact.getEmail());
-				contact.setFax(oldContact.getFax());
-				contact.setMobile(oldContact.getMobile());
-				contact.setNote(oldContact.getNote());
-				if(oldContact.getPayment() > -1) {
-				    contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
-				}
-				contact.setPhone(oldContact.getPhone());
-				contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
-				contact.setSupplierNumber(oldContact.getSuppliernumber());
-				contact.setUseNetGross(Integer.valueOf(oldContact.getUseNetGross()).shortValue());
-				contact.setVatNumber(oldContact.getVatnr());
-				contact.setVatNumberValid(BooleanUtils.toBooleanObject(oldContact.getVatnrvalid()));
-				contact.setWebsite(oldContact.getWebsite());
-				contact.setMandateReference(oldContact.getMandatRef());
-				contact = contactDAO.save(contact, true);
-				
-				// store it for further using (only ID for memory saving)
-				newContacts.put(oldContact.getId(), contact.getId());
-				subMonitor.worked(1);
 			}
-			catch (FakturamaStoringException | RuntimeException e) {
-				migLogUser.warning("!!! error while migrating Contact. (old) ID=" + oldContact.getId()+"; Message: " + e.getMessage());
+		} finally {
+			if(cs != null) {
+				cs.close();
 			}
 		}
 	}
@@ -1073,51 +1100,58 @@ public class MigrationManager {
         @SuppressWarnings("unchecked")
 		CategoryBuilder<VoucherCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
         Map<String, VoucherCategory> expenditureAccounts = catBuilder.buildCategoryMap(oldDao.findAllExpenditureVoucherCategories(), VoucherCategory.class);
-        
-		for (OldExpenditures oldExpenditure : oldDao.findAllExpenditures()) {
-			try {
-				Voucher Voucher = modelFactory.createVoucher();
-				Voucher.setVoucherType(VoucherType.EXPENDITURE);
-				if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
-					Voucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
-				}
-				Voucher.setDeleted(oldExpenditure.isDeleted());
-				Voucher.setDiscounted(oldExpenditure.isDiscounted());
-				Voucher.setDocumentNumber(oldExpenditure.getDocumentnr());
-				Voucher.setDoNotBook(oldExpenditure.isDonotbook());
-				Voucher.setValidFrom(new Date());
-				if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
-				    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
-					Voucher.setVoucherDate(expenditureDate);
-				}
-				Voucher.setVoucherNumber(oldExpenditure.getNr());
-				// each Voucher has its own items
-				if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
-					String[] itemRefs = oldExpenditure.getItems().split(",");
-					int pos = 1;
-					for (String itemRef : itemRefs) {
-						OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
-						VoucherItem item = modelFactory.createVoucherItem();
-						item.setItemVoucherType(VoucherType.EXPENDITURE);
-						item.setAccountType(itemAccountTypes.get(oldExpenditureItem.getCategory()));
-						item.setDeleted(oldExpenditureItem.isDeleted());
-						item.setName(oldExpenditureItem.getName());
-						item.setPrice(oldExpenditureItem.getPrice());
-						item.setPosNr(pos++);
-						VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
-						item.setVat(newVat);
-						Voucher.addToItems(item);
+        CursoredStream cs = oldDao.findAllExpenditures();
+        try {
+        	while(cs.hasNext()) {
+        		OldExpenditures oldExpenditure = (OldExpenditures) cs.next();
+				try {
+					Voucher Voucher = modelFactory.createVoucher();
+					Voucher.setVoucherType(VoucherType.EXPENDITURE);
+					if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
+						Voucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
 					}
+					Voucher.setDeleted(oldExpenditure.isDeleted());
+					Voucher.setDiscounted(oldExpenditure.isDiscounted());
+					Voucher.setDocumentNumber(oldExpenditure.getDocumentnr());
+					Voucher.setDoNotBook(oldExpenditure.isDonotbook());
+					Voucher.setValidFrom(new Date());
+					if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
+					    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
+						Voucher.setVoucherDate(expenditureDate);
+					}
+					Voucher.setVoucherNumber(oldExpenditure.getNr());
+					// each Voucher has its own items
+					if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
+						String[] itemRefs = oldExpenditure.getItems().split(",");
+						int pos = 1;
+						for (String itemRef : itemRefs) {
+							OldExpenditureitems oldExpenditureItem = oldDao.findExpenditureItem(itemRef);
+							VoucherItem item = modelFactory.createVoucherItem();
+							item.setItemVoucherType(VoucherType.EXPENDITURE);
+							item.setAccountType(itemAccountTypes.get(oldExpenditureItem.getCategory()));
+							item.setDeleted(oldExpenditureItem.isDeleted());
+							item.setName(oldExpenditureItem.getName());
+							item.setPrice(oldExpenditureItem.getPrice());
+							item.setPosNr(pos++);
+							VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
+							item.setVat(newVat);
+							Voucher.addToItems(item);
+						}
+					}
+					Voucher.setName(oldExpenditure.getName());
+					Voucher.setPaidValue(oldExpenditure.getPaid());
+					Voucher.setTotalValue(oldExpenditure.getTotal());
+					expendituresDAO.save(Voucher, true);
+					subMonitor.worked(1);
 				}
-				Voucher.setName(oldExpenditure.getName());
-				Voucher.setPaidValue(oldExpenditure.getPaid());
-				Voucher.setTotalValue(oldExpenditure.getTotal());
-				expendituresDAO.save(Voucher, true);
-				subMonitor.worked(1);
+				catch (FakturamaStoringException | ParseException e) {
+					migLogUser.warning("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
+	            }
+        	}
+		} finally {
+			if(cs != null) {
+				cs.close();
 			}
-			catch (FakturamaStoringException | ParseException e) {
-				migLogUser.warning("!!! error while migrating Voucher. (old) ID=" + oldExpenditure.getId() + "; Message: " + e.getMessage());
-            }
 		}
 	}
 

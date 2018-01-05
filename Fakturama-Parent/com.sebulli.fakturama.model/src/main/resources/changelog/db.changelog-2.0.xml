@@ -924,4 +924,19 @@
     <changeSet author="rheydenr (generated)" id="1510081018595-119" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>
+    
+    <!-- fix column types -->
+    <changeSet author="rheydenr (generated)" id="20180104-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="LONGTEXT"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="DEPOSITTEXT" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="DESCRIPTION" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="PAIDTEXT" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="UNPAIDTEXT" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_ADDRESS" columnName="MANUALADDRESS" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="NOVATDESCRIPTION" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTDESCRIPTION" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTTEXT" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="VARCHAR(8192)"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="VARCHAR(8192)"/>
+    </changeSet>
 </databaseChangeLog>

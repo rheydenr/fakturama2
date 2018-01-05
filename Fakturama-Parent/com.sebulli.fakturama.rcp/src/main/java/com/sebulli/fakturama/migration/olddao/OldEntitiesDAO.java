@@ -6,7 +6,7 @@ import java.util.Locale;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -15,6 +15,7 @@ import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.queries.CursoredStream;
 
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.oldmodel.OldContacts;
@@ -65,9 +66,11 @@ public class OldEntitiesDAO {
 	 * 
 	 * @return List<Contact>
 	 */
-	public List<OldContacts> findAllContacts() {
-		return em.createQuery("select c from OldContacts c", OldContacts.class)
-				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
+	public CursoredStream findAllContacts() {
+		Query query = em.createQuery("select c from OldContacts c", OldContacts.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE)
+				.setHint(QueryHints.CURSOR, HintValues.TRUE);
+		return (CursoredStream)query.getSingleResult();
 	}
 	
 	public Long countAllContacts() {
@@ -178,17 +181,6 @@ public class OldEntitiesDAO {
 	
 	/* * * * * * * * * * * * * * * * * * [Lists] * * * * * * * * * * * * * * * * * * * * * */ 
 	
-	public Long countAllLists() {
-		return em.createQuery("select count(l) from OldList l where l.deleted = false", Long.class)
-				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
-	}
-	
-	public List<OldList> findAllCountryCodes() {
-		// SELECT * FROM "PUBLIC"."LIST" where category like 'country%' order by value, name
-		return em.createQuery("select l from OldList l where l.deleted = false and l.category like 'country%' order by l.value, l.id", OldList.class)
-				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
-	}
-	
 	/**
 	 * Finds all entries from {@link OldList} which represent an account. {@link OldList} also
 	 * contains the country codes for all countries (ISO codes). These codes are not converted because
@@ -230,9 +222,11 @@ public class OldEntitiesDAO {
 				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getSingleResult();
 	}
 	
-	public List<OldDocuments> findAllDocuments() {
-		return em.createQuery("select d from OldDocuments d where d.deleted = false", OldDocuments.class)
-				.setHint(QueryHints.READ_ONLY, HintValues.TRUE).getResultList();
+	public CursoredStream findAllDocuments() {
+		Query query = em.createQuery("select d from OldDocuments d where d.deleted = false", OldDocuments.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE)
+				.setHint(QueryHints.CURSOR, HintValues.TRUE);
+		return (CursoredStream)query.getSingleResult();
 	}
 
 	// there are no categories...
@@ -251,17 +245,13 @@ public class OldEntitiesDAO {
 	 * @param id
 	 */
 	public OldDocuments findDocumentById(int id) {
-		TypedQuery<OldDocuments> query = em.createQuery("select d from OldDocuments d where d.id = :id ", OldDocuments.class);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE).setParameter("id", id);
-		return query.getSingleResult();
+		return em.find(OldDocuments.class, id);
 	}
 
 	/* * * * * * * * * * * * * * * * * * [Document items section] * * * * * * * * * * * * * * * * * * * * * */
 
 	public OldItems findDocumentItem(int id) {
-		TypedQuery<OldItems> query = em.createQuery("select oi from OldItems oi where oi.id = :id ", OldItems.class);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE).setParameter("id", id);
-		return query.getSingleResult();
+		return em.find(OldItems.class, id);
 	}
 	
 //  not used!
@@ -299,8 +289,11 @@ public class OldEntitiesDAO {
 		return em.createQuery("select count(e) from OldExpenditures e where e.deleted = false", Long.class).getSingleResult();
 	}
 	
-	public List<OldExpenditures> findAllExpenditures() {
-		return em.createQuery("select e from OldExpenditures e where e.deleted = false", OldExpenditures.class).getResultList();
+	public CursoredStream findAllExpenditures() {
+		Query query = em.createQuery("select e from OldExpenditures e where e.deleted = false", OldExpenditures.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE)
+				.setHint(QueryHints.CURSOR, HintValues.TRUE);
+		return (CursoredStream)query.getSingleResult();
 	}
 	
 	public List<String> findAllExpenditureVoucherCategories() {
@@ -359,8 +352,11 @@ public class OldEntitiesDAO {
 		return em.createQuery("select count(p) from OldProducts p", Long.class).getSingleResult();
 	}
 	
-	public List<OldProducts> findAllProducts() {
-		return em.createQuery("select p from OldProducts p", OldProducts.class).getResultList();
+	public CursoredStream findAllProducts() {
+		Query query = em.createQuery("select p from OldProducts p", OldProducts.class)
+				.setHint(QueryHints.READ_ONLY, HintValues.TRUE)
+				.setHint(QueryHints.CURSOR, HintValues.TRUE);
+		return (CursoredStream)query.getSingleResult();
 	}
 	
     /**
