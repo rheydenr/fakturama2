@@ -106,10 +106,11 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                 String translatedServiceString = StringUtils.trim(translate("page.parcelservice"));
 				Path parcelServiceFolder = Paths.get(workspacePathString, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
                 if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-                    resourceCopy("/$nl$/Templates/ParcelService/DHL_de.txt", Paths.get(workspacePathString, translatedServiceString, "DHL_de.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE_de.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/myHermes_de.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes_de.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/UPS_de.txt", Paths.get(workspacePathString, translatedServiceString, "UPS_de.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/DHL.txt", Paths.get(workspacePathString, translatedServiceString, "DHL.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/eFILIALE.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/myHermes.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/UPS.txt", Paths.get(workspacePathString, translatedServiceString, "UPS.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/readme.txt", Paths.get(workspacePathString, translatedServiceString, "readme.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");
