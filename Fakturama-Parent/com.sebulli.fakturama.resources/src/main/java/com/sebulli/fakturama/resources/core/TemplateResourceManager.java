@@ -26,12 +26,14 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.translation.TranslationService;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.misc.DocumentType;
@@ -83,11 +85,11 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                         // do nothing!
                         break;
                     case DELIVERY:
-                        resourceCopy("Templates/Delivery/Document.ott",
+                        resourceCopy("/$nl$/Templates/Delivery/Document.ott",
                                 Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     default:
-                        resourceCopy("Templates/Invoice/Document.ott",
+                        resourceCopy("/$nl$/Templates/Invoice/Document.ott",
                                 Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     }
@@ -96,18 +98,18 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                 // Create the start page, if it does not exist.
                 Path startPage = Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML);
                 if (Files.notExists(startPage)) {
-                    resourceCopy("Templates/Start/start.html", Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML));
-                    resourceCopy("Templates/Start/logo.png", Paths.get(workspacePathString,  START_DOC_PATH, "logo.png"));
+                    resourceCopy("/$nl$/Templates/Start/start.html", Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML));
+                    resourceCopy("/$nl$/Templates/Start/logo.png", Paths.get(workspacePathString,  START_DOC_PATH, "logo.png"));
                 }
         
                 // Copy the parcel service templates
                 String translatedServiceString = StringUtils.trim(translate("page.parcelservice"));
 				Path parcelServiceFolder = Paths.get(workspacePathString, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
                 if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-                    resourceCopy("Templates/ParcelService/DHL_de.txt", Paths.get(workspacePathString, translatedServiceString, "DHL_de.txt"));
-                    resourceCopy("Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE_de.txt"));
-                    resourceCopy("Templates/ParcelService/myHermes_de.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes_de.txt"));
-                    resourceCopy("Templates/ParcelService/UPS_de.txt", Paths.get(workspacePathString, translatedServiceString, "UPS_de.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/DHL_de.txt", Paths.get(workspacePathString, translatedServiceString, "DHL_de.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/eFILIALE_de.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE_de.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/myHermes_de.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes_de.txt"));
+                    resourceCopy("/$nl$/Templates/ParcelService/UPS_de.txt", Paths.get(workspacePathString, translatedServiceString, "UPS_de.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");
@@ -145,11 +147,14 @@ public class TemplateResourceManager implements ITemplateResourceManager {
      */
     private void resourceCopy(String resource, final Path targetFile) {
         // Create the input stream from the resource file "Templates/Invoice/Document.ott"
-        URL fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource(resource);
+        Bundle definingBundle = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID);
+		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+				resource), null);
         if(fileResource == null) {
         	// if running inside Eclipse IDE we have to change the source path silently
         	fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource("/target/classes/"+resource);
         }
+
 		try(InputStream in = fileResource.openStream()) {
             // Create the destination folder if it doesn't exists
             if (!Files.isDirectory(targetFile.getParent())) {

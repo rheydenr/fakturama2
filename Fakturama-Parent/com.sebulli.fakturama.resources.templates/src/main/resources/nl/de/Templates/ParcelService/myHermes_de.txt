@@ -1,0 +1,57 @@
+# Name and URL of the parcel service:
+name = myHermes.de
+url = https://www.myhermes.de/wps/portal/PRIPS_DEU/PAKETVERSAND
+# as of 09.05.2012
+
+# Fields:
+senderAddress.lastname = YOURCOMPANY.COMPANY
+senderAddress.addressExtension = YOURCOMPANY.OWNER
+senderAddress.street = YOURCOMPANY.STREETNAME
+senderAddress.streetNo = YOURCOMPANY.STREETNO
+senderAddress.postalCode = YOURCOMPANY.ZIP
+senderAddress.city = YOURCOMPANY.CITY
+senderEmail.email = YOURCOMPANY.EMAIL
+senderTelephone.areaCodePhoneNo = YOURCOMPANY.PHONE.PRE
+senderTelephone.phoneNo = YOURCOMPANY.PHONE.POST
+
+receiverAddress.firstname = DELIVERY.ADDRESS.FIRSTNAME
+receiverAddress.lastname = DELIVERY.ADDRESS.LASTNAME
+receiverAddress.addressExtension = DELIVERY.ADDRESS.COMPANY
+receiverAddress.street = DELIVERY.ADDRESS.STREETNAME
+receiverAddress.streetNo = DELIVERY.ADDRESS.STREETNO
+receiverAddress.postalCode = DELIVERY.ADDRESS.ZIP
+receiverAddress.city = DELIVERY.ADDRESS.CITY
+receiverTelephone.areaCodePhoneNo = DELIVERY.ADDRESS.PHONE.PRE
+receiverTelephone.phoneNo = DELIVERY.ADDRESS.PHONE.POST
+receiverAddress.countryISO2 = DELIVERY.ADDRESS.COUNTRY.CODE2
+
+
+# If you have created a template file for a new parcel service,
+# it yould be nice to share it with other users on fakturama.sebulli.com
+#
+# Syntax:
+# field = PLACE.HOLDER
+#
+# Some of the most significant placeholders are:
+#
+# YOURCOMPANY.COMPANY
+# YOURCOMPANY.OWNER
+# YOURCOMPANY.OWNER.FIRSTNAME
+# YOURCOMPANY.OWNER.LASTNAME
+# YOURCOMPANY.STREET
+# YOURCOMPANY.STREETNAME
+# YOURCOMPANY.STREETNO
+# YOURCOMPANY.ZIP
+# YOURCOMPANY.CITY
+#
+# DELIVERY.ADDRESS.NAME
+# DELIVERY.ADDRESS.FIRSTNAME
+# DELIVERY.ADDRESS.LASTNAME
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.STREET
+# DELIVERY.ADDRESS.STREETNAME
+# DELIVERY.ADDRESS.STREETNO
+# DELIVERY.ADDRESS.ZIP
+# DELIVERY.ADDRESS.CITY
+#
+# Read the manual for all placeholders.

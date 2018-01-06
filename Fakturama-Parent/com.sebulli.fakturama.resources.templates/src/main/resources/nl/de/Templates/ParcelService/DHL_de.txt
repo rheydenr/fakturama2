@@ -1,0 +1,52 @@
+# Name and URL of the parcel service:
+name = DHL.de
+url  = https://www.dhl.de/popweb/maptos.entry?PARAMETERSET_VERSION_NO=1.0&PARTNER_ID=DHLANON&POP_INTERNAL_SHOPPINGCART=true
+
+# Fields:
+formModel.sender.name          = YOURCOMPANY.COMPANY
+formModel.sender.addressExt    = YOURCOMPANY.OWNER
+formModel.sender.street        = YOURCOMPANY.STREETNAME
+formModel.sender.houseNumber   = YOURCOMPANY.STREETNO
+formModel.sender.zip           = YOURCOMPANY.ZIP
+formModel.sender.city          = YOURCOMPANY.CITY
+
+formModel.receiver.name        = DELIVERY.ADDRESS.NAME
+formModel.receiver.addressExt  = ""
+formModel.receiver.street      = DELIVERY.ADDRESS.STREETNAME
+formModel.receiver.houseNumber = DELIVERY.ADDRESS.STREETNO
+formModel.receiver.zip         = DELIVERY.ADDRESS.ZIP
+formModel.receiver.city        = DELIVERY.ADDRESS.CITY
+formModel.receiver.email       = ADDRESS.EMAIL
+formModel.receiver.countryCode = DELIVERY.ADDRESS.COUNTRY.CODE3
+
+
+# If you have created a template file for a new parcel service,
+# it yould be nice to share it with other users on fakturama.sebulli.com
+# 
+# Syntax:
+# field = PLACE.HOLDER
+#
+# Some of the most significant placeholders are:
+#
+# YOURCOMPANY.COMPANY
+# YOURCOMPANY.OWNER
+# YOURCOMPANY.OWNER.FIRSTNAME
+# YOURCOMPANY.OWNER.LASTNAME
+# YOURCOMPANY.STREET
+# YOURCOMPANY.STREETNAME
+# YOURCOMPANY.STREETNO
+# YOURCOMPANY.ZIP
+# YOURCOMPANY.CITY
+#
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.NAME
+# DELIVERY.ADDRESS.FIRSTNAME
+# DELIVERY.ADDRESS.LASTNAME
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.STREET
+# DELIVERY.ADDRESS.STREETNAME
+# DELIVERY.ADDRESS.STREETNO
+# DELIVERY.ADDRESS.ZIP
+# DELIVERY.ADDRESS.CITY
+#
+# Read the manual for all placeholders.
