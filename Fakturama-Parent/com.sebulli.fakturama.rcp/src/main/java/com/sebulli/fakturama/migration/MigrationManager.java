@@ -915,6 +915,8 @@ public class MigrationManager {
 					contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 					if(!isAddressEqualToDeliveryAdress(oldContact)) {
 	    				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
+	    				// maybe the old contact is deleted...
+	    				deliveryContact.setDeleted(oldContact.isDeleted());
 	    //				contact.getAlternateContacts().add(deliveryContact);
 	                    contact.setAlternateContacts(deliveryContact);
 					}
@@ -991,6 +993,8 @@ public class MigrationManager {
 			
 			// create address
 			Address address = modelFactory.createAddress();
+			// if the contact is already deleted, we use the address only for documentation purposes
+			address.setDeleted(oldContact.isDeleted());
 			address.setStreet(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryStreet(), oldContact.getStreet()));
 			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));

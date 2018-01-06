@@ -46,8 +46,8 @@ import com.sebulli.fakturama.resources.ITemplateResourceManager;
  */
 public class TemplateResourceManager implements ITemplateResourceManager {
     private static final String START_DOC_HTML = "start.html";
-
 	private static final String START_DOC_PATH = "Start";
+	private static final String TEMPLATE_PARENT_PATH = "/$nl$/Templates/";
 
 	private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
     
@@ -85,11 +85,11 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                         // do nothing!
                         break;
                     case DELIVERY:
-                        resourceCopy("/$nl$/Templates/Delivery/Document.ott",
+                        resourceCopy(TEMPLATE_PARENT_PATH + "Delivery/Document.ott",
                                 Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     default:
-                        resourceCopy("/$nl$/Templates/Invoice/Document.ott",
+                        resourceCopy(TEMPLATE_PARENT_PATH + "Invoice/Document.ott",
                                 Paths.get(workspacePathString, StringUtils.trim(translate(doctype.getSingularKey())), "Document.ott"));
                         break;
                     }
@@ -98,19 +98,19 @@ public class TemplateResourceManager implements ITemplateResourceManager {
                 // Create the start page, if it does not exist.
                 Path startPage = Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML);
                 if (Files.notExists(startPage)) {
-                    resourceCopy("/$nl$/Templates/Start/start.html", Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML));
-                    resourceCopy("/$nl$/Templates/Start/logo.png", Paths.get(workspacePathString,  START_DOC_PATH, "logo.png"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "Start/start.html", Paths.get(workspacePathString, START_DOC_PATH, START_DOC_HTML));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "Start/logo.png", Paths.get(workspacePathString,  START_DOC_PATH, "logo.png"));
                 }
         
                 // Copy the parcel service templates
                 String translatedServiceString = StringUtils.trim(translate("page.parcelservice"));
 				Path parcelServiceFolder = Paths.get(workspacePathString, translatedServiceString); // new File(ParcelServiceManager.getTemplatePath());
                 if(!Files.exists(parcelServiceFolder)) {   // ParcelServiceManager.getRelativeTemplatePath();
-                    resourceCopy("/$nl$/Templates/ParcelService/DHL.txt", Paths.get(workspacePathString, translatedServiceString, "DHL.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/eFILIALE.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/myHermes.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/UPS.txt", Paths.get(workspacePathString, translatedServiceString, "UPS.txt"));
-                    resourceCopy("/$nl$/Templates/ParcelService/readme.txt", Paths.get(workspacePathString, translatedServiceString, "readme.txt"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "ParcelService/DHL.txt", Paths.get(workspacePathString, translatedServiceString, "DHL.txt"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "ParcelService/eFILIALE.txt", Paths.get(workspacePathString, translatedServiceString, "eFILIALE.txt"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "ParcelService/myHermes.txt", Paths.get(workspacePathString, translatedServiceString, "myHermes.txt"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "ParcelService/UPS.txt", Paths.get(workspacePathString, translatedServiceString, "UPS.txt"));
+                    resourceCopy(TEMPLATE_PARENT_PATH + "ParcelService/readme.txt", Paths.get(workspacePathString, translatedServiceString, "readme.txt"));
                 }
             } catch (IOException ioex) {
                 log.error(ioex, "couldn't create template dir in workspace");
@@ -151,10 +151,6 @@ public class TemplateResourceManager implements ITemplateResourceManager {
         Bundle definingBundle = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID);
 		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
 				resource), null);
-        if(fileResource == null) {
-        	// if running inside Eclipse IDE we have to change the source path silently
-        	fileResource = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID).getResource("/target/classes/"+resource);
-        }
 
 		try(InputStream in = fileResource.openStream()) {
             // Create the destination folder if it doesn't exists
