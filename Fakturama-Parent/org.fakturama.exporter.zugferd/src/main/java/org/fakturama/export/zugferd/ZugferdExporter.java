@@ -1244,7 +1244,7 @@ public class ZugferdExporter {
 			retval = editor.getDocument();
 		} else if(selectionService != null && selectionService.getSelection() != null) {
 			List<Document> tmpList = (List<Document>) selectionService.getSelection();
-			retval = tmpList.get(0);
+			retval = tmpList.isEmpty() ? null : tmpList.get(0);
 		}
 
 		return retval;
