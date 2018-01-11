@@ -101,7 +101,7 @@ public class DocumentMatcher implements Matcher<Document> {
                     break;
                 case DELIVERY:
                     // .. the state of the delivery document ..
-                    if (item.getSourceDocument() != null && item.getSourceDocument().getBillingType().isINVOICE())
+                   	if (item.getInvoiceReference() != null && item.getInvoiceReference().getBillingType().isINVOICE())
                         category += "/" + msg.documentDeliveryStateHasinvoice;
                     else
                         category += "/" + msg.documentDeliveryStateHasnoinvoice;

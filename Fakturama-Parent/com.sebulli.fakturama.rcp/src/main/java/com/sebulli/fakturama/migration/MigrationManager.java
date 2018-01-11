@@ -783,7 +783,8 @@ public class MigrationManager {
 			// second pass...
 			
 			// the reference to the source document cannot be set before all documents are stored
-			for (OldDocuments oldDocument : oldDao.findAllInvoiceRelatedDocuments()) {
+			List<OldDocuments> allInvoiceRelatedDocuments = oldDao.findAllInvoiceRelatedDocuments();
+			for (OldDocuments oldDocument : allInvoiceRelatedDocuments) {
 				try {
 					// invoiceRelevantDocuments now contains all Documents that needs to have an Invoice reference
 					document = invoiceRelevantDocuments.get(oldDocument.getId());
