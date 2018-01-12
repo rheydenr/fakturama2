@@ -414,7 +414,7 @@ public class DocumentEditor extends Editor<Document> {
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
 		if (documentType == DocumentType.DELIVERY) {
-            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
+            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
             if(document.getDeliveryContact() == null) {
@@ -431,11 +431,11 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-    			document.setDeliveryContact(displayAddress);
-			} else {
+//    			document.setDeliveryContact(displayAddress);
+			} else if(addressModified) {
 			    /*
 			     * If no addressId was given (no contact selected) then we use
-			     * the text field content for the manual address.
+			     * the text field content for the manual address (but only if the address was modified).
 			     */
     			document.getDeliveryContact().getAddress().setManualAddress(billingAddress);
 			}
@@ -499,7 +499,7 @@ public class DocumentEditor extends Editor<Document> {
 				
 				//T: Text of the dialog that appears if the document is assigned to  an other address.
 				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
-				return;
+//				return;
 			}
 		}
 
@@ -1092,16 +1092,21 @@ public class DocumentEditor extends Editor<Document> {
 		 * 2.2 document has a delivery contact ==> use that as delivery contact 
 		 * 2.3 document has no delivery contact ==> check if billing contact has an alternate contact and use use billing contact as delivery contact
 		 */
-		if(document.getBillingType().isDELIVERY()) {
-	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
-			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
-					? document.getBillingContact() : document.getDeliveryContact());
-		} else {
-	        billingAddress = contactUtil.getAddressAsString(displayAddress);
-			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
-					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
-						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
-		}
+		
+	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
+    	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+
+		
+//		if(document.getBillingType().isDELIVERY()) {
+//	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+//			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
+//					? document.getBillingContact() : document.getDeliveryContact());
+//		} else {
+//	        billingAddress = contactUtil.getAddressAsString(displayAddress);
+//			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
+//					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
+//						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
+//		}
 
 		if(BooleanUtils.isNotTrue(silentMode)) {
 			showOrderStatisticDialog(parent);
@@ -1136,7 +1141,7 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		Contact billingContact, deliveryContact;
+		Contact billingContact;
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
 		// what about additionalInfo?
@@ -1155,16 +1160,9 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
 		
-		// for delivery documents we have to switch between delivery address and billing address
-		if(parentDoc.getBillingType().isDELIVERY()) {
-			billingContact = parentDoc.getDeliveryContact();
-			deliveryContact = parentDoc.getBillingContact();
-		} else {
-			billingContact = parentDoc.getBillingContact();
-			deliveryContact = parentDoc.getDeliveryContact();
-		}
-		retval.setBillingContact(retval.getBillingType().isDELIVERY() ? deliveryContact : billingContact);
-		retval.setDeliveryContact(retval.getBillingType().isDELIVERY() ? billingContact : deliveryContact);
+		billingContact = parentDoc.getBillingContact();
+		retval.setBillingContact(billingContact);
+		retval.setDeliveryContact(parentDoc.getDeliveryContact());
 		
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
@@ -1711,20 +1709,19 @@ public class DocumentEditor extends Editor<Document> {
 	private void setAddress(Contact contact) {
 		// Use delivery address, if it's a delivery note
 		if (documentType == DocumentType.DELIVERY) {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact));
-		    contact.setContactType(ContactType.DELIVERY);
+			this.displayAddress = contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact;
+		    document.setDeliveryContact(displayAddress);
+		    document.setBillingContact(contact);
 		} else {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact));
-		    contact.setContactType(ContactType.BILLING);
+			this.displayAddress = contact;
+		    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
+		    document.setBillingContact(displayAddress);
 		}
-		
-	    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-	    document.setBillingContact(contact);
+		txtAddress.setText(contactUtil.getAddressAsString(this.displayAddress));
+
 	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
     	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
-		this.displayAddress = contact;
-
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         	document.setItemsRebate(contact.getDiscount());
