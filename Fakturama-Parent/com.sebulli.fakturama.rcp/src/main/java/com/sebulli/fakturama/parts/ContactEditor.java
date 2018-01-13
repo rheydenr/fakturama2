@@ -303,6 +303,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		if(editorContact.getDiscount() != null && editorContact.getDiscount().compareTo(Double.valueOf(0.0)) > 0) {
 		    editorContact.setDiscount(editorContact.getDiscount() * -1); // discount has to be negative
 		}
+		
+		// remove any manual added address
+		editorContact.getAddress().setManualAddress(null);
+		if(editorContact.getAlternateContacts() != null && editorContact.getAlternateContacts().getAddress() != null) {
+			editorContact.getAlternateContacts().getAddress().setManualAddress(null);
+		}
 
         try {
             // save the new or updated Contact
