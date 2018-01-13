@@ -582,6 +582,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         Root<Document> root = criteria.from(Document.class);
         CriteriaQuery<Document> cq = criteria.where(
                 cb.and(
+                		cb.not(root.get(Document_.deleted)),
                         cb.equal(root.<BillingType>get(Document_.billingType), billingType),
                         cb.equal(root.<Integer>get(Document_.transactionId), transaction)));
         List<Document> resultList = getEntityManager().createQuery(cq).getResultList();
