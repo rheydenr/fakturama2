@@ -107,9 +107,6 @@ public class ConfigurationManager {
         Options options = new Options();
         options.addOption(selectWorkspaceOpt).addOption(persistState).addOption(showlocation);
         
-        // perhaps: set RTL mode and configure the Workbench like so:
-        //        Window.setDefaultOrientation(SWT.RIGHT_TO_LEFT);
-        
         CommandLineParser parser = new BasicParser();
         try {
             CommandLine cmd = parser.parse(options, args, true);
