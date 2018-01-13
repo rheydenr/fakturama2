@@ -1554,6 +1554,7 @@ public class DocumentEditor extends Editor<Document> {
 				spDueDays.setSelection(days);
 				// spinner doesn't throw an event if updating...
 				document.setDueDays(spDueDays.getSelection());
+				setDirty(true);
 			}));
 			if(document.getDueDays() != null && document.getDocumentDate() != null) {
 				dtIssueDate.setSelection(DateUtils.addDays(document.getDocumentDate(), document.getDueDays()));
@@ -1613,6 +1614,8 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// TODO bind later!
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
+		bindModelValue(document, dtPaidDate, Document_.payDate.getName());
+		
 		txtPayValue.getControl().addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -2503,6 +2506,7 @@ public class DocumentEditor extends Editor<Document> {
         		if(!bPaid.getSelection()) {
         			// remove previously set values
         			document.setPaidValue(null);
+        			document.setPayDate(null);
         		}
         		// remove the grayed state
         		bPaid.setGrayed(false);
