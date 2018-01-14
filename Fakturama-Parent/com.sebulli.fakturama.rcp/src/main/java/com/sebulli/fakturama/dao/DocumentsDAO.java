@@ -694,8 +694,9 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	 * @param transactionId the transaction id to which the document belongs
 	 * @param targetype the type of document which is to be searched
 	 * @param dunninglevel the dunning level to prove
+	 * @throws FakturamaStoringException 
 	 */
-	public Document findByTransactionIdAndBillingType(Integer transactionId, BillingType targetype) {
+	public Document findExistingDocumentByTransactionIdAndBillingType(Integer transactionId, BillingType targetype) {
 		Document retval = null;
 		if(transactionId != null && targetype != null) {
 	        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -709,7 +710,8 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 			CriteriaQuery<Document> cq = criteria.where(
 	        		whereClause);
 	        try {
-				retval = getEntityManager().createQuery(cq).getSingleResult();
+				List<Document> result = getEntityManager().createQuery(cq).getResultList();
+				retval = !result.isEmpty() && result.size() > 0 ? result.get(0) : null;
 			} catch (NoResultException e) {
 				// is ok, we have to return a null value
 			}

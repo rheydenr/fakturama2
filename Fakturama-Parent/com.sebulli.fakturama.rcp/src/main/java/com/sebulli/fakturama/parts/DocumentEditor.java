@@ -416,12 +416,16 @@ public class DocumentEditor extends Editor<Document> {
             if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
-            if(document.getDeliveryContact() == null) {
+            if(document.getDeliveryContact() == null || displayAddress.getCustomerNumber() == null && addressModified) {
+			    /*
+			     * If no addressId was given (no contact selected) then we use
+			     * the text field content for the manual address (but only if the address was modified).
+			     */
             	displayAddress = modelFactory.createDebitor();
             	Address address = modelFactory.createAddress();
+            	address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             	displayAddress.setAddress(address);
             	document.setDeliveryContact(displayAddress);
-            	document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             }
 
 			// Use the delivery address if the billing address is empty
@@ -436,7 +440,7 @@ public class DocumentEditor extends Editor<Document> {
 			     * If no addressId was given (no contact selected) then we use
 			     * the text field content for the manual address (but only if the address was modified).
 			     */
-    			document.getDeliveryContact().getAddress().setManualAddress(billingAddress);
+//    			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 			}
 		}
 		else {
@@ -2959,25 +2963,29 @@ public class DocumentEditor extends Editor<Document> {
      */
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
-		if(document != null && document.getTransactionId() != null) {
+		if (document != null && document.getTransactionId() != null) {
 			Document copyDoc = null;
 			// dunning is an extra case
-			if(targetype.isDUNNING()) {
-				// if the given document is also a dunning, increase the dunning level
-				int lookupDunningLevel = (document.getBillingType().isDUNNING()) ? ((Dunning)document).getDunningLevel() + 1 : 1;
+			if (targetype.isDUNNING()) {
+				// if the given document is also a dunning, increase the
+				// dunning level
+				int lookupDunningLevel = (document.getBillingType().isDUNNING())
+						? ((Dunning) document).getDunningLevel() + 1 : 1;
 				copyDoc = documentsDAO.findDunningByTransactionId(document.getTransactionId(), lookupDunningLevel);
 			} else {
-				// lookup for a document with the same transaction id and the given target type
-				copyDoc = documentsDAO.findByTransactionIdAndBillingType(document.getTransactionId(), targetype);
+				// lookup for a document with the same transaction id and
+				// the given target type
+				copyDoc = documentsDAO.findExistingDocumentByTransactionIdAndBillingType(document.getTransactionId(), targetype);
 			}
-			if(copyDoc != null) {
-				// the retval has to be inverted because the question asks if you want to create another copy
-				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));
+			if (copyDoc != null) {
+				// the retval has to be inverted because the question asks
+				// if you want to create another copy
+				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning,
+						MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));
 			}
 		}
 		return retval;
-	}
-    
+	}    
 
 //	/**
 //	 * Set the focus to the top composite.
