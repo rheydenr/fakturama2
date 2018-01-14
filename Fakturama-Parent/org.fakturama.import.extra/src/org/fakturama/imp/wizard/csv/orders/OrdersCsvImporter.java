@@ -206,11 +206,13 @@ public class OrdersCsvImporter {
 				// Test if all columns are used
 				if (prop.size() > 0 && prop.size() != requiredHeaders.length) {
 					for (int i = 0; i < requiredHeaders.length; i++) {
-						if (!prop.containsKey(requiredHeaders[i]))
+						if (!prop.containsKey(requiredHeaders[i])) {
 							//T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
 							result += NL 
 								+ MessageFormat.format(importMessages.wizardImportErrorNodatafound, Integer.toString(lineNr),
-							    "\"" + requiredHeaders[i] + "\""); 
+							    "\"" + requiredHeaders[i] + "\"");
+							doRewind = true;
+						}
 					}
 				}
 				else {
@@ -224,6 +226,7 @@ public class OrdersCsvImporter {
 						contact = debitorsDAO.findByDebitorNumber(StringUtils.trim(debtorIdentifier[2]));
 						if(contact == null) {
 							result += NL + "no debtor found or multiple results found with number " + debtorIdentifier[2] + " in line " + csvr.getLinesRead();
+							doRewind = true;
 							continue; // don't create an order since it's useless without a debtor.
 						}
 					} else {
@@ -259,6 +262,7 @@ public class OrdersCsvImporter {
 							Product product = productsDAO.findByItemNumber(StringUtils.trim(prop.getProperty("artikelnr"+i)));
 							if(product == null) {
 								result += NL + "no product found with Number " + prop.getProperty("artikelnr"+i) + " in line " + csvr.getLinesRead();
+								doRewind = true;
 								continue; // no item? doesn't work! 
 							}
 							item = documentItemUtil.from(product, DocumentType.ORDER);
@@ -284,7 +288,9 @@ public class OrdersCsvImporter {
 					numberGenerator.setNextFreeNumberInPrefStore(order.getName(), DocumentType.ORDER.getTypeAsString());
 				}
 			}
-			if(!resultList.isEmpty()) {
+			
+			// result contains error messages, resultList is the workload data
+			if(!doRewind && !resultList.isEmpty()) {
 				// Add the order to the data base and store the ID for later processing
 				// (the order of these IDs is not relevant)
 				documentIds = documentsDAO.saveBatch(resultList);
@@ -303,11 +309,15 @@ public class OrdersCsvImporter {
 				createDocuments(documentIds, orderTemplate);
 				
 				createDocuments(deliveries, deliveryTemplate);
+			} else {
+				doRewind = true;
 			}
 			
 			// The result string
-			//T: Message: xx Orders have been imported 
-			result += NL + MessageFormat.format(importOrdersMessages.wizardImportInfoOrdersimported, documentIds.size());
+			if(!doRewind) {
+				//T: Message: xx Orders have been imported 
+				result += NL + MessageFormat.format(importOrdersMessages.wizardImportInfoOrdersimported, documentIds.size());
+			}
 		} catch (FakturamaStoringException e) {/*, address first line is: '" + doc.getAddressFirstLine() + "'*/
 			log.error(e, "can't save imported order");
 			doRewind = true;
