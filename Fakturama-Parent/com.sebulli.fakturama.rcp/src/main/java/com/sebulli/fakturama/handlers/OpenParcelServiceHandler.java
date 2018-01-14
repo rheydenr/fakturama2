@@ -70,16 +70,16 @@ public class OpenParcelServiceHandler {
 
 	private Document dataSetDocument = null; 
 	
-	@CanExecute
-    public boolean canExecute(final MApplication application, final EModelService modelService, @Active MPart activePage) {
-		documentEditor = null;
-		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
-		
-        return (documentEditor != null && (activeBrowserEditor != null 
-        		|| parcelServiceBrowserEditor != null
-        		|| dataSetDocument != null)
-        		);
-    }
+//	@CanExecute
+//    public boolean canExecute(final MApplication application, final EModelService modelService, @Active MPart activePage) {
+//		documentEditor = null;
+//		BrowserEditor activeBrowserEditor = findActiveDocumentOrGetBrowser(application, modelService, activePage);
+//		
+//        return (documentEditor != null && (activeBrowserEditor != null 
+//        		|| parcelServiceBrowserEditor != null
+//        		|| dataSetDocument != null)
+//        		);
+//    }
 
 	/**
 	 * Run the action
