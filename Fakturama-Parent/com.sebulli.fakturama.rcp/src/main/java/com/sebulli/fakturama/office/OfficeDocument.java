@@ -1057,6 +1057,8 @@ public class OfficeDocument {
 				value = product.getCdf02();
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
+			} else if(key.equals("ITEM.UNIT.COSTPRICE")) {
+				value = DataUtils.getInstance().DoubleToFormatedPriceRound(product.getCostPrice());
 			}
 		} else {
 			value = "";

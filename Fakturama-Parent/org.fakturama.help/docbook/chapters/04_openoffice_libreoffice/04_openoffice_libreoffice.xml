@@ -1075,6 +1075,13 @@ id="04_openoffice_libreoffice">
 							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
 						</entry>
 					</row>
+					<row>
+						<entry>ITEM.UNIT.COSTPRICE</entry>
+						<entry>
+							<para>Einkaufspreis des Produktes. Dieser Wert wird nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		</informaltable>
