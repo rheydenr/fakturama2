@@ -115,7 +115,8 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Creditor;
+import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -412,15 +413,19 @@ public class DocumentEditor extends Editor<Document> {
 		boolean addressModified = false;
 		// if it's a delivery note, compare the delivery address
 		if (documentType == DocumentType.DELIVERY) {
-            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
+            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
 				addressModified = true;
 			}
-            if(document.getDeliveryContact() == null) {
+            if(document.getDeliveryContact() == null || displayAddress.getCustomerNumber() == null && addressModified) {
+			    /*
+			     * If no addressId was given (no contact selected) then we use
+			     * the text field content for the manual address (but only if the address was modified).
+			     */
             	displayAddress = modelFactory.createDebitor();
             	Address address = modelFactory.createAddress();
+            	address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             	displayAddress.setAddress(address);
             	document.setDeliveryContact(displayAddress);
-            	document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
             }
 
 			// Use the delivery address if the billing address is empty
@@ -429,13 +434,13 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
 				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-    			document.setDeliveryContact(displayAddress);
-			} else {
+//    			document.setDeliveryContact(displayAddress);
+			} else if(addressModified) {
 			    /*
 			     * If no addressId was given (no contact selected) then we use
-			     * the text field content for the manual address.
+			     * the text field content for the manual address (but only if the address was modified).
 			     */
-    			document.getDeliveryContact().getAddress().setManualAddress(billingAddress);
+//    			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
 			}
 		}
 		else {
@@ -497,7 +502,7 @@ public class DocumentEditor extends Editor<Document> {
 				
 				//T: Text of the dialog that appears if the document is assigned to  an other address.
 				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
-				return;
+//				return;
 			}
 		}
 
@@ -1090,16 +1095,21 @@ public class DocumentEditor extends Editor<Document> {
 		 * 2.2 document has a delivery contact ==> use that as delivery contact 
 		 * 2.3 document has no delivery contact ==> check if billing contact has an alternate contact and use use billing contact as delivery contact
 		 */
-		if(document.getBillingType().isDELIVERY()) {
-	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
-			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
-					? document.getBillingContact() : document.getDeliveryContact());
-		} else {
-	        billingAddress = contactUtil.getAddressAsString(displayAddress);
-			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
-					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
-						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
-		}
+		
+	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
+    	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+
+		
+//		if(document.getBillingType().isDELIVERY()) {
+//	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+//			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
+//					? document.getBillingContact() : document.getDeliveryContact());
+//		} else {
+//	        billingAddress = contactUtil.getAddressAsString(displayAddress);
+//			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
+//					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
+//						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
+//		}
 
 		if(BooleanUtils.isNotTrue(silentMode)) {
 			showOrderStatisticDialog(parent);
@@ -1134,7 +1144,7 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		Contact billingContact, deliveryContact;
+		Contact billingContact;
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
 		// what about additionalInfo?
@@ -1147,20 +1157,15 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setPaidValue(parentDoc.getPaidValue());
 		retval.setPaid(parentDoc.getPaid());
 		retval.setPayDate(parentDoc.getPayDate());
-		retval.setTransactionId(parentDoc.getTransactionId());
+		if(parentDoc.getTransactionId() != null) {
+			retval.setTransactionId(parentDoc.getTransactionId());
+		}
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
 		
-		// for delivery documents we have to switch between delivery address and billing address
-		if(parentDoc.getBillingType().isDELIVERY()) {
-			billingContact = parentDoc.getDeliveryContact();
-			deliveryContact = parentDoc.getBillingContact();
-		} else {
-			billingContact = parentDoc.getBillingContact();
-			deliveryContact = parentDoc.getDeliveryContact();
-		}
-		retval.setBillingContact(retval.getBillingType().isDELIVERY() ? deliveryContact : billingContact);
-		retval.setDeliveryContact(retval.getBillingType().isDELIVERY() ? billingContact : deliveryContact);
+		billingContact = parentDoc.getBillingContact();
+		retval.setBillingContact(billingContact);
+		retval.setDeliveryContact(parentDoc.getDeliveryContact());
 		
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
@@ -1552,6 +1557,7 @@ public class DocumentEditor extends Editor<Document> {
 				spDueDays.setSelection(days);
 				// spinner doesn't throw an event if updating...
 				document.setDueDays(spDueDays.getSelection());
+				setDirty(true);
 			}));
 			if(document.getDueDays() != null && document.getDocumentDate() != null) {
 				dtIssueDate.setSelection(DateUtils.addDays(document.getDocumentDate(), document.getDueDays()));
@@ -1611,6 +1617,8 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// TODO bind later!
 		bindModelValue(document, txtPayValue, Document_.paidValue.getName(), 32);
+		bindModelValue(document, dtPaidDate, Document_.payDate.getName());
+		
 		txtPayValue.getControl().addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -1707,20 +1715,19 @@ public class DocumentEditor extends Editor<Document> {
 	private void setAddress(Contact contact) {
 		// Use delivery address, if it's a delivery note
 		if (documentType == DocumentType.DELIVERY) {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact));
-		    contact.setContactType(ContactType.DELIVERY);
+			this.displayAddress = contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact;
+		    document.setDeliveryContact(displayAddress);
+		    document.setBillingContact(contact);
 		} else {
-		    txtAddress.setText(contactUtil.getAddressAsString(contact));
-		    contact.setContactType(ContactType.BILLING);
+			this.displayAddress = contact;
+		    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
+		    document.setBillingContact(displayAddress);
 		}
-		
-	    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-	    document.setBillingContact(contact);
+		txtAddress.setText(contactUtil.getAddressAsString(this.displayAddress));
+
 	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
     	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
 		
-		this.displayAddress = contact;
-
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         	document.setItemsRebate(contact.getDiscount());
@@ -1730,9 +1737,8 @@ public class DocumentEditor extends Editor<Document> {
 		
 		if (paymentid != null) {
 			//Use the payment method of the customer
+			document.setPayment(paymentid);
 			if (comboPayment != null) {
-				document.setPayment(paymentid);
-//				comboViewerPayment.getCombo().getItems()getText();
 				comboPayment.setText(paymentid.getName());
 			}
 
@@ -2137,8 +2143,16 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
-			    SelectContactDialog dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-			    dlg.open();
+		        // FIXME Workaround (quick & dirty), please use enums or an extra button
+			    if((e.stateMask & SWT.CTRL) != 0) {
+				    context.set("CONTACT_TYPE", "CREDITOR");
+				    SelectContactDialog<Creditor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+				    dlg.open();
+			    } else {
+			    	context.set("CONTACT_TYPE", "DEBITOR");
+			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+			    	dlg.open();
+			    }
 			    // the result is set via event DialogSelection/Contact
 			}
 		});
@@ -2495,6 +2509,7 @@ public class DocumentEditor extends Editor<Document> {
         		if(!bPaid.getSelection()) {
         			// remove previously set values
         			document.setPaidValue(null);
+        			document.setPayDate(null);
         		}
         		// remove the grayed state
         		bPaid.setGrayed(false);
@@ -2948,25 +2963,29 @@ public class DocumentEditor extends Editor<Document> {
      */
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
-		if(document != null && document.getTransactionId() != null) {
+		if (document != null && document.getTransactionId() != null) {
 			Document copyDoc = null;
 			// dunning is an extra case
-			if(targetype.isDUNNING()) {
-				// if the given document is also a dunning, increase the dunning level
-				int lookupDunningLevel = (document.getBillingType().isDUNNING()) ? ((Dunning)document).getDunningLevel() + 1 : 1;
+			if (targetype.isDUNNING()) {
+				// if the given document is also a dunning, increase the
+				// dunning level
+				int lookupDunningLevel = (document.getBillingType().isDUNNING())
+						? ((Dunning) document).getDunningLevel() + 1 : 1;
 				copyDoc = documentsDAO.findDunningByTransactionId(document.getTransactionId(), lookupDunningLevel);
 			} else {
-				// lookup for a document with the same transaction id and the given target type
-				copyDoc = documentsDAO.findByTransactionIdAndBillingType(document.getTransactionId(), targetype);
+				// lookup for a document with the same transaction id and
+				// the given target type
+				copyDoc = documentsDAO.findExistingDocumentByTransactionIdAndBillingType(document.getTransactionId(), targetype);
 			}
-			if(copyDoc != null) {
-				// the retval has to be inverted because the question asks if you want to create another copy
-				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));
+			if (copyDoc != null) {
+				// the retval has to be inverted because the question asks
+				// if you want to create another copy
+				retval = !MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning,
+						MessageFormat.format(msg.editorDocumentDialogWarningCopyexists, copyDoc.getName()));
 			}
 		}
 		return retval;
-	}
-    
+	}    
 
 //	/**
 //	 * Set the focus to the top composite.

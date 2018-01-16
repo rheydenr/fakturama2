@@ -49,6 +49,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.xmpbox.type.BadFieldValueException;
@@ -258,14 +259,17 @@ public class ZugferdExporter {
 		    			MessageFormat.format(msg.zugferdExportErrorWrongpath, invoice.getPdfPath()));
 		    	return null;
 		    }
-			
+		    
+			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
+			ConformanceLevel zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
+
 			// 2. create XML file
-			CrossIndustryDocument root = createInvoiceFromDataset(invoice);
+			CrossIndustryDocument root = createInvoiceFromDataset(invoice, zugferdProfile);
 
 //			testOutput(root);
 			
 			// 3. merge XML & PDF/A-1 to PDF/A-3
-			boolean result = createPdf(invoice, root);
+			boolean result = createPdf(invoice, root, zugferdProfile);
 			if(result) {
 				// Display an info message
 				MessageDialog.openInformation(shell, msg.zugferdExportCommandTitle, msg.zugferdExportInfoSuccessfully);
@@ -312,10 +316,10 @@ public class ZugferdExporter {
 	 * 
 	 * @param invoice
 	 * @param root
+	 * @param zugferdProfile 
 	 */
-	private boolean createPdf(Document invoice, CrossIndustryDocument root) {
+	private boolean createPdf(Document invoice, CrossIndustryDocument root, ConformanceLevel zugferdProfile) {
 		boolean retval = true;
-		ConformanceLevel level = ConformanceLevel.COMFORT;
 		String pdfFile = invoice.getPdfPath();
 		PDDocument pdfa3 = null;
 		try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
@@ -326,7 +330,7 @@ public class ZugferdExporter {
 			org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
 			printDocument(zugferdXml, buffo);
 
-			PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, level, zugferdXml, invoice.getName());
+			PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, zugferdProfile, zugferdXml, invoice.getName());
 
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
@@ -351,7 +355,7 @@ public class ZugferdExporter {
 				fileSelected = dialog.open();
 			}
 			if (fileSelected != null) {
-				pdfa3.save(fileSelected);
+				pdfa3.save(fileSelected + fileName);
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled
 				retval = false;
@@ -373,17 +377,19 @@ public class ZugferdExporter {
 		return retval;
 	}
 
-	private CrossIndustryDocument createInvoiceFromDataset(Document invoice) {
+	private CrossIndustryDocument createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
 		// Recalculate the sum of the document before exporting
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
 	    DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
 
+		Boolean testMode = BooleanUtils.toBooleanObject(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_TEST, "TRUE"));
+
 		CrossIndustryDocument root = factory.createCrossIndustryDocument();
 		// at first create a reasonable context
 		ExchangedDocumentContextType exchangedDocCtx = factory.createExchangedDocumentContextType()
-				.withTestIndicator(factory.createIndicatorType().withIndicator(Boolean.TRUE));
+				.withTestIndicator(factory.createIndicatorType().withIndicator(testMode));
 		DocumentContextParameterType ctxParam = factory.createDocumentContextParameterType()
-				.withID(createIdFromString("urn:ferd:CrossIndustryDocument:invoice:1p0:comfort"));
+				.withID(createIdFromString("urn:ferd:CrossIndustryDocument:invoice:1p0:" + zugferdProfile.toString().toLowerCase()));
 		exchangedDocCtx.getGuidelineSpecifiedDocumentContextParameter().add(ctxParam );
 		root.setSpecifiedExchangedDocumentContext(exchangedDocCtx);
 		
@@ -482,6 +488,7 @@ public class ZugferdExporter {
 		String splitted[] = StringUtils.isEmpty(deliveryRef) ? new String[]{} : deliveryRef.split(",");
 		for (String string : splitted) {
 			refDoc.getID().add(createIdFromString(string));
+			break; // ONLY FIRST ID IS USED (according to the specification only ONE document can be referenced!)
 		}
 		refDoc.setIssueDateTime(DataUtils.getInstance().DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
 		if(!refDoc.getID().isEmpty()) {
@@ -1140,14 +1147,13 @@ public class ZugferdExporter {
 		return retval;
 	}
 
-	private CountryIDType createCountry(String value) {
+	private CountryIDType createCountry(final String value) {
+		String countryStr = null;
 		if(StringUtils.length(value) > 2) {
-			value = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
-			if(value == null) {
-				value = "DE"; // null values aren't allowed!
-			}
+			countryStr = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
 		}
-		return factory.createCountryIDType().withValue(value);
+		// null values aren't allowed!
+		return factory.createCountryIDType().withValue(Optional.ofNullable(countryStr).orElse("DE"));
 	}
 
 //	private TradeContactType createContact(Document invoice, ContactType contactType) {
@@ -1244,7 +1250,7 @@ public class ZugferdExporter {
 			retval = editor.getDocument();
 		} else if(selectionService != null && selectionService.getSelection() != null) {
 			List<Document> tmpList = (List<Document>) selectionService.getSelection();
-			retval = tmpList.get(0);
+			retval = tmpList.isEmpty() ? null : tmpList.get(0);
 		}
 
 		return retval;

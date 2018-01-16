@@ -293,7 +293,9 @@ public class VoucherExporter extends OOCalcExporter {
 
 					col = 5;
 					setCellText(row, col++, voucherItem.getName());
-					setCellText(row, col++, voucherItem.getAccountType().getName());
+					if(voucherItem.getAccountType() != null) {
+						setCellText(row, col++, voucherItem.getAccountType().getName());
+					}
 
 					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
 

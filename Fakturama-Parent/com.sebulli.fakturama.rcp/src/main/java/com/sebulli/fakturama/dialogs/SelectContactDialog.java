@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -42,13 +43,14 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
+import com.sebulli.fakturama.views.datatable.contacts.CreditorListTable;
 import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
 
 /**
  * @param <T>
  *
  */
-public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
+public class SelectContactDialog<T extends Contact> extends AbstractSelectionDialog<T> {
     protected String editor = "";
     
     @Inject
@@ -68,7 +70,7 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
     
     private Control top;
 
-    private DebitorListTable debitorListTable; 
+    private ContactListTable<T> contactListTable; 
 
     @Inject
     public SelectContactDialog(Shell shell, @Translation Messages msg) {
@@ -103,7 +105,12 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
         part.setContext(context);
         part.getProperties().put(Constants.PROPERTY_CONTACTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
-        debitorListTable = ContextInjectionFactory.make(DebitorListTable.class, context);
+        // FIXME Workaround (quick & dirty), please use enums
+        if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "CREDITOR")) {
+        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(CreditorListTable.class, context);
+        } else {
+        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(DebitorListTable.class, context);
+        }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
 
@@ -117,11 +124,11 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
      */
     @Override
     protected void okPressed() {
-        if (debitorListTable.getSelectedObject() != null) {
+        if (contactListTable.getSelectedObject() != null) {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-            eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(debitorListTable.getSelectedObject().getId()));
-            setResult(debitorListTable.getSelectedObject());
+            eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(contactListTable.getSelectedObject().getId()));
+            setResult(contactListTable.getSelectedObject());
             // inform the DocumentEditor (or any other Editor) about the selection
             evtBroker.post("DialogSelection/Contact", eventParams);
             // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
@@ -140,10 +147,10 @@ public class SelectContactDialog extends AbstractSelectionDialog<Contact> {
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseContact") Event event) {
         if (event != null) {
-            if (debitorListTable.getSelectedObject() != null) {
+            if (contactListTable.getSelectedObject() != null) {
                 // only for convenience, the result is already set by NatTable on double click and send to the 
                 // DocumentEditor.
-                setResult(debitorListTable.getSelectedObject());
+                setResult(contactListTable.getSelectedObject());
             }
             super.okPressed();
         }

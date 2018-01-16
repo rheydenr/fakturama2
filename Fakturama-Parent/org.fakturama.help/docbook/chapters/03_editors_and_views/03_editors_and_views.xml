@@ -1671,7 +1671,6 @@
 				<varlistentry>
 					<term>
 						<inlinemediaobject>
-
 							<imageobject role="html">
 								<imagedata contentdepth="60%" fileref="../images/editor/contact_list_20.png" format="PNG" scalefit="1"/>
 							</imageobject>
@@ -1681,7 +1680,7 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-						<para>Die Adresse kann direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Kontaktadressen geöffnet und die gewünschte Adresse ausgewählt werden. Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden.</para>
+						<para>Die Adresse kann auch direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Debitoradressen geöffnet und die gewünschte Adresse ausgewählt werden (mit STRG+Klick wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese ebenfalls mit übernommen.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -2031,6 +2030,7 @@
 		<title>Der Kontakteditor</title>
 		<anchor xreflabel="" xml:id="editor_editor_contact"/>
 		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
+		<para>Fakturama unterscheidet die Kontakte nach Debitoren (Kunden) und Kreditoren (Lieferanten). Aufgrund dieser Unterscheidung kann man auch unterschiedliche Nummernkreise verwenden. Der Editor für die Erfassung der Kontaktdaten ist in beiden Fällen identisch. Kreditoren und Debitoren werden in unterschiedlichen Listenansichten dargestellt.</para>
 		<sect2>
 			<title>Reiter Adresse</title>
 			<informalfigure>

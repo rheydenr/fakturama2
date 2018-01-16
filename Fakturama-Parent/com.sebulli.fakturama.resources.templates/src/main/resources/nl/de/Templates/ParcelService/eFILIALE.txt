@@ -1,0 +1,61 @@
+# Name and URL of the parcel service:
+name = Deutsche Post efiliale.de
+url  = https://www.efiliale.de/efiliale/pop/produktauswahl.jsp
+
+# Fields:
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.company        = YOURCOMPANY.COMPANY
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.additionalInfo = YOURCOMPANY.OWNER
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.street         = YOURCOMPANY.STREETNAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.houseNumber    = YOURCOMPANY.STREETNO
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.zipCode        = YOURCOMPANY.ZIP
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.city           = YOURCOMPANY.CITY
+
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.company        = DELIVERY.ADDRESS.NAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.additionalInfo = ""
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.street         = DELIVERY.ADDRESS.STREETNAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.houseNumber    = DELIVERY.ADDRESS.STREETNO
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.zipCode        = DELIVERY.ADDRESS.ZIP
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.city           = DELIVERY.ADDRESS.CITY
+
+# Do not set the country, because AJAX controls the list box's behaviour.
+#
+#/de/dpag/efiliale/presentation/vo/POPProductVO.countryId 			 = DELIVERY.ADDRESS.COUNTRY.CODE2$REPLACE: \
+#						{ \
+#						"BE","24";"BG","37";"DK","47";"D","48";"DE","48";"EE","55"; \
+#						"FI","59";"FR","60";"GR","69";"IE","92";"IT","95";"LV","123"; \
+#						"LT","128";"LU","130";"MT","137";"NL","161";"AT","170"; \
+#						"PL","180";"PT","181";"RO","185";"SE","193";"SK","201"; \
+#						"SI","202";"ES","203";"CZ","234";"HU","242";"GB","71"; \
+#						"CH","194";"NO","168";"TR","236";"LI","127" \
+#						}
+
+# If you have created a template file for a new parcel service,
+# it yould be nice to share it with other users on fakturama.sebulli.com
+# 
+# Syntax:
+# field = PLACE.HOLDER
+#
+# Some of the most significant placeholders are:
+#
+# YOURCOMPANY.COMPANY
+# YOURCOMPANY.OWNER
+# YOURCOMPANY.OWNER.FIRSTNAME
+# YOURCOMPANY.OWNER.LASTNAME
+# YOURCOMPANY.STREET
+# YOURCOMPANY.STREETNAME
+# YOURCOMPANY.STREETNO
+# YOURCOMPANY.ZIP
+# YOURCOMPANY.CITY
+#
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.NAME
+# DELIVERY.ADDRESS.FIRSTNAME
+# DELIVERY.ADDRESS.LASTNAME
+# DELIVERY.ADDRESS.COMPANY
+# DELIVERY.ADDRESS.STREET
+# DELIVERY.ADDRESS.STREETNAME
+# DELIVERY.ADDRESS.STREETNO
+# DELIVERY.ADDRESS.ZIP
+# DELIVERY.ADDRESS.CITY
+#
+# Read the manual for all placeholders.

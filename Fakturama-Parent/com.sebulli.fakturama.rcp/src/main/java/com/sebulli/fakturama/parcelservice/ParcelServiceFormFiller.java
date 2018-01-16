@@ -200,7 +200,8 @@ public class ParcelServiceFormFiller {
 		
 		// Fill the fields
 		// At least this fields must exist in the website's form
-		if ((formFieldExists(p.getProperty("DELIVERY.ADDRESS.NAME")) ||
+		if ((  formFieldExists(inputProperties.getProperty("username")) ||
+			   formFieldExists(p.getProperty("DELIVERY.ADDRESS.NAME")) ||
 			   formFieldExists(p.getProperty("DELIVERY.ADDRESS.LASTNAME")) ||
 			   formFieldExists(p.getProperty("DELIVERY.ADDRESS.COMPANY")) ||
 			   formFieldExists(p.getProperty("YOURCOMPANY.COMPANY")) ||
@@ -264,12 +265,13 @@ public class ParcelServiceFormFiller {
 		if (Files.notExists(directory))
 			Files.createDirectories(directory);
 
+		title = title.replaceAll(":", "");
+		title = title.replaceAll(" ", "_");
+		title = title.replaceAll("\\.", "");
+		title = title.replaceAll("\\|", "_");
 		if (Files.exists(Paths.get(filename, title+".txt"))) {
 			// Add date and time, if file exists
 			title+= "_"+DataUtils.getInstance().DateAndTimeOfNowAsISO8601String();
-			title = title.replaceAll(":", "");
-			title = title.replaceAll(" ", "_");
-			title = title.replaceAll("\\.", "");
 		}
 
 		filename += title+".txt";
@@ -396,7 +398,6 @@ public class ParcelServiceFormFiller {
 						"#" + NL +
 						"# Read the manual for all placeholders." + NL;
 					bos.write(s);
-					bos.close();
 					
 					// Show a dialog
 					MessageDialog.openInformation(browser.getShell(), 

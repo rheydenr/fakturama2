@@ -59,7 +59,7 @@
 		</sect3>
 		<sect3>
 			<title>Name der Formularfelder bestimmen</title>
-			<para>Um den Namen der Formularfelder zu bestimmen, kann entweder ein Webbrowser benutzt werden, in dem der Quelltext der Seite analysiert wird, oder man öffnet die Seite in einem Fakturama-Webbrowser-Editor und startet dann den Paketdienst. Jetzt werden die Formularfelder analysiert und der Name im Feld selbst bzw. als Kommentartext beim Überfahren mit der Maus angezeigt.</para>
+			<para>Um den Namen der Formularfelder zu bestimmen, kann entweder ein Webbrowser benutzt werden, in dem der Quelltext der Seite analysiert wird, oder man öffnet die Seite in einem Fakturama-Webbrowser-Editor und startet dann den Paketdienst. Jetzt werden die Formularfelder analysiert und der Name im Feld selbst bzw. als Kommentartext beim Überfahren mit der Maus angezeigt. Eine neue Vorlagendatei wird im Arbeitsverzeichnis abgespeichert und kann mit einem Text-Editor weiterbearbeitet werden.</para>
 			<para>Siehe auch <link linkend="openoffice_placeholders_common">Platzhalter</link>.</para>
 		</sect3>
 	</section>

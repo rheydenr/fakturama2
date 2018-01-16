@@ -88,19 +88,21 @@ public class FileOrganizer {
 	 * @return The clean string
 	 */
 	public static String replaceIllegalCharacters(String s) {
-		s = s.replaceAll(" ", "_");
-		s = s.replaceAll("\\\\", "_");
-		s = s.replaceAll("\"", "_");
-		s = s.replaceAll("/", "_");
-		s = s.replaceAll("\\:", "_");
-		s = s.replaceAll("\\*", "_");
-		s = s.replaceAll("\\?", "_");
-		s = s.replaceAll("\\>", "_");
-		s = s.replaceAll("\\<", "_");
-		s = s.replaceAll("\\|", "_");
-		s = s.replaceAll("\\&", "_");
-		s = s.replaceAll("\\n", "_");
-		s = s.replaceAll("\\t", "_");
+		if(StringUtils.isNotBlank(s)) {
+			s = s.replaceAll(" ", "_");
+			s = s.replaceAll("\\\\", "_");
+			s = s.replaceAll("\"", "_");
+			s = s.replaceAll("/", "_");
+			s = s.replaceAll("\\:", "_");
+			s = s.replaceAll("\\*", "_");
+			s = s.replaceAll("\\?", "_");
+			s = s.replaceAll("\\>", "_");
+			s = s.replaceAll("\\<", "_");
+			s = s.replaceAll("\\|", "_");
+			s = s.replaceAll("\\&", "_");
+			s = s.replaceAll("\\n", "_");
+			s = s.replaceAll("\\t", "_");
+		}
 		return s;
 	}
 
@@ -164,7 +166,7 @@ public class FileOrganizer {
 				.replaceAll("\\{docref\\}", StringUtils.defaultString(document.getCustomerRef()))
 				.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
 						DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))))
-				.replaceAll("\\{address\\}", address)
+				.replaceAll("\\{address\\}", StringUtils.defaultString(address))
 				.replaceAll("\\{name\\}", name);
 
 		// Find the placeholder for a decimal number with n digits
@@ -197,7 +199,7 @@ public class FileOrganizer {
 		}
 
 		Instant calendar = document.getDocumentDate().toInstant();
-		LocalDateTime docDateTime = LocalDateTime.ofInstant(calendar, ZoneId.of("Z"));
+		LocalDateTime docDateTime = LocalDateTime.ofInstant(calendar, ZoneId.systemDefault());
 
 		int yyyy = docDateTime.getYear();
 		// Replace the date information

@@ -341,6 +341,8 @@ public class OfficeDocument {
 						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
 					}
 				});
+			} else {
+				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
 			}
 		}
 	}
