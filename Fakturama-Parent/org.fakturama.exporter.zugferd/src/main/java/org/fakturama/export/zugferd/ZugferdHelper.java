@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
@@ -47,6 +48,9 @@ import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
+import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 
 /**
@@ -145,13 +149,20 @@ public class ZugferdHelper {
  * @throws XmpParsingException 
  */
 	private static void addZugferdXMP(XMPMetadata metadata, XMPSchema schema, ConformanceLevel level, Document doc) throws XmpParsingException {
-		InputStream zfExtensionIs = ZugferdHelper.class.getResourceAsStream(XMP_SCHEMALOCATION);
-		DomXmpParser builder = new DomXmpParser();
-		builder.setStrictParsing(true);
-		XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
-		metadata.addSchema(defaultXmp.getPDFExtensionSchema());
-		XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level, "1.0");
-		metadata.addSchema(zf);
+        Bundle definingBundle = ResourceBundleHelper.getBundleForName(org.fakturama.export.zugferd.Activator.PLUGIN_ID);
+		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+				XMP_SCHEMALOCATION), null);
+		try(InputStream zfExtensionIs = fileResource.openStream();) {
+			DomXmpParser builder = new DomXmpParser();
+			builder.setStrictParsing(true);
+			XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
+			metadata.addSchema(defaultXmp.getPDFExtensionSchema());
+			XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level, "1.0");
+			metadata.addSchema(zf);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

@@ -24,7 +24,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
 	// The bundle ID (Bundle-SymbolicName)
-    public static final String PLUGIN_ID = "org.fakturama.export.zugferd";
+    public static final String PLUGIN_ID = "org.fakturama.exporter.zugferd";
 
     // The shared instance
     private static BundleContext context;
