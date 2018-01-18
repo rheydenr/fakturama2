@@ -44,6 +44,7 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -2989,16 +2990,16 @@ public class DocumentEditor extends Editor<Document> {
 		return retval;
 	}    
 
-//	/**
-//	 * Set the focus to the top composite.
-//	 * 
-//	 * @see com.sebulli.fakturama.editors.Editor#setFocus()
-//	 */
-//	@Focus
-//	public void setFocus() {
-//		if(top != null) 
-//			top.setFocus();
-//	}
+	/**
+	 * Set the focus to the top composite.
+	 * 
+	 * @see com.sebulli.fakturama.editors.Editor#setFocus()
+	 */
+	@Focus
+	public void setFocus() {
+		if(txtAddress != null) 
+			txtAddress.setFocus();
+	}
 
 	/**
 	 * Test, if there is a document with the same number
