@@ -32,6 +32,7 @@ import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -1058,7 +1059,9 @@ public class OfficeDocument {
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
 			} else if(key.equals("ITEM.UNIT.COSTPRICE")) {
-				value = DataUtils.getInstance().DoubleToFormatedPriceRound(product.getCostPrice());
+				value = DataUtils.getInstance().DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
+			} else {
+				value = "";
 			}
 		} else {
 			value = "";

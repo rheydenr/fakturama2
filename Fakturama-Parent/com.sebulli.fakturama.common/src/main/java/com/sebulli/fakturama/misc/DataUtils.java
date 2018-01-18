@@ -336,13 +336,15 @@ public class DataUtils {
     }
     
     public Double round(Double d, int scale) {
-    	Double floorValue;
+    	Double floorValue = null;
     	double factor = Math.pow(10, scale);
-        if (d >= 0)
-            floorValue = Math.floor(d * factor + EPSILON) / factor;
-        else
-            floorValue = Math.ceil(d * factor - EPSILON) / factor;
-
+    	if (d != null) {
+	        if(d >= 0)
+	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	        else
+	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+    	}
+    	
         return floorValue;
     }
     
