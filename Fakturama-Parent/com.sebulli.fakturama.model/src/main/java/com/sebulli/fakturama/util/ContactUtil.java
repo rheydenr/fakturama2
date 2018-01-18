@@ -93,6 +93,16 @@ public class ContactUtil {
         }
         return line;
     }
+    
+    public String getCompanyOrLastname(Contact contact) {
+        String line = "";
+        if (StringUtils.isNotBlank(contact.getCompany())) {
+            line = DataUtils.getInstance().getSingleLine(contact.getCompany());
+        } else if (StringUtils.isNotBlank(contact.getName())) {
+            line = contact.getName();
+        }
+        return line;
+    }
         
     /**
      * Get the first and the last name

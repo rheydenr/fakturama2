@@ -708,6 +708,14 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{companyorname}</emphasis> Firmenname oder (falls Firmenname leer ist) Nachname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{custno}</emphasis> Kundennummer</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{Xnr}</emphasis> Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
                 </listitem>
                 <listitem>

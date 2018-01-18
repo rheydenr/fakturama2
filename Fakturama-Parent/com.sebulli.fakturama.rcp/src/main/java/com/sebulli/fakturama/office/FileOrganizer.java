@@ -41,7 +41,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 public class FileOrganizer {
@@ -146,6 +148,7 @@ public class FileOrganizer {
 	public String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
 		String path = "";
 		String filename = "";
+		ContactUtil contactUtil = new ContactUtil();
 
 		// T: Subdirectory of the OpenOffice documents
 		String savePath = msg.pathsDocumentsName + "/";
@@ -158,8 +161,12 @@ public class FileOrganizer {
 		String address = document.getAddressFirstLine();
 		address = replaceIllegalCharacters(address);
 
-		String name = StringUtils.defaultString(Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact()).getName());
+		Contact documentContact = Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact());
+		String name = StringUtils.defaultString(documentContact.getName());
 		name = replaceIllegalCharacters(name);
+		
+		String companyOrName = contactUtil.getCompanyOrLastname(documentContact);
+		companyOrName = replaceIllegalCharacters(companyOrName);
 
 		// Replace the placeholders
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName())
@@ -167,7 +174,10 @@ public class FileOrganizer {
 				.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
 						DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))))
 				.replaceAll("\\{address\\}", StringUtils.defaultString(address))
-				.replaceAll("\\{name\\}", name);
+				.replaceAll("\\{name\\}", name)
+				.replaceAll("\\{companyorname\\}", companyOrName)
+				.replaceAll("\\{custno\\}", 
+					StringUtils.defaultString(documentContact.getCustomerNumber()));
 
 		// Find the placeholder for a decimal number with n digits
 		// with the format "{Xnr}", "X" is the number of digits (which can be
