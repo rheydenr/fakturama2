@@ -14,7 +14,7 @@ The i18n files are from the following bundles:
 
 The files are always located in the sub directory `OSGI-INF/l10n`.
 
-Double click ``i18nedit.jar``, you can see an empty program window. Open a project (_Projects &rarr; open project&hellip;_) and select `i18nedit.properties` from your working directory. Via (_Project &rarr; Select shown locales_) (please note the difference between the _Projects_ and the _Project_ menu entry, they reside on different menu bars!)
+Double click ``i18nedit.jar``, you can see an empty program window. Open a project (_Projects &rarr; open project&hellip;_) and select `i18nedit.properties` from your working directory. Via _Project &rarr; Select shown locales_ (please note the difference between the _Projects_ and the _Project_ menu entry, they reside on different menu bars!)
 
 ![](images/i18nedit_select_locales.png)
 
