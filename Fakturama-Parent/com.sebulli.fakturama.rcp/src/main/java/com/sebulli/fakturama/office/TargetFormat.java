@@ -21,15 +21,16 @@ package com.sebulli.fakturama.office;
 public enum TargetFormat {
 	
 	/** PDF format */
-	PDF(".pdf", "PDF"), 
+	PDF(".pdf", "PDF", false), 
 	
 	/** ODT format */
-	ODT(".odt", "ODT"),
+	ODT(".odt", "ODT", false),
 	
 	/** additional PDF format */
-	ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF");
+	ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF", true);
 	
 	private String extension, prefId;
+	boolean absolutePath;
 
 	/**
 	 * The Constructor.
@@ -37,9 +38,10 @@ public enum TargetFormat {
 	 * @param extension the extension
 	 * @param prefId the pref id
 	 */
-	private TargetFormat(String extension, String prefId) {
+	private TargetFormat(String extension, String prefId, boolean absolutePath) {
 		this.extension = extension;
 		this.prefId = prefId;
+		this.absolutePath = absolutePath;
 	}
 
 	/**
@@ -57,6 +59,13 @@ public enum TargetFormat {
 	 */
 	public final String getPrefId() {
 		return prefId;
+	}
+
+	/**
+	 * @return the absolutePath
+	 */
+	public final boolean isAbsolutePath() {
+		return absolutePath;
 	}
 	
 }

@@ -414,8 +414,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), 
-        	        generatedPdf.getFileName().toString());
+        	documentPath = Paths.get(fo.getRelativeDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document));
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());

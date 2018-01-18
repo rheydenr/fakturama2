@@ -232,7 +232,12 @@ public class FileOrganizer {
 			filename = fileNamePlaceholder.substring(pos + 1);
 		}
 
-		savePath += path + "/";
+		if(!targetFormat.isAbsolutePath()) {
+			// if target path is relative we have to put the documents below Fakturama working dir
+			savePath += path + "/";
+		} else {
+			savePath = path + "/"; 
+		}
 
 		// Use the document name as filename
 		if (pathOptions.contains(PathOption.WITH_FILENAME))
