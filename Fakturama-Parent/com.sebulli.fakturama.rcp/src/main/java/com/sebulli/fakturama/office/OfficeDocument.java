@@ -792,6 +792,7 @@ public class OfficeDocument {
 		String key = placeholder.split("\\$")[0];
 
 		Price price = new Price(item, useSET);
+		boolean isReplaceOptionalPrice = item.getOptional() && preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE);
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
@@ -855,14 +856,14 @@ public class OfficeDocument {
 			}
 		}
 
-		// Get the item discount
+		// Get the item discount in percent
 		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemRebate());
 		}
 
-		// Get the item's VAT
-		else if (key.equals("ITEM.VAT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+		// Get the absolute item discount (gross=
+		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 		
 		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
@@ -912,31 +913,54 @@ public class OfficeDocument {
 
 		// Get the total net value
 		else if (key.equals("ITEM.TOTAL.NET")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
-			if (item.getOptional()) {
-				if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-					value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			if (isReplaceOptionalPrice ) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
 			}
 		}
 
 		// Get the total VAT
 		else if (key.equals("ITEM.TOTAL.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
-			if (item.getOptional()) {
-                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
 			}
 		}
 
 		// Get the total gross value
 		else if (key.equals("ITEM.TOTAL.GROSS")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
-            if (item.getOptional()) {
-                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+            if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
 			}
 		}
 		
+		// Get the absolute item discount (net)
+		else if (key.equals("ITEM.NET.DISCOUNT.VALUE")) {
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
+			}
+		}
+		
+		// Get the absolute item discount (gross)
+		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
+			}
+		}
+		
+		// Get the item's VAT
+		else if (key.equals("ITEM.VAT.PERCENT")) {
+			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+		}
+	
 		// Get product picture
 		else if (key.startsWith("ITEM.PICTURE")){
 			

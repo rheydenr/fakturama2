@@ -1003,6 +1003,18 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
+						<entry>ITEM.GROSS.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Bruttowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.NET.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Nettowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
 						<entry>ITEM.UNIT.NET</entry>
 						<entry>
 							<para>Einzelpreis (netto)</para>
@@ -1072,6 +1084,13 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.UNIT.UDF01; ITEM.UNIT.UDF02; ITEM.UNIT.UDF03</entry>
 						<entry>
 							<para>Nutzerdefinierte Felder. Diese Werte werden nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.CATEGORY</entry>
+						<entry>
+							<para>Kategorie des eingefügten Artikel. Dieser Wert wird nur ersetzt, wenn der 
 							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
 						</entry>
 					</row>
