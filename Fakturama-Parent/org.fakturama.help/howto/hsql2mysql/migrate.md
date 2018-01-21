@@ -15,12 +15,13 @@ Die folgende Beschreibung ist für die Konvertierung einer HSQL-DB (Standard-Dat
 - download [HSQL2MYSQL4FAK.ZIP](https://files.fakturama.info/release/HSQL2MYSQL4FAK.ZIP)
 - unzip `HSQL2MYSQL4FAK.ZIP`
 - cd `HSQL2MYSQL4FAK`
-- Zugangsdaten in allen `migration*.grf`-Dateien ändern (suche nach MYSQL) &rArr; URL, User und Passwort eintragen (nur diese drei Parameter sind anzupassen!)
+- Zugangsdaten in allen `migration*.grf`-Dateien ändern (suche nach MYSQL) ==> URL, User und Passwort eintragen (nur diese drei Parameter sind anzupassen!); das gilt sowohl für die MySQL als auch für die HSQL-DB! (Für Windows-Nutzer: Der Pfad ist mit Backslash "\" anzugeben, wie gewohnt.)
+- in der Datei `workspace.prm` ist der Eintrag für `PROJECT`auf "." zu setzen (das ist gleich der erste Eintrag für `GraphParameter`)
 
 **Beispiel:**
 
 	<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-	<Connection database="HSQLDB" dbURL="jdbc:hsqldb:d:\MeineDaten\Fakt2tmp\Database\Database" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
+	<Connection database="HSQLDB" dbURL="jdbc:hsqldb:/PFAD/ZUM/ARBEITSVERZEICHNIS/Database/Database" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
 
 - `bin\clover migration.grf`
 - `bin\clover migration_002.grf`
