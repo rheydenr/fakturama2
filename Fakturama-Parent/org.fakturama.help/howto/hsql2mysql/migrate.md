@@ -22,10 +22,6 @@ Die folgende Beschreibung ist für die Konvertierung einer HSQL-DB (Standard-Dat
 	<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
 	<Connection database="HSQLDB" dbURL="jdbc:hsqldb:d:\MeineDaten\Fakt2tmp\Database\Database" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
 
-- HSQL-Server starten:
-
-	java -cp plugins/org.jetel.jdbc/lib/hsqldb/hsqldb.jar org.hsqldb.server.Server --database.0 file:PFAD_ZUM_ARBEITSVERZEICHNIS_V2/Database/Database --dbname.0 Fakturama2 --silent=false
-
 - `bin\clover migration.grf`
 - `bin\clover migration_002.grf`
 - `bin\clover migration_003.grf`
