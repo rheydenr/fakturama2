@@ -74,7 +74,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         
         // and, finally, filter all deleted contacts (or contacts that are'nt valid anymore)
         restrictions.add(cb.and(
-                cb.equal(root.get(Contact_.deleted), Boolean.FALSE),
+                cb.not(root.get(Contact_.deleted)),
                 cb.or(
                     cb.isNull(root.get(Contact_.validTo)),
                     cb.greaterThanOrEqualTo(root.get(Contact_.validTo), cb.currentDate())
@@ -124,6 +124,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         Root<Contact> root = query.from(getEntityClass());
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
+        restrictions.add(cb.not(root.get(Contact_.deleted)));
         restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
         CriteriaQuery<Contact> select = query.select(root);
         select.where(restrictions.toArray(new Predicate[]{}));
@@ -147,6 +148,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
         Root<Contact> root = query.from(getEntityClass());
         restrictions.add(cb.equal(root.get(Contact_.customerNumber), StringUtils.defaultString(contactNumber)));
+        restrictions.add(cb.not(root.get(Contact_.deleted)));
         CriteriaQuery<Contact> q = query.select(root).where(restrictions.toArray(new Predicate[]{}));
         List<Contact> resultList = getEntityManager().createQuery(q).getResultList();
         if(!resultList.isEmpty()) {
