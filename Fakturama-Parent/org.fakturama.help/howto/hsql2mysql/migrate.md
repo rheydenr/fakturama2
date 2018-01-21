@@ -1,5 +1,6 @@
 ### Hinweise
 Die folgende Beschreibung ist für die Konvertierung einer HSQL-DB (Standard-Datenbank in Fakturama) in eine MySQL-Datenbank. Bevor die Schritte zur Konvertierung ausgeführt werden, müssen folgende Voraussetzungen erfüllt sein:
+
 - Daten sichern (Arbeitsverzeichnis incl. Datenbank)
 - Verzeichnis `~/.fakturama2` (bei Linux / Mac OS) bzw. `%USERPROFILE%\.fakturama2` (unter Windows) umbenennen nach `.fakturama2.old`
 - leere MySQL-Datenbank anlegen und einen Datenbank-Benutzer darauf berechtigen (`GRANT ALL`, der User muss Rechte zum Anlegen und Löschen von Tabellen haben sowie zum Erzeugen von Indizes usw.)
