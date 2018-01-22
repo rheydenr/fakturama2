@@ -269,12 +269,19 @@ public class OrdersCsvImporter {
 							item.setPosNr(i);
 						}
 						String quantityProp = prop.getProperty("anzahl"+i);
-						double quantity = Double.valueOf(0.0);
 						if(StringUtils.isNumeric(quantityProp)) {
-							quantity = Double.parseDouble(quantityProp);
+							double quantity = 0.0;
+							try {
+								quantity = Double.parseDouble(quantityProp);
+							} catch (NumberFormatException nfe) {
+								// ignore and set quantity to 0.0
+								quantity = 0.0;
+							}
+							if(quantity != 0.0) {
+								item.setQuantity(quantity);
+								itemsList.add(item);
+							}
 						}
-						item.setQuantity(quantity);
-						itemsList.add(item);
 					}
 					
 					order.setItems(itemsList);

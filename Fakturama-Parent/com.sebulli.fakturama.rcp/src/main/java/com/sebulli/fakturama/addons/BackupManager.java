@@ -77,6 +77,7 @@ public class BackupManager {
 		backupedFiles.add("Database/Database.properties");
 		backupedFiles.add("Database/Database.script");
 		backupedFiles.add("Database/Database.lobs");
+		backupedFiles.add("Database/Database.log");  // contains last activities
 
 		FileInputStream in;
 		byte[] data = new byte[1024];
