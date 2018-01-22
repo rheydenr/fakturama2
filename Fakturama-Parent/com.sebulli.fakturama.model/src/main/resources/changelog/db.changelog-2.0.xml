@@ -939,4 +939,7 @@
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="VARCHAR(2048)"/>
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="VARCHAR(2048)"/>
     </changeSet>
+    <changeSet author="rheydenr (generated)" id="20180122-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+        <modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="TEXT"/>
+    </changeSet>
 </databaseChangeLog>
