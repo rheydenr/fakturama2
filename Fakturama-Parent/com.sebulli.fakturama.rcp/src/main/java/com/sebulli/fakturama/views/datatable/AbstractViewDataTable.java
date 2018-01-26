@@ -701,6 +701,10 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 		this.eclipsePrefs = eclipsePrefs;
 	}
 
+	
+	public TextSearchControl getSearchControl() {
+		return searchText;
+	}
 
 	protected String createRootNodeDescriptor(String filter) {
 		String rootNode = ""; 

@@ -113,6 +113,7 @@ public class SelectContactDialog<T extends Contact> extends AbstractSelectionDia
         }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
+    	contactListTable.getSearchControl().getTextControl().setFocus();
 
         return top;
     }
