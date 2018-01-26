@@ -260,13 +260,14 @@ public class Placeholders {
 	 * @return
 	 * 		Part of the telephone number
 	 */
-	private String getTelPrePost(String phoneNo, boolean pre){
+	private String getTelPrePost(final String phoneNo, final boolean pre) {
+		String phoneNumber = StringUtils.defaultString(phoneNo);
 		// if phoneNo contains "/" or " " (space) then split there
-		if(phoneNo.startsWith("+")) {
+		if(phoneNumber.startsWith("+")) {
 			// phoneNo has a country dialing number, therefore we have to chain it with area code
-			phoneNo = phoneNo.replaceFirst(" ", "_");
+			phoneNumber = phoneNumber.replaceFirst(" ", "_");
 		}
-		String parts[] = StringUtils.defaultString(phoneNo).trim().split("[ |/]", 2);
+		String parts[] = phoneNumber.trim().split("[ |/]", 2);
 		
 		// Split the number
 		if (parts.length < 2) {
