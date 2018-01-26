@@ -140,7 +140,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 // Send user name , password and a list of unsynchronized orders to
                 // the shop
                 URLConnection conn = createConnection(address, useAuthorization, authorizationUser, authorizationPassword);
-                if(conn != null) {
+                if(conn != null && conn.getDoOutput()) {
                 	OutputStream outputStream = conn.getOutputStream();
                     OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                     setProgress(20);
