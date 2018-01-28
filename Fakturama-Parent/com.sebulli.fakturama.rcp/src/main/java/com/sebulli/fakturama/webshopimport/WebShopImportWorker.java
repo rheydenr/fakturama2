@@ -82,6 +82,7 @@ import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.OrderType;
 import com.sebulli.fakturama.webshopimport.type.PaymentType;
 import com.sebulli.fakturama.webshopimport.type.ProductType;
+import com.sebulli.fakturama.webshopimport.type.ProductsType;
 import com.sebulli.fakturama.webshopimport.type.ShippingType;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
@@ -350,26 +351,28 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         		shopURL = webshopexport.getWebshop().getUrl();
         	}
         
-        	// Get the general products data
-        	if (webshopexport.getProducts() != null) {
-        		productImagePath = webshopexport.getProducts().getImagepath();
-        	}
-        
         	// Get all products and import them
-        	List<ProductType> productList = webshopexport.getProducts().getProduct();
-			int producListSize = productList.size();
-			for (int productIndex = 0; productIndex < producListSize; productIndex++) {
-        		//T: Status message importing data from web shop
-        		monitor.subTask(msg.importWebshopInfoLoading + " " + Integer.toString(productIndex + 1) + "/" + Integer.toString(producListSize));
-        		setProgress(50 + 40 * (productIndex + 1) / producListSize);
-        		ProductType product = productList.get(productIndex);
-        		createProductFromXMLOrderNode(product);
-        		
-        		// Cancel the product picture import process
-        		if ( monitor.isCanceled() )
-        			return;
+        	ProductsType products = webshopexport.getProducts();
+        	// sometimes there are no products...
+			if (products != null) {
+				// Get the general products data
+        		productImagePath = products.getImagepath();
+	        	
+	        	List<ProductType> productList = products.getProduct();
+				int producListSize = productList.size();
+				for (int productIndex = 0; productIndex < producListSize; productIndex++) {
+	        		//T: Status message importing data from web shop
+	        		monitor.subTask(msg.importWebshopInfoLoading + " " + Integer.toString(productIndex + 1) + "/" + Integer.toString(producListSize));
+	        		setProgress(50 + 40 * (productIndex + 1) / producListSize);
+	        		ProductType product = productList.get(productIndex);
+	        		createProductFromXMLOrderNode(product);
+	        		
+	        		// Cancel the product picture import process
+	        		if ( monitor.isCanceled() )
+	        			return;
+	        	}
         	}
-        
+   
         	// Get order by order and import it
         	//T: Status message importing data from web shop
         	monitor.subTask(msg.importWebshopInfoImportorders);
