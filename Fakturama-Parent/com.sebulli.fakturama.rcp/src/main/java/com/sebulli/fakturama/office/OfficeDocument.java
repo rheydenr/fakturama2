@@ -276,9 +276,10 @@ public class OfficeDocument {
                         	 */
     	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
-                        case VATLIST_TABLE:
-                          fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), false);
-                          break;
+						case VATLIST_TABLE:
+							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate,
+									placeholderNode.getTableType(), false);
+							break;
                           
                         case SALESEQUALIZATIONTAX_TABLE:
 							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);

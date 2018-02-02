@@ -316,6 +316,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
+            MessageDialog.openError(parent, msg.dialogMessageboxTitleError, "Can't save data! Please see log file.\n");
+            return;
         }
 		newContact = false;
 		

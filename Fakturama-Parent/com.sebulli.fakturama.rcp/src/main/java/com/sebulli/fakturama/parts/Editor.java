@@ -371,7 +371,7 @@ public abstract class Editor<T extends IEntity> {
             ((Combo)source).addModifyListener(e -> {
             	// because of the Linux event fireworks bug :-(
             	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
-            			&& ((Combo)source).getSelectionIndex() != ((Combo)e.getSource()).getSelectionIndex()) {
+            			/*&& (((Combo)source).getSelectionIndex() != ((Combo)e.getSource()).getSelectionIndex() || ((Combo)e.getSource()).getSelectionIndex() == -1)*/) {
 				    getMDirtyablePart().setDirty(true);
 				}
             });
