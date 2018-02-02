@@ -59,6 +59,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -1369,7 +1370,8 @@ public class DocumentEditor extends Editor<Document> {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
-			comboNetGross.getCombo().select(netgross);
+			StructuredSelection sel = new StructuredSelection(netgross);
+			comboNetGross.setSelection(sel, true);
 		}
 
 		// Show a warning if the customer uses a different setting for net or gross
@@ -1885,7 +1887,8 @@ public class DocumentEditor extends Editor<Document> {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				netgross = comboNetGross.getCombo().getSelectionIndex();
+				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
+				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
 				// recalculate the total sum
 //				calculate();
 				updateUseGross(false);
