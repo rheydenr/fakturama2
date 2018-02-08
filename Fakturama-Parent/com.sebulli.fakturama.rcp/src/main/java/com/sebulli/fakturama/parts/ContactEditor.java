@@ -399,6 +399,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			Payment defaultPayment = paymentsDao.findById(paymentId);
 			editorContact.setPayment(defaultPayment);
 			editorContact.setReliability(ReliabilityType.NONE);
+			// it's not known to me why Texo generates a default value of "1" for this field.
+			// I'ver never given it to the model!
+			// Therefore, to keep it in sync with old version, I've changed it here back to "uncertain" (which is 0).
+			editorContact.setUseNetGross((short)0);
 			
 			// country is determined by locale
 			editorContact.getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());

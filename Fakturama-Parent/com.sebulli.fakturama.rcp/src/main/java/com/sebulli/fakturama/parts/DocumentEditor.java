@@ -1447,8 +1447,16 @@ public class DocumentEditor extends Editor<Document> {
 		// If the shipping value has changed:
 		// Set the shippingAutoVat to net or gross, depending on the
 		// settings of this editor.
-		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
+		// sometimes the shipping value has many fraction digits so that we have to round it
+		// to a reasonable value
+		// but at first we have to decide which value is the correct shipping value (net or gross)
+		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
+		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
+				currentShippingValue.getNumber().doubleValue())) {
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+		} else {
+			// no change occured, we can return and leave the values unchanged
+			return;
 		}
 
 		// Recalculate the sum
