@@ -187,6 +187,8 @@ public class ItemListBuilder {
         Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
 
+        itemListTable.setItemsNoVat(document.getNoVatReference() != null, document.getNoVatReference());
+
         addButton.addMouseListener(new MouseAdapter() {
 
             // Add a new item with default properties

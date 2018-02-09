@@ -260,14 +260,19 @@ public class Placeholders {
 	 * @return
 	 * 		Part of the telephone number
 	 */
-	private String getTelPrePost(String no, boolean pre){
-		// if no contains "/" ord " " (space) then split there
-		String parts[] = StringUtils.defaultString(no).trim().split("[ /]", 2);
+	private String getTelPrePost(final String phoneNo, final boolean pre) {
+		String phoneNumber = StringUtils.defaultString(phoneNo);
+		// if phoneNo contains "/" or " " (space) then split there
+		if(phoneNumber.startsWith("+")) {
+			// phoneNo has a country dialing number, therefore we have to chain it with area code
+			phoneNumber = phoneNumber.replaceFirst(" ", "_");
+		}
+		String parts[] = phoneNumber.trim().split("[ |/]", 2);
 		
 		// Split the number
 		if (parts.length < 2) {
 			String tel = parts[0];
-			// devide the number at the 4th position
+			// divide the number at the 4th position
 			if (tel.length() > 4) {
 				if (pre)
 					return tel.substring(0, 4);
@@ -279,7 +284,8 @@ public class Placeholders {
 		}
 		// return the first or the second part
 		else {
-			return pre ? parts[0] : parts[1];
+			String[] area = StringUtils.split(parts[0], "_");  // phone number with country code
+			return pre ? StringUtils.join(area, " ") : parts[1];
 		}
 	}
 
@@ -1040,14 +1046,33 @@ public class Placeholders {
 //	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
 //	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
 	    
-	    System.out.println("is 'DOCUMENT.ADDRESS' placeholder? " + ph.isPlaceholder("DOCUMENT.ADDRESS"));
-	    System.out.println("is 'NO.PLACEHOLDER' placeholder? " + ph.isPlaceholder("NO.PLACEHOLDER"));
+//	    System.out.println("is 'DOCUMENT.ADDRESS' placeholder? " + ph.isPlaceholder("DOCUMENT.ADDRESS"));
+//	    System.out.println("is 'NO.PLACEHOLDER' placeholder? " + ph.isPlaceholder("NO.PLACEHOLDER"));
+//	    
+//	    System.out.println("mit null: " + ph.censorAccountNumber(null));
+//	    System.out.println("mit 12: " + ph.censorAccountNumber("12"));
+//	    System.out.println("mit 123: " + ph.censorAccountNumber("123"));
+//	    System.out.println("mit 123456789: " + ph.censorAccountNumber("123456789"));
+//	    System.out.println("mit 9999999999999999999999999999999999: " + ph.censorAccountNumber("9999999999999999999999999999999999"));
 	    
-	    System.out.println("mit null: " + ph.censorAccountNumber(null));
-	    System.out.println("mit 12: " + ph.censorAccountNumber("12"));
-	    System.out.println("mit 123: " + ph.censorAccountNumber("123"));
-	    System.out.println("mit 123456789: " + ph.censorAccountNumber("123456789"));
-	    System.out.println("mit 9999999999999999999999999999999999: " + ph.censorAccountNumber("9999999999999999999999999999999999"));
+	    // test phone numbers
+	    String[] testphones = new String[]{
+	    		"02031/4775864",
+	    		"+49 (0)2031/4775864",
+	    		"020315 75864",
+	    		"020315/75864",
+	    		"+49 (0)20315 75864",
+	    		"02031 4775864",
+	    		"030/44775864",
+	    		"030 44775864",
+	    		"+49 (0)30 44775864",
+	    		"03726 2824",
+	    		"03726 781-0",
+	    		"03726 781",
+	    };
+	    for (String phone : testphones) {
+	    	System.out.println(String.format("PHONE: [%s]; PRE: [%s]; POST: [%s]", phone, ph.getTelPrePost(phone, true), ph.getTelPrePost(phone, false)));
+		}
     }
 
 	/**

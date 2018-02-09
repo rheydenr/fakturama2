@@ -46,15 +46,21 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_C8FCIPo9EeKmVtv93KLoRw" elementId="menu:main.menu.data.id" label="%command.data.name">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_C_K2MEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.documents.id" label="%command.documents.name" iconURI="icon://COMMAND_LETTER" command="_Gp8DIKAaEeSCTeF-q1OtSg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_EZQ1oEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.products.id" label="%page.products" iconURI="icon://COMMAND_PRODUCT" command="_OkPpoCY8EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_EZQ1oEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.products.id" label="%page.products" iconURI="icon://COMMAND_PRODUCT" command="_OkPpoCY8EeSOztFzZzvbWw">
+          <parameters xmi:id="_t2UrAAz9EeiwcpXgFtyyCw" elementId="com.sebulli.fakturama.rcp.parameter.81" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.productTable"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_E5OvIEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.debtors.id" label="%command.debtors.name" iconURI="icon://COMMAND_CONTACT" command="_RmPT0-tOEeKo5Ms1QUgPTw">
           <parameters xmi:id="_yppDcO0OEeSUiJK9ZlP2cw" elementId="menu:com.sebulli.fakturama.lists.debtors" name="com.sebulli.fakturama.lists.contacttype" value="fakturama.views.debitorTable"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_EwVjEO0PEeSUiJK9ZlP2cw" elementId="menu:main.menu.data.creditors.id" label="%command.creditors.name" iconURI="icon://COMMAND_VENDOR" command="_RmPT0-tOEeKo5Ms1QUgPTw">
           <parameters xmi:id="_PvYqkO0PEeSUiJK9ZlP2cw" elementId="menu:com.sebulli.fakturama.lists.creditors" name="com.sebulli.fakturama.lists.contacttype" value="fakturama.views.creditorTable"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_FTj6sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.payments.id" label="%command.payments.name" iconURI="icon://COMMAND_PAYMENT" command="__1BmsCY8EeSOztFzZzvbWw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_FtMisEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.shippings.id" label="%command.shippings.name" iconURI="icon://COMMAND_SHIPPING" command="_Y1nWUCY9EeSOztFzZzvbWw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FTj6sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.payments.id" label="%command.payments.name" iconURI="icon://COMMAND_PAYMENT" command="__1BmsCY8EeSOztFzZzvbWw">
+          <parameters xmi:id="_Sf3QMAz9EeiwcpXgFtyyCw" elementId="com.sebulli.fakturama.rcp.parameter.3" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.paymentTable"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FtMisEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.shippings.id" label="%command.shippings.name" iconURI="icon://COMMAND_SHIPPING" command="_Y1nWUCY9EeSOztFzZzvbWw">
+          <parameters xmi:id="_1f4dYAz9EeiwcpXgFtyyCw" elementId="com.sebulli.fakturama.rcp.parameter.82" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.shippingTable"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUjsEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.vats.id" label="%command.vats.name" iconURI="icon://COMMAND_VAT" mnemonics="" command="_f9TOgJNwEeOHwsccdr5WIQ">
           <parameters xmi:id="_DUxYkO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.61" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.vatTable"/>
         </children>
@@ -62,7 +68,7 @@
           <parameters xmi:id="_J7OIIO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.62" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.viewTextTable"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_JKS7sEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.lists.id" label="%command.lists.name" iconURI="icon://COMMAND_LIST" command="_kmeVQCY9EeSOztFzZzvbWw">
-          <parameters xmi:id="_R7WncO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.63" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.viewListTable"/>
+          <parameters xmi:id="_R7WncO4CEeScLKnTyMNVVA" elementId="com.sebulli.fakturama.rcp.parameter.63" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.listTable"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_JkZdwEgMEeOrp6PdA0AQig" elementId="menu:main.menu.data.expenditurevouchers.id" label="%command.expenditurevouchers.name" iconURI="icon://COMMAND_EXPENDITURE_VOUCHER" command="_rAi1sCY9EeSOztFzZzvbWw">
           <parameters xmi:id="_dl3NQM0eEeWKM-ChS55k7g" elementId="fakturama.menu.data.expenditurevouchers.viewparam" name="com.sebulli.fakturama.lists.viewtype" value="fakturama.views.expenditureVoucherTable"/>
@@ -332,13 +338,11 @@
           </children>
           <children xsi:type="basic:Part" xmi:id="_fv7pQ_SxEeK_Q5-j00j-lw" elementId="fakturama.views.creditorTable" toBeRendered="false" visible="false" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.CreditorListTable" label="%command.creditors.name" iconURI="icon://COMMAND_VENDOR" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
             <tags>NoMove</tags>
-            <menus xsi:type="menu:PopupMenu" xmi:id="_Y1tWAHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.contactlist.popup" label="Creditor list popup">
+            <menus xsi:type="menu:PopupMenu" xmi:id="_Y1tWAHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.creditorlist.popup" label="Creditor list popup">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_gxFRIHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.rcp.handledmenuitem.commandnewcontactname" label="%command.new.creditor.name" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.creditor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
                 <parameters xmi:id="_YjG78HuuEeSFwer2JIsM3w" elementId="com.sebulli.fakturama.rcp.parameter.2" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.creditorEditor"/>
               </children>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_wQdJMHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.contactlist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ">
-                <parameters xmi:id="_crnpcHuuEeSFwer2JIsM3w" elementId="com.sebulli.fakturama.rcp.parameter.3" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.creditorEditor"/>
-              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_wQdJMHs5EeSTsapboMOHbA" elementId="com.sebulli.fakturama.contactlist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
             </menus>
             <toolbar xmi:id="_sAlE4Hs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.rcp.toolbar.1">
               <children xsi:type="menu:HandledToolItem" xmi:id="_vvjRAHs4EeSTsapboMOHbA" elementId="com.sebulli.fakturama.listview.creditor.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.creditor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
@@ -348,6 +352,12 @@
             </toolbar>
           </children>
           <children xsi:type="basic:Part" xmi:id="_tCv5gOYVEeSmXZiiofyvSg" elementId="fakturama.views.debitorTable" toBeRendered="false" visible="false" accessibilityPhrase="" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.views.datatable.contacts.DebitorListTable" label="%command.debtors.name" iconURI="icon://COMMAND_CONTACT" bindingContexts="_c7LSgGFOEeShb_NtiSSU9w" closeable="true">
+            <menus xsi:type="menu:PopupMenu" xmi:id="_ddEfgAKHEeipDbGmk3sxAA" elementId="com.sebulli.fakturama.debitorlist.popup" label="debtor list popup">
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_pu42cAKHEeipDbGmk3sxAA" elementId="com.sebulli.fakturama.rcp.handledmenuitem.commandnewdebtorname" label="%command.new.debtor.name" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.debtor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                <parameters xmi:id="_0TxKcAKHEeipDbGmk3sxAA" elementId="com.sebulli.fakturama.rcp.parameter.80" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.debtorEditor"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_5Qx3AAKHEeipDbGmk3sxAA" elementId="com.sebulli.fakturama.debtorlist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+            </menus>
             <toolbar xmi:id="_0B414OYVEeSmXZiiofyvSg" elementId="com.sebulli.fakturama.rcp.toolbar.5">
               <children xsi:type="menu:HandledToolItem" xmi:id="_nmjpIO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.listview.debtor.add" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.debtor.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
                 <parameters xmi:id="_3JJNQO0REeSUiJK9ZlP2cw" elementId="com.sebulli.fakturama.rcp.parameter.59" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.debtorEditor"/>

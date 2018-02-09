@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
@@ -47,7 +48,12 @@ import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
+import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
+
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 
 /**
  * @author rheydenr
@@ -55,7 +61,7 @@ import org.w3c.dom.Document;
  */
 public class ZugferdHelper {
 
-	private static final String XMP_SCHEMALOCATION = "/resources/ZUGFeRD_Extension-Schema-neu.xmp";
+	private static final String XMP_SCHEMALOCATION = "/ZUGFeRD_Extension-Schema-neu.xmp";
 
 	/**
 	 * Makes A PDF/A3a-compliant document from a PDF-A1 compliant document (on
@@ -68,8 +74,10 @@ public class ZugferdHelper {
 	 * @throws XmpParsingException 
 	 * @throws XPathExpressionException 
 	 * */
-	public static PDDocument makeA3Acompliant(String pdfFile, ConformanceLevel level, Document zugferdXml, String docName) throws IOException, TransformerException, BadFieldValueException, XmpParsingException, XPathExpressionException {
-		PDDocument doc = PDDocument.load(new File(pdfFile));
+	public static PDDocument makeA3Acompliant(String pdfFile, ConformanceLevel level, Document zugferdXml, String docName) throws FakturamaStoringException {
+		PDDocument doc = null;
+		try {
+			doc = PDDocument.load(new File(pdfFile));
 		PDDocumentCatalog cat = doc.getDocumentCatalog();
 		PDMetadata metadata = new PDMetadata(doc);
 		cat.setMetadata(metadata);
@@ -135,6 +143,9 @@ public class ZugferdHelper {
 		OutputStream outputStreamMeta = metadata.createOutputStream();
 		new XmpSerializer().serialize(xmp, outputStreamMeta, true);
 		outputStreamMeta.close();
+		} catch (IOException | XmpParsingException | BadFieldValueException | TransformerException exception) {
+			throw new FakturamaStoringException("error creating ZUGFeRD document", exception);
+		}
 		return doc;
 	}
 
@@ -143,15 +154,27 @@ public class ZugferdHelper {
  * neccessary PDF/A schema extension description to be able to add this information to RDF 
  * @param metadata
  * @throws XmpParsingException 
+ * @throws FakturamaStoringException 
  */
-	private static void addZugferdXMP(XMPMetadata metadata, XMPSchema schema, ConformanceLevel level, Document doc) throws XmpParsingException {
-		InputStream zfExtensionIs = ZugferdHelper.class.getResourceAsStream(XMP_SCHEMALOCATION);
-		DomXmpParser builder = new DomXmpParser();
-		builder.setStrictParsing(true);
-		XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
-		metadata.addSchema(defaultXmp.getPDFExtensionSchema());
-		XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level, "1.0");
-		metadata.addSchema(zf);
+	private static void addZugferdXMP(XMPMetadata metadata, XMPSchema schema, ConformanceLevel level, Document doc) throws XmpParsingException, FakturamaStoringException {
+        Bundle definingBundle = ResourceBundleHelper.getBundleForName(org.fakturama.export.zugferd.Activator.PLUGIN_ID);
+		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+				XMP_SCHEMALOCATION), null);
+//		if(fileResource == null) {
+//			// try resource from src
+//			fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+//				"/src/main/resources/"+XMP_SCHEMALOCATION), null);
+//		}
+		try(InputStream zfExtensionIs = fileResource.openStream();) {
+			DomXmpParser builder = new DomXmpParser();
+			builder.setStrictParsing(true);
+			XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
+			metadata.addSchema(defaultXmp.getPDFExtensionSchema());
+			XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level, "1.0");
+			metadata.addSchema(zf);
+		} catch (IOException | NullPointerException e) {
+			throw new FakturamaStoringException("can't parse XMP file", e);
+		}
 	}
 
 	/**

@@ -39,7 +39,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         if(StringUtils.isBlank(displayString) || displayString.equalsIgnoreCase("0")) {
         	return null;
         }
-        displayString = StringUtils.appendIfMissing(displayString.trim(), "%");
+        displayString = StringUtils.appendIfMissing(displayString.trim(), "%").replaceAll(" %", "%");
     	try {
 			return NumberFormat.getPercentInstance(LocaleUtil.getInstance().getDefaultLocale()).parse(displayString).doubleValue();
         } catch (ParseException e) {
