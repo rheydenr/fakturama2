@@ -249,7 +249,11 @@ public class OfficeDocument {
 						// store parent node for later removing
 						// we have to remember the parent node since the current node is replaced (could be orphaned)
 						TableTableRowElement row = (TableTableRowElement)placeholderNode.findParentNode(TableTableRowElement.ELEMENT_NAME.getQName(), placeholderNode.getNode());
-						nodesMarkedForRemoving.add(row);
+						
+						// ah, but wait: sometimes the DEPOSIT placeholder isn't placed in a table...
+						if(row != null) {
+							nodesMarkedForRemoving.add(row);
+						}
 					}
 	              // Replace all other placeholders
 	                replaceText(placeholderNode);

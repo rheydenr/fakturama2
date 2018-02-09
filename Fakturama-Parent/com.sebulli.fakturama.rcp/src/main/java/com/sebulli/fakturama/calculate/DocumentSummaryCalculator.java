@@ -61,7 +61,9 @@ public class DocumentSummaryCalculator {
         Double scaleFactor = NumberUtils.DOUBLE_ONE;
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
-        MonetaryAmount deposit = Money.of(dataSetDocument.getPaidValue(), currencyCode);
+        // only calculate a deposit if the document is really deposited (else, if e.g. we have a fully paid invoice and the deposit 
+        // amount is not equal to zero we get unpredictable results in later processing)
+        MonetaryAmount deposit = Money.of(dataSetDocument.getDeposit() ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
         Shipping shipping = dataSetDocument.getShipping();
 		return calculate(null, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
