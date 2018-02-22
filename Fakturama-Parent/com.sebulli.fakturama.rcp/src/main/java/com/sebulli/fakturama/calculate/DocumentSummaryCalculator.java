@@ -63,7 +63,7 @@ public class DocumentSummaryCalculator {
         VAT noVatReference = dataSetDocument.getNoVatReference();
         // only calculate a deposit if the document is really deposited (else, if e.g. we have a fully paid invoice and the deposit 
         // amount is not equal to zero we get unpredictable results in later processing)
-        MonetaryAmount deposit = Money.of(dataSetDocument.getDeposit() ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
+        MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
         Shipping shipping = dataSetDocument.getShipping();
 		return calculate(null, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 

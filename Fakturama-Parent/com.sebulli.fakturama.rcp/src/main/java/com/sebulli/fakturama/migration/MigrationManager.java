@@ -818,7 +818,7 @@ public class MigrationManager {
 			DocumentItem item = modelFactory.createDocumentItem();
 			// the position was formerly determined through the order how they stayed in documents entry
 			item.setPosNr(Integer.valueOf(i+1));
-			item.setValidFrom(document.getDocumentDate());
+			item.setValidFrom(document.getValidFrom());
 			item.setDescription(oldItem.getDescription());
 			item.setDeleted(oldItem.isDeleted());
 			item.setItemType(ItemType.POSITION);

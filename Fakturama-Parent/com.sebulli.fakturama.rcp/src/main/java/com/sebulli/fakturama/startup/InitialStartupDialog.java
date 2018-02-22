@@ -364,10 +364,14 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			workspace = txtWorkdir.getText();
 			
 			// handle workdir and JDBC connection
-			if (workspace.isEmpty() || Files.notExists(Paths.get(workspace))) {
+			if (workspace.isEmpty()) {
 				MessageDialog.openError(parent, msg.dialogMessageboxTitleError, msg.startFirstSelectWorkdirNoselection);
 				txtWorkdir.setFocus();
 			} else {
+				if(Files.notExists(Paths.get(workspace))) {
+					Files.createDirectories(Paths.get(workspace));
+				}
+				
     			preferences.put(PersistenceUnitProperties.JDBC_DRIVER, driver);
     			
     			// for default DB setting we use the workdir as DB store
@@ -392,7 +396,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
 				super.okPressed();
 			}
-		} catch (BackingStoreException e) {
+		} catch (BackingStoreException | IOException e) {
 			log.error(e);
 		}
 	}
