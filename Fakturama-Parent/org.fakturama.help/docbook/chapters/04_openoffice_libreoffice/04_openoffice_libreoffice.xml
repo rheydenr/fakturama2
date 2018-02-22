@@ -1003,6 +1003,18 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
+						<entry>ITEM.GROSS.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Bruttowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.NET.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Nettowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
 						<entry>ITEM.UNIT.NET</entry>
 						<entry>
 							<para>Einzelpreis (netto)</para>
@@ -1072,6 +1084,20 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.UNIT.UDF01; ITEM.UNIT.UDF02; ITEM.UNIT.UDF03</entry>
 						<entry>
 							<para>Nutzerdefinierte Felder. Diese Werte werden nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.CATEGORY</entry>
+						<entry>
+							<para>Kategorie des eingefügten Artikel. Dieser Wert wird nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.COSTPRICE</entry>
+						<entry>
+							<para>Einkaufspreis des Produktes. Dieser Wert wird nur ersetzt, wenn der 
 							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
 						</entry>
 					</row>
@@ -1188,6 +1214,7 @@ id="04_openoffice_libreoffice">
 					</tbody>
 				</tgroup>
 			</informaltable>
+			<para>Die Platzhalter für Anzahlung und Teilzahlung müssen in einer (ggf. unsichtbaren) Tabelle platziert werden, da sie sich teilweise gegenseitig ausschließen. beim Ausfüllen der Vorlage werden dann die nicht zutreffenden Zeilen mit den Platzhaltern gelöscht.</para>
 							<important>Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Einstellungen hinterlegt werden: </important>
 							<para>
 								<inlinemediaobject>

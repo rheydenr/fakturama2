@@ -14,6 +14,7 @@
 package com.sebulli.fakturama.handlers;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
@@ -170,15 +172,15 @@ public class MarkOrderAsActionHandler {
                 {
                     for (DocumentItem item : items) {
                     	Product product = item.getProduct();
-                    	// only process if item is based on a real product
-                    	if(product != null) {
+                    	// only process if item is based on a real product and if quantity is given
+                    	if(product != null && product.getQuantity() != null) {
 	                        Double quantityOrder = item.getQuantity();
 	                        Double quantityStock = product.getQuantity();
 	                        product.setQuantity(quantityStock - quantityOrder);
 	                        if (product.getQuantity() <= 0) {
-	                            String name = product.getName();
-	                            String cat = product.getCategories()/*.get(0)*/.getName();
-	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
+	                            String cat = CommonConverter.getCategoryName(product.getCategories(), "/");
+	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, 
+	                            		MessageFormat.format(msg.commandMarkorderWarnStockzero, product.getName(), cat));
 	                        }
 	                        productsDAO.update(product);
 	                        needUpdate = true;

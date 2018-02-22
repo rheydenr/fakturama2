@@ -3,7 +3,7 @@ To create the manual in PDF format you have to install the DocBook XSL files loc
 
 Here's the structure of this folder:
 
-manual-main.xml .. The main file. It references the chapters in chapter subfolder. 
-customization .... customization layer, contains some individual settings, template changes and the titlepage template
-chapters ......... all the chapters from manual
-images ........... images for DocBook adminitions (tip, warning etc)
+<table><tr><td width="150">manual-main.xml</td><td>The main file. It references the chapters in chapter subfolder.</td></tr>
+<tr><td>customization</td><td>customization layer, contains some individual settings, template changes and the titlepage template</td></tr>
+<tr><td>chapters</td><td>all the chapters from manual</td></tr>
+<tr><td>images</td><td>images for DocBook adminitions (tip, warning etc)</td></tr></table>

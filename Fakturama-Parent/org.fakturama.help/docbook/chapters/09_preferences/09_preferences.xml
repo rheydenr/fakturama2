@@ -708,6 +708,14 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{companyorname}</emphasis> Firmenname oder (falls Firmenname leer ist) Nachname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{custno}</emphasis> Kundennummer</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{Xnr}</emphasis> Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
                 </listitem>
                 <listitem>
@@ -730,7 +738,8 @@
             <para>Siehe auch <link linkend="application_mainmenu_extras">Hauptmenü Extras</link>
             </para>
 			<para>Im Feld <emphasis role="bold">Zusätzlicher Pfad der .pdf-Dateien</emphasis> kann man einen weiteren Pfad angeben, in dem PDF-Dateien abgelegt werden. Dies wird beispielsweise verwendet,
-			wenn andere Programme (z. B. Archivsysteme) Dateien aus diesem Pfad direkt lesen und verschieben.</para>
+			wenn andere Programme (z. B. Archivsysteme) Dateien aus diesem Pfad direkt lesen und verschieben. In diesem Feld kann man dieselben Platzhalter verwenden wie in den anderen Dateinamen-Feldern 
+			mit der Ausnahme, daß der Dateipfad in diesem Feld absolut sein sollte.</para>
 			<para>Mit dem Schalter <emphasis role="bold">PDF nach Druck anzeigen</emphasis> kann man sich das erstellte PDF-Dokument direkt nach dem Erstellen anzeigen lassen.</para>
         </section>
         <!-- section> @deprecated

@@ -336,13 +336,15 @@ public class DataUtils {
     }
     
     public Double round(Double d, int scale) {
-    	Double floorValue;
+    	Double floorValue = null;
     	double factor = Math.pow(10, scale);
-        if (d >= 0)
-            floorValue = Math.floor(d * factor + EPSILON) / factor;
-        else
-            floorValue = Math.ceil(d * factor - EPSILON) / factor;
-
+    	if (d != null) {
+	        if(d >= 0)
+	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	        else
+	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+    	}
+    	
         return floorValue;
     }
     
@@ -743,7 +745,7 @@ public class DataUtils {
         DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
         return df.format(calendar.getTime());
     }
-//
+
 //    /**
 //     * Convert a date string from the format YYYY-MM-DD to to localized format.
 //     * 
@@ -767,7 +769,7 @@ public class DataUtils {
 //        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 //        return df.format(calendar.getTime());
 //    }
-//
+
     /**
      * Convert a date and time string from the format YYYY-MM-DD HH:MM:SS to to
      * localized format.
@@ -880,19 +882,18 @@ public class DataUtils {
         }
         return calendar;
     }
-//
-//    /**
-//     * Returns the date and time of now in a localized format.
-//     * 
-//     * @return Date and time as formated String
-//     */
-//    public static String DateAndTimeOfNowAsLocalString() {
-//
-//        GregorianCalendar calendar = new GregorianCalendar();
-//        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-//        return df.format(calendar.getTime());
-//    }
-//
+
+    /**
+     * Returns the date and time of now in a localized format.
+     * 
+     * @return Date and time as formated String
+     */
+    public String DateAndTimeOfNowAsLocalString() {
+        GregorianCalendar calendar = new GregorianCalendar();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        return df.format(calendar.getTime());
+    }
+
 //    /**
 //     * Adds days to a date string.
 //     * 

@@ -159,7 +159,7 @@ em.joinTransaction();
 			//getEntityManager().persist(object);
 			//getEntityManager().flush();
 			trx.commit();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new FakturamaStoringException("Error updating to the database.", e, object);
 		}
 		return object;

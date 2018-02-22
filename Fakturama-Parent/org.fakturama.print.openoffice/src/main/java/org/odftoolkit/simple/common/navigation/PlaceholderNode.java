@@ -185,7 +185,12 @@ public class PlaceholderNode extends Selection {
         
         // make every line break a separate paragraph
         String[] st = StringUtils.splitByWholeSeparatorPreserveAllTokens(StringUtils.defaultString(newText), "\r");
+        boolean firstSkip = false;
         for (String s : st) {
+        	if(s.isEmpty() && !firstSkip) {
+        		firstSkip = true;
+        		continue;
+        	}
             // create a "template node" by cloning the original node
             Node templateNode = parentNode.cloneNode(false);
             templateNode.setTextContent(s);
