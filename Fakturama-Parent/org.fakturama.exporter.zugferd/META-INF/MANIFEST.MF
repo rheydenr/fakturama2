@@ -4,9 +4,9 @@ Bundle-Name: Fakturama ZUGFeRD-Exporter
 Bundle-SymbolicName: org.fakturama.exporter.zugferd;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-ClassPath: .,
- lib/fontbox-2.0.7.jar,
- lib/pdfbox-2.0.7.jar,
- lib/xmpbox-2.0.7.jar
+ lib/fontbox-2.0.8.jar,
+ lib/pdfbox-2.0.8.jar,
+ lib/xmpbox-2.0.8.jar
 Bundle-Vendor: Fakturama.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt;bundle-version="3.105.0",
