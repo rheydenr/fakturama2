@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="444">
+<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="447">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.2.201308292016"/>
@@ -13,18 +13,6 @@
 <unit id="org.javamoney.feature.feature.group" version="1.0.1"/>
 <unit id="org.slf4j.osgi.feature.feature.group" version="1.0.0"/>
 <repository location="http://ralf-heydenreich.homepage.t-online.de/p2"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201803152140"/>
-<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201803152140"/>
-<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201803152140"/>
-<repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.0.0.201711021145"/>
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.1.0.201711021145"/>
-<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201711021145"/>
-<repository location="http://download.eclipse.org/nebula/releases/1.4.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
@@ -123,6 +111,22 @@
 <unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201605260315"/>
 <unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201605260315"/>
 <repository location="http://download.eclipse.org/releases/oxygen"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201803231500"/>
+<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201803231500"/>
+<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201803231500"/>
+<repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.1.0.201804011600"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201804011600"/>
+<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201804011600"/>
+<repository location="http://download.eclipse.org/nebula/releases/2.0.0"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.collections.feature.source.feature.group" version="9.1.0.v20171231-1315"/>
+<repository location="http://download.eclipse.org/collections/9.1.0/repository"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
