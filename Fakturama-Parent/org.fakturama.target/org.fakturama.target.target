@@ -95,21 +95,12 @@
 <unit id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
 <unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.0.v20170110-1317"/>
 <unit id="org.eclipse.emf.common.feature.group" version="2.13.0.v20170609-0707"/>
-<unit id="org.eclipse.emf.databinding.feature.group" version="1.4.0.v20170609-0928"/>
-<unit id="org.eclipse.emf.doc.feature.group" version="2.12.0.v20170609-0928"/>
-<unit id="org.eclipse.emf.ecore.edit.feature.group" version="2.9.0.v20170609-0928"/>
-<unit id="org.eclipse.emf.ecore.feature.group" version="2.13.0.v20170609-0707"/>
-<unit id="org.eclipse.emf.edit.feature.group" version="2.12.0.v20170609-0928"/>
 <unit id="org.eclipse.emf.feature.group" version="2.13.0.v20170609-0928"/>
 <unit id="org.eclipse.equinox.core.feature.feature.group" version="1.4.1.v20170928-1321"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.7.2.v20171108-1834"/>
 <unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.4.1.v20170928-1405"/>
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.2.v20171108-1834"/>
 <unit id="org.eclipse.platform.feature.group" version="4.7.2.v20171130-0510"/>
-<unit id="org.eclipse.xpand.feature.group" version="2.2.0.v201605260315"/>
-<unit id="org.eclipse.xtend.dependencies.feature.group" version="2.2.0.v201605260315"/>
-<unit id="org.eclipse.xtend.feature.group" version="2.2.0.v201605260315"/>
-<unit id="org.eclipse.xtend.typesystem.emf.feature.group" version="2.2.0.v201605260315"/>
 <repository location="http://download.eclipse.org/releases/oxygen"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
