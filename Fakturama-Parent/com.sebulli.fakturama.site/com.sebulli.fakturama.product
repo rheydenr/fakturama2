@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -22,7 +22,6 @@
 
    <windowImages i16="app/app_16.png" i32="app/app_32.png" i48="app/app_48.png" i64="app/app_64.png" i128="app/app_128.png" i256="app/app_256.png"/>
 
-
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
@@ -37,7 +36,6 @@
             winExtraLargeHigh="app/app_256.bmp"/>
       </win>
    </launcher>
-
 
    <vm>
       <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
@@ -233,10 +231,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.0.0.qualifier"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.0.qualifier"/>
-      <feature id="org.fakturama.export.feature" version="2.0.0.qualifier"/>
-      <feature id="org.fakturama.import.feature" version="2.0.0.qualifier"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.0.2.qualifier"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.2.qualifier"/>
+      <feature id="org.fakturama.export.feature" version="2.0.2.qualifier"/>
+      <feature id="org.fakturama.import.feature" version="2.0.2.qualifier"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
@@ -258,18 +256,18 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ar" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_de" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_es" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_fr" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_hu" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_it" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_pl" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ro" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.7.0.v20170819060001"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ar"/>
+      <feature id="org.eclipse.babel.nls_eclipse_de"/>
+      <feature id="org.eclipse.babel.nls_eclipse_es"/>
+      <feature id="org.eclipse.babel.nls_eclipse_eu"/>
+      <feature id="org.eclipse.babel.nls_eclipse_fr"/>
+      <feature id="org.eclipse.babel.nls_eclipse_hu"/>
+      <feature id="org.eclipse.babel.nls_eclipse_it"/>
+      <feature id="org.eclipse.babel.nls_eclipse_pl"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ro"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ru"/>
+      <feature id="org.eclipse.babel.nls_eclipse_tr"/>
+      <feature id="org.eclipse.babel.nls_eclipse_uk"/>
    </features>
 
    <configurations>
