@@ -281,6 +281,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
+      <property name="--add-modules" value="ALL-SYSTEM" />
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
       <property name="eclipse.p2.profile" value="profile" />
