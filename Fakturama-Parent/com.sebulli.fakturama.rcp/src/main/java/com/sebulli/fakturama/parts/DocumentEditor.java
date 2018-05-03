@@ -872,6 +872,9 @@ public class DocumentEditor extends Editor<Document> {
      * @return <code>true</code> if it's only a deposit
      */
     private boolean isInvoiceDeposited() {
+    	if(document.getPayment() == null) {
+    		return false;
+    	}
     	// see FAK-485
     	double discount = 1 - document.getPayment().getDiscountValue();
     	MonetaryAmount paidValue = Money.of(document.getPaidValue(), currencyUnit);
