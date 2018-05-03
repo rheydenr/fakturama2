@@ -103,7 +103,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.vat = itemVat;
 		this.salesEqTax = Money.zero(net.getCurrency());
 		this.accountType = accountType;
-		this.description = accountType.getName();
+		this.description = this.accountType != null ? accountType.getName() : "";
    }
 
     /**

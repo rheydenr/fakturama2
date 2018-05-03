@@ -294,7 +294,7 @@ em.joinTransaction();
      * <P>Find or create an Entity based on given Entity. This method is used e.g.
      * for web shop import where a new contact is only created if it doesn't exist. 
      * </P><P>
-     * This method is analogous to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
+     * This method is analog to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
      * </P><P>The criteria are set in {@link AbstractDAO#getRestrictions(Object, CriteriaBuilder, Root)} which has to
      * be overridden by sub classes.
      * @param contact Entity to test

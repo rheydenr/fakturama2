@@ -47,6 +47,7 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 	    			 object.getAccount().getName()));
     	}
     	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.voucherDate), object.getVoucherDate()));
+    	restrictions.add(criteriaBuilder.not(root.get(Voucher_.deleted)));
     	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.documentNumber), StringUtils.defaultString(object.getDocumentNumber())));
     	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.voucherNumber), StringUtils.defaultString(object.getVoucherNumber())));
     	return restrictions;

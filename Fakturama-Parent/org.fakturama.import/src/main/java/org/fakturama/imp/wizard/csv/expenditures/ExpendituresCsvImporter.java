@@ -21,12 +21,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.Calendar;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
@@ -239,12 +238,14 @@ public class ExpendituresCsvImporter {
 
 						// Fill the expenditure item with data
 						expenditureItem.setName(prop.getProperty("item name"));
-						ItemAccountType newAccountType = itemAccountTypeDAO.findByName(prop.getProperty("item category"));
-						if(newAccountType == null) {
-							newAccountType = modelFactory.createItemAccountType();
-							newAccountType.setName(prop.getProperty("item category"));
+						if(StringUtils.isNotBlank(prop.getProperty("item category"))) {
+							ItemAccountType newAccountType = itemAccountTypeDAO.findByName(prop.getProperty("item category"));
+							if(newAccountType == null) {
+								newAccountType = modelFactory.createItemAccountType();
+								newAccountType.setName(prop.getProperty("item category"));
+							}
+							expenditureItem.setAccountType(newAccountType);
 						}
-						expenditureItem.setAccountType(newAccountType);
 						expenditureItem.setPrice(DataUtils.getInstance().StringToDouble(prop.getProperty("item price")));
 
 						String vatName = prop.getProperty("item vat");
@@ -267,11 +268,11 @@ public class ExpendituresCsvImporter {
 						// Add the item to the item string
 //						String oldItems = expenditure.getStringValueByKey("items");
 //						String newItem = expenditureItem.getStringValueByKey("id");
-						if (DateUtils.isSameDay(expenditure.getDateAdded(), Calendar.getInstance().getTime())) {
+//						if (DateUtils.isSameDay(expenditure.getDateAdded(), Calendar.getInstance().getTime())) {
 //							oldItems += ",";
-						} else {
+//						} else {
 							importedExpenditures++;
-						}
+//						}
 
 						// Recalculate the total sum of all items and set the total value
 						VoucherSummaryCalculator calculator = new VoucherSummaryCalculator();
