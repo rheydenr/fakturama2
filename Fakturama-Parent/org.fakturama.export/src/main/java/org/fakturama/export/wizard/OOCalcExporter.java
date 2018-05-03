@@ -43,7 +43,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Voucher;
 
@@ -183,8 +182,8 @@ public class OOCalcExporter {
 
 		// Only invoices and credits in the interval
 		// will be exported.
-		boolean isInvoiceOrCreditInIntervall = ((document.getBillingType() == BillingType.INVOICE) 
-				|| (document.getBillingType() == BillingType.CREDIT
+		boolean isInvoiceOrCreditInIntervall = (document.getBillingType().isINVOICE() 
+				|| (document.getBillingType().isCREDIT()
 				)) && isInIntervall;
 		
 		// Export paid or unpaid documents

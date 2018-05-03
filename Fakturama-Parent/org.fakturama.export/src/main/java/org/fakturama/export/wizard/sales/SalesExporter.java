@@ -15,6 +15,8 @@
 package org.fakturama.export.wizard.sales;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -162,7 +165,11 @@ public class SalesExporter extends OOCalcExporter {
 
 		// Table column headings
 		int headLine = row;
-		setCellTextInBold(row, col++, msg.exporterDataPayday);
+		if (this.exportPaid) {
+			setCellTextInBold(row, col++, msg.exporterDataPayday);
+		} else {
+			setCellTextInBold(row, col++, msg.editorDocumentDuedays);
+		}
 		setCellTextInBold(row, col++, msg.exporterDataInvoiceno);
 		setCellTextInBold(row, col++, msg.exporterDataInvoicedate);
 		setCellTextInBold(row, col++, msg.commonFieldFirstname);
@@ -229,7 +236,7 @@ public class SalesExporter extends OOCalcExporter {
 
 			// Create a column heading in bold
 			int column = vatSummarySetAllDocuments.getIndex(item);
-			setCellTextInBold(headLine, columnsWithVatHeading + column + col, msg.productDataNet +"\n" + item.getVatName());
+			setCellTextInBold(headLine, columnsWithVatHeading + column + col, msg.productDataNet + (StringUtils.isEmpty(item.getVatName()) ? "" : "\n" + item.getVatName()) );
 		}
 
 		// Second run.
@@ -265,7 +272,13 @@ public class SalesExporter extends OOCalcExporter {
 
 				// Fill the row with the document data
 				col = 0;
-				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+				if(this.exportPaid) {
+					setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+				} else {
+					// calculate due date
+					LocalDateTime targetDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
+					setCellText(row, col++, DateTimeFormatter.ISO_LOCAL_DATE.format(targetDate));
+				}
 				setCellText(row, col++, document.getName());
 				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate()));
 				Contact addressid = document.getBillingContact();
@@ -343,7 +356,7 @@ public class SalesExporter extends OOCalcExporter {
 				// It could be a rounding error.
 				if (Math.abs(roundingError) > 0.01)
 					setCellTextInRedBold(row, col + columnsWithVatHeading + columnsWithNetHeading, "Runden prüfen");
-
+				
 				// Set the background of the table rows. Use a light and
 				// alternating blue color.
 				if ((row % 2) == 0)
