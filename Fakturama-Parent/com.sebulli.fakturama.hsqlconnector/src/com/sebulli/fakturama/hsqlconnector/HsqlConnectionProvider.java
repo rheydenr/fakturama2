@@ -58,6 +58,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		hsqlProps.setProperty("server.dbname.0", "fakdbneu");
 		hsqlProps.setProperty("hsqldb.lob_compressed", "true");
 		hsqlProps.setProperty("server.port", "9002");
+		hsqlProps.setProperty("hsqldb.lob_file_scale", "1");
 
 		try {
 			server.setProperties(hsqlProps);

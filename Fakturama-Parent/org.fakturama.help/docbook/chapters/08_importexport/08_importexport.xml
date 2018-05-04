@@ -587,7 +587,7 @@
 		<anchor xreflabel="" xml:id="importexport_export_accounts"/>
 		<title>Export Kontostand</title>
 		<para>Exportiert den Kontostand in eine OpenOffice.org / LibreOffice-Tabelle.</para>
-		<para>Dieser "Kontoauszug" wird aus den bezahlten Rechnungen, den Einnahmen- und Ausgabebelegen gebildet. Vergleicht man diesen mit dem Kontoauszug der Bank kann sehr gut überprüft werden, ob alle Belege korrekt eingegeben wurden.</para>
+		<para>Dieser "Kontoauszug" wird aus den bezahlten Rechnungen, den Einnahmen- und Ausgabebelegen gebildet. Vergleicht man diesen mit dem Kontoauszug der Bank, kann sehr gut überprüft werden, ob alle Belege korrekt eingegeben wurden.</para>
 		<para>Damit mit unterschiedlichen Konten gearbeitet werden kann, müssen diese bei den Zahlungsarten oder den Belegen angegeben werden.</para>
 		<para>Beim Export wird der Zeitraum vorgegeben, für den die Kontobewegungen exportiert werden. Ein Export findet für ein Konto statt, das in einer Drop-Down-Liste ausgewählt wird. Diese Liste wird aus den Konten in den Zahlungsarten und Belegen gebildet.</para>
 		<section>
