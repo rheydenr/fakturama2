@@ -457,7 +457,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 		   /* if the address was modified but addressId has a customer number then we have
-			* a manually changed contact which has to created as new contact (else we would
+			* a manually changed contact which has to be created as new contact (else we would
 			* update the existing contact which isn't wanted in most cases).
 			* But wait... the Id of the old entry and the new entry have to be the same.
 			* Else it could be a newly selected contact from the contact list.
@@ -489,6 +489,10 @@ public class DocumentEditor extends Editor<Document> {
 				if(document.getBillingContact().getCustomerNumber() == null) {
 				    document.getBillingContact().setDeleted(Boolean.TRUE);
 				}
+			} else {
+				// A manually changed address means that there's no reason for an alternative address which was stored earlier.
+				// Therefore we remove that alternative address from document.
+				document.setDeliveryContact(null);
 			}
             // set the new contact
             document.setBillingContact(displayAddress);
@@ -2226,6 +2230,7 @@ public class DocumentEditor extends Editor<Document> {
 //		            document.setManualAddress(txtAddress.getText());
 //		            document.setBillingContact(null);
 		            setDirty(true);
+		            showHideWarningIcon();
 //		        }
             }
         });
