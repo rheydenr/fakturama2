@@ -1,100 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.javamoney</groupId>
 	<artifactId>org.javamoney.osgi</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
-	<properties>
-		<tycho-version>0.23.1</tycho-version>
-		<project.version>1.0.1</project.version>
-	</properties>
-    <repositories>
-        <repository>
-            <id>luna</id>
-            <layout>p2</layout>
-            <url>http://download.eclipse.org/releases/luna</url>
-        </repository>
-    </repositories>
-
-   	<packaging>eclipse-plugin</packaging>
-	<build>
-		<!-- To define the plugin version in your parent POM -->
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-compiler-plugin</artifactId>
-					<version>${tycho-version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-packaging-plugin</artifactId>
-					<version>${tycho-version}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		<!-- To use the plugin goals in your POM or parent POM -->
-		<plugins>
-         <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-maven-plugin</artifactId>
-            <version>${tycho-version}</version>
-            <extensions>true</extensions>
-         </plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-packaging-plugin</artifactId>
-				<!-- dependencies>
-					<dependency>
-						<groupId>timestamp-provider-groupid</groupId>
-						<artifactId>timestamp-provider-artifactid</artifactId>
-						<version>timestamp-provider-version</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<timestampProvider>custom</timestampProvider>
-				</configuration -->
-			</plugin>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>target-platform-configuration</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <environments>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                        <environment>
-                            <os>win32</os>
-                            <ws>win32</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>win32</os>
-                            <ws>win32</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                        <environment>
-                            <os>macosx</os>
-                            <ws>cocoa</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                    </environments>
-                </configuration>
-            </plugin>
-		</plugins>
-		
-	</build>
-
+    <packaging>eclipse-plugin</packaging>
+  <version>1.0.1</version>
+  <parent>
+  <groupId>de.rhe.helper</groupId>
+  <artifactId>fakturama</artifactId>
+  <version>1.0.0</version>
+  </parent>
 </project>
