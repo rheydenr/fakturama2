@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Collections
+Bundle-SymbolicName: org.apache.commons.collections;singleton:=true
+Bundle-Version: 4.1.0
+Bundle-ClassPath: commons-collections4-4.1-javadoc.jar,
+ commons-collections4-4.1.jar
+Bundle-Vendor: Apache.org
+Export-Package: org.apache.commons.collections4,
+ org.apache.commons.collections4.bag,
+ org.apache.commons.collections4.bidimap,
+ org.apache.commons.collections4.collection,
+ org.apache.commons.collections4.comparators,
+ org.apache.commons.collections4.functors,
+ org.apache.commons.collections4.iterators,
+ org.apache.commons.collections4.keyvalue,
+ org.apache.commons.collections4.list,
+ org.apache.commons.collections4.map,
+ org.apache.commons.collections4.multimap,
+ org.apache.commons.collections4.multiset,
+ org.apache.commons.collections4.queue,
+ org.apache.commons.collections4.sequence,
+ org.apache.commons.collections4.set,
+ org.apache.commons.collections4.splitmap,
+ org.apache.commons.collections4.trie,
+ org.apache.commons.collections4.trie.analyzer
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

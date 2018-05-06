@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MySQL Connector/J
+Bundle-SymbolicName: com.mysql.jdbc
+Bundle-Version: 5.1.38
+Specification-Version: 5.1.38
+Bundle-ClassPath: mysql-connector-java-5.1.38-bin.jar
+Bundle-Vendor: mysql.org
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: com.mysql.jdbc;version="5.1.38";uses:="com.mysql.jdbc.
+ log,javax.naming,javax.net.ssl,javax.xml.transform,org.xml.sax",com.m
+ ysql.jdbc.jdbc2.optional;version="5.1.38";uses:="com.mysql.jdbc,com.m
+ ysql.jdbc.log,javax.naming,javax.sql,javax.transaction.xa",com.mysql.
+ jdbc.log;version="5.1.38",com.mysql.jdbc.profiler;version="5.1.38";us
+ es:="com.mysql.jdbc",com.mysql.jdbc.util;version="5.1.38";uses:="com.
+ mysql.jdbc.log",com.mysql.jdbc.exceptions;version="5.1.38",com.mysql.
+ jdbc.exceptions.jdbc4;version="5.1.38";uses:="com.mysql.jdbc",com.mys
+ ql.jdbc.interceptors;version="5.1.38";uses:="com.mysql.jdbc",com.mysq
+ l.jdbc.integration.c3p0;version="5.1.38",com.mysql.jdbc.integration.j
+ boss;version="5.1.38",com.mysql.jdbc.configs;version="5.1.38",org.gjt
+ .mm.mysql;version="5.1.38"
