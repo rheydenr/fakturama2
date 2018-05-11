@@ -1,9 +1,7 @@
 package com.sebulli.fakturama.dao;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.ShippingCategory;
 
 @Creatable

@@ -31,7 +31,6 @@ import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 
-import liquibase.CatalogAndSchema;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
