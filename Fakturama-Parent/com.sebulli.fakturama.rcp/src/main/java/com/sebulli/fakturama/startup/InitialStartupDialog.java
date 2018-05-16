@@ -474,7 +474,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 					selectedDirectory = "";
 				}
 				selectionField.setText(selectedDirectory);
-				if(shouldCheckPreviousVersion) {
+				if(shouldCheckPreviousVersion && forOldVersion) {
 				    dirChecker.checkPreviousVersion(selectedDirectory);
 				}
 			}
