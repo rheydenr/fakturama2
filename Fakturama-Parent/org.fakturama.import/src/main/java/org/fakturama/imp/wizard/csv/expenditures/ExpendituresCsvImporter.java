@@ -155,6 +155,7 @@ public class ExpendituresCsvImporter {
 		String[] columns;
 	
 		// Open the existing file
+		// TODO use NIO
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
 			 BufferedReader in = new BufferedReader(isr);
 			 CSVReader csvr = new CSVReader(in, ';');	) {
