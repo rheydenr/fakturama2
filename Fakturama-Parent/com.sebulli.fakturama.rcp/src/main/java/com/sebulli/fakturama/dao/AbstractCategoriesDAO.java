@@ -15,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.ShippingCategory;
 
 /**
  *
