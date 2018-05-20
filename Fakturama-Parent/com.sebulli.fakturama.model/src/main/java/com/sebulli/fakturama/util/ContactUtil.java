@@ -100,6 +100,8 @@ public class ContactUtil {
             line = DataUtils.getInstance().getSingleLine(contact.getCompany());
         } else if (StringUtils.isNotBlank(contact.getName())) {
             line = contact.getName();
+        } else if(contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
+        	line = getDataFromAddressField(contact.getAddress().getManualAddress(), KEY_NAME);
         }
         return line;
     }
