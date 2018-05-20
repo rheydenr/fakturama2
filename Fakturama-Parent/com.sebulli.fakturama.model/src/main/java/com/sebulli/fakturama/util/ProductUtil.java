@@ -75,7 +75,7 @@ public final class ProductUtil {
         int blockQuantity = Integer.valueOf(0);
         int newQuantity;
         int scaledPrices;
-        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
+        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(1));
 
         // search all used blocks
         // no reflection used because of unwanted side effects...

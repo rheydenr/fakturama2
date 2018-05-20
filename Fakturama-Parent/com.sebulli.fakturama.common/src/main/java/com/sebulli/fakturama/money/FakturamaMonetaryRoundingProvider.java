@@ -41,6 +41,7 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
      * @return the (shared) default rounding instances matching, never null.
      */
     public MonetaryRounding getRounding(RoundingQuery roundingQuery) {
+        RoundingMode roundingMode;
 //        if (roundingQuery.getTimestamp() != null) {
 //            return null;
 //        }
@@ -53,15 +54,14 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
                     return new FakturamaCashRounding(currency, 1);
                 }
             }
-           RoundingMode roundingMode = java.util.Optional.ofNullable(roundingQuery.get(RoundingMode.class)).orElse(RoundingMode.HALF_UP);
-           return new FakturamaRounding(currency, roundingMode);
+//           return new FakturamaRounding(currency, roundingMode);
         }
         Integer scale = roundingQuery.getScale();
         if (scale == null) {
             scale = 2;
         }
         MathContext mc = roundingQuery.get(MathContext.class/*, null*/);
-        RoundingMode roundingMode = roundingQuery.get(RoundingMode.class/*, null*/);
+        roundingMode = java.util.Optional.ofNullable(roundingQuery.get(RoundingMode.class)).orElse(RoundingMode.HALF_UP);
         if (roundingMode != null || mc != null) {
             if (mc != null) {
                 return new FakturamaRounding(scale, mc.getRoundingMode());

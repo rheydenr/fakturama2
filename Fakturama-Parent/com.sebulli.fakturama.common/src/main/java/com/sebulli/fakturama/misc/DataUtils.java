@@ -50,6 +50,7 @@ import org.javamoney.moneta.format.CurrencyStyle;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
+import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
 import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
 import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
@@ -103,15 +104,14 @@ public class DataUtils {
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
 
-        if (currencyLocale.getCountry().equals("CH")) {
-            if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
-                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
-                mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                        .setCurrency(chf)
-                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
-                        .build());
-            }
+        if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
+            mro = Monetary.getRounding(RoundingQueryBuilder.of()
+                    .setCurrency(Monetary.getCurrency(currencyLocale))
+                    .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
+                    .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+                    // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true))
+                    .build());
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
@@ -131,9 +131,11 @@ public class DataUtils {
     public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
         return Monetary.getCurrency(currencyLocale);
     }
+    
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
+                .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
                 .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                 .set("cashRounding", cashRounding)
                 .build());
