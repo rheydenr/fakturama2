@@ -46,22 +46,22 @@ public class FakturamaMonetaryRoundingProvider implements RoundingProviderSpi {
 //            return null;
 //        }
         CurrencyUnit currency = roundingQuery.getCurrency();
-        if (currency != null) {
-            if (BooleanUtils.isTrue(roundingQuery.getBoolean("cashRounding"))) {
-                if (currency.getCurrencyCode().equals("CHF")) {
-                    return new FakturamaCashRounding(currency, RoundingMode.HALF_UP, 5);
-                } else {
-                    return new FakturamaCashRounding(currency, 1);
-                }
-            }
-//           return new FakturamaRounding(currency, roundingMode);
-        }
         Integer scale = roundingQuery.getScale();
         if (scale == null) {
             scale = 2;
         }
         MathContext mc = roundingQuery.get(MathContext.class/*, null*/);
         roundingMode = java.util.Optional.ofNullable(roundingQuery.get(RoundingMode.class)).orElse(RoundingMode.HALF_UP);
+        if (currency != null) {
+            if (BooleanUtils.isTrue(roundingQuery.getBoolean("cashRounding"))) {
+                if (currency.getCurrencyCode().equals("CHF")) {
+                    return new FakturamaCashRounding(scale, roundingMode, 5);
+                } else {
+                    return new FakturamaCashRounding(scale, roundingMode, 1);
+                }
+            }
+//           return new FakturamaRounding(currency, roundingMode);
+        }
         if (roundingMode != null || mc != null) {
             if (mc != null) {
                 return new FakturamaRounding(scale, mc.getRoundingMode());

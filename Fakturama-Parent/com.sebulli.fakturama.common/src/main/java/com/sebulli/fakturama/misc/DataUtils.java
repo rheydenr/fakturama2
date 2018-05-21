@@ -110,7 +110,7 @@ public class DataUtils {
                     .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
                     .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                     // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true))
+                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false))
                     .build());
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(

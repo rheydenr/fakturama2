@@ -26,7 +26,7 @@ public class FakturamaCashRounding implements MonetaryRounding {
      */
     private static final String SCALE_KEY = "scale";
     /**
-     * The scale key to be used.
+     * The minimal minors key to be used.
      */
     private static final String MINMINORS_KEY = "minimalMinors";
 

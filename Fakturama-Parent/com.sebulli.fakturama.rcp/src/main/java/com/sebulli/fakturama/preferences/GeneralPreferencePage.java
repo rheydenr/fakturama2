@@ -199,6 +199,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(value);
         if (event.getSource() instanceof ComboFieldEditor) {
             String newValue = (String) event.getNewValue();
+            cashCheckbox.loadDefault();
             String exampleFormat = calculateExampleCurrencyFormatString(newValue, thousandsSeparatorCheckbox.getBooleanValue(), cashCheckbox.getBooleanValue(), currencySetting);
             example.setText(exampleFormat);
         } else if(event.getSource() instanceof BooleanFieldEditor
