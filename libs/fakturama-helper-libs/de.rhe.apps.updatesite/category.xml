@@ -6,9 +6,9 @@
    <feature url="features/org.javamoney.feature_1.0.1.jar" id="org.javamoney.feature" version="1.0.1">
       <category name="de.rhe.libs.additional"/>
    </feature>
-   <!-- feature url="features/org.slf4j.osgi.feature_1.0.0.jar" id="org.slf4j.osgi.feature" version="1.0.0">
+   <feature url="features/org.slf4j.osgi.feature_1.0.0.jar" id="org.slf4j.osgi.feature" version="1.0.0">
       <category name="de.rhe.libs.additional"/>
-   </feature -->
+   </feature>
    <feature url="features/com.opcoach.e4.preference.feature_1.0.0.jar" id="com.opcoach.e4.preference.feature" version="1.0.0">
       <category name="de.rhe.libs.additional"/>
    </feature>

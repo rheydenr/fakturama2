@@ -26,6 +26,7 @@
         <module>com.mysql.jdbc.feature</module>
         <module>org.hsqldb.jdbc</module>
         <module>org.hsql.jdbc.feature</module>
+        <module>org.slf4j.osgi.feature</module>
 
         <module>com.opcoach.e4.preference.feature</module>
 
@@ -131,8 +132,15 @@
                             <arch>x86_64</arch>
                         </environment>
                     </environments>
-				</configuration>
-			</plugin>
+                    <target>
+                        <artifact>
+                            <groupId>com.sebulli.fakturama</groupId>
+                            <artifactId>org.fakturama.target</artifactId>
+                            <version>2.0.2-SNAPSHOT</version>
+                        </artifact>
+                    </target>
+                </configuration>
+            </plugin>
             
         </plugins>
     </build>

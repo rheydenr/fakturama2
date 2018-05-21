@@ -244,12 +244,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="com.mysql.jdbc.feature"/>
       <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.slf4j.osgi.feature" version="1.0.0"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
-      <feature id="org.slf4j.osgi.feature"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
@@ -269,6 +269,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_ru"/>
       <feature id="org.eclipse.babel.nls_eclipse_tr"/>
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
+      <feature id="org.eclipse.babel.nls_eclipse_sk"/>
    </features>
 
    <configurations>
