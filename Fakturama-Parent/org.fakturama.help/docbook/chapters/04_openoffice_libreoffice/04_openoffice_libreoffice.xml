@@ -838,6 +838,7 @@ id="04_openoffice_libreoffice">
 						<row><entry>%LT</entry><entry>&lt;</entry></row>
 						<row><entry>%GT</entry><entry>&gt;</entry></row>
 						<row><entry>%NL</entry><entry>Neue Zeile</entry></row>
+						<row><entry>%SPACE</entry><entry>Leerzeichen</entry></row>
 						<row><entry>%TAB</entry><entry>Tabspace</entry></row>
 						<row><entry>%DOLLAR</entry><entry>$</entry></row>
 						<row><entry>%COMMA</entry><entry>,</entry></row>

@@ -1053,59 +1053,59 @@ public class DataUtils {
      */
     public String replaceAllAccentedChars(String s) {
         
-        s = s.replace("À", "A");
-        s = s.replace("�?", "A");
-        s = s.replace("Â", "A");
-        s = s.replace("Ã", "A");
-        s = s.replace("Ä", "Ae");
-        s = s.replace("â", "a");
-        s = s.replace("ã", "a");
-        s = s.replace("ä", "ae");
-        s = s.replace("à", "a");
-        s = s.replace("á", "a");
+	    s = s.replace("À", "A");
+	    s = s.replace("Á", "A");
+	    s = s.replace("Â", "A");
+	    s = s.replace("Ã", "A");
+	    s = s.replace("Ä", "Ae");
+	    s = s.replace("â", "a");
+	    s = s.replace("ã", "a");
+	    s = s.replace("ä", "ae");
+	    s = s.replace("à", "a");
+	    s = s.replace("á", "a");
 
-        s = s.replace("È", "E");
-        s = s.replace("É", "E");
-        s = s.replace("Ê", "E");
-        s = s.replace("Ë", "E");
-        s = s.replace("ê", "e");
-        s = s.replace("ë", "e");
-        s = s.replace("è", "e");
-        s = s.replace("é", "e");
+	    s = s.replace("È", "E");
+	    s = s.replace("É", "E");
+	    s = s.replace("Ê", "E");
+	    s = s.replace("Ë", "E");
+	    s = s.replace("ê", "e");
+	    s = s.replace("ë", "e");
+	    s = s.replace("è", "e");
+	    s = s.replace("é", "e");
 
-        s = s.replace("Ì", "I");
-        s = s.replace("�?", "I");
-        s = s.replace("Î", "I");
-        s = s.replace("�?", "I");
-        s = s.replace("î", "i");
-        s = s.replace("ï", "i");
-        s = s.replace("ì", "i");
-        s = s.replace("í", "i");
+	    s = s.replace("Ì", "I");
+	    s = s.replace("Í", "I");
+	    s = s.replace("Î", "I");
+	    s = s.replace("Ï", "I");
+	    s = s.replace("î", "i");
+	    s = s.replace("ï", "i");
+	    s = s.replace("ì", "i");
+	    s = s.replace("í", "i");
 
-        s = s.replace("Ò", "O");
-        s = s.replace("Ó", "O");
-        s = s.replace("Ô", "O");
-        s = s.replace("Õ", "O");
-        s = s.replace("Ö", "Oe");
-        s = s.replace("ô", "o");
-        s = s.replace("õ", "o");
-        s = s.replace("ö", "oe");
-        s = s.replace("ò", "o");
-        s = s.replace("ó", "o");
+	    s = s.replace("Ò", "O");
+	    s = s.replace("Ó", "O");
+	    s = s.replace("Ô", "O");
+	    s = s.replace("Õ", "O");
+	    s = s.replace("Ö", "Oe");
+	    s = s.replace("ô", "o");
+	    s = s.replace("õ", "o");
+	    s = s.replace("ö", "oe");
+	    s = s.replace("ò", "o");
+	    s = s.replace("ó", "o");
 
-        s = s.replace("Ù", "U");
-        s = s.replace("Ú", "U");
-        s = s.replace("Û", "U");
-        s = s.replace("Ü", "Ue");
-        s = s.replace("û", "u");
-        s = s.replace("ü", "ue");
-        s = s.replace("ù", "u");
-        s = s.replace("ú", "u");
+	    s = s.replace("Ù", "U");
+	    s = s.replace("Ú", "U");
+	    s = s.replace("Û", "U");
+	    s = s.replace("Ü", "Ue");
+	    s = s.replace("û", "u");
+	    s = s.replace("ü", "ue");
+	    s = s.replace("ù", "u");
+	    s = s.replace("ú", "u");
 
-        s = s.replace("�?", "Y");
-        s = s.replace("ý", "y");
-        s = s.replace("ñ", "n");
-        s = s.replace("ß", "ss");
+	    s = s.replace("Ý", "Y");
+	    s = s.replace("ý", "y");
+	    s = s.replace("ñ", "n");
+	    s = s.replace("ß", "ss");
 
         return s;
     }
