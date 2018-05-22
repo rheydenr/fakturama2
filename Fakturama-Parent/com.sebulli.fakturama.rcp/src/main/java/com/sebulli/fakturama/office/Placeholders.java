@@ -360,6 +360,7 @@ public class Placeholders {
 		if (parts.length < 1)
 			return value;
 		
+		int i = 0;
 		// get all parts
 		for (String part : parts) {
 			String twoStrings[] = part.split(",");
@@ -586,6 +587,7 @@ public class Placeholders {
 			s = s.replaceAll("%u_GRAVE", Matcher.quoteReplacement("ù"));
 			s = s.replaceAll("%u_ACUTE", Matcher.quoteReplacement("ú"));
 			s = s.replaceAll("%u_CIRC", Matcher.quoteReplacement("û"));
+			s = s.replaceAll("%%", Matcher.quoteReplacement("%"));
 		}
 		return s;
 	}	
