@@ -25,7 +25,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         if (canonicalValue != null) {
             double percentageValue = ((Number) canonicalValue).doubleValue();
             double displayInt = percentageValue * 100;
-            return String.format("%.1f %%", displayInt);
+            return String.format("%.2f %%", displayInt);
         }
         return ""; //$NON-NLS-1$
 	}
@@ -39,9 +39,10 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         if(StringUtils.isBlank(displayString) || displayString.equalsIgnoreCase("0")) {
         	return null;
         }
-        displayString = StringUtils.appendIfMissing(displayString.trim(), "%").replaceAll(" %", "%");
     	try {
-			return NumberFormat.getPercentInstance(LocaleUtil.getInstance().getDefaultLocale()).parse(displayString).doubleValue();
+    		// don't use NumberFormat.getPercentInstance()! The formatting of percentage values is evil!
+    		// We can use "normal" numbers. 
+    		return NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale()).parse(displayString).doubleValue()/100;
         } catch (ParseException e) {
             throw new NumberFormatException(e.getLocalizedMessage());
         }
