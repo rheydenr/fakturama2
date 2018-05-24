@@ -360,7 +360,6 @@ public class Placeholders {
 		if (parts.length < 1)
 			return value;
 		
-		int i = 0;
 		// get all parts
 		for (String part : parts) {
 			String twoStrings[] = part.split(",");
