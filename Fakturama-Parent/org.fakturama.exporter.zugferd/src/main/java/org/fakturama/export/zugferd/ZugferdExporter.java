@@ -336,12 +336,9 @@ public class ZugferdExporter {
 			String fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
 			
 			// extract filename for further use
-			// unify path name so that we can extract a filename
-			int lastIndexOfPathSeparator = pdfFile.replaceAll("\\\\", "/").lastIndexOf('/');
-			String fileName = ""; // filename w/o separator
-			if(lastIndexOfPathSeparator > -1) { // found! (else no separator was found)
-				fileName = pdfFile.substring(lastIndexOfPathSeparator + 1);
-			}
+			// filename w/o separator
+			Path fileName = Paths.get(pdfFile).getFileName();
+			
 			if(StringUtils.isBlank(fileSelected)) {
 				// store file
 				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
@@ -351,9 +348,11 @@ public class ZugferdExporter {
 				dialog.setFileName("ZF-" + fileName);
 				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
 				fileSelected = dialog.open();
+			} else {
+				fileSelected = Paths.get(fileSelected, fileName.toString()).toString();
 			}
 			if (fileSelected != null) {
-				pdfa3.save(fileSelected + fileName);
+				pdfa3.save(Paths.get(fileSelected).toFile());
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled
 				retval = false;
