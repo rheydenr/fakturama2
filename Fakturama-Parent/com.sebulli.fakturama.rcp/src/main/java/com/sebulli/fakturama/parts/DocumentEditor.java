@@ -34,6 +34,7 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -880,9 +881,10 @@ public class DocumentEditor extends Editor<Document> {
     		return false;
     	}
     	// see FAK-485
-    	double discount = 1 - document.getPayment().getDiscountValue();
+    	Double discount = 1 - document.getPayment().getDiscountValue();
     	MonetaryAmount paidValue = Money.of(document.getPaidValue(), currencyUnit);
-		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply(discount).with(DataUtils.getInstance().getDefaultRounding()));
+		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply((java.util.Optional.ofNullable(discount).orElse(NumberUtils.DOUBLE_ZERO)))
+				.with(DataUtils.getInstance().getDefaultRounding()));
     }
 
 	/**

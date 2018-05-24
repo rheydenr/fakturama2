@@ -202,45 +202,50 @@ public class CreateOODocumentHandler {
 			// Search in the folder "Templates" and also in the folder with the
 			// localized name
 			DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
-			List<Path> templates = collectTemplates(documentEditor.getDocumentType());
 			
-			// If more than 1 template is found, show a pup up menu
-			if (templates.size() > 1) {
-				Menu menu = new Menu(shell, SWT.POP_UP);
-				for (int i = 0; i < templates.size(); i++) {
-					template = templates.get(i);
-					MenuItem item = new MenuItem(menu, SWT.PUSH);
-					item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
-							OO_TEMPLATE_FILEEXTENSION));
-					item.setData(template);
-					item.addListener(SWT.Selection, new Listener() {
-						public void handleEvent(Event e) {
-							// save the document and open the exporter
-							documentEditor.doSave(null);
-							openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
-							// documentEditor.markAsPrinted();
-						}
-					});
+			if(documentEditor != null) {
+				List<Path> templates = collectTemplates(documentEditor.getDocumentType());
+				
+				// If more than 1 template is found, show a pup up menu
+				if (templates.size() > 1) {
+					Menu menu = new Menu(shell, SWT.POP_UP);
+					for (int i = 0; i < templates.size(); i++) {
+						template = templates.get(i);
+						MenuItem item = new MenuItem(menu, SWT.PUSH);
+						item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
+								OO_TEMPLATE_FILEEXTENSION));
+						item.setData(template);
+						item.addListener(SWT.Selection, new Listener() {
+							public void handleEvent(Event e) {
+								// save the document and open the exporter
+								documentEditor.doSave(null);
+								openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
+								// documentEditor.markAsPrinted();
+							}
+						});
+					}
+	
+					// Set the location of the pop up menu near to the upper left
+					// corner,
+					// but with a gap, so it should be under the tool bar icon of
+					// this action.
+					int x = shell.getLocation().x;
+					int y = shell.getLocation().y;
+					menu.setLocation(x + 80, y + 80);
+					menu.setVisible(true);
+	
+				} else if (templates.size() == 1) {
+					// Save the document and open the exporter
+					documentEditor.doSave(null);
+					openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
+					// documentEditor.markAsPrinted();
+				} else {
+					// Show an information dialog if no template was found
+					MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
+							MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
 				}
-
-				// Set the location of the pop up menu near to the upper left
-				// corner,
-				// but with a gap, so it should be under the tool bar icon of
-				// this action.
-				int x = shell.getLocation().x;
-				int y = shell.getLocation().y;
-				menu.setLocation(x + 80, y + 80);
-				menu.setVisible(true);
-
-			} else if (templates.size() == 1) {
-				// Save the document and open the exporter
-				documentEditor.doSave(null);
-				openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
-				// documentEditor.markAsPrinted();
 			} else {
-				// Show an information dialog if no template was found
-				MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
-						MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Please select a document first! No active part was found.");
 			}
 		}
 	}
