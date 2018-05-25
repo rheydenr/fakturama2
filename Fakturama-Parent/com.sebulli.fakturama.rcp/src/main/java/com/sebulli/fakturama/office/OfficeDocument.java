@@ -77,7 +77,7 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -116,6 +116,9 @@ public class OfficeDocument {
     
     @Inject
     private DocumentsDAO documentsDAO;
+    
+	@Inject
+	private ILocaleService localeUtil;
     
     /**
      * Event Broker for sending update events to the list table
@@ -825,7 +828,7 @@ public class OfficeDocument {
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			value = numberInstance.format(item.getQuantity());
 		}

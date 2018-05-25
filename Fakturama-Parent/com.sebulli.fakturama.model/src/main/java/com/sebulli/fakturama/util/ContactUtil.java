@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -33,6 +33,10 @@ import com.sebulli.fakturama.model.ReliabilityType;
  */
 @Singleton
 public class ContactUtil {
+	
+	@Inject
+	private ILocaleService localeUtil;
+
     
 	/**
 	 * Address key for the country field.
@@ -300,7 +304,7 @@ public class ContactUtil {
         		for (String hideCountry : hideCountries) {
         			String hiddenCountry = "";
         			if(hideCountry.length() <= 3) {
-	        			Optional<Locale> hiddenLocale = LocaleUtil.getInstance().findByCode(hideCountry);
+	        			Optional<Locale> hiddenLocale = localeUtil.findByCode(hideCountry);
 						//if(hiddenLocale.isPresent()) {
 							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
 						//}
@@ -367,9 +371,9 @@ public class ContactUtil {
 		 */
 		Optional<Locale> locale;
 		if(StringUtils.length(country) > 3) {
-			locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+			locale = localeUtil.findLocaleByDisplayCountry(country);
 		} else {
-			locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findByCode(country);
+			locale = StringUtils.isEmpty(country) ? Optional.of(localeUtil.getDefaultLocale()) : localeUtil.findByCode(country);
 		}
 		// if not found we try to find it in localized form
 		if (!locale.isPresent()) {

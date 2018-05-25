@@ -39,7 +39,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Transaction;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -68,6 +68,9 @@ public class Placeholders {
 //
 //    @Inject
 //    private Logger log;
+	
+	@Inject
+	private ILocaleService localeUtil;
 
     @Inject
     private IPreferenceStore preferences;
@@ -832,7 +835,7 @@ public class Placeholders {
     			if (key.equals("ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("ADDRESS.CITY")) return address.getCity();
                 if (key.equals("ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
-                Optional<Locale> locale = LocaleUtil.getInstance().findByCode(address.getCountryCode());
+                Optional<Locale> locale = localeUtil.findByCode(address.getCountryCode());
                 if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
                 if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
 			}
@@ -890,10 +893,10 @@ public class Placeholders {
     			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			Optional<Locale> locale = LocaleUtil.getInstance().findByCode(address.getCountryCode());
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : LocaleUtil.getInstance().getDefaultLocale().getDisplayCountry();
-   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
+    			Optional<Locale> locale = localeUtil.findByCode(address.getCountryCode());
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
+    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
+   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
             }
 		}
 		// There is no reference - Try to get the information from the address field
@@ -911,12 +914,12 @@ public class Placeholders {
 			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_CITY);
 			String country = contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_COUNTY);
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
-            Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+            Optional<Locale> locale = localeUtil.findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
-				return locale.isPresent() ? locale.get().getCountry() : LocaleUtil.getInstance().getDefaultLocale().getCountry();
+				return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
 			}
 			if (key2.equals("ADDRESS.COUNTRY.CODE3")) {
-				return locale.isPresent() ? locale.get().getISO3Country() : LocaleUtil.getInstance().getDefaultLocale().getISO3Country();
+				return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
 			}
 
 			if (key2.equals("ADDRESS.GREETING")) return contactUtil.getCommonGreeting();

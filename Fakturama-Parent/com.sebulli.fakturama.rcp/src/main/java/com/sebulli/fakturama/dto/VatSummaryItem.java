@@ -21,7 +21,6 @@ import javax.money.MonetaryRounding;
 import org.apache.commons.lang3.StringUtils;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.ItemAccountType;
 
@@ -134,7 +133,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	 * "xxRoundingError"
 	 */
 	public void round() {
-        CurrencyUnit currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
 
 		// Round the net value

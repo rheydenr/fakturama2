@@ -32,7 +32,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.wizards.ExporterHelper;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -45,7 +45,10 @@ import com.sebulli.fakturama.util.ContactUtil;
 public class AddressExport {
 	
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
-	
+    
+	@Inject
+	private ILocaleService localeUtil;
+
 	@Inject
 	private ContactsDAO contactsDAO;
     
@@ -145,7 +148,7 @@ public class AddressExport {
 						stringBuffer.append(ExporterHelper.inQuotes(contact.getAddress().getStreet())).append(";")
 						   .append(ExporterHelper.inQuotes(contact.getAddress().getZip())).append(";")
 						   .append(ExporterHelper.inQuotes(contact.getAddress().getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry())).append(";");
+						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}
@@ -166,7 +169,7 @@ public class AddressExport {
 					stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
-					   .append(ExporterHelper.inQuotes(LocaleUtil.getInstance().findByCode(deliveryContact.getAddress().getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry())).append(";");
+					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryContact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}

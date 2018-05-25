@@ -129,7 +129,7 @@ public class PlaceholderNavigation extends Navigation {
             if (this.mPattern != null) {
                 this.mPattern = StringUtils.appendIfMissing(StringUtils.prependIfMissing(this.mPattern, PLACEHOLDER_PREFIX), PLACEHOLDER_SUFFIX);
             }
-            
+
             if (tableIdentifiers != null) {
                 this.tableIdentifierStrings = Arrays.stream(tableIdentifiers).map(ti -> StringUtils.prependIfMissing(ti.getKey(), PLACEHOLDER_PREFIX))
                         .collect(Collectors.toList()).toArray(new String[] {});

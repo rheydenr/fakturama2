@@ -23,10 +23,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.Voucher;
+import com.sebulli.fakturama.model.VoucherItem;
 
 
 /**
@@ -59,7 +58,7 @@ public class VoucherSummarySetManager {
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
 		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
-        CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
         List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items, useCategory,
 				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
@@ -80,7 +79,7 @@ public class VoucherSummarySetManager {
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
         VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
-        CurrencyUnit currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
 		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
 		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
 		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));

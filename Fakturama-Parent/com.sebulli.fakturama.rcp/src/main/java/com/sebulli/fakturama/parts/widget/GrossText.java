@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
@@ -62,11 +63,10 @@ public class GrossText {
 		// Create the text widget
 		this.grossText = new FormattedText(parent, style);
 		ITextFormatter formatter;
-		if(context != null) {
-			formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
-		} else {
-			formatter = new MoneyFormatter(null);
+		if(context == null) {
+			context = EclipseContextFactory.create();
 		}
+		formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		this.grossText.setFormatter(formatter);
 		if(netValue != null) {
 			grossText.setValue(netValue.multiply(1 + vat));

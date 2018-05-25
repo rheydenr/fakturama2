@@ -43,6 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
@@ -110,7 +111,7 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -216,6 +217,10 @@ public class DocumentEditor extends Editor<Document> {
     
     @Inject
     private TextsDAO textsDAO; 
+    
+	@Inject
+	private ILocaleService localeUtil;
+
 	// SWT components of the editor
 	private Composite top;
 	private Text txtName;
@@ -918,7 +923,7 @@ public class DocumentEditor extends Editor<Document> {
 //        this.context = part.getContext();
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
-        this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(localeUtil.getCurrencyLocale());
         pendingDeliveryMerges = new ArrayList<>();
         
         if (StringUtils.isNumeric(tmpObjId)) {
@@ -2563,7 +2568,9 @@ public class DocumentEditor extends Editor<Document> {
     
             // Sub total
             itemsSum = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
-            itemsSum.setFormatter(new MoneyFormatter());
+            context.set(ILocaleService.class, localeUtil);
+    		MoneyFormatter formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
+            itemsSum.setFormatter(formatter);
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
