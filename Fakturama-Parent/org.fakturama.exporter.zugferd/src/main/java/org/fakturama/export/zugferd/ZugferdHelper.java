@@ -160,11 +160,11 @@ public class ZugferdHelper {
         Bundle definingBundle = ResourceBundleHelper.getBundleForName(org.fakturama.export.zugferd.Activator.PLUGIN_ID);
 		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
 				XMP_SCHEMALOCATION), null);
-//		if(fileResource == null) {
-//			// try resource from src
-//			fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
-//				"/src/main/resources/"+XMP_SCHEMALOCATION), null);
-//		}
+		if(fileResource == null) {
+			// try resource from src
+			fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+				"/src/main/resources/"+XMP_SCHEMALOCATION), null);
+		}
 		try(InputStream zfExtensionIs = fileResource.openStream();) {
 			DomXmpParser builder = new DomXmpParser();
 			builder.setStrictParsing(true);

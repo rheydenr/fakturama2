@@ -28,7 +28,7 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.dto.VoucherSummary;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Voucher;
@@ -68,7 +68,7 @@ public class VoucherSummaryCalculator {
      */
     public VoucherSummary calculate(VatSummarySet globalVoucherSummarySet, List<VoucherItem> items, boolean useCategory, 
             MonetaryAmount paid, MonetaryAmount total, Boolean discounted) {
-        VoucherSummary retval = new VoucherSummary(DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+        VoucherSummary retval = new VoucherSummary(DataUtils.getInstance().getDefaultCurrencyUnit());
         Double vatPercent;
         String vatDescription;
 

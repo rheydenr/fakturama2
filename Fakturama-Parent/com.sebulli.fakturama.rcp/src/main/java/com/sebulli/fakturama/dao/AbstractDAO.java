@@ -156,7 +156,7 @@ em.joinTransaction();
 			trx.begin();
 			object = getEntityManager().merge(object);
 			
-			//getEntityManager().persist(object);
+			getEntityManager().persist(object);
 			//getEntityManager().flush();
 			trx.commit();
 		} catch (Exception e) {

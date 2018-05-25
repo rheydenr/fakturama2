@@ -73,6 +73,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -127,6 +128,9 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
+    
+	@Inject
+	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -743,7 +747,7 @@ public class ProductEditor extends Editor<Product> {
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
 		}
-		textQuantity.setFormatter(new DoubleFormatter(LocaleUtil.getInstance().getDefaultLocale()));
+		textQuantity.setFormatter(new DoubleFormatter(localeUtil.getDefaultLocale()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 
 		// user defined fields

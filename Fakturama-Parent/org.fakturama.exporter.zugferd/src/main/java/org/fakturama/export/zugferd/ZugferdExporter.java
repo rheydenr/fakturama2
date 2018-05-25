@@ -115,7 +115,7 @@ import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -163,6 +163,9 @@ public class ZugferdExporter {
     @Inject
     private ESelectionService selectionService;
     
+	@Inject
+	private ILocaleService localeUtil;
+
     private Shell shell;
 	
 	/** The Constant DEFAULT_PRICE_SCALE. */
@@ -785,7 +788,7 @@ public class ZugferdExporter {
 	private String determineQuantityUnit(String userdefinedQuantityUnit) {
 		String isoUnit = "";
 		if(StringUtils.isNotBlank(userdefinedQuantityUnit))	{
-			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
+			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, localeUtil.getDefaultLocale());
 			isoUnit = code.isPresent() ? code.get().getCode() : "";
 		}
 		return isoUnit;
@@ -1150,8 +1153,9 @@ public class ZugferdExporter {
 
 	private CountryIDType createCountry(final String value) {
 		String countryStr = null;
+		// FIXME CHANGE THIS!!!
 		if(StringUtils.length(value) > 2) {
-			countryStr = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
+			countryStr = localeUtil.findCodeByDisplayCountry(value, "DE");
 		}
 		// null values aren't allowed!
 		return factory.createCountryIDType().withValue(Optional.ofNullable(countryStr).orElse("DE"));

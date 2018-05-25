@@ -3,7 +3,6 @@
  */
 package com.sebulli.fakturama.i18n;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -17,46 +16,46 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * Utility class for handling {@link Locale}s. 
  */
-public class LocaleUtil {
+public class LocaleUtil implements ILocaleService {
     
-    private static LocaleUtil instance;
-    private static Locale currencyLocale = null;
+    private Locale currencyLocale = null;
 
-    private static final Map<String, Locale> countryLocaleMap = new HashMap<>();
+    private final Map<String, Locale> countryLocaleMap = new HashMap<>();
 
     private Locale defaultLocale = Locale.getDefault();
     private SortedMap<String, String> localeCountryMap;
-    private static final Map<String, Locale> localeLookUp = new HashMap<>();
-
-    /** Returns a reference to the {@link LocaleUtil}. */
-    public static LocaleUtil getInstance() {
-        return getInstance(Activator.getContext() == null ? System.getProperty(EclipseStarter.PROP_NL) : 
-            Activator.getContext().getProperty(EclipseStarter.PROP_NL));
-    }
+    private final Map<String, Locale> localeLookUp = new HashMap<>();
     
     /**
      * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
      * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
      * @return a {@link LocaleUtil} instance
      */
-	public static LocaleUtil getInstance(String lang) {
+    @PostConstruct
+	public void getInstance() {
+    	String lang = (Activator.getContext() == null ? System.getProperty(EclipseStarter.PROP_NL) : 
+            Activator.getContext().getProperty(EclipseStarter.PROP_NL));
+    	
 		if (lang == null) {
-			instance = new LocaleUtil("en_US");
+			initLocaleUtil("en_US");
 		}
 		// We have to track different language settings (e.g., from command line) which
 		// aren't equal to the default locale.
-		if (instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
+		if (lang != null && !getDefaultLocale().getLanguage().contentEquals(lang)) {
 			/*
 			 * If a two-letter locale is given try to interpret it (because we need it later
 			 * for determining currency etc.)
@@ -66,30 +65,29 @@ public class LocaleUtil {
 				// try to get the locale from language, use the first fitting country
 				if (!countriesByLanguage.isEmpty()) {
 					Locale tmpLocale = countriesByLanguage.get(0);
-					instance = new LocaleUtil(String.format("%s_%s", tmpLocale.getCountry(), tmpLocale.getLanguage()));
+					initLocaleUtil(String.format("%s_%s", tmpLocale.getCountry(), tmpLocale.getLanguage()));
 				} else {
 					// if none found, try to guess it from country code (very uncertain!)
-					instance = new LocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
+					initLocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
 				}
 			} else {
-				instance = new LocaleUtil(lang);
+				initLocaleUtil(lang);
 			}
 		}
-		return instance;
 	}
     
     /**
-     * hidden constructor.
+     * constructor.
      * 
      */
-    private LocaleUtil() {}
+    public LocaleUtil() {}
     
     /**
      * Private constructor initializes the Locale hashmap.
      * 
      * @param lang
      */
-    private LocaleUtil(String lang) {
+    private void initLocaleUtil(String lang) {
         Locale[] availableLocales = Locale.getAvailableLocales();
         // only countries are relevant
 //        String[] locales = Locale.getISOCountries();
@@ -121,73 +119,56 @@ public class LocaleUtil {
             }
         }
     }
-    
-    /**
-     * <p>Refreshes the settings of this class.</p><p>
-     * <i>Caution:</i> This method makes the {@link DataUtils} class not thread safe, anymore.
-     * If multiple threads are try to refresh this class the state becomes indeterminable.
-     */
-    public static void refresh() {
-        instance = null;
-        currencyLocale = null;
-    }
-    
-    /**
-     * Finds a {@link Locale} by its display name. E.g., 
-     * @param country
-     * @return
-     */
-    public String findCodeByDisplayCountry(String country) {
+        
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#findCodeByDisplayCountry(java.lang.String)
+	 */
+    @Override
+	public String findCodeByDisplayCountry(String country, String lang) {
+    	// TODO use lang, but without interfering with other methods!
         Locale retval = countryLocaleMap.get(country);
         // hint: countryLocaleString.getDisplayCountry(defaultLocale) gives
         // the country as localized string
         return retval != null ? retval.getCountry() : null;
     }
     
-    /**
-     * Finds a {@link Locale} by its display country name.
-     * 
-     * @param country
-     * @return
-     */
-    public Optional<Locale> findLocaleByDisplayCountry(String country) {
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#findLocaleByDisplayCountry(java.lang.String)
+	 */
+    @Override
+	public Optional<Locale> findLocaleByDisplayCountry(String country) {
          return Optional.ofNullable(countryLocaleMap.get(country));
     }
 
-   /**
-     * Finds a {@link Locale} by country code.
-     * 
-     * @param code Country code (e.g., "DE" for German {@link Locale})
-     * @return the {@link Locale} for this code
-     */
-    public Optional<Locale> findByCode(String code) {
+   /* (non-Javadoc)
+ * @see com.sebulli.fakturama.i18n.ILocaleService#findByCode(java.lang.String)
+ */
+    @Override
+	public Optional<Locale> findByCode(String code) {
         return Optional.ofNullable(localeLookUp.get(StringUtils.upperCase(code)));
     }
     
-    /**
-     * The default {@link Locale} currently in use.
-     * @return
-     */
-    public Locale getDefaultLocale() {
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#getDefaultLocale()
+	 */
+    @Override
+	public Locale getDefaultLocale() {
         return defaultLocale;
     }
 
-    /**
-     * Contains all {@link Locale}s with its accompanying localized country names.
-     * 
-     * I.e., Kroatien=hr_HR etc.
-     * 
-     * @return the countryLocaleMap
-     */
-    public Map<String, Locale> getCountryLocaleMap() {
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCountryLocaleMap()
+	 */
+    @Override
+	public Map<String, Locale> getCountryLocaleMap() {
         return countryLocaleMap;
     }
 
-    /**
-     * Contains a {@link Map} with all country abbreviations and the according {@link Locale}.
-     * @return {@link Map} with all country abbreviations
-     */
-    public Map<String, String> getLocaleCountryMap() {
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#getLocaleCountryMap()
+	 */
+    @Override
+	public Map<String, String> getLocaleCountryMap() {
         if(localeCountryMap == null) {
             Map<String, String> tmpMap = countryLocaleMap.entrySet().stream().collect(
                     Collectors.toMap((Entry<String, Locale> e) -> e.getValue().getCountry(), 
@@ -199,12 +180,11 @@ public class LocaleUtil {
         return localeCountryMap;
     }
     
-    /**
-     * The {@link Locale} for the currently selected currency. If no currency locale is found in preferences, 
-     * the default locale is returned. Note that the locales in preferences are stored with {@link Locale#US}.
-     * @return {@link Locale} for the currently selected currency
-     */
-    public Locale getCurrencyLocale() {
+    /* (non-Javadoc)
+	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCurrencyLocale()
+	 */
+    @Override
+	public Locale getCurrencyLocale() {
         if(currencyLocale == null) {
             String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry());
             Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
@@ -226,32 +206,33 @@ public class LocaleUtil {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println(getInstance().findCodeByDisplayCountry("Deutschland"));
-        Optional<Locale> code = getInstance().findByCode("LT");
-        System.out.println(code);
-        System.out.println(code.get().getDisplayCountry(new Locale("lt")));
-
-        String testCountry = "Lietuva";
-//        Locale lt = new Locale("lt");
-        System.out.println(Runtime.getRuntime().availableProcessors());
+//    	ILocaleService localeService = new LocaleUtil();
+//        System.out.println(findCodeByDisplayCountry("Deutschland"));
+//        Optional<Locale> code = findByCode("LT");
+//        System.out.println(code);
+//        System.out.println(code.get().getDisplayCountry(new Locale("lt")));
 //
-        Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(testCountry);
-        // if not found we try to find it in localized form
-        if (!locale.isPresent()) {
-            Locale[] availableLocales = Locale.getAvailableLocales();
-            long nanoTime = System.nanoTime();
-            for (Locale locale2 : availableLocales) {
-//                if(StringUtils.isEmpty(locale2.getCountry())) continue;
-                locale = Arrays.stream(availableLocales)
-                        .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(testCountry))
-                        .findFirst();
-                if (locale.isPresent())
-                    break;
-            }
-            System.out.println("End: " + ((System.nanoTime() - nanoTime)/1_000_000)+ "ms");
-        }
-        if (locale.isPresent()) {
-            System.out.println(locale.get());
-        }
+//        String testCountry = "Lietuva";
+////        Locale lt = new Locale("lt");
+//        System.out.println(Runtime.getRuntime().availableProcessors());
+////
+//        Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(testCountry);
+//        // if not found we try to find it in localized form
+//        if (!locale.isPresent()) {
+//            Locale[] availableLocales = Locale.getAvailableLocales();
+//            long nanoTime = System.nanoTime();
+//            for (Locale locale2 : availableLocales) {
+////                if(StringUtils.isEmpty(locale2.getCountry())) continue;
+//                locale = Arrays.stream(availableLocales)
+//                        .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(testCountry))
+//                        .findFirst();
+//                if (locale.isPresent())
+//                    break;
+//            }
+//            System.out.println("End: " + ((System.nanoTime() - nanoTime)/1_000_000)+ "ms");
+//        }
+//        if (locale.isPresent()) {
+//            System.out.println(locale.get());
+//        }
     }
 }

@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -33,27 +33,21 @@ import com.sebulli.fakturama.model.ReliabilityType;
  */
 @Singleton
 public class ContactUtil {
-    
+	
+	@Inject
+	private ILocaleService localeUtil;
+
     public static final String KEY_COUNTY = "county";
-
 	public static final String KEY_CITY = "city";
-
 	public static final String KEY_ZIP = "zip";
-
 	public static final String KEY_STREETNO = "streetno";
-
 	public static final String KEY_STREETNAME = "streetname";
-
 	public static final String KEY_STREET = "street";
-
 	public static final String KEY_ADDRESSFIRSTLINE = "addressfirstline";
-
 	public static final String KEY_LASTNAME = "lastname";
-
 	public static final String KEY_FIRSTNAME = "firstname";
-
 	public static final String KEY_NAME = "name";
-
+	
 	public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
@@ -246,13 +240,13 @@ public class ContactUtil {
         		for (String hideCountry : hideCountries) {
         			String hiddenCountry = "";
         			if(hideCountry.length() <= 3) {
-	        			Optional<Locale> hiddenLocale = LocaleUtil.getInstance().findByCode(hideCountry);
+	        			Optional<Locale> hiddenLocale = localeUtil.findByCode(hideCountry);
 						//if(hiddenLocale.isPresent()) {
 							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
 						//}
         			}
         			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry))) {
+        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry))) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
@@ -263,7 +257,6 @@ public class ContactUtil {
         		for (String addressFormatLine : addressFormatLines) {
         			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
         			String trimmedAddressLine = formatedAddressLine.trim();
-        int i = 9;
         			if (formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) {
         				if (!address.isEmpty())
         					address += separator;
@@ -313,9 +306,9 @@ public class ContactUtil {
 		 */
 		Optional<Locale> locale;
 		if(StringUtils.length(country) > 3) {
-			locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(country);
+			locale = localeUtil.findLocaleByDisplayCountry(country);
 		} else {
-			locale = StringUtils.isEmpty(country) ? Optional.of(LocaleUtil.getInstance().getDefaultLocale()) : LocaleUtil.getInstance().findByCode(country);
+			locale = StringUtils.isEmpty(country) ? Optional.of(localeUtil.getDefaultLocale()) : localeUtil.findByCode(country);
 		}
 		// if not found we try to find it in localized form
 		if (!locale.isPresent()) {

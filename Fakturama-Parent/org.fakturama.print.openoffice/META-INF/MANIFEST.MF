@@ -6,7 +6,7 @@ Bundle-Version: 2.0.2.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Require-Bundle: org.apache.commons.lang3;bundle-version="3.4.0",
- com.sebulli.fakturama.common;bundle-version="2.0.0"
+Require-Bundle: com.sebulli.fakturama.common;bundle-version="2.0.0",
+ org.apache.commons.lang3;bundle-version="3.4.0"
 Bundle-Vendor: Fakturama.org
 Export-Package: org.odftoolkit.simple.common.navigation

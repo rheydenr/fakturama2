@@ -30,7 +30,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -41,7 +41,10 @@ import com.sebulli.fakturama.util.ContactUtil;
  * @author Gerd Bartelt
  */
 public class VcardExport {
-	
+    
+	@Inject
+	private ILocaleService localeUtil;
+
 	@Inject
 	private ContactsDAO contactsDAO;
     
@@ -205,7 +208,7 @@ public class VcardExport {
 							"",
 							address.getZip(),
 							address.getCountryCode() != null
-							   ? LocaleUtil.getInstance().findByCode(address.getCountryCode()).get().getDisplayCountry()
+							   ? localeUtil.findByCode(address.getCountryCode()).get().getDisplayCountry()
 							   : ""
 							);
 				}
@@ -228,7 +231,7 @@ public class VcardExport {
 								address.getCity(),
 								"",
 								address.getZip(),
-								LocaleUtil.getInstance().findByCode(address.getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry()
+								localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
 								);
 					}
 					writeVCard("ADR;TYPE=other:",
@@ -238,7 +241,7 @@ public class VcardExport {
 							address.getCity(),
 							"",
 							address.getZip(),
-							LocaleUtil.getInstance().findByCode(address.getCountryCode()).orElse(LocaleUtil.getInstance().getDefaultLocale()).getDisplayCountry()
+							localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
 							);
 				}
 				

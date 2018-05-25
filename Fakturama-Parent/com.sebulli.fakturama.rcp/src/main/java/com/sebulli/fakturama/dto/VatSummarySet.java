@@ -22,7 +22,6 @@ import javax.money.MonetaryRounding;
 
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 
 /**
@@ -46,7 +45,7 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 
     public VatSummarySet() {
         super();
-        currencyCode = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
         rounding = DataUtils.getInstance().getRounding(currencyCode);  
 
     }

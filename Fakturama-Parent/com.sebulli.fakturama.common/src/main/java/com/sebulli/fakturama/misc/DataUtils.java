@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
@@ -42,12 +43,15 @@ import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.swt.widgets.DateTime;
 import org.javamoney.moneta.Money;
 import org.javamoney.moneta.RoundedMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
 
 import com.sebulli.fakturama.common.Activator;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
 import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
@@ -61,6 +65,9 @@ import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
  * @author Gerd Bartelt
  */
 public class DataUtils {
+	
+	@Inject
+	private ILocaleService localeUtil;
 
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
@@ -90,7 +97,7 @@ public class DataUtils {
     public void refresh() {
         instance = null;
         useThousandsSeparator = false;
-        LocaleUtil.refresh();
+//        LocaleUtil.refresh();
     }
 
     /**
@@ -101,8 +108,10 @@ public class DataUtils {
         CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
         		CurrencySettingEnum.SYMBOL.name()));
         
+    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
+        
         currencyFormat = NumberFormat.getCurrencyInstance();
-        currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
+        currencyLocale = localeUtil.getCurrencyLocale();
 
         if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
             mro = Monetary.getRounding(RoundingQueryBuilder.of()

@@ -75,7 +75,6 @@ import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -477,7 +476,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	public void init(Composite parent) {
 	    this.part = (MPart) parent.getData("modelElement");
 	    this.part.setIconURI(getEditorIconURI());
-	    this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+	    this.currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
 	
 	    String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
 	    if (StringUtils.isNumeric(tmpObjId)) {

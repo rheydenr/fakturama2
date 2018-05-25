@@ -51,6 +51,7 @@ import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
@@ -90,6 +91,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         private IWebshopConnection webShopImportManager;
         private MathContext mathContext = new MathContext(5);
         private ProductUtil productUtil;
+        private ILocaleService localeUtil;
     	private String generalWorkspace;
 
         // true, if the product's EAN number is imported as item number
@@ -98,8 +100,9 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         public WebShopImportWorker(IWebshopConnection webShopImportManager) {
         	super(webShopImportManager.getPreferences(), webShopImportManager.getMsg());
         	this.webShopImportManager = webShopImportManager;
-    		productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
-    		generalWorkspace = webShopImportManager.getPreferences().getString(Constants.GENERAL_WORKSPACE);
+        	this.productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
+        	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
+        	this.generalWorkspace = webShopImportManager.getPreferences().getString(Constants.GENERAL_WORKSPACE);
 	}
 
 		@Override
@@ -501,7 +504,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setZip(contact.getZip());
             address.setCity(contact.getCity());
             address.setValidFrom(today); //
-            String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
+            String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
@@ -522,7 +525,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             deliveryAddress.setZip(contact.getDeliveryZip());
             deliveryAddress.setCity(contact.getDeliveryCity());
             deliveryAddress.setValidFrom(today);
-            countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getDeliveryCountry());
+            countryCode = localeUtil.findCodeByDisplayCountry(contact.getDeliveryCountry(), lang);
             deliveryAddress.setCountryCode(countryCode);
             
             // if delivery contact is equal to main contact we don't need to persist it
