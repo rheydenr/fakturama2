@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.AbstractCategory_;
 
 /**
  *
@@ -40,8 +41,8 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
     		CriteriaQuery<T> selectQuery = cq.select(rootEntity)
     		        .where(cb.and(
-        		                cb.equal(rootEntity.<String> get("name"), leafCategory),
-        		                cb.equal(rootEntity.<Boolean> get("deleted"), false)/*));
+        		                cb.equal(rootEntity.get(AbstractCategory_.name), leafCategory),
+        		                cb.equal(rootEntity.get(AbstractCategory_.deleted), false)/*));
         		                /*cb.equal(rootEntity.get(ContactCategory_.parent), getEntityClass())
         		               ,
         		                cb.equal(rootEntity.get(ContactCategory_.deleted), false)*/));

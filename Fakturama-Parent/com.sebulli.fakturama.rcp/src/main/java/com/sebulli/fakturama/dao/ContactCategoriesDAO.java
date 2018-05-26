@@ -28,50 +28,7 @@ public class ContactCategoriesDAO extends AbstractCategoriesDAO<ContactCategory>
     	CriteriaQuery<ContactCategory> cq = cb.createQuery(ContactCategory.class);
     	CriteriaQuery<ContactCategory> selectQuery = cq.select(cq.from(ContactCategory.class));
     	return getEntityManager().createQuery(selectQuery).getResultList();
-//    	return getEntityManager().createQuery("select p from ContactCategory p", ContactCategory.class).getResultList();
     }
-//    
-//    /**
-//     * Finds a {@link ContactCategory} by its name. Category in this case is a String separated by 
-//     * slashes, e.g. "/fooCat/barCat". Searching starts with the rightmost value
-//     * and then check the parent. 
-//     * 
-//     * @param pContactCategory the Category to search
-//     * @return {@link ContactCategory}
-//     */
-//    public ContactCategory findContactCategoryByName(String pContactCategory) {
-//        ContactCategory result = null;
-//        if(StringUtils.isNotEmpty(pContactCategory)) {
-//        	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        	CriteriaQuery<ContactCategory> cq = cb.createQuery(ContactCategory.class);
-//        	Root<ContactCategory> rootEntity = cq.from(ContactCategory.class);
-//        	// extract the rightmost value
-//            String[] splittedCategories = pContactCategory.split("/");
-//        	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
-//    		CriteriaQuery<ContactCategory> selectQuery = cq.select(rootEntity)
-//    		        .where(cb.and(
-//        		                cb.equal(rootEntity.get(ContactCategory_.name), leafCategory) /*,
-//        		                cb.equal(rootEntity.get(ContactCategory_.parent), ContactCategory.class)
-//        		               ,
-//        		                cb.equal(rootEntity.get(ContactCategory_.deleted), false)*/));
-//            try {
-//                List<ContactCategory> tmpResultList = getEntityManager().createQuery(selectQuery).getResultList();
-//                // remove leading slash
-//                String testCat = StringUtils.removeStart(pContactCategory, "/");
-//                for (ContactCategory contactCategoryEntry : tmpResultList) {
-//                    if(StringUtils.equals(CommonConverter.getCategoryName(contactCategoryEntry, ""), testCat)) {
-//                        result = contactCategoryEntry;
-//                        break;
-//                    }
-//                }
-//            }
-//            catch (NoResultException nre) {
-//                // no result means we return a null value 
-//            }
-//        }
-//        return result;
-//    }
-    
 
     /**
      * Find a {@link ContactCategory} by its name. If one of the part categories doesn't exist we create it 

@@ -549,7 +549,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                VoucherCategory account = voucherCategoriesDAO.getOrCreateCategory(testCat, true);
+                VoucherCategory account = voucherCategoriesDAO.getCategory(testCat, true);
                 // parentCategory now has the last found Category
                 voucher.setAccount(account);
             }

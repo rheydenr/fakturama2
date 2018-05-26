@@ -123,7 +123,7 @@ public class PaymentEditor extends Editor<Payment> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                VoucherCategory parentCategory = accountDAO.getOrCreateCategory(testCat, true);
+                VoucherCategory parentCategory = accountDAO.getCategory(testCat, true);
                 // parentCategory now has the last found Category
                 payment.setCategory(parentCategory);
             }
