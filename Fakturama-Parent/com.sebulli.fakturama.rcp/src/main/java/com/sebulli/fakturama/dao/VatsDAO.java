@@ -20,6 +20,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.nls.Translation;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -98,9 +99,24 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
 		Root<VAT> root = criteria.from(VAT.class);
-		CriteriaQuery<VAT> cq = criteria.where(cb.and(cb.equal(root.<String> get(VAT_.description), oldVat.getDescription()),
+		criteria.where(cb.and(cb.equal(root.<String> get(VAT_.description), oldVat.getDescription()),
 				cb.equal(root.<String> get(VAT_.name), oldVat.getName())));
-		return getEntityManager().createQuery(cq).getSingleResult();
+		return getEntityManager().createQuery(criteria).getSingleResult();
+	}
+	
+	/**
+	 * Counts all entities with the given category.
+	 * 
+	 * @param cat count of entities which have the given category
+	 */
+	public long countByCategory(AbstractCategory cat) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+		Root<VAT> root = criteria.from(getEntityClass());
+		criteria.select(cb.count(root)).where(
+						cb.equal(root.get(VAT_.category), cat)
+				);
+		return getEntityManager().createQuery(criteria).getSingleResult();
 	}
 
 	/**
@@ -114,16 +130,16 @@ public class VatsDAO extends AbstractDAO<VAT> {
      * 
      * @return ArrayList with all undeleted data sets
      */
-	public List<VAT> findVATPrefereCategory(String category) {
+	public List<VAT> findVATPreferredCategory(String category) {
 	    VATCategory vATCategory = vatCategoriesDAO.findCategoryByName(category);
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
         Root<VAT> root = criteria.from(VAT.class);
-        CriteriaQuery<VAT> cq = criteria.where(
+        criteria.where(
                 cb.or(
-                        cb.equal(root.<VATCategory>get(VAT_.category.getName()), vATCategory),
-                        cb.isNull(root.<VATCategory>get(VAT_.category.getName()))));
-        return getEntityManager().createQuery(cq).getResultList();
+                        cb.equal(root.get(VAT_.category), vATCategory),
+                        cb.isNull(root.get(VAT_.category))));
+        return getEntityManager().createQuery(criteria).getResultList();
 	}
 
 	/**
@@ -140,7 +156,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
         Root<VAT> root = criteria.from(VAT.class);
-        CriteriaQuery<VAT> cq = criteria.where(
+        criteria.where(
                 cb.and(
                     cb.equal(root.<Double> get(VAT_.taxValue), Double.valueOf(0.0)),
                     cb.or(
@@ -150,7 +166,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
                 );
         List<VAT> resultList = new ArrayList<>();
         resultList.add(dummyVat);
-        resultList.addAll(getEntityManager().createQuery(cq).getResultList());
+        resultList.addAll(getEntityManager().createQuery(criteria).getResultList());
         return resultList;
 	}
 	     
