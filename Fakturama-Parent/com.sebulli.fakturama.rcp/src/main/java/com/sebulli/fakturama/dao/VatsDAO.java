@@ -49,18 +49,6 @@ public class VatsDAO extends AbstractDAO<VAT> {
 //	        VATDao vatDao = DaoRegistry.getInstance().getDao(VATDao.class);
 //	        VAT vat2 = vatDao.get(1L);
 	}
-
-// THIS DOESN'T WORK BECAUSE VAT IS REFERENCED FROM OTHER TABLES!!!	
-//	/**
-//	 * Deletes the whole table data. Use with caution!
-//	 */
-////	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) ==> ONLY EJB!
-//	public boolean truncate() {
-//	    getEntityManager().getTransaction().begin();
-//	    getEntityManager().createQuery("delete from VAT").executeUpdate();
-//	    getEntityManager().getTransaction().commit();
-//	    return true;
-//	}
 	
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dao.AbstractDAO#getAlwaysIncludeAttributes()
@@ -75,17 +63,17 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	}
 	
 	@Override
-	protected Set<Predicate> getRestrictions(VAT object, CriteriaBuilder cb, Root<VAT> product) {
+	protected Set<Predicate> getRestrictions(VAT object, CriteriaBuilder cb, Root<VAT> vat) {
         Set<Predicate> restrictions = new HashSet<>();
 	    // Only the name and the
 	    // values are compared If the name is not set, only the values are used.
 	    // If the name of the DataSet to test is empty, than search for an entry with at least the same VAT value
 	    if(StringUtils.isNotBlank(object.getName())) {
-	        restrictions.add(cb.equal(product.get(VAT_.name), object.getName()));
+	        restrictions.add(cb.equal(vat.get(VAT_.name), object.getName()));
 	    }
 	    // if tax value is not set we create an irregular value to compare
-	    // (forcing create a new object)
-        restrictions.add(cb.equal(product.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(-10.0)));
+	    // (force creating a new object)
+        restrictions.add(cb.equal(vat.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(-10.0)));
 	    return restrictions;
 	}
 
@@ -99,8 +87,8 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<VAT> criteria = cb.createQuery(VAT.class);
 		Root<VAT> root = criteria.from(VAT.class);
-		criteria.where(cb.and(cb.equal(root.<String> get(VAT_.description), oldVat.getDescription()),
-				cb.equal(root.<String> get(VAT_.name), oldVat.getName())));
+		criteria.where(cb.and(cb.equal(root.get(VAT_.description), oldVat.getDescription()),
+				cb.equal(root.get(VAT_.name), oldVat.getName())));
 		return getEntityManager().createQuery(criteria).getSingleResult();
 	}
 	
@@ -158,10 +146,10 @@ public class VatsDAO extends AbstractDAO<VAT> {
         Root<VAT> root = criteria.from(VAT.class);
         criteria.where(
                 cb.and(
-                    cb.equal(root.<Double> get(VAT_.taxValue), Double.valueOf(0.0)),
+                    cb.equal(root.get(VAT_.taxValue), Double.valueOf(0.0)),
                     cb.or(
-                            cb.equal(root.<VATCategory>get(VAT_.category.getName()), vATCategory),
-                            cb.isNull(root.<VATCategory>get(VAT_.category.getName()))))
+                            cb.equal(root.get(VAT_.category), vATCategory),
+                            cb.isNull(root.get(VAT_.category))))
                 
                 );
         List<VAT> resultList = new ArrayList<>();

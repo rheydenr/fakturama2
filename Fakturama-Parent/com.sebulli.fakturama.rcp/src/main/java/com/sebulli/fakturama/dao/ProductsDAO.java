@@ -16,6 +16,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.oldmodel.OldProducts;
@@ -42,6 +43,21 @@ public class ProductsDAO extends AbstractDAO<Product> {
 						cb.equal(root.<String>get(Product_.description), oldProduct.getDescription()),
 						cb.equal(root.<String>get(Product_.name), oldProduct.getName())));
     	return getEntityManager().createQuery(cq).getSingleResult();
+	}
+	
+	/**
+	 * Counts all entities with the given category.
+	 * 
+	 * @param cat count of entities which have the given category
+	 */
+	public long countByCategory(AbstractCategory cat) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+		Root<Product> root = criteria.from(getEntityClass());
+		criteria.select(cb.count(root)).where(
+						cb.equal(root.get(Product_.categories), cat)
+				);
+		return getEntityManager().createQuery(criteria).getSingleResult();
 	}
 
     /**

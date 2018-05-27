@@ -79,48 +79,4 @@ public class VatCategoriesDAO extends AbstractCategoriesDAO<VATCategory> {
 //        }
 //        return parentCategory;
 //    }
-    
-    /**
-     * Tests if a given Category has child categories.
-     * 
-     * @param category
-     * @return
-     */
-    public boolean hasChildren(AbstractCategory category) {
-    	// select * from abstractcategory where parent_id = category.id;
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<VATCategory> criteria = cb.createQuery(getEntityClass());
-        Root<VATCategory> root = criteria.from(getEntityClass());
-        criteria.where(cb.equal(root.get(VATCategory_.parent), category));
-        return !getEntityManager().createQuery(criteria).getResultList().isEmpty();
-    }
-
-    /**
-     * Checks if the given Category can be deleted. This is the case if no reference to it exists and if the category has no children.
-     * @param oldCat the category to delete
-     * @throws FakturamaStoringException 
-     */
-	public void deleteEmptyCategory(AbstractCategory oldCat) throws FakturamaStoringException {
-		try {
-			if(hasChildren(oldCat)) {
-				throw new FakturamaStoringException("category has one or more children and can't be deleted.", new SQLException());
-			}
-			checkConnection();
-			EntityTransaction trx = getEntityManager().getTransaction();
-			trx.begin();
-			// merge before persist since we could have referenced entities
-			// which are already persisted
-//			if(withBatch) {
-//				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
-//				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
-//			}
-			oldCat = getEntityManager().merge(oldCat);
-//			oldCat.setDeleted(true);
-			getEntityManager().remove(oldCat);
-			trx.commit();
-		} catch (SQLException e) {
-			throw new FakturamaStoringException("Error removing category from database.", e, oldCat);
-		}
-		
-	}
 }

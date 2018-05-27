@@ -49,7 +49,6 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -83,7 +82,7 @@ public class VatEditor extends Editor<VAT> {
     private Text textDescription;
     private FormattedText textValue, textSalesEqTax;
     private Combo comboCategory;
-    private AbstractCategory oldCat;
+    private VATCategory oldCat;
 
     // defines if the vat is just created
     private boolean newVat;
