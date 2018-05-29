@@ -920,6 +920,9 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.TOTAL.NET")) {
 			if (isReplaceOptionalPrice ) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
+				}
 			} else {
 				value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
 			}
@@ -929,6 +932,9 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.TOTAL.VAT")) {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
+				}
 			} else {
 				value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
 			}
@@ -938,6 +944,9 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.TOTAL.GROSS")) {
             if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
+				}
 			} else {
 				value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
 			}
@@ -947,6 +956,9 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.NET.DISCOUNT.VALUE")) {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
+				}
 			} else {
 				value = DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
 			}
@@ -956,6 +968,9 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
+				}
 			} else {
 				value = DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
 			}
