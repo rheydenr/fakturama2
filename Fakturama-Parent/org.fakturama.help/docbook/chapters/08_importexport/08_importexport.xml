@@ -731,7 +731,8 @@
 	<section>
 		<anchor xreflabel="" xml:id="importexport_export_unpaid_invoices"/>
 		<title>Export unbezahlte Rechnungen</title>
-		<para>Exportiert alle unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice-Tabelle.</para>
+		<para>Exportiert alle unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice-Tabelle. Hierbei ist zu beachten, dass die Spalten für die Mehrwertsteuer-Sätze und den Nettowert erst gefüllt werden, wenn tatsächlich Umsätze (beispielsweise in Form von Anzahlungen) erzielt wurden. Der Betrag wird jeweils anteilig ermittelt.</para>
+		<para>Wurde die Rechnungsadresse manuell eingegeben, so ist eine Ermittlung von Firmenname, Land und USt.-ID nicht möglich.</para>
 		<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
 		</para>
 	</section>
