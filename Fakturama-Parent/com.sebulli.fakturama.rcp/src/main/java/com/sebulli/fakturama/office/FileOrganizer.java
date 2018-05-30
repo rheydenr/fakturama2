@@ -178,6 +178,7 @@ public class FileOrganizer {
 						DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))))
 				.replaceAll("\\{address\\}", StringUtils.defaultString(address))
 				.replaceAll("\\{name\\}", name)
+				.replaceAll("\\{firstname\\}", replaceIllegalCharacters(documentContact.getFirstName()))
 				.replaceAll("\\{companyorname\\}", companyOrName)
 				.replaceAll("\\{custno\\}", 
 					StringUtils.defaultString(documentContact.getCustomerNumber()));

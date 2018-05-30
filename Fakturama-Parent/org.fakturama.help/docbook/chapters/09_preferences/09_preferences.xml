@@ -712,6 +712,10 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{firstname}</emphasis> Vorname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{companyorname}</emphasis> Firmenname oder (falls Firmenname leer ist) Nachname des Kunden</para>
                 </listitem>
                 <listitem>
