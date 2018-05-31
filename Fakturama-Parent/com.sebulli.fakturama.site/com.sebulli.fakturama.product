@@ -270,6 +270,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_tr"/>
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
+      <feature id="org.eclipse.babel.nls_eclipse_el"/>
    </features>
 
    <configurations>
