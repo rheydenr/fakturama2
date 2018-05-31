@@ -97,13 +97,8 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	}
 
 	public VatSummaryItem(String vatName, Double vatPercent, MonetaryAmount totalNet, MonetaryAmount itemVat, ItemAccountType accountType) {
-		this.vatName = vatName;
-		this.vatPercent = vatPercent;
- 		this.net = totalNet;
-		this.vat = itemVat;
-		this.salesEqTax = Money.zero(net.getCurrency());
+		this(vatName, vatPercent, totalNet, itemVat, accountType != null ? accountType.getName() : "");
 		this.accountType = accountType;
-		this.description = this.accountType != null ? accountType.getName() : "";
    }
 
     /**
