@@ -339,16 +339,19 @@ public class OfficeDocument {
 				}
 			}
 			
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) 
-			&& preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && generatedPdf != null) {
-				sync.asyncExec(() -> {
-					boolean wasLaunched = Program.launch(generatedPdf.toString());
-					if(!wasLaunched) {
-						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+			if(preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId())) {
+				if(generatedPdf != null) {
+					if (preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+						sync.asyncExec(() -> {
+							boolean wasLaunched = Program.launch(generatedPdf.toString());
+							if(!wasLaunched) {
+								MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+							}
+						});
+					} else {
+						MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "PDF was created successfully.");
 					}
-				});
-			} else {
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				}
 			}
 		}
 	}
