@@ -229,10 +229,10 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact, String separator) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null && contact.getAddress() != null/*(contact.getCustomerNumber() != null ||)*/ ) {
+		if(contact != null && contact.getAddress() != null) {
 		    
-		    if(/*contact.getAddress() != null && */contact.getAddress().getManualAddress() != null) {
-		        // if a manual address is set we use this one
+		    if(contact.getAddress().getManualAddress() != null) {
+		        // if a manual address is set we use it
 		        address = contact.getAddress().getManualAddress();
 		    } else {
 		        // else we build an address string from address fields
@@ -251,8 +251,8 @@ public class ContactUtil {
 							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
 						//}
         			}
-        			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry))) {
+        			if (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry)) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
@@ -263,10 +263,10 @@ public class ContactUtil {
         		for (String addressFormatLine : addressFormatLines) {
         			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
         			String trimmedAddressLine = formatedAddressLine.trim();
-        int i = 9;
-        			if (formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) {
-        				if (!address.isEmpty())
-        					address += separator;
+
+        			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
+        					&& !address.isEmpty()) {
+						address += separator;
         			}
         
         			address += trimmedAddressLine;
@@ -541,11 +541,11 @@ public class ContactUtil {
 	 */
 	public String replaceFormatString(String formatString, Contact contact) {
 		if(contact == null) {
-			return formatString;
+			return "";
 		}
 		// Replace the placeholders
 		formatString = replaceAllWithSpace(formatString, "\\{company\\}", contact.getCompany());
-		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact));
+		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact).replaceAll("---", ""));
 		formatString = replaceAllWithSpace(formatString, "\\{title\\}", contact.getTitle());
 		formatString = replaceAllWithSpace(formatString, "\\{firstname\\}", contact.getFirstName());
 		formatString = replaceAllWithSpace(formatString, "\\{lastname\\}", contact.getName());
