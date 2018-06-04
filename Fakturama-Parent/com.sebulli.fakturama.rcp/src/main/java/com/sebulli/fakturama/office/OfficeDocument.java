@@ -54,6 +54,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Shell;
+import org.odftoolkit.odfdom.dom.element.table.TableCoveredTableCellElement;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -615,7 +616,17 @@ public class OfficeDocument {
 			for (int j = 0; j < cellCount; j++) {
 				// System.out.print(".");
 				// a template cell
-				Cell currentCell = newRow.getCellByIndex(j);
+				Cell currentCell;
+				
+				// temp index for columns
+				int tmpIdx = j;
+				do {
+					// Attention: Skip covered (spanned) cells!
+					currentCell = newRow.getCellByIndex(tmpIdx++);
+				} while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
+				// correct for later use
+				tmpIdx--;
+				
 				// make a copy of the template cell
 				Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
@@ -626,9 +637,9 @@ public class OfficeDocument {
 				/*
 				 * The appended row only has default cells (without styles
 				 * etc.). Therefore we have to take the template cell and
-				 * replace the current cell with it.
+				 * replace the current cell (the real cell!) with it.
 				 */
-				newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+				newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
 				// replace placeholders in this cell with current content
 				int countOfPlaceholders = cellPlaceholders.getLength();
 				for (int k = 0; k < countOfPlaceholders; k++) {
