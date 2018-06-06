@@ -55,6 +55,7 @@ import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
+import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
@@ -86,13 +87,7 @@ public class WebShopImportManager implements IWebshopConnection {
 	 */
 	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
 
-	/**
-     * Prepare the web shop import to request products and orders or to change
-     * the state of an order.
-     */
-    public static final String PARAM_IS_GET_PRODUCTS = "com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders";
-
-    @Inject
+	@Inject
     @Translation
 	private Messages msg;
     
@@ -183,7 +178,7 @@ public class WebShopImportManager implements IWebshopConnection {
 	@Override
 	@Execute
 	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
-	        @Optional @Named(PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
+	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
 	    ExecutionResult executionResult = null;
 	    if(BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
 	        prepareGetProductsAndOrders();

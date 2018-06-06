@@ -115,14 +115,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
    			currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
             
             // Check empty URL
-            if (address.isEmpty()) {
+            if (shopURL.isEmpty()) {
                 //T: Status message importing data from web shop
             	webShopImportManager.setRunResult(msg.importWebshopErrorUrlnotset);
                 return;
             }
             
             // Add "http://" if no protocol is given
-            address = StringUtils.prependIfMissingIgnoreCase(address, "http://", "https://", "file://");
+            shopURL = StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://");
     
             // Get the open order IDs that are out of sync with the webshop
 			// from the file system
@@ -135,12 +135,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 //T: Status message importing data from web shop
                 localMonitor.beginTask(msg.importWebshopInfoConnection, 100);
                 //T: Status message importing data from web shop
-                localMonitor.subTask(msg.importWebshopInfoConnected + " " + address);
+                localMonitor.subTask(msg.importWebshopInfoConnected + " " + shopURL);
                 setProgress(10);
 
                 // Send user name , password and a list of unsynchronized orders to
                 // the shop
-                URLConnection conn = createConnection(address, useAuthorization, authorizationUser, authorizationPassword);
+                URLConnection conn = createConnection(shopURL, useAuthorization, authorizationUser, authorizationPassword);
                 if(conn != null && conn.getDoOutput()) {
                 	OutputStream outputStream = conn.getOutputStream();
                     OutputStreamWriter writer = new OutputStreamWriter(outputStream);
@@ -270,7 +270,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 if (!localMonitor.isCanceled()) {
                 	if(webshopexport.getWebshop() == null) {
                         //T: Status message importing data from web shop
-                		webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + address);
+                		webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL);
                         return;
                     }
     
@@ -304,11 +304,11 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             }
             catch (MarshalException mex) {
                 //T: Status message importing data from web shop
-            	webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + address + "\n" + mex.getMessage());
+            	webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL + "\n" + mex.getMessage());
 			}
             catch (Exception e) {
                 //T: Status message importing data from web shop
-            	webShopImportManager.setRunResult(msg.importWebshopErrorCantopen + "\n" + address + "\n");
+            	webShopImportManager.setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n");
             	webShopImportManager.setRunResult(webShopImportManager.getRunResult()+"Message: " + e.getLocalizedMessage()+ "\n");
                 if (e.getStackTrace().length > 0)
                 	webShopImportManager.setRunResult(webShopImportManager.getRunResult()+"Trace: " + e.getStackTrace()[0].toString()+ "\n");

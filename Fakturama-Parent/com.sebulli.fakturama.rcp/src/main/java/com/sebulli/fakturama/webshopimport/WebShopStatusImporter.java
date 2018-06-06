@@ -18,55 +18,66 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
 /**
  * Importer for the different WebShop states.
  */
-public class WebShopStatusImport extends AbstractWebshopImporter implements IRunnableWithProgress {
-IWebshopConnection webshopManager;
+public class WebShopStatusImporter implements IRunnableWithProgress {
+//	private String productImagePath = "";
+	private int   worked = 0;
+	
+	private WebShopConnector connector;
+	private String runResult = "";
+	
+	private IProgressMonitor localMonitor;
+	private Messages msg;
+	private Webshopexport webshopexport = null;
 
-	public WebShopStatusImport(IWebshopConnection webshopManager) {
-		super(webshopManager.getPreferences(), webshopManager.getMsg());
-		this.webshopManager = webshopManager;
+	public WebShopStatusImporter(WebShopConnector connector, Messages msg) {
+        this.connector = connector;
+        this.msg = msg;
 	}
 
 	@Override
 	public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException {
         localMonitor = pMonitor;
-		Webshopexport webshopexport = null;
-
-        // Check empty URL   http://shop.fakturama.info/admin/fakturama2_connector.php
-        if (address.isEmpty()) {
+        String shopURL = connector.getShopURL();
+        
+        // Check empty URL http://shop.fakturama.info/admin/fakturama2_connector.php
+        if (shopURL.isEmpty()) {
             //T: Status message importing data from web shop
-        	webshopManager.setRunResult(msg.importWebshopErrorUrlnotset);
+        	setRunResult(msg.importWebshopErrorUrlnotset);
             return;
         }
         
-        // Add "http://" if no protocol is given
-        address = StringUtils.prependIfMissingIgnoreCase(address, "http://", "https://", "file://");
         // Connect to web shop
         //T: Status message importing data from web shop
         localMonitor.beginTask(msg.importWebshopInfoConnection, 100);
         //T: Status message importing data from web shop
-        localMonitor.subTask(msg.importWebshopInfoConnected + " " + address);
+        localMonitor.subTask(msg.importWebshopInfoConnected + " " + shopURL);
         setProgress(10);
+        
 
         try {
         // Send user name, password and a list of unsynchronized orders to
         // the shop
-	        URLConnection conn = createConnection(address, useAuthorization, authorizationUser, authorizationPassword);
-	        if(conn != null) {
-	        	((HttpURLConnection)conn).setRequestMethod( "POST" );
-	            String postString = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" +URLEncoder.encode(password, "UTF-8")
-	            				  + "&action=status";
+	        URLConnection connection = connector.createConnection();
+	        if(connection != null) {
+	        	((HttpURLConnection)connection).setRequestMethod( "POST" );
+	        	String postString = new StringBuilder("username=")
+	            					.append(URLEncoder.encode(connector.getUser(), "UTF-8"))
+									.append("&password=")
+									.append(URLEncoder.encode(connector.getPassword(), "UTF-8"))
+									.append("&action=status").toString();
                 //this.webShopImportManager.log.debug("POST-String: " + postString);
-	            conn.setRequestProperty( "Content-Type",
-                        "application/x-www-form-urlencoded" );
-	            conn.setRequestProperty( "Content-Length", String.valueOf(postString.length()) );
+	            connection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+	            connection.setRequestProperty("Content-Length", String.valueOf(postString.length()));
 	        	
-	        	OutputStream outputStream = conn.getOutputStream();
+	        	OutputStream outputStream = connection.getOutputStream();
 	            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 	            setProgress(20);
 
@@ -78,25 +89,25 @@ IWebshopConnection webshopManager;
 	        
             setProgress(30);
             // Start a connection in an extra thread
-            InterruptConnection interruptConnection = new InterruptConnection(conn);
+            InterruptConnection interruptConnection = new InterruptConnection(connection);
             new Thread(interruptConnection).start();
             while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
             
             // If the connection was interrupted and not finished: return
             if (!interruptConnection.isFinished()) {
-                ((HttpURLConnection)conn).disconnect();
+                ((HttpURLConnection)connection).disconnect();
                 if (interruptConnection.isError()) {
                     //T: Status error message importing data from web shop
-                	webshopManager.setRunResult(msg.importWebshopErrorCantconnect);
+                	setRunResult(msg.importWebshopErrorCantconnect);
                 }
                 return;
             }
             
             // If there was an error, return with error message
             if (interruptConnection.isError()) {
-                ((HttpURLConnection)conn).disconnect();
+                ((HttpURLConnection)connection).disconnect();
                 //T: Status message importing data from web shop
-                webshopManager.setRunResult(msg.importWebshopErrorCantread);
+                setRunResult(msg.importWebshopErrorCantread);
                 return;
             }
             
@@ -115,48 +126,85 @@ IWebshopConnection webshopManager;
 			// JAXBElement.
 			webshopexport = (Webshopexport) unmarshaller
     					.unmarshal(interruptConnection.getInputStream());
-    		setProgress(50);
+    		setProgress(40);
             // parse the XML stream
             if (!localMonitor.isCanceled()) {
             	if(webshopexport.getWebshop() == null) {
                     //T: Status message importing data from web shop
-            		webshopManager.setRunResult(msg.importWebshopErrorNodata + "\n" + address);
+            		setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL);
                     return;
                 }
 
                 // Get the error elements and add them to the run result list
                 //ndList = document.getElementsByTagName("error");
                 if (StringUtils.isNotEmpty(webshopexport.getError()) ) {
-                	webshopManager.setRunResult(webshopexport.getError());
+                	setRunResult(webshopexport.getError());
                 }
             }
             // else cancel the download process
 
-            // Interpret the imported data (and load the product images)
-            if (webshopManager.getRunResult().isEmpty()) {
-                // If there is no error - interpret the data.
-                interpretWebShopStates(localMonitor, webshopexport);
-            }
+//            // Interpret the imported data (and load the product images)
+//            if (getRunResult().isEmpty()) {
+//                // If there is no error - interpret the data.
+//            	setWebshopexport(webshopexport);
+//            }
             
             localMonitor.done();
         }
         catch (MarshalException mex) {
             //T: Status message importing data from web shop
-        	webshopManager.setRunResult(msg.importWebshopErrorNodata + "\n" + address + "\n" + mex.getMessage());
+        	setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL + "\n" + mex.getMessage());
 		}
         catch (Exception e) {
             //T: Status message importing data from web shop
-        	webshopManager.setRunResult(msg.importWebshopErrorCantopen + "\n" + address + "\n");
-        	webshopManager.setRunResult(webshopManager.getRunResult() + "Message: " + e.getLocalizedMessage()+ "\n");
+        	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n");
+        	setRunResult(getRunResult() + "\nMessage: " + e.getLocalizedMessage()+ "\n");
             if (e.getStackTrace().length > 0)
-            	webshopManager.setRunResult(webshopManager.getRunResult()+ "Trace: " + e.getStackTrace()[0].toString()+ "\n");
+            	setRunResult(getRunResult()+ "\nTrace: " + e.getStackTrace()[0].toString()+ "\n");
 
             if (webshopexport != null)
-            	webshopManager.setRunResult(webshopManager.getRunResult() + "\n\n" + webshopexport);
+            	setRunResult(getRunResult() + "\n\n" + webshopexport);
             }
         }
-
-	private void interpretWebShopStates(IProgressMonitor localMonitor, Webshopexport webshopexport) {
-		webshopManager.setData(webshopexport);
+	
+	/**
+	 * Sets the progress of the job in percent
+	 * 
+	 * @param percent
+	 */
+	protected void setProgress(int percent) {
+	    if (percent > worked) {
+	        localMonitor.worked(percent - worked);
+	        worked = percent;
+	    }
 	}
+
+	/**
+	 * @return the runResult
+	 */
+	public String getRunResult() {
+		return runResult;
+	}
+
+	/**
+	 * @param runResult the runResult to set
+	 */
+	public void setRunResult(String runResult) {
+		this.runResult = runResult;
+	}
+
+	/**
+	 * @return the webshopexport
+	 */
+	public Webshopexport getWebshopexport() {
+		return webshopexport;
+	}
+
+	/**
+	 * @param webshopexport the webshopexport to set
+	 */
+	public void setWebshopexport(Webshopexport webshopexport) {
+		this.webshopexport = webshopexport;
+	}
+
 }
