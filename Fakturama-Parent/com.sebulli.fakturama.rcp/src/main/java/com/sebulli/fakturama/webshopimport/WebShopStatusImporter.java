@@ -10,12 +10,15 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -26,24 +29,28 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
  * Importer for the different WebShop states.
  */
 public class WebShopStatusImporter implements IRunnableWithProgress {
+	
+	@Inject
+	@Translation
+	private Messages msg;
+
 //	private String productImagePath = "";
-	private int   worked = 0;
+	private int worked = 0;
 	
 	private WebShopConnector connector;
 	private String runResult = "";
 	
 	private IProgressMonitor localMonitor;
-	private Messages msg;
 	private Webshopexport webshopexport = null;
-
-	public WebShopStatusImporter(WebShopConnector connector, Messages msg) {
-        this.connector = connector;
-        this.msg = msg;
-	}
 
 	@Override
 	public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException {
         localMonitor = pMonitor;
+        
+        if(connector == null) {
+        	runResult = "no connection information provided";
+        	return;
+        }
         String shopURL = connector.getShopURL();
         
         // Check empty URL http://shop.fakturama.info/admin/fakturama2_connector.php
@@ -59,7 +66,6 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
         //T: Status message importing data from web shop
         localMonitor.subTask(msg.importWebshopInfoConnected + " " + shopURL);
         setProgress(10);
-        
 
         try {
         // Send user name, password and a list of unsynchronized orders to
@@ -205,6 +211,20 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	 */
 	public void setWebshopexport(Webshopexport webshopexport) {
 		this.webshopexport = webshopexport;
+	}
+
+	/**
+	 * @return the connector
+	 */
+	public WebShopConnector getConnector() {
+		return connector;
+	}
+
+	/**
+	 * @param connector the connector to set
+	 */
+	public void setConnector(WebShopConnector connector) {
+		this.connector = connector;
 	}
 
 }

@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -586,7 +587,8 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
         		.withUser(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_USER))
         		.withPassword(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
 		
-        WebShopStatusImporter importOperation = new WebShopStatusImporter(conn, msg);
+        WebShopStatusImporter importOperation = ContextInjectionFactory.make(WebShopStatusImporter.class, context);
+        importOperation.setConnector(conn);
 		try {
 			// get all order status from web shop
 			progressMonitorDialog.run(true, true, importOperation);
@@ -607,19 +609,4 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	public IPreferenceStore getPreferences() {
 		return preferences;
 	}
-	
-	/**
-	 * @return the data
-	 */
-	public final Webshopexport getData() {
-		return data;
-	}
-	
-	/**
-	 * @param data the data to set
-	 */
-	public final void setData(Webshopexport data) {
-		this.data = data;
-	}
-
 }
