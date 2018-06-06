@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
@@ -41,17 +43,29 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.calculate.NumberGenerator;
+import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.ProductCategoriesDAO;
+import com.sebulli.fakturama.dao.ProductsDAO;
+import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
+import com.sebulli.fakturama.dao.ShippingsDAO;
+import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -63,6 +77,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
@@ -86,30 +101,93 @@ import com.sebulli.fakturama.webshopimport.type.ProductsType;
 import com.sebulli.fakturama.webshopimport.type.ShippingType;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
-public class WebShopImportWorker extends AbstractWebshopImporter implements IRunnableWithProgress {
-        private IWebshopConnection webShopImportManager;
-        private MathContext mathContext = new MathContext(5);
-        private ProductUtil productUtil;
-    	private String generalWorkspace;
+public class WebShopDataImporter implements IRunnableWithProgress {
+	
+	@Inject
+	@Translation
+	private Messages msg;
 
-        // true, if the product's EAN number is imported as item number
-        private Boolean useEANasItemNr = false;
+	@Inject
+	public IPreferenceStore preferences;
+    
+    @Inject 
+    private Logger log;
 
-        public WebShopImportWorker(IWebshopConnection webShopImportManager) {
-        	super(webShopImportManager.getPreferences(), webShopImportManager.getMsg());
-        	this.webShopImportManager = webShopImportManager;
-    		productUtil = ContextInjectionFactory.make(ProductUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
-    		generalWorkspace = webShopImportManager.getPreferences().getString(Constants.GENERAL_WORKSPACE);
+    @Inject 
+    private IEclipseContext context;
+
+    @Inject 
+    private VatsDAO vatsDAO;
+    
+    @Inject 
+    private DocumentsDAO documentsDAO;
+    
+    @Inject 
+    private ProductsDAO productsDAO;
+    
+    @Inject 
+    private ContactsDAO contactsDAO;
+    
+    @Inject 
+    private ShippingCategoriesDAO shippingCategoriesDAO;
+    
+    @Inject 
+    private ShippingsDAO shippingsDAO;
+    
+    @Inject 
+    private PaymentsDAO paymentsDAO;
+    
+	@Inject
+	private WebshopDAO webshopStateMappingDAO;
+
+    @Inject 
+    private ProductCategoriesDAO productCategoriesDAO;
+    
+    private OrderSyncManager orderSyncManager;
+
+	private MathContext mathContext = new MathContext(5);
+
+	@Inject
+	private ProductUtil productUtil;
+	private String generalWorkspace;
+	
+	private WebShopConnector connector;
+	private String runResult = "";
+
+	// true, if the product's EAN number is imported as item number
+	private Boolean useEANasItemNr = false;
+	protected String shopURL = "";
+	protected String productImagePath = "";
+	protected int worked = 0;
+
+	protected IProgressMonitor localMonitor;
+	protected CurrencyUnit currencyCode;
+	protected final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
+	protected String user;
+	protected String password;
+	protected Boolean useAuthorization;
+	protected String authorizationUser;
+	protected String authorizationPassword;
+
+	public WebShopDataImporter(IWebshopConnection webShopImportManager) {
+		generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+        orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 	}
 
 		@Override
 	    public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException  {
-			useEANasItemNr = webShopImportManager.getPreferences().getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
+			useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
+	        
+	        if(connector == null) {
+	        	runResult = "no connection information provided";
+	        	return;
+	        }
+	        
 
-            Integer maxProducts = Integer.parseInt(webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS));
-            Boolean onlyModifiedProducts = webShopImportManager.getPreferences().getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
+            Integer maxProducts = preferences.getInt(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS);
+            Boolean onlyModifiedProducts = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
 	        localMonitor = pMonitor;
-            webShopImportManager.setRunResult("");
+            setRunResult("");
     		Webshopexport webshopexport = null;
             
    			currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
@@ -117,16 +195,15 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             // Check empty URL
             if (shopURL.isEmpty()) {
                 //T: Status message importing data from web shop
-            	webShopImportManager.setRunResult(msg.importWebshopErrorUrlnotset);
+            	setRunResult(msg.importWebshopErrorUrlnotset);
                 return;
             }
             
-            // Add "http://" if no protocol is given
-            shopURL = StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://");
+            String shopURL = connector.getShopURL();
     
             // Get the open order IDs that are out of sync with the webshop
 			// from the file system
-			webShopImportManager.readOrdersToSynchronize();
+//			webShopImportManager.readOrdersToSynchronize();
             BufferedWriter logBuffer = null;
 
             try {
@@ -140,34 +217,34 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 
                 // Send user name , password and a list of unsynchronized orders to
                 // the shop
-                URLConnection conn = createConnection(shopURL, useAuthorization, authorizationUser, authorizationPassword);
-                if(conn != null && conn.getDoOutput()) {
-                	OutputStream outputStream = conn.getOutputStream();
+    	        URLConnection connection = connector.createConnection();
+                if(connection != null && connection.getDoOutput()) {
+                	OutputStream outputStream = connection.getOutputStream();
                     OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                     setProgress(20);
                     String postString = "username=" + URLEncoder.encode(user, "UTF-8") + "&password=" +URLEncoder.encode(password, "UTF-8") ;
     
                     String actionString = "";
-                    if (webShopImportManager.isGetProducts())
+                    if (connector.isGetProducts())
                         actionString += "_products";
-                    if (webShopImportManager.isGetOrders())
+                    if (connector.isGetOrders())
                         actionString += "_orders";
                     if (!actionString.isEmpty())
                         actionString = "&action=get" + actionString;
     
-                    postString += actionString + "&setstate=" + webShopImportManager.getOrderstosynchronize().toString();
+                    postString += actionString + "&setstate=" + connector.getOrderstosynchronize().toString();
                     
                     if (maxProducts > 0) {
                         postString += "&maxproducts=" + maxProducts.toString();
                     }
     
                     if (onlyModifiedProducts) {
-                        String lasttime = webShopImportManager.getPreferences().getString("lastwebshopimport");
+                        String lasttime = preferences.getString("lastwebshopimport");
                         if (! lasttime.isEmpty())
                             postString += "&lasttime=" + lasttime.toString();
                     }
                 
-                    webShopImportManager.getLog().info("POST-String: " + postString);
+                    log.info("POST-String: " + postString);
                     writer.write(postString);
                     writer.flush();
                     writer.close();
@@ -176,25 +253,25 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 setProgress(30);
                 
                 // Start a connection in an extra thread
-                InterruptConnection interruptConnection = new InterruptConnection(conn);
+                InterruptConnection interruptConnection = new InterruptConnection(connection);
                 new Thread(interruptConnection).start();
                 while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
     
                 // If the connection was interrupted and not finished: return
                 if (!interruptConnection.isFinished()) {
-                    ((HttpURLConnection)conn).disconnect();
+                    ((HttpURLConnection)connection).disconnect();
                     if (interruptConnection.isError()) {
                         //T: Status error message importing data from web shop
-                    	webShopImportManager.setRunResult(msg.importWebshopErrorCantconnect);
+                    	setRunResult(msg.importWebshopErrorCantconnect);
                     }
                     return;
                 }
     
                 // If there was an error, return with error message
                 if (interruptConnection.isError()) {
-                    ((HttpURLConnection)conn).disconnect();
+                    ((HttpURLConnection)connection).disconnect();
                     //T: Status message importing data from web shop
-                    webShopImportManager.setRunResult(msg.importWebshopErrorCantread);
+                    setRunResult(msg.importWebshopErrorCantread);
                     return;
                 }
                 
@@ -270,32 +347,32 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 if (!localMonitor.isCanceled()) {
                 	if(webshopexport.getWebshop() == null) {
                         //T: Status message importing data from web shop
-                		webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL);
+                		setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL);
                         return;
                     }
     
                     // Clear the list of orders to sync, if the data was sent
                 	// NodeList ndList = document.getElementsByTagName("webshopexport");
 					if (webshopexport.getOrders() != null) {
-						webShopImportManager.setOrderstosynchronize(new Properties());
+						connector.setOrderstosynchronize(new Properties());
 					} else {
-						webShopImportManager.setRunResult("import NOT ok");
+						setRunResult("import NOT ok");
 					}
     
                     // Get the error elements and add them to the run result list
                     //ndList = document.getElementsByTagName("error");
                     if (StringUtils.isNotEmpty(webshopexport.getError()) ) {
-                    	webShopImportManager.setRunResult(webshopexport.getError());
+                    	setRunResult(webshopexport.getError());
                     }
     
                     // Interpret the imported data (and load the product images)
-                    if (webShopImportManager.getRunResult().isEmpty()) {
+                    if (getRunResult().isEmpty()) {
                         // If there is no error - interpret the data.
                         interpretWebShopData(localMonitor, webshopexport);
             
                         // Store the time of now
                         String now = DataUtils.getInstance().DateAsISO8601String();
-                        webShopImportManager.getPreferences().putValue("lastwebshopimport", now);
+                        preferences.putValue("lastwebshopimport", now);
                     }
                 }
                 // else cancel the download process
@@ -304,24 +381,24 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             }
             catch (MarshalException mex) {
                 //T: Status message importing data from web shop
-            	webShopImportManager.setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL + "\n" + mex.getMessage());
+            	setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL + "\n" + mex.getMessage());
 			}
             catch (Exception e) {
                 //T: Status message importing data from web shop
-            	webShopImportManager.setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n");
-            	webShopImportManager.setRunResult(webShopImportManager.getRunResult()+"Message: " + e.getLocalizedMessage()+ "\n");
+            	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n");
+            	setRunResult(getRunResult()+"Message: " + e.getLocalizedMessage()+ "\n");
                 if (e.getStackTrace().length > 0)
-                	webShopImportManager.setRunResult(webShopImportManager.getRunResult()+"Trace: " + e.getStackTrace()[0].toString()+ "\n");
+                	setRunResult(getRunResult()+"Trace: " + e.getStackTrace()[0].toString()+ "\n");
 
                 if (webshopexport != null)
-                	webShopImportManager.setRunResult(webShopImportManager.getRunResult()+"\n\n" + webshopexport);
+                	setRunResult(getRunResult()+"\n\n" + webshopexport);
                 }
             finally {
             	if(logBuffer != null) {
             		try {
 						logBuffer.close();
 					} catch (IOException e) {
-						webShopImportManager.getLog().error(e, "couldn't close output stream for webshopimport logfile.");
+						log.error(e, "couldn't close output stream for webshopimport logfile.");
 					}
             	}
             }
@@ -379,29 +456,28 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	setProgress(95);
             List<OrderType> orderList = webshopexport.getOrders().getOrder();
         	int orderListSize = orderList.size();
-            ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, this.webShopImportManager.getContext());              
+            ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);              
             Date today = Date.from(Instant.now());
         	for (int orderIndex = 0; orderIndex < orderListSize; orderIndex++) {
         		OrderType order = orderList.get(orderIndex);
         		createOrderFromXMLOrderNode(order, webshopexport.getWebshop().getLang(), contactUtil, today);
         	}
         
-        	// Save the new list of orders that are not in synch with the shop
-        	webShopImportManager.saveOrdersToSynchronize();
-        	
+        	// Save the new list of orders that are not in sync with the shop
+        	orderSyncManager.saveOrdersToSynchronize();
         }
 
         /**
          * Mark all orders as "in sync" with the web shop
          */
         private void allOrdersAreInSync() {
-        	webShopImportManager.setOrderstosynchronize(new Properties());
-        	Path f = Paths.get(generalWorkspace, WebShopImportManager.FILENAME_ORDERS2SYNC);
+        	connector.setOrderstosynchronize(new Properties());
+        	Path f = Paths.get(generalWorkspace, OrderSyncManager.FILENAME_ORDERS2SYNC);
         	try {
                 Files.deleteIfExists(f);
             }
             catch (IOException e) {
-                webShopImportManager.getLog().error(e, "can't delete " +  WebShopImportManager.FILENAME_ORDERS2SYNC);
+                log.error(e, "can't delete " +  OrderSyncManager.FILENAME_ORDERS2SYNC);
             }
         }
 
@@ -418,7 +494,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	
     		// Order data
     		String webshopId;
-    		String webShopName = webShopImportManager.getWebshopDAO().createWebShopIdentifier(webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_URL));
+    		String webShopName = webshopStateMappingDAO.createWebShopIdentifier(preferences.getString(Constants.PREFERENCES_WEBSHOP_URL));
     		String webshopDate;
 
     		// Comments
@@ -442,7 +518,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	// Check, if this order is still existing
         	// date="2011-08-04 15:35:52"
         	LocalDateTime calendarWebshopDate = LocalDateTime.parse(webshopDate, DateTimeFormatter.ISO_DATE_TIME);
-            if(!this.webShopImportManager.getDocumentsDAO().findByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
+            if(!documentsDAO.findByDocIdAndDocDate(DocumentType.ORDER, webshopId, calendarWebshopDate).isEmpty()) {
         		return;
         	}
         
@@ -458,7 +534,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	dataSetDocument.setWebshopDate(Date.from(instant));
         	dataSetDocument.setValidFrom(Date.from(instant));
         
-            CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(webShopImportManager.getLog());
+            CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(log);
    
         	// First get all contacts. Normally there is only one
             ContactType contact = order.getContact();        
@@ -474,7 +550,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 			contactItem.setValidFrom(Date.from(instant));
 
 			// Get the category for new contacts from the preferences
-			String shopCategory = webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY);
+			String shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_CONTACT_CATEGORY);
 			if(StringUtils.isNotEmpty(shopCategory)) {
     			ContactCategory contactCat = contactCatBuilder.buildCategoryFromString(shopCategory, ContactCategory.class);
     			// later on we have more than one category per contact
@@ -505,14 +581,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             address.setCountryCode(countryCode);
             
             contactItem.setAddress(address);
-            contactItem = this.webShopImportManager.getContactsDAO().findOrCreate(contactItem);
+            contactItem = contactsDAO.findOrCreate(contactItem);
             // Attention: If the contact is new then we have to create a new number for it!
             if(StringUtils.isBlank(contactItem.getCustomerNumber())) {
-        		NumberGenerator numberProvider = ContextInjectionFactory.make(NumberGenerator.class, this.webShopImportManager.getContext());
+        		NumberGenerator numberProvider = ContextInjectionFactory.make(NumberGenerator.class, context);
                 numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
                 String nextNr = numberProvider.getNextNr();
                 contactItem.setCustomerNumber(nextNr);
-                contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
+                contactItem = contactsDAO.update(contactItem);
                 numberProvider.setNextFreeNumberInPrefStore(nextNr);
             }
 //            contactItem.setSupplierNumber(contact.get???); ==> is not transferred from connector!!!
@@ -546,7 +622,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 
                 deliveryContact.setAddress(deliveryAddress);
                 contactItem.setAlternateContacts(deliveryContact);
-                contactItem = this.webShopImportManager.getContactsDAO().update(contactItem);
+                contactItem = contactsDAO.update(contactItem);
             }
         
             dataSetDocument.setBillingContact(contactItem);
@@ -580,7 +656,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     				vatPercent = Double.valueOf(itemType.getVatpercent()).doubleValue() / 100;
     			}
     			catch (NumberFormatException e) {
-    				webShopImportManager.getLog().error(e, String.format(webShopImportManager.getMsg().importWebshopErrorCantconvertnumber, 
+    				log.error(e, String.format(msg.importWebshopErrorCantconvertnumber, 
     						vatPercent, " (vatPercent)" ));
     			}
     
@@ -602,7 +678,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			VAT vat = getOrCreateVAT(itemType.getVatname(), vatPercent);
     
     			// Get the category of the imported products from the preferences
-    			shopCategory = webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
+    			shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
     			shopCategory = StringUtils.appendIfMissing(shopCategory, "/", "/");
     
                 // Import the item as a new product
@@ -647,7 +723,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			// OLD call: itemName, itemModel, shopCategory + itemCategory, itemDescription, priceNet, vat, "", "", 1.0, productID, itemQUnit
     			product.setName(itemName);
     			product.setItemNumber(itemModel);
-                ProductCategory productCategory = this.webShopImportManager.getProductCategoriesDAO().getCategory(shopCategory + itemType.getCategory(), true);
+                ProductCategory productCategory = productCategoriesDAO.getCategory(shopCategory + itemType.getCategory(), true);
     			product.setCategories(productCategory);
     			
     			product.setDescription(itemDescription.toString());
@@ -659,7 +735,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			//product.setProductId(itemType.getProductid());
     
     			// Add the new product to the data base, if it's not existing yet
-    			Product newOrExistingProduct = this.webShopImportManager.getProductsDAO().findOrCreate(product);
+    			Product newOrExistingProduct = productsDAO.findOrCreate(product);
     			// Get the picture from the existing product  ==> TODO WHY???
 //    			product.setPictureName(newOrExistingProduct.getPictureName());
     
@@ -711,13 +787,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			Double shippingGross = Double.valueOf(shippingType.getGross());
     
     			// Get the category of the imported shipping from the preferences
-    			shopCategory = webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY);   
+    			shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_SHIPPING_CATEGORY);   
     			VAT shippingvat = getOrCreateVAT(shippingType.getVatname(), shippingVatPercent);//vatsDAO.findOrCreate(shippingvat);
     
     			// Add the shipping to the data base, if it's a new shipping
     			Shipping shipping = fakturamaModelFactory.createShipping();
     			shipping.setName(shippingType.getName());
-    			ShippingCategory newShippingCategory = this.webShopImportManager.getShippingCategoriesDAO().getCategory(shopCategory, true);
+    			ShippingCategory newShippingCategory = shippingCategoriesDAO.getCategory(shopCategory, true);
 //    			shipping.addToCategories(newShippingCategory);
     			shipping.setCategories(newShippingCategory);
     			shipping.setDescription(shippingType.getName());
@@ -725,13 +801,13 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			shipping.setShippingVat(shippingvat);
     			shipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
     			shipping.setValidFrom(today);
-    			shipping = this.webShopImportManager.getShippingsDAO().findOrCreate(shipping);
+    			shipping = shippingsDAO.findOrCreate(shipping);
     
     			// Set the document entries for the shipping
                 dataSetDocument.setShipping(shipping);
                 dataSetDocument.setShippingAutoVat(ShippingVatType.SHIPPINGVATFIX);
                 dataSetDocument.setShippingValue(shippingGross);
-    			String webShopNo = this.webShopImportManager.getMsg().importWebshopInfoWebshopno + " ";
+    			String webShopNo = msg.importWebshopInfoWebshopno + " ";
     
     			// Use the order ID of the web shop as customer reference for
     			// the import of web shop orders
@@ -749,12 +825,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
     			payment.setName(paymentType.getName());
     			payment.setDescription(paymentType.getName() + " (" + paymentType.getType() + ")");
     			payment.setPaidText(msg.dataDefaultPaymentPaidtext);
-    			payment = this.webShopImportManager.getPaymentsDAO().findOrCreate(payment);  // here the validFrom is also set
+    			payment = paymentsDAO.findOrCreate(payment);  // here the validFrom is also set
             	dataSetDocument.setPayment(payment);
     		}
         
         	// Set the progress of an imported order to "pending"
-        	Optional<WebshopStateMapping> mappedStatus = webShopImportManager.getWebshopDAO().findOrderState(webShopName, order.getStatus());
+        	Optional<WebshopStateMapping> mappedStatus = webshopStateMappingDAO.findOrderState(webShopName, order.getStatus());
         	if(mappedStatus.isPresent()) {
         		dataSetDocument.setProgress(OrderState.valueOf(mappedStatus.get().getFakturamaOrderState()).getState());
         	} else {
@@ -780,14 +856,14 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         	// There is no VAT used
         	if (noVat) {
         		// Set the no-VAT flag in the document and use the name and description
-        		VAT noVatReference = this.webShopImportManager.getVatsDAO().findByName(noVatName);
+        		VAT noVatReference = vatsDAO.findByName(noVatName);
         		if (noVatReference != null) {
         			dataSetDocument.setNoVatReference(noVatReference);
         		}
         	}
         	
         	// Update the data base with the new document data
-        	dataSetDocument = this.webShopImportManager.getDocumentsDAO().save(dataSetDocument);
+        	dataSetDocument = documentsDAO.save(dataSetDocument);
         
         	// Re-calculate the document's total sum and check it.
         	// It must be the same total value as in the web shop
@@ -803,7 +879,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
         		String error = MessageFormat.format(msg.toolbarNewOrderName + ": " + webshopId + "\n"
         		+ msg.importWebshopErrorTotalsumincorrect, DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
         		DataUtils.getInstance().formatCurrency(calcTotal));
-        		webShopImportManager.setRunResult(error);
+        		setRunResult(error);
         	}        
         }
 
@@ -822,10 +898,10 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             vat.setTaxValue(vatPercent);
             vat.setValidFrom(new Date());
             try {
-                vat = this.webShopImportManager.getVatsDAO().addIfNew(vat);
+                vat = vatsDAO.addIfNew(vat);
             }
             catch (FakturamaStoringException e1) {
-                webShopImportManager.getLog().error(e1);
+                log.error(e1);
             }
             return vat;
         }
@@ -863,14 +939,12 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             Product productItem;
 
             // Get the category of the imported products from the preferences
-            String shopCategory = webShopImportManager.getPreferences().getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
+            String shopCategory = preferences.getString(Constants.PREFERENCES_WEBSHOP_PRODUCT_CATEGORY);
             shopCategory = StringUtils.appendIfMissing(shopCategory, "/", "/");
 
             // Use the EAN number
-            if (useEANasItemNr) {
-                if (product.getEan() != null && !product.getEan().isEmpty())
-                    productModel = product.getEan();
-            }
+            if (useEANasItemNr && product.getEan() != null && !product.getEan().isEmpty())
+				productModel = product.getEan();
 
             // Use product name as product model, if model is empty
             if (productModel.isEmpty() && !product.getName().isEmpty())
@@ -894,7 +968,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             productItem.setItemNumber(productModel);
 
             // save ProductCategory
-            ProductCategory productCategoryFromBuilder = this.webShopImportManager.getProductCategoriesDAO().getCategory(shopCategory + product.getCategory(), true);
+            ProductCategory productCategoryFromBuilder = productCategoriesDAO.getCategory(shopCategory + product.getCategory(), true);
             productItem.setCategories(productCategoryFromBuilder);
             productItem.setDescription(productDescription);
             productItem.setPrice1(priceNet.getNumber().numberValue(Double.class));
@@ -907,7 +981,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             productItem.setValidFrom(Date.from(Instant.now()));
 
             // Add a new product to the data base, if it not exists yet	
-            Product existingProduct = this.webShopImportManager.getProductsDAO().findOrCreate(productItem);
+            Product existingProduct = productsDAO.findOrCreate(productItem);
             if (existingProduct != null) {
                 // Update data
               //  existingProduct.clearCategories();
@@ -923,7 +997,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
                 existingProduct.setQuantityUnit(productItem.getQuantityUnit());
 
                 // Update the modified product data
-                this.webShopImportManager.getProductsDAO().save(existingProduct);
+                productsDAO.save(existingProduct);
             }
         }
 
@@ -948,11 +1022,11 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             }
             catch (MalformedURLException e) {
                 //T: Status message importing data from web shop
-                webShopImportManager.getLog().error(e, this.webShopImportManager.getMsg().importWebshopErrorMalformedurl + " " + address);
+                log.error(e, msg.importWebshopErrorMalformedurl + " " + address);
             }
             catch (IOException e) {
                 //T: Status message importing data from web shop
-                webShopImportManager.getLog().error(e, this.webShopImportManager.getMsg().importWebshopErrorCantopenpicture + " " + address);
+                log.error(e, msg.importWebshopErrorCantopenpicture + " " + address);
             }
             return null;
         }
@@ -986,6 +1060,7 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
 	 * @param is
 	 *            the {@link InputStream}
 	 */
+	@SuppressWarnings("unused")
 	private void debugInputStream(InputStream is) {
 		String result = getStringFromInputStream(is);
 		System.out.println(result);
@@ -1010,4 +1085,44 @@ public class WebShopImportWorker extends AbstractWebshopImporter implements IRun
             }
             return line;
     	}
+    	
+    	/**
+    	 * Sets the progress of the job in percent
+    	 * 
+    	 * @param percent
+    	 */
+    	protected void setProgress(int percent) {
+    	    if (percent > worked) {
+    	        localMonitor.worked(percent - worked);
+    	        worked = percent;
+    	    }
+    	}
+
+		/**
+		 * @return the runResult
+		 */
+		public String getRunResult() {
+			return runResult;
+		}
+
+		/**
+		 * @param runResult the runResult to set
+		 */
+		public void setRunResult(String runResult) {
+			this.runResult = runResult;
+		}
+
+		/**
+		 * @return the connector
+		 */
+		public WebShopConnector getConnector() {
+			return connector;
+		}
+
+		/**
+		 * @param connector the connector to set
+		 */
+		public void setConnector(WebShopConnector connector) {
+			this.connector = connector;
+		}
 	 }

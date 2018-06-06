@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Base64;
+import java.util.Properties;
 
 /**
  * WebShopConfigVO contains all the necessary information
@@ -20,7 +21,11 @@ public class WebShopConnector {
 	protected Boolean useAuthorization;
 	protected String authorizationUser;
 	protected String authorizationPassword;
-	
+	// Configuration of the web shop request
+	private boolean getProducts, getOrders;
+
+	// List of all orders which are out of sync with the web shop.
+	private Properties orderstosynchronize = null;
 
 	public URLConnection createConnection() throws IOException {
 	    URLConnection conn = null;
@@ -118,4 +123,64 @@ public class WebShopConnector {
 		this.authorizationPassword = authorizationPassword;
 		return this;
 	}
+
+	/**
+	 * @return the getProducts
+	 */
+	public boolean isGetProducts() {
+		return getProducts;
+	}
+
+	/**
+	 * @param getProducts the getProducts to set
+	 */
+	public void setGetProducts(boolean getProducts) {
+		this.getProducts = getProducts;
+	}
+
+	/**
+	 * @return the getOrders
+	 */
+	public boolean isGetOrders() {
+		return getOrders;
+	}
+
+	/**
+	 * @param getOrders the getOrders to set
+	 */
+	public void setGetOrders(boolean getOrders) {
+		this.getOrders = getOrders;
+	}
+
+	/**
+	 * @return the orderstosynchronize
+	 */
+	public Properties getOrderstosynchronize() {
+		return orderstosynchronize;
+	}
+
+	/**
+	 * @param orderstosynchronize the orderstosynchronize to set
+	 */
+	public void setOrderstosynchronize(Properties orderstosynchronize) {
+		this.orderstosynchronize = orderstosynchronize;
+	}
+
+	/**
+	 * Prepare the web shop import to request products and orders.
+	 */
+	public void prepareGetProductsAndOrders() {
+		setGetProducts(true);
+		setGetOrders(true);
+	}
+
+	/**
+	 * Prepare the web shop import to change the state of an order.
+	 */
+	public void prepareChangeState() {
+		setGetProducts(false);
+		setGetOrders(false);
+	}
+
+
 }

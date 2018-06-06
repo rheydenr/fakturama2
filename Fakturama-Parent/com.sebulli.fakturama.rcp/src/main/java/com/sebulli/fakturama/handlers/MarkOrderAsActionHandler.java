@@ -64,7 +64,7 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
-import com.sebulli.fakturama.webshopimport.WebShopImportManager;
+import com.sebulli.fakturama.webshopimport.OrderSyncManager;
 
 /**
  * This action marks an entry in the order table as pending, processing, shipped
@@ -214,12 +214,10 @@ public class MarkOrderAsActionHandler {
                 // Change the state also in the webshop
                 if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
 
-                    // Start a new web shop import manager in a
-                    // progress Monitor Dialog
-                    WebShopImportManager webShopImportManager = new WebShopImportManager();
-                    ContextInjectionFactory.inject(webShopImportManager, iEclipseContext);
-                    //                  webShopImportManager.initialize();
-                    webShopImportManager.updateOrderProgress(document, comment, sendNotification);
+                	// sync orders with web shop
+                	OrderSyncManager orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, iEclipseContext);
+                	orderSyncManager.updateOrderProgress(document, comment, sendNotification);
+                	
                     // Send a request to the web shop import manager.
                     // It will update the state in the web shop the next time
                     // when we synchronize with the shop.

@@ -86,13 +86,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
     @Inject
     private Logger log;
     
-    /**
-     * contains the result from Web shop connector execution
-     */
-    private Webshopexport data;
 	private Control top;
-
-	int worked;
 
 	private Text connectorVersion, shopInfoString;
 
@@ -576,16 +570,16 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		ExecutionResult executionResult = null;
 		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent.getShell());
 		
-		String shopURL = getPreferences().getString(Constants.PREFERENCES_WEBSHOP_URL);
+		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 		
         // Add "http://" if no protocol is given
         WebShopConnector conn = new WebShopConnector()
         		.withShopURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
-        		.withUseAuthorization(getPreferences().getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
-        		.withAuthorizationUser(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
-        		.withAuthorizationPassword(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
-        		.withUser(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_USER))
-        		.withPassword(getPreferences().getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
+        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
+        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
+        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
+        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
+        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
 		
         WebShopStatusImporter importOperation = ContextInjectionFactory.make(WebShopStatusImporter.class, context);
         importOperation.setConnector(conn);
@@ -604,9 +598,5 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 			log.error(errorMessage);
 		}
 		return importOperation.getWebshopexport();
-	}
-
-	public IPreferenceStore getPreferences() {
-		return preferences;
 	}
 }
