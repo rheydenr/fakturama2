@@ -4,9 +4,7 @@ Bundle-Name: ODF Toolkit
 Bundle-SymbolicName: org.apache.odftoolkit
 Bundle-Version: 0.9.0.qualifier
 Bundle-Vendor: Apache.org
-Bundle-ClassPath: odfdom-java-0.9.0-incubating-SNAPSHOT.jar,
- schema2template-0.9.0-incubating-SNAPSHOT.jar,
- simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
+Bundle-ClassPath: simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.odfdom.doc,
