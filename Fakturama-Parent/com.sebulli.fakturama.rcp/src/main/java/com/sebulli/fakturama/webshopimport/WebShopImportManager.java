@@ -157,7 +157,7 @@ public class WebShopImportManager {
 		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 		
         conn = new WebShopConnector()
-        		.withShopURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
+        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
         		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
         		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
         		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
@@ -175,6 +175,7 @@ public class WebShopImportManager {
             WebShopDataImporter importOperation = ContextInjectionFactory.make(WebShopDataImporter.class, context);
             importOperation.setConnector(conn);
             progressMonitorDialog.run(true, true, importOperation);
+            this.runResult = importOperation.getRunResult();
             executionResult = new ExecutionResult(getRunResult(), getRunResult().isEmpty() ? 0 : 1);
         }
           catch (InvocationTargetException e) {

@@ -133,7 +133,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 
 		stateBtn.setText(msg.preferencesWebshopSettingsGetallstates);
 		stateBtn.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-			Webshopexport wsExport = execute(parent);
+			Webshopexport wsExport = execute(parent.getShell());
 			if (wsExport != null) {
 				// set the values from web shop
 				shopInfoString.setText(String.format("%s (%s: %s)", wsExport.getWebshop().getShop(),
@@ -144,6 +144,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 
 				// fill WebshopStateTreeMapper
 				if (wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
+					log.error("can't get status list from web shop, status list is empty!");
 					MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError,
 							msg.preferencesWebshopSettingsStateError);
 				} else {
@@ -566,15 +567,15 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	/**
 	 * @param parent
 	 */
-	public Webshopexport execute(Composite parent) {
+	public Webshopexport execute(Shell parent) {
 		ExecutionResult executionResult = null;
-		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent.getShell());
+		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
 		
 		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 		
         // Add "http://" if no protocol is given
         WebShopConnector conn = new WebShopConnector()
-        		.withShopURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
+        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
         		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
         		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
         		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
@@ -594,7 +595,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		if (executionResult.getErrorCode() != Constants.RC_OK) {
 			// If there is an error - display it in a message box
 			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
-			MessageDialog.openError(parent.getShell(), msg.importWebshopActionError, errorMessage);
+			MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
 			log.error(errorMessage);
 		}
 		return importOperation.getWebshopexport();

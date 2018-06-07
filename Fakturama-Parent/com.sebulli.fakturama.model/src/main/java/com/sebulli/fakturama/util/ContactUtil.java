@@ -34,26 +34,59 @@ import com.sebulli.fakturama.model.ReliabilityType;
 @Singleton
 public class ContactUtil {
     
+	/**
+	 * Address key for the country field.
+	 */
     public static final String KEY_COUNTY = "county";
 
+	/**
+	 * Address key for the city field.
+	 */
 	public static final String KEY_CITY = "city";
 
+	/**
+	 * Address key for the zip code field.
+	 */
 	public static final String KEY_ZIP = "zip";
 
+	/**
+	 * Address key for the street number field.
+	 */
 	public static final String KEY_STREETNO = "streetno";
 
+	/**
+	 * Address key for the street with street number field.
+	 */
 	public static final String KEY_STREETNAME = "streetname";
 
+	/**
+	 * Address key for the street field.
+	 */
 	public static final String KEY_STREET = "street";
 
+	/**
+	 * Address key for the first address line field.
+	 */
 	public static final String KEY_ADDRESSFIRSTLINE = "addressfirstline";
 
+	/**
+	 * Address key for the last name field.
+	 */
 	public static final String KEY_LASTNAME = "lastname";
 
+	/**
+	 * Address key for the first name field.
+	 */
 	public static final String KEY_FIRSTNAME = "firstname";
 
+	/**
+	 * Address key for the complete name field.
+	 */
 	public static final String KEY_NAME = "name";
 
+	/**
+	 * Maximal count of salutations.
+	 */
 	public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
@@ -150,6 +183,26 @@ public class ContactUtil {
         return genderString + contact.getName();
     }
     
+    /**
+     * Returns an "ID" based upon the gender String.<br/>
+     * Hereby means<br />
+     * <pre>
+     * m ... 1
+     * f ... 2
+     * undefined ... 0
+     * </pre>
+     * @param genderString String to convert ("m" or "f")
+     * @return a (virtual) ID for the gender
+     */
+    public Integer getGenderIdFromString(String genderString) {
+    	Integer retval = Integer.valueOf(0);
+		if (genderString.equals("m"))
+			retval = Integer.valueOf(1);
+		if (genderString.equals("f"))
+			retval = Integer.valueOf(2);
+		return retval;
+    }
+    
     
     /**
      * Get the gender String by the gender number
@@ -198,15 +251,16 @@ public class ContactUtil {
      * @return
      *          The number
      */
-    public int getSalutationID(String s) {
-        // Test all strings
-        for (int i = 0;i <= MAX_SALUTATION_COUNT ; i++) {
-            if (getSalutationString(i,false).equalsIgnoreCase(s)) return i;
-//            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
-        }
-        // Default = "---"
-        return 0;
-    }
+	public int getSalutationID(String s) {
+		// Test all strings
+		for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
+			if (getSalutationString(i, false).equalsIgnoreCase(s))
+				return i;
+			// if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+		}
+		// Default = "---"
+		return 0;
+	}
     
     /**
      * Get the address as one String.

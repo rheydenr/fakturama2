@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,18 +41,20 @@ public class OrderSyncManager {
 	 * file name for the temporary sync info file.
 	 */
 	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
-	
-	@PostConstruct
-	public void init() {
-		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
-        conn = new WebShopConnector()
-        		.withShopURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
-        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
-        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
-        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
-        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
-        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
-	}
+
+    /**
+     * Mark all orders as "in sync" with the web shop
+     */
+    public void allOrdersAreInSync() {
+    	getConn().setOrderstosynchronize(new Properties());
+    	Path f = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), OrderSyncManager.FILENAME_ORDERS2SYNC);
+    	try {
+            Files.deleteIfExists(f);
+        }
+        catch (IOException e) {
+            log.error(e, "can't delete " +  f.toString());
+        }
+    }
 
 	/**
 	 * Update the progress of an order.
@@ -83,13 +84,11 @@ public class OrderSyncManager {
 		// Add an "*" to mark the ID as "notify customer"
 
 		//Replace the "," by "&comma;
-		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%2C", "%26comma%3B");
 		//Replace the "=" by "&equal;
-		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%3D", "%26equal%3B");
-		
+		comment = StringUtils.replace(comment, "%2C", "%26comma%3B").replace("%3D", "%26equal%3B");
 		if (notify)	webshopState += "*" + comment;
 
-		conn.getOrderstosynchronize().setProperty(orderId, webshopState);
+		getConn().getOrderstosynchronize().setProperty(orderId, webshopState);
 		saveOrdersToSynchronize();
 	}
 
@@ -99,13 +98,13 @@ public class OrderSyncManager {
      * 
      */
 	public void readOrdersToSynchronize() {
-		conn.setOrderstosynchronize(new Properties());
+		getConn().setOrderstosynchronize(new Properties());
 		String generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
         Path orders2sync = Paths.get(generalWorkspace, FILENAME_ORDERS2SYNC);
         try (InputStream reader = Files.newInputStream(orders2sync)) {
-        	conn.getOrderstosynchronize().load(reader);
+        	getConn().getOrderstosynchronize().load(reader);
         } catch (NoSuchFileException fnex) {
-            //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
+            // log.warn(fnex, "file not found: orders2sync.txt (will be created next time)");
         	// it's not really important...
         } catch (IOException e) {
             log.error(e);
@@ -118,18 +117,42 @@ public class OrderSyncManager {
 	 * 
 	 */
 	public void saveOrdersToSynchronize() {
-		if (conn.getOrderstosynchronize().isEmpty())
+		if (getConn().getOrderstosynchronize().isEmpty())
 			return;
 		
-		String generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		Path orders2sync = Paths.get(generalWorkspace, FILENAME_ORDERS2SYNC);
+		Path orders2sync = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), FILENAME_ORDERS2SYNC);
 
 		try (Writer writer = Files.newBufferedWriter(orders2sync)) {
-			conn.getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
+			getConn().getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @return the conn
+	 */
+	public WebShopConnector getConn() {
+		if(conn == null) {
+			String scriptURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
+	        conn = new WebShopConnector()
+	        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(scriptURL, "http://", "https://", "file://"))
+	        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
+	        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
+	        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
+	        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
+	        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
+
+		}
+		return conn;
+	}
+
+	/**
+	 * @param conn the conn to set
+	 */
+	public void setConn(WebShopConnector conn) {
+		this.conn = conn;
 	}
 
 }

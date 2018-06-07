@@ -9,18 +9,29 @@ import java.net.URLConnection;
 import java.util.Base64;
 import java.util.Properties;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * WebShopConfigVO contains all the necessary information
  * for connection to a web shop.
  *
  */
 public class WebShopConnector {
+	/**
+	 * Main URL for the shop.
+	 */
 	protected String shopURL = "";
 	protected String user;
 	protected String password;
 	protected Boolean useAuthorization;
 	protected String authorizationUser;
 	protected String authorizationPassword;
+	
+	/**
+	 * The URL for shop connector.
+	 */
+	protected String scriptURL;
+	
 	// Configuration of the web shop request
 	private boolean getProducts, getOrders;
 
@@ -29,11 +40,11 @@ public class WebShopConnector {
 
 	public URLConnection createConnection() throws IOException {
 	    URLConnection conn = null;
-	    URL url = new URL(shopURL);
+	    URL url = new URL(scriptURL);
 	    conn = url.openConnection();
 	    conn.setDoInput(true);
 	    conn.setConnectTimeout(4000);
-	    if (!shopURL.toLowerCase().startsWith("file://")) {
+	    if (!scriptURL.toLowerCase().startsWith("file://")) {
 	        conn.setDoOutput(true);
 	
 	        // Use password for password protected web shops
@@ -43,20 +54,6 @@ public class WebShopConnector {
 	        }
 	    }
 	    return conn;
-	}
-	
-	/**
-	 * @return the shopURL
-	 */
-	public String getShopURL() {
-		return shopURL;
-	}
-	/**
-	 * @param shopURL the shopURL to set
-	 */
-	public WebShopConnector withShopURL(String shopURL) {
-		this.shopURL = shopURL;
-		return this;
 	}
 	/**
 	 * @return the user
@@ -167,6 +164,34 @@ public class WebShopConnector {
 	}
 
 	/**
+	 * @return the scriptURL
+	 */
+	public String getScriptURL() {
+		return scriptURL;
+	}
+
+	/**
+	 * @param scriptURL the scriptURL to set
+	 */
+	public void setShopURL(String shopURL) {
+		this.shopURL = shopURL;
+	}
+	
+	/**
+	 * @return the shopURL
+	 */
+	public String getShopURL() {
+		return shopURL;
+	}
+	/**
+	 * @param shopURL the shopURL to set
+	 */
+	public WebShopConnector withScriptURL(String scriptURL) {
+		this.scriptURL = scriptURL;
+		return this;
+	}
+
+	/**
 	 * Prepare the web shop import to request products and orders.
 	 */
 	public void prepareGetProductsAndOrders() {
@@ -182,5 +207,9 @@ public class WebShopConnector {
 		setGetOrders(false);
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 
 }
