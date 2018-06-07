@@ -770,6 +770,16 @@ public class OfficeDocument {
 //                    System.out.print(".");
                     // a template cell
                     Cell currentCell = newRow.getCellByIndex(j);
+                    
+    				// temp index for columns
+    				int tmpIdx = j;
+    				do {
+    					// Attention: Skip covered (spanned) cells!
+    					currentCell = newRow.getCellByIndex(tmpIdx++);
+    				} while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
+    				// correct for later use
+    				tmpIdx--;
+                    
                     // make a copy of the template cell
                     Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
@@ -780,7 +790,7 @@ public class OfficeDocument {
                      * The appended row only has default cells (without styles etc.). Therefore we have to take
                      * the template cell and replace the current cell with it.
                      */
-                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
                     // replace placeholders in this cell with current content
                     int countOfPlaceholders = cellPlaceholders.getLength();
                     for (int k = 0; k < countOfPlaceholders; k++) {
