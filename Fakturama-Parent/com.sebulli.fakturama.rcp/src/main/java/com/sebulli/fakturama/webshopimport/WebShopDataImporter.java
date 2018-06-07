@@ -479,7 +479,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 		String webshopDate;
 
 		// Comments
-		String commentDate;
+		LocalDateTime commentDate;
 		StringBuilder comment = new StringBuilder();
 		String commentText;
 
@@ -517,7 +517,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     
         CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(log);
    
-        	// First get all contacts. Normally there is only one
+        // First get all contacts. Normally there is only one
         ContactType contact = order.getContact();        
 
 		Contact contactItem = fakturamaModelFactory.createDebitor();
@@ -612,12 +612,15 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	// Get the comments
     	for (CommentType commentType : order.getComments()) {
     		// Get the comment text
-			commentDate = DataUtils.getInstance().DateAndTimeAsLocalString(commentType.getDate());
+    		if(commentType.getDate() != null) {
+    			commentDate = LocalDateTime.parse(commentType.getDate(), DateTimeFormatter.ISO_DATE_TIME);
+    		} else {
+    			commentDate = null;
+    		}
 			commentText = commentType.getTextcontent();
 			if (comment.length() > 0) {
 				comment.append('\n');
 			}
-
 			// Add the date
 			comment.append(commentDate).append(" :\n");
 			comment.append(commentText).append("\n");
