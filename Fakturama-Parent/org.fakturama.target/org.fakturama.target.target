@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="462">
+<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="463">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.collections.feature.source.feature.group" version="9.1.0.v20171231-1315"/>
@@ -85,12 +85,6 @@
 <repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201805311110"/>
-<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201805311110"/>
-<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201805311110"/>
-<repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="com.mysql.jdbc.feature.feature.group" version="5.1.38"/>
 <unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0"/>
 <unit id="org.apache.commons.feature.feature.group" version="3.3.0"/>
@@ -120,6 +114,12 @@
 <unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
 <unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180531190352/repository"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201806070735"/>
+<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201806070735"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201806070735"/>
+<repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
