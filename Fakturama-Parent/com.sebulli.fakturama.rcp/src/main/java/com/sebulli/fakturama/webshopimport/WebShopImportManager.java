@@ -14,21 +14,14 @@
 
 package com.sebulli.fakturama.webshopimport;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -42,7 +35,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 
@@ -55,9 +47,9 @@ import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
+import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.OrderState;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.VAT;
@@ -79,19 +71,8 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
  * missing products, {@link VAT}s and {@link Document}s (orders in this case). 
  * 
  */
-public class WebShopImportManager implements IWebshopConnection {
+public class WebShopImportManager {
 	
-    /**
-	 * 
-	 */
-	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
-
-	/**
-     * Prepare the web shop import to request products and orders or to change
-     * the state of an order.
-     */
-    public static final String PARAM_IS_GET_PRODUCTS = "com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders";
-
     @Inject
     @Translation
 	private Messages msg;
@@ -119,36 +100,40 @@ public class WebShopImportManager implements IWebshopConnection {
     @Inject @Optional
 	private IPreferenceStore preferences;
 
-    @Inject IEclipseContext context;
+    @Inject 
+    private IEclipseContext context;
 
-    @Inject VatsDAO vatsDAO;
+    @Inject 
+    private VatsDAO vatsDAO;
     
-    @Inject DocumentsDAO documentsDAO;
+    @Inject 
+    private DocumentsDAO documentsDAO;
     
-    @Inject ProductsDAO productsDAO;
+    @Inject 
+    private ProductsDAO productsDAO;
     
-    @Inject ContactsDAO contactsDAO;
+    @Inject 
+    private ContactsDAO contactsDAO;
     
-    @Inject ShippingCategoriesDAO shippingCategoriesDAO;
+    @Inject 
+    private ShippingCategoriesDAO shippingCategoriesDAO;
     
-    @Inject ShippingsDAO shippingsDAO;
+    @Inject 
+    private ShippingsDAO shippingsDAO;
     
-    @Inject PaymentsDAO paymentsDAO;
+    @Inject 
+    private PaymentsDAO paymentsDAO;
     
-    @Inject ProductCategoriesDAO productCategoriesDAO;
+    @Inject 
+    private ProductCategoriesDAO productCategoriesDAO;
     
 	@Inject
 	private WebshopDAO webshopStateMappingDAO;
 
-	        
-	// List of all orders which are out of sync with the web shop.
-	private Properties orderstosynchronize = null;
-
 	// The result of this import process
 	private String runResult = "";
 
-	// Configuration of the web shop request
-	private boolean getProducts, getOrders;
+	private WebShopConnector conn;
 
 	@CanExecute
 	public boolean canExecute() {
@@ -160,40 +145,37 @@ public class WebShopImportManager implements IWebshopConnection {
 		XMLParserActivator
 */
 
-	/**
-	 * Prepare the web shop import to request products and orders.
-	 */
-	private void prepareGetProductsAndOrders() {
-		setGetProducts(true);
-		setGetOrders(true);
-	}
-
-	/**
-	 * Prepare the web shop import to change the state of an order.
-	 */
-	private void prepareChangeState() {
-		setGetProducts(false);
-		setGetOrders(false);
-	}
-
 	
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.webshopimport.IWebshopConnection#execute(org.eclipse.swt.widgets.Shell, java.lang.String)
 	 */
-	@Override
 	@Execute
 	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
-	        @Optional @Named(PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
+	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
 	    ExecutionResult executionResult = null;
+	    
+		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
+		
+        conn = new WebShopConnector()
+        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
+        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
+        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
+        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
+        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
+        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
+	    
 	    if(BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
-	        prepareGetProductsAndOrders();
+	    	conn.prepareGetProductsAndOrders();
 	    } else {
-	        prepareChangeState();
+	    	conn.prepareChangeState();
 	    }
+	    
         try {
             ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
-            IRunnableWithProgress op = new WebShopImportWorker(this);
-            progressMonitorDialog.run(true, true, op);
+            WebShopDataImporter importOperation = ContextInjectionFactory.make(WebShopDataImporter.class, context);
+            importOperation.setConnector(conn);
+            progressMonitorDialog.run(true, true, importOperation);
+            this.runResult = importOperation.getRunResult();
             executionResult = new ExecutionResult(getRunResult(), getRunResult().isEmpty() ? 0 : 1);
         }
           catch (InvocationTargetException e) {
@@ -234,88 +216,10 @@ public class WebShopImportManager implements IWebshopConnection {
 	}
 
 	/**
-	 * Save the list of all orders, which are out of sync with the web shop to
-	 * file system
-	 * 
-	 */
-	@Override
-	public void saveOrdersToSynchronize() {
-		if (getOrderstosynchronize().isEmpty())
-			return;
-
-		Path orders2sync = Paths.get(getGeneralWorkspace(), FILENAME_ORDERS2SYNC);
-
-		try (Writer writer = Files.newBufferedWriter(orders2sync)) {
-			getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Update the progress of an order.
-	 * 
-	 * @param uds
-	 *            The UniDataSet with the new progress value
-	 */
-	public void updateOrderProgress(Document uds, String comment, boolean notify) {
-
-		// Get the progress value of the UniDataSet
-		String orderId = uds.getWebshopId();
-		int progress = uds.getProgress();
-		String webshopState;
-
-		// Get the orders that are out of sync with the shop
-		readOrdersToSynchronize();
-
-		// Convert a percent value of 0..100% to a state of 1,2,3
-		if (progress >= OrderState.SHIPPED.getState())
-			webshopState = "3";
-		else if (progress >= OrderState.PROCESSING.getState())
-			webshopState = "2";
-		else
-			webshopState = "1";
-
-		// Set the new progress state 
-		// Add an "*" to mark the ID as "notify customer"
-
-		//Replace the "," by "&comma;
-		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%2C", "%26comma%3B");
-		//Replace the "=" by "&equal;
-		comment = java.util.Optional.ofNullable(comment).orElse("").replace("%3D", "%26equal%3B");
-		
-		if (notify)	webshopState += "*" + comment;
-
-		getOrderstosynchronize().setProperty(orderId, webshopState);
-		saveOrdersToSynchronize();
-	}
-
-	/**
-     * Read the list of all orders, which are out of sync with the web shop
-     * from the file system
-     * 
-     */
-    @Override
-	public void readOrdersToSynchronize() {
-        setOrderstosynchronize(new Properties());
-        Path orders2sync = Paths.get(getGeneralWorkspace(), FILENAME_ORDERS2SYNC);
-        try (InputStream reader = Files.newInputStream(orders2sync)) {
-            getOrderstosynchronize().load(reader);
-        } catch (NoSuchFileException fnex) {
-            //getLog().warn(fnex, "file not found: orders2sync.txt (will be created next time)");
-        	// it's not really important...
-        } catch (IOException e) {
-            getLog().error(e);
-        }
-    }
-
-	/**
 	 * Remove the HTML tags from the result
 	 * 
 	 * @return The formated run result string
 	 */
-	@Override
 	public String getRunResult() {
 		return runResult.replaceAll("\\<.*?\\>", "");
 	}
@@ -323,7 +227,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.webshopimport.IWebshopConnection#setRunResult(java.lang.String)
 	 */
-	@Override
 	public void setRunResult(String runResult) {
 		this.runResult = runResult;
 	}
@@ -331,7 +234,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the preferences
 	 */
-	@Override
 	public IPreferenceStore getPreferences() {
 		return preferences;
 	}
@@ -346,7 +248,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the msg
 	 */
-	@Override
 	public Messages getMsg() {
 		return msg;
 	}
@@ -359,55 +260,8 @@ public class WebShopImportManager implements IWebshopConnection {
 	}
 
 	/**
-	 * @return the getProducts
-	 */
-	@Override
-	public final boolean isGetProducts() {
-		return getProducts;
-	}
-
-	/**
-	 * @param getProducts the getProducts to set
-	 */
-	public final void setGetProducts(boolean getProducts) {
-		this.getProducts = getProducts;
-	}
-
-	/**
-	 * @return the getOrders
-	 */
-	@Override
-	public final boolean isGetOrders() {
-		return getOrders;
-	}
-
-	/**
-	 * @param getOrders the getOrders to set
-	 */
-	public final void setGetOrders(boolean getOrders) {
-		this.getOrders = getOrders;
-	}
-
-	/**
-	 * @return the orderstosynchronize
-	 */
-	@Override
-	public Properties getOrderstosynchronize() {
-		return orderstosynchronize;
-	}
-
-	/**
-	 * @param orderstosynchronize the orderstosynchronize to set
-	 */
-	@Override
-	public void setOrderstosynchronize(Properties orderstosynchronize) {
-		this.orderstosynchronize = orderstosynchronize;
-	}
-
-	/**
 	 * @return the log
 	 */
-	@Override
 	public Logger getLog() {
 		return log;
 	}
@@ -415,7 +269,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the context
 	 */
-	@Override
 	public final IEclipseContext getContext() {
 		return context;
 	}
@@ -423,7 +276,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the vatsDAO
 	 */
-	@Override
 	public final VatsDAO getVatsDAO() {
 		return vatsDAO;
 	}
@@ -431,7 +283,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the documentsDAO
 	 */
-	@Override
 	public final DocumentsDAO getDocumentsDAO() {
 		return documentsDAO;
 	}
@@ -439,7 +290,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the productsDAO
 	 */
-	@Override
 	public final ProductsDAO getProductsDAO() {
 		return productsDAO;
 	}
@@ -447,7 +297,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the contactsDAO
 	 */
-	@Override
 	public final ContactsDAO getContactsDAO() {
 		return contactsDAO;
 	}
@@ -455,7 +304,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the shippingCategoriesDAO
 	 */
-	@Override
 	public final ShippingCategoriesDAO getShippingCategoriesDAO() {
 		return shippingCategoriesDAO;
 	}
@@ -463,7 +311,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the shippingsDAO
 	 */
-	@Override
 	public final ShippingsDAO getShippingsDAO() {
 		return shippingsDAO;
 	}
@@ -471,7 +318,6 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the paymentsDAO
 	 */
-	@Override
 	public final PaymentsDAO getPaymentsDAO() {
 		return paymentsDAO;
 	}
@@ -479,14 +325,12 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the productCategoriesDAO
 	 */
-	@Override
 	public final ProductCategoriesDAO getProductCategoriesDAO() {
 		return productCategoriesDAO;
 	}
 	/**
 	 * @return the webshopStateMappingDAO
 	 */
-	@Override
 	public final WebshopDAO getWebshopDAO() {
 		return webshopStateMappingDAO;
 	}
@@ -494,22 +338,13 @@ public class WebShopImportManager implements IWebshopConnection {
 	/**
 	 * @return the data
 	 */
-	@Override
 	public final Object getData() {
 		return data;
 	}
 	/**
 	 * @param data the data to set
 	 */
-	@Override
 	public final void setData(Object data) {
 		this.data = data;
-	}
-
-	/**
-	 * @return the generalWorkspace
-	 */
-	private String getGeneralWorkspace() {
-		return getPreferences().getString(Constants.GENERAL_WORKSPACE);
 	}
 }

@@ -56,7 +56,7 @@ public class LocaleUtil {
 		}
 		// We have to track different language settings (e.g., from command line) which
 		// aren't equal to the default locale.
-		if (instance == null || lang != null && !instance.getDefaultLocale().getLanguage().contentEquals(lang)) {
+		if (instance == null || lang != null && !instance.getDefaultLocale().toString().startsWith(lang)) {
 			/*
 			 * If a two-letter locale is given try to interpret it (because we need it later
 			 * for determining currency etc.)
@@ -66,7 +66,7 @@ public class LocaleUtil {
 				// try to get the locale from language, use the first fitting country
 				if (!countriesByLanguage.isEmpty()) {
 					Locale tmpLocale = countriesByLanguage.get(0);
-					instance = new LocaleUtil(String.format("%s_%s", tmpLocale.getCountry(), tmpLocale.getLanguage()));
+					instance = new LocaleUtil(String.format("%s_%s", tmpLocale.getLanguage(), tmpLocale.getCountry()));
 				} else {
 					// if none found, try to guess it from country code (very uncertain!)
 					instance = new LocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
@@ -91,9 +91,12 @@ public class LocaleUtil {
      */
     private LocaleUtil(String lang) {
         Locale[] availableLocales = Locale.getAvailableLocales();
+        // clear caches
+        localeLookUp.clear();
+        countryLocaleMap.clear();
         // only countries are relevant
 //        String[] locales = Locale.getISOCountries();
-        if(!StringUtils.isEmpty(lang)) {
+        if(StringUtils.isNotBlank(lang)) {
             // the language code are the letters before "_"
             String splittedString[] = lang.split("_");
             Builder builder = new Locale.Builder()

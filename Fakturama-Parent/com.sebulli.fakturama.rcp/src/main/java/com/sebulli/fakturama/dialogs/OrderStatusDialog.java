@@ -137,7 +137,7 @@ public class OrderStatusDialog extends Dialog {
 	 */
 	@Override
 	public boolean close() {
-		comment = StringUtils.chomp(comment);
+		comment = StringUtils.chomp(txtComment.getText());
 		notify = bNotification.getSelection();
 		return super.close();
 
