@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
+import org.fakturama.imp.wizard.ImportOptionPage;
 
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -111,7 +113,11 @@ public class ProductsCsvImporter {
 	 * @param importEmptyValues
 	 *            if true, also empty values will be updated
 	 */
-	public void importCSV(final String fileName, boolean test,boolean updateExisting, boolean importEmptyValues) {
+	public void importCSV(final String fileName, boolean test, ImportOptionPage optionPage) {
+		boolean updateExisting = optionPage.getUpdateExisting(); 
+		//boolean importEmptyValues = optionPage.getUpdateWithEmptyValues();
+		char separator = StringUtils.defaultIfBlank(optionPage.getSeparator(), ";").charAt(0);
+		char quoteChar = StringUtils.isNotBlank(optionPage.getQuoteChar()) ? optionPage.getQuoteChar().charAt(0) : '"';
 		modelFactory = FakturamaModelPackage.MODELFACTORY;
 		Date today = Calendar.getInstance().getTime();
 
@@ -131,7 +137,7 @@ public class ProductsCsvImporter {
 		// Open the existing file
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
 				 BufferedReader in = new BufferedReader(isr);
-				 CSVReader csvr = new CSVReader(in, ';');	) {
+				 CSVReader csvr = new CSVReader(in, separator, quoteChar);	) {
 				
 				// Read next CSV line
 				columns = csvr.readNext();
@@ -155,13 +161,13 @@ public class ProductsCsvImporter {
 
 				// Dispatch all the cells into a property
 				for (int col = 0; col < cells.length; col++) {
-					if (col < columns.length && isRequiredColumn(columns[col])) {
-						prop.setProperty(columns[col].toLowerCase(), cells[col]);
+					if (col < columns.length && isRequiredColumn(StringUtils.trim(columns[col]))) {
+						prop.setProperty(StringUtils.trim(columns[col]).toLowerCase(), cells[col]);
 					}
 				}
 
 				// Test, if all columns are used
-				if ((prop.size() > 0) && (prop.size() != requiredHeaders.length)) {
+				if (prop.size() > 0 && (prop.size() != requiredHeaders.length)) {
 					for (int i = 0; i < requiredHeaders.length; i++) {
 						if (!prop.containsKey(requiredHeaders[i]))
 							//T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.

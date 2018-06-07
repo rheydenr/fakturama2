@@ -84,7 +84,7 @@ public final class ProductUtil {
         Double[] prices = new Double[] {product.getPrice1(), product.getPrice2(), product.getPrice3(), product.getPrice4(), product.getPrice5()};
         for (int i = 0; i < scaledPrices; i++) {
             newQuantity = blocks[i];
-            if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001) {
+            if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001 && prices[i] != 0) {
                 blockQuantity = newQuantity;
                 price = prices[i];
             }
