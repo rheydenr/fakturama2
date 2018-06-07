@@ -189,7 +189,7 @@
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Positionen in einer eigenen Zeile angelegt wird, und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis>, und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
+		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Position in einer eigenen Zeile angelegt wird und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis> und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
 		<para>Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
 		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird (zum Beispiel auch ein Beleg mit mehreren Positionen). Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
