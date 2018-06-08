@@ -49,7 +49,14 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
     private PreferencesInDatabase preferencesInDatabase;
     
     @Inject
-    private IEclipseContext context;
+    private IEclipseContext context;   
+    
+//    @Inject @Optional
+//    private EModelService modelService;
+//    
+//    @Inject @Optional
+//    private MApplication application;
+//
 
 	/**
 	 * Constructor
@@ -98,7 +105,6 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 				context.set(Messages.class, msg);
 				WebShopStatusSettingsDialog dialog = ContextInjectionFactory.make(WebShopStatusSettingsDialog.class, context);
 				dialog.open();				
-				// modelService isn't available at this moment, therefore we can't use the dialog from ApplicationModel
 		}));
 	
 	}

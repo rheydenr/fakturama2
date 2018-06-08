@@ -46,8 +46,10 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.util.ContactUtil;
 
 
 /**
@@ -103,6 +105,7 @@ public class SalesExporter extends OOCalcExporter {
 	 * 			True, if the export was successful
 	 */
 	public boolean export(boolean showZeroVatColumn, boolean paid) {
+		ContactUtil contactUtil = new ContactUtil();
 
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())
@@ -262,7 +265,7 @@ public class SalesExporter extends OOCalcExporter {
 				// The VAT value in the invoice is also scaled by this 0.958333...
 				// to 19.17€
 				
-				Double paidFactor = Double.valueOf(0.0);
+				Double paidFactor = Double.valueOf(1.0); 
 				if(Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)) > 0) {
 					paidFactor = document.getPaidValue() / document.getTotalValue();
 				}
@@ -284,7 +287,7 @@ public class SalesExporter extends OOCalcExporter {
 				Contact addressid = document.getBillingContact();
 
 				// Fill the address columns with the contact that corresponds to the addressid
-				if (addressid != null) {
+				if (addressid != null && addressid.getName() != null) {
 					setCellText(row, col++, addressid.getFirstName());
 					setCellText(row, col++, addressid.getName());
 					setCellText(row, col++, addressid.getCompany());
@@ -292,8 +295,12 @@ public class SalesExporter extends OOCalcExporter {
 					if(addressid.getAddress() != null) {
 						setCellText(row, col++, addressid.getAddress().getCountryCode());
 					} else {
-						setCellText(row, col++, " ");
+						col++;
 					}
+				} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
+					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
+					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
+					col += 3;
 				}
 				// ... or use the documents first line
 				else {

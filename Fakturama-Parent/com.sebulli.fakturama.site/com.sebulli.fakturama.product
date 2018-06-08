@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.2.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.2" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Xdock:icon=../Resources/app.icns
       </vmArgsMac>
@@ -25,7 +25,6 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
-      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -232,10 +231,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.0.2.qualifier"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.2.qualifier"/>
-      <feature id="org.fakturama.export.feature" version="2.0.2.qualifier"/>
-      <feature id="org.fakturama.import.feature" version="2.0.2.qualifier"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.0.2"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.2"/>
+      <feature id="org.fakturama.export.feature" version="2.0.2"/>
+      <feature id="org.fakturama.import.feature" version="2.0.2"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
@@ -270,6 +269,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_tr"/>
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
+      <feature id="org.eclipse.babel.nls_eclipse_el"/>
    </features>
 
    <configurations>

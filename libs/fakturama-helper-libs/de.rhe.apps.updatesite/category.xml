@@ -18,6 +18,9 @@
    <feature url="features/org.apache.commons.feature_3.3.0.jar" id="org.apache.commons.feature" version="3.3.0">
       <category name="de.rhe.libs.apache"/>
    </feature>
+   <feature url="features/org.apache.odftoolkit.feature_0.9.0.qualifier.jar" id="org.apache.odftoolkit.feature" version="0.9.0.qualifier">
+      <category name="de.rhe.libs.apache"/>
+   </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
       <description>
          JDBC driver for various databases as OSGi plugin.
@@ -25,7 +28,7 @@
    </category-def>
    <category-def name="de.rhe.libs.apache" label="Apache libraries">
       <description>
-         Missing apache libraries which could&apos;nt be found at Orbit
+         Missing or updated apache libraries which couldn&apos;t be found at Orbit
       </description>
    </category-def>
    <category-def name="de.rhe.libs.additional" label="some helpful libs">

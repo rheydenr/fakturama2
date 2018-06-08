@@ -330,3 +330,4 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
         		.append(']').toString();
     }
 }
+

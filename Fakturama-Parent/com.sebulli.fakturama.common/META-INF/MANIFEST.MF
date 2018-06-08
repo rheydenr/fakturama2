@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
 Bundle-SymbolicName: com.sebulli.fakturama.common
-Bundle-Version: 2.0.2.qualifier
+Bundle-Version: 2.0.2
 Export-Package: com.sebulli.fakturama.common,
  com.sebulli.fakturama.exception,
  com.sebulli.fakturama.i18n,
@@ -71,7 +71,6 @@ Export-Package: com.sebulli.fakturama.common,
  org.odftoolkit.odfdom.pkg.dsig,
  org.odftoolkit.odfdom.pkg.manifest,
  org.odftoolkit.odfdom.pkg.rdfa,
- org.odftoolkit.odfdom.taglet,
  org.odftoolkit.odfdom.type,
  org.odftoolkit.simple,
  org.odftoolkit.simple.chart,
@@ -126,7 +125,7 @@ Import-Package: ch.qos.logback.classic,
  org.osgi.util.tracker,
  org.slf4j
 Bundle-Activator: com.sebulli.fakturama.common.Activator
-Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,OSGI-INF/rounding_provider.xml,
- OSGI-INF/localeservice.xml
+Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,OSGI-INF/rounding_provider.xml,OSGI-INF/localeservice.xml
 Bundle-ClassPath: .,
- lib/simple-odf-0.8.2-incubating-SNAPSHOT-jar-with-dependencies.jar
+ lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
+

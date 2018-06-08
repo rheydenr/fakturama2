@@ -19,7 +19,10 @@ Export-Package: javax.money,
  org.javamoney.moneta.spi,
  org.javamoney.osgi
 Bundle-ClassPath: .,
- lib/moneta-1.0.1-SNAPSHOT.jar,
- lib/money-api-1.0.1-SNAPSHOT.jar
+ lib/money-api-1.0.2-SNAPSHOT.jar,
+ lib/moneta-core-1.2-SNAPSHOT.jar,
+ lib/moneta-convert-1.2-SNAPSHOT.jar,
+ lib/moneta-convert-ecb-1.2-SNAPSHOT.jar,
+ lib/moneta-convert-imf-1.2-SNAPSHOT.jar
 Bundle-Activator: org.javamoney.osgi.Activator
 Require-Bundle: javax.inject

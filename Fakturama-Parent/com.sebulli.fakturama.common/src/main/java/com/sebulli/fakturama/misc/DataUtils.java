@@ -790,17 +790,21 @@ public class DataUtils {
      * @return Date and time as formated String
      */
     public String DateAndTimeAsLocalString(String s) {
-
+    	String retval = "";
+    	if(s == null) {
+    		return retval;
+    	}
         GregorianCalendar calendar = new GregorianCalendar();
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             calendar.setTime(formatter.parse(s));
+	        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
+	        retval = df.format(calendar.getTime());
         }
         catch (ParseException e) {
 //            Logger.logError(e, "Error parsing Date and Time");
         }
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
-        return df.format(calendar.getTime());
+        return retval;
     }
 
     /**

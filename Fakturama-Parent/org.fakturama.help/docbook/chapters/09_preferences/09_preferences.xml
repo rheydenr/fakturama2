@@ -216,7 +216,11 @@
         </section>
         <section>
             <title>Preis ersetzen</title>
-            <para>Der Gesamtpreis eines Artikels (Menge x Einzelpreis) kann durch einen Platzhalter wie zum Beispiel "---" ersetzt werden, um eine Bedarfsposition zusätzlich zu markieren.</para>
+            <para>Der Gesamtpreis eines Artikels (Menge x Einzelpreis) kann durch einen Platzhalter wie zum Beispiel "---" ersetzt werden, um eine Bedarfsposition zusätzlich zu markieren. Soll stattdessen der eigentliche Preis dargestellt werden, sind die Zeichen "{}" zu verwenden.</para>
+            <para>Beispiel:
+            <programlisting>({})</programlisting>
+            wird (bei einem angenommenen Preis von 1,53 €) auf einem Angebot ersetzt zu:
+            <programlisting>(1,53 €)</programlisting></para>
         </section>
         <section>
             <title>Ersatztext für Preisangabe</title>
@@ -708,6 +712,10 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{firstname}</emphasis> Vorname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{companyorname}</emphasis> Firmenname oder (falls Firmenname leer ist) Nachname des Kunden</para>
                 </listitem>
                 <listitem>
@@ -906,7 +914,7 @@
             <para>Siehe <link linkend="editor_editor_browser">Webbrowser</link>
             </para>
         </section>
-		<section><title>Adresleiste anzeigen</title>
+		<section><title>Adressleiste anzeigen</title>
 		<para>Mit diesem Schalter kann die Adressleiste im Browserfenster ein- oder ausgeblendet werden.</para>
 		</section>
         <!-- section>

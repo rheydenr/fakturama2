@@ -15,6 +15,8 @@
 
 package com.sebulli.fakturama.dto;
 
+import java.util.Optional;
+
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
@@ -240,11 +242,11 @@ public class Price {
 		// Calculate net from gross
 		if (asGross) {
 			this.unitGross = this.unitPrice;
-			this.unitNet = this.unitPrice.divide(1 + vatPercent + (salesEqTaxPercent != null ? salesEqTaxPercent : 0));
+			this.unitNet = this.unitPrice.divide(1 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(Double.valueOf(0.0)));
 		}
 		// or gross from net
 		else {
-			this.unitGross = this.unitPrice.multiply(1 + vatPercent + (salesEqTaxPercent != null ? salesEqTaxPercent : 0));
+			this.unitGross = this.unitPrice.multiply(1 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(Double.valueOf(0.0)));
 			this.unitNet = this.unitPrice;
 		}
 

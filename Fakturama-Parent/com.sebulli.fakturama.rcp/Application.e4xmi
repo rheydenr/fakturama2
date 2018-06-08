@@ -17,7 +17,10 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_RjR8sEgIEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_qPRcEPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.openpreferences.id" label="%main.menu.file.openpreferences" command="_EDLOIDtZEeOcltwCzP-ZbQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.4"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_uCz_IPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.webshop.id" label="%command.webshop.name" iconURI="icon://COMMAND_SHOP" tooltip="%command.webshop.tooltip" enabled="false" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_uCz_IPo6EeKmVtv93KLoRw" elementId="menu:main.menu.file.webshop.id" label="%command.webshop.name" iconURI="icon://COMMAND_SHOP" tooltip="%command.webshop.tooltip" enabled="false" command="_QWE00ENJEeOd4ZSH8zQNZQ">
+          <parameters xmi:id="_X6Vx4GoxEeiJR_zJMWdDkw" elementId="com.sebulli.fakturama.rcp.parameter.83" name="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" value="true"/>
+          <parameters xmi:id="_kgnV4GoxEeiJR_zJMWdDkw" elementId="com.sebulli.fakturama.rcp.parameter.84" name="org.fakturama.webshop.connector.action" value="import-orders"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_vwm9sPo6EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.import" label="%main.menu.file.import" iconURI="icon://COMMAND_IMPORT" enabled="false" mnemonics="" command="_-9DrwGbyEeWmqtjz1q2EEA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_w0AUYPo6EeKmVtv93KLoRw" elementId="org.eclipse.ui.file.export" label="%main.menu.file.export" iconURI="icon://COMMAND_EXPORT" enabled="false" command="_RAuAAEf5EeO7mNzAwIZUXQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_KyAysPo0EeKmVtv93KLoRw" elementId="fakturama.main.menu.file.separator.5"/>
@@ -197,7 +200,6 @@
   <handlers xmi:id="_ZBS4gENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.handler.webShopImport" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.webshopimport.WebShopImportManager" command="_QWE00ENJEeOd4ZSH8zQNZQ"/>
   <handlers xmi:id="__VvQYEWlEeOt-cfrfJc3bg" elementId="com.sebulli.fakturama.handler.selectWorkspace" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SelectWorkspaceHandler" command="_mzJEUEWlEeOt-cfrfJc3bg"/>
   <handlers xmi:id="_YEaEsMExEeSyj41D59qmtg" elementId="com.sebulli.fakturama.handler.openbrowser" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenBrowserEditorHandler" command="_qPSyAEy_EeOA3qmx22wNtw"/>
-  <handlers xmi:id="_NdhkECY6EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.new.product.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.NewProductHandler" command="_MFWfwEy7EeOA3qmx22wNtw"/>
   <handlers xmi:id="_te9tsM2mEeSiG9D4SxDGVQ" elementId="com.sebulli.fakturama.new.contact.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.NewContactHandler" command="_c8eN4Ey7EeOA3qmx22wNtw"/>
   <handlers xmi:id="_7l2HYDtWEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.openDetailEditor" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CallEditor" command="_A9gvoDtXEeOcltwCzP-ZbQ"/>
   <handlers xmi:id="_TsyuYG3mEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ErrorViewHandler" command="_VpeoEG3nEeS8E6Dq10mFSA"/>
@@ -560,6 +562,7 @@
   <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId=""/>
+    <parameters xmi:id="_yezBsGllEeiWHetSrMwJHQ" elementId="org.fakturama.webshop.connector.action" name="action" optional="false"/>
   </commands>
   <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_xsk48LUbEeeE-J3bdSEiTA" elementId="org.fakturama.command.printoo.document" name="Document parameter"/>

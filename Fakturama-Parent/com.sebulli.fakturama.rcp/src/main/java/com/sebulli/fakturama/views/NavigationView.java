@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -48,6 +49,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.OpenContactsHandler;
 import com.sebulli.fakturama.handlers.OpenListViewsHandler;
+import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -108,7 +110,10 @@ public class NavigationView {
 
         // Create the first expand bar "Import"
         PGroup group = createPGroup("command.navigation.import", Icon.ICON_SHOP);
-        addAction(group, Icon.COMMAND_IMPORT, "command.webshop", CommandIds.CMD_WEBSHOP_IMPORT);
+        parameters = new HashMap<>();
+        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, BooleanUtils.toStringTrueFalse(true));
+        parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
+        addAction(group, Icon.COMMAND_IMPORT, "command.webshop", CommandIds.CMD_WEBSHOP_IMPORT, parameters);
 
         // Create the 2nd expand bar "Data"
         PGroup group2 = createPGroup("command.data.name", Icon.ICON_LETTER);

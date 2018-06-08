@@ -565,7 +565,7 @@ public class ProductEditor extends Editor<Product> {
 		labelDescription.setToolTipText(msg.editorProductAdddescriptionTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
-		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 //		textDescription.setText(DataUtils.makeOSLineFeeds(editorProduct.getStringValueByKey("description")));
 		textDescription.setToolTipText(labelDescription.getToolTipText());
 		GridDataFactory.fillDefaults().hint(10, 80).grab(true, false).applyTo(textDescription);
