@@ -58,6 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -66,6 +67,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -79,6 +81,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
@@ -169,6 +172,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private ProductUtil productUtil;
 	
 	private String generalWorkspace;
+    private ILocaleService localeUtil;
 	
 	private WebShopConnector connector;
 	private String runResult = "";
@@ -188,6 +192,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
 	@Override
@@ -424,11 +429,12 @@ public class WebShopDataImporter implements IRunnableWithProgress {
      * @throws SQLException 
      */
     private void interpretWebShopData(IProgressMonitor monitor, Webshopexport webshopexport) throws FakturamaStoringException {
-    	connector.setShopURL(webshopexport.getWebshop().getUrl());
-    	productImagePath = "";
     
     	// There is no order
     	if (webshopexport == null) return;
+    	
+    	connector.setShopURL(webshopexport.getWebshop().getUrl());
+    	productImagePath = "";
     
     	// Mark all orders as "in sync with the web shop"
     	orderSyncManager.allOrdersAreInSync();
@@ -570,7 +576,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         address.setZip(contact.getZip());
         address.setCity(contact.getCity());
         address.setValidFrom(today);
-        String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
+        String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
         address.setCountryCode(countryCode);
         
         contactItem.setAddress(address);
@@ -591,7 +597,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         deliveryAddress.setZip(contact.getDeliveryZip());
         deliveryAddress.setCity(contact.getDeliveryCity());
         deliveryAddress.setValidFrom(today);
-        countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getDeliveryCountry());
+        countryCode = localeUtil.findCodeByDisplayCountry(contact.getDeliveryCountry(), lang);
         deliveryAddress.setCountryCode(countryCode);
         
         // if delivery contact is equal to main contact we don't need to persist it
