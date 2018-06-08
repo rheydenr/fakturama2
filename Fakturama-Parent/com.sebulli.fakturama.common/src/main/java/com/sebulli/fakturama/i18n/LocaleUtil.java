@@ -67,7 +67,7 @@ public class LocaleUtil implements ILocaleService {
 				// try to get the locale from language, use the first fitting country
 				if (!countriesByLanguage.isEmpty()) {
 					Locale tmpLocale = countriesByLanguage.get(0);
-					initLocaleUtil(String.format("%s_%s", tmpLocale.getCountry(), tmpLocale.getLanguage()));
+					initLocaleUtil(String.format("%s_%s", tmpLocale.getLanguage(), tmpLocale.getCountry()));
 				} else {
 					// if none found, try to guess it from country code (very uncertain!)
 					initLocaleUtil(String.format("%s_%s", lang, lang.toUpperCase()));
@@ -91,9 +91,12 @@ public class LocaleUtil implements ILocaleService {
      */
     private void initLocaleUtil(String lang) {
         Locale[] availableLocales = Locale.getAvailableLocales();
+        // clear caches
+        localeLookUp.clear();
+        countryLocaleMap.clear();
         // only countries are relevant
 //        String[] locales = Locale.getISOCountries();
-        if(!StringUtils.isEmpty(lang)) {
+        if(StringUtils.isNotBlank(lang)) {
             // the language code are the letters before "_"
             String splittedString[] = lang.split("_");
             Builder builder = new Locale.Builder()
