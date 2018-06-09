@@ -131,6 +131,8 @@ public class OpenParcelServiceHandler {
 				// There is only one parcel service. Do not show a menu
 				else if (parcelServiceManager.size() == 1) {
 					openParcelServiceBrowser(documentPartStack);
+				} else {
+					MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "No templates for parcel services found!");
 				}
 			}
 		}
@@ -162,7 +164,7 @@ public class OpenParcelServiceHandler {
 		
         MPartStack documentPartStack = (MPartStack) modelService.find(CallEditor.DETAIL_PARTSTACK_ID, application);
         
-        if(activePart == null) {
+        if(activePart == null || activePart.getElementId().contentEquals("com.sebulli.fakturama.navigationView")) {
 	        // first try is to look for an open Document editor
 	        // this step can't executed together with looking for an opened Browser Editor
 	        // since we can't determine if one of that windows is on top (isOnTop() is false even if
@@ -176,27 +178,31 @@ public class OpenParcelServiceHandler {
 				}
 			}
         
-	        // nothing found? Then try to find an open Browser Editor
-	        for (MStackElement stackElement : documentPartStack.getChildren()) {
-				if(stackElement.isVisible() 
-					&&(stackElement.getElementId().contentEquals(ParcelServiceBrowserEditor.ID)
-						|| stackElement.getElementId().contentEquals(BrowserEditor.ID))) {
-					activePart = (MPart) modelService.find(stackElement.getElementId(), stackElement);
-					if(activePart.getContext() == null) {
-						// dead part, reset and go on
-						activePart = null;
-					} else {
-						// found!
-						break;
+	        if(activePart == null ) {
+	        		// nothing found? Then try to find an open Browser Editor
+		        for (MStackElement stackElement : documentPartStack.getChildren()) {
+					if(stackElement.isVisible() 
+						&&(stackElement.getElementId().contentEquals(ParcelServiceBrowserEditor.ID)
+							|| stackElement.getElementId().contentEquals(BrowserEditor.ID))) {
+						activePart = (MPart) modelService.find(stackElement.getElementId(), stackElement);
+						if(activePart.getContext() == null) {
+							// dead part, reset and go on
+							activePart = null;
+						} else {
+							// found!
+							break;
+						}
 					}
 				}
-			}
+	        }
 
-	        // try to get a reasonable document from documents list view
-			List<MUIElement> dataPanelElements = modelService.findElements(application, DocumentsListTable.ID, MUIElement.class, null, EModelService.IN_ACTIVE_PERSPECTIVE);
-			if(!dataPanelElements.isEmpty() && dataPanelElements.get(0).getElementId().contentEquals(DocumentsListTable.ID)) {
-				activePart = (MPart) dataPanelElements.get(0);
-			}
+	        if(activePart == null ) {
+		        // try to get a reasonable document from documents list view
+				List<MUIElement> dataPanelElements = modelService.findElements(application, DocumentsListTable.ID, MUIElement.class, null, EModelService.IN_ACTIVE_PERSPECTIVE);
+				if(!dataPanelElements.isEmpty() && dataPanelElements.get(0).getElementId().contentEquals(DocumentsListTable.ID)) {
+					activePart = (MPart) dataPanelElements.get(0);
+				}
+	        }
         }
 		if (documentEditor == null && activePart != null) {
 			
