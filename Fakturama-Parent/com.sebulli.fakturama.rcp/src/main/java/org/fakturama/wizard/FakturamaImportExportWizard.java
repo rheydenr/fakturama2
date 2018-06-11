@@ -23,6 +23,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardSelectionPage;
 import org.fakturama.wizard.export.ExportPage;
 import org.fakturama.wizard.imp.ImportPage;
 import org.fakturama.wizards.IFakturamaWizardService;
@@ -140,10 +141,24 @@ public class FakturamaImportExportWizard extends Wizard {
 		}
     }
     
+//    @Override
+//    public boolean canFinish() {
+//    	if(importExportPage != null && ((WizardSelectionPage)importExportPage).getSelectedNode() != null) {
+//    		return ((WizardSelectionPage)importExportPage).getSelectedNode().getWizard().canFinish();
+//    	} else {
+//    		return super.canFinish();
+//    	}
+//    }
+    
+    
     @Override
     public boolean performFinish() {
-    	importExportPage.saveWidgetValues();
-        return true;
+//    	if(importExportPage != null && ((WizardSelectionPage)importExportPage).getSelectedNode() != null) {
+    		importExportPage.saveWidgetValues();
+//    		return ((WizardSelectionPage)importExportPage).getSelectedNode().getWizard().performFinish();
+//    	} else {
+    		return true;
+//    	}
     }
     
 }

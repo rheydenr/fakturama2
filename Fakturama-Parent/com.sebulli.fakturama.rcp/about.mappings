@@ -1,6 +1,6 @@
 0=Fakturama
 1=${releaseName}
-2=2017
+2=2018
 3=Gerd Bartelt\n\
 Oliver Groth\n\
 Ralf Heydenreich\n\
@@ -9,6 +9,9 @@ Steffen Lenhart\n
 Kemal Ak\u00E7oucuk\n\
 Pierre Backes\n\
 Ander Baraja\n\
+Ondrej J\u00E1no\u0161\u00EDk\n\
+Dennis Kamolow\n\
 Christoph Kieffer\n\
+Konstantin Stamatopoulos\n\
 Monika Viste\n
 5=${buildId}

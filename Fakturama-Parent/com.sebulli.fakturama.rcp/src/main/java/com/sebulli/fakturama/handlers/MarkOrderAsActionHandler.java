@@ -14,6 +14,7 @@
 package com.sebulli.fakturama.handlers;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
@@ -62,7 +64,7 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
-import com.sebulli.fakturama.webshopimport.WebShopImportManager;
+import com.sebulli.fakturama.webshopimport.OrderSyncManager;
 
 /**
  * This action marks an entry in the order table as pending, processing, shipped
@@ -170,15 +172,15 @@ public class MarkOrderAsActionHandler {
                 {
                     for (DocumentItem item : items) {
                     	Product product = item.getProduct();
-                    	// only process if item is based on a real product
-                    	if(product != null) {
+                    	// only process if item is based on a real product and if quantity is given
+                    	if(product != null && product.getQuantity() != null) {
 	                        Double quantityOrder = item.getQuantity();
 	                        Double quantityStock = product.getQuantity();
 	                        product.setQuantity(quantityStock - quantityOrder);
 	                        if (product.getQuantity() <= 0) {
-	                            String name = product.getName();
-	                            String cat = product.getCategories()/*.get(0)*/.getName();
-	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, msg.commandMarkorderWarnStockzero + " " + name + "/" + cat);
+	                            String cat = CommonConverter.getCategoryName(product.getCategories(), "/");
+	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, 
+	                            		MessageFormat.format(msg.commandMarkorderWarnStockzero, product.getName(), cat));
 	                        }
 	                        productsDAO.update(product);
 	                        needUpdate = true;
@@ -212,17 +214,15 @@ public class MarkOrderAsActionHandler {
                 // Change the state also in the webshop
                 if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
 
-                    // Start a new web shop import manager in a
-                    // progress Monitor Dialog
-                    WebShopImportManager webShopImportManager = new WebShopImportManager();
-                    ContextInjectionFactory.inject(webShopImportManager, iEclipseContext);
-                    //                  webShopImportManager.initialize();
-                    webShopImportManager.updateOrderProgress(document, comment, sendNotification);
+                	// sync orders with web shop
+                	OrderSyncManager orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, iEclipseContext);
+                	orderSyncManager.updateOrderProgress(document, comment, sendNotification);
+                	
                     // Send a request to the web shop import manager.
                     // It will update the state in the web shop the next time
                     // when we synchronize with the shop.
                     Map<String, Object> parameters = new HashMap<>();
-                    parameters.put(WebShopImportManager.PARAM_IS_GET_PRODUCTS, Boolean.FALSE.toString());
+                    parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.FALSE.toString());
                     ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT, parameters);
                     /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
                     //                  webShopImportManager.prepareChangeState();

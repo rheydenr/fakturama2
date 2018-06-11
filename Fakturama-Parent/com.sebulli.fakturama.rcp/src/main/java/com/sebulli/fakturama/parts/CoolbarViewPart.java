@@ -39,6 +39,7 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
+import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -120,8 +121,11 @@ public class CoolbarViewPart {
 		 * Das muß man dann beim Erstellen des Icons über den Preference-Store abfragen, da die Einstellung dort
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
-		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, 
-				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP));
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, BooleanUtils.toStringTrueFalse(true));
+        parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
+		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
+				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), parameters);
 		createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
@@ -164,8 +168,10 @@ public class CoolbarViewPart {
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
         Map<String, Object> params = new HashMap<>();
+		// if called from CoolBar it is *always* a new one...
+        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
-        createToolItem(toolBar3, CommandIds.CMD_NEW_PRODUCT, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
+        createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
         		Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize), null,
                 preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params);    
 

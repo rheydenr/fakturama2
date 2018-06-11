@@ -25,7 +25,6 @@ public abstract class AbstractWebshopImporter {
 	protected IProgressMonitor localMonitor;
 	protected CurrencyUnit currencyCode;
 	protected final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
-	protected String address;
 	protected String user;
 	protected String password;
 	protected Boolean useAuthorization;
@@ -34,7 +33,7 @@ public abstract class AbstractWebshopImporter {
 	protected Messages msg;
 
 	public AbstractWebshopImporter(IPreferenceStore preferences, Messages msg) {
-		address = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
+		shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
         user = preferences.getString(Constants.PREFERENCES_WEBSHOP_USER);
         password = preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD);
         useAuthorization = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED);

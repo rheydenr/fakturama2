@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: HSQL DB-Connector
 Bundle-SymbolicName: com.sebulli.fakturama.hsqlconnector;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.0.2
 Bundle-Vendor: Fakturama.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/service.xml,
@@ -12,4 +12,4 @@ Export-Package: com.sebulli.fakturama.hsqlconnector
 Require-Bundle: org.eclipse.osgi;bundle-version="3.9.1",
  org.eclipse.osgi.services;bundle-version="3.3.100",
  com.sebulli.fakturama.model;bundle-version="2.0.0",
- org.hsqldb.jdbc;bundle-version="2.3.0"
+ org.hsqldb.jdbc;bundle-version="2.4.0"

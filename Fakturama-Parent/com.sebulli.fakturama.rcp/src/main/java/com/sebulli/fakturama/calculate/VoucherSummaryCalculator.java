@@ -20,6 +20,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.javamoney.moneta.Money;
 
@@ -50,7 +51,7 @@ public class VoucherSummaryCalculator {
 	/**
 	 * Recalculate the voucher total values
 	 */
-    public VoucherSummary calculate(List<VoucherItem> items, MonetaryAmount paid, MonetaryAmount total, boolean discounted) {
+    public VoucherSummary calculate(List<VoucherItem> items, MonetaryAmount paid, MonetaryAmount total, Boolean discounted) {
     	return calculate(null, items, false, paid, total, discounted);
     }
     
@@ -66,7 +67,7 @@ public class VoucherSummaryCalculator {
      *            description
      */
     public VoucherSummary calculate(VatSummarySet globalVoucherSummarySet, List<VoucherItem> items, boolean useCategory, 
-            MonetaryAmount paid, MonetaryAmount total, boolean discounted) {
+            MonetaryAmount paid, MonetaryAmount total, Boolean discounted) {
         VoucherSummary retval = new VoucherSummary(DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
         Double vatPercent;
         String vatDescription;
@@ -81,7 +82,7 @@ public class VoucherSummaryCalculator {
             log.error("Voucher Summary: Total value is 0, but paid value != 0");
         }
         
-        if (discounted && (!total.isZero()))
+        if (BooleanUtils.isTrue(discounted) && (!total.isZero()))
             paidFactor = paid.divide(total.getNumber().doubleValue()).getNumber().doubleValue();
 
         

@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -24,9 +24,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
@@ -51,14 +49,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.sebulli.fakturama.dao.ContactsDAO;
-import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dao.PaymentsDAO;
-import com.sebulli.fakturama.dao.ProductCategoriesDAO;
-import com.sebulli.fakturama.dao.ProductsDAO;
-import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
-import com.sebulli.fakturama.dao.ShippingsDAO;
-import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
@@ -69,8 +59,8 @@ import com.sebulli.fakturama.model.WebShop;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
-import com.sebulli.fakturama.webshopimport.IWebshopConnection;
-import com.sebulli.fakturama.webshopimport.WebShopStatusImport;
+import com.sebulli.fakturama.webshopimport.WebShopConnector;
+import com.sebulli.fakturama.webshopimport.WebShopStatusImporter;
 import com.sebulli.fakturama.webshopimport.type.StatusType;
 import com.sebulli.fakturama.webshopimport.type.StatusType.Status;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
@@ -78,15 +68,14 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 /**
  * Settings for Webshop import (dialog within Webshop preferences)
  */
-public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWebshopConnection {
+public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	
 	@Inject
 	@Translation
-	protected Messages msg;
+	private Messages msg;
 
 	@Inject
-	public
-	IPreferenceStore preferences;
+	public IPreferenceStore preferences;
 	
 	@Inject
 	private WebshopDAO webshopDAO;
@@ -95,24 +84,15 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	private IEclipseContext context;
     
     @Inject
-    protected Logger log;
+    private Logger log;
     
-    /**
-     * contains the result from Web shop connector execution
-     */
-    private Object data;
 	private Control top;
-
-	int worked;
 
 	private Text connectorVersion, shopInfoString;
 
-	// The result of this import process
-	private String runResult = "";
-
 	private TreeMapper<WebshopOrderStateMapping, WebshopOrderState, OrderState> treeMapper;
 	private List<WebshopOrderStateMapping> mappings;
-	private boolean isMappingChanged = false;
+//	private boolean isMappingChanged = false;
 
 	@Inject
 	public WebShopStatusSettingsDialog(Shell shell, @Translation Messages msg) {
@@ -152,35 +132,37 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		stateBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
 
 		stateBtn.setText(msg.preferencesWebshopSettingsGetallstates);
-		stateBtn.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				execute(parent);
+		stateBtn.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+			Webshopexport wsExport = execute(parent.getShell());
+			if (wsExport != null) {
+				// set the values from web shop
+				shopInfoString.setText(String.format("%s (%s: %s)", wsExport.getWebshop().getShop(),
+						msg.helpAboutfeaturesdialogVersion,
+						StringUtils.defaultIfBlank(wsExport.getCompleteVersion(), "unknown")));
+				connectorVersion.setText(wsExport.getVersion());
+				// isMappingChanged = true;
 
-				Webshopexport wsExport = (Webshopexport) getData();
-				if(wsExport != null) {
-					// set the values from web shop
-					shopInfoString.setText(String.format("%s (%s)", wsExport.getWebshop().getShop(), wsExport.getCompleteVersion()));
-					connectorVersion.setText(wsExport.getVersion());
-					isMappingChanged = true;
-					
-					// fill WebshopStateTreeMapper
-					if(wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
-						MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError, msg.preferencesWebshopSettingsStateError);
-					} else {
-						StatusType statusList = wsExport.getStatusList();
-						List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.getStatus().size());
-						// TODO perhaps a naming confusion?
-						// statusList is a container for several statuses, getStatus() returns a list of statuses
-						for (Status st : statusList.getStatus()) {
-							WebshopOrderState webshopOrderState = new WebshopOrderState(st.getId(), 
-								st.getName());
-							leftTreeInput.add(webshopOrderState);
-						}
-						// throw away all mappings
-						mappings.clear();
-						// and create a new one
-						setInputAndActivateTreeMapperWidget(leftTreeInput, true);
+				// fill WebshopStateTreeMapper
+				if (wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
+					log.error("can't get status list from web shop, status list is empty!");
+					MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError,
+							msg.preferencesWebshopSettingsStateError);
+				} else {
+					StatusType statusList = wsExport.getStatusList();
+					List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.getStatus().size());
+					// TODO perhaps a naming confusion?
+					// statusList is a container for several statuses, getStatus() returns a list of
+					// statuses
+					for (Status st : statusList.getStatus()) {
+						WebshopOrderState webshopOrderState = new WebshopOrderState(st.getId(), st.getName());
+						leftTreeInput.add(webshopOrderState);
 					}
+					// throw away all mappings
+					mappings.clear();
+					// and create a new one
+					setInputAndActivateTreeMapperWidget(leftTreeInput, true);
 				}
+			}
 		}));
 
 		Label lblShopInfo = new Label(container, SWT.READ_ONLY);
@@ -239,7 +221,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 				uiConfig);
 
 		treeMapper.setContentProviders(new WebshopStateContentProvider(), new FktOrderStateContentProvider());
-		treeMapper.setLabelProviders(new ViewLabelProvider(null), new ViewLabelProvider(null));
+		treeMapper.setLabelProviders(new ViewLabelProvider(), new ViewLabelProvider());
 		List<WebshopOrderState> leftTreeInput = new ArrayList<>();
 		
 		Canvas cv;
@@ -426,6 +408,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	}
 
 	class WebshopStateContentProvider extends SimpleTreeContentProvider {
+		@SuppressWarnings("unchecked")
 		@Override
 		public Object[] getElements(Object inputElement) {
 			return ((List<WebshopOrderState>) inputElement).toArray();
@@ -433,12 +416,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	}
 
 	class ViewLabelProvider extends LabelProvider {
-		private ImageDescriptor directoryImage;
 		private ResourceManager resourceManager;
-
-		public ViewLabelProvider(ImageDescriptor directoryImage) {
-			this.directoryImage = directoryImage;
-		}
 		
 		@Override
 		public String getText(Object element) {
@@ -590,14 +568,27 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 	/**
 	 * @param parent
 	 */
-	public ExecutionResult execute(Composite parent) {
+	public Webshopexport execute(Shell parent) {
 		ExecutionResult executionResult = null;
-		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent.getShell());
-		IRunnableWithProgress op = new WebShopStatusImport(this);
+		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
+		
+		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
+		
+        // Add "http://" if no protocol is given
+        WebShopConnector conn = new WebShopConnector()
+        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
+        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
+        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
+        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
+        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
+        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
+		
+        WebShopStatusImporter importOperation = ContextInjectionFactory.make(WebShopStatusImporter.class, context);
+        importOperation.setConnector(conn);
 		try {
 			// get all order status from web shop
-			progressMonitorDialog.run(true, true, op);
-			executionResult = new ExecutionResult(getRunResult(), getRunResult().isEmpty() ? 0 : 1);
+			progressMonitorDialog.run(true, true, importOperation);
+			executionResult = new ExecutionResult(importOperation.getRunResult(), importOperation.getRunResult().isEmpty() ? 0 : 1);
 		} catch (Exception ex) {
 			log.error(ex);
 		}
@@ -605,141 +596,9 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog implements IWeb
 		if (executionResult.getErrorCode() != Constants.RC_OK) {
 			// If there is an error - display it in a message box
 			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
-			MessageDialog.openError(parent.getShell(), msg.importWebshopActionError, errorMessage);
+			MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
 			log.error(errorMessage);
 		}
-		return executionResult;
+		return importOperation.getWebshopexport();
 	}
-
-	/**
-	 * @return the runResult
-	 */
-	public String getRunResult() {
-		return runResult;
-	}
-
-	/**
-	 * @param runResult
-	 *            the runResult to set
-	 */
-	public void setRunResult(String runResult) {
-		this.runResult = runResult;
-	}
-
-	@Override
-	public Messages getMsg() {
-		return msg;
-	}
-
-	@Override
-	public IPreferenceStore getPreferences() {
-		return preferences;
-	}
-	
-	@Override
-	public Logger getLog() {
-		return log;
-	}
-
-	@Override
-	public IEclipseContext getContext() {
-		return context;
-	}
-	
-	/**
-	 * @return the data
-	 */
-	public final Object getData() {
-		return data;
-	}
-	
-	/**
-	 * @param data the data to set
-	 */
-	public final void setData(Object data) {
-		this.data = data;
-	}
-
-	
-	/* * * * * * * * [only dummy implementations] * * * * * * * * * * * * * * * * * * * */
-
-	@Override
-	public ExecutionResult execute(Shell parent, String prepareGetProductsAndOrders) {
-		return null;
-	}
-
-	@Override
-	public void readOrdersToSynchronize() {
-	}
-
-	@Override
-	public boolean isGetOrders() {
-		return false;
-	}
-
-	@Override
-	public boolean isGetProducts() {
-		return false;
-	}
-
-	@Override
-	public Properties getOrderstosynchronize() {
-		return null;
-	}
-
-	@Override
-	public void setOrderstosynchronize(Properties orderstosynchronize) {
-	}
-
-	@Override
-	public void saveOrdersToSynchronize() {
-	}
-
-	@Override
-	public ProductCategoriesDAO getProductCategoriesDAO() {
-		return null;
-	}
-
-	@Override
-	public PaymentsDAO getPaymentsDAO() {
-		return null;
-	}
-
-	@Override
-	public ShippingsDAO getShippingsDAO() {
-		return null;
-	}
-
-	@Override
-	public ShippingCategoriesDAO getShippingCategoriesDAO() {
-		return null;
-	}
-
-	@Override
-	public ContactsDAO getContactsDAO() {
-		return null;
-	}
-
-	@Override
-	public ProductsDAO getProductsDAO() {
-		return null;
-	}
-
-	@Override
-	public DocumentsDAO getDocumentsDAO() {
-		return null;
-	}
-
-	@Override
-	public VatsDAO getVatsDAO() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sebulli.fakturama.webshopimport.IWebshopConnection#getWebshopStateMappingDAO()
-	 */
-	public WebshopDAO getWebshopDAO() {
-		return null;
-	}
-
 }

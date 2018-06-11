@@ -75,7 +75,7 @@ Additional code for JavaBeans
 	   	}
    		«ELSE» «ENDIF»
 	«ELSEIF this.type == 'java.util.Date' || this.type == 'java.lang.Integer' || this.type == 'java.lang.String' || this.type == 'java.lang.Double' || this.type == 'java.lang.Boolean' -»
-		if(«this.name» != null) {
+		if(«this.name» != null && other.«this.getter»() != null) {
 		  retval &= «this.name».compareTo(other.«this.getter»()) == 0;
 		}
 	«ELSE -»

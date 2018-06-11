@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.javamoney.feature"
+      label="Javamoney"
+      version="1.0.1"
+      provider-name="org.javamoney">
+
+   <description url="http://javamoney.github.io/">
+      Java Money and Currency API for the Java™ Platform
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="org.javamoney.osgi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

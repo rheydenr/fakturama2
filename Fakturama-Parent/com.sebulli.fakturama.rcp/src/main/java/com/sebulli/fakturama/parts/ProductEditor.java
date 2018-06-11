@@ -561,7 +561,7 @@ public class ProductEditor extends Editor<Product> {
 		labelDescription.setToolTipText(msg.editorProductAdddescriptionTooltip);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
-		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+		textDescription = new Text(useDescription ? productDescGroup : invisible, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 //		textDescription.setText(DataUtils.makeOSLineFeeds(editorProduct.getStringValueByKey("description")));
 		textDescription.setToolTipText(labelDescription.getToolTipText());
 		GridDataFactory.fillDefaults().hint(10, 80).grab(true, false).applyTo(textDescription);
@@ -835,7 +835,7 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
-		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 250);
+		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
 		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
 		// bind the scaled prices widgets
 		for (int i = 0; i < grossText.length; i++) {

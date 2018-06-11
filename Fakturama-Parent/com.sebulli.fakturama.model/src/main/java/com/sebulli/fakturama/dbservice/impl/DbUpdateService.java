@@ -31,7 +31,6 @@ import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 
-import liquibase.CatalogAndSchema;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -76,6 +75,7 @@ public class DbUpdateService implements IDbUpdateService {
 			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
+			liquibase.forceReleaseLocks();   // workaround!
 			liquibase.update(new Contexts(), new LabelExpression());
 		} catch (LiquibaseException | SQLException | NullPointerException ex) {
 			ex.printStackTrace();

@@ -47,13 +47,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.xmpbox.type.BadFieldValueException;
-import org.apache.xmpbox.xml.XmpParsingException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -117,6 +114,7 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -338,12 +336,9 @@ public class ZugferdExporter {
 			String fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
 			
 			// extract filename for further use
-			// unify path name so that we can extract a filename
-			int lastIndexOfPathSeparator = pdfFile.replaceAll("\\\\", "/").lastIndexOf('/');
-			String fileName = ""; // filename w/o separator
-			if(lastIndexOfPathSeparator > -1) { // found! (else no separator was found)
-				fileName = pdfFile.substring(lastIndexOfPathSeparator + 1);
-			}
+			// filename w/o separator
+			Path fileName = Paths.get(pdfFile).getFileName();
+			
 			if(StringUtils.isBlank(fileSelected)) {
 				// store file
 				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
@@ -353,16 +348,18 @@ public class ZugferdExporter {
 				dialog.setFileName("ZF-" + fileName);
 				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
 				fileSelected = dialog.open();
+			} else {
+				fileSelected = Paths.get(fileSelected, fileName.toString()).toString();
 			}
 			if (fileSelected != null) {
-				pdfa3.save(fileSelected + fileName);
+				pdfa3.save(Paths.get(fileSelected).toFile());
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled
 				retval = false;
 			}
 		}
-		catch (JAXBException | IOException | TransformerException | BadFieldValueException | XmpParsingException | XPathExpressionException e) {
-			log.error(e, "creating ZUGFeRD document: " + e.getMessage());
+		catch (JAXBException | IOException | TransformerException | FakturamaStoringException exception) {
+			log.error(exception, "error creating ZUGFeRD document: " + exception.getMessage());
 			retval = false;
 		} finally {
 			if(pdfa3 != null) {
@@ -455,12 +452,14 @@ public class ZugferdExporter {
 		
 		// referenced order
 		Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
-		ReferencedDocumentType orderRef = factory.createReferencedDocumentType()
-				.withIssueDateTime(createSimpleDateTime(invoice.getOrderDate()))
-				.withID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
-		// only if ID is not empty!
-		if(!StringUtils.isEmpty(transaction.getReference(DocumentType.ORDER))) {
-			tradeAgreement.getBuyerOrderReferencedDocument().add(orderRef);
+		if(transaction != null) {
+			ReferencedDocumentType orderRef = factory.createReferencedDocumentType()
+					.withIssueDateTime(createSimpleDateTime(invoice.getOrderDate()))
+					.withID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
+			// only if ID is not empty!
+			if(!StringUtils.isEmpty(transaction.getReference(DocumentType.ORDER))) {
+				tradeAgreement.getBuyerOrderReferencedDocument().add(orderRef);
+			}
 		}
 
 		// there is no contract information in Fakturama!
@@ -484,13 +483,15 @@ public class ZugferdExporter {
 		// Despatch Advice_ Referenced.Referenced_ Document => EXTENDED (not yet available)
 
 		ReferencedDocumentType refDoc = factory.createReferencedDocumentType();
-		String deliveryRef = transaction.getReference(DocumentType.DELIVERY);
+		String deliveryRef = transaction != null ? transaction.getReference(DocumentType.DELIVERY) : "";
 		String splitted[] = StringUtils.isEmpty(deliveryRef) ? new String[]{} : deliveryRef.split(",");
 		for (String string : splitted) {
 			refDoc.getID().add(createIdFromString(string));
 			break; // ONLY FIRST ID IS USED (according to the specification only ONE document can be referenced!)
 		}
-		refDoc.setIssueDateTime(DataUtils.getInstance().DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
+		if (transaction != null) {
+			refDoc.setIssueDateTime(DataUtils.getInstance().DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
+		}
 		if(!refDoc.getID().isEmpty()) {
 			tradeDelivery.setDeliveryNoteReferencedDocument(refDoc);
 		}
@@ -948,7 +949,7 @@ public class ZugferdExporter {
 		// VAT description
 		// (unused) String key = vatSummaryItem.getVatName();
 		// It's the VAT value
-		MonetaryAmount basisAmount = netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()));
+		MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
 		TradeTaxType retval = factory.createTradeTaxType()
 				.withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
 				.withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))

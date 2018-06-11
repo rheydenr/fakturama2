@@ -104,7 +104,7 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Office" 
 		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathPdf, getFieldEditorParent()));
 
-		addField(new DirectoryFieldEditor(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathAdditionalpdf, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, msg.preferencesOfficeFormatandpathAdditionalpdf, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENPDF, msg.preferencesOfficeExportasOpenaction, getFieldEditorParent()));
 		
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"

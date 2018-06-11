@@ -781,7 +781,7 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>REPLACE</entry>
 						<entry>
-							<para>Ersetzt den Platzhaltertext durch einen anderen. Es wird eine Liste mit allen möglichen Ersetzungen angebenen. Die Liste muss in geschweifte Klammern eingeschlossen sein. Alle Listenelemente sind durch ein Semikolon getrennt. Jedes Listenelement besteht aus einem Schlüssel und dem zu ersetzenden Text. Beide wiederum durch ein Komma getrennt.</para>
+							<para>Ersetzt den Platzhaltertext durch einen anderen. Es wird eine Liste mit allen möglichen Ersetzungen angegeben. Die Liste muss in geschweifte Klammern eingeschlossen sein. Alle Listenelemente sind durch ein Semikolon getrennt. Jedes Listenelement besteht aus einem Schlüssel und dem zu ersetzenden Text. Beide sind wiederum durch ein Komma getrennt.</para>
 							<para>Beispiel: Ein <emphasis role="bold">DE</emphasis> würde durch den Text <emphasis role="bold">Deutschland</emphasis> ersetzt werden, ein <emphasis role="bold">CH</emphasis> durch <emphasis role="bold">Schweiz</emphasis>:</para>
 							<para>
 								<emphasis role="bold">&lt;ADDRESS.COUNTRY.CODE2$REPLACE:{DE,Deutschland;CH,Schweiz}&gt;</emphasis>
@@ -837,11 +837,13 @@ id="04_openoffice_libreoffice">
 					<tbody>
 						<row><entry>%LT</entry><entry>&lt;</entry></row>
 						<row><entry>%GT</entry><entry>&gt;</entry></row>
-						<row><entry>%NL</entry><entry>Neue Zeile</entry></row>
+						<row><entry>%NL</entry><entry>neue Zeile</entry></row>
+						<row><entry>%SPACE</entry><entry>Leerzeichen</entry></row>
 						<row><entry>%TAB</entry><entry>Tabspace</entry></row>
 						<row><entry>%DOLLAR</entry><entry>$</entry></row>
 						<row><entry>%COMMA</entry><entry>,</entry></row>
 						<row><entry>%EURO</entry><entry>€</entry></row>
+						<row><entry>%%</entry><entry>Prozent-Zeichen</entry></row>
 						<row><entry>%A_GRAVE</entry><entry>À</entry></row>
 						<row><entry>%A_ACUTE</entry><entry>Á</entry></row>
 						<row><entry>%A_CIRC</entry><entry>Â</entry></row>
@@ -1003,6 +1005,18 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
+						<entry>ITEM.GROSS.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Bruttowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.NET.DISCOUNT.VALUE</entry>
+						<entry>
+							<para>Rabatt absolut auf den Nettowert des Artikels</para>
+						</entry>
+					</row>
+					<row>
 						<entry>ITEM.UNIT.NET</entry>
 						<entry>
 							<para>Einzelpreis (netto)</para>
@@ -1072,6 +1086,20 @@ id="04_openoffice_libreoffice">
 						<entry>ITEM.UNIT.UDF01; ITEM.UNIT.UDF02; ITEM.UNIT.UDF03</entry>
 						<entry>
 							<para>Nutzerdefinierte Felder. Diese Werte werden nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.CATEGORY</entry>
+						<entry>
+							<para>Kategorie des eingefügten Artikel. Dieser Wert wird nur ersetzt, wenn der 
+							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
+						</entry>
+					</row>
+					<row>
+						<entry>ITEM.UNIT.COSTPRICE</entry>
+						<entry>
+							<para>Einkaufspreis des Produktes. Dieser Wert wird nur ersetzt, wenn der 
 							Artikel über die Artikelauswahl in das Dokument eingefügt wurde. </para>
 						</entry>
 					</row>
@@ -1188,6 +1216,7 @@ id="04_openoffice_libreoffice">
 					</tbody>
 				</tgroup>
 			</informaltable>
+			<para>Die Platzhalter für Anzahlung und Teilzahlung müssen in einer (ggf. unsichtbaren) Tabelle platziert werden, da sie sich teilweise gegenseitig ausschließen. beim Ausfüllen der Vorlage werden dann die nicht zutreffenden Zeilen mit den Platzhaltern gelöscht.</para>
 							<important>Der Text für die Platzhalter <emphasis role="italic">DOCUMENT.DEPOSIT.DEP_TEXT</emphasis> und <emphasis role="italic">DOCUMENT.DEPOSIT.FINALPMT_TEXT</emphasis> kann in den Einstellungen hinterlegt werden: </important>
 							<para>
 								<inlinemediaobject>

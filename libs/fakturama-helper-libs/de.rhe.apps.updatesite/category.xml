@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.mysql.jdbc.feature_5.1.38.jar" id="com.mysql.jdbc.feature" version="5.1.38">
+      <category name="de.rhe.apps.osgi.drivers"/>
+   </feature>
+   <feature url="features/org.javamoney.feature_1.0.1.jar" id="org.javamoney.feature" version="1.0.1">
+      <category name="de.rhe.libs.additional"/>
+   </feature>
+   <feature url="features/org.slf4j.osgi.feature_1.0.0.jar" id="org.slf4j.osgi.feature" version="1.0.0">
+      <category name="de.rhe.libs.additional"/>
+   </feature>
+   <feature url="features/com.opcoach.e4.preference.feature_1.0.0.jar" id="com.opcoach.e4.preference.feature" version="1.0.0">
+      <category name="de.rhe.libs.additional"/>
+   </feature>
+   <feature url="features/org.hsql.jdbc.feature_2.4.0.jar" id="org.hsql.jdbc.feature" version="2.4.0">
+      <category name="de.rhe.apps.osgi.drivers"/>
+   </feature>
+   <feature url="features/org.apache.commons.feature_3.3.0.jar" id="org.apache.commons.feature" version="3.3.0">
+      <category name="de.rhe.libs.apache"/>
+   </feature>
+   <feature url="features/org.apache.odftoolkit.feature_0.9.0.qualifier.jar" id="org.apache.odftoolkit.feature" version="0.9.0.qualifier">
+      <category name="de.rhe.libs.apache"/>
+   </feature>
+   <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
+      <description>
+         JDBC driver for various databases as OSGi plugin.
+      </description>
+   </category-def>
+   <category-def name="de.rhe.libs.apache" label="Apache libraries">
+      <description>
+         Missing or updated apache libraries which couldn&apos;t be found at Orbit
+      </description>
+   </category-def>
+   <category-def name="de.rhe.libs.additional" label="some helpful libs">
+      <description>
+         Libs that aren&apos;t available as plugins anywhere
+      </description>
+   </category-def>
+</site>

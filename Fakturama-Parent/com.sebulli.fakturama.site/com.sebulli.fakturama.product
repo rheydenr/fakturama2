@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.2" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Xdock:icon=../Resources/app.icns
       </vmArgsMac>
@@ -25,7 +25,6 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
-      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -232,23 +231,24 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.0.0.qualifier"/>
-      <feature id="org.fakturama.export.feature" version="2.0.0.qualifier"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.0.qualifier"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.0.2"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.2"/>
+      <feature id="org.fakturama.export.feature" version="2.0.2"/>
+      <feature id="org.fakturama.import.feature" version="2.0.2"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
-      <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
+      <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
+      <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="com.mysql.jdbc.feature"/>
       <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.slf4j.osgi.feature" version="1.0.0"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
-      <feature id="org.slf4j.osgi.feature"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
@@ -256,18 +256,20 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
-      <feature id="org.eclipse.babel.nls_eclipse_de" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_es" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_eu" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_fr" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_hu" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_it" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_pl" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ro" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_ru" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_tr" version="4.7.0.v20170819060001"/>
-      <feature id="org.eclipse.babel.nls_eclipse_uk" version="4.7.0.v20170819060001"/>
-      <feature id="org.fakturama.import.feature" version="2.0.0.qualifier"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ar"/>
+      <feature id="org.eclipse.babel.nls_eclipse_de"/>
+      <feature id="org.eclipse.babel.nls_eclipse_es"/>
+      <feature id="org.eclipse.babel.nls_eclipse_eu"/>
+      <feature id="org.eclipse.babel.nls_eclipse_fr"/>
+      <feature id="org.eclipse.babel.nls_eclipse_hu"/>
+      <feature id="org.eclipse.babel.nls_eclipse_it"/>
+      <feature id="org.eclipse.babel.nls_eclipse_pl"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ro"/>
+      <feature id="org.eclipse.babel.nls_eclipse_ru"/>
+      <feature id="org.eclipse.babel.nls_eclipse_tr"/>
+      <feature id="org.eclipse.babel.nls_eclipse_uk"/>
+      <feature id="org.eclipse.babel.nls_eclipse_sk"/>
+      <feature id="org.eclipse.babel.nls_eclipse_el"/>
    </features>
 
    <configurations>
@@ -281,6 +283,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
       <property name="eclipse.p2.profile" value="profile" />
       <property name="org.eclipse.update.reconcile" value="false" />
@@ -288,7 +291,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </configurations>
 
    <repositories>
-      <repository location="http://files.fakturama.info/release/update2/" enabled="true" />
+      <repository location="https://files.fakturama.info/release/update2/" enabled="true" />
    </repositories>
 
    <preferencesInfo>

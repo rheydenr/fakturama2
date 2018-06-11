@@ -456,7 +456,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                         Double oldPrice = rowObject.getDocumentItem().getPrice();
                         Double oldPriceByQuantity = productUtil.getPriceByQuantity(product, oldQuanity);
 
-                        Double newPrice = productUtil.getPriceByQuantity(product, DataUtils.getInstance().StringToDouble(String.valueOf(newValue)));
+                        Double newPrice = productUtil.getPriceByQuantity(product, (Double) newValue);
 
                         if (DataUtils.getInstance().DoublesAreEqual(oldPrice, oldPriceByQuantity)) {
                             // Do not use 0.00€

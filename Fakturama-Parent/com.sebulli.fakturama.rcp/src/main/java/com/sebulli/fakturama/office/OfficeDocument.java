@@ -32,6 +32,7 @@ import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,6 +54,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Shell;
+import org.odftoolkit.odfdom.dom.element.table.TableCoveredTableCellElement;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
 import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -248,7 +250,11 @@ public class OfficeDocument {
 						// store parent node for later removing
 						// we have to remember the parent node since the current node is replaced (could be orphaned)
 						TableTableRowElement row = (TableTableRowElement)placeholderNode.findParentNode(TableTableRowElement.ELEMENT_NAME.getQName(), placeholderNode.getNode());
-						nodesMarkedForRemoving.add(row);
+						
+						// ah, but wait: sometimes the DEPOSIT placeholder isn't placed in a table...
+						if(row != null) {
+							nodesMarkedForRemoving.add(row);
+						}
 					}
 	              // Replace all other placeholders
 	                replaceText(placeholderNode);
@@ -275,9 +281,10 @@ public class OfficeDocument {
                         	 */
     	                    fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
-                        case VATLIST_TABLE:
-                          fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), false);
-                          break;
+						case VATLIST_TABLE:
+							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate,
+									placeholderNode.getTableType(), false);
+							break;
                           
                         case SALESEQUALIZATIONTAX_TABLE:
 							fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);
@@ -333,16 +340,19 @@ public class OfficeDocument {
 				}
 			}
 			
-			if(preferences.getBoolean(Constants.PREFERENCES_OPENPDF) 
-			&& preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && generatedPdf != null) {
-				sync.asyncExec(() -> {
-					boolean wasLaunched = Program.launch(generatedPdf.toString());
-					if(!wasLaunched) {
-						MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+			if(preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId())) {
+				if(generatedPdf != null) {
+					if (preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
+						sync.asyncExec(() -> {
+							boolean wasLaunched = Program.launch(generatedPdf.toString());
+							if(!wasLaunched) {
+								MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
+							}
+						});
+					} else {
+						MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "PDF was created successfully.");
 					}
-				});
-			} else {
-				MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+				}
 			}
 		}
 	}
@@ -413,8 +423,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT), 
-        	        generatedPdf.getFileName().toString());
+        	documentPath = Paths.get(fo.getRelativeDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document));
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
@@ -607,7 +616,17 @@ public class OfficeDocument {
 			for (int j = 0; j < cellCount; j++) {
 				// System.out.print(".");
 				// a template cell
-				Cell currentCell = newRow.getCellByIndex(j);
+				Cell currentCell;
+				
+				// temp index for columns
+				int tmpIdx = j;
+				do {
+					// Attention: Skip covered (spanned) cells!
+					currentCell = newRow.getCellByIndex(tmpIdx++);
+				} while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
+				// correct for later use
+				tmpIdx--;
+				
 				// make a copy of the template cell
 				Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
@@ -618,9 +637,9 @@ public class OfficeDocument {
 				/*
 				 * The appended row only has default cells (without styles
 				 * etc.). Therefore we have to take the template cell and
-				 * replace the current cell with it.
+				 * replace the current cell (the real cell!) with it.
 				 */
-				newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+				newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
 				// replace placeholders in this cell with current content
 				int countOfPlaceholders = cellPlaceholders.getLength();
 				for (int k = 0; k < countOfPlaceholders; k++) {
@@ -751,6 +770,16 @@ public class OfficeDocument {
 //                    System.out.print(".");
                     // a template cell
                     Cell currentCell = newRow.getCellByIndex(j);
+                    
+    				// temp index for columns
+    				int tmpIdx = j;
+    				do {
+    					// Attention: Skip covered (spanned) cells!
+    					currentCell = newRow.getCellByIndex(tmpIdx++);
+    				} while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
+    				// correct for later use
+    				tmpIdx--;
+                    
                     // make a copy of the template cell
                     Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
@@ -761,7 +790,7 @@ public class OfficeDocument {
                      * The appended row only has default cells (without styles etc.). Therefore we have to take
                      * the template cell and replace the current cell with it.
                      */
-                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
                     // replace placeholders in this cell with current content
                     int countOfPlaceholders = cellPlaceholders.getLength();
                     for (int k = 0; k < countOfPlaceholders; k++) {
@@ -792,6 +821,7 @@ public class OfficeDocument {
 		String key = placeholder.split("\\$")[0];
 
 		Price price = new Price(item, useSET);
+		boolean isReplaceOptionalPrice = item.getOptional() && preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE);
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
@@ -855,14 +885,14 @@ public class OfficeDocument {
 			}
 		}
 
-		// Get the item discount
+		// Get the item discount in percent
 		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
 			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemRebate());
 		}
 
-		// Get the item's VAT
-		else if (key.equals("ITEM.VAT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+		// Get the absolute item discount (gross=
+		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 		
 		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
@@ -912,31 +942,69 @@ public class OfficeDocument {
 
 		// Get the total net value
 		else if (key.equals("ITEM.TOTAL.NET")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
-			if (item.getOptional()) {
-				if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-					value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			if (isReplaceOptionalPrice ) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
+				}
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
 			}
 		}
 
 		// Get the total VAT
 		else if (key.equals("ITEM.TOTAL.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
-			if (item.getOptional()) {
-                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
+				}
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
 			}
 		}
 
 		// Get the total gross value
 		else if (key.equals("ITEM.TOTAL.GROSS")) {
-			value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
-            if (item.getOptional()) {
-                if (preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE))
-                    value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+            if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
+				}
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
 			}
 		}
 		
+		// Get the absolute item discount (net)
+		else if (key.equals("ITEM.NET.DISCOUNT.VALUE")) {
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
+				}
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
+			}
+		}
+		
+		// Get the absolute item discount (gross)
+		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+			if (isReplaceOptionalPrice) {
+				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+				if(value.contains("{}")) {
+					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
+				}
+			} else {
+				value = DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
+			}
+		}
+		
+		// Get the item's VAT
+		else if (key.equals("ITEM.VAT.PERCENT")) {
+			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+		}
+	
 		// Get product picture
 		else if (key.startsWith("ITEM.PICTURE")){
 			
@@ -1057,6 +1125,10 @@ public class OfficeDocument {
 				value = product.getCdf02();
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
+			} else if(key.equals("ITEM.UNIT.COSTPRICE")) {
+				value = DataUtils.getInstance().DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
+			} else {
+				value = "";
 			}
 		} else {
 			value = "";

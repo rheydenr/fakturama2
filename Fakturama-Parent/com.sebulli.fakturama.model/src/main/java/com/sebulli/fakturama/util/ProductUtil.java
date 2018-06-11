@@ -20,7 +20,7 @@ import com.sebulli.fakturama.model.Product;
 public final class ProductUtil {
        
     @Inject
-    @Preference//(nodePath="/instance/com.sebulli.fakturama.rcp")
+    @Preference(nodePath="/instance/com.sebulli.fakturama.rcp")
     private IEclipsePreferences eclipsePrefs;
 
     /**
@@ -75,7 +75,7 @@ public final class ProductUtil {
         int blockQuantity = Integer.valueOf(0);
         int newQuantity;
         int scaledPrices;
-        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
+        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(1));
 
         // search all used blocks
         // no reflection used because of unwanted side effects...
@@ -84,7 +84,7 @@ public final class ProductUtil {
         Double[] prices = new Double[] {product.getPrice1(), product.getPrice2(), product.getPrice3(), product.getPrice4(), product.getPrice5()};
         for (int i = 0; i < scaledPrices; i++) {
             newQuantity = blocks[i];
-            if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001) {
+            if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001 && prices[i] != 0) {
                 blockQuantity = newQuantity;
                 price = prices[i];
             }

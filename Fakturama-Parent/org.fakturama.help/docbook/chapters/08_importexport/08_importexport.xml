@@ -189,7 +189,7 @@
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Positionen in einer eigenen Zeile angelegt wird, und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis>, und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
+		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Position in einer eigenen Zeile angelegt wird und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis> und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
 		<para>Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
 		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird (zum Beispiel auch ein Beleg mit mehreren Positionen). Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
@@ -587,8 +587,8 @@
 		<anchor xreflabel="" xml:id="importexport_export_accounts"/>
 		<title>Export Kontostand</title>
 		<para>Exportiert den Kontostand in eine OpenOffice.org / LibreOffice-Tabelle.</para>
-		<para>Dieser "Kontoauszug" wird aus den bezahlten Rechnungen, den Einnahmen- und Ausgabebelegen gebildet. Vergleicht man diesen mit dem Kontoauszug der Bank kann sehr gut überprüft werden, ob alle Belege korrekt eingegeben wurden.</para>
-		<para>Damit mit unterschiedlichen Konten gearbeitet werden kann, müssen diese bei den Zahlungsarten oder den Belegen angegeben werden.</para>
+		<para>Dieser "Kontoauszug" wird aus den bezahlten Rechnungen, den Einnahmen- und Ausgabebelegen gebildet. Vergleicht man diesen mit dem Kontoauszug der Bank, kann sehr gut überprüft werden, ob alle Belege korrekt eingegeben wurden.</para>
+		<para>Damit mit unterschiedlichen Konten gearbeitet werden kann, müssen diese bei den Zahlungsarten oder den Belegen angegeben werden. Die Daten werden exportiert, wenn die Kategorie der Zahlungsart der Rechnung oder der Rechnungskorrektur mit der ausgewählten übereinstimmt. Dazu werden auch die Einnahme- und Ausgabebelege gesammelt.</para>
 		<para>Beim Export wird der Zeitraum vorgegeben, für den die Kontobewegungen exportiert werden. Ein Export findet für ein Konto statt, das in einer Drop-Down-Liste ausgewählt wird. Diese Liste wird aus den Konten in den Zahlungsarten und Belegen gebildet.</para>
 		<section>
 			<title>Startdatum und Startwert</title>
@@ -731,7 +731,8 @@
 	<section>
 		<anchor xreflabel="" xml:id="importexport_export_unpaid_invoices"/>
 		<title>Export unbezahlte Rechnungen</title>
-		<para>Exportiert alle unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice-Tabelle.</para>
+		<para>Exportiert alle unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice-Tabelle. Hierbei ist zu beachten, dass die Spalten für die Mehrwertsteuer-Sätze und den Nettowert erst gefüllt werden, wenn tatsächlich Umsätze (beispielsweise in Form von Anzahlungen) erzielt wurden. Der Betrag wird jeweils anteilig ermittelt.</para>
+		<para>Wurde die Rechnungsadresse manuell eingegeben, so ist eine Ermittlung von Firmenname, Land und USt.-ID nicht möglich.</para>
 		<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
 		</para>
 	</section>

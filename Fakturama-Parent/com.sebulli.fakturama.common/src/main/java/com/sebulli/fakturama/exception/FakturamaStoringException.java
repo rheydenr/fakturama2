@@ -53,6 +53,10 @@ public class FakturamaStoringException extends Exception {
 	public final String getDescription() {
 		return description;
 	}
+	
+	public final String getMessage() {
+		return description;
+	}
 	/**
 	 * @return the exception
 	 */

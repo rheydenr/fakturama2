@@ -34,26 +34,59 @@ import com.sebulli.fakturama.model.ReliabilityType;
 @Singleton
 public class ContactUtil {
     
+	/**
+	 * Address key for the country field.
+	 */
     public static final String KEY_COUNTY = "county";
 
+	/**
+	 * Address key for the city field.
+	 */
 	public static final String KEY_CITY = "city";
 
+	/**
+	 * Address key for the zip code field.
+	 */
 	public static final String KEY_ZIP = "zip";
 
+	/**
+	 * Address key for the street number field.
+	 */
 	public static final String KEY_STREETNO = "streetno";
 
+	/**
+	 * Address key for the street with street number field.
+	 */
 	public static final String KEY_STREETNAME = "streetname";
 
+	/**
+	 * Address key for the street field.
+	 */
 	public static final String KEY_STREET = "street";
 
+	/**
+	 * Address key for the first address line field.
+	 */
 	public static final String KEY_ADDRESSFIRSTLINE = "addressfirstline";
 
+	/**
+	 * Address key for the last name field.
+	 */
 	public static final String KEY_LASTNAME = "lastname";
 
+	/**
+	 * Address key for the first name field.
+	 */
 	public static final String KEY_FIRSTNAME = "firstname";
 
+	/**
+	 * Address key for the complete name field.
+	 */
 	public static final String KEY_NAME = "name";
 
+	/**
+	 * Maximal count of salutations.
+	 */
 	public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
@@ -90,6 +123,18 @@ public class ContactUtil {
             line += StringUtils.chomp(splitted[0]);
         } else {
             line += getFirstAndLastName(contact);
+        }
+        return line;
+    }
+    
+    public String getCompanyOrLastname(Contact contact) {
+        String line = "";
+        if (StringUtils.isNotBlank(contact.getCompany())) {
+            line = DataUtils.getInstance().getSingleLine(contact.getCompany());
+        } else if (StringUtils.isNotBlank(contact.getName())) {
+            line = contact.getName();
+        } else if(contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
+        	line = getDataFromAddressField(contact.getAddress().getManualAddress(), KEY_NAME);
         }
         return line;
     }
@@ -138,6 +183,26 @@ public class ContactUtil {
         return genderString + contact.getName();
     }
     
+    /**
+     * Returns an "ID" based upon the gender String.<br/>
+     * Hereby means<br />
+     * <pre>
+     * m ... 1
+     * f ... 2
+     * undefined ... 0
+     * </pre>
+     * @param genderString String to convert ("m" or "f")
+     * @return a (virtual) ID for the gender
+     */
+    public Integer getGenderIdFromString(String genderString) {
+    	Integer retval = Integer.valueOf(0);
+		if (genderString.equals("m"))
+			retval = Integer.valueOf(1);
+		if (genderString.equals("f"))
+			retval = Integer.valueOf(2);
+		return retval;
+    }
+    
     
     /**
      * Get the gender String by the gender number
@@ -173,8 +238,9 @@ public class ContactUtil {
             return msg.commonFieldCompany;
         case 4:
         	return msg.contactFieldFamilyName;
+    	default:
+        	return "";
         }
-        return "";
     }
 
     /**
@@ -185,15 +251,16 @@ public class ContactUtil {
      * @return
      *          The number
      */
-    public int getSalutationID(String s) {
-        // Test all strings
-        for (int i = 0;i <= MAX_SALUTATION_COUNT ; i++) {
-            if (getSalutationString(i,false).equalsIgnoreCase(s)) return i;
-//            if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
-        }
-        // Default = "---"
-        return 0;
-    }
+	public int getSalutationID(String s) {
+		// Test all strings
+		for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
+			if (getSalutationString(i, false).equalsIgnoreCase(s))
+				return i;
+			// if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+		}
+		// Default = "---"
+		return 0;
+	}
     
     /**
      * Get the address as one String.
@@ -216,14 +283,14 @@ public class ContactUtil {
 	public String getAddressAsString(Contact contact, String separator) {
 		String addressFormat = "";
 		String address = "";
-		if(contact != null /*&& (contact.getCustomerNumber() != null ||contact.getAddress() != null)*/ ) {
+		if(contact != null && contact.getAddress() != null) {
 		    
-		    if(contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
-		        // if a manual address is set we use this one
+		    if(contact.getAddress().getManualAddress() != null) {
+		        // if a manual address is set we use it
 		        address = contact.getAddress().getManualAddress();
 		    } else {
 		        // else we build an address string from address fields
-		        
+		    	
         		// Get the format string
         		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
         		
@@ -234,13 +301,14 @@ public class ContactUtil {
         			String hiddenCountry = "";
         			if(hideCountry.length() <= 3) {
 	        			Optional<Locale> hiddenLocale = LocaleUtil.getInstance().findByCode(hideCountry);
-						if(hiddenLocale.isPresent()) {
-							hiddenCountry = hiddenLocale.orElse(Locale.ENGLISH).getDisplayCountry();
-						}
+						//if(hiddenLocale.isPresent()) {
+							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
+						//}
         			}
-        			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.ENGLISH).getDisplayCountry(), hiddenCountry))) {
+        			if (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry)) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
+        				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
         		}
         
@@ -249,10 +317,10 @@ public class ContactUtil {
         		for (String addressFormatLine : addressFormatLines) {
         			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
         			String trimmedAddressLine = formatedAddressLine.trim();
-        
-        			if (formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) {
-        				if (!address.isEmpty())
-        					address += separator;
+
+        			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
+        					&& !address.isEmpty()) {
+						address += separator;
         			}
         
         			address += trimmedAddressLine;
@@ -527,11 +595,11 @@ public class ContactUtil {
 	 */
 	public String replaceFormatString(String formatString, Contact contact) {
 		if(contact == null) {
-			return formatString;
+			return "";
 		}
 		// Replace the placeholders
 		formatString = replaceAllWithSpace(formatString, "\\{company\\}", contact.getCompany());
-		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact));
+		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact).replaceAll("---", ""));
 		formatString = replaceAllWithSpace(formatString, "\\{title\\}", contact.getTitle());
 		formatString = replaceAllWithSpace(formatString, "\\{firstname\\}", contact.getFirstName());
 		formatString = replaceAllWithSpace(formatString, "\\{lastname\\}", contact.getName());

@@ -15,6 +15,8 @@
 package org.fakturama.export.wizard.sales;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -43,8 +46,10 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.util.ContactUtil;
 
 
 /**
@@ -100,6 +105,7 @@ public class SalesExporter extends OOCalcExporter {
 	 * 			True, if the export was successful
 	 */
 	public boolean export(boolean showZeroVatColumn, boolean paid) {
+		ContactUtil contactUtil = new ContactUtil();
 
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())
@@ -162,7 +168,11 @@ public class SalesExporter extends OOCalcExporter {
 
 		// Table column headings
 		int headLine = row;
-		setCellTextInBold(row, col++, msg.exporterDataPayday);
+		if (this.exportPaid) {
+			setCellTextInBold(row, col++, msg.exporterDataPayday);
+		} else {
+			setCellTextInBold(row, col++, msg.editorDocumentDuedays);
+		}
 		setCellTextInBold(row, col++, msg.exporterDataInvoiceno);
 		setCellTextInBold(row, col++, msg.exporterDataInvoicedate);
 		setCellTextInBold(row, col++, msg.commonFieldFirstname);
@@ -229,7 +239,7 @@ public class SalesExporter extends OOCalcExporter {
 
 			// Create a column heading in bold
 			int column = vatSummarySetAllDocuments.getIndex(item);
-			setCellTextInBold(headLine, columnsWithVatHeading + column + col, msg.productDataNet +"\n" + item.getVatName());
+			setCellTextInBold(headLine, columnsWithVatHeading + column + col, msg.productDataNet + (StringUtils.isEmpty(item.getVatName()) ? "" : "\n" + item.getVatName()) );
 		}
 
 		// Second run.
@@ -255,7 +265,7 @@ public class SalesExporter extends OOCalcExporter {
 				// The VAT value in the invoice is also scaled by this 0.958333...
 				// to 19.17€
 				
-				Double paidFactor = Double.valueOf(0.0);
+				Double paidFactor = Double.valueOf(1.0); 
 				if(Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)) > 0) {
 					paidFactor = document.getPaidValue() / document.getTotalValue();
 				}
@@ -265,13 +275,19 @@ public class SalesExporter extends OOCalcExporter {
 
 				// Fill the row with the document data
 				col = 0;
-				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+				if(this.exportPaid) {
+					setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+				} else {
+					// calculate due date
+					LocalDateTime targetDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
+					setCellText(row, col++, DateTimeFormatter.ISO_LOCAL_DATE.format(targetDate));
+				}
 				setCellText(row, col++, document.getName());
 				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate()));
 				Contact addressid = document.getBillingContact();
 
 				// Fill the address columns with the contact that corresponds to the addressid
-				if (addressid != null) {
+				if (addressid != null && addressid.getName() != null) {
 					setCellText(row, col++, addressid.getFirstName());
 					setCellText(row, col++, addressid.getName());
 					setCellText(row, col++, addressid.getCompany());
@@ -279,8 +295,12 @@ public class SalesExporter extends OOCalcExporter {
 					if(addressid.getAddress() != null) {
 						setCellText(row, col++, addressid.getAddress().getCountryCode());
 					} else {
-						setCellText(row, col++, " ");
+						col++;
 					}
+				} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
+					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
+					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
+					col += 3;
 				}
 				// ... or use the documents first line
 				else {
@@ -343,7 +363,7 @@ public class SalesExporter extends OOCalcExporter {
 				// It could be a rounding error.
 				if (Math.abs(roundingError) > 0.01)
 					setCellTextInRedBold(row, col + columnsWithVatHeading + columnsWithNetHeading, "Runden prüfen");
-
+				
 				// Set the background of the table rows. Use a light and
 				// alternating blue color.
 				if ((row % 2) == 0)

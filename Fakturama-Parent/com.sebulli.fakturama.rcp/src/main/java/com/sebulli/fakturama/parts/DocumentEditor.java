@@ -34,6 +34,7 @@ import javax.money.MonetaryAmount;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -44,6 +45,7 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -58,6 +60,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -111,6 +114,7 @@ import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -454,7 +458,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 		   /* if the address was modified but addressId has a customer number then we have
-			* a manually changed contact which has to created as new contact (else we would
+			* a manually changed contact which has to be created as new contact (else we would
 			* update the existing contact which isn't wanted in most cases).
 			* But wait... the Id of the old entry and the new entry have to be the same.
 			* Else it could be a newly selected contact from the contact list.
@@ -486,6 +490,10 @@ public class DocumentEditor extends Editor<Document> {
 				if(document.getBillingContact().getCustomerNumber() == null) {
 				    document.getBillingContact().setDeleted(Boolean.TRUE);
 				}
+			} else {
+				// A manually changed address means that there's no reason for an alternative address which was stored earlier.
+				// Therefore we remove that alternative address from document.
+				document.setDeliveryContact(null);
 			}
             // set the new contact
             document.setBillingContact(displayAddress);
@@ -869,10 +877,14 @@ public class DocumentEditor extends Editor<Document> {
      * @return <code>true</code> if it's only a deposit
      */
     private boolean isInvoiceDeposited() {
+    	if(document.getPayment() == null) {
+    		return false;
+    	}
     	// see FAK-485
-    	double discount = 1 - document.getPayment().getDiscountValue();
+    	Double discount = 1 - document.getPayment().getDiscountValue();
     	MonetaryAmount paidValue = Money.of(document.getPaidValue(), currencyUnit);
-		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply(discount).with(DataUtils.getInstance().getDefaultRounding()));
+		return paidValue.isGreaterThan(Money.zero(currencyUnit)) && paidValue.isLessThan(total.multiply((java.util.Optional.ofNullable(discount).orElse(NumberUtils.DOUBLE_ZERO)))
+				.with(DataUtils.getInstance().getDefaultRounding()));
     }
 
 	/**
@@ -1165,7 +1177,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		billingContact = parentDoc.getBillingContact();
 		retval.setBillingContact(billingContact);
-		retval.setDeliveryContact(parentDoc.getDeliveryContact());
+		retval.setDeliveryContact(java.util.Optional.ofNullable(parentDoc.getDeliveryContact()).orElse(billingContact));
 		
 		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
 		// addressFirstLine instead
@@ -1367,7 +1379,8 @@ public class DocumentEditor extends Editor<Document> {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
-			comboNetGross.getCombo().select(netgross);
+			StructuredSelection sel = new StructuredSelection(netgross);
+			comboNetGross.setSelection(sel, true);
 		}
 
 		// Show a warning if the customer uses a different setting for net or gross
@@ -1443,8 +1456,16 @@ public class DocumentEditor extends Editor<Document> {
 		// If the shipping value has changed:
 		// Set the shippingAutoVat to net or gross, depending on the
 		// settings of this editor.
-		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, shipping.getShippingValue())) {
+		// sometimes the shipping value has many fraction digits so that we have to round it
+		// to a reasonable value
+		// but at first we have to decide which value is the correct shipping value (net or gross)
+		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
+		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
+				currentShippingValue.getNumber().doubleValue())) {
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+		} else {
+			// no change occured, we can return and leave the values unchanged
+			return;
 		}
 
 		// Recalculate the sum
@@ -1883,7 +1904,8 @@ public class DocumentEditor extends Editor<Document> {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				netgross = comboNetGross.getCombo().getSelectionIndex();
+				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
+				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
 				// recalculate the total sum
 //				calculate();
 				updateUseGross(false);
@@ -2210,6 +2232,7 @@ public class DocumentEditor extends Editor<Document> {
 //		            document.setManualAddress(txtAddress.getText());
 //		            document.setBillingContact(null);
 		            setDirty(true);
+		            showHideWarningIcon();
 //		        }
             }
         });
@@ -2963,7 +2986,8 @@ public class DocumentEditor extends Editor<Document> {
      */
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
-		if (document != null && document.getTransactionId() != null) {
+		// under Linux the focus is removed and we get an exception (see issue #601)	
+		if (!OSDependent.isLinux() && document != null && document.getTransactionId() != null) {
 			Document copyDoc = null;
 			// dunning is an extra case
 			if (targetype.isDUNNING()) {
@@ -2987,16 +3011,16 @@ public class DocumentEditor extends Editor<Document> {
 		return retval;
 	}    
 
-//	/**
-//	 * Set the focus to the top composite.
-//	 * 
-//	 * @see com.sebulli.fakturama.editors.Editor#setFocus()
-//	 */
-//	@Focus
-//	public void setFocus() {
-//		if(top != null) 
-//			top.setFocus();
-//	}
+	/**
+	 * Set the focus to the top composite.
+	 * 
+	 * @see com.sebulli.fakturama.editors.Editor#setFocus()
+	 */
+	@Focus
+	public void setFocus() {
+		if(txtAddress != null) 
+			txtAddress.setFocus();
+	}
 
 	/**
 	 * Test, if there is a document with the same number

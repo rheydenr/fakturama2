@@ -46,7 +46,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -60,6 +59,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.sebulli.fakturama.addons.BackupManager;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -68,7 +68,6 @@ import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.handlers.EditorSaveHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -385,8 +384,9 @@ public class LifecycleManager {
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
 
-            // TODO: Create a database backup
-//            BackupManager.createBackup();
+            // #0000604: Create a database backup
+            BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
+            backupManager.createBackup();
         }
         
         if(dialogSettings != null) {

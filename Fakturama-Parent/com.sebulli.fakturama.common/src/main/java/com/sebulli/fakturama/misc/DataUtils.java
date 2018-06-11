@@ -50,6 +50,7 @@ import org.javamoney.moneta.format.CurrencyStyle;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
+import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
 import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
 import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
@@ -103,15 +104,14 @@ public class DataUtils {
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
 
-        if (currencyLocale.getCountry().equals("CH")) {
-            if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
-                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
-                mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                        .setCurrency(chf)
-                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
-                        .build());
-            }
+        if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
+            mro = Monetary.getRounding(RoundingQueryBuilder.of()
+                    .setCurrency(Monetary.getCurrency(currencyLocale))
+                    .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
+                    .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+                    // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
+                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false))
+                    .build());
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
@@ -131,9 +131,11 @@ public class DataUtils {
     public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
         return Monetary.getCurrency(currencyLocale);
     }
+    
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
+                .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
                 .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                 .set("cashRounding", cashRounding)
                 .build());
@@ -336,13 +338,15 @@ public class DataUtils {
     }
     
     public Double round(Double d, int scale) {
-    	Double floorValue;
+    	Double floorValue = null;
     	double factor = Math.pow(10, scale);
-        if (d >= 0)
-            floorValue = Math.floor(d * factor + EPSILON) / factor;
-        else
-            floorValue = Math.ceil(d * factor - EPSILON) / factor;
-
+    	if (d != null) {
+	        if(d >= 0)
+	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	        else
+	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+    	}
+    	
         return floorValue;
     }
     
@@ -743,7 +747,7 @@ public class DataUtils {
         DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
         return df.format(calendar.getTime());
     }
-//
+
 //    /**
 //     * Convert a date string from the format YYYY-MM-DD to to localized format.
 //     * 
@@ -767,7 +771,7 @@ public class DataUtils {
 //        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 //        return df.format(calendar.getTime());
 //    }
-//
+
     /**
      * Convert a date and time string from the format YYYY-MM-DD HH:MM:SS to to
      * localized format.
@@ -777,17 +781,21 @@ public class DataUtils {
      * @return Date and time as formated String
      */
     public String DateAndTimeAsLocalString(String s) {
-
+    	String retval = "";
+    	if(s == null) {
+    		return retval;
+    	}
         GregorianCalendar calendar = new GregorianCalendar();
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             calendar.setTime(formatter.parse(s));
+	        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
+	        retval = df.format(calendar.getTime());
         }
         catch (ParseException e) {
 //            Logger.logError(e, "Error parsing Date and Time");
         }
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
-        return df.format(calendar.getTime());
+        return retval;
     }
 
     /**
@@ -880,19 +888,18 @@ public class DataUtils {
         }
         return calendar;
     }
-//
-//    /**
-//     * Returns the date and time of now in a localized format.
-//     * 
-//     * @return Date and time as formated String
-//     */
-//    public static String DateAndTimeOfNowAsLocalString() {
-//
-//        GregorianCalendar calendar = new GregorianCalendar();
-//        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-//        return df.format(calendar.getTime());
-//    }
-//
+
+    /**
+     * Returns the date and time of now in a localized format.
+     * 
+     * @return Date and time as formated String
+     */
+    public String DateAndTimeOfNowAsLocalString() {
+        GregorianCalendar calendar = new GregorianCalendar();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        return df.format(calendar.getTime());
+    }
+
 //    /**
 //     * Adds days to a date string.
 //     * 
@@ -1050,59 +1057,59 @@ public class DataUtils {
      */
     public String replaceAllAccentedChars(String s) {
         
-        s = s.replace("À", "A");
-        s = s.replace("�?", "A");
-        s = s.replace("Â", "A");
-        s = s.replace("Ã", "A");
-        s = s.replace("Ä", "Ae");
-        s = s.replace("â", "a");
-        s = s.replace("ã", "a");
-        s = s.replace("ä", "ae");
-        s = s.replace("à", "a");
-        s = s.replace("á", "a");
+	    s = s.replace("À", "A");
+	    s = s.replace("Á", "A");
+	    s = s.replace("Â", "A");
+	    s = s.replace("Ã", "A");
+	    s = s.replace("Ä", "Ae");
+	    s = s.replace("â", "a");
+	    s = s.replace("ã", "a");
+	    s = s.replace("ä", "ae");
+	    s = s.replace("à", "a");
+	    s = s.replace("á", "a");
 
-        s = s.replace("È", "E");
-        s = s.replace("É", "E");
-        s = s.replace("Ê", "E");
-        s = s.replace("Ë", "E");
-        s = s.replace("ê", "e");
-        s = s.replace("ë", "e");
-        s = s.replace("è", "e");
-        s = s.replace("é", "e");
+	    s = s.replace("È", "E");
+	    s = s.replace("É", "E");
+	    s = s.replace("Ê", "E");
+	    s = s.replace("Ë", "E");
+	    s = s.replace("ê", "e");
+	    s = s.replace("ë", "e");
+	    s = s.replace("è", "e");
+	    s = s.replace("é", "e");
 
-        s = s.replace("Ì", "I");
-        s = s.replace("�?", "I");
-        s = s.replace("Î", "I");
-        s = s.replace("�?", "I");
-        s = s.replace("î", "i");
-        s = s.replace("ï", "i");
-        s = s.replace("ì", "i");
-        s = s.replace("í", "i");
+	    s = s.replace("Ì", "I");
+	    s = s.replace("Í", "I");
+	    s = s.replace("Î", "I");
+	    s = s.replace("Ï", "I");
+	    s = s.replace("î", "i");
+	    s = s.replace("ï", "i");
+	    s = s.replace("ì", "i");
+	    s = s.replace("í", "i");
 
-        s = s.replace("Ò", "O");
-        s = s.replace("Ó", "O");
-        s = s.replace("Ô", "O");
-        s = s.replace("Õ", "O");
-        s = s.replace("Ö", "Oe");
-        s = s.replace("ô", "o");
-        s = s.replace("õ", "o");
-        s = s.replace("ö", "oe");
-        s = s.replace("ò", "o");
-        s = s.replace("ó", "o");
+	    s = s.replace("Ò", "O");
+	    s = s.replace("Ó", "O");
+	    s = s.replace("Ô", "O");
+	    s = s.replace("Õ", "O");
+	    s = s.replace("Ö", "Oe");
+	    s = s.replace("ô", "o");
+	    s = s.replace("õ", "o");
+	    s = s.replace("ö", "oe");
+	    s = s.replace("ò", "o");
+	    s = s.replace("ó", "o");
 
-        s = s.replace("Ù", "U");
-        s = s.replace("Ú", "U");
-        s = s.replace("Û", "U");
-        s = s.replace("Ü", "Ue");
-        s = s.replace("û", "u");
-        s = s.replace("ü", "ue");
-        s = s.replace("ù", "u");
-        s = s.replace("ú", "u");
+	    s = s.replace("Ù", "U");
+	    s = s.replace("Ú", "U");
+	    s = s.replace("Û", "U");
+	    s = s.replace("Ü", "Ue");
+	    s = s.replace("û", "u");
+	    s = s.replace("ü", "ue");
+	    s = s.replace("ù", "u");
+	    s = s.replace("ú", "u");
 
-        s = s.replace("�?", "Y");
-        s = s.replace("ý", "y");
-        s = s.replace("ñ", "n");
-        s = s.replace("ß", "ss");
+	    s = s.replace("Ý", "Y");
+	    s = s.replace("ý", "y");
+	    s = s.replace("ñ", "n");
+	    s = s.replace("ß", "ss");
 
         return s;
     }

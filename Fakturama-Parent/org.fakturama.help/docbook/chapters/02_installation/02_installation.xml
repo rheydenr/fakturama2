@@ -36,6 +36,7 @@
         <para>Sollten Sie sich für den Einsatz einer MySQL- oder MariaDB entscheiden (z. B. wegen des Mehrbenutzerzugriffes), 
         müssen Sie diese ebenfalls bereits installiert haben. Für den Betrieb von Fakturama erzeugen Sie bitte eine leere Datenbank und konfigurieren Sie zu dieser Datenbank einen Nutzer, der die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
         Es wird <emphasis role="bold">nicht</emphasis> empfohlen, den <computeroutput>root</computeroutput>-Benutzer für den Zugriff zu verwenden.</para>
+		<para>Sofern Sie bereits eine frühere Version von Fakturama verwenden (bis 1.6.9), geben Sie bitte als Arbeitsverzeichnis ein neues an. Sie können die alten Daten automatisch übernehmen, wenn Sie möchten.</para>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_install_windows"/>
@@ -165,6 +166,8 @@
 			</informalfigure>
 			Sollten Sie keine Datenübernahme wünschen, löschen Sie bitte den Eintrag unter "Arbeitsverzeichnis (alt)". Dann wird die Datenübernahme übersprungen.
 		</para>
+		<warning>
+		Installieren Sie auf keinen Fall die neue Version in das alte Arbeitsverzeichnis! Sie würden damit die alten Daten beschädigen.</warning>
 		<!-- das wurde noch nicht umgesetzt -->
 		<!-- para>Fakturama begrüßt Sie mit einem Intro. Schließen Sie dies über das <emphasis role="bold">X</emphasis> rechts neben dem Text "Willkommen"</para>
 		<informalfigure>
@@ -241,6 +244,9 @@
 				<listitem>
 						<emphasis role="bold">-nl de_LI</emphasis> Deutsch, Liechtenstein
 				</listitem>
+                <listitem>
+                        <emphasis role="bold">-nl el_GR</emphasis> Griechisch
+                </listitem>
 				<listitem>
 						<emphasis role="bold">-nl ru_RU</emphasis> Russisch
 				</listitem>
@@ -256,6 +262,9 @@
 				<listitem>
 						<emphasis role="bold">-nl es_ES</emphasis> Spanisch
 				</listitem>
+                <listitem>
+                        <emphasis role="bold">-nl sk</emphasis> Slowakisch
+                </listitem>
 				<listitem>
 						<emphasis role="bold">-nl eu_EU</emphasis> Baskisch
 				</listitem>
