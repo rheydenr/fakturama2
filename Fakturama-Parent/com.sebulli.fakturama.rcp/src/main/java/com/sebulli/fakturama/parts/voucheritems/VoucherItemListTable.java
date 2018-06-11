@@ -80,13 +80,14 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.Voucher_;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
+import com.sebulli.fakturama.model.Voucher_;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.VoucherEditor;
@@ -116,6 +117,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     
     @Inject
     private ItemAccountTypeDAO itemAccountTypeDAO;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     // ID of this view
     public static final String ID = "fakturama.document.voucherItemTable";
@@ -690,7 +694,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     DisplayMode.EDIT, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
@@ -703,7 +707,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE, 

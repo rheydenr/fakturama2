@@ -121,6 +121,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -167,6 +168,9 @@ public class ZugferdExporter {
 	@Inject
 	private ILocaleService localeUtil;
     
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
     @Inject
     private IDateFormatterService dateFormatterService;
 
@@ -956,7 +960,7 @@ public class ZugferdExporter {
 		// VAT description
 		// (unused) String key = vatSummaryItem.getVatName();
 		// It's the VAT value
-		MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
+		MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
 		TradeTaxType retval = factory.createTradeTaxType()
 				.withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
 				.withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))

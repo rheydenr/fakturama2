@@ -58,7 +58,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -67,7 +66,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -82,13 +80,13 @@ import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -176,7 +174,13 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private ProductUtil productUtil;
 	
 	private String generalWorkspace;
+	
+	@Inject
     private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
 	
 	private WebShopConnector connector;
 	private String runResult = "";
@@ -196,7 +200,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
-    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
+//    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
 	@Override
@@ -883,8 +887,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     		//T: Error message importing data from web shop
     		//T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
     		String error = MessageFormat.format(msg.toolbarNewOrderName + ": " + webshopId + "\n"
-    		+ msg.importWebshopErrorTotalsumincorrect, DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
-    		DataUtils.getInstance().formatCurrency(calcTotal));
+    		+ msg.importWebshopErrorTotalsumincorrect, numberFormatterService.DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
+    		numberFormatterService.formatCurrency(calcTotal));
     		setRunResult(error);
     	}        
     }

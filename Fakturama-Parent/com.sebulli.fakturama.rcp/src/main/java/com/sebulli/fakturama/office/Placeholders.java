@@ -45,6 +45,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
@@ -72,6 +73,9 @@ public class Placeholders {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
 	@Inject
 	private ILocaleService localeUtil;
@@ -432,7 +436,7 @@ public class Placeholders {
 			if (!par.isEmpty()) {
 				try {
 					Double parsedDouble = localizedNumberFormat.parse(value).doubleValue();
-					value = DataUtils.getInstance().DoubleToDecimalFormatedValue(parsedDouble, par);
+					value = numberFormatterService.DoubleToDecimalFormatedValue(parsedDouble, par);
 				}
 				catch (ParseException e) {
 					value = "### NVL ###";
@@ -699,24 +703,24 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.ORDER.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getOrderDate());
 		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodStart());
 		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodEnd());
-		if (key.equals("DOCUMENT.ITEMS.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsGross());
-		if (key.equals("DOCUMENT.ITEMS.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet());
+		if (key.equals("DOCUMENT.ITEMS.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getItemsGross());
+		if (key.equals("DOCUMENT.ITEMS.NET")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet());
 		// FAK-432
-		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
-		if (key.equals("DOCUMENT.TOTAL.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalNet());
-		if (key.equals("DOCUMENT.TOTAL.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalVat());
-		if (key.equals("DOCUMENT.TOTAL.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross());
+		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
+		if (key.equals("DOCUMENT.TOTAL.NET")) return numberFormatterService.formatCurrency(documentSummary.getTotalNet());
+		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVat());
+		if (key.equals("DOCUMENT.TOTAL.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getTotalGross());
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
-		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return DataUtils.getInstance().formatCurrency(documentSummary.getDeposit());
-		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return DataUtils.getInstance().formatCurrency(documentSummary.getFinalPayment());
+		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return numberFormatterService.formatCurrency(documentSummary.getDeposit());
+		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return numberFormatterService.formatCurrency(documentSummary.getFinalPayment());
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
-		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) return DataUtils.getInstance().DoubleToFormatedPercent(document.getItemsRebate());
-		if (key.equals("ITEMS.DISCOUNT.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountNet());
-		if (key.equals("ITEMS.DISCOUNT.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getDiscountGross());
+		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) return numberFormatterService.DoubleToFormatedPercent(document.getItemsRebate());
+		if (key.equals("ITEMS.DISCOUNT.NET")) return numberFormatterService.formatCurrency(documentSummary.getDiscountNet());
+		if (key.equals("ITEMS.DISCOUNT.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getDiscountGross());
 
 		if(document.getPayment() != null) {
 			if (key.equals("ITEMS.DISCOUNT.DAYS")) return document.getPayment().getDiscountDays().toString();
@@ -724,15 +728,15 @@ public class Placeholders {
 				return getDiscountDueDate(document);
 			}
 			double percent = document.getPayment().getDiscountValue();
-			if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return DataUtils.getInstance().DoubleToFormatedPercent(percent);
+			if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return numberFormatterService.DoubleToFormatedPercent(percent);
 			if (key.equals("ITEMS.DISCOUNT.VALUE")) {
-				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
+				return numberFormatterService.formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
 			}
 			if (key.equals("ITEMS.DISCOUNT.NETVALUE")) {
-				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalNet().multiply(1 - percent));
+				return numberFormatterService.formatCurrency(documentSummary.getTotalNet().multiply(1 - percent));
 			}
 			if (key.equals("ITEMS.DISCOUNT.TARAVALUE")) {
-				return DataUtils.getInstance().formatCurrency(documentSummary.getTotalVat().multiply(1 - percent));
+				return numberFormatterService.formatCurrency(documentSummary.getTotalVat().multiply(1 - percent));
 			}
 			
 			if (key.equals("PAYMENT.TEXT")) {
@@ -742,9 +746,9 @@ public class Placeholders {
 			}
 		}
 
-		if (key.equals("SHIPPING.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingNet());
-		if (key.equals("SHIPPING.VAT")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingVat());
-		if (key.equals("SHIPPING.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getShippingGross());
+		if (key.equals("SHIPPING.NET")) return numberFormatterService.formatCurrency(documentSummary.getShippingNet());
+		if (key.equals("SHIPPING.VAT")) return numberFormatterService.formatCurrency(documentSummary.getShippingVat());
+		if (key.equals("SHIPPING.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getShippingGross());
 //		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
 		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
@@ -784,7 +788,7 @@ public class Placeholders {
 				return document.getAdditionalInfo().getPaymentDescription();
 			}
 		}
-		if (key.equals("PAYMENT.PAID.VALUE")) return DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue());
+		if (key.equals("PAYMENT.PAID.VALUE")) return numberFormatterService.DoubleToFormatedPriceRound(document.getPaidValue());
 		if (key.equals("PAYMENT.PAID.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getPayDate());
 		if (key.equals("PAYMENT.DUE.DAYS")) return Integer.toString(document.getDueDays());
 		if (key.equals("PAYMENT.DUE.DATE")) {
@@ -972,15 +976,15 @@ public class Placeholders {
 	    }
 	    paymenttext = StringUtils.replaceEach(paymenttext, new String[]{"<PAID.VALUE>", "<PAID.DATE>", "<DUE.DAYS>"}, 
 	    		new String[]{
-	    				DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()), 
+	    				numberFormatterService.DoubleToFormatedPriceRound(document.getPaidValue()), 
 	    				dateFormatterService.getFormattedLocalizedDate(document.getPayDate()), 
 	    				Integer.toString(document.getDueDays())});
 	    LocalDateTime dueDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DATE>", dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 	    
-	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.PERCENT>", DataUtils.getInstance().DoubleToFormatedPercent(document.getPayment().getDiscountValue()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.PERCENT>", numberFormatterService.DoubleToFormatedPercent(document.getPayment().getDiscountValue()));
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DAYS>", document.getPayment().getDiscountDays().toString());
-	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.VALUE>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross().multiply(1 - percent)));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.VALUE>", numberFormatterService.formatCurrency(documentSummary.getTotalGross().multiply(1 - percent)));
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DATE>", getDiscountDueDate(document));
 
 // FIXME doesn't exist!	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT.HOLDER>", preferences.getString("BANK_ACCOUNT_HOLDER"));
@@ -1022,7 +1026,7 @@ public class Placeholders {
 	    }
 	    
 	    // placeholder for total sum
-	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", DataUtils.getInstance().formatCurrency(documentSummary.getTotalGross()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", numberFormatterService.formatCurrency(documentSummary.getTotalGross()));
 	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.NAME>", document.getName());
 	    return paymenttext;
     }

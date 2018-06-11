@@ -64,6 +64,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -110,6 +111,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     @Inject
     private ProductCategoriesDAO productCategoriesDAO;
     
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
     private EventList<Product> productListData;
     private EventList<ProductCategory> categories;
 
@@ -497,7 +501,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL,
                     MONEYVALUE_CELL_LABEL);
             

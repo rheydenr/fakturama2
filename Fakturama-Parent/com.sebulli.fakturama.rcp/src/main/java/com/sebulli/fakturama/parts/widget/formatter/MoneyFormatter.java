@@ -30,7 +30,7 @@ import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 
 /**
  *
@@ -42,14 +42,17 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
     
 	@Inject
 	private ILocaleService localeUtil;
-	
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
 	public MoneyFormatter() {
 		super();
 	}
 
     @PostConstruct
     public void init() {
-        DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
+        DecimalFormat format = (DecimalFormat) numberFormatterService.getCurrencyFormat();
         // the edit pattern has to be a normal number pattern
         DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(localeUtil.getCurrencyLocale());
         editFormat.setMaximumIntegerDigits(6);
@@ -92,7 +95,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
      */
     @Override
     public String getDisplayString() {
-    	return DataUtils.getInstance().doubleToFormattedPrice((Double) getValue());
+    	return numberFormatterService.doubleToFormattedPrice((Double) getValue());
     }
 
     /**

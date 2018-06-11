@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -64,6 +65,9 @@ public class AccountSettingsPage extends WizardPage {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+	@Inject
+	protected IEclipseContext context;
 
 	//Control elements
 	private CDateTime dtDate;
@@ -132,7 +136,7 @@ public class AccountSettingsPage extends WizardPage {
 		}));
 
 		txtValue = new FormattedText(dateAndValue, SWT.BORDER | SWT.RIGHT);
-		txtValue.setFormatter(new MoneyFormatter());
+		txtValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 		txtValue.setValue(value);
 		
 		//T: Account settings page of account exporter

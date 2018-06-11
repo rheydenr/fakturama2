@@ -17,18 +17,23 @@ import javax.money.MonetaryAmount;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 
 /**
  * Converter for displaying money values in a NatTable.
  */
 public class MoneyDisplayConverter extends DisplayConverter {
+	
+//	@Inject
+	private INumberFormatterService numberFormatterService;
 
     /**
      * Constructor.
+     * @param numberFormatterService2 
      * 
      */
-    public MoneyDisplayConverter() {
+    public MoneyDisplayConverter(INumberFormatterService numberFormatterService) {
+    	this.numberFormatterService = numberFormatterService;
     }
 
     public Object canonicalToDisplayValue(Object canonicalValue) {
@@ -36,10 +41,10 @@ public class MoneyDisplayConverter extends DisplayConverter {
         if (canonicalValue != null) {
             if(canonicalValue instanceof MonetaryAmount) {
                 MonetaryAmount value = (MonetaryAmount)canonicalValue;
-                retval = DataUtils.getInstance().formatCurrency(value);
+                retval = numberFormatterService.formatCurrency(value);
             } else {
                 Double value = (Double) canonicalValue;
-                retval = DataUtils.getInstance().doubleToFormattedPrice(value);
+                retval = numberFormatterService.doubleToFormattedPrice(value);
             }
         }
         return retval;
@@ -48,6 +53,6 @@ public class MoneyDisplayConverter extends DisplayConverter {
     public Object displayToCanonicalValue(Object displayValue) {
         String displayString = (String) displayValue;
         displayString = displayString.trim();
-        return DataUtils.getInstance().formattedPriceToDouble(displayString);
+        return numberFormatterService.formattedPriceToDouble(displayString);
     }
 }

@@ -16,12 +16,16 @@ import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 
 class VoucherTableConfiguration extends AbstractRegistryConfiguration {
     
 	@Inject
 	private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     static final String DONOTBOOK_LABEL = "Do_Not_Book_Label";
 
@@ -65,7 +69,7 @@ class VoucherTableConfiguration extends AbstractRegistryConfiguration {
                 ExpenditureVoucherListTable.MONEYVALUE_CELL_LABEL ); 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                new MoneyDisplayConverter(),
+                new MoneyDisplayConverter(numberFormatterService),
                 DisplayMode.NORMAL,
                 ExpenditureVoucherListTable.MONEYVALUE_CELL_LABEL);
         }
