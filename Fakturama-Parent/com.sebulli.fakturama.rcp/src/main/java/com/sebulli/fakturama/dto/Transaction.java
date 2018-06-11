@@ -20,8 +20,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -35,7 +35,10 @@ public class Transaction {
     
     @Inject
     private DocumentsDAO documentsDAO;
-		
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	// The transcation no.
 	Integer transaction = Integer.valueOf(-1);
 	// An list with all documents with the same transaction number
@@ -79,7 +82,7 @@ public class Transaction {
 		Document reference = getFirstReferencedDocument(docType);
 		
 		// Return the reference date
-		return reference != null ? DataUtils.getInstance().getFormattedLocalizedDate(reference.getDocumentDate()) : "";
+		return reference != null ? dateFormatterService.getFormattedLocalizedDate(reference.getDocumentDate()) : "";
 	}
 	
 	public Document getFirstReferencedDocument(DocumentType docType) {
@@ -102,7 +105,7 @@ public class Transaction {
 //		Document reference = getFirstReferencedDocument(docType);
 //		
 //		// Return the reference date
-//		return reference != null ? DataUtils.getInstance().getFormattedLocalizedDate(reference.getDocumentDate())) : "";
+//		return reference != null ? dateFormatterService.getFormattedLocalizedDate(reference.getDocumentDate())) : "";
 //	}
     
     /**

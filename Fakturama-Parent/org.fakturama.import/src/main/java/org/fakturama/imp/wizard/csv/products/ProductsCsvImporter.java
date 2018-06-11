@@ -22,7 +22,6 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -41,6 +40,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
@@ -73,6 +73,9 @@ public class ProductsCsvImporter {
     @Inject
     protected Logger log;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	/**
 	 * the model factory
 	 */
@@ -208,7 +211,7 @@ public class ProductsCsvImporter {
 					if (prop.getProperty("date_added").isEmpty()) {
 						product.setDateAdded(today);
 					} else {
-						product.setDateAdded(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						product.setDateAdded(dateFormatterService.getCalendarFromDateString(prop.getProperty("date_added")).getTime());
 						product.setModified(today);
 					}
 					

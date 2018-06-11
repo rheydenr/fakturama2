@@ -125,7 +125,8 @@ Import-Package: ch.qos.logback.classic,
  org.osgi.util.tracker,
  org.slf4j
 Bundle-Activator: com.sebulli.fakturama.common.Activator
-Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,OSGI-INF/rounding_provider.xml,OSGI-INF/localeservice.xml
+Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,OSGI-INF/rounding_provider.xml,OSGI-INF/localeservice.xml,
+ OSGI-INF/dateformatter.xml
 Bundle-ClassPath: .,
  lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
 

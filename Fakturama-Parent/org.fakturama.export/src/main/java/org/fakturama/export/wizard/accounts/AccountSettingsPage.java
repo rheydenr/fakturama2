@@ -44,6 +44,7 @@ import org.fakturama.wizards.IFakturamaWizardService;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
@@ -60,6 +61,9 @@ public class AccountSettingsPage extends WizardPage {
 	@Inject
 	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
 	private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
 	//Control elements
 	private CDateTime dtDate;
@@ -185,7 +189,7 @@ public class AccountSettingsPage extends WizardPage {
 		String date = eclipsePrefs.get(datePropertyKey, "2000-01-01");
 		
 		GregorianCalendar calendar = new GregorianCalendar();
-		calendar = DataUtils.getInstance().getCalendarFromDateString(date);
+		calendar = dateFormatterService.getCalendarFromDateString(date);
 
 		// Set the date widget with the property from the database
 		if (dtDate != null) {

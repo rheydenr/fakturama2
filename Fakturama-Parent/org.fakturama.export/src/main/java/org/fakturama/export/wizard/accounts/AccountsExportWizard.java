@@ -36,7 +36,7 @@ import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 
 /**
  * Export wizard to export sales
@@ -55,6 +55,9 @@ public class AccountsExportWizard extends Wizard implements IExportWizard {
 	@Inject
 	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
 	private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
 	@Inject
 	private IEclipseContext ctx;
@@ -107,7 +110,7 @@ public class AccountsExportWizard extends Wizard implements IExportWizard {
 				
 		String datePropertyKey = "export_account_date_"  + page2.getSelectedAccount().toLowerCase().replaceAll("/", "\\\\/");
 		if (!datePropertyKey.isEmpty()) {
-			String datePropertyValue = DataUtils.getInstance().getDateAndTimeAsString(accountDate);
+			String datePropertyValue = dateFormatterService.getDateAndTimeAsString(accountDate);
 			eclipsePrefs.put(datePropertyKey, datePropertyValue);
 		}
 

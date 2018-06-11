@@ -82,6 +82,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Product;
@@ -120,6 +121,9 @@ public class OfficeDocument {
 	@Inject
 	private ILocaleService localeUtil;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     /**
      * Event Broker for sending update events to the list table
      */
@@ -873,10 +877,10 @@ public class OfficeDocument {
 		
 		// vesting period
 		else if (key.equals("ITEM.VESTINGPERIOD.START")) {
-			value = item.getVestingPeriodStart() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
+			value = item.getVestingPeriodStart() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
 		}
 		else if (key.equals("ITEM.VESTINGPERIOD.END")) {
-			value = item.getVestingPeriodEnd() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
+			value = item.getVestingPeriodEnd() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
 		}
 
 		// Get the item description

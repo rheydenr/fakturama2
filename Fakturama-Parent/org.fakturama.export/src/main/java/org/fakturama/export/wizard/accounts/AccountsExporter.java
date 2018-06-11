@@ -39,6 +39,7 @@ import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 
 
 /**
@@ -58,7 +59,10 @@ public class AccountsExporter extends OOCalcExporter {
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
-	
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	@Inject
 	private Shell shell;
 
@@ -154,7 +158,7 @@ public class AccountsExporter extends OOCalcExporter {
 		row++;
 
 		MonetaryAmount balance = monetaryAmount;
-		setCellText(row, 0, DataUtils.getInstance().getDateTimeAsLocalString(date));
+		setCellText(row, 0, dateFormatterService.getDateTimeAsLocalString(date));
 
 		//T: Cell text of the account exporter
 		setCellText(row, 1, exportMessages.wizardExportAccountsStartvalue);
@@ -183,7 +187,7 @@ public class AccountsExporter extends OOCalcExporter {
 			
 			// Display the balance before one entry was exported
 			if (inIntervall && !somethingExported) {
-				setCellText(row, 0, DataUtils.getInstance().getFormattedLocalizedDate(accountEntry.date));
+				setCellText(row, 0, dateFormatterService.getFormattedLocalizedDate(accountEntry.date));
 				setCellValueAsLocalCurrency(row, 4,balance);
 				setBold(row, 4);
 				row ++;
@@ -202,7 +206,7 @@ public class AccountsExporter extends OOCalcExporter {
 				// Fill the row with the accountEntry data
 				col = 0;
 				
-				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(accountEntry.date));
+				setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(accountEntry.date));
 				setCellText(row, col++, accountEntry.name);
 				setCellText(row, col++, accountEntry.text);
 				setCellValueAsLocalCurrency(row, col++,value);

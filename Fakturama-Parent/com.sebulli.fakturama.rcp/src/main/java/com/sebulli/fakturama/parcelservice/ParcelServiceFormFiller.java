@@ -40,7 +40,7 @@ import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.office.Placeholders;
@@ -61,7 +61,10 @@ public class ParcelServiceFormFiller {
 
     @Inject
     private IEclipseContext context;
-	
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	// The webbrowser
 	private Browser browser;
 	
@@ -271,7 +274,7 @@ public class ParcelServiceFormFiller {
 		title = title.replaceAll("\\|", "_");
 		if (Files.exists(Paths.get(filename, title+".txt"))) {
 			// Add date and time, if file exists
-			title+= "_"+DataUtils.getInstance().DateAndTimeOfNowAsISO8601String();
+			title+= "_"+dateFormatterService.DateAndTimeOfNowAsISO8601String();
 		}
 
 		filename += title+".txt";

@@ -120,6 +120,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -165,6 +166,9 @@ public class ZugferdExporter {
     
 	@Inject
 	private ILocaleService localeUtil;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
     private Shell shell;
 	
@@ -493,7 +497,7 @@ public class ZugferdExporter {
 			break; // ONLY FIRST ID IS USED (according to the specification only ONE document can be referenced!)
 		}
 		if (transaction != null) {
-			refDoc.setIssueDateTime(DataUtils.getInstance().DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
+			refDoc.setIssueDateTime(dateFormatterService.DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
 		}
 		if(!refDoc.getID().isEmpty()) {
 			tradeDelivery.setDeliveryNoteReferencedDocument(refDoc);

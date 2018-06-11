@@ -40,6 +40,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
@@ -78,6 +79,9 @@ public class ContactsCsvImporter {
     
     @Inject
     private PaymentsDAO paymentsDAO;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
     private char quoteChar, separator;
     
@@ -260,7 +264,7 @@ public class ContactsCsvImporter {
 					if (prop.getProperty("date_added").isEmpty()) {
 						testContact.setDateAdded(Calendar.getInstance().getTime());
 					} else {
-						testContact.setDateAdded(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						testContact.setDateAdded(dateFormatterService.getCalendarFromDateString(prop.getProperty("date_added")).getTime());
 					}
 					
 					Payment payment = paymentsDAO.findByName(prop.getProperty("payment"));

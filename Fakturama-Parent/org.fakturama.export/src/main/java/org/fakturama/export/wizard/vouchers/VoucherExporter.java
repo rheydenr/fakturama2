@@ -41,6 +41,7 @@ import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.dto.VoucherSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherItem;
 
@@ -63,6 +64,9 @@ public class VoucherExporter extends OOCalcExporter {
     
     @Inject
     private ReceiptVouchersDAO receiptVouchersDAO;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
 	// Settings from the preference page
 	private boolean showVoucherSumColumn;
@@ -285,7 +289,7 @@ public class VoucherExporter extends OOCalcExporter {
 
 					if (voucherItemIndex == 0) {
 						setCellText(row, col++, voucher.getAccount().getName());
-						setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(voucher.getVoucherDate()));
+						setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(voucher.getVoucherDate()));
 						setCellText(row, col++, voucher.getVoucherNumber());
 						setCellText(row, col++, voucher.getDocumentNumber());
 						setCellText(row, col++, voucher.getName());

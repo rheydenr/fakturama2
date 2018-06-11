@@ -74,6 +74,7 @@ import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -151,6 +152,9 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     @Inject 
     private ProductCategoriesDAO productCategoriesDAO;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     private OrderSyncManager orderSyncManager;
 
 	private MathContext mathContext = new MathContext(5);
@@ -378,7 +382,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
                 }
         
                 // Store the time of now
-                String now = DataUtils.getInstance().DateAsISO8601String();
+                String now = dateFormatterService.DateAsISO8601String();
                 preferences.putValue(PREFERENCE_LASTWEBSHOPIMPORT_DATE, now);
             }
             // else cancel the download process

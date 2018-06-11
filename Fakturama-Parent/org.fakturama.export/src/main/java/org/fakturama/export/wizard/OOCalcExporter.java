@@ -42,6 +42,7 @@ import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Voucher;
@@ -60,6 +61,9 @@ public class OOCalcExporter {
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
     @Inject
     protected Logger log;
@@ -139,10 +143,10 @@ public class OOCalcExporter {
 		setCellTextInBold(row++, 0, exportMessages.wizardExportOutputPeriod);
 		//T: Sales Exporter - Text in the Calc document for the period
 		setCellText(row, 0, exportMessages.wizardExportOutputStartdate);
-		setCellText(row++, 1, DataUtils.getInstance().getDateTimeAsLocalString(startDate));
+		setCellText(row++, 1, dateFormatterService.getDateTimeAsLocalString(startDate));
 		//T: Sales Exporter - Text in the Calc document for the period
 		setCellText(row, 0, exportMessages.wizardExportOutputEnddate);
-		setCellText(row++, 1, DataUtils.getInstance().getDateTimeAsLocalString(endDate));
+		setCellText(row++, 1, dateFormatterService.getDateTimeAsLocalString(endDate));
 	}
 	
 	
