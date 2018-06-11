@@ -244,6 +244,9 @@
 				<listitem>
 						<emphasis role="bold">-nl de_LI</emphasis> Deutsch, Liechtenstein
 				</listitem>
+                <listitem>
+                        <emphasis role="bold">-nl el_GR</emphasis> Griechisch
+                </listitem>
 				<listitem>
 						<emphasis role="bold">-nl ru_RU</emphasis> Russisch
 				</listitem>
@@ -259,6 +262,9 @@
 				<listitem>
 						<emphasis role="bold">-nl es_ES</emphasis> Spanisch
 				</listitem>
+                <listitem>
+                        <emphasis role="bold">-nl sk</emphasis> Slowakisch
+                </listitem>
 				<listitem>
 						<emphasis role="bold">-nl eu_EU</emphasis> Baskisch
 				</listitem>

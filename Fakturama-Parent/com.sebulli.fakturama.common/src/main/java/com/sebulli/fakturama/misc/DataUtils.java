@@ -97,7 +97,6 @@ public class DataUtils {
     public void refresh() {
         instance = null;
         useThousandsSeparator = false;
-//        LocaleUtil.refresh();
     }
 
     /**

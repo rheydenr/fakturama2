@@ -29,8 +29,6 @@ import com.sebulli.fakturama.misc.Constants;
  * Utility class for handling {@link Locale}s. 
  */
 public class LocaleUtil implements ILocaleService {
-    
-    private Locale currencyLocale = null;
 
     private final Map<String, Locale> countryLocaleMap = new HashMap<>();
 
@@ -73,13 +71,7 @@ public class LocaleUtil implements ILocaleService {
 			}
 		}
 	}
-    
-    /**
-     * constructor.
-     * 
-     */
-    public LocaleUtil() {}
-    
+
     /**
      * Private constructor initializes the Locale hashmap.
      * 
@@ -87,6 +79,7 @@ public class LocaleUtil implements ILocaleService {
      */
     private void initLocaleUtil(String lang) {
         Locale[] availableLocales = Locale.getAvailableLocales();
+
         // clear caches
         localeLookUp.clear();
         countryLocaleMap.clear();
@@ -186,7 +179,9 @@ public class LocaleUtil implements ILocaleService {
 	 */
     @Override
 	public Locale getCurrencyLocale() {
-        if(currencyLocale == null) {
+        
+         Locale currencyLocale = null;
+//        if(currencyLocale == null) {
             String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry());
             Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
             Matcher matcher = pattern.matcher(localeString);
@@ -197,7 +192,7 @@ public class LocaleUtil implements ILocaleService {
             } else {
                 currencyLocale = getDefaultLocale();
             }
-        }
+//        }
         return currencyLocale;
     }
     

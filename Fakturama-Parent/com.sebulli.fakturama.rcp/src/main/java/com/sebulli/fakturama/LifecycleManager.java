@@ -127,6 +127,10 @@ public class LifecycleManager {
     public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
 //        IApplicationContext appContext = context.get(IApplicationContext.class);
     	
+        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
+        // launch ConfigurationManager.checkFirstStart
+        configMgr.checkAndUpdateConfiguration();
+
     	splashService.setSplashPluginId(Activator.PLUGIN_ID);
     	splashService.setTotalWork(20);
     	splashService.setTextColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
@@ -433,10 +437,6 @@ public class LifecycleManager {
     		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
         
     	// TODO put the Login Dialog in here
-    	
-        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
-        // launch ConfigurationManager.checkFirstStart
-        configMgr.checkAndUpdateConfiguration();
         if(eclipsePrefs.getBoolean("isreinit", false)) {
         	dbUpdateService.updateDatabase();
         }

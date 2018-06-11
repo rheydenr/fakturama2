@@ -1,13 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.sebulli.fakturama</groupId>
-    <artifactId>Fakturama-Parent</artifactId>
-    <version>2.0.2</version>
-  </parent>
-  <artifactId>com.sebulli.fakturama.model</artifactId>
-  <packaging>eclipse-plugin</packaging>
-  	<build>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sebulli.fakturama</groupId>
+		<artifactId>Fakturama-Parent</artifactId>
+		<version>2.0.2</version>
+	</parent>
+	<artifactId>com.sebulli.fakturama.model</artifactId>
+	<packaging>eclipse-plugin</packaging>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -35,7 +37,63 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
+
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>3.3.3</version>
+				<executions>
+					<execution>
+						<id>eclipselink-jpa-metamodel</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<processors>
+								<processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</processor>
+							</processors>
+							<outputDirectory>${project.build.directory}/src-gen</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa.modelgen.processor -->
+					<dependency>
+						<groupId>org.eclipse.persistence</groupId>
+						<artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+						<version>2.7.1</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+<!-- 	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>exec-maven-plugin</artifactId>
+		<version>1.6.0</version>
+		<executions>
+			<execution>
+				<goals>
+					<goal>exec</goal>
+				</goals>
+			</execution>
+		</executions>
+		<configuration>
+			<executable>java</executable>
+			<arguments>
+				<argument>-classpath
+					c:\Eclipse_Oxygen/plugins/org.eclipse.equinox.launcher_1.4.0.v20161219-1356.jar
+					org.eclipse.equinox.launcher.Main -nosplash -data %WORKSPACE_DIR%
+					-application
+					org.eclipse.emf.texo.eclipse.generator.TexoCodeGenerator
+					-projectName com.sebulli.fakturama.model -modelLocation
+					%PROJECT_DIR%/com.sebulli.fakturama.model/model/Fakturama.ecore
+					-jpa</argument>
+			</arguments>
+		</configuration>
+	</plugin>
+ -->		</plugins>
 	</build>
-  
+
 </project>
