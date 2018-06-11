@@ -703,46 +703,19 @@ public class DataUtils {
     }
     
 /* * * * * * * * * * * * [Date and Time methods] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
     
-//    /**
-//     * Adds days to a date string.
-//     * 
-//     * @param date
-//     *            Days to add
-//     * @param days
-//     *            Date as string
-//     * @return Calculated date
-//     */
-//    public static String AddToDate(String date, int days) {
-//        GregorianCalendar calendar = getCalendarFromDateString(date);
-//
-//        // Add the days
-//        calendar.add(Calendar.DAY_OF_MONTH, days);
-//
-//        // And convert it back to a String value
-//        return getDateTimeAsString(calendar);
-//    }
-    
+    /**
+     * Adds days to a date string.
+     * 
+     * @param date
+     *            Days to add
+     * @param days
+     *            Date
+     * @return Calculated date
+     */
     public LocalDateTime addToDate(Date date, int days) {
         LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         return localDate.plusDays(days);
-    }
-
-    /**
-     * Calculates the similarity of two string.
-     * 
-     * The result is a value from 0.0 to 1.0. Returns 1.0, if both strings are
-     * equal.
-     * 
-     * @param sA
-     *            First String value
-     * @param sB
-     *            Second String value
-     * @return Similarity from 0.0 to 1.0
-     */
-    public double similarity(String sA, String sB) {
-        return StringUtils.getJaroWinklerDistance(sA, sB);
     }
 
 //    /**
