@@ -44,6 +44,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
@@ -68,7 +69,10 @@ public class Placeholders {
 //
 //    @Inject
 //    private Logger log;
-	
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	@Inject
 	private ILocaleService localeUtil;
 
@@ -439,7 +443,7 @@ public class Placeholders {
 			par = extractParam(placeholder, "DFORMAT");
 			if (!par.isEmpty()) {
 				try {
-					GregorianCalendar checkDate = DataUtils.getInstance().getCalendarFromDateString(value);
+					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(value);
 					SimpleDateFormat sdf = new SimpleDateFormat(par);
 					value = sdf.format(checkDate.getTime());
 				} catch (IllegalArgumentException e) {
@@ -648,7 +652,7 @@ public class Placeholders {
 		if (document == null)
 			return null;
 
-		if (key.equals("DOCUMENT.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate());
+		if (key.equals("DOCUMENT.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate());
 		if (key.equals("DOCUMENT.ADDRESSES.EQUAL")) {
             return (contactUtil.deliveryAddressEqualsBillingAddress(document)).toString();
         }
@@ -683,7 +687,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.NAME")) return document.getName();
 		if (key.equals("DOCUMENT.CUSTOMERREF")) return document.getCustomerRef();
 		if (key.equals("DOCUMENT.CONSULTANT")) return document.getConsultant();
-		if (key.equals("DOCUMENT.SERVICEDATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getServiceDate());
+		if (key.equals("DOCUMENT.SERVICEDATE")) return dateFormatterService.getFormattedLocalizedDate(document.getServiceDate());
 		if (key.equals("DOCUMENT.MESSAGE")) return document.getMessage();
 		if (key.equals("DOCUMENT.MESSAGE1")) return document.getMessage();
 		if (key.equals("DOCUMENT.MESSAGE2")) return document.getMessage2();
@@ -691,10 +695,10 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TRANSACTION")) return Optional.ofNullable(document.getTransactionId()).orElse(Integer.valueOf(0)).toString();
 		if (key.equals("DOCUMENT.INVOICE")) return document.getInvoiceReference() != null ? document.getInvoiceReference().getName() : "";
 		if (key.equals("DOCUMENT.WEBSHOP.ID")) return document.getWebshopId();
-		if (key.equals("DOCUMENT.WEBSHOP.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getWebshopDate());
-		if (key.equals("DOCUMENT.ORDER.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getOrderDate());
-		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getVestingPeriodStart());
-		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getVestingPeriodEnd());
+		if (key.equals("DOCUMENT.WEBSHOP.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getWebshopDate());
+		if (key.equals("DOCUMENT.ORDER.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getOrderDate());
+		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodStart());
+		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodEnd());
 		if (key.equals("DOCUMENT.ITEMS.GROSS")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsGross());
 		if (key.equals("DOCUMENT.ITEMS.NET")) return DataUtils.getInstance().formatCurrency(documentSummary.getItemsNet());
 		// FAK-432
@@ -781,7 +785,7 @@ public class Placeholders {
 			}
 		}
 		if (key.equals("PAYMENT.PAID.VALUE")) return DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue());
-		if (key.equals("PAYMENT.PAID.DATE")) return DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate());
+		if (key.equals("PAYMENT.PAID.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getPayDate());
 		if (key.equals("PAYMENT.DUE.DAYS")) return Integer.toString(document.getDueDays());
 		if (key.equals("PAYMENT.DUE.DATE")) {
             LocalDateTime newDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
@@ -819,7 +823,7 @@ public class Placeholders {
 			if (key.equals("ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : DataUtils.getInstance().getFormattedLocalizedDate(contact.getBirthday());
+				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
 			}
 			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
@@ -879,7 +883,7 @@ public class Placeholders {
 			if (key.equals("DELIVERY.ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("DELIVERY.ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : DataUtils.getInstance().getFormattedLocalizedDate(contact.getBirthday());
+				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
 			}
 			if (key.equals("DELIVERY.ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("DELIVERY.ADDRESS.FIRSTNAME")) return contact.getFirstName();
@@ -969,7 +973,7 @@ public class Placeholders {
 	    paymenttext = StringUtils.replaceEach(paymenttext, new String[]{"<PAID.VALUE>", "<PAID.DATE>", "<DUE.DAYS>"}, 
 	    		new String[]{
 	    				DataUtils.getInstance().DoubleToFormatedPriceRound(document.getPaidValue()), 
-	    				DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()), 
+	    				dateFormatterService.getFormattedLocalizedDate(document.getPayDate()), 
 	    				Integer.toString(document.getDueDays())});
 	    LocalDateTime dueDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DATE>", dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
