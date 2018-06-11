@@ -506,7 +506,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
 		if (displayAddress.getCustomerNumber() != null && addressModified) {
-			if (DataUtils.getInstance().similarity(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
+			if (StringUtils.getJaroWinklerDistance(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
 				//T: Title of the dialog that appears if the document is assigned to  an other address.
