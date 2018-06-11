@@ -408,6 +408,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	}
 
 	class WebshopStateContentProvider extends SimpleTreeContentProvider {
+		@SuppressWarnings("unchecked")
 		@Override
 		public Object[] getElements(Object inputElement) {
 			return ((List<WebshopOrderState>) inputElement).toArray();

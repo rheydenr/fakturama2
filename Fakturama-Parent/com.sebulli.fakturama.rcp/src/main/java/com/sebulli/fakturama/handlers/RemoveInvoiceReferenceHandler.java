@@ -28,6 +28,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
 
 /**
  * Handler for removing an invoice reference from a delivery document.
@@ -72,17 +73,18 @@ public class RemoveInvoiceReferenceHandler {
 		for (Document document : uds) {
 			try {
 
+				document = documentsDAO.update(document);
 				// remove the reference
 				document.setInvoiceReference(null);
 
 				// also in the database
-				documentsDAO.update(document);
+				documentsDAO.save(document);
 			} catch (FakturamaStoringException e) {
 				log.error(e);
 			}
 
 			// Refresh the table with delivery notes.
-			evtBroker.post(DocumentEditor.EDITOR_ID, "update");
+			evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 		}
 	}
 }

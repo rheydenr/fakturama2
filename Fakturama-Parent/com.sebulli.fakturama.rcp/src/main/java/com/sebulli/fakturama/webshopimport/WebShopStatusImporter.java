@@ -47,10 +47,10 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
         localMonitor = pMonitor;
         
         if(connector == null) {
-        	runResult = "no connection information provided";
-        	return;
+	        	runResult = "no connection information provided";
+	        	return;
         }
-        String shopURL = connector.getShopURL();
+        String shopURL = connector.getScriptURL();
         
         // Check empty URL http://shop.fakturama.info/admin/fakturama2_connector.php
         if (shopURL.isEmpty()) {
