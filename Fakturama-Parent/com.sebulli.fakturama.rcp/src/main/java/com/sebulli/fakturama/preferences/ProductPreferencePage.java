@@ -87,10 +87,15 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Product" - Label "Use weight"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, msg.preferencesProductUseweight, getFieldEditorParent()));
-
+		
 		//T: Preference page "Product" - Label "Use quantity"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, msg.preferencesProductUsequantity, getFieldEditorParent()));
-
+		
+		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, msg.preferencesProductQtyHeader, 3, new String[][] { 
+			{ msg.preferencesProductQtyChangeOrder, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_ORDER },
+			{ msg.preferencesProductQtyChangeDelivery, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY },
+			{ msg.preferencesProductQtyChangeInvoice, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE } }, getFieldEditorParent()));
+		
 		//T: Preference page "Product" - Label "Use product picture"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_PICTURE, msg.preferencesProductUsepicture, getFieldEditorParent()));
 	}
@@ -137,6 +142,7 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_VAT, true);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, false);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, true);
+		node.setDefault(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_PICTURE, true);
 	}
 }

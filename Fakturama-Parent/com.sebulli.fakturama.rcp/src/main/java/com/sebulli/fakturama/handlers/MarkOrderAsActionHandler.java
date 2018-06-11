@@ -165,44 +165,43 @@ public class MarkOrderAsActionHandler {
             	// (even if some values are changed - the uow isn't updated :-( )
             	document = documentsDAO.update(document);
             	
-                OrderState progress_old = OrderState.findByProgressValue(Optional.of(document.getProgress()));
-                // Stock
-                List<DocumentItem> items = document.getItems();
-                if (progress == OrderState.SHIPPED && progress_old != OrderState.SHIPPED) // mark as shipped - take from stock
-                {
-                    for (DocumentItem item : items) {
-                    	Product product = item.getProduct();
-                    	// only process if item is based on a real product and if quantity is given
-                    	if(product != null && product.getQuantity() != null) {
-	                        Double quantityOrder = item.getQuantity();
-	                        Double quantityStock = product.getQuantity();
-	                        product.setQuantity(quantityStock - quantityOrder);
-	                        if (product.getQuantity() <= 0) {
-	                            String cat = CommonConverter.getCategoryName(product.getCategories(), "/");
-	                            MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, 
-	                            		MessageFormat.format(msg.commandMarkorderWarnStockzero, product.getName(), cat));
-	                        }
-	                        productsDAO.update(product);
-	                        needUpdate = true;
-                    	}
-                    }
-                }
-                else if (progress_old == OrderState.SHIPPED && progress != OrderState.SHIPPED) // mark as processing or lower - add to stock
-                {
-                    // TODO DO THIS IN DAO!!!
-                    for (DocumentItem item : items) {
-                    	Product product = item.getProduct();
-                    	// only process if item is based on a real product
-                    	if(product != null) {
-	                        Double quantityOrder = item.getQuantity();
-	                        Double quantityStock = product.getQuantity();
-	                        product.setQuantity(quantityStock + quantityOrder);
-	                        productsDAO.update(product);
-	                        needUpdate = true;
-                    	}
-                    }
-                }
-                // end patch
+				OrderState progressOld = OrderState.findByProgressValue(Optional.of(document.getProgress()));
+				// adapt stock value
+				List<DocumentItem> items = document.getItems();
+				// mark as shipped - take from stock
+				if (progress == OrderState.SHIPPED && progressOld != OrderState.SHIPPED) {
+					for (DocumentItem item : items) {
+						Product product = item.getProduct();
+						// only process if item is based on a real product and if quantity is given
+						if (product != null && product.getQuantity() != null) {
+							Double quantityOrder = item.getQuantity();
+							Double quantityStock = product.getQuantity();
+							product.setQuantity(quantityStock - quantityOrder);
+							productsDAO.update(product);
+							needUpdate = true;
+							if (product.getQuantity() <= 0) {
+								String cat = CommonConverter.getCategoryName(product.getCategories(), "/");
+								MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, MessageFormat
+										.format(msg.commandMarkorderWarnStockzero, product.getName(), cat));
+							}
+						}
+					}
+				}
+				// mark as processing or lower - add to stock
+				else if (progressOld == OrderState.SHIPPED && progress != OrderState.SHIPPED) {
+					// TODO DO THIS IN DAO!!!
+					for (DocumentItem item : items) {
+						Product product = item.getProduct();
+						// only process if item is based on a real product
+						if (product != null && product.getQuantity() != null) {
+							Double quantityOrder = item.getQuantity();
+							Double quantityStock = product.getQuantity();
+							product.setQuantity(quantityStock + quantityOrder);
+							productsDAO.update(product);
+							needUpdate = true;
+						}
+					}
+				}
 
                 // change the state
                 document.setProgress(progress.getState());
