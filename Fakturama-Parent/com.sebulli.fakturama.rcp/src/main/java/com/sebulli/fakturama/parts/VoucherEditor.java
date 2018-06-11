@@ -338,7 +338,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        paidValue = Money.of(java.util.Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textPaidValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
-	        textPaidValue.setFormatter(new MoneyFormatter());
+	        textPaidValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 	        textPaidValue.getControl().setVisible(bPaidWithDiscount.getSelection());
 	        textPaidValue.getControl().setToolTipText(labelPaidValue.getToolTipText());
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textPaidValue.getControl());
@@ -354,7 +354,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        totalValue = Money.of(java.util.Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textTotalValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
-	        textTotalValue.setFormatter(new MoneyFormatter());
+	        textTotalValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 	        textTotalValue.getControl().setEditable(false);
 	        textTotalValue.getControl().setToolTipText(labelTotalValue.getToolTipText());
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textTotalValue.getControl());

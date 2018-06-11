@@ -114,6 +114,7 @@ import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
@@ -219,6 +220,9 @@ public class DocumentEditor extends Editor<Document> {
     
 	@Inject
 	private ILocaleService localeUtil;
+	
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
 	// SWT components of the editor
 	private Composite top;
@@ -922,7 +926,7 @@ public class DocumentEditor extends Editor<Document> {
 //        this.context = part.getContext();
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
-        this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(localeUtil.getCurrencyLocale());
+        this.currencyUnit = numberFormatterService.getCurrencyUnit(localeUtil.getCurrencyLocale());
         pendingDeliveryMerges = new ArrayList<>();
         
         if (StringUtils.isNumeric(tmpObjId)) {
@@ -1637,7 +1641,7 @@ public class DocumentEditor extends Editor<Document> {
 		paidValueLabel.setToolTipText(msg.editorDocumentPaidvalue);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidValueLabel);
 		final FormattedText txtPayValue = new FormattedText(paidDataContainer, SWT.BORDER | SWT.RIGHT);
-		txtPayValue.setFormatter(new MoneyFormatter());
+		txtPayValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 		txtPayValue.getControl().setToolTipText(paidValueLabel.getToolTipText());
 		
 		// TODO bind later!
@@ -2621,7 +2625,7 @@ public class DocumentEditor extends Editor<Document> {
     
             // VAT value
             vatValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
-            vatValue.setFormatter(new MoneyFormatter());
+            vatValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
             vatValue.getControl().setEditable(false);
     //			vatValue.setText("---");
 // TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
@@ -2636,7 +2640,7 @@ public class DocumentEditor extends Editor<Document> {
 
         // Total value
         totalValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
-        totalValue.setFormatter(new MoneyFormatter());
+        totalValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
         totalValue.getControl().setEditable(false);
         GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(totalValue.getControl());
     }
@@ -2662,7 +2666,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Shipping value field
 		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
 		shippingValue.setValue(document.getShippingValue() != null ? document.getShippingValue() : shipping.getShippingValue());
-		shippingValue.setFormatter(new MoneyFormatter());
+		shippingValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 		shippingValue.getControl().setToolTipText(shippingLabel.getToolTipText());
 		
 		// since the shipping value can be changed also by comboNetGross we have to store
@@ -2783,7 +2787,7 @@ public class DocumentEditor extends Editor<Document> {
 						        customerStaticstics.getOrdersCount(),
 						        customerStaticstics.getLastOrderDate(),
 						        customerStaticstics.getInvoices(),
-						        DataUtils.getInstance().doubleToFormattedPrice(customerStaticstics.getTotal())));
+						        numberFormatterService.doubleToFormattedPrice(customerStaticstics.getTotal())));
 			}
 		}
     }

@@ -33,7 +33,7 @@ import org.fakturama.wizards.ExporterHelper;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -54,6 +54,9 @@ public class AddressExport {
     
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
 	/**
 	 * 	Do the export job.
@@ -206,7 +209,7 @@ public class AddressExport {
 				   .append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getVatNumber())).append(";")
 				   .append(BooleanUtils.isTrue(contact.getVatNumberValid())).append(";")
-				   .append(ExporterHelper.inQuotes(DataUtils.getInstance().DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
+				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
 				
 				if(contact.getBirthday() != null) {
 					stringBuffer.append(sdf.format(contact.getBirthday()));

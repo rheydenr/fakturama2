@@ -57,6 +57,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.ContextHelpConstants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
@@ -79,10 +80,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     
     @Inject
     private IEventBroker evtBroker;
-
     
 	@Inject
 	private ILocaleService localeUtil;
+	
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
@@ -186,8 +189,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	
-	
-
 	/**
 	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
 	 */
@@ -307,13 +308,13 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                      * they already loaded by DataUtils and therefore the classloader gets
                      * confused.
                      */
-                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                    retval = numberFormatterService.formatCurrency(myNumber, locale, 
                     				currencySetting,
                                     cashCheckbox != null ? cashCheckbox.getBooleanValue() : true,
                                             useThousandsSeparator);
               //  }
             } else {
-                retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                retval = numberFormatterService.formatCurrency(myNumber, locale, 
                 				currencySetting,
                                 cashCheckbox != null ? cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
                 if(cashCheckbox != null) {
