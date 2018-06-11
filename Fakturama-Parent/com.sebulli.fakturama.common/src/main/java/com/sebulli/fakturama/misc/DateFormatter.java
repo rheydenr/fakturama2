@@ -24,6 +24,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.eclipse.swt.widgets.DateTime;
+
 /**
  * Date formatting with various possibilities.
  *
@@ -216,5 +218,16 @@ public class DateFormatter implements IDateFormatterService {
 		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		return df.format(calendar.getTime());
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sebulli.fakturama.misc.IDataFormatter#getDateTimeAsString()
+	 */
+    @Override
+	public String getDateTimeAsString(DateTime dtDate) {
+        return String.format("%04d-%02d-%02d", dtDate.getYear(), dtDate.getMonth() + 1, dtDate.getDay());
+    }
 
 }
