@@ -704,17 +704,6 @@ public class DataUtils {
     
 /* * * * * * * * * * * * [Date and Time methods] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /**
-     * Get the date from a SWT DateTime widget in the format: YYYY-MM-DD
-     * 
-     * @param dtDate
-     *            SWT DateTime widget
-     * @return Date as formated String
-     */
-    public String getDateTimeAsString(DateTime dtDate) {
-        return String.format("%04d-%02d-%02d", dtDate.getYear(), dtDate.getMonth() + 1, dtDate.getDay());
-    }
-
     
 //    /**
 //     * Adds days to a date string.

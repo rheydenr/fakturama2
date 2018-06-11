@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.eclipse.swt.widgets.DateTime;
+
 /**
  * Date formatting service with various possibilities.
  *
@@ -108,5 +110,14 @@ public interface IDateFormatterService {
 	 * @return Date and Time as formatted String
 	 */
 	String getDateAndTimeAsString(Calendar calendar);
+
+	/**
+	 * Get the date from a SWT DateTime widget in the format: YYYY-MM-DD
+	 * 
+	 * @param dtDate
+	 *            SWT DateTime widget
+	 * @return Date as formated String
+	 */
+	String getDateTimeAsString(DateTime dtDate);
 
 }
