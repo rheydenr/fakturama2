@@ -27,4 +27,6 @@ public interface IDbUpdateService {
 	 * @return <code>true</code> if the update was successful. 
 	 */
 	public boolean updateDatabase();
+
+	void shutDownDb();
 }

@@ -29,6 +29,7 @@ import org.osgi.service.prefs.Preferences;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
+import com.sebulli.fakturama.dbconnector.IDbConnection;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 
 import liquibase.Contexts;
@@ -120,10 +121,10 @@ public class DbUpdateService implements IDbUpdateService {
 			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences.length > 0) {
-					ServiceReference<IActivateDbServer> serviceDbRef;
-					serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
+					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
 					prop.put("encoding", "UTF-8");
+					prop.put("shutdown", "true");
 					if(currentService != null) {
 						try {
 							currentService.stopServer();
@@ -136,10 +137,16 @@ public class DbUpdateService implements IDbUpdateService {
 					eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL, String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
 					prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
 					eclipsePrefs.put(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
-				}
-			}
 
-			conn = context.getService(serviceReference).createDataSource(prop).getConnection();
+					ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
+					IDbConnection dbConn = context.getService(serviceDbRef2);
+					conn = dbConn.getConnection();
+				}				
+			}
+			
+			if(conn == null) {
+				conn = context.getService(serviceReference).createDataSource(prop).getConnection();
+			}
 		} catch (SQLException ex) {
 		    // handle any errors
 		    System.err.println("SQLException: " + ex.getMessage());
@@ -150,5 +157,17 @@ public class DbUpdateService implements IDbUpdateService {
 			e.printStackTrace();
 		}
 		return conn;
+	}
+
+	
+	@Override
+	public void shutDownDb() {
+		if(currentService != null) {
+			try {
+				currentService.stopServer();
+			} catch (Exception e) {
+				// ignore any exception
+			}
+		}
 	}
 }
