@@ -3,6 +3,8 @@
  */
 package com.sebulli.fakturama.dbconnector;
 
+import java.sql.Connection;
+
 /**
  * This interface describes a JDBC connection handler. 
  *
@@ -22,4 +24,8 @@ public interface IDbConnection {
 	 * @return pattern for jdbc url
 	 */
 	public String getJdbcUrlPattern();
+	
+	default Connection getConnection() {
+		return null;
+	}
 }
