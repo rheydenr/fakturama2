@@ -383,11 +383,13 @@ public class LifecycleManager {
 		if (preferencesInDatabase != null) {
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
-
-            // #0000604: Create a database backup
-            BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
-            backupManager.createBackup();
         }
+		
+		dbUpdateService.shutDownDb();
+		
+		// #0000604: Create a database backup
+		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
+		backupManager.createBackup();
         
         if(dialogSettings != null) {
         	log.debug("save dialog settings");
