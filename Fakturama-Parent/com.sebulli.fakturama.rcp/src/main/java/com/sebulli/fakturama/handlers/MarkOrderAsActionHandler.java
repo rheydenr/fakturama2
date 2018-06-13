@@ -14,12 +14,10 @@
 package com.sebulli.fakturama.handlers;
 
 import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,23 +40,16 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OrderState;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentItem;
-import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
@@ -85,9 +76,6 @@ public class MarkOrderAsActionHandler {
     private IEclipsePreferences eclipsePrefs;
 
     @Inject
-    private ProductsDAO productsDAO;
-
-    @Inject
     private DocumentsDAO documentsDAO;
 
     @Inject
@@ -105,9 +93,6 @@ public class MarkOrderAsActionHandler {
     @Inject
     protected IEventBroker evtBroker;
 
-    public static final String PARAM_STATUS = "com.sebulli.fakturama.command.order.markas.progress";
-    public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
-
     @CanExecute
     public boolean canExecute(@Active MPart activePart, EPartService partService) {
         boolean retval = false;
@@ -121,7 +106,7 @@ public class MarkOrderAsActionHandler {
         	DocumentEditor editor = (DocumentEditor)activePart.getObject();
         	selectedObjects = new Document[]{editor.getDocument()};
         }
-        retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType() == BillingType.ORDER);
+        retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isORDER());
         return retval;
     }
 
@@ -158,57 +143,28 @@ public class MarkOrderAsActionHandler {
     public void markOrderAs(Shell parent, Document document, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
     	boolean needUpdate = false ;  // if an update of views is needed
         // Do it only, if it is an order.
-        if (document.getBillingType() == BillingType.ORDER) {
+        if (document.getBillingType().isORDER()) {
             try {
 
             	// the object has to be refreshed, else no action is taken by saving 
             	// (even if some values are changed - the uow isn't updated :-( )
             	document = documentsDAO.update(document);
             	
-				OrderState progressOld = OrderState.findByProgressValue(Optional.of(document.getProgress()));
-				// adapt stock value
-				List<DocumentItem> items = document.getItems();
-				// mark as shipped - take from stock
-				if (progress == OrderState.SHIPPED && progressOld != OrderState.SHIPPED) {
-					for (DocumentItem item : items) {
-						Product product = item.getProduct();
-						// only process if item is based on a real product and if quantity is given
-						if (product != null && product.getQuantity() != null) {
-							Double quantityOrder = item.getQuantity();
-							Double quantityStock = product.getQuantity();
-							product.setQuantity(quantityStock - quantityOrder);
-							productsDAO.update(product);
-							needUpdate = true;
-							if (product.getQuantity() <= 0) {
-								String cat = CommonConverter.getCategoryName(product.getCategories(), "/");
-								MessageDialog.openWarning(parent, msg.dialogMessageboxTitleInfo, MessageFormat
-										.format(msg.commandMarkorderWarnStockzero, product.getName(), cat));
-							}
-						}
-					}
-				}
-				// mark as processing or lower - add to stock
-				else if (progressOld == OrderState.SHIPPED && progress != OrderState.SHIPPED) {
-					// TODO DO THIS IN DAO!!!
-					for (DocumentItem item : items) {
-						Product product = item.getProduct();
-						// only process if item is based on a real product
-						if (product != null && product.getQuantity() != null) {
-							Double quantityOrder = item.getQuantity();
-							Double quantityStock = product.getQuantity();
-							product.setQuantity(quantityStock + quantityOrder);
-							productsDAO.update(product);
-							needUpdate = true;
-						}
-					}
-				}
+            	// save the previous progress for further processing
+            	Integer oldProgress = document.getProgress();
 
                 // change the state
                 document.setProgress(progress.getState());
 
                 // also in the database 
-                document = documentsDAO.update(document);
-                evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+                document = documentsDAO.save(document);
+                
+                // update stock quantity
+                Map<String, Object> params = new HashMap<>();
+                params.put(Constants.PARAM_PROGRESS, oldProgress);
+                params.put(Constants.PARAM_ORDERID, document);
+                ParameterizedCommand stockUpdate = cmdService.createCommand(CommandIds.CMD_PRODUCTS_STOCKUPDATE, params);
+                handlerService.executeHandler(stockUpdate);
 
                 // Change the state also in the webshop
                 if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
@@ -257,7 +213,7 @@ public class MarkOrderAsActionHandler {
      */
     @SuppressWarnings("unchecked")
 	@Execute
-    public void run(@Active MPart activePart, @Named(PARAM_STATUS) String status, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+    public void run(@Active MPart activePart, @Named(Constants.PARAM_STATUS) String status, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
 
         OrderState progress = OrderState.NONE;
         progress = OrderState.valueOf(status);
@@ -269,12 +225,9 @@ public class MarkOrderAsActionHandler {
 			uds = Arrays.asList(doc);
         }
         for (Document document : uds) {
-            // Get the document
-            // and the type of the document
-            DocumentType documentType = DocumentType.findByKey(document.getBillingType().getValue());
-
-            // Exit, if it was not an order
-            if (documentType != DocumentType.ORDER || document.getProgress() == OrderState.valueOf(status).getState())
+            // Get the document and the type of the document
+            // Exit, if it was not an order or if progress state hasn't changed
+            if (!document.getBillingType().isORDER() || document.getProgress() == progress.getState())
                 continue;
 
             String comment = "";

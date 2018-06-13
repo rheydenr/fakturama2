@@ -678,6 +678,13 @@ public class DocumentEditor extends Editor<Document> {
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
+        
+        // update stock quantity
+        Map<String, Object> params = new HashMap<>();
+        params.put(Constants.PARAM_PROGRESS, document.getProgress());
+        params.put(Constants.PARAM_ORDERID, document);
+        ParameterizedCommand stockUpdate = commandService.createCommand(CommandIds.CMD_PRODUCTS_STOCKUPDATE, params);
+        handlerService.executeHandler(stockUpdate);
 
 		//Set the editor's name
 		this.part.setLabel(document.getName());

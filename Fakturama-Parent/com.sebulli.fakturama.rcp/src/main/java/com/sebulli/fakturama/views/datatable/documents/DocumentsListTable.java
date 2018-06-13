@@ -77,7 +77,8 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.handlers.paramconverter.LongParameterValueConverter;
+import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
+import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
@@ -170,10 +171,13 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
         	return null;
         }
-        // This is for text only!!!
-        ParameterType parameterType = cmdMan.getParameterType("myParam");
-    	AbstractParameterValueConverter parameterTypeConverter = new LongParameterValueConverter();
-		parameterType.define("myParam", parameterTypeConverter);
+        // This is for test only!!!
+        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
+        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
+		
+        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Integer");
+        parameterTypeBoolean.define("java.lang.Integer", new NumberParameterValueConverter());
+
         // +++ END TEST +++
         
         super.createPartControl(parent, Document.class, true, ID);

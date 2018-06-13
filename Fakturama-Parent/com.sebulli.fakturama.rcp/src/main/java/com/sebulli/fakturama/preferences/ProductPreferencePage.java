@@ -115,6 +115,7 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_VAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_PICTURE, write);
 	}
 
