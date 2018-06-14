@@ -79,7 +79,7 @@ public class StockUpdateHandler {
     protected IEventBroker evtBroker;
 
 	@Execute
-	public void updateStockQuantity(@Active MPart activePart, EPartService partService, Shell parent,
+	public void updateStockQuantity(Shell parent,
 			@org.eclipse.e4.core.di.annotations.Optional @Named(Constants.PARAM_PROGRESS) Integer oldProgress,
 			@Named(Constants.PARAM_ORDERID) Document document) {
 		boolean needUpdate = false; // if an update of views is needed
@@ -129,6 +129,7 @@ public class StockUpdateHandler {
 							return x - y;
 						};
 						needUpdate = updateStockFromItems(items, parent, func);
+
 						break;
 					case CREDIT:
 						items = document.getItems();
@@ -175,7 +176,18 @@ public class StockUpdateHandler {
 			Product product = item.getProduct();
 			// only process if item is based on a real product and if quantity is given
 			if (product != null && product.getQuantity() != null) {
-				product.setQuantity(func.apply(product.getQuantity(), item.getQuantity()));
+				
+				/*
+				 * TODO Das muß nochmal korrigiert werden. Wenn man nämlich die Menge eines bereits bestehenden Dokumentes ändert, wird immer die
+				 * absolute Menge vom Bestand abgezogen. Es muß aber relativ zur vorherigen Menge berechnet werden.
+				 */
+				// quantity is the difference between the old (formerly stored) and the current quantity of this DocumentItem.
+				// The origin quantity is stored in a separate (transient) field. If the DocumentItem is a new one, 
+				// the origin quantity can be empty. In this case we use the current quantity.
+				// If the Document item was removed from Document then the quantity is null and the originQuantity contains the old value.
+				// The "real" quantity results to a negative number, so that the item is "put back" into the stock (but only if the document was printed before).
+				Double realQuantity = Optional.ofNullable(item.getQuantity()).orElse(Double.valueOf(0.0)) - Optional.ofNullable(item.getOriginQuantity()).orElse(Double.valueOf(0.0));
+				product.setQuantity(func.apply(product.getQuantity(), realQuantity));
 				try {
 					productsDAO.update(product);
 					needUpdate = true;
