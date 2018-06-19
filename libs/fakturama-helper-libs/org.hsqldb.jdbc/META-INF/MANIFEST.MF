@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: HSQL JDBC driver
 Bundle-SymbolicName: org.hsqldb.jdbc
 Bundle-Version: 2.4.0
-Bundle-ClassPath: hsqldb.jar
 Bundle-Vendor: hypersonic
 Export-Package: org.hsqldb,
  org.hsqldb.auth,
@@ -27,3 +26,4 @@ Export-Package: org.hsqldb,
  org.hsqldb.types,
  org.hsqldb.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: hsqldb.jar

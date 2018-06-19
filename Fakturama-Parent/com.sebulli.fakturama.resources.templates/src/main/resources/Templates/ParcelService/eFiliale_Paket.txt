@@ -1,0 +1,74 @@
+#------------------------------------------------------------------------------------------------------------------------
+# BEACHTE:
+# --------
+# Diese Textdatei füllt nur Onlineformular-Felder und führt keine Befehlsschritte aus!
+# Die Navigation innerhalb der Webseiten musst Du ggf. durchführen.
+# Durch wiederholtes Drücken des Paketdienst-Buttons in FAKTURAMA werden die gerade benötigten Formularfelder gefüllt.
+#
+# Beispiel:
+# ---------
+# "Paketdienst" in FAKTURAMA klicken.
+#   -> Du landest in der Anmeldemaske des Paketdienstes. Die Login-Daten sind ausgefüllt.
+# "Anmelden" klicken.
+# Zur gewünschten Seite (z.B. zum Paketschein) navigieren.
+# "Paketdienst" in FAKTURAMA wiederholt klicken.
+#   -> Adressen werden ausgefüllt.
+# Zu den Produkten navigieren.
+# "Paketdienst" in FAKTURAMA wiederholt klicken.
+#   -> Produkte werden ausgefüllt.
+# Auf "Paketschein erstellen" klicken.
+#
+# usw.
+#------------------------------------------------------------------------------------------------------------------------
+
+
+
+# Name and URL of the parcel service:
+
+name = efiliale Paket Login
+url = https://www.efiliale.de/efiliale/login_page.jsp#
+
+# Stand: 01.07.2015
+
+
+# Logindaten
+
+# --------------------------------------------------------------------
+# Vorgehensweise:
+# 1) "Paketdienst" in FAKTURAMA klicken. Benutzername wird ausgefüllt.
+# 2) In das Passwort-Feld klicken.
+# 3) "Paketdienst" in FAKTURAMA wiederholt klicken.
+# 4) Sicherheitscode (CAPTCHA) eingeben.
+# usw.
+# --------------------------------------------------------------------
+
+username = 				"DEINEN BENUTZERNAMEN EINTRAGEN"
+password = 				"DEIN PASSWORT EINTRAGEN"
+
+
+# Daten für Internetmarke
+
+to-name			= DELIVERY.ADDRESS.NAME
+to-nameaddon		= DELIVERY.ADDRESS.COMPANY
+to-street		= DELIVERY.ADDRESS.STREETNAME
+to-number		= DELIVERY.ADDRESS.STREETNO
+to-postalcode		= DELIVERY.ADDRESS.ZIP
+to-city			= DELIVERY.ADDRESS.CITY
+to-country		= DELIVERY.ADDRESS.COUNTRY
+
+
+# Daten für Paket-Frankierung
+
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.company = YOURCOMPANY.COMPANY
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.additionalInfo = YOURCOMPANY.OWNER
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.street = YOURCOMPANY.STREETNAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.houseNumber = YOURCOMPANY.STREETNO
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.zipCode = YOURCOMPANY.ZIP
+/de/dpag/efiliale/presentation/vo/POPProductVO.newPickupAddress.city = YOURCOMPANY.CITY
+
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.company = DELIVERY.ADDRESS.NAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.additionalInfo = DELIVERY.ADDRESS.COMPANY
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.street = DELIVERY.ADDRESS.STREETNAME
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.houseNumber = DELIVERY.ADDRESS.STREETNO
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.zipCode = DELIVERY.ADDRESS.ZIP
+/de/dpag/efiliale/presentation/vo/POPProductVO.newDeliveryAddress.city = DELIVERY.ADDRESS.CITY
