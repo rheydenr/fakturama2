@@ -203,8 +203,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName, msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params);	
 		
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), 
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR));	
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, msg.commandCalculatorName, msg.commandCalculatorTooltip,
+				Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), null,
+		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR), null);	
 		finishToolbar(coolbar1, toolBar4);	
 	}
 

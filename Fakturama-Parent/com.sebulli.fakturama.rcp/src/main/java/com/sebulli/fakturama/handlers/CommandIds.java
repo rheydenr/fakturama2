@@ -101,6 +101,7 @@ public final class CommandIds {
 	public static final String CMD_SELECT_WORKSPACE = "com.sebulli.fakturama.command.selectWorkspace";
 
 	public static final String CMD_WEBSHOP_IMPORT = "com.sebulli.fakturama.command.webShopImport";
+	public static final String CMD_PRODUCTS_STOCKUPDATE = "org.fakturama.command.updatestock";
 
 	public static final String CMD_MARK_ORDER_AS = "com.sebulli.fakturama.command.order.markas";
 	public static final String CMD_MARK_DOCUMENT_AS = "com.sebulli.fakturama.command.document.markas";

@@ -441,9 +441,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     rowObject.getDocumentItem().setOptional((Boolean) newValue);
                     break;
                 case QUANTITY:
-                    Double oldQuanity = rowObject.getDocumentItem().getQuantity();
+                    Double oldQuantity = rowObject.getDocumentItem().getQuantity();
                     // Set the quantity
-                    rowObject.getDocumentItem().setQuantity(ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0)));
+                    rowObject.getDocumentItem().setQuantity(Optional.ofNullable((Double) newValue).orElse(Double.valueOf(0.0)));
                     Product product = rowObject.getDocumentItem().getProduct();
 
                     // If the item is coupled with a product, get the graduated price
@@ -454,7 +454,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                         // If the price is not equal, it was modified. In this case, do not
                         // modify the price value.
                         Double oldPrice = rowObject.getDocumentItem().getPrice();
-                        Double oldPriceByQuantity = productUtil.getPriceByQuantity(product, oldQuanity);
+                        Double oldPriceByQuantity = productUtil.getPriceByQuantity(product, oldQuantity);
 
                         Double newPrice = productUtil.getPriceByQuantity(product, (Double) newValue);
 

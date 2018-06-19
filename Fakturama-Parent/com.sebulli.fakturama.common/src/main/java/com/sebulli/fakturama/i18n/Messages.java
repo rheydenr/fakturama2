@@ -724,6 +724,11 @@ public class Messages {
 	public String preferencesProductUsepicture;
 	public String preferencesProductUsequantity;
 	public String preferencesProductUsequantityunit;
+	public String preferencesProductQtyChangeDelivery;
+	public String preferencesProductQtyChangeInvoice;
+	public String preferencesProductQtyChangeOrder;
+	public String preferencesProductQtyHeader;
+	
 	public String preferencesProductUseweight;
 	public String preferencesToolbarIcons;
 	public String preferencesToolbarShowicon;

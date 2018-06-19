@@ -538,5 +538,16 @@ public class Constants {
 
 	public static final String PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX = "PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX";
 
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY = "PRODUCT_CHANGE_QTY";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_ORDER = "0";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY = "1";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE = "2";
+
+	public static final String PARAM_STATUS =   "com.sebulli.fakturama.command.order.markas.status";
+	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
+
+	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
+
+
 
 }

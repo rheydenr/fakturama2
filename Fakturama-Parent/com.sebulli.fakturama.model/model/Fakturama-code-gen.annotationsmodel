@@ -750,6 +750,12 @@
         <eAttribute href="Fakturama.ecore#//DocumentItem/vestingPeriodEnd"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The end of a vesting period. If this field is not set but the vestinPeriodStart is set, then that field is a fixed date for a given deliverable."/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//DocumentItem/originQuantity"/>
+        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
+          <transient name="originQuantity"/>
+        </eAttributeAnnotations>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//IndividualDocumentInfo"/>

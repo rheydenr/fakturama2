@@ -37,14 +37,14 @@
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_OnpnIEgKEeOrp6PdA0AQig" elementId="com.sebulli.fakturama.rcp.menuseparator.2"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_QK_CIEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markaspending.id" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_bFPksLPZEeS-Jtapb6hhEg">
-          <parameters xmi:id="_Tksu8LPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.30" name="com.sebulli.fakturama.command.order.markas.progress" value="PENDING"/>
+          <parameters xmi:id="_Tksu8LPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.30" name="com.sebulli.fakturama.command.order.markas.status" value="PENDING"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_4Xx2MEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markasprocessing.id" label="%main.menu.edit.markasprocessing" iconURI="icon://COMMAND_ORDER_PROCESSING" command="_bFPksLPZEeS-Jtapb6hhEg">
-          <parameters xmi:id="_Z_avoLPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.31" name="com.sebulli.fakturama.command.order.markas.progress" value="PROCESSING"/>
+          <parameters xmi:id="_Z_avoLPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.31" name="com.sebulli.fakturama.command.order.markas.status" value="PROCESSING"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5cbxIEgKEeOrp6PdA0AQig" elementId="menu:main.menu.edit.markasshipped.id" label="%main.menu.edit.markasshipped" iconURI="icon://COMMAND_ORDER_SHIPPED" command="_bFPksLPZEeS-Jtapb6hhEg">
           <tags>orderActive</tags>
-          <parameters xmi:id="_eY8UoLPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.32" name="com.sebulli.fakturama.command.order.markas.progress" value="SHIPPED"/>
+          <parameters xmi:id="_eY8UoLPaEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.rcp.parameter.32" name="com.sebulli.fakturama.command.order.markas.status" value="SHIPPED"/>
         </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_C8FCIPo9EeKmVtv93KLoRw" elementId="menu:main.menu.data.id" label="%command.data.name">
@@ -209,6 +209,7 @@
   <handlers xmi:id="_w7HNYDAIEeadQNc3uX9jkA" elementId="com.sebulli.fakturama.rcp.handler.syncmobile" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SyncMobileHandler" command="_keAzgDAIEeadQNc3uX9jkA"/>
   <handlers xmi:id="_591t8DAPEeadQNc3uX9jkA" elementId="handler:org.fakturama.parcelservice" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenParcelServiceHandler" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_90KEgJ7PEeeQ-uZqSpleQA" elementId="com.sebulli.fakturama.resetperspective.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ResetPerspectiveHandler" command="_4yx1UJ7PEeeQ-uZqSpleQA"/>
+  <handlers xmi:id="_ww_VsG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.handler.stockupdate" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.StockUpdateHandler" command="_hvS4IG4_EeixJ7qGG0_Y8A"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.bindingtable.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -270,15 +271,15 @@
             <menus xsi:type="menu:PopupMenu" xmi:id="_C8AVIK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup" label="Document list popup">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_9Hy-sLPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspending" visible="false" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_bFPksLPZEeS-Jtapb6hhEg">
                 <tags>orderActive</tags>
-                <parameters xmi:id="_QPtG0LSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.33" name="com.sebulli.fakturama.command.order.markas.progress" value="PENDING"/>
+                <parameters xmi:id="_QPtG0LSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.33" name="com.sebulli.fakturama.command.order.markas.status" value="PENDING"/>
               </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_9BV0kLPKEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasprocessing" visible="false" label="%main.menu.edit.markasprocessing" iconURI="icon://COMMAND_ORDER_PROCESSING" command="_bFPksLPZEeS-Jtapb6hhEg">
                 <tags>orderActive</tags>
-                <parameters xmi:id="_y2H_8LPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markas.progress.param1" name="com.sebulli.fakturama.command.order.markas.progress" value="PROCESSING"/>
+                <parameters xmi:id="_y2H_8LPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markas.progress.param1" name="com.sebulli.fakturama.command.order.markas.status" value="PROCESSING"/>
               </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_NPeQELPLEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markasshipped" visible="false" label="%main.menu.edit.markasshipped" iconURI="icon://COMMAND_ORDER_SHIPPED" command="_bFPksLPZEeS-Jtapb6hhEg">
                 <tags>orderActive</tags>
-                <parameters xmi:id="_VSttsLSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.34" name="com.sebulli.fakturama.command.order.markas.progress" value="SHIPPED"/>
+                <parameters xmi:id="_VSttsLSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.34" name="com.sebulli.fakturama.command.order.markas.status" value="SHIPPED"/>
               </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_jCvIELPLEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.removeref" visible="false" label="%main.menu.edit.removeinvoicereference" iconURI="icon://COMMAND_REMOVE_INVOICEREF" command="_3Wx3MO3uEeScLKnTyMNVVA">
                 <tags>deliveryActive</tags>
@@ -561,7 +562,7 @@
   </commands>
   <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
-    <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId=""/>
+    <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId="java.lang.Boolean"/>
     <parameters xmi:id="_yezBsGllEeiWHetSrMwJHQ" elementId="org.fakturama.webshop.connector.action" name="action" optional="false"/>
   </commands>
   <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
@@ -604,7 +605,8 @@
     <parameters xmi:id="_d8-uMEEXEeSEOrX6Mzhm6Q" elementId="com.sebulli.fakturama.command.document.markas.state" name="Paid or unpaid indicator" optional="false"/>
   </commands>
   <commands xmi:id="_bFPksLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas" commandName="mark order as..." description="mark order as..." category="_ck9sUCTREeS9z6SQNducwg">
-    <parameters xmi:id="_hNiYoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="" optional="false"/>
+    <parameters xmi:id="_hNiYoLPZEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.command.order.markas.status" name="Progress indicator" optional="false"/>
+    <parameters xmi:id="_otu50G5TEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.orderid" name="Document to update" typeId="com.sebulli.fakturama.model.Order"/>
   </commands>
   <commands xmi:id="_VpeoEG3nEeS8E6Dq10mFSA" elementId="com.sebulli.fakturama.errorview.command" commandName="Show error view"/>
   <commands xmi:id="_epsVUMUQEeShSO-6QzwVpg" elementId="com.sebulli.fakturama.command.selectitem" commandName="Select item" description="selects an item (Contact, Product etc.) in a dialog">
@@ -619,7 +621,11 @@
   </commands>
   <commands xmi:id="_spNTACBUEea-4Y0BjcPDPA" elementId="com.sebulli.fakturama.rcp.command.update" commandName="%command.app.update" description="Searches for updates" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_keAzgDAIEeadQNc3uX9jkA" elementId="com.sebulli.fakturama.rcp.command.syncmobile" commandName="%main.menu.extra.syncmobile" description="Synchronize with your mobile device" category="_ck9sUCTREeS9z6SQNducwg"/>
-  <commands xmi:id="_4yx1UJ7PEeeQ-uZqSpleQA" elementId="org.eclipse.ui.window.resetPerspective" commandName="reset perspective" category="_ck9sUCTREeS9z6SQNducwg"/>
+  <commands xmi:id="_4yx1UJ7PEeeQ-uZqSpleQA" elementId="org.eclipse.ui.window.resetPerspective" commandName="%main.menu.help.reset" category="_ck9sUCTREeS9z6SQNducwg"/>
+  <commands xmi:id="_hvS4IG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.command.updatestock" commandName="%command.products.stockupdate" description="%command.products.stockupdate">
+    <parameters xmi:id="_XfNAAG5NEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="java.lang.Integer"/>
+    <parameters xmi:id="_tDNsUG5TEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.orderid" name="Document to update" typeId="com.sebulli.fakturama.model.Order" optional="false"/>
+  </commands>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

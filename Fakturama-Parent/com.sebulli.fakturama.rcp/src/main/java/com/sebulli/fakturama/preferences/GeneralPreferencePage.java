@@ -214,7 +214,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             boolean useThousandsSeparator = thousandsSeparatorCheckbox.getBooleanValue();
             boolean useCashRounding = cashCheckbox.getBooleanValue();
             
-            String preferenceName;
+            String preferenceName = "";
             if(event.getSource() instanceof BooleanFieldEditor) {
 				preferenceName = ((BooleanFieldEditor)event.getSource()).getPreferenceName();
             } else {
