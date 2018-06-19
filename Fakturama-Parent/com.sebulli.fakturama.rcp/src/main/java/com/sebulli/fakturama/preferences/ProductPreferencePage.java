@@ -14,17 +14,23 @@
 
 package com.sebulli.fakturama.preferences;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.emf.common.util.Reflect;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -42,6 +48,10 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
+
+	private BooleanFieldEditor useQuantityCheckbox;
+
+	private RadioGroupFieldEditor radioGroupQtyChange;
 
     /**
 	 * Constructor
@@ -88,18 +98,37 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		//T: Preference page "Product" - Label "Use weight"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, msg.preferencesProductUseweight, getFieldEditorParent()));
 		
-		//T: Preference page "Product" - Label "Use quantity"
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, msg.preferencesProductUsequantity, getFieldEditorParent()));
+		useQuantityCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, msg.preferencesProductUsequantity, getFieldEditorParent());
+		addField(useQuantityCheckbox);
 		
-		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, msg.preferencesProductQtyHeader, 3, new String[][] { 
+		radioGroupQtyChange = new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, msg.preferencesProductQtyHeader, 3, new String[][] { 
 			{ msg.preferencesProductQtyChangeOrder, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_ORDER },
 			{ msg.preferencesProductQtyChangeDelivery, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY },
-			{ msg.preferencesProductQtyChangeInvoice, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE } }, getFieldEditorParent()));
+			{ msg.preferencesProductQtyChangeInvoice, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE } }, getFieldEditorParent());
+		addField(radioGroupQtyChange);
 		
 		//T: Preference page "Product" - Label "Use product picture"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_PICTURE, msg.preferencesProductUsepicture, getFieldEditorParent()));
+		
+		radioGroupQtyChange.setEnabled(useQuantityCheckbox.getBooleanValue(), getFieldEditorParent());
 	}
 	
+	/**
+	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
+	 */
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        String preferenceName = null;
+        super.propertyChange(event);
+        
+        Object eventSource = event.getSource();
+		if (eventSource instanceof BooleanFieldEditor) {
+			preferenceName = ((BooleanFieldEditor)eventSource).getPreferenceName();
+        }
+        if (StringUtils.equalsIgnoreCase(preferenceName, Constants.PREFERENCES_PRODUCT_USE_QUANTITY)) {
+        	radioGroupQtyChange.setEnabled(((BooleanFieldEditor)eventSource).getBooleanValue(), getFieldEditorParent());
+        }
+    }
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 
