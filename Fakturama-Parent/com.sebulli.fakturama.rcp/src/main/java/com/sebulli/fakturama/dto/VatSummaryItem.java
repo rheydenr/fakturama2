@@ -31,7 +31,7 @@ import com.sebulli.fakturama.model.ItemAccountType;
  * @author Gerd Bartelt
  */
 public class VatSummaryItem implements Comparable<VatSummaryItem> {
-
+	
 	// Absolute Net and Vat value
 	// This can be the sum of more than one item
 	private MonetaryAmount net;
@@ -125,7 +125,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	public void add(VatSummaryItem other) {
 	    this.net = this.net.add(other.net);
 	    this.vat = this.vat.add(other.vat);
-	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 
 	/**
@@ -325,3 +325,4 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
         		.append(']').toString();
     }
 }
+
