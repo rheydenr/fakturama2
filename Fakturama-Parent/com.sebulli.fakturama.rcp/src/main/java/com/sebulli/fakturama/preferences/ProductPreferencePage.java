@@ -27,6 +27,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -105,6 +106,12 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		
 		//T: Preference page "Product" - Label "Use product picture"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_PICTURE, msg.preferencesProductUsepicture, getFieldEditorParent()));
+	}
+	
+	@Override
+	protected void contributeButtons(Composite parent) {
+		// ok, it's a little misuse of this method, but I need to initialize the RadioGroup correctly...
+		super.contributeButtons(parent);
 		
 		radioGroupQtyChange.setEnabled(useQuantityCheckbox.getBooleanValue(), getFieldEditorParent());
 	}
