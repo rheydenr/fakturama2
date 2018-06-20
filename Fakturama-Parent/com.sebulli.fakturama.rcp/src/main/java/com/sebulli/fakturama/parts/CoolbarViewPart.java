@@ -122,7 +122,7 @@ public class CoolbarViewPart {
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, BooleanUtils.toStringTrueFalse(true));
+        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.TRUE);
         parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), parameters);
