@@ -111,7 +111,7 @@ public class NavigationView {
         // Create the first expand bar "Import"
         PGroup group = createPGroup("command.navigation.import", Icon.ICON_SHOP);
         parameters = new HashMap<>();
-        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, BooleanUtils.toStringTrueFalse(true));
+        parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.TRUE);
         parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
         addAction(group, Icon.COMMAND_IMPORT, "command.webshop", CommandIds.CMD_WEBSHOP_IMPORT, parameters);
 

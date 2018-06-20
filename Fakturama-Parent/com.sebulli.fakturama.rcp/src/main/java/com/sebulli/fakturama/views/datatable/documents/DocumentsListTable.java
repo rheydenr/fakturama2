@@ -78,6 +78,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.StockUpdateHandler;
+import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
 import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
 import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 import com.sebulli.fakturama.i18n.LocaleUtil;
@@ -177,8 +178,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
         parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
 		
-        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Integer");
-        parameterTypeBoolean.define("java.lang.Integer", new NumberParameterValueConverter());
+        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
+        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
+		
+        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
+        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
 
         // +++ END TEST +++
         
