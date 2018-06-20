@@ -221,10 +221,15 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     int rowPos = natTable.getRowPositionByY(event.y);
                     int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
                     selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                    // see comment below
 //                    selectionService.setSelection(selectionService);
                 }
             });
         }
+        
+        // TODO refactor the IMouseAction into a new class. Then add a new KeyBinding for RETURN key so that
+        // the user can select an entry with one keystroke.
+        
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -243,7 +248,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 Map<String, Object> params = new HashMap<>();
                 ParameterizedCommand parameterizedCommand;
                 if(commandId != null) {
-                    // If we don't give a target document number the event will  be catched by *all*
+                    // If we don't give a target document number the event will be caught by *all*
                     // open editors which listens to this event. This is (obviously :-) ) not
                     // the intended behavior...
                     Map<String, Object> eventParams = new HashMap<>();
