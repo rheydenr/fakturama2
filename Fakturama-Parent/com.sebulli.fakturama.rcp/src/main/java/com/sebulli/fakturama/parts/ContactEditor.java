@@ -15,6 +15,10 @@
 package com.sebulli.fakturama.parts;
 
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -57,7 +62,11 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -75,7 +84,6 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
-import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -199,9 +207,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-	
-	@Inject
-	private ItemAccountTypeDAO itemListTypeDao;
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
@@ -220,8 +225,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
-
-	private List<Payment> allPayments;
 
 	/**
 	 * Saves the contents of this part
@@ -1072,6 +1075,47 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelWebsite.setText(msg.exporterDataWebsite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebsite);
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
+		
+		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
+		
+		txtWebsite.addMouseMoveListener(new MouseMoveListener() {
+			
+			@Override
+			public void mouseMove(MouseEvent e) {
+				if(e.stateMask == SWT.CTRL) {
+					txtWebsite.setCursor(cursorHand);
+				} else {
+					txtWebsite.setCursor(cursorIBeam);
+				}
+			}
+		});
+		
+		// FAK-382 clickable URL
+		txtWebsite.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if(e.stateMask == SWT.CTRL) {
+					String websiteText = txtWebsite.getText();
+					
+					// validate URL and open it in browser
+				    String[] schemes = {"http","https"};
+				    UrlValidator urlValidator = new UrlValidator(schemes);
+		    	    if (urlValidator.isValid(websiteText)) {
+						try {
+							Desktop.getDesktop().browse(new URI(websiteText));
+						} catch (IOException | URISyntaxException e1) {
+							log.warn("can't open the contact's web site. Reason: ", e1);
+						}
+					} else {
+						// URL is invalid or empty
+					}
+				}
+				super.mouseDoubleClick(e);
+			}
+		});
+		
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
 		
 		// WebShop name  
