@@ -77,11 +77,13 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Product;
@@ -117,6 +119,15 @@ public class OfficeDocument {
     @Inject
     private DocumentsDAO documentsDAO;
     
+	@Inject
+	private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     /**
      * Event Broker for sending update events to the list table
      */
@@ -683,7 +694,7 @@ public class OfficeDocument {
         String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
         
 		String key = vatSummaryItem.getVatName();
-		String value = DataUtils.getInstance().formatCurrency(vatSummaryItem.getVat());
+		String value = numberFormatterService.formatCurrency(vatSummaryItem.getVat());
 		// Get the text of the column. This is to determine, if it is the column
 		// with the VAT description or with the VAT value
 		String textValue = "";
@@ -697,10 +708,10 @@ public class OfficeDocument {
 			textValue = value;
 		}
 		else if (placeholder.equals("VATLIST.PERCENT")) {
-			textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
+			textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
 		}
 		else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
-			textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+			textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
 		}
 		else {
 			return null;
@@ -727,11 +738,11 @@ public class OfficeDocument {
 
 		if (this.useSET && vatSummaryItem.getSalesEqTax() != null) {
 			if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
-				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getSalesEqTax());
+				textValue = numberFormatterService.formatCurrency(vatSummaryItem.getSalesEqTax());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
-				textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
+				textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.SUBTOTAL")) {
-				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+				textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
 			} else {
 				return null;
 			}
@@ -825,7 +836,7 @@ public class OfficeDocument {
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			value = numberInstance.format(item.getQuantity());
 		}
@@ -870,10 +881,10 @@ public class OfficeDocument {
 		
 		// vesting period
 		else if (key.equals("ITEM.VESTINGPERIOD.START")) {
-			value = item.getVestingPeriodStart() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
+			value = item.getVestingPeriodStart() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
 		}
 		else if (key.equals("ITEM.VESTINGPERIOD.END")) {
-			value = item.getVestingPeriodEnd() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
+			value = item.getVestingPeriodEnd() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
 		}
 
 		// Get the item description
@@ -887,16 +898,16 @@ public class OfficeDocument {
 
 		// Get the item discount in percent
 		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemRebate());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemRebate());
 		}
 
 		// Get the absolute item discount (gross=
 		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 		
 		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
 		}
 		
 
@@ -912,32 +923,32 @@ public class OfficeDocument {
 		
 		// Get the item net value
 		else if (key.equals("ITEM.UNIT.NET")) {
-		    value = DataUtils.getInstance().formatCurrency(price.getUnitNetRounded());
+		    value = numberFormatterService.formatCurrency(price.getUnitNetRounded());
 		}
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitVatRounded());
 		}
 
 		// Get the item gross value
 		else if (key.equals("ITEM.UNIT.GROSS")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossRounded());
 		}
 
 		// Get the discounted item net value
 		else if (key.equals("ITEM.UNIT.NET.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitNetDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitNetDiscountedRounded());
 		}
 
 		// Get the discounted item VAT
 		else if (key.equals("ITEM.UNIT.VAT.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitVatDiscountedRounded());
 		}
 
 		// Get the discounted item gross value
 		else if (key.equals("ITEM.UNIT.GROSS.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 
 		// Get the total net value
@@ -945,10 +956,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice ) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalNetRounded());
 			}
 		}
 
@@ -957,10 +968,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalVatRounded());
 			}
 		}
 
@@ -969,10 +980,10 @@ public class OfficeDocument {
             if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalGrossRounded());
 			}
 		}
 		
@@ -981,10 +992,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
+				value = numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
 			}
 		}
 		
@@ -993,16 +1004,16 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
+				value = numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
 			}
 		}
 		
 		// Get the item's VAT
 		else if (key.equals("ITEM.VAT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getTaxValue());
 		}
 	
 		// Get product picture
@@ -1126,7 +1137,7 @@ public class OfficeDocument {
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
 			} else if(key.equals("ITEM.UNIT.COSTPRICE")) {
-				value = DataUtils.getInstance().DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
+				value = numberFormatterService.DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
 			} else {
 				value = "";
 			}

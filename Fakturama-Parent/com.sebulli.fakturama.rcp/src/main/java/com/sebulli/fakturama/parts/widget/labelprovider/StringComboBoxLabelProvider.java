@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.LabelProvider;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 
 /**
  * This {@link LabelProvider} shows a String value which is mapped to a String
@@ -28,6 +28,8 @@ import com.sebulli.fakturama.i18n.LocaleUtil;
  * defaultLocale).
  */
 public class StringComboBoxLabelProvider extends LabelProvider {
+    
+	private ILocaleService localeUtil;
 
     /**
      * The values.
@@ -38,8 +40,9 @@ public class StringComboBoxLabelProvider extends LabelProvider {
      * @param values the possible label values that this 
      * <code>ILabelProvider</code> may return.
      */
-    public StringComboBoxLabelProvider(Map<String, String> values) {
+    public StringComboBoxLabelProvider(Map<String, String> values, ILocaleService localeUtil) {
         this.values = values;
+        this.localeUtil = localeUtil;
     }
 
     /**
@@ -56,7 +59,7 @@ public class StringComboBoxLabelProvider extends LabelProvider {
         if (element != null && element instanceof String) {
             retval = values.get(element);
         } else {
-            retval = values.get(LocaleUtil.getInstance().getDefaultLocale().getLanguage());
+            retval = values.get(localeUtil.getDefaultLocale().getLanguage());
         }
         
         return retval;

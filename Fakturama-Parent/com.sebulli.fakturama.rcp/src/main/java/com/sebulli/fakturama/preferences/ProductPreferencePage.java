@@ -80,10 +80,10 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Product" - Label "Use gross or net or both"
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, msg.preferencesProductNetorgrossprices, 3, new String[][] { 
-				{ msg.productDataNet, "1" },
-				{ msg.productDataGross, "2" },
+				{ msg.productDataNet, Integer.toString(Constants.PRODUCT_USE_NET) },
+				{ msg.productDataGross, Integer.toString(Constants.PRODUCT_USE_GROSS) },
 				//T: Preference page "Product" - Label "Use both: net and gross"
-				{ msg.preferencesProductNetandgross, "0" } }, getFieldEditorParent()));
+				{ msg.preferencesProductNetandgross, Integer.toString(Constants.PRODUCT_USE_NET_AND_GROSS) } }, getFieldEditorParent()));
 
 		//T: Preference page "Product" - Label "Use scaled prices"
 		addField(new ComboFieldEditor(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, msg.preferencesProductScaledprices, new String[][] { { "--", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" },

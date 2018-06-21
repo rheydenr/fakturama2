@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
@@ -70,11 +71,10 @@ public class NetText {
 		// Create the text widget
 		this.netText = new FormattedText(parent, style);
 		ITextFormatter formatter;
-		if(context != null) {
-			formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
-		} else {
-			formatter = new MoneyFormatter(null);
+		if(context == null) {
+			context = EclipseContextFactory.create();
 		}
+		formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		this.netText.setFormatter(formatter);
 		netText.setValue(net);
 

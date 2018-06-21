@@ -34,7 +34,7 @@ import org.odftoolkit.odfdom.type.Color;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Product;
 
 
@@ -55,6 +55,9 @@ public class ProductExporter extends OOCalcExporter {
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
 	private int row;
 
@@ -140,7 +143,7 @@ public class ProductExporter extends OOCalcExporter {
 						setCellText(row, col++, StringUtils.join(product.getAttributes(), ','));
 						setCellText(row, col++, Double.toString(product.getWeight() != null ? product.getWeight() : 0));
 						setCellText(row, col++, product.getQuantityUnit());
-						setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(product.getDateAdded()));
+						setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(product.getDateAdded()));
 			//			setCellText(row, col++, product.getFormatedStringValueByKey("picturename"));
 						setCellValueAsDouble(row, col++, product.getQuantity() != null ? product.getQuantity() : 0);
 						setCellText(row, col++, Long.toString(product.getWebshopId() != null ? product.getWebshopId() : 0));

@@ -56,6 +56,7 @@ import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.Shipping_;
@@ -91,6 +92,9 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 //    this is for synchronizing the UI thread
     @Inject    
     private UISynchronize sync;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     // ID of this view
     public static final String ID = "fakturama.views.shippingTable";
@@ -402,7 +406,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 					MONEYVALUE_CELL_LABEL ); 
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER,
-					new MoneyDisplayConverter(),
+					new MoneyDisplayConverter(numberFormatterService),
 					DisplayMode.NORMAL,
 					MONEYVALUE_CELL_LABEL);
 		}

@@ -18,7 +18,6 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -39,12 +38,12 @@ public class DocumentSummaryCalculator {
 	private CurrencyUnit currencyCode;
 	
 	public DocumentSummaryCalculator() {
-	    this(false, DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	public DocumentSummaryCalculator(Document document, boolean useSET) {
 		this(useSET && document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
-				DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+				DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {
@@ -108,7 +107,7 @@ public class DocumentSummaryCalculator {
             int netGross, MonetaryAmount deposit) {
 		Double vatPercent;
 		String vatDescription;
-        CurrencyUnit currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         DocumentSummary retval = new DocumentSummary(currencyUnit);
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
 

@@ -30,7 +30,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 
 public class BackupManager {
 
@@ -40,6 +40,9 @@ public class BackupManager {
     @Inject
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
 
 	public void createBackup() {
 
@@ -66,7 +69,7 @@ public class BackupManager {
 		}
 
 		// Filename of the zip file
-		String dateString = DataUtils.getInstance().DateAndTimeOfNowAsLocalString();
+		String dateString = dateFormatterService.DateAndTimeOfNowAsLocalString();
 		dateString = dateString.replace(" ", "_");
 		dateString = dateString.replace(":", "");
 

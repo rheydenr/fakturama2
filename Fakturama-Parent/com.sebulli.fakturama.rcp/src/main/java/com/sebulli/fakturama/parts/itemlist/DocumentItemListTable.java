@@ -116,10 +116,11 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DummyStringCategory;
@@ -160,6 +161,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     
     @Inject
     private VatsDAO vatsDAO;
+	
+	@Inject
+	private ILocaleService localeUtil;
+	
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
@@ -363,7 +370,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    retval = rowObject.getDocumentItem().getPosNr();
 	                    break;
 	                case QUANTITY:
-	                    retval = DataUtils.getInstance().doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
+	                    retval = numberFormatterService.doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
 	                    break;
 	                case OPTIONAL:
 	                case QUNIT:
@@ -977,7 +984,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             TextCellEditor textCellEditor = new TextCellEditor(true, true);
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
 			doubleDisplayConverter.setNumberFormat(numberInstance);
@@ -1029,7 +1036,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DoublePercentageDisplayConverter(),
+                    new DoublePercentageDisplayConverter(localeUtil),
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL);
             configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
@@ -1057,7 +1064,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.EDIT, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
@@ -1070,7 +1077,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE, 

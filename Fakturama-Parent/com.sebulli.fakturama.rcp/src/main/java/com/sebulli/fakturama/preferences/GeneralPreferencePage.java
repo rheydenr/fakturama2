@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -51,12 +52,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.ContextHelpConstants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
+import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
+import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
+import com.sebulli.fakturama.parts.ShippingEditor;
 
 /**
  * Preference page for the document settings. The preferences are written to the Fakturama common preferences store
@@ -70,6 +78,15 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     @Translation
     protected Messages msg;
     
+    @Inject
+    private IEventBroker evtBroker;
+    
+	@Inject
+	private ILocaleService localeUtil;
+	
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
 
@@ -171,7 +188,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	    Map<Object,Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
-
+	
 	/**
 	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
 	 */
@@ -291,13 +308,13 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                      * they already loaded by DataUtils and therefore the classloader gets
                      * confused.
                      */
-                    retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                    retval = numberFormatterService.formatCurrency(myNumber, locale, 
                     				currencySetting,
                                     cashCheckbox != null ? cashCheckbox.getBooleanValue() : true,
                                             useThousandsSeparator);
               //  }
             } else {
-                retval = DataUtils.getInstance().formatCurrency(myNumber, locale, 
+                retval = numberFormatterService.formatCurrency(myNumber, locale, 
                 				currencySetting,
                                 cashCheckbox != null ? cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
                 if(cashCheckbox != null) {
@@ -322,7 +339,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		// at the moment we have to reset the DataUtils manually
 		// TODO put it in a service!
 		DataUtils.getInstance().refresh();
-		
+
 //        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, write);
@@ -348,16 +365,16 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
 		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
-
-		//Set the default currency locale from current locale
-		Locale defaultLocale = LocaleUtil.getInstance().getCurrencyLocale();
-		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
-		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
         node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
         node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
+
+		//Set the default currency locale from current locale
+		Locale defaultLocale = localeUtil.getCurrencyLocale();
+		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
+		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));
         String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
                 true, false, currencySetting);
@@ -372,6 +389,13 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	@Override
 	public boolean performOk() {
 		DataUtils.getInstance().refresh();
+        
+        // Refresh the table view of all documents
+		evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+		evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(ReceiptVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(ExpenditureVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 		return super.performOk();
 	}
 

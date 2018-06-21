@@ -79,7 +79,7 @@ import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -120,6 +120,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     
     @Inject
     private EPartService partService;
+    
+	@Inject
+	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
     private Composite top;
@@ -405,7 +408,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.setUseNetGross((short)0);
 			
 			// country is determined by locale
-			editorContact.getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());
+			editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -461,7 +464,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.getAlternateContacts().getAddress().setCountryCode(
 					editorContact.getAddress() != null 
 						? editorContact.getAddress().getCountryCode() 
-						: LocaleUtil.getInstance().getDefaultLocale().getCountry()); 
+						: localeUtil.getDefaultLocale().getCountry()); 
 			rebindAlternativeContactsEditor();
 		}
 	}
@@ -548,7 +551,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		useCountry = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
 		
 		// now do some helpful initializations (needed for combo boxes)
-        Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
+        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
 		
 		Map<Integer, String> salutationList = new HashMap<>();
 		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
@@ -814,7 +817,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
 		comboCountry.setInput(countryNames);
-		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
 		
 		// Birthday
@@ -926,7 +929,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
-        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday

@@ -81,10 +81,11 @@ import com.sebulli.fakturama.handlers.StockUpdateHandler;
 import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
 import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
 import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -130,6 +131,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private ILocaleService localeUtil;
 	
     @Inject
     @Preference   //(value=InstanceScope.SCOPE)
@@ -144,6 +148,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     private ContactsDAO contactsDAO;
     
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
     private EntityGridListLayer<Document> gridLayer;
     
 //    @Inject
@@ -755,7 +762,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL,
                     MONEYVALUE_CELL_LABEL);
 
@@ -763,7 +770,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
                     DATE_CELL_LABEL ); 
-            SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, LocaleUtil.getInstance().getDefaultLocale());
+            SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, localeUtil.getDefaultLocale());
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDateDisplayConverter(dateFormat.toPattern()),

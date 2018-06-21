@@ -75,7 +75,6 @@ import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -339,7 +338,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        paidValue = Money.of(java.util.Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textPaidValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
-	        textPaidValue.setFormatter(new MoneyFormatter());
+	        textPaidValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 	        textPaidValue.getControl().setVisible(bPaidWithDiscount.getSelection());
 	        textPaidValue.getControl().setToolTipText(labelPaidValue.getToolTipText());
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textPaidValue.getControl());
@@ -355,7 +354,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        totalValue = Money.of(java.util.Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), currencyUnit);
 	
 	        textTotalValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
-	        textTotalValue.setFormatter(new MoneyFormatter());
+	        textTotalValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 	        textTotalValue.getControl().setEditable(false);
 	        textTotalValue.getControl().setToolTipText(labelTotalValue.getToolTipText());
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textTotalValue.getControl());
@@ -477,7 +476,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	public void init(Composite parent) {
 	    this.part = (MPart) parent.getData("modelElement");
 	    this.part.setIconURI(getEditorIconURI());
-	    this.currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+	    this.currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
 	
 	    String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
 	    if (StringUtils.isNumeric(tmpObjId)) {

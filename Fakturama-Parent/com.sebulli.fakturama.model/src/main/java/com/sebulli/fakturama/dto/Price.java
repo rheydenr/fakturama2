@@ -24,9 +24,11 @@ import javax.money.MonetaryRounding;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.javamoney.moneta.Money;
+import org.osgi.framework.ServiceReference;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.VoucherItem;
 
@@ -37,7 +39,7 @@ import com.sebulli.fakturama.model.VoucherItem;
  * 
  */
 public class Price {
-
+	
 	private Double quantity;
 	private Double vatPercent;
 	private Double salesEqTaxPercent;
@@ -63,6 +65,7 @@ public class Price {
 	private MonetaryAmount totalGross;
 	
 	private DataUtils dataUtils;
+	private INumberFormatterService numberFormatterService;
 
 	// unit values rounded
 	private MonetaryAmount unitNetRounded;
@@ -82,6 +85,7 @@ public class Price {
 	private MonetaryAmount totalSalesEqTaxRounded;
 	private MonetaryAmount totalGrossRounded;
 	
+	
 	public Price(DocumentItem item) {
 		this(item, false);
 	}
@@ -94,7 +98,7 @@ public class Price {
 	 */
 	public Price(DocumentItem item, boolean useSET) {
 		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
-		        Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())), 
+		        Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
 		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false, useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
 
@@ -109,7 +113,7 @@ public class Price {
 	 */
     public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
         this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
-        	 Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), 
+        	 Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), 
         	 item.getItemVat().getTaxValue(), 
         	 item.getItemRebate(), 
         	 BooleanUtils.toBoolean(item.getNoVat()), 
@@ -137,7 +141,7 @@ public class Price {
 	 * 				Scale factor of this expenditure item
 	 */
 	public Price(VoucherItem item, Double scaleFactor) {
-		this(1.0, Money.of(item.getPrice(), DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale())).multiply(scaleFactor), item.getVat().getTaxValue(), Double.valueOf(0.0), false, false);
+		this(1.0, Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), item.getVat().getTaxValue(), Double.valueOf(0.0), false, false);
 	}
 
 	
@@ -236,7 +240,7 @@ public class Price {
 	 */
 	private void calculate(boolean asGross) {
 		
-         CurrencyUnit currencyUnit = getDataUtils().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+         CurrencyUnit currencyUnit = getDataUtils().getDefaultCurrencyUnit();
          MonetaryRounding rounding = getDataUtils().getRounding(currencyUnit);  
 
 		// Calculate net from gross
@@ -326,7 +330,7 @@ public class Price {
 	 * @return VAT as formated string
 	 */
 	public String getVatPercent() {
-		return getDataUtils().DoubleToFormatedPercent(vatPercent);
+		return getNumberFormatterService().DoubleToFormatedPercent(vatPercent);
 	}
 
 	/**
@@ -606,7 +610,25 @@ public class Price {
         this.dataUtils = dataUtils;
     }
 
-    @Override
+    /**
+	 * @return the numberFormatterService
+	 */
+	public INumberFormatterService getNumberFormatterService() {
+		if(numberFormatterService == null) {
+			ServiceReference<INumberFormatterService> servRef = Activator.getContext().getServiceReference(INumberFormatterService.class);
+			numberFormatterService = Activator.getContext().getService(servRef);
+		}
+		return numberFormatterService;
+	}
+
+	/**
+	 * @param numberFormatterService the numberFormatterService to set
+	 */
+	public void setNumberFormatterService(INumberFormatterService numberFormatterService) {
+		this.numberFormatterService = numberFormatterService;
+	}
+
+	@Override
     public String toString() {
     	return ToStringBuilder.reflectionToString(this);
     }
