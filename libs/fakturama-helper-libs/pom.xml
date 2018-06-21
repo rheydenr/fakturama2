@@ -32,7 +32,10 @@
         <module>org.slf4j.osgi.feature</module>
 
         <module>com.opcoach.e4.preference.feature</module>
-
+        
+        <!--  For building this project you have to disable the following two modules. -->
+        <!--  After successful build (mvn clean install) you can re-enable 
+              these modules and build the project again. -->
         <module>../../javamoney/javamoney-osgi</module>
         <module>../../javamoney/javamoney.feature</module>
         

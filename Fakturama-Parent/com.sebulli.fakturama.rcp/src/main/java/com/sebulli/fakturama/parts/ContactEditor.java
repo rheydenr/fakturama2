@@ -1085,7 +1085,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
 		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
 		
-		//txtWebsite.addListener (SWT.MouseHover, e -> txtWebsite.setCursor(cursor));
 		txtWebsite.addMouseMoveListener(new MouseMoveListener() {
 			
 			@Override
@@ -1105,8 +1104,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			public void mouseDoubleClick(MouseEvent e) {
 				if(e.stateMask == SWT.CTRL) {
 					String websiteText = txtWebsite.getText();
+					
+					// validate URL and open it in browser
 					if(StringUtils.isNotBlank(websiteText)) {
-						// open browser
 						try {
 							Desktop.getDesktop().browse(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
