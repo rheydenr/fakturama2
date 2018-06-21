@@ -100,6 +100,11 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.accountType = accountType;
    }
 
+
+
+
+
+
     /**
 	 * Creates a {@link VatSummaryItem} from an existing {@link VatSummaryItem}.
 	 * 

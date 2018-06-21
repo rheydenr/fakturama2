@@ -33,10 +33,8 @@ import com.sebulli.fakturama.model.ReliabilityType;
  */
 @Singleton
 public class ContactUtil {
-	
 	@Inject
 	private ILocaleService localeUtil;
-
     
 	/**
 	 * Address key for the country field.
@@ -91,7 +89,8 @@ public class ContactUtil {
 	/**
 	 * Maximal count of salutations.
 	 */
-	public static final int MAX_SALUTATION_COUNT = 4;
+
+    public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
     @Translation
@@ -309,8 +308,8 @@ public class ContactUtil {
 							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
 						//}
         			}
-        			if (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(LocaleUtil.getInstance().findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry)) {
+        			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry))) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
@@ -321,7 +320,6 @@ public class ContactUtil {
         		for (String addressFormatLine : addressFormatLines) {
         			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
         			String trimmedAddressLine = formatedAddressLine.trim();
-
         			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
         					&& !address.isEmpty()) {
 						address += separator;
