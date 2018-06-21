@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -71,7 +72,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -84,7 +84,6 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
-import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -208,9 +207,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-	
-	@Inject
-	private ItemAccountTypeDAO itemListTypeDao;
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
@@ -229,8 +225,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
-
-	private List<Payment> allPayments;
 
 	/**
 	 * Saves the contents of this part
@@ -1101,18 +1095,21 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtWebsite.addMouseListener(new MouseAdapter() {
 			
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
+			public void mouseDown(MouseEvent e) {
 				if(e.stateMask == SWT.CTRL) {
 					String websiteText = txtWebsite.getText();
 					
 					// validate URL and open it in browser
-					if(StringUtils.isNotBlank(websiteText)) {
+				    String[] schemes = {"http","https"};
+				    UrlValidator urlValidator = new UrlValidator(schemes);
+		    	    if (urlValidator.isValid(websiteText)) {
 						try {
 							Desktop.getDesktop().browse(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							log.warn("can't open the contact's web site. Reason: ", e1);
 						}
+					} else {
+						// URL is invalid or empty
 					}
 				}
 				super.mouseDoubleClick(e);
