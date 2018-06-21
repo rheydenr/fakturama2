@@ -32,13 +32,11 @@ import javax.money.RoundingQueryBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.javamoney.moneta.Money;
+import org.osgi.framework.ServiceReference;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
 
 /**
@@ -57,7 +55,7 @@ public class DataUtils {
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
     private static DataUtils instance = null;
-    
+
     /**
      * @return the instance
      */
@@ -80,9 +78,11 @@ public class DataUtils {
 
     /**
      * Update the currency symbol and the thousands separator from the preferences
+     * @param localeUtil 
      */
     private void initialize() {
-    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
+    	ServiceReference<ILocaleService> serviceReference = Activator.getContext().getServiceReference(ILocaleService.class);
+    	this.localeUtil = Activator.getContext().getService(serviceReference);
         currencyLocale = localeUtil.getCurrencyLocale();
     }
     
