@@ -15,6 +15,10 @@
 package com.sebulli.fakturama.parts;
 
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -57,12 +61,17 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -1072,6 +1081,44 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelWebsite.setText(msg.exporterDataWebsite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebsite);
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
+		
+		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
+		
+		//txtWebsite.addListener (SWT.MouseHover, e -> txtWebsite.setCursor(cursor));
+		txtWebsite.addMouseMoveListener(new MouseMoveListener() {
+			
+			@Override
+			public void mouseMove(MouseEvent e) {
+				if(e.stateMask == SWT.CTRL) {
+					txtWebsite.setCursor(cursorHand);
+				} else {
+					txtWebsite.setCursor(cursorIBeam);
+				}
+			}
+		});
+		
+		// FAK-382 clickable URL
+		txtWebsite.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if(e.stateMask == SWT.CTRL) {
+					String websiteText = txtWebsite.getText();
+					if(StringUtils.isNotBlank(websiteText)) {
+						// open browser
+						try {
+							Desktop.getDesktop().browse(new URI(websiteText));
+						} catch (IOException | URISyntaxException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+				super.mouseDoubleClick(e);
+			}
+		});
+		
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
 		
 		// WebShop name  
