@@ -21,8 +21,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
