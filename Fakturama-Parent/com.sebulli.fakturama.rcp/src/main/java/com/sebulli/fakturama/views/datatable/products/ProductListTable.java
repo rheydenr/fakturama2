@@ -19,6 +19,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -55,7 +57,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -110,7 +111,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
     @Inject
     private ProductCategoriesDAO productCategoriesDAO;
-    
+
 	@Inject
 	private INumberFormatterService numberFormatterService;
 
@@ -127,6 +128,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     protected FilterList<Product> treeFilteredIssues;
 
 	private ProductMatcher currentFilter;
+
+	private BidiMap<Integer, ProductListDescriptor> prodListDescriptors;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -286,6 +289,19 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      * @return
      */
 	private IColumnPropertyAccessor<Product> createColumnPropertyAccessor(String[] propertyNames) {
+		Map<Integer, ProductListDescriptor> tmpMap = new HashMap<>();
+		
+		// columns are dynamic because of some properties settings (use quantity, use vat etc)
+		for (int i = 0; i < propertyNames.length; i++) {
+			String string = propertyNames[i];
+			java.util.Optional<ProductListDescriptor> descriptorForProperty = ProductListDescriptor.getDescriptorForProperty(string);
+			if(descriptorForProperty.isPresent()) {
+				tmpMap.put(i, descriptorForProperty.get());
+			}
+		}
+		
+		prodListDescriptors = new DualHashBidiMap<>(tmpMap);
+		
 		final IColumnPropertyAccessor<Product> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<Product>(
 				propertyNames);
 //		final SpecialCellValueProvider specialCellValueProvider = new SpecialCellValueProvider(msg);
@@ -294,20 +310,20 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 		final IColumnPropertyAccessor<Product> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<Product>() {
 
 			public Object getDataValue(Product rowObject, int columnIndex) {
-				ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
+				ProductListDescriptor descriptor = prodListDescriptors.get(columnIndex);
 				switch (descriptor) {
 				case PRICE:
 					// Fill the price column with the net or the gross price (
 					// for quantity = 1)
-					String priceKey = "";
-					if (getEclipsePrefs().getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) == 1) {
-						priceKey = "$Price1Gross";
+//					String priceKey = "";
+					if (getEclipsePrefs().getInt(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS) == Constants.PRODUCT_USE_NET) {
+//						priceKey = "$Price1Gross";
 //                    cell.setText(new Price(product.getDoubleValueByKey("price1"), product.getDoubleValueByKeyFromOtherTable("vatid.VATS:value")).getUnitNet()
 //                            .asFormatedString());
-						return Money.of(rowObject.getPrice1(), DataUtils.getInstance().getDefaultCurrencyUnit());
+						return rowObject.getPrice1();
 						// return Money.of(rowObject.getPrice1(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(1+rowObject.getVat().getTaxValue());
 					} else {
-						priceKey = "price1";
+//						priceKey = "price1";
 						return DataUtils.getInstance().CalculateGrossFromNet(rowObject.getPrice1(), rowObject.getVat().getTaxValue());
 					}
 				default:
@@ -320,11 +336,11 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 			}
 
 			public int getColumnCount() {
-				return ProductListDescriptor.getProductPropertyNames().length;
+				return prodListDescriptors.size();
 			}
 
 			public String getColumnProperty(int columnIndex) {
-				ProductListDescriptor descriptor = ProductListDescriptor.getDescriptorFromColumn(columnIndex);
+				ProductListDescriptor descriptor = prodListDescriptors.get(columnIndex);
 				return msg.getMessageFromKey(descriptor.getMessageKey());
 			}
 
@@ -341,7 +357,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
         // get the visible properties to show in list view
         String[] propertyNames = productsDAO.getVisibleProperties();
-
         final IColumnPropertyAccessor<Product> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
         /*
@@ -371,9 +386,13 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
-        columnLabelAccumulator.registerColumnOverrides(ProductListDescriptor.PRICE.getPosition(), MONEYVALUE_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(ProductListDescriptor.QUANTITY.getPosition(), NUMBER_CELL_LABEL);
-        columnLabelAccumulator.registerColumnOverrides(ProductListDescriptor.VAT.getPosition(), VAT_CELL_LABEL);
+        columnLabelAccumulator.registerColumnOverrides(prodListDescriptors.getKey(ProductListDescriptor.PRICE), MONEYVALUE_CELL_LABEL);
+        if(prodListDescriptors.getKey(ProductListDescriptor.QUANTITY) != null) {
+        	columnLabelAccumulator.registerColumnOverrides(prodListDescriptors.getKey(ProductListDescriptor.QUANTITY), NUMBER_CELL_LABEL);
+        }
+        if(prodListDescriptors.getKey(ProductListDescriptor.VAT) != null) {
+        	columnLabelAccumulator.registerColumnOverrides(prodListDescriptors.getKey(ProductListDescriptor.VAT), VAT_CELL_LABEL);
+        }
 
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);

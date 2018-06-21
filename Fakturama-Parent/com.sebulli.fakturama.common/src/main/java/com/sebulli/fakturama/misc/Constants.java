@@ -192,9 +192,24 @@ public class Constants {
     public static final String PREFERENCES_PRODUCT_SCALED_PRICES = "PRODUCT_SCALED_PRICES";
 
     /**
-     * 
+     * Preference: Use gross or net or both for price values
      */
     public static final String PREFERENCES_PRODUCT_USE_NET_GROSS = "PRODUCT_USE_NET_GROSS";
+    
+    /**
+     * Use net and gross prices for monetary values
+     */
+    public static final int PRODUCT_USE_NET_AND_GROSS = 0;
+    
+    /**
+     * Use only net prices for monetary values
+     */
+    public static final int PRODUCT_USE_NET = 1;
+    
+    /**
+     * Use only gross prices for monetary values
+     */
+    public static final int PRODUCT_USE_GROSS = 2;
 
     /**
      * 
