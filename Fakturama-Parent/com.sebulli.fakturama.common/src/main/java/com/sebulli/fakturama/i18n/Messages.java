@@ -157,6 +157,9 @@ public class Messages {
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
 	public String editorContactFieldSalesequalizationtaxName;
+	public String editorContactFieldEmailValidationerror;
+	public String editorContactFieldWebsiteCantopen;
+	public String editorContactFieldEmailCantlaunch;
 	
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;

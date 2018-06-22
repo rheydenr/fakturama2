@@ -336,8 +336,8 @@ public abstract class Editor<T extends IEntity> {
 	 * @param source the SWT widget
 	 * @param property the property to observe
 	 */
-	protected void bindModelValue(T target, Control source, String property) {
-	    bindModelValue(target, source, property, null, null);
+	protected Binding bindModelValue(T target, Control source, String property) {
+	    return bindModelValue(target, source, property, null, null);
 	}
 	
     protected Binding bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
@@ -361,7 +361,7 @@ public abstract class Editor<T extends IEntity> {
             uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
         }
 
-        if (modelToTarget != null) {
+        if (targetToModel != null || modelToTarget != null) {
             retval = getCtx().bindValue(uiWidget, model, targetToModel, modelToTarget);
         } else {
             retval = getCtx().bindValue(uiWidget, model);
@@ -392,37 +392,40 @@ public abstract class Editor<T extends IEntity> {
         return retval;
     }
 	
-    protected void bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    protected Binding bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    	Binding binding = null;
         if (limit > 0) {
             source.setTextLimit(limit);
         }
 
         // the bind has to occur _before_ adding a ModifyListener, because
         // else the setting of the initial value would fire a modification event
-        bindModelValue(target, source, property, targetToModel, modelToTarget);
+        binding = bindModelValue(target, source, property, targetToModel, modelToTarget);
         
         source.addModifyListener(e -> {
         	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
                 getMDirtyablePart().setDirty(true);
         	}
         });
+        return binding;
     }	
 
     /**
      * Supervise this text widget. Set the text limit and request a new
      * "isDirty" validation, if the content of the text widget is modified.
      */
-    protected void bindModelValue(T target, Text source, String property, int limit) {
-        bindModelValue(target, source, property, limit, null, null);
+    protected Binding bindModelValue(T target, Text source, String property, int limit) {
+        return bindModelValue(target, source, property, limit, null, null);
     }
 
 
-    protected void bindModelValue(T target, FormattedText source, String property, int limit) {
+    protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
+    	Binding binding = null;
         source.getControl().setTextLimit(limit);
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
-        getCtx().bindValue(uiWidget, model);
+        binding = getCtx().bindValue(uiWidget, model);
 
         source.getControl().addModifyListener(e -> {
                 /*
@@ -435,14 +438,16 @@ public abstract class Editor<T extends IEntity> {
                     getMDirtyablePart().setDirty(true);
                 }
         });
+        return binding;
     }
 
-    protected void bindModelValue(T target, ComboViewer source, String property) {
+    protected Binding bindModelValue(T target, ComboViewer source, String property) {
+    	Binding binding = null;
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
-        getCtx().bindValue(uiWidget, model);
+        binding = getCtx().bindValue(uiWidget, model);
         
         source.getCombo().addModifyListener(e -> {
         	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
@@ -450,6 +455,7 @@ public abstract class Editor<T extends IEntity> {
         	}
         });
          
+        return binding;
     }
 
 	/**
