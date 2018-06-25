@@ -49,6 +49,10 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
+/**
+ * Create file names from format templates and reorganize documents.
+ *
+ */
 public class FileOrganizer {
 
 	@Inject
@@ -73,7 +77,7 @@ public class FileOrganizer {
 	}
 
 	// Counts the documents and show the progress in the status bar
-	static private int i;
+	private int i;
 
 	/**
 	 * Replace all characters, that are not allowed in the path
@@ -82,21 +86,21 @@ public class FileOrganizer {
 	 *            The String with special characters
 	 * @return The clean string
 	 */
-	private static String replaceIllegalCharacters(String s) {
+	private String replaceIllegalCharacters(String s) {
 		if(StringUtils.isNotBlank(s)) {
-			s = s.replaceAll(" ", "_");
-			s = s.replaceAll("\\\\", "_");
-			s = s.replaceAll("\"", "_");
-			s = s.replaceAll("/", "_");
-			s = s.replaceAll("\\:", "_");
-			s = s.replaceAll("\\*", "_");
-			s = s.replaceAll("\\?", "_");
-			s = s.replaceAll("\\>", "_");
-			s = s.replaceAll("\\<", "_");
-			s = s.replaceAll("\\|", "_");
-			s = s.replaceAll("\\&", "_");
-			s = s.replaceAll("\\n", "_");
-			s = s.replaceAll("\\t", "_");
+			s = s.replaceAll(" ", "_")
+			     .replaceAll("\\\\", "_")
+			     .replaceAll("\"", "_")
+			     .replaceAll("/", "_")
+			     .replaceAll("\\:", "_")
+			     .replaceAll("\\*", "_")
+			     .replaceAll("\\?", "_")
+			     .replaceAll("\\>", "_")
+			     .replaceAll("\\<", "_")
+			     .replaceAll("\\|", "_")
+			     .replaceAll("\\&", "_")
+			     .replaceAll("\\n", "_")
+			     .replaceAll("\\t", "_");
 		}
 		return s;
 	}
@@ -206,7 +210,6 @@ public class FileOrganizer {
 		}
 
 		return savePath;
-
 	}
 
 	/**
@@ -220,7 +223,9 @@ public class FileOrganizer {
 		if(OSDependent.isWin()) {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
-			
+			// detect if the beginning of the given path is an existing one
+			Path tmpPath = Paths.get(StringUtils.substringBefore(fileNamePlaceholder, "/"));
+			retval = Files.exists(tmpPath);
 		}
 		return retval;
 	}
@@ -289,7 +294,6 @@ public class FileOrganizer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -305,18 +309,16 @@ public class FileOrganizer {
 	 * @return True, if it was successful
 	 */
 	private boolean reorganizeDocument(String workspacePath, Document document, TargetFormat targetFormat, boolean copyFile) {
-		String oldDocumentPath;
-
 		boolean changed = false;
+		String oldDocumentPath = targetFormat == TargetFormat.PDF ? document.getPdfPath() : document.getOdtPath();
+
 		// ODT or PDF string
 		// Get the old path from the document
-		oldDocumentPath = targetFormat == TargetFormat.PDF ? document.getPdfPath() : document.getOdtPath();
-
 		if (oldDocumentPath.isEmpty())
 			return false;
 
 		// Update the document entry "odtpath"
-		Set<PathOption> pathOptions = Stream.of(PathOption.WITH_FILENAME, PathOption.WITH_EXTENSION).collect(Collectors.toSet());
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 		Path newFile = getDocumentPath(pathOptions, targetFormat, document);
 		
 		// Move it if it exists
@@ -335,7 +337,6 @@ public class FileOrganizer {
 		}
 
 		return changed;
-
 	}
 
 	/**
@@ -388,5 +389,4 @@ public class FileOrganizer {
 			}
 		}
 	}
-
 }

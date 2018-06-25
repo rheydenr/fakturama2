@@ -1250,7 +1250,7 @@ public class OfficeDocument {
 	*	generate one by the data, but open the existing one.
 	*/
 	public boolean testOpenAsExisting(Document document, Path template) {
-		Set<PathOption> pathOptions = Stream.of(PathOption.WITH_FILENAME, PathOption.WITH_EXTENSION).collect(Collectors.toSet());
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
