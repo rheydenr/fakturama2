@@ -2,6 +2,7 @@
 package com.sebulli.fakturama.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 
 import javax.inject.Inject;
 
@@ -68,7 +69,7 @@ public class UpdateHandler {
 		// update all user-visible installable units
 		UpdateOperation operation = new UpdateOperation(session);
 
-		SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
+		SubMonitor sub = SubMonitor.convert(monitor, msg.commandAppUpdateChecking, 200);
 
 		IStatus status = operation.resolveModal(sub.newChild(100));
 		if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
@@ -114,7 +115,7 @@ public class UpdateHandler {
 		} else {
 			if (operation.hasResolved()) {
 				showDialog(sync, MessageDialog.ERROR, msg.dialogMessageboxTitleError,
-						"Couldn't get provisioning job: " + operation.getResolutionResult());
+						MessageFormat.format(msg.commandAppUpdateErrorProvisioningjob, operation.getResolutionResult()));
 			} else {
 				showDialog(sync, MessageDialog.ERROR, msg.dialogMessageboxTitleError,
 						msg.commandAppUpdateErrorProvisioningjobresolve);

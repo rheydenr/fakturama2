@@ -46,6 +46,7 @@ public class Messages {
 	public String commandAppUpdateNewQuestion;
 	public String commandAppUpdateErrorProvisioningjobresolve;
 	public String commandAppUpdateErrorProvisioningjob;
+	public String commandAppUpdateChecking;
 	public String commandBrowserCommand;
 	public String commandBrowserName;
 	public String commandBrowserOpenStartpage;
