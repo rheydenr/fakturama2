@@ -152,8 +152,7 @@ public class FileOrganizer {
 
 		// T: Subdirectory of the OpenOffice documents
 		String savePath = msg.pathsDocumentsName + "/";
-		String fileNamePlaceholder;
-		fileNamePlaceholder = preferences.getString("OPENOFFICE_" + targetFormat.getPrefId() + "_PATH_FORMAT");
+		String fileNamePlaceholder = preferences.getString("OPENOFFICE_" + targetFormat.getPrefId() + "_PATH_FORMAT");
 
 		// Replace all backslashes
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
