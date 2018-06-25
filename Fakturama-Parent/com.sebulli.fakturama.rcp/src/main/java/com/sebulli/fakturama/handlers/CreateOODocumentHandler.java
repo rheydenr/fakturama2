@@ -91,9 +91,6 @@ public class CreateOODocumentHandler {
     @Inject
     private ILogger log;
 
-    //T: Text of the action
-    public final static String ACTIONTEXT = "Print as OO document";
-
     /**
      * Parameter identifier for the document
      */
@@ -108,31 +105,6 @@ public class CreateOODocumentHandler {
 	 * Parameter identifier for the template path.
 	 */
 	public static final String PARAM_TEMPLATEPATH = "org.fakturama.command.printoo.templatepath";
-
-    //	/**
-    //	 * default constructor
-    //	 */
-    //	public CreateOODocumentHandler() {
-    //		this(ACTIONTEXT, 
-    //				//T: Text of the action
-    //			_("Print/Export this document as an OpenOffice Writer document"));
-    //	}
-    //
-    //	/**
-    //	 * constructor
-    //	 * 
-    //	 * @param text
-    //	 *            Action text
-    //	 * @param toolTipText
-    //	 *            Tool tip text
-    //	 */
-    //	public CreateOODocumentHandler(String text, String toolTipText) {
-    //		super(text);
-    //		setToolTipText(toolTipText);
-    //		setId(CommandIds.CMD_CREATE_OODOCUMENT);
-    //		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
-    //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
-    //	}
     
     @CanExecute
     public boolean canExecute(EPartService partService, @Optional @Named(PARAM_SILENTMODE) String silentMode) {
@@ -206,8 +178,7 @@ public class CreateOODocumentHandler {
 		}
     	MPart activePart = partService.getActivePart();
 		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
-			// Search in the folder "Templates" and also in the folder with the
-			// localized name
+			// Search in the folder "Templates" and also in the folder with the localized name
 			DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
 			
 			if(documentEditor != null) {
@@ -260,7 +231,7 @@ public class CreateOODocumentHandler {
 							MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
 				}
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Please select a document first! No active part was found.");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooErrorNoactivepart);
 			}
 		}
 	}
@@ -312,6 +283,11 @@ public class CreateOODocumentHandler {
 		default:
 			break;
 		}
+    	
+    	//if no reasonable billing type ist given we can return from this method
+    	if(tmpDocument == null) {
+    		return;
+    	}
     	
 		// create a set of DocumentItems (if the same DocumentItem is used we have to
 		// summarize them)
@@ -384,8 +360,6 @@ public class CreateOODocumentHandler {
 
 		tmpDocItems.put(itemToAdd.getItemNumber().hashCode(), itemToAdd);
 	}
-    
-    
 
 	/**
      * Get the relative path of the template
@@ -430,8 +404,7 @@ public class CreateOODocumentHandler {
 			        if (answer == 0) {
 			            log.debug("open doc");
 			            od.createDocument(false);
-			        }
-			        if (answer == 1) {
+			        } else if (answer == 1) {
 			            log.debug("create doc");
 			            od.createDocument(true);
 			        }
@@ -439,18 +412,18 @@ public class CreateOODocumentHandler {
 			} else {
 			    od.setDocument(document);
 			    od.setTemplate(template);
-			    log.debug("******************* open NEW doc");
+			    log.debug("open NEW doc");
 			    od.createDocument(false);
 			}
 		} catch (FakturamaStoringException e) {
-			log.error(e, "Dokument konnte nicht erstellt werden! Grund: " + e.getDescription());
+			log.error(e, "Document couldn't be created. Reason: " + e.getDescription());
 			if(e.getException() != null && e.getException() instanceof FakturamaStoringException) {
 				log.warn("Caused by: " + ((FakturamaStoringException)e.getException()).getDescription());
 			} else {
 				log.error(e.getException());
 			}
 			if(!silentMode) {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooCantprint);
 			}
 		}
     }

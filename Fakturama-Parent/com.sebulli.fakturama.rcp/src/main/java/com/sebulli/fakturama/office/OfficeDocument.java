@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -434,7 +435,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(fo.getRelativeDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document));
+        	documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document);
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
@@ -1249,10 +1250,8 @@ public class OfficeDocument {
 	*	generate one by the data, but open the existing one.
 	*/
 	public boolean testOpenAsExisting(Document document, Path template) {
-		Path oODocumentFile = fo.getDocumentPath(
-				FileOrganizer.WITH_FILENAME,
-				FileOrganizer.WITH_EXTENSION, 
-				FileOrganizer.ODT, document);
+		Set<PathOption> pathOptions = Stream.of(PathOption.WITH_FILENAME, PathOption.WITH_EXTENSION).collect(Collectors.toSet());
+		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
 				filesAreEqual(document.getPrintTemplate(),template));
@@ -1268,7 +1267,7 @@ public class OfficeDocument {
      * @param folder
      *      The folder name to separate the relative path
      * @return
-     *      True, if both are equal
+     *      <code>true</code>, if both are equal
      */
     private boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
         
@@ -1281,7 +1280,6 @@ public class OfficeDocument {
         pos = fileName2.toString().indexOf(folder);
         if (pos >= 0)
             otherFileName = fileName2.toString().substring(pos);
-
         
         return fileName1.equals(otherFileName);
     }

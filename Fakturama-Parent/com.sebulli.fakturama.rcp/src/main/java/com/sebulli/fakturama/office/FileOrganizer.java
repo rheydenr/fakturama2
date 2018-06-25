@@ -18,20 +18,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -41,6 +43,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -51,6 +54,9 @@ public class FileOrganizer {
 	@Inject
 	private IPreferenceStore preferences;
 
+    @Inject
+    protected IEclipseContext context;
+
 	@Inject
 	@Translation
 	protected Messages msg;
@@ -59,25 +65,12 @@ public class FileOrganizer {
 	private ILogger log;
 
 	@Inject
-	protected DocumentsDAO documentsDAO;
+	private DocumentsDAO documentsDAO;
 	
 	enum PathOption {
 		WITH_FILENAME,
 		WITH_EXTENSION,
 	}
-	
-	@Deprecated
-	final public static boolean WITH_FILENAME = true;
-	@Deprecated
-	final public static boolean NO_FILENAME = false;
-	@Deprecated
-	final public static boolean WITH_EXTENSION = true;
-	@Deprecated
-	final public static boolean NO_EXTENSION = false;
-	@Deprecated
-	final public static boolean PDF = true;
-	@Deprecated
-	final public static boolean ODT = false;
 
 	// Counts the documents and show the progress in the status bar
 	static private int i;
@@ -89,7 +82,7 @@ public class FileOrganizer {
 	 *            The String with special characters
 	 * @return The clean string
 	 */
-	public static String replaceIllegalCharacters(String s) {
+	private static String replaceIllegalCharacters(String s) {
 		if(StringUtils.isNotBlank(s)) {
 			s = s.replaceAll(" ", "_");
 			s = s.replaceAll("\\\\", "_");
@@ -110,45 +103,18 @@ public class FileOrganizer {
 
 	/**
 	 * Generates the document file name from the document and the placeholder
-	 * string in the preference page
-	 * 
-	 * @param pathOptions {@link PathOption}s to use
-	 * 
-	 * @param targetFormat the {@link TargetFormat}
-	 * 
-	 * @param document
-	 *            The document
-	 * @return The filename
-	 * 
-	 * @deprecated use {@link FileOrganizer#getRelativeDocumentPath(PathOption[], TargetFormat, Document)}
-	 */
-	public String getRelativeDocumentPath(boolean inclFilename, boolean inclExtension, boolean isPDF,
-			Document document) {
-		Set<PathOption> pathOptions = new HashSet<>();
-		TargetFormat targetFormat;
-		if(inclFilename) pathOptions.add(PathOption.WITH_FILENAME);
-		if(inclExtension) pathOptions.add(PathOption.WITH_EXTENSION);
-		if(isPDF) targetFormat = TargetFormat.PDF;
-			else targetFormat = TargetFormat.ODT;
-		return getRelativeDocumentPath(pathOptions, targetFormat, document);
-		
-	}
-
-	/**
-	 * Generates the document file name from the document and the placeholder
-	 * string in the preference page
+	 * string in the preference page. Whether the path is absolute or relative depends on
+	 * {@link TargetFormat} or preferences format settings.
 	 * 
 	 * @param pathOptions {@link PathOption}s to use
 	 * @param targetFormat the {@link TargetFormat}
-	 * 
 	 * @param document
 	 *            The document
 	 * @return The filename
 	 */
-	public String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
-		String path = "";
-		String filename = "";
-		ContactUtil contactUtil = new ContactUtil();
+	private String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
+		String path, filename;
+		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
 		// T: Subdirectory of the OpenOffice documents
 		String savePath = msg.pathsDocumentsName + "/";
@@ -157,19 +123,14 @@ public class FileOrganizer {
 		// Replace all backslashes
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
 
-		String address = document.getAddressFirstLine();
-		address = replaceIllegalCharacters(address);
+		String address = replaceIllegalCharacters(document.getAddressFirstLine());
 
 		Contact documentContact = Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact());
-		String name = StringUtils.defaultString(documentContact.getName());
-		name = replaceIllegalCharacters(name);
-		
-		String companyOrName = contactUtil.getCompanyOrLastname(documentContact);
-		companyOrName = replaceIllegalCharacters(companyOrName);
+		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
+		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
 
 		// Replace the placeholders
-		String customerRef = document.getCustomerRef();
-		customerRef = replaceIllegalCharacters(customerRef);
+		String customerRef = replaceIllegalCharacters(document.getCustomerRef());
 		
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName())
 				.replaceAll("\\{docref\\}", StringUtils.defaultString(customerRef))
@@ -191,9 +152,8 @@ public class FileOrganizer {
 			String replacementString = "";
 			String replaceNumberString = "%d"; // default
 			if (m.groupCount() > 0) { // has some digits before <nr>?
-				String numberString = m.group(1); // get the length for the
-													// resulting number
-				if (numberString.matches("\\d+")) { // is this really a number?
+				String numberString = m.group(1); // get the length for the resulting number
+				if (StringUtils.isNumeric(numberString)) { // is this really a number?
 					// build a format replacement string
 					replaceNumberString = "%0" + numberString + "d";
 				}
@@ -201,18 +161,15 @@ public class FileOrganizer {
 			// find the current docNumber
 			Pattern docNumberPattern = Pattern.compile("\\w+(\\d+)");
 			Matcher docNumberMatcher = docNumberPattern.matcher(document.getName());
-			if (docNumberMatcher.find()) {
-				if (docNumberMatcher.groupCount() > 0) {
-					String docNumberString = docNumberMatcher.group(1);
-					Integer docNumber = Integer.valueOf(docNumberString);
-					replacementString = String.format(replaceNumberString, docNumber);
-				}
+			if (docNumberMatcher.find() && docNumberMatcher.groupCount() > 0) {
+				String docNumberString = docNumberMatcher.group(1);
+				Integer docNumber = Integer.valueOf(docNumberString);
+				replacementString = String.format(replaceNumberString, docNumber);
 			}
 			fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{\\d*nr\\}", replacementString);
 		}
 
-		Instant calendar = document.getDocumentDate().toInstant();
-		LocalDateTime docDateTime = LocalDateTime.ofInstant(calendar, ZoneId.systemDefault());
+		LocalDateTime docDateTime = LocalDateTime.ofInstant(document.getDocumentDate().toInstant(), ZoneId.systemDefault());
 
 		int yyyy = docDateTime.getYear();
 		// Replace the date information
@@ -232,11 +189,11 @@ public class FileOrganizer {
 			filename = fileNamePlaceholder.substring(pos + 1);
 		}
 
-		if(!targetFormat.isAbsolutePath()) {
+		if(targetFormat.isAbsolutePath() || isAbsolutePath(fileNamePlaceholder)) {
+			savePath = path + "/"; 
+		} else {
 			// if target path is relative we have to put the documents below Fakturama working dir
 			savePath += path + "/";
-		} else {
-			savePath = path + "/"; 
 		}
 
 		// Use the document name as filename
@@ -253,6 +210,22 @@ public class FileOrganizer {
 	}
 
 	/**
+	 * Checks if the given String is an absolute filename
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	private boolean isAbsolutePath(String fileNamePlaceholder) {
+		boolean retval = false;
+		if(OSDependent.isWin()) {
+			retval = fileNamePlaceholder.matches("^\\w:.*");
+		} else {
+			
+		}
+		return retval;
+	}
+
+	/**
 	 * Returns the filename (with path) of the Office document including the
 	 * workspace path
 	 * 
@@ -262,33 +235,13 @@ public class FileOrganizer {
 	 */
 	public Path getDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
 		String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		return Paths.get(workspace, getRelativeDocumentPath(pathOptions, targetFormat, document));
+		String documentPath = getRelativeDocumentPath(pathOptions, targetFormat, document);
+		if(isAbsolutePath(documentPath)) {
+			return Paths.get(documentPath);
+		} else {
+			return Paths.get(workspace, documentPath);
+		}
 	}
-	
-	/**
-	 * Returns the filename (with path) of the Office document including the
-	 * workspace path
-	 * 
-	 * @param inclFilename
-	 *            <code>true</code> if the filename should also be returned
-	 * @param inclExtension
-	 *            <code>true</code> if the extension should also be returned
-	 * @param isPDF
-	 *            <code>true</code> if it is a PDF File
-	 * @return the filename
-	 * @Deprecated use {@link FileOrganizer#getDocumentPath(Set, TargetFormat, Document)}
-	 */
-	public Path getDocumentPath(boolean inclFilename, boolean inclExtension, boolean isPDF, Document document) {
-		String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		Set<PathOption> pathOptions = new HashSet<>();
-		TargetFormat targetFormat;
-		if(inclFilename) pathOptions.add(PathOption.WITH_FILENAME);
-		if(inclExtension) pathOptions.add(PathOption.WITH_EXTENSION);
-		if(isPDF) targetFormat = TargetFormat.PDF;
-			else targetFormat = TargetFormat.ODT;
-		return Paths.get(workspace, getRelativeDocumentPath(pathOptions, targetFormat, document));
-	}
-	
 
 	/**
 	 * Move a file and create the directories, if they do not exist
@@ -351,27 +304,27 @@ public class FileOrganizer {
 	 * @param copyFile copy files instead of moving them
 	 * @return True, if it was successful
 	 */
-	private boolean reorganizeDocument(String workspacePath, Document document, boolean isPDF, boolean copyFile) {
+	private boolean reorganizeDocument(String workspacePath, Document document, TargetFormat targetFormat, boolean copyFile) {
 		String oldDocumentPath;
 
 		boolean changed = false;
 		// ODT or PDF string
 		// Get the old path from the document
-		oldDocumentPath = isPDF ? document.getPdfPath() : document.getOdtPath();
+		oldDocumentPath = targetFormat == TargetFormat.PDF ? document.getPdfPath() : document.getOdtPath();
 
 		if (oldDocumentPath.isEmpty())
 			return false;
 
 		// Update the document entry "odtpath"
-		String filename = getRelativeDocumentPath(WITH_FILENAME, WITH_EXTENSION, isPDF, document);
-		Path newFile = Paths.get(workspacePath, filename);
+		Set<PathOption> pathOptions = Stream.of(PathOption.WITH_FILENAME, PathOption.WITH_EXTENSION).collect(Collectors.toSet());
+		Path newFile = getDocumentPath(pathOptions, targetFormat, document);
 		
 		// Move it if it exists
 		Path oldFile = Paths.get(oldDocumentPath);
 
 		if (Files.exists(oldFile) && !oldFile.toAbsolutePath().equals(newFile.toAbsolutePath())) {
-			fileMove(oldDocumentPath, workspacePath + filename, copyFile);
-			if (isPDF) {
+			fileMove(oldDocumentPath, workspacePath + newFile.getFileName().toString(), copyFile);
+			if (targetFormat == TargetFormat.PDF) {
 				document.setPdfPath(newFile.toAbsolutePath().toString());
 			} else {
 				document.setOdtPath(newFile.toAbsolutePath().toString());
@@ -406,12 +359,12 @@ public class FileOrganizer {
 			boolean changed = false;
 
 			// Rename and move the ODT file.
-			if (reorganizeDocument(workspacePath, document, ODT, copyFile)) {
+			if (reorganizeDocument(workspacePath, document, TargetFormat.ODT, copyFile)) {
 				changed = true;
 			}
 
 			// Rename and move the PDF file
-			if (reorganizeDocument(workspacePath, document, PDF, copyFile)) {
+			if (reorganizeDocument(workspacePath, document, TargetFormat.PDF, copyFile)) {
 				changed = true;
 			}
 

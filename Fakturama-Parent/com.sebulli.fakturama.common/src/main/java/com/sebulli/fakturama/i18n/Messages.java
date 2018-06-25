@@ -215,6 +215,7 @@ public class Messages {
 	public String dialogPrintooNotemplate;
 	public String dialogPrintooSuccessful;
 	public String dialogPrintooCantprint;
+	public String dialogPrintooErrorNoactivepart;
 	public String dialogProductPicturePreview;
 	public String dialogSelectaddressTitle;
 	public String dialogSelectaddressTooltip;
