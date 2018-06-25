@@ -35,8 +35,17 @@ import org.eclipse.e4.core.services.nls.Message;
 
 @Message(contributionURI = "platform:/plugin/com.sebulli.fakturama.rcp")
 public class Messages {
+
 	public String aboutText;
 	public String applicationName;
+	public String commandAppUpdateNoupdates;
+	public String commandAppUpdateNewTitle;
+	public String commandAppNewfeature;
+	public String commandAppUpdateRestartQuestion;
+	public String commandAppUpdateRestartTitle;
+	public String commandAppUpdateNewQuestion;
+	public String commandAppUpdateErrorProvisioningjobresolve;
+	public String commandAppUpdateErrorProvisioningjob;
 	public String commandBrowserCommand;
 	public String commandBrowserName;
 	public String commandBrowserOpenStartpage;
@@ -81,8 +90,8 @@ public class Messages {
 	public String commandOpenContactTooltip;
 	public String commandOpenParcelName;
 	public String commandOpenWwwName;
-	public String commandParcelserviceTooltip;
 	public String commandParcelserviceName;
+	public String commandParcelserviceTooltip;
 	public String commandPaymentsName;
 	public String commandPaymentsTooltip;
 	public String commandProductsName;
@@ -107,8 +116,8 @@ public class Messages {
 	public String commonButtonSetdefault;
 	public String commonErrorClosefile;
 	public String commonFieldAccount;
-	public String commonFieldAccountholder;
 	public String commonFieldAccountTooltip;
+	public String commonFieldAccountholder;
 	public String commonFieldBalance;
 	public String commonFieldCategory;
 	public String commonFieldCity;
@@ -131,8 +140,8 @@ public class Messages {
 	public String commonFieldPrice;
 	public String commonFieldPrinted;
 	public String commonFieldQuantity;
-	public String commonFieldQuantityTooltip;
 	public String commonFieldQuantityShort;
+	public String commonFieldQuantityTooltip;
 	public String commonFieldSalutation;
 	public String commonFieldState;
 	public String commonFieldStreet;
@@ -144,7 +153,7 @@ public class Messages {
 	public String commonFieldVat;
 	public String commonFieldZipcode;
 	public String commonLabelDefault;
-	public String commonLabelSearchfield;
+	public String commonLabelSearchfield;	
 	public String configWorkspaceTemplatesName;
 	public String contactCreditorFieldName;
 	public String contactDebtorFieldName;
@@ -156,11 +165,11 @@ public class Messages {
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
-	public String editorContactFieldSalesequalizationtaxName;
-	public String editorContactFieldEmailValidationerror;
-	public String editorContactFieldWebsiteCantopen;
+
 	public String editorContactFieldEmailCantlaunch;
-	
+	public String editorContactFieldEmailValidationerror;
+	public String editorContactFieldSalesequalizationtaxName;
+	public String editorContactFieldWebsiteCantopen;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
 	public String editorDocumentDialogNodefaultvalue;
@@ -182,10 +191,11 @@ public class Messages {
 	public String dataListAccountnumbers;
 	public String dataListSalutations;
 	public String dataReceiptvoucherItems;
-	public String dataVatPurchasetax;
-	public String dataVatSalestax;
 	public String dataTaxSalesequalizationtax;
 	public String dataTaxSalesequalizationtaxShort;
+	public String dataVatPurchasetax;
+	public String dataVatSalestax;
+	
 	public String dialogAboutTitle;
 	public String dialogCustomerStatisticsPart1;
 	public String dialogDeletedatasetMessage;
@@ -211,6 +221,7 @@ public class Messages {
 	public String dialogSelectproductTitle;
 	public String dialogSelectproductTooltip;
 	public String dialogSelecttextTitle;
+	
 	public String documentDeliveryStateHasinvoice;
 	public String documentDeliveryStateHasnoinvoice;
 	public String documentDunningStatemarkerName;
