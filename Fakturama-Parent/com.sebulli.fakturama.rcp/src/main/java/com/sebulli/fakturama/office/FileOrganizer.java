@@ -222,7 +222,7 @@ public class FileOrganizer {
 		} else {
 			// detect if the beginning of the given path is an existing one
 			Path tmpPath = Paths.get(StringUtils.substringBefore(fileNamePlaceholder, "/"));
-			retval = Files.exists(tmpPath);
+			retval = !tmpPath.toString().isEmpty() && Files.exists(tmpPath);
 		}
 		return retval;
 	}
