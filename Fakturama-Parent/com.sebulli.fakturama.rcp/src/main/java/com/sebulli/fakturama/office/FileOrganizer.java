@@ -76,11 +76,8 @@ public class FileOrganizer {
 		WITH_EXTENSION,
 	}
 
-	// Counts the documents and show the progress in the status bar
-	private int i;
-
 	/**
-	 * Replace all characters, that are not allowed in the path
+	 * Replace all characters that are not allowed in the path
 	 * 
 	 * @param s
 	 *            The String with special characters
@@ -325,7 +322,7 @@ public class FileOrganizer {
 		Path oldFile = Paths.get(oldDocumentPath);
 
 		if (Files.exists(oldFile) && !oldFile.toAbsolutePath().equals(newFile.toAbsolutePath())) {
-			fileMove(oldDocumentPath, workspacePath + newFile.getFileName().toString(), copyFile);
+			fileMove(oldDocumentPath, newFile.toString(), copyFile);
 			if (targetFormat == TargetFormat.PDF) {
 				document.setPdfPath(newFile.toAbsolutePath().toString());
 			} else {
@@ -333,7 +330,7 @@ public class FileOrganizer {
 			}
 			changed = true;
 		} else {
-			log.warn(String.format("File '%s' couldn't be found or exists in target path. Source document is '%s'.", oldFile, document.getName()));
+			log.warn(String.format("File '%s' couldn't be found or exists in target path. Source document number is '%s'.", oldFile, document.getName()));
 		}
 
 		return changed;
@@ -348,12 +345,14 @@ public class FileOrganizer {
 	 */
 	public void reorganizeDocuments(final IProgressMonitor monitor, boolean copyFile) {
 
+		// Counts the documents and show the progress in the status bar
+		int i = 0;
+
 		// Get all documents
 		List<Document> documents = documentsDAO.findAllPrintedDocuments();
 		// Get the workspace path
 		String workspacePath = preferences.getString(Constants.GENERAL_WORKSPACE);
 
-		i = 0;
 		// Get all documents
 		for (Document document : documents) {
 
@@ -372,19 +371,17 @@ public class FileOrganizer {
 			// Update the document in the database
 			if (changed) {
 				try {
-					documentsDAO.update(document);
+					documentsDAO.save(document);
                 } catch (FakturamaStoringException e) {
                     log.error(e);
                 }
 			}
-
-			// Count the documents
-			i++;
 			
 			// Show the progress in the status bar
 			if (monitor != null) {
-				// T: Message in the status bar
-				monitor.setTaskName(String.format("%s... %4d", msg.commandReorganizeDocumentsUpdateMessage, i));
+	
+				// Count the documents
+				monitor.setTaskName(String.format("%s... %4d", msg.commandReorganizeDocumentsUpdateMessage, i++));
 				monitor.worked(1);
 			}
 		}

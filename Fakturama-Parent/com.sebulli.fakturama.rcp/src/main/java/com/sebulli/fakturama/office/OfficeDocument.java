@@ -184,9 +184,7 @@ public class OfficeDocument {
 			// generate one by the data, but open the existing one.
 			if (testOpenAsExisting(document, template) && !forceRecreation) {
 				openExisting = true;
-	    		Set<PathOption> pathOptions = new HashSet<>();
-	            pathOptions.add(PathOption.WITH_FILENAME);
-	            pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				template = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 			}
 
@@ -377,9 +375,7 @@ public class OfficeDocument {
      */
 	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
 		generatedPdf = null;
-		Set<PathOption> pathOptions = new HashSet<>();
-		pathOptions.add(PathOption.WITH_FILENAME);
-		pathOptions.add(PathOption.WITH_EXTENSION);
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator(msg.applicationName);
@@ -463,7 +459,7 @@ public class OfficeDocument {
                 document.setPdfPath(generatedPdf.toString());
             }
 
-        	document = documentsDAO.update(document);                
+        	document = documentsDAO.save(document);                
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
@@ -475,7 +471,7 @@ public class OfficeDocument {
 	private void cleanup() throws IOException {
 		// remove temp images
 		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
-				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
+				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"/tmpImage*");
 		
 		Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
 			
@@ -530,9 +526,7 @@ public class OfficeDocument {
 
 				// now, if the file name templates are different, we have to
 				// rename the pdf
-				Set<PathOption> pathOptions = new HashSet<>();
-				pathOptions.add(PathOption.WITH_FILENAME);
-				pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 
 				// FIXME How to create a PDF/A1 document?
