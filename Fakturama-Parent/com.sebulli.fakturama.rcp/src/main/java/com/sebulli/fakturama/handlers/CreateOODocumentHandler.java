@@ -183,9 +183,14 @@ public class CreateOODocumentHandler {
 			
 			if(documentEditor != null) {
 				List<Path> templates = collectTemplates(documentEditor.getDocumentType());
-				
-				Document tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
 				final List<DocumentItem> olditemsList = new ArrayList<>();
+				
+				// new documents need to be saved first, we don't have an id yet
+				Document tmpDoc = null;
+				if(documentEditor.getDocument().getId() > 0) {
+					tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
+				}
+				
 				if(tmpDoc != null) {
 					 olditemsList.addAll(tmpDoc.getItems());
 				}
