@@ -74,7 +74,6 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -349,76 +348,6 @@ public class ProductEditor extends Editor<Product> {
 		  
         createPartControl(parent);
 	}
-
-//	/**
-//	 * Set the variable picturePath to the path of the product picture, which is
-//	 * a combination of the selected workspace, the /pics/products/ folder and
-//	 * the product name.
-//	 * 
-//	 * Also update the text widget textProductPicturePath which is displayed
-//	 * under the product picture.
-//	 */
-//	private void createPicturePathFromPictureName() {
-//
-//		// Get the workspace
-//		filename1 = defaultValuePrefs.getString(Constants.GENERAL_WORKSPACE);
-//
-//		// add the picture sub folder
-//		filename2 = Constants.PRODUCT_PICTURE_FOLDER;
-//
-//		// Set the variables
-//		picturePath = filename1 + filename2;
-//		filename2 += pictureName;
-//
-//		// Display the text under the product picture
-//		if (textProductPicturePath != null) {
-//			textProductPicturePath.setText(filename2);
-//		}
-//	}
-//
-//	/**
-//	 * Create the picture name based on the product's item number
-//	 */
-//	private void createPictureName() {
-//
-//		pictureName = createPictureName(textName.getText(), textItemNr.getText());
-//
-//		// Add the full path.
-//		createPicturePathFromPictureName();
-//	}
-//
-//	/**
-//	 * Create the picture name based on the product's item number. Remove illegal
-//	 * characters and add a ".jpg"
-//	 * 
-//	 * @param name
-//	 *            The name of the product
-//	 * @param itemNr
-//	 *            The item number of the product
-//	 * @return Picture name as String
-//	 */
-//	public String createPictureName(String name, String itemNr) {
-//
-//		String pictureName;
-//
-//		// Get the product's item number
-//		pictureName = itemNr;
-//
-//		// If the product name is different to the item number,
-//		// add also the product name to the pictures name
-//		if (!name.equals(itemNr))
-//			pictureName += "_" + name;
-//
-//		// Remove all illegal characters that are not allowed as file name.
-//		final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':', ' ', '.' };
-//		for (char c : ILLEGAL_CHARACTERS)
-//			pictureName = pictureName.replace(c, '_');
-//
-//		// Add the .*jpg
-//		pictureName += ".jpg";
-//
-//		return pictureName;
-//	}
 
 	/**
 	 * Reload the product picture
