@@ -2099,7 +2099,9 @@
 		<sect3>
 			<title>Zusätzliche Kontaktdaten</title>
 			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
-			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man bei gedrückter STRG-Taste und Mausklick auf das Feld die Seite direkt im Browser aufrufen.</para>
+			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man bei gedrückter STRG-Taste 
+			und Mausklick auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
+			neues E-Mail-Fenster geöffnet.</para>
 		</sect3>
 		<sect3>
 			<title>Zahlungsart</title>

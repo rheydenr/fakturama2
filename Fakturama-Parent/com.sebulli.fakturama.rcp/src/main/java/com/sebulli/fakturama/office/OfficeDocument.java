@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -183,9 +184,7 @@ public class OfficeDocument {
 			// generate one by the data, but open the existing one.
 			if (testOpenAsExisting(document, template) && !forceRecreation) {
 				openExisting = true;
-	    		Set<PathOption> pathOptions = new HashSet<>();
-	            pathOptions.add(PathOption.WITH_FILENAME);
-	            pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				template = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 			}
 
@@ -376,9 +375,7 @@ public class OfficeDocument {
      */
 	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
 		generatedPdf = null;
-		Set<PathOption> pathOptions = new HashSet<>();
-		pathOptions.add(PathOption.WITH_FILENAME);
-		pathOptions.add(PathOption.WITH_EXTENSION);
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator(msg.applicationName);
@@ -434,7 +431,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(fo.getRelativeDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document));
+        	documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document);
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
@@ -462,7 +459,7 @@ public class OfficeDocument {
                 document.setPdfPath(generatedPdf.toString());
             }
 
-        	document = documentsDAO.update(document);                
+        	document = documentsDAO.save(document);                
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
@@ -474,7 +471,7 @@ public class OfficeDocument {
 	private void cleanup() throws IOException {
 		// remove temp images
 		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
-				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
+				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"/tmpImage*");
 		
 		Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
 			
@@ -529,9 +526,7 @@ public class OfficeDocument {
 
 				// now, if the file name templates are different, we have to
 				// rename the pdf
-				Set<PathOption> pathOptions = new HashSet<>();
-				pathOptions.add(PathOption.WITH_FILENAME);
-				pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 
 				// FIXME How to create a PDF/A1 document?
@@ -1249,10 +1244,8 @@ public class OfficeDocument {
 	*	generate one by the data, but open the existing one.
 	*/
 	public boolean testOpenAsExisting(Document document, Path template) {
-		Path oODocumentFile = fo.getDocumentPath(
-				FileOrganizer.WITH_FILENAME,
-				FileOrganizer.WITH_EXTENSION, 
-				FileOrganizer.ODT, document);
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
+		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
 				filesAreEqual(document.getPrintTemplate(),template));
@@ -1268,7 +1261,7 @@ public class OfficeDocument {
      * @param folder
      *      The folder name to separate the relative path
      * @return
-     *      True, if both are equal
+     *      <code>true</code>, if both are equal
      */
     private boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
         
@@ -1281,7 +1274,6 @@ public class OfficeDocument {
         pos = fileName2.toString().indexOf(folder);
         if (pos >= 0)
             otherFileName = fileName2.toString().substring(pos);
-
         
         return fileName1.equals(otherFileName);
     }

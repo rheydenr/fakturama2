@@ -11,6 +11,7 @@
  * Contributors:
  *     Fakturama Team - initial API and implementation
  */
+
 package com.sebulli.fakturama.handlers;
 
 import java.text.MessageFormat;

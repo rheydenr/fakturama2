@@ -236,7 +236,7 @@
     <menus xsi:type="menu:PopupMenu" xmi:id="_jggrEOYREeSmXZiiofyvSg" elementId="com.sebulli.fakturama.documentitemlist.popup">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_WyqJIOhmEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.documentitemlist.move.up" label="%command.documents.move.up.name" iconURI="icon://COMMAND_UP" mnemonics="ALT+UP" command="_58wvUOOYEeSCoO-pHSKlQQ"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_XlcO0IZEEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.documentitemlist.move.down" label="%command.documents.move.down.name" iconURI="icon://COMMAND_DOWN" mnemonics="ALT+DOWN" command="_y4hyMOhnEeSelNaW6sEw-A"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_5-b7sIWpEeWfCoLoCa3btA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_5-b7sIWpEeWfCoLoCa3btA" elementId="com.sebulli.fakturama.document.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" mnemonics="CTRL + D" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
     </menus>
   </descriptors>
   <snippets xsi:type="advanced:Perspective" xmi:id="_RmPTpOtOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.perspective" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" label="Fakturama Perspective">
@@ -562,7 +562,7 @@
   </commands>
   <commands xmi:id="_FYZ6QCY-EeSOztFzZzvbWw" elementId="command.new.vat" commandName="%main.menu.new.vat" description="%main.menu.new.vat.tooltip" category="_ck9sUCTREeS9z6SQNducwg"/>
   <commands xmi:id="_QWE00ENJEeOd4ZSH8zQNZQ" elementId="com.sebulli.fakturama.command.webShopImport" commandName="%command.webshop.name" description="%command.webshop.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
-    <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId="java.lang.Boolean" />
+    <parameters xmi:id="_pRDTILSJEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders" name="prepareGetProductsAndOrders" typeId="java.lang.Boolean"/>
     <parameters xmi:id="_yezBsGllEeiWHetSrMwJHQ" elementId="org.fakturama.webshop.connector.action" name="action" optional="false"/>
   </commands>
   <commands xmi:id="_eJYjgEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile" commandName="%main.menu.file.print" description="%main.menu.file.print.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">

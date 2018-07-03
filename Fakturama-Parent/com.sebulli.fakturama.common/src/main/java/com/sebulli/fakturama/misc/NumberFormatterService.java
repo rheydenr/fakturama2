@@ -292,7 +292,7 @@ public class NumberFormatterService implements INumberFormatterService {
 
     @Override
 	public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
-        return Monetary.getCurrency(getLocaleUtil().getCurrencyLocale());
+        return Monetary.getCurrency(currencyLocale);
     }
 
     /**

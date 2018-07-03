@@ -13,6 +13,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -72,6 +73,9 @@ public class CoolbarViewPart {
 	protected Messages msg;
 
     private Composite top;
+	
+	@Inject
+    private IEclipseContext ctx;
     
     private Set<ToolBar> coolBarsByKey = new HashSet<>();
 
@@ -93,6 +97,7 @@ public class CoolbarViewPart {
 	@PostConstruct
 	public void createControls(Composite parent) {
 	    this.top = parent;
+	    
 	    // now lets create our CoolBar
 		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
 		top.setLayout(layout);
@@ -102,7 +107,6 @@ public class CoolbarViewPart {
 			// this is only the case if we start it for the very first time
 			// and nothing is initialized
 			return;
-//			preferences = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
 		}
 
 		coolbarmgr = new CoolBarManager(SWT.NONE);
@@ -346,6 +350,17 @@ public class CoolbarViewPart {
 		}
 		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				if (handlerService.canExecute(pCmd)) {
+				/*
+				 * Dirty hack. The HandlerService first determines the active leaf in the
+				 * current context before it is executing the command. The current active leaf
+				 * in the context is the document editor. But in its context there's a setting
+				 * for the "category" parameter. But this parameter is not reasonable e.g. for
+				 * new product editors. Therefore we have to remove it from context. The
+				 * alternative would be to set another active leaf, but I didn't get it.
+				 */
+					if(ctx != null && ctx.getActiveLeaf() != null) {
+						ctx.getActiveLeaf().remove(CallEditor.PARAM_CATEGORY);
+					}
 					handlerService.executeHandler(pCmd);
 				} else {
 					MessageDialog.openInformation(toolBar.getShell(),

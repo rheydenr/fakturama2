@@ -14,9 +14,11 @@
 
 package com.sebulli.fakturama.parts;
 
+import java.awt.MouseInfo;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -37,9 +39,14 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.converter.CommonConverter;
@@ -217,7 +224,7 @@ public class PaymentEditor extends Editor<Payment> {
 
 		// Create the top Composite
 		top = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(top);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(top);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.PAYMENT_EDITOR);
@@ -226,7 +233,7 @@ public class PaymentEditor extends Editor<Payment> {
 		Label labelTitle = new Label(top, SWT.NONE);
 		//T: Payment Editor: Title
 		labelTitle.setText(msg.editorContactFieldPaymentName);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(4, 1).applyTo(labelTitle);
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(3, 1).applyTo(labelTitle);
 		makeLargeLabel(labelTitle);
 
 		// Payment name
@@ -239,7 +246,7 @@ public class PaymentEditor extends Editor<Payment> {
 		textName = new Text(top, SWT.BORDER);
 //		textName.setText(StringUtils.defaultString(payment.getName()));
 		textName.setToolTipText(labelName.getToolTipText());
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textName);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(textName);
 
 		// Payment category
 		Label labelCategory = new Label(top, SWT.NONE);
@@ -251,7 +258,7 @@ public class PaymentEditor extends Editor<Payment> {
 		
         // Collect all category strings
         comboCategory = new Combo(top, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(comboCategory);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCategory);
 
 		// Payment description
 		Label labelDescription = new Label(top, SWT.NONE);
@@ -262,7 +269,7 @@ public class PaymentEditor extends Editor<Payment> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
 		textDescription = new Text(top, SWT.BORDER);
 		textDescription.setToolTipText(labelDescription.getToolTipText());
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDescription);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(textDescription);
 
 		// Payment discount value
 		Label labelDiscountValue = new Label(top, SWT.NONE);
@@ -274,7 +281,7 @@ public class PaymentEditor extends Editor<Payment> {
 		textDiscountValue = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textDiscountValue.setFormatter(new PercentFormatter());
 		textDiscountValue.getControl().setToolTipText(labelDiscountValue.getToolTipText());
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountValue.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(textDiscountValue.getControl());
 
 		// Payment days to pay the discount
 		Label labelDiscountDays = new Label(top, SWT.NONE);
@@ -287,7 +294,7 @@ public class PaymentEditor extends Editor<Payment> {
 		textDiscountDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textDiscountDays.setFormatter(new IntegerFormatter());
 		textDiscountDays.getControl().setToolTipText(labelDiscountDays.getToolTipText());
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textDiscountDays.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(textDiscountDays.getControl());
 
 		// Payment days to pay the net value
 		Label labelNetDays = new Label(top, SWT.NONE);
@@ -299,7 +306,90 @@ public class PaymentEditor extends Editor<Payment> {
 		textNetDays = new FormattedText(top, SWT.BORDER | SWT.SINGLE);
 		textNetDays.setFormatter(new IntegerFormatter());
 		textNetDays.getControl().setToolTipText(labelNetDays.getToolTipText());
-		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(textNetDays.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(textNetDays.getControl());
+		
+		//T: Label in the payment editor
+		String[] possiblePlaceholders = new String[] {
+				"BANK.ACCOUNT.HOLDER",
+				"BANK.BIC",
+				"BANK.IBAN",
+				"BANK.IBAN.CENSORED",
+				"BANK.NAME",
+				"DEBITOR.BANK.ACCOUNT.HOLDER",
+				"DEBITOR.BANK.BIC",
+				"DEBITOR.BANK.IBAN",
+				"DEBITOR.BANK.IBAN.CENSORED",
+				"DEBITOR.BANK.NAME",
+				"DEBITOR.MANDATREF",
+				"DOCUMENT.TOTAL",
+				"DUE.DATE",
+				"DUE.DAYS",
+				"DUE.DISCOUNT.DATE",
+				"DUE.DISCOUNT.DAYS",
+				"DUE.DISCOUNT.PERCENT",
+				"DUE.DISCOUNT.VALUE",
+				"PAID.DATE",
+				"PAID.VALUE",
+				"YOURCOMPANY.CREDITORID"		
+		};
+
+		// Label for the "unpaid" text message
+		Label labelUnpaid = new Label(top, SWT.NONE);
+		//T: Payment Editor: Label for the text unpaid
+		labelUnpaid.setText(msg.editorPaymentUnpaidName);
+		//T: Tool Tip Text
+		labelUnpaid.setToolTipText(msg.editorPaymentUnpaidTooltip);
+		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(labelUnpaid);
+
+		// Create text field for "unpaid" text message
+		textUnpaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		textUnpaid.setToolTipText(labelUnpaid.getToolTipText());
+		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textUnpaid);
+		
+		Button placeholderUnpaidBtn = new Button(top, SWT.BORDER | SWT.ARROW | SWT.DOWN);
+		placeholderUnpaidBtn.setToolTipText(msg.editorPaymentPlaceholderInfo);
+		placeholderUnpaidBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    Menu popupMenu = new Menu(placeholderUnpaidBtn);
+			    
+			    Arrays.stream(possiblePlaceholders).forEach(entry -> addPlaceholderPopupItem(popupMenu, textUnpaid, entry));
+
+			    java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
+			    popupMenu.setLocation(location.x - 100, location.y);
+			    popupMenu.setVisible(true);
+			}
+		});
+		GridDataFactory.fillDefaults().hint(35, SWT.DEFAULT).align(SWT.BEGINNING, SWT.TOP).applyTo(placeholderUnpaidBtn);
+
+		// Label for the "depositpaid" text message
+		Label labelDepositPaid = new Label(top, SWT.NONE);
+		//T: Payment Editor: Label for the text paid
+		labelDepositPaid.setText(msg.editorPaymentDepositName);
+		//T: Tool Tip Text
+		labelDepositPaid.setToolTipText(msg.editorPaymentDepositTooltip);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDepositPaid);
+
+		// Create text field for the "depositpaid" text message
+		textDepositPaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		textDepositPaid.setToolTipText(labelDepositPaid.getToolTipText());
+		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textDepositPaid);
+		
+		Button placeholderDepositBtn = new Button(top, SWT.BORDER | SWT.ARROW | SWT.DOWN);
+		placeholderDepositBtn.setToolTipText(msg.editorPaymentPlaceholderInfo);
+		placeholderDepositBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    Menu popupMenu = new Menu(placeholderDepositBtn);
+			    
+			    Arrays.stream(possiblePlaceholders).forEach(entry -> addPlaceholderPopupItem(popupMenu, textDepositPaid, entry));
+
+			    java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
+			    popupMenu.setLocation(location.x - 100, location.y);
+			    popupMenu.setVisible(true);
+			}
+		});
+		GridDataFactory.fillDefaults().hint(35, SWT.DEFAULT).align(SWT.BEGINNING, SWT.TOP).applyTo(placeholderDepositBtn);
 
 		// Label for the "paid" text message
 		Label labelPaid = new Label(top, SWT.NONE);
@@ -313,56 +403,22 @@ public class PaymentEditor extends Editor<Payment> {
 		textPaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		textPaid.setToolTipText(labelPaid.getToolTipText());
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textPaid);
-
-		// Label for the "depositpaid" text message
-		Label labelDepositPaid = new Label(top, SWT.NONE);
-		//T: Payment Editor: Label for the text paid
-		labelDepositPaid.setText(msg.editorPaymentDepositName);
-		//T: Tool Tip Text
-		labelDepositPaid.setToolTipText(msg.editorPaymentDepositTooltip);
-			
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDepositPaid);
-
-		// Create text field for the "depositpaid" text message
-		textDepositPaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		textDepositPaid.setToolTipText(labelDepositPaid.getToolTipText());
-		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textDepositPaid);
 		
-		// Label for the "unpaid" text message
-		Label labelUnpaid = new Label(top, SWT.NONE);
-		//T: Payment Editor: Label for the text unpaid
-		labelUnpaid.setText(msg.editorPaymentUnpaidName);
-		//T: Tool Tip Text
-		labelUnpaid.setToolTipText(msg.editorPaymentUnpaidTooltip);
-		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(labelUnpaid);
+		Button placeholderPaidBtn = new Button(top, SWT.BORDER | SWT.ARROW | SWT.DOWN);
+		placeholderPaidBtn.setToolTipText(msg.editorPaymentPlaceholderInfo);
+		placeholderPaidBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    Menu popupMenu = new Menu(placeholderPaidBtn);
+			    
+			    Arrays.stream(possiblePlaceholders).forEach(entry -> addPlaceholderPopupItem(popupMenu, textPaid, entry));
 
-		// Create text field for "unpaid" text message
-		textUnpaid = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		textUnpaid.setToolTipText(labelUnpaid.getToolTipText());
-		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).grab(true, true).applyTo(textUnpaid);
-
-		// Empty label
-		new Label(top, SWT.NONE);
-
-		// Info label with the possible placeholders
-		Label labelPlaceholderInfo1 = new Label(top, SWT.WRAP);
-		//T: Label in the payment editor
-		labelPlaceholderInfo1.setText(msg.editorPaymentPlaceholderInfo + ": <PAID.VALUE>, <PAID.DATE>");
-		makeSmallLabel(labelPlaceholderInfo1);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).applyTo(labelPlaceholderInfo1);
-
-		// Empty label
-		new Label(top, SWT.NONE);
-
-		// Info label with the possible placeholders
-		Label labelPlaceholderInfo2 = new Label(top, SWT.WRAP);
-		//T: Label in the payment editor
-		labelPlaceholderInfo2.setText(msg.editorPaymentPlaceholderInfo + ": <DUE.DAYS>, <DUE.DATE>, <DUE.DISCOUNT.PERCENT>, <DUE.DISCOUNT.DAYS>, <DUE.DISCOUNT.VALUE>, <DUE.DISCOUNT.DATE>,\n" +
-				"<BANK.ACCOUNT.HOLDER>, <BANK.ACCOUNT>, <BANK.ACCOUNT.CENSORED>, <BANK.IBAN>, <BANK.IBAN.CENSORED>, <BANK.BIC>, <BANK.CODE>,\n" +
-				"<BANK.NAME>, <DEBITOR.BANK.ACCOUNT.HOLDER>, <DEBITOR.BANK.IBAN>, <DEBITOR.BANK.IBAN.CENSORED>, <DEBITOR.BANK.BIC>,\n" +
-				"<DEBITOR.BANK.NAME>, <DEBITOR.MANDATREF>, <DOCUMENT.TOTAL>, <YOURCOMPANY.CREDITORID>");
-		makeSmallLabel(labelPlaceholderInfo2);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(3, 1).applyTo(labelPlaceholderInfo2);
+			    java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
+			    popupMenu.setLocation(location.x - 100, location.y);
+			    popupMenu.setVisible(true);
+			}
+		});
+		GridDataFactory.fillDefaults().hint(35, SWT.DEFAULT).align(SWT.BEGINNING, SWT.TOP).applyTo(placeholderPaidBtn);
 
 		// Create the composite to make this payment to the standard payment. 
 		Label labelStd = new Label(top, SWT.NONE);
@@ -382,7 +438,7 @@ public class PaymentEditor extends Editor<Payment> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStd);
 		//T: Payment Editor: Button description to make this as standard payment.
-		stdComposite = new StdComposite(top, payment, stdPayment, msg.editorPaymentDefaultButtonName, 3);
+		stdComposite = new StdComposite(top, payment, stdPayment, msg.editorPaymentDefaultButtonName, 2);
 		
 		//T: Tool Tip Text
 		stdComposite.setToolTipText(msg.editorPaymentDefaultButtonHint);
@@ -404,9 +460,9 @@ public class PaymentEditor extends Editor<Payment> {
         bindModelValue(payment, textDiscountValue, Payment_.discountValue.getName(), 12);
         bindModelValue(payment, textDiscountDays, Payment_.discountDays.getName(), 8);
         bindModelValue(payment, textNetDays, Payment_.netDays.getName(), 8);
-        bindModelValue(payment, textPaid, Payment_.paidText.getName(), 500);
-        bindModelValue(payment, textDepositPaid, Payment_.depositText.getName(), 500);
-        bindModelValue(payment, textUnpaid, Payment_.unpaidText.getName(), 500);
+        bindModelValue(payment, textPaid, Payment_.paidText.getName(), 2000);
+        bindModelValue(payment, textDepositPaid, Payment_.depositText.getName(), 2000);
+        bindModelValue(payment, textUnpaid, Payment_.unpaidText.getName(), 2000);
         
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
@@ -464,5 +520,50 @@ public class PaymentEditor extends Editor<Payment> {
     @Override
     protected Class<Payment> getModelClass() {
         return Payment.class;
+    }
+
+    /**
+     * Adds a new {@link MenuItem} to the popup menu for the placeholder menu.
+     * 
+     * @param popupMenu
+     * @param textPaid
+     * @param placeholderText
+     */
+	private void addPlaceholderPopupItem(Menu popupMenu, Text textPaid, String placeholderText) {
+		MenuItem newItem = new MenuItem(popupMenu, SWT.NONE);
+		newItem.setText(placeholderText);
+		newItem.addSelectionListener(new PlaceholderItemSelection(textPaid, placeholderText));
+	}
+    
+	/**
+	 * Convenience class for a selection handler for placeholders.
+	 * 
+	 */
+    private static class PlaceholderItemSelection extends SelectionAdapter {
+    	private Text targetWidget;
+    	private String placeholderString; 
+    	
+		/**
+		 * @param targetWidget
+		 * @param placeholderString
+		 */
+		public PlaceholderItemSelection(Text targetWidget, String placeholderString) {
+			this.targetWidget = targetWidget;
+			this.placeholderString = placeholderString;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// Insert the selected text in the message text (selected widget is set in the
+			// calling method)
+			int begin = targetWidget.getSelection().x;
+			int end = targetWidget.getSelection().y;
+			String s = targetWidget.getText();
+			String s1 = s.substring(0, begin);
+			String s2 = placeholderString;
+
+			targetWidget.setText(String.format("%s <%s> %s", s1, s2, s.substring(end, s.length())));
+			targetWidget.setSelection(s1.length() + s2.length());
+		}
     }
 }

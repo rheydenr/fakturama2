@@ -683,7 +683,7 @@
         <section>
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
             <title>Format und Pfad der Dateien</title>
-            <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest.</para>
+            <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest. Hier können auch absolute Pfadangaben eingetragen werden. Ansonsten sind die Pfade relativ zum Arbeitsverzeichnis.</para>
             <para>Über das Hauptmenü Extras <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
             <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
