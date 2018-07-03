@@ -13,33 +13,31 @@
  */
 package com.sebulli.fakturama.misc;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
-import javax.money.RoundingQueryBuilder;
 import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.javamoney.moneta.RoundedMoney;
 import org.javamoney.moneta.format.CurrencyStyle;
+import org.osgi.service.prefs.Preferences;
 
-import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
-import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
 import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
 import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
@@ -55,41 +53,37 @@ public class NumberFormatterService implements INumberFormatterService {
     private ILogger log;
 
     @Inject
-    protected IPreferenceStore defaultValuePrefs;
+    protected IPreferencesService defaultValuePrefs;
+    private Preferences prefs;
 
     private NumberFormat currencyFormat;
     private MonetaryRounding mro = null;
     private MonetaryAmountFormat monetaryAmountFormat;
     private boolean useThousandsSeparator = false;
-    private Locale currencyLocale = Locale.getDefault();
    
-    @PostConstruct
+//    @PostConstruct
     public void initialize() {
-        useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
-        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
+    	useThousandsSeparator = prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
+        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(prefs.get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
         		CurrencySettingEnum.SYMBOL.name()));
         
 //    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
         
-        currencyLocale = localeUtil.getCurrencyLocale();
+        Locale currencyLocale = getLocaleUtil().getCurrencyLocale();
 
         currencyFormat = NumberFormat.getCurrencyInstance();
         if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
-            mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                    .setCurrency(Monetary.getCurrency(currencyLocale))
-                    .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
-                    .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+            mro = DataUtils.getInstance().getRounding(Monetary.getCurrency(currencyLocale), 
                     // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false))
-                    .build());
+            		prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false));
         }
         monetaryAmountFormat = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale)
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, prefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
                         .set(currencyCheckboxEnabled)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
+                              prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
                         .build());
     }
@@ -136,7 +130,7 @@ public class NumberFormatterService implements INumberFormatterService {
 	 */
     @Override
 	public String doubleToFormattedQuantity(Double d) {
-        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
+        final int scale = prefs.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
         return doubleToFormattedValue(d, scale);
     }
     
@@ -188,14 +182,16 @@ public class NumberFormatterService implements INumberFormatterService {
     public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryRounding mro = DataUtils.getInstance().getRounding(usd, cashRounding);
+        
         MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(locale)
                         .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
 //                .set(CurrencySettingEnum.NONE)
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
                         .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-                        		Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+                        		prefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
+                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE) 
                 .build());
         return format.format(amount.with(mro));
     }
@@ -212,7 +208,7 @@ public class NumberFormatterService implements INumberFormatterService {
     			.set(useCurrencySymbol)
     			.setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
     			.set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-    					Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+    					prefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
     			.set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
     			.build());
     	return format.format(amount.with(mro));
@@ -224,8 +220,8 @@ public class NumberFormatterService implements INumberFormatterService {
     @Override
 	public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
         return formatCurrency(amount, locale, useCurrencySymbol, 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
+                prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
+                prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
      
 //	/**
@@ -241,17 +237,17 @@ public class NumberFormatterService implements INumberFormatterService {
 //                mro = Monetary.getRounding(RoundingQueryBuilder.of()
 //                        .setCurrency(chf)
 //                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-//                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
+//                        .set("cashRounding", prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
 //                        .build());
 //            }
 //        }
 //        monetaryAmountFormat = MonetaryFormats.getAmountFormat(
 //                AmountFormatQueryBuilder.of(localeUtil.getCurrencyLocale())
 //	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-//                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
+//                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, prefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
 //                        .set(currencySetting)
 //                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-//                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
+//                    prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
 //                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
 //                        .build());
 //        return monetaryAmountFormat;
@@ -264,7 +260,7 @@ public class NumberFormatterService implements INumberFormatterService {
     @Override
 	public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+        MonetaryAmount rounded = RoundedMoney.of(BigDecimal.valueOf(myNumber), usd);
         return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
     }
     
@@ -285,14 +281,14 @@ public class NumberFormatterService implements INumberFormatterService {
     @Override
 	public String formatCurrency(double myNumber, Locale locale) {
         return formatCurrency(myNumber, locale, 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true), 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
+                prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true), 
+                prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
+                prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
     }
 
     @Override
 	public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
-        return Monetary.getCurrency(getLocaleUtil().getCurrencyLocale());
+        return Monetary.getCurrency(currencyLocale);
     }
 
     /**
@@ -315,8 +311,8 @@ public class NumberFormatterService implements INumberFormatterService {
         
 	        // Format as "0.00"
 	        NumberFormat numberFormat = NumberFormat.getNumberInstance();
-	        numberFormat.setGroupingUsed(useThousandsSeparator);
-	        numberFormat = new DecimalFormat((useThousandsSeparator ? ",##0." : "0.") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
+	        numberFormat.setGroupingUsed(isUseThousandsSeparator());
+	        numberFormat = new DecimalFormat((isUseThousandsSeparator() ? ",##0." : "0.") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
 			s = numberFormat.format(floorValue);
 	
 	        // Are there parts of a cent ? Add ".."
@@ -333,6 +329,9 @@ public class NumberFormatterService implements INumberFormatterService {
      */
     @Override
 	public MonetaryAmountFormat getMonetaryAmountFormat() {
+    	if(monetaryAmountFormat == null) {
+    		initialize();
+    	}
         return monetaryAmountFormat;
     }
 
@@ -349,10 +348,10 @@ public class NumberFormatterService implements INumberFormatterService {
 	 * @return the localeUtil
 	 */
 	public ILocaleService getLocaleUtil() {
-		return localeUtil;
+		return this.localeUtil;
 	}
 
-	public void unbindLocaleService() {
+	public void unbindLocaleService(ILocaleService localeUtil) {
 		this.localeUtil = null;
 	}
 
@@ -361,9 +360,17 @@ public class NumberFormatterService implements INumberFormatterService {
 	 */
 	public void bindLocaleService(ILocaleService localeUtil) {
 		this.localeUtil = localeUtil;
-		initialize();
+	}
+	
+	public void bindPreferenceService(IPreferencesService defaultValuePrefs) {
+		this.defaultValuePrefs = defaultValuePrefs;
+    	this.prefs = defaultValuePrefs.getRootNode().node("/instance/com.sebulli.fakturama.rcp");
 	}
 
+	public void unbindPreferenceService(IPreferencesService defaultValuePrefs) {
+		this.defaultValuePrefs = null;
+		this.prefs = null;
+	}
 
 	/**
 	 * @return the log
@@ -372,7 +379,7 @@ public class NumberFormatterService implements INumberFormatterService {
 		return log;
 	}
 
-	public void unbindLog() {
+	public void unbindLog(ILogger log) {
 		this.log = null;
 	}
 
@@ -381,6 +388,14 @@ public class NumberFormatterService implements INumberFormatterService {
 	 */
 	public void bindLog(ILogger log) {
 		this.log = log;
+	}
+
+
+	/**
+	 * @return the useThousandsSeparator
+	 */
+	private boolean isUseThousandsSeparator() {
+		return useThousandsSeparator;
 	}
 
 }

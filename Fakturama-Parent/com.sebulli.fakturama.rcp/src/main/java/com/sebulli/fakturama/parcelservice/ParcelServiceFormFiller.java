@@ -34,6 +34,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.browser.Browser;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -50,10 +51,9 @@ import com.sebulli.fakturama.office.Placeholders;
  * 
  */
 public class ParcelServiceFormFiller {
-
+    
     @Inject
-    @Preference
-    private IEclipsePreferences eclipsePrefs;
+    private IPreferenceStore preferences;
 
     @Inject
     @Translation
@@ -218,7 +218,7 @@ public class ParcelServiceFormFiller {
 
 			// get all entries
 			Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, context);
-			DocumentSummary documentSummary = new DocumentSummaryCalculator().calculate(document);
+			DocumentSummary documentSummary = new DocumentSummaryCalculator(preferences).calculate(document);
 			
 			for (Map.Entry<Object, Object> propItem : inputProperties.entrySet()) {
 			    String key = (String) propItem.getKey();
@@ -252,7 +252,7 @@ public class ParcelServiceFormFiller {
 	 */
 	private String getParcelServiceFileName(String title) throws IOException {
 		// Get the directory of the workspace
-		String filename = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "");
+		String filename = preferences.getString(Constants.GENERAL_WORKSPACE);
 
 		// Do not save parcel service files, if there is no workspace set
 		if (filename.isEmpty())

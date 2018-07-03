@@ -33,6 +33,7 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.imp.ImportMessages;
 
 import com.opencsv.CSVReader;
@@ -107,6 +108,9 @@ public class OrdersCsvImporter {
 	
 	@Inject
 	private EHandlerService handlerService;
+
+    @Inject
+    protected IPreferenceStore defaultValuePrefs;
 
 	/**
 	 * the model factory
@@ -286,7 +290,7 @@ public class OrdersCsvImporter {
 					
 					order.setItems(itemsList);
 					// in this case, no SET is used per default
-					DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(order, false);
+					DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(order, defaultValuePrefs);
 					DocumentSummary documentSummary = documentSummaryCalculator.calculate(order);
 					order.setTotalValue(documentSummary.getTotalGross().getNumber().doubleValue());
 					

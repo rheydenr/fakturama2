@@ -285,6 +285,7 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS = "DOCUMENT_USE_DISCOUNT_ALL_ITEMS";
+	public static final String PREFERENCES_DOCUMENT_USE_ALLOWANCE = "DOCUMENT_USE_ALLOWANCE";
 
     /**
      * 
@@ -562,6 +563,7 @@ public class Constants {
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
 
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
+
 
 
 

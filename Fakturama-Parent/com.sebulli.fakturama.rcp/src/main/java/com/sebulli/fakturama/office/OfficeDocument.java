@@ -204,10 +204,10 @@ public class OfficeDocument {
             cleanup();
             
             // Recalculate the sum of the document before exporting
-			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+			documentSummary = new DocumentSummaryCalculator(preferences).calculate(this.document);
 
 			// Get the VAT summary of the UniDataSet document
-			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.

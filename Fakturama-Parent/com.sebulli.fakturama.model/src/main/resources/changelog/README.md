@@ -14,4 +14,4 @@ Changes after creation:
 * add a start value to each id column (search for 'name="ID"' and replace it by 'name="ID" startWith="1"')
 * change the constraint names for primary keys, because HSQL isn't able to process them. Search for 'constraintName="PRIMARY" tableName="(.+)"' and replace it by 'constraintName="PRIMARY_\1" tableName="\1"'
 
-Hint: The database update can be prevented if you supply "NODBUPDATE=true" at startup. Then you have to enable the "eclipselink.ddl-generation" line for generation with eclipselink.
+Hint: The database update can be prevented if you supply "NODBUPDATE=true" at startup. Then you have to enable the "eclipselink.ddl-generation" line for generation with eclipselink (see META-INF/persistence.xml).

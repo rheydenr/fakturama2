@@ -256,6 +256,7 @@ public class DocumentEditor extends Editor<Document> {
 	//private Text depositValue;
 	private FormattedText vatValue;
 	private FormattedText totalValue;
+	private FormattedText allowanceValue = null;
 	private Composite addressAndIconComposite;
 	private Label differentDeliveryAddressIcon;
 	private Label netLabel;
@@ -735,6 +736,9 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		if(comboShipping != null) {
 			fillAndBindShippingCombo();
+		}
+		if(allowanceValue != null) {
+			bindModelValue(document, allowanceValue, Document_.allowance.getName(), 10);
 		}
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
@@ -1308,7 +1312,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document,
-				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
+				defaultValuePrefs);
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
     				document.getShippingValue()/* * sign*/,
@@ -2572,11 +2576,36 @@ public class DocumentEditor extends Editor<Document> {
             // Sub total
             itemsSum = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
             context.set(ILocaleService.class, localeUtil);
+            // dont't use the same formatter for different widgets!!!
     		MoneyFormatter formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
+    		MoneyFormatter formatter2 = ContextInjectionFactory.make(MoneyFormatter.class, context);
             itemsSum.setFormatter(formatter);
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
+            
+            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE)) {
+            	Label allowanceLabel = new Label(totalComposite, SWT.NONE);
+            	allowanceLabel.setText(msg.editorDocumentFieldAllowance);
+            	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(allowanceLabel);
+                allowanceValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
+                allowanceValue.setFormatter(formatter2);
+                GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(allowanceValue.getControl());
+                allowanceValue.getControl().addFocusListener(new FocusAdapter() {
+            		public void focusLost(FocusEvent e) {
+            			calculate();
+            		}
+            	});
+                
+                allowanceValue.getControl().addKeyListener(new KeyAdapter() {
+            		public void keyPressed(KeyEvent e) {
+            			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+            				allowanceValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
+            			}
+            		}
+            	});
+            }
+            
     
             if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
@@ -2605,7 +2634,7 @@ public class DocumentEditor extends Editor<Document> {
             		}
             	});
     
-            	// Recalculate, if the discount is modified.
+            	// traverse to the next field
             	itemsDiscount.getControl().addKeyListener(new KeyAdapter() {
             		public void keyPressed(KeyEvent e) {
             			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {

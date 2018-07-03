@@ -21,8 +21,6 @@ import javax.money.format.MonetaryParseException;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
-
-
 	/**
      * The international Unicode currency sign.
      */

@@ -878,7 +878,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	// Re-calculate the document's total sum and check it.
     	// It must be the same total value as in the web shop
 //        	dataSetDocument.calculate();
-    	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode).calculate(dataSetDocument);
+    	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode, preferences).calculate(dataSetDocument);
 		MonetaryAmount calcTotal = summary.getTotalGross();
 		MonetaryAmount totalFromWebshop = Money.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode);
 		totalFromWebshop = DataUtils.getInstance().getDefaultRounding().apply(totalFromWebshop);

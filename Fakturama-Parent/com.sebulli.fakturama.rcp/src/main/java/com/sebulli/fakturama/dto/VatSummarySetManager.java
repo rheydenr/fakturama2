@@ -15,18 +15,12 @@
 package com.sebulli.fakturama.dto;
 
 
-import java.util.Optional;
+import javax.inject.Inject;
 
-import javax.money.CurrencyUnit;
-import javax.money.MonetaryAmount;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.javamoney.moneta.Money;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  * Stores one VatSummarySet object and provides some methods e.g. to add an
@@ -36,6 +30,9 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  */
 public class VatSummarySetManager {
 	private VatSummarySet vatSummarySet;
+    
+    @Inject
+    private IPreferenceStore preferences;
 
 	/**
 	 * Constructor Creates a new VatSummarySet
@@ -51,21 +48,10 @@ public class VatSummarySetManager {
 	 *            Document to add
 	 */
 	public void add(Document document, Double scaleFactor) {
-		int parentSign =DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
-		CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-        boolean useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
-		documentSummaryCalculator.setUseSET(useSET);
-		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
-				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
-				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
-				document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
-				Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), 
-				document.getNoVatReference(),
- 			    scaleFactor, document.getNetGross(), deposit);
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(preferences);
+		documentSummaryCalculator.calculate(vatSummarySet, document);
 	}
 	
 	

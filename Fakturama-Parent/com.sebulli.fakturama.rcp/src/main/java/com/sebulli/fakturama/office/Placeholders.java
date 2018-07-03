@@ -144,6 +144,7 @@ public class Placeholders {
 			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.TOTAL.VAT",
 			"DOCUMENT.TOTAL.GROSS",
+			"DOCUMENT.TOTAL.ALLOWANCE",
 			"DOCUMENT.DEPOSIT.DEPOSIT",
 			"DOCUMENT.DEPOSIT.FINALPAYMENT",
 			"DOCUMENT.DEPOSIT.DEP_TEXT",
@@ -711,6 +712,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVat());
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getTotalGross());
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
+		if (key.equals("DOCUMENT.TOTAL.ALLOWANCE")) return numberFormatterService.doubleToFormattedPrice(document.getAllowance()); // FAK-301
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
 		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return numberFormatterService.formatCurrency(documentSummary.getDeposit());

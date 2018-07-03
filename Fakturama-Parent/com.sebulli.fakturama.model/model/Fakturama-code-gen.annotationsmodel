@@ -638,6 +638,10 @@
         </eReferenceAnnotations>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="This field references a block of additional infos for this document entity. It is used especially for storing manually edited values or values that has to be unchangeable (e.g., within invoices for audit proofing)." defaultValue="new com.sebulli.fakturama.model.IndividualDocumentInfo()"/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Document/allowance"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Additional amount which is added to the total net of the document summary (can be positive or negative)."/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//DocumentItem"/>

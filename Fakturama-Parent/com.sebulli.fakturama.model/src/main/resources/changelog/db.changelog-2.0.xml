@@ -942,4 +942,12 @@
     <changeSet author="rheydenr (generated)" id="20180122-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="TEXT"/>
     </changeSet>
+
+    <!-- new attribute for documents, since 2.0.2.2 -->
+	<changeSet author="rheydenr (generated)" id="20180622-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="ALLOWANCE" type="DOUBLE" valueNumeric="0" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>

@@ -292,6 +292,8 @@ public class Messages {
 	public String editorDocumentFieldInvoiceTooltip;
 	public String editorDocumentFieldOrderdate;
 	public String editorDocumentFieldOrderdateTooltip;
+	public String editorDocumentFieldAllowance;
+	
 	
 	public String editorDocumentFieldVestingperiodEnd;
 	public String editorDocumentFieldVestingperiodEndTooltip;
@@ -646,6 +648,7 @@ public class Messages {
 	public String preferencesDocumentUsediscountall;
 	public String preferencesDocumentUsediscountsingle;
 	public String preferencesDocumentUsenetgross;
+	public String preferencesDocumentUseallowance;
 	public String preferencesDocumentUsepos;
 	public String preferencesDocumentUsesalesequalizationtax;
 	public String preferencesDocumentUsevestingperiod;

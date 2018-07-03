@@ -27,10 +27,12 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
@@ -73,7 +75,13 @@ public class SalesExporter extends OOCalcExporter {
 	@Inject
 	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
 	private IEclipsePreferences eclipsePrefs;
-	
+
+    @Inject
+    protected IEclipseContext context;
+
+    @Inject
+    private IPreferenceStore preferences;
+    
 	@Inject
 	private DocumentsDAO documentsDao;
 
@@ -167,7 +175,7 @@ public class SalesExporter extends OOCalcExporter {
 
 		// Create a VAT summary set manager that collects all VAT
 		// values of all documents
-		VatSummarySetManager vatSummarySetAllDocuments = new VatSummarySetManager();
+		VatSummarySetManager vatSummarySetAllDocuments = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 
 		// Table column headings
 		int headLine = row;
@@ -193,7 +201,7 @@ public class SalesExporter extends OOCalcExporter {
 		// the columns are created.
 		// Later all the documents are analyzed a second time and then they
 		// are exported document by document into the table.
-		DocumentSummaryCalculator dsc = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator dsc = new DocumentSummaryCalculator(preferences);
 //		for (Document document : documents) {
 //			if (documentShouldBeExported(document)) {
 //				dsc.calculate(document);

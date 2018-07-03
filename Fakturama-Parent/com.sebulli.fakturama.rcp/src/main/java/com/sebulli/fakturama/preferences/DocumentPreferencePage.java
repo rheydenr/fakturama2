@@ -82,6 +82,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		//T: Preference page "Document" - Label "Copy the description in product selection dialog."
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_COPY_PRODUCT_DESCRIPTION_FROM_PRODUCTS_DIALOG, msg.preferencesDocumentCopydescfield, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE, msg.preferencesDocumentDisplaypreview, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE, msg.preferencesDocumentUseallowance, getFieldEditorParent()));
 //		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS, msg.preferencesDocumentUsepos, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, msg.preferencesDocumentUsediscountsingle, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, msg.preferencesDocumentUsediscountall, getFieldEditorParent()));
@@ -132,6 +133,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, write);
@@ -165,6 +167,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD, "0");
+		node.setDefault(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE, false);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_ADD_NR_OF_IMPORTED_DELIVERY_NOTE, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true);
