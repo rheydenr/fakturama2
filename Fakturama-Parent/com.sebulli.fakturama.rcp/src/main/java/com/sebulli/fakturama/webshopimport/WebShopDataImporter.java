@@ -543,7 +543,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	dataSetDocument.setWebshopDate(Date.from(instant));
     	dataSetDocument.setValidFrom(Date.from(instant));
     
-        CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(log);
+        CategoryBuilder<ContactCategory> contactCatBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
    
         // First get all contacts. Normally there is only one
         ContactType contact = order.getContact();        

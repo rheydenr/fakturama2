@@ -18,8 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.e4.core.services.log.Logger;
+import javax.inject.Inject;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.AbstractCategory;
 
 /**
@@ -29,12 +30,14 @@ import com.sebulli.fakturama.model.AbstractCategory;
  */
 public class CategoryBuilder<T extends AbstractCategory> {
 
-    private Logger log;
-	
+	@Inject
+    private ILogger log;
+    	
 	/**
      * @param log
      */
-    public CategoryBuilder(Logger log) {
+	@Inject
+    public CategoryBuilder(ILogger log) {
         this.log = log;
     }
 	
