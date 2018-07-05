@@ -116,8 +116,8 @@ public class DocumentSummaryCalculator {
             ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, Double scaleFactor, 
             int netGross, MonetaryAmount deposit) {
 		Double vatPercent;
-		boolean useAllowance = false;
 		String vatDescription;
+		boolean useAllowance = false;
         CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         DocumentSummary retval = new DocumentSummary(currencyUnit);
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
@@ -175,11 +175,10 @@ public class DocumentSummaryCalculator {
 //		} 
 		
 		retval.setTotalNet(retval.getItemsNet());
-		if(defaultValuePrefs != null) {
-			useAllowance = defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE);
-		}
-		if(useAllowance && currentDocument != null && currentDocument.getAllowance() != null) {
-			retval.setTotalNet(retval.getTotalNet().add(Money.of(currentDocument.getAllowance(), currencyUnit)));
+		if(defaultValuePrefs != null && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE) 
+				&& currentDocument != null && currentDocument.getAllowance() != null) {
+			retval.setTotalNet(retval.getTotalNet().multiply(1 + currentDocument.getAllowance()));
+			useAllowance = true;
 		}
 		
 		// Gross value is the sum of net and VAT and sales equalization tax value 
@@ -207,7 +206,7 @@ public class DocumentSummaryCalculator {
 		final MonetaryAmount zero = Money.zero(currencyCode);
 
 		// Calculate discount
-		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, NumberUtils.DOUBLE_ZERO)) {
+		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, NumberUtils.DOUBLE_ZERO) || useAllowance) {
 
 			// Calculate the vat value in percent from the gross value of all items
 			// and the net value of all items. So the discount's vat is the average 
@@ -227,6 +226,7 @@ public class DocumentSummaryCalculator {
 
 			// Reduce all the VAT entries in the VAT Summary Set by the discount 
 			MonetaryAmount discountVatValue = Money.from(zero);
+			MonetaryAmount allowanceVatValue = Money.from(zero);
 			String discountVatDescription = "";
 			// Get the data from each entry
 			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
@@ -243,8 +243,13 @@ public class DocumentSummaryCalculator {
 				// Calculate the ratio of this vat summary item and all items.
 				// The discountNetPart is proportional to this ratio.
 				MonetaryAmount discountNetPart = Money.from(zero);
-				if (!itemsNet.isZero())
+				MonetaryAmount allowanceNetPart = Money.from(zero);
+				if (!itemsNet.isZero()) {
+					allowanceNetPart = itemsNet.multiply(vatSummaryItem.getNet().divide(itemsNet.getNumber()).getNumber());
 					discountNetPart = discountNet.multiply(vatSummaryItem.getNet().divide(itemsNet.getNumber()).getNumber());
+				}
+				
+				allowanceVatValue = allowanceVatValue.add(allowanceNetPart).add(discountPart.getTotalSalesEqTax());
 
 				// Add discountNetPart to the sum "discountVatValue"  
 				Price discountPart = new Price(discountNetPart, discountVatPercent, Optional.ofNullable(vatSummaryItem.getSalesEqTaxPercent()).orElse(NumberUtils.DOUBLE_ZERO));

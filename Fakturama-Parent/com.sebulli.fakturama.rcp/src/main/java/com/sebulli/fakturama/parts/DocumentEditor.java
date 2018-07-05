@@ -2578,7 +2578,6 @@ public class DocumentEditor extends Editor<Document> {
             context.set(ILocaleService.class, localeUtil);
             // dont't use the same formatter for different widgets!!!
     		MoneyFormatter formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
-    		MoneyFormatter formatter2 = ContextInjectionFactory.make(MoneyFormatter.class, context);
             itemsSum.setFormatter(formatter);
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
@@ -2589,7 +2588,7 @@ public class DocumentEditor extends Editor<Document> {
             	allowanceLabel.setText(msg.editorDocumentFieldAllowance);
             	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(allowanceLabel);
                 allowanceValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
-                allowanceValue.setFormatter(formatter2);
+                allowanceValue.setFormatter(new PercentFormatter());
                 GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(allowanceValue.getControl());
                 allowanceValue.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
