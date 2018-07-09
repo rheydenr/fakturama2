@@ -117,4 +117,6 @@ public interface INumberFormatterService {
 
 	CurrencyUnit getCurrencyUnit(Locale currencyLocale);
 
+	void refresh();
+
 }

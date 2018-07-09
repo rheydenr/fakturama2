@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,8 +49,6 @@ public class DataUtils {
 	@Inject
 	private ILocaleService localeUtil;
 	
-	private static Locale currencyLocale;
-
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
     private static DataUtils instance = null;
@@ -77,21 +74,24 @@ public class DataUtils {
     }
 
     /**
+     * use {@link ILocaleService#getDefaultCurrencyUnit()} 
+     * @return
+     */
+    @Deprecated
+    public CurrencyUnit getDefaultCurrencyUnit() {
+    	return localeUtil.getDefaultCurrencyUnit();
+    }
+    /**
      * Update the currency symbol and the thousands separator from the preferences
      * @param localeUtil 
      */
     private void initialize() {
     	ServiceReference<ILocaleService> serviceReference = Activator.getContext().getServiceReference(ILocaleService.class);
     	this.localeUtil = Activator.getContext().getService(serviceReference);
-        currencyLocale = localeUtil.getCurrencyLocale();
     }
-    
-    public CurrencyUnit getDefaultCurrencyUnit() {
-        return Monetary.getCurrency(currencyLocale);
-    }
-    
+
     public MonetaryRounding getDefaultRounding() {
-    	return getRounding(getDefaultCurrencyUnit());
+    	return getRounding(localeUtil.getDefaultCurrencyUnit());
     }
 
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
@@ -358,7 +358,7 @@ public class DataUtils {
      * @return Net value as string
      */
     public MonetaryAmount calculateNetFromGross(Double gross, Double vat) {
-        return Money.of(gross / (1 + vat), getDefaultCurrencyUnit());
+        return Money.of(gross / (1 + vat), localeUtil.getDefaultCurrencyUnit());
     }
 
     /**

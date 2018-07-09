@@ -64,7 +64,7 @@ public class NumberFormatterService implements INumberFormatterService {
 //    @PostConstruct
     public void initialize() {
     	useThousandsSeparator = prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
-        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(prefs.get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
+        CurrencySettingEnum currencyAppearance = CurrencySettingEnum.valueOf(prefs.get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
         		CurrencySettingEnum.SYMBOL.name()));
         
 //    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
@@ -72,7 +72,7 @@ public class NumberFormatterService implements INumberFormatterService {
         Locale currencyLocale = getLocaleUtil().getCurrencyLocale();
 
         currencyFormat = NumberFormat.getCurrencyInstance();
-        if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
+        if(currencyAppearance != CurrencySettingEnum.NONE) {
             mro = DataUtils.getInstance().getRounding(Monetary.getCurrency(currencyLocale), 
                     // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
             		prefs.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false));
@@ -81,7 +81,7 @@ public class NumberFormatterService implements INumberFormatterService {
                 AmountFormatQueryBuilder.of(currencyLocale)
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
                         .set(FakturamaMonetaryAmountFormat.KEY_SCALE, prefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
-                        .set(currencyCheckboxEnabled)
+                        .set(currencyAppearance)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
                               prefs.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
@@ -398,4 +398,11 @@ public class NumberFormatterService implements INumberFormatterService {
 		return useThousandsSeparator;
 	}
 
+	@Override
+	public void refresh() {
+		this.currencyFormat = null;
+		this.monetaryAmountFormat = null;
+		this.mro = null;
+		localeUtil.refresh();
+	}
 }

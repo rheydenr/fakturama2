@@ -86,7 +86,11 @@ public class FakturamaMonetaryAmountFormat implements MonetaryAmountFormat {
         } else if (index == 0) { // currency placement before
             tokens.add(new CurrencyToken(style.get(CurrencySettingEnum.class), style
                     .get(Locale.class)));
-            tokens.add(new AmountNumberToken(style, pattern.substring(1)));
+            index++;
+            if(pattern.charAt(index) == '-') {
+            	index++;
+            }
+            tokens.add(new AmountNumberToken(style, pattern.substring(index)));
         } else { // no currency
             tokens.add(new AmountNumberToken(style, pattern));
         }

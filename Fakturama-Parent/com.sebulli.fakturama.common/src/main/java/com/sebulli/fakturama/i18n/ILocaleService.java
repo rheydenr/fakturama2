@@ -4,6 +4,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.money.CurrencyUnit;
+
 public interface ILocaleService {
 
 	/**
@@ -56,5 +58,9 @@ public interface ILocaleService {
 	 * @return {@link Locale} for the currently selected currency
 	 */
 	Locale getCurrencyLocale();
+
+	void refresh();
+
+	CurrencyUnit getDefaultCurrencyUnit();
 
 }

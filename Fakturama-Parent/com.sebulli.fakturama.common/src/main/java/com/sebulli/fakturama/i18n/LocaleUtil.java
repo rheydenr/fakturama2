@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +35,7 @@ public class LocaleUtil implements ILocaleService {
     private final Map<String, Locale> countryLocaleMap = new HashMap<>();
 
     private Locale defaultLocale = Locale.getDefault();
+	private Locale currencyLocale;
     private SortedMap<String, String> localeCountryMap;
     private final Map<String, Locale> localeLookUp = new HashMap<>();
     
@@ -177,25 +180,29 @@ public class LocaleUtil implements ILocaleService {
     /* (non-Javadoc)
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCurrencyLocale()
 	 */
-    @Override
+	@Override
 	public Locale getCurrencyLocale() {
-        
-         Locale currencyLocale = null;
-//        if(currencyLocale == null) {
-            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry());
-            Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
-            Matcher matcher = pattern.matcher(localeString);
-            if (matcher.matches() && matcher.groupCount() > 1) {
-                String s = matcher.group(1);
-                String s2 = matcher.group(2);
-                currencyLocale = new Locale(s, s2);
-            } else {
-                currencyLocale = getDefaultLocale();
-            }
-//        }
-        return currencyLocale;
+		if(currencyLocale == null) {
+			String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE,
+					String.format("%s/%s", Locale.getDefault().getLanguage(), Locale.getDefault().getCountry()));
+			Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
+			Matcher matcher = pattern.matcher(localeString);
+			if (matcher.matches() && matcher.groupCount() > 1) {
+				String s = matcher.group(1);
+				String s2 = matcher.group(2);
+				currencyLocale = new Locale(s, s2);
+			} else {
+				currencyLocale = getDefaultLocale();
+			}
+		}
+		return currencyLocale;
+	}
+	
+    @Override
+	public CurrencyUnit getDefaultCurrencyUnit() {
+        return Monetary.getCurrency(getCurrencyLocale());
     }
-    
+
     /**
      * Main method. For tests only.
      * 
@@ -231,4 +238,9 @@ public class LocaleUtil implements ILocaleService {
 //            System.out.println(locale.get());
 //        }
     }
+
+	@Override
+	public void refresh() {
+		currencyLocale = null;
+	}
 }
