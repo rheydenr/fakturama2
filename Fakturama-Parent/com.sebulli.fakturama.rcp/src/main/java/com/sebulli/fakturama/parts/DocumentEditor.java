@@ -2582,29 +2582,6 @@ public class DocumentEditor extends Editor<Document> {
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
             GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
-            
-            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE)) {
-            	Label allowanceLabel = new Label(totalComposite, SWT.NONE);
-            	allowanceLabel.setText(msg.editorDocumentFieldAllowance);
-            	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(allowanceLabel);
-                allowanceValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
-                allowanceValue.setFormatter(new PercentFormatter());
-                GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(allowanceValue.getControl());
-                allowanceValue.getControl().addFocusListener(new FocusAdapter() {
-            		public void focusLost(FocusEvent e) {
-            			calculate();
-            		}
-            	});
-                
-                allowanceValue.getControl().addKeyListener(new KeyAdapter() {
-            		public void keyPressed(KeyEvent e) {
-            			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
-            				allowanceValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
-            			}
-            		}
-            	});
-            }
-            
     
             if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
@@ -2642,6 +2619,29 @@ public class DocumentEditor extends Editor<Document> {
             		}
             	});
             }
+            
+            if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE)) {
+            	Label allowanceLabel = new Label(totalComposite, SWT.NONE);
+            	allowanceLabel.setText(msg.editorDocumentFieldAllowance);
+            	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(allowanceLabel);
+                allowanceValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
+                allowanceValue.setFormatter(new PercentFormatter());
+                GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(allowanceValue.getControl());
+                allowanceValue.getControl().addFocusListener(new FocusAdapter() {
+            		public void focusLost(FocusEvent e) {
+            			calculate();
+            		}
+            	});
+                
+                allowanceValue.getControl().addKeyListener(new KeyAdapter() {
+            		public void keyPressed(KeyEvent e) {
+            			if (e.keyCode == 13 || e.keyCode == SWT.KEYPAD_CR) {
+            				allowanceValue.getControl().traverse(SWT.TRAVERSE_TAB_NEXT);
+            			}
+            		}
+            	});
+            }
+            
         
             createShippingInfoFields(totalComposite);
     

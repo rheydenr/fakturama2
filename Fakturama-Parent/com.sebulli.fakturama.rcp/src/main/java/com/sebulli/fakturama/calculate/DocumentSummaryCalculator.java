@@ -115,6 +115,8 @@ public class DocumentSummaryCalculator {
     public DocumentSummary calculate(VatSummarySet globalVatSummarySet, List<DocumentItem> items, Double shippingValue, VAT shippingVat,
             ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, Double scaleFactor, 
             int netGross, MonetaryAmount deposit) {
+
+		final MonetaryAmount zero = Money.zero(currencyCode);
 		Double vatPercent;
 		String vatDescription;
         CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
@@ -174,16 +176,11 @@ public class DocumentSummaryCalculator {
 //		} 
 		
 		retval.setTotalNet(retval.getItemsNet());
-		if(defaultValuePrefs != null && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE) 
-				&& currentDocument != null && currentDocument.getAllowance() != null) {
-			retval.setTotalAllowance(retval.getTotalNet().multiply(currentDocument.getAllowance()));
-//			retval.setTotalNet(retval.getTotalNet().multiply(1 + currentDocument.getAllowance()));
-//			retval.setTotalVat(retval.getTotalVat().multiply(1 + currentDocument.getAllowance()));
-//			retval.setTotalSET(retval.getTotalSET().multiply(1 + currentDocument.getAllowance()));
-		}
 		
 		// Gross value is the sum of net and VAT and sales equalization tax value 
-		retval.setItemsGross(retval.getTotalNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
+		retval.setItemsGross(retval.getTotalNet()
+				.add(retval.getTotalVat())
+				.add(retval.getTotalSET()));
 		
 		// round to full gross cents
 		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
@@ -203,8 +200,6 @@ public class DocumentSummaryCalculator {
 		MonetaryAmount discountNet = itemsNet.multiply(itemsDiscount);
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(itemsDiscount));
-
-		final MonetaryAmount zero = Money.zero(currencyCode);
 
 		// Calculate discount
 		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, NumberUtils.DOUBLE_ZERO)) {
@@ -274,24 +269,32 @@ public class DocumentSummaryCalculator {
 			if (netGross != DocumentSummary.ROUND_GROSS_VALUES) {
 				retval.setTotalGross(retval.getTotalNet()
 						.add(retval.getTotalVat())
-						.add(retval.getTotalSET())
-						.add(retval.getTotalAllowance()));
+						.add(retval.getTotalSET()));
 			} else {
 
 				// round to full gross cents
 				// this.discountGross.round();
 				retval.setTotalGross(retval.getTotalGross()
-						.add(retval.getDiscountGross())
-						.add(retval.getTotalAllowance()));
+						.add(retval.getDiscountGross()));
 				// this.totalGross.round();
 				retval.setDiscountNet(retval.getDiscountGross().subtract(discountVatValue));
 				retval.setTotalNet(
 						retval.getTotalGross().subtract(retval.getTotalVat()).subtract(retval.getTotalSET()));
 			}
 		}
+		
+		if(defaultValuePrefs != null && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ALLOWANCE) 
+				&& currentDocument != null && currentDocument.getAllowance() != null) {
+			retval.setTotalAllowance(retval.getTotalNet().multiply(currentDocument.getAllowance()));
+		} else {
+			retval.setTotalAllowance(Money.from(zero));
+		}
+		
+		// add allowances
+		retval.setTotalGross(retval.getTotalGross()
+				.add(retval.getTotalAllowance()));
 
 		// calculate shipping
-
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
 		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : NumberUtils.DOUBLE_ZERO;

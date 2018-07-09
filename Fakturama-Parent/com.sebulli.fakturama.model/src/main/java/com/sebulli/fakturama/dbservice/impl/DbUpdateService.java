@@ -73,7 +73,7 @@ public class DbUpdateService implements IDbUpdateService {
 //				CatalogAndSchema cat = new CatalogAndSchema("", database.getDefaultSchemaName());
 //				database.dropDatabaseObjects(cat);
 //			}
-			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
+//			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
 //			liquibase.forceReleaseLocks();   // workaround!
