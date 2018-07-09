@@ -62,6 +62,9 @@ hier klingt vor allem das interessant:
 	// discount values
 	private MonetaryAmount discountNet;
 	private MonetaryAmount discountGross;
+	
+	// allowance value
+	private MonetaryAmount totalAllowance;
 
 	// shipping value
 	private MonetaryAmount shippingNet;
@@ -185,6 +188,20 @@ hier klingt vor allem das interessant:
 	 */
 	public MonetaryAmount getTotalGross() {
 		return this.totalGross;
+	}
+
+	/**
+	 * @return the totalAllowance
+	 */
+	public final MonetaryAmount getTotalAllowance() {
+		return totalAllowance;
+	}
+
+	/**
+	 * @param totalAllowance the totalAllowance to set
+	 */
+	public final void setTotalAllowance(MonetaryAmount totalAllowance) {
+		this.totalAllowance = totalAllowance;
 	}
 
 	/**

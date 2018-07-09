@@ -339,6 +339,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		// at the moment we have to reset the DataUtils manually
 		// TODO put it in a service!
 		DataUtils.getInstance().refresh();
+		numberFormatterService.refresh();
 
 //        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
@@ -388,6 +389,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 */
 	@Override
 	public boolean performOk() {
+		numberFormatterService.refresh();
 		DataUtils.getInstance().refresh();
         
         // Refresh the table view of all documents

@@ -257,6 +257,14 @@ id="04_openoffice_libreoffice">
 						<entry>Gesamtmenge der Artikel (dies ist natürlich nur bei vergleichbaren Artikeln sinnvoll)</entry>
 					</row>
 					<row>
+						<entry>DOCUMENT.TOTAL.ALLOWANCE.PERCENT</entry>
+						<entry>Zu- oder Abschlag in Prozent</entry>
+					</row>
+					<row>
+						<entry>DOCUMENT.TOTAL.ALLOWANCE.VALUE</entry>
+						<entry>Zu- oder Abschlag als Wert (netto)</entry>
+					</row>
+					<row>
 						<entry>DOCUMENT.REFERENCE.OFFER</entry>
 						<entry>Die Angebote, die zum gleichen Vorgang wie dieses Dokument gehören.</entry>
 					</row>
