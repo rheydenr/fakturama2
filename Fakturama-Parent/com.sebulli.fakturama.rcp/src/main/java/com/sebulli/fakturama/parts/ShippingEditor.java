@@ -114,6 +114,7 @@ public class ShippingEditor extends Editor<Shipping> {
     private NetText netText;
     private GrossText grossText;
     private Combo comboCategory;
+    private ShippingCategory oldCat;
 
     // defines if the shipping is just created
     private boolean newShipping;
@@ -182,6 +183,16 @@ public class ShippingEditor extends Editor<Shipping> {
             BigDecimal val = BigDecimal.valueOf(editorShipping.getShippingValue()).round(mc).setScale(5, RoundingMode.HALF_UP);
             editorShipping.setShippingValue(val.doubleValue());
             editorShipping = shippingDao.update(editorShipping);
+
+            // check if we can delete the old category (if it's empty)
+            if(oldCat != null && oldCat != editorShipping.getCategories()) {
+            	long countOfEntriesInCategory = shippingDao.countByCategory(oldCat);
+            	if(countOfEntriesInCategory == 0) {
+            		shippingCategoriesDAO.deleteEmptyCategory(oldCat);
+            	}
+            }
+
+            oldCat = editorShipping.getCategories();
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Shipping: " + editorShipping.toString());

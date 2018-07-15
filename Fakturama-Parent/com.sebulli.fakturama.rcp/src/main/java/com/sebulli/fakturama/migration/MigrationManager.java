@@ -1054,7 +1054,7 @@ public class MigrationManager {
 				receiptVoucher.setVoucherType(VoucherType.RECEIPTVOUCHER);
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getCategory()) && receiptVoucherAccounts.containsKey(oldReceiptvoucher.getCategory())) {
 					//receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
-					receiptVoucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldReceiptvoucher.getCategory(), true));
+					receiptVoucher.setAccount(voucherCategoriesDAO.getCategory(oldReceiptvoucher.getCategory(), true));
 				}
 				receiptVoucher.setDiscounted(oldReceiptvoucher.isDiscounted());
 				receiptVoucher.setDeleted(oldReceiptvoucher.isDeleted());
@@ -1113,7 +1113,7 @@ public class MigrationManager {
 					Voucher Voucher = modelFactory.createVoucher();
 					Voucher.setVoucherType(VoucherType.EXPENDITURE);
 					if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
-						Voucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
+						Voucher.setAccount(voucherCategoriesDAO.getCategory(oldExpenditure.getCategory(), true));
 					}
 					Voucher.setDeleted(oldExpenditure.isDeleted());
 					Voucher.setDiscounted(oldExpenditure.isDiscounted());
@@ -1235,7 +1235,7 @@ public class MigrationManager {
 				payment.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
 					// add it to the new entity
-					payment.setCategory(voucherCategoriesDAO.getOrCreateCategory(oldPayment.getCategory(), true));
+					payment.setCategory(voucherCategoriesDAO.getCategory(oldPayment.getCategory(), true));
 				}
 				payment = paymentsDAO.save(payment, true);
 				newPayments.put(oldPayment.getId(), payment.getId());
@@ -1308,7 +1308,7 @@ public class MigrationManager {
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
 				    // get VatCategory from DAO since it may not be stored
-					vat.setCategory(vatCategoriesDAO.getOrCreateCategory(oldVat.getCategory(), true));
+					vat.setCategory(vatCategoriesDAO.getCategory(oldVat.getCategory(), true));
 				}
 				vat = vatsDAO.save(vat, true);
 				// use a HashMap as a simple cache

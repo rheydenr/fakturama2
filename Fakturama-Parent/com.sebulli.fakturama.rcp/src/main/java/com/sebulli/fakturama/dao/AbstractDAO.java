@@ -95,7 +95,8 @@ public abstract class AbstractDAO<T extends IEntity> {
      * @throws SQLException if an error is occurred
      */
     public T save(T object, boolean withBatch) throws FakturamaStoringException {
-        
+    	Object oldBatchWritingSize = ""; 
+    	Object oldBatchWriting = 20;
 /*
  * BESSER: 
  * 
@@ -137,12 +138,19 @@ em.joinTransaction();
 			// merge before persist since we could have referenced entities
 			// which are already persisted
 			if(withBatch) {
+				// first save old values
+				oldBatchWriting = entityManager.getProperties().get(PersistenceUnitProperties.BATCH_WRITING);
+				oldBatchWritingSize = entityManager.getProperties().get(PersistenceUnitProperties.BATCH_WRITING_SIZE);
 				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
 				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
 			}
 			object = entityManager.merge(object);
 			getEntityManager().persist(object);
 			trx.commit();
+			if(withBatch) {
+				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, oldBatchWriting);
+				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, oldBatchWritingSize);
+			}
 		} catch (SQLException e) {
 			throw new FakturamaStoringException("Error saving to the database.", e, object);
 		}

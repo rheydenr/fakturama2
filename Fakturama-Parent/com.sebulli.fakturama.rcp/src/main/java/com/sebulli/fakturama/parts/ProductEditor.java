@@ -144,6 +144,7 @@ public class ProductEditor extends Editor<Product> {
 	private FormattedText costPrice;
 	private Text textQuantityUnit;
 	private Combo comboCategory;
+	private ProductCategory oldCat;
 	private FakturamaPictureControl labelProductPicture;
 	private Composite photoComposite;
 
@@ -204,7 +205,7 @@ public class ProductEditor extends Editor<Product> {
             // parentCategory now has the last found Category
             editorProduct.setCategories(contactCategory);
         }
-
+        
 		if (newProduct) {
 			// Check, if the item number is the next one
 			if (setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
@@ -225,6 +226,7 @@ public class ProductEditor extends Editor<Product> {
 
 		// Always set the editor's data set to "undeleted"
 		editorProduct.setDeleted(Boolean.FALSE);
+    
 
 		// Set the product data
         // ... done through databinding...
@@ -264,11 +266,22 @@ public class ProductEditor extends Editor<Product> {
 		else {
 //			Data.INSTANCE.getProducts().updateDataSet(product);
 		}
-			try {
-				editorProduct = productsDAO.save(editorProduct);
-            } catch (FakturamaStoringException e) {
-                log.error(e);
-            }
+		
+		try {
+			editorProduct = productsDAO.save(editorProduct);
+			
+	        // check if we can delete the old category (if it's empty)
+	        if(oldCat != null && oldCat != editorProduct.getCategories()) {
+	        	long countOfEntriesInCategory = productsDAO.countByCategory(oldCat);
+	        	if(countOfEntriesInCategory == 0) {
+	        		productCategoriesDAO.deleteEmptyCategory(oldCat);
+	        	}
+	        }
+
+	        oldCat = editorProduct.getCategories();
+        } catch (FakturamaStoringException e) {
+            log.error(e);
+        }
 
 		// Set the Editor's name to the product name...
 		this.part.setLabel(editorProduct.getName());
@@ -744,6 +757,8 @@ public class ProductEditor extends Editor<Product> {
 	            getMDirtyablePart().setDirty(true);
 	        }
 		});
+        
+    	oldCat = editorProduct.getCategories();        
 
 		bindModel();
 	}

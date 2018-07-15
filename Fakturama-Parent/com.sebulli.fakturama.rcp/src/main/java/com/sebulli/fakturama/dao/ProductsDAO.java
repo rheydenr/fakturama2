@@ -53,6 +53,21 @@ public class ProductsDAO extends AbstractDAO<Product> {
 						cb.equal(root.<String>get(Product_.name), oldProduct.getName())));
     	return getEntityManager().createQuery(cq).getSingleResult();
 	}
+	
+	/**
+	 * Counts all entities with the given category.
+	 * 
+	 * @param cat count of entities which have the given category
+	 */
+	public long countByCategory(AbstractCategory cat) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+		Root<Product> root = criteria.from(getEntityClass());
+		criteria.select(cb.count(root)).where(
+						cb.equal(root.get(Product_.categories), cat)
+				);
+		return getEntityManager().createQuery(criteria).getSingleResult();
+	}
 
     /**
      * @param object
