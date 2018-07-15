@@ -22,6 +22,7 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.oldmodel.OldProducts;

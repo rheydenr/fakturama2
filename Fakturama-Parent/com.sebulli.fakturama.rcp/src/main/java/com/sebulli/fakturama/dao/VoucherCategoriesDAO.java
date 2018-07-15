@@ -55,44 +55,44 @@ public class VoucherCategoriesDAO extends AbstractCategoriesDAO<VoucherCategory>
 //      return getEntityManager().createQuery("select p from VoucherCategory p", VoucherCategory.class).getResultList();
     }
 
-//    /**
-//     * Find a {@link VoucherCategory} by its name. If one of the part categories doesn't exist we create it 
-//     * (if {@code withPersistOption} is set to <code>true</code>).
-//     * 
-//     * @param testCat the category to find
-//     * @param withPersistOption persist a (part) category if it doesn't exist
-//     * @return found category
-//     */
-//    public VoucherCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
-//        // to find the complete category we have to start with the topmost category
-//        // and then lookup each of the child categories in the given path
-//        String[] splittedCategories = testCat.split("/");
-//        VoucherCategory parentCategory = null;
-//        String category = "";
-//        try {
-//            for (int i = 0; i < splittedCategories.length; i++) {
-//                category += "/" + splittedCategories[i];
-//                if(category.contentEquals("/")) {
-//                	continue;
-//                }
-//                VoucherCategory searchCat = findCategoryByName(category);
-//                if (searchCat == null) {
-//                    // not found? Then create a new one.
-//                    VoucherCategory newCategory = new VoucherCategory();
-//                    newCategory.setName(splittedCategories[i]);
-//                    newCategory.setParent(parentCategory);
-//                    newCategory = save(newCategory);
-//                    searchCat = newCategory;
-//                }
-//                // save the parent and then dive deeper...
-//                parentCategory = searchCat;
-//            }
-//        }
-//        catch (FakturamaStoringException e) {
-//            getLog().error(e);
-//        }
-//        return parentCategory;
-//    }
+    /**
+     * Find a {@link VoucherCategory} by its name. If one of the part categories doesn't exist we create it 
+     * (if {@code withPersistOption} is set to <code>true</code>).
+     * 
+     * @param testCat the category to find
+     * @param withPersistOption persist a (part) category if it doesn't exist
+     * @return found category
+     */
+    public VoucherCategory getOrCreateCategory(String testCat, boolean withPersistOption) {
+        // to find the complete category we have to start with the topmost category
+        // and then lookup each of the child categories in the given path
+        String[] splittedCategories = testCat.split("/");
+        VoucherCategory parentCategory = null;
+        String category = "";
+        try {
+            for (int i = 0; i < splittedCategories.length; i++) {
+                category += "/" + splittedCategories[i];
+                if(category.contentEquals("/")) {
+                	continue;
+                }
+                VoucherCategory searchCat = findCategoryByName(category);
+                if (searchCat == null) {
+                    // not found? Then create a new one.
+                    VoucherCategory newCategory = new VoucherCategory();
+                    newCategory.setName(splittedCategories[i]);
+                    newCategory.setParent(parentCategory);
+                    newCategory = save(newCategory);
+                    searchCat = newCategory;
+                }
+                // save the parent and then dive deeper...
+                parentCategory = searchCat;
+            }
+        }
+        catch (FakturamaStoringException e) {
+            getLog().error(e);
+        }
+        return parentCategory;
+    }
 
     public VoucherCategory getLastUsedCategoryForExpenditure() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
