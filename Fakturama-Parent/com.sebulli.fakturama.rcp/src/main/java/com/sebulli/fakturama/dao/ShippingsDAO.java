@@ -49,7 +49,10 @@ public class ShippingsDAO extends AbstractDAO<Shipping> {
 		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
 		Root<Shipping> root = criteria.from(getEntityClass());
 		criteria.select(cb.count(root)).where(
-						cb.equal(root.get(Shipping_.categories), cat)
+				cb.and(
+						cb.equal(root.get(Shipping_.categories), cat),
+						cb.isFalse(root.get(Shipping_.deleted))
+						)
 				);
 		return getEntityManager().createQuery(criteria).getSingleResult();
 	}

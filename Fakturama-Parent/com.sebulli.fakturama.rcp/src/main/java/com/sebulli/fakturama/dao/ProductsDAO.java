@@ -65,7 +65,10 @@ public class ProductsDAO extends AbstractDAO<Product> {
 		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
 		Root<Product> root = criteria.from(getEntityClass());
 		criteria.select(cb.count(root)).where(
-						cb.equal(root.get(Product_.categories), cat)
+						cb.and(
+								cb.equal(root.get(Product_.categories), cat),
+								cb.isFalse(root.get(Product_.deleted))
+								)
 				);
 		return getEntityManager().createQuery(criteria).getSingleResult();
 	}

@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Control;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ShippingCategoriesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -326,6 +327,28 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     	}
     }
 
+	@Override
+	protected void handleAfterDeletion(Shipping objToDelete) {
+		// check if we can delete the old category (if it's empty)
+		if (objToDelete != null) {
+			try {
+				long countOfEntriesInCategory = shippingsDAO.countByCategory(objToDelete.getCategories());
+				if (countOfEntriesInCategory == 0) {
+					/* the category has to be set to null since the objToDelete isn't "really" deleted
+				     * but only marked as "invisible". The reference to the category still remains,
+					 * therefore we have to update it.
+					 */
+					ShippingCategory oldCat = objToDelete.getCategories();
+					objToDelete.setCategories(null);
+					getEntityDAO().update(objToDelete);
+					shippingCategoriesDAO.deleteEmptyCategory(oldCat);
+				}
+			} catch (FakturamaStoringException e) {
+				log.error(e, "can't delete empty category from object " + objToDelete.getName());
+			}
+		}
+	}
+    
     /**
      * Set the category filter with a given {@link TreeObjectType}.
      * 
