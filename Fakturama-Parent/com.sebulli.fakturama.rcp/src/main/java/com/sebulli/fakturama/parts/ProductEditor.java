@@ -573,8 +573,8 @@ public class ProductEditor extends Editor<Product> {
 		// Create a row for each entry of the scaled price table
 		context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
 		context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
+		Object priceObj;
 		for (int i = 0; i < MAX_NUMBER_OF_PRICES; i++) {
-			Object priceObj;
 			try {
 
 				// Get the net price scaled price

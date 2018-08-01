@@ -72,7 +72,7 @@ public class ProductsDAO extends AbstractDAO<Product> {
 				);
 		return getEntityManager().createQuery(criteria).getSingleResult();
 	}
-
+	
     /**
      * @param object
      * @param cb

@@ -83,7 +83,7 @@ public class GrossText {
 			public void modifyText(ModifyEvent e) {
 				if (grossText != null && grossText.getControl().isFocusControl()) {
 					setNetValue(DataUtils.getInstance().calculateNetFromGross(
-							grossText.getControl().getText(), 
+							Double.toString((Double) grossText.getValue()), 
 							vatValue, netValue));
 
 			        // Fill the SWT text field "net" with the result

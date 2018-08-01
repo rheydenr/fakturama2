@@ -461,10 +461,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 				     * but only marked as "invisible". The reference to the category still remains,
 					 * therefore we have to update it.
 					 */
-					ProductCategory oldCat = objToDelete.getCategories();
-					objToDelete.setCategories(null);
-                    getEntityDAO().update(objToDelete);
-					productCategoriesDAO.deleteEmptyCategory(oldCat);
+//					ProductCategory oldCat = objToDelete.getCategories();
+//					objToDelete.setCategories(null);
+//                    getEntityDAO().update(objToDelete);
+					productCategoriesDAO.deleteEmptyCategory(objToDelete.getCategories());
 				}
 			} catch (FakturamaStoringException e) {
 				log.error(e, "can't delete empty category from object " + objToDelete.getName());

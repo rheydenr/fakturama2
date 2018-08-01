@@ -531,7 +531,7 @@ public class DocumentEditor extends Editor<Document> {
 //		else {
 			// the customer changed and so there is a new payment. Set it.
 		// TODO Check it! The payment *cannot* be changed manually!
-			if (!newPaymentDescription.isEmpty()) {
+			if (StringUtils.isNotBlank(newPaymentDescription)) {
 				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
 			}
 //		}

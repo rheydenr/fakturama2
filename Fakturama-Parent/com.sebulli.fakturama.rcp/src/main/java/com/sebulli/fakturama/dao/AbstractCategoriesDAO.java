@@ -95,12 +95,7 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
 			checkConnection();
 			EntityTransaction trx = getEntityManager().getTransaction();
 			trx.begin();
-			// merge before persist since we could have referenced entities
-			// which are already persisted
-//			if(withBatch) {
-//				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
-//				entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
-//			}
+			updateObsoleteEntities(oldCat);
 			oldCat = getEntityManager().merge(oldCat);
 //			oldCat.setDeleted(true);
 			getEntityManager().remove(oldCat);
@@ -110,7 +105,18 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
 		}
 	}
 
-    /**
+	/**
+	 * Used only if orphaned categories should be deleted. In this case the entities' category has to
+	 * be set to null since else references to empty categories exist.
+	 * This method should be overwritten if needed.  
+	 * @param oldCat the obsolete category
+	 */
+    protected void updateObsoleteEntities(T oldCat) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
      * Find a Category by its name. If one of the part categories doesn't exist we create it 
      * (if withPersistOption is set).
      * 
