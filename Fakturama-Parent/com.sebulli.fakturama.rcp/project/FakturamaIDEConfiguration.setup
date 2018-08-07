@@ -15,7 +15,7 @@
       name="fakturama-workspace"
       label="Fakturama IDE Workspace">
     <stream
-        href="file:///vagrant/Fakturama2GIT.setup?oomph_form=b'users/sign_in'#//@streams[name='master']"/>
+        href="https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup?oomph_form=b'users/sign_in'#//@streams[name='develop']"/>
     <description>The Fakturama IDE workspace provides cool stuff.</description>
   </workspace>
   <description>The Fakturama IDE configuration.</description>
