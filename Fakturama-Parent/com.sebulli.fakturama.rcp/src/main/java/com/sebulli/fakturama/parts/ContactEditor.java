@@ -281,7 +281,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				messageBox.setMessage(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()) + "\n" + 
 						msg.editorContactHintSeepreferences);
 				messageBox.open();
-				return;
+				throw new RuntimeException(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()));
+//				return;
 			}
 
 		}
@@ -1283,7 +1284,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		    @Override
 		    public IStatus validate(Object value) {
 		        String emailAddress = (String) value;
-		        if(EmailValidator.getInstance().isValid(emailAddress)) {
+		        if(StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
 		        	return ValidationStatus.ok();
 		        } else {
 		        	return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);

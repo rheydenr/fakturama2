@@ -8,7 +8,6 @@ import org.eclipse.core.commands.AbstractParameterValueConverter;
 import org.eclipse.core.commands.ParameterValueConversionException;
 
 /**
- * @author rheydenreich
  *
  */
 public class BooleanParameterValueConverter extends AbstractParameterValueConverter {
