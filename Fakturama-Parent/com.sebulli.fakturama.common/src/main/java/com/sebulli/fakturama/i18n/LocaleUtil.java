@@ -163,8 +163,9 @@ public class LocaleUtil implements ILocaleService {
 	 */
     @Override
 	public Map<String, String> getLocaleCountryMap() {
-        if(localeCountryMap == null) {
-            Map<String, String> tmpMap = countryLocaleMap.entrySet().stream().collect(
+        if(localeCountryMap == null || localeCountryMap.isEmpty()) {
+        	initLocaleUtil(getDefaultLocale().toString());
+            Map<String, String> tmpMap = getCountryLocaleMap().entrySet().stream().collect(
                     Collectors.toMap((Entry<String, Locale> e) -> e.getValue().getCountry(), 
                                      (Entry<String, Locale> e) -> e.getKey()));
             ValueComparator bvc = new ValueComparator(tmpMap, defaultLocale);

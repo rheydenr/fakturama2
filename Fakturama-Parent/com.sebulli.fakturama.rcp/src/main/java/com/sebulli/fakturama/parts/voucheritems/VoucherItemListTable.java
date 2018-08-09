@@ -266,30 +266,15 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     calculate = false; // no recalculation needed
                     break;
                 case PRICE:
-                    String priceString = ((String) newValue).toLowerCase();
-
-                    // If the price is tagged with an "Net" or "Gross", force this
-                    // value to a net or gross value
-                    //T: Tag to mark a price as net or gross
-                    if (priceString.contains((msg.productDataNet).toLowerCase())) {
-                        useGross = false;
-                    }
-                    //T: Tag to mark a price as net or gross
-                    if (priceString.contains((msg.productDataGross).toLowerCase())) {
-                        useGross = true;
-                    }
-
-                    // Set the price as gross or net value.
-                    // If the editor displays gross values, calculate the net value,
-                    // because only net values are stored.
-                    if (useGross) {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        Price newPrice = new Price(amount, rowObject.getVoucherItem().getVat().getTaxValue(), false, true);
-                        rowObject.getVoucherItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
-                    } else {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        rowObject.getVoucherItem().setPrice(amount.getNumber().doubleValue());
-                    }
+                	String priceString = ((String) newValue).toLowerCase();
+                	rowObject.getVoucherItem().setPrice(DataUtils.getInstance().StringToDouble(priceString));
+                	break;
+                case TOTAL:
+                    // only net values are stored.
+                	priceString = ((String) newValue).toLowerCase();
+                    MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
+                    Price newPrice = new Price(amount, rowObject.getVoucherItem().getVat().getTaxValue(), false, true);
+                    rowObject.getVoucherItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
                     break;
                 default:
                     break;
@@ -370,7 +355,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.ACCOUNTTYPE, ACCOUNTTYPE_CELL_LABEL);
 //        registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.DISCOUNT, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.PRICE, MONEYVALUE_CELL_LABEL);
-        registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.TOTAL, TOTAL_MONEYVALUE_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.TOTAL, MONEYVALUE_CELL_LABEL);
         
         // "normal" columns are always editable
         registerColumnOverrides(reverseMap, columnLabelAccumulator, VoucherItemListDescriptor.TEXT, DESCRIPTION_CELL_LABEL);
