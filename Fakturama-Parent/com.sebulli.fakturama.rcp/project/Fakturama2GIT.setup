@@ -16,30 +16,40 @@
     label="Fakturama Project">
   <setupTask
       xsi:type="setup:VariableTask"
+      id="org.fakturama.install.root"
       name="install.root"
-      value="${user.home}/projects"/>
+      value="${user.home}/projects">
+    <description>Root installation folder</description>
+  </setupTask>
   <setupTask
       xsi:type="setup:VariableTask"
+      id="org.fakturama.install.location"
       name="installation.location"
       value="${install.root/fakturama2}"
-      defaultValue=""
-      label="install location"/>
+      label="install location">
+    <description>installation folder within root installation folder</description>
+  </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
+      id="org.fakturama.install.prefs"
       name="User Preferences">
     <annotation
         source="http://www.eclipse.org/oomph/setup/UserPreferences"/>
     <setupTask
         xsi:type="setup:CompoundTask"
+        id="org.fakturama.install.prefs.maven"
         name="org.eclipse.m2e.core">
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.m2e.core/eclipse.m2.problem.notCoveredMojoExecution"
           value="ignore"/>
+      <description>Changed preferences for maven.</description>
     </setupTask>
+    <description>User preferences for the IDE.</description>
   </setupTask>
   <setupTask
       xsi:type="jdt:JRETask"
+      id="org.fakturama.install.jre"
       version="JavaSE-1.8"
       location="${jre.location-1.8}"
       name="JDK for JavaSE-1.8">
@@ -47,6 +57,7 @@
   </setupTask>
   <setupTask
       xsi:type="setup:EclipseIniTask"
+      id="org.fakturama.install.ini"
       option="-Xmx"
       value="2g"
       vm="true">
@@ -54,6 +65,7 @@
   </setupTask>
   <setupTask
       xsi:type="setup:ResourceCreationTask"
+      id="org.fakturama.install.settingsdialog"
       excludedTriggers="STARTUP MANUAL"
       content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;section name=&quot;Workbench&quot;>&#xD;&#xA;&#x9;&lt;section name=&quot;org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart&quot;>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;true&quot; key=&quot;group_libraries&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;false&quot; key=&quot;linkWithEditor&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;2&quot; key=&quot;layout&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;2&quot; key=&quot;rootMode&quot;/>&#xD;&#xA;&#x9;&#x9;&lt;item value=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;packageExplorer configured=&amp;quot;true&amp;quot; group_libraries=&amp;quot;1&amp;quot; layout=&amp;quot;2&amp;quot; linkWithEditor=&amp;quot;0&amp;quot; rootMode=&amp;quot;2&amp;quot; sortWorkingSets=&amp;quot;false&amp;quot; workingSetName=&amp;quot;&amp;quot;&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;workingSet editPageId=&amp;quot;org.eclipse.jdt.internal.ui.OthersWorkingSet&amp;quot; factoryID=&amp;quot;org.eclipse.ui.internal.WorkingSetFactory&amp;quot; id=&amp;quot;1382792884467_1&amp;quot; label=&amp;quot;Other Projects&amp;quot; name=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/localWorkingSetManager&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;activeWorkingSet workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;allWorkingSets workingSetName=&amp;quot;Other Projects&amp;quot;/&amp;gt;&amp;#x0D;&amp;#x0A;&amp;lt;/packageExplorer&amp;gt;&quot; key=&quot;memento&quot;/>&#xD;&#xA;&#x9;&lt;/section>&#xD;&#xA;&lt;/section>&#xD;&#xA;"
       targetURL="${workspace.location|uri}/.metadata/.plugins/org.eclipse.jdt.ui/dialog_settings.xml"
@@ -61,11 +73,14 @@
     <description>Initialize JDT's package explorer to show working sets as its root objects</description>
   </setupTask>
   <setupTask
-      xsi:type="setup:VariableTask"
-      name="eclipse.target.platform"
-      value="Photon"
-      defaultValue="Neon"
-      storageURI="scope://Workspace"/>
+      xsi:type="setup:ResourceCreationTask"
+      id="org.fakturama.install.startupsettings"
+      excludedTriggers="STARTUP MANUAL"
+      content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;state reopen=&quot;false&quot;/>"
+      targetURL="${workspace.location|uri}/.metadata/.plugins/org.eclipse.ui.intro/introstate"
+      encoding="UTF-8">
+    <description>Suppress Welcome page at startup</description>
+  </setupTask>
   <setupTask
       xsi:type="setup.p2:P2Task"
       id="org.fakturama.additionalFeatures"
@@ -75,18 +90,44 @@
         name="org.eclipse.emf.texo.feature.group"/>
     <requirement
         name="com.essiembre.eclipse.rbe.feature.group"/>
+    <requirement
+        name="net.sf.eclipsecs.feature.group"/>
+    <requirement
+        name="com.github.sevntu.checkstyle.checks.feature.feature.group"
+        filter=""/>
+    <requirement
+        name="org.eclipse.e4.core.tools.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.xpand.sdk.feature.group"/>
+    <requirement
+        name="org.eclipse.xtext.sdk.feature.group"/>
+    <requirement
+        name="org.eclipse.xtend.feature.group"/>
+    <requirement
+        name="org.eclipse.emf.ecoretools.design.feature.group"/>
+    <requirement
+        name="net.sf.jautodoc.feature.feature.group"/>
+    <requirement
+        name="net.sourceforge.pmd.eclipse.feature.group"/>
+    <repository
+        url="https://dl.bintray.com/pmd/pmd-eclipse-plugin/updates/"/>
+    <repository
+        url="http://jautodoc.sourceforge.net/update"/>
     <repository
         url="http://download.eclipse.org/releases/photon"/>
     <repository
         url="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
     <repository
         url="https://raw.githubusercontent.com/essiembre/eclipse-rbe/master/eclipse-rbe-update-site/site.xml"/>
+    <repository
+        url="http://eclipse-cs.sourceforge.net/update"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}</description>
   </setupTask>
   <setupTask
       xsi:type="git:GitCloneTask"
       id="git.clone.fakturama2"
       remoteURI="https://bitbucket.org/fakturamadev/fakturama-2.git"
+	  checkoutBranch="develop"
       pushURI="">
     <description>${scope.project.label}</description>
   </setupTask>
@@ -101,14 +142,20 @@
     <workingSet
         name="Fakturama">
       <predicate
-          xsi:type="predicates:AndPredicate">
+          xsi:type="predicates:OrPredicate">
         <operand
-            xsi:type="predicates:LocationPredicate"
-            pattern="like .*/Fakturama-Parent/.*"/>
+            xsi:type="predicates:NamePredicate"
+            pattern="com.sebulli.*"/>
         <operand
-            xsi:type="predicates:RepositoryPredicate"
-            project="com.sebulli.fakturama.rcp"/>
+            xsi:type="predicates:NamePredicate"
+            pattern="org.fakturama.*"/>
       </predicate>
+    </workingSet>
+    <workingSet
+        name="JavaMoney">
+      <predicate
+          xsi:type="predicates:NamePredicate"
+          pattern="javamoney*"/>
     </workingSet>
     <description>The dynamic working sets for ${scope.project.label}</description>
   </setupTask>
@@ -117,15 +164,17 @@
       id="org.fakturama.target"
       name="Fakturama Target Plattform">
     <annotation
-        source="file:///${git.clone.fakturama2.location}/fakturama-2/Fakturama-Parent/org.fakturama.target/org.fakturama.target.target"/>
+        source="${git.clone.fakturama2.location}/fakturama-2/Fakturama-Parent/org.fakturama.target/org.fakturama.target.target"/>
     <description>Fakturama Target Plattform</description>
   </setupTask>
   <setupTask
-      xsi:type="pde:APIBaselineFromTargetTask"
-      id="org.fakturama.target.baseline"
-      name="Fakturama API Baseline"
-      targetName="org.fakturama.target">
-    <description>Fakturama API Baseline</description>
+      xsi:type="setup:VariableTask"
+      id="org.fakturama.install.targetplatform"
+      name="eclipse.target.platform"
+      value="org.fakturama.target"
+      defaultValue="Neon"
+      storageURI="scope://Workspace">
+    <description>basic IDE target platform</description>
   </setupTask>
   <stream name="master"
       label="Master">
@@ -135,6 +184,13 @@
         value="=https://git.eclipse.org/c/fakturamadev/fakturama-2.git.git/plain/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup->${git.clone.fakturama2.location|uri}/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup"
         vm="true">
       <description>Set an Oomph redirection system property to redirect the logical location of this setup to its physical location in the Git clone.</description>
+    </setupTask>
+    <setupTask
+        xsi:type="pde:APIBaselineFromTargetTask"
+        id="org.fakturama.target.baseline"
+        name="Fakturama API Baseline"
+        targetName="org.fakturama.target">
+      <description>Fakturama API Baseline</description>
     </setupTask>
   </stream>
   <logicalProjectContainer
