@@ -117,7 +117,7 @@
       id="org.fakturama.target"
       name="Fakturama Target Plattform">
     <annotation
-        source="file:///${git.clone.fakturama2.location}/fakturama-2/Fakturama-Parent/org.fakturama.target/org.fakturama.target.target"/>
+        source="${git.clone.fakturama2.location|uri}/fakturama-2/Fakturama-Parent/org.fakturama.target/org.fakturama.target.target"/>
     <description>Fakturama Target Plattform</description>
   </setupTask>
   <setupTask
