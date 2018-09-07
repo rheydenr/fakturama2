@@ -39,7 +39,12 @@ public class FakturamaLogger implements ILogger {
 	 */
 	@Override
 	public void debug(String message) {
-		delegate.log(LogService.LOG_DEBUG, message);
+		if(delegate != null) {
+			delegate.log(LogService.LOG_DEBUG, message);
+		} else {
+			// fallback
+			System.out.println(message);
+		}
 	}
 
 	/* (non-Javadoc)
