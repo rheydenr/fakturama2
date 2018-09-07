@@ -603,7 +603,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 ParameterizedCommand wbCommand = toolItem.getWbCommand();
                 @SuppressWarnings("unchecked")
                 Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
-                if (treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
+                if (treeObject.getDocType() != null) {
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
                     parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getDocType().name());
                 }

@@ -1,26 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="468">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="468">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.collections.feature.source.feature.group" version="9.1.0.v20171231-1315"/>
 <repository location="http://download.eclipse.org/collections/9.1.0/repository"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.7.0.v20171231020002"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.dbaccess.feature.feature.group" version="1.1.0.RELEASE"/>
@@ -121,6 +103,23 @@
 <unit id="org.javamoney.feature.feature.group" version="1.0.1"/>
 <repository location="http://p2.fakturama.info"/>
 </location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.7.0.v20171231020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.7.0.v20171231020002"/>
+		<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
+	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 </target>
