@@ -27,11 +27,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -138,7 +138,7 @@ public class CustomerStatistics {
 			
 			// Compare the the address
             if (!byID && address.length() > 10 && 
-				DataUtils.getInstance().similarity(contactUtil.getAddressAsString(document.getBillingContact()), address) > 0.7) {
+            		StringUtils.getJaroWinklerDistance(contactUtil.getAddressAsString(document.getBillingContact()), address) > 0.7) {
 				customerFound = true;
 			}
 			

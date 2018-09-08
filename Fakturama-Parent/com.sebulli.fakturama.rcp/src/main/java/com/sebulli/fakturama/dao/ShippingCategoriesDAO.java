@@ -1,8 +1,14 @@
 package com.sebulli.fakturama.dao;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
+
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
+import com.sebulli.fakturama.model.Shipping_;
 
 @Creatable
 public class ShippingCategoriesDAO extends AbstractCategoriesDAO<ShippingCategory> {
@@ -11,45 +17,17 @@ public class ShippingCategoriesDAO extends AbstractCategoriesDAO<ShippingCategor
     	return ShippingCategory.class;
     }
     
-//    
-//    /**
-//     * Find a {@link ShippingCategory} by its name. If one of the part categories doesn't exist we create it 
-//     * (if withPersistOption is set).
-//     * 
-//     * @param testCat the category to find
-//     * @param withPersistOption persist a (part) category if it doesn't exist
-//     * @return found category
-//     */
-//    public ShippingCategory getCategory(String testCat, boolean withPersistOption) {
-//        // to find the complete category we have to start with the topmost category
-//        // and then lookup each of the child categories in the given path
-//        String[] splittedCategories = testCat.split("/");
-//        ShippingCategory parentCategory = null;
-//        String category = "";
-//        try {
-//            for (int i = 0; i < splittedCategories.length; i++) {
-//            	if(StringUtils.isBlank(splittedCategories[i])) {
-//            		continue;
-//            	}
-//                category += "/" + splittedCategories[i];
-////                ShippingCategory searchCat = findShippingCategoryByName(category);
-//                ShippingCategory searchCat = findCategoryByName(category);
-//                if (searchCat == null) {
-//                    // not found? Then create a new one.
-//                    ShippingCategory newCategory = new ShippingCategory();
-//                    newCategory.setName(splittedCategories[i]);
-//                    newCategory.setParent(parentCategory);
-//                    newCategory = save(newCategory);
-//                    searchCat = newCategory;
-//                }
-//                // save the parent and then dive deeper...
-//                parentCategory = searchCat;
-//            } 
-//        }
-//        catch (FakturamaStoringException e) {
-//            getLog().error(e);
-//        }
-//        return parentCategory;
-//    }
+    @Override
+    protected void updateObsoleteEntities(ShippingCategory oldCat) {
+		// at first update all (deleted) entries in this category and set the category entry to null
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaUpdate<Shipping> updateShippings = getEntityManager().getCriteriaBuilder().createCriteriaUpdate(Shipping.class);
+        Root<Shipping> root = updateShippings.from(Shipping.class);	        
+		updateShippings.set(root.get(Shipping_.categories),(ShippingCategory) null);
+		updateShippings.where(cb.and(
+				cb.equal(root.get(Shipping_.categories), oldCat),
+				cb.isTrue(root.get(Shipping_.deleted))));
+		getEntityManager().createQuery(updateShippings).executeUpdate();
+    }
 
 }

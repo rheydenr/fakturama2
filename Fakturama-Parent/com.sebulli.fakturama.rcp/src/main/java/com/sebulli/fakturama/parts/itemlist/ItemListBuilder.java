@@ -49,6 +49,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
@@ -212,6 +213,7 @@ public class ItemListBuilder {
 
                 // Use the standard VAT value
                 item.setItemVat(defaultVat);
+                item.setQuantity(Double.valueOf(1.0) * documentType.getSign());
                 DocumentItemDTO newItem = new DocumentItemDTO(item);
                 itemListTable.addNewItem(newItem);
 

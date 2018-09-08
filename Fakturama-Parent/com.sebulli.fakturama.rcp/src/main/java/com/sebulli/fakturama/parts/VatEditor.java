@@ -82,6 +82,7 @@ public class VatEditor extends Editor<VAT> {
     private Text textDescription;
     private FormattedText textValue, textSalesEqTax;
     private Combo comboCategory;
+    private VATCategory oldCat;
 
     // defines if the vat is just created
     private boolean newVat;
@@ -125,7 +126,8 @@ public class VatEditor extends Editor<VAT> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                VATCategory parentCategory = vatCategoriesDAO.getOrCreateCategory(testCat, true);
+                VATCategory parentCategory = vatCategoriesDAO.getCategory(testCat, true);
+
                 // parentCategory now has the last found Category
                 editorVat.setCategory(parentCategory);
             }
@@ -136,6 +138,16 @@ public class VatEditor extends Editor<VAT> {
              * all went ok. That's the point...
              */
             editorVat = vatDao.update(editorVat);
+
+            // check if we can delete the old category (if it's empty)
+            if(oldCat != null && oldCat != editorVat.getCategory()) {
+            	long countOfEntriesInCategory = vatDao.countByCategory(oldCat);
+            	if(countOfEntriesInCategory == 0) {
+            		vatCategoriesDAO.deleteEmptyCategory(oldCat);
+            	}
+            }
+
+            oldCat = editorVat.getCategory();
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current VAT: " + editorVat.toString());
@@ -306,6 +318,8 @@ public class VatEditor extends Editor<VAT> {
         if (!newVat) {
             stdComposite.stdButton.setEnabled(true);
         }
+        
+    	oldCat = editorVat.getCategory();        
         
         bindModel();
     }

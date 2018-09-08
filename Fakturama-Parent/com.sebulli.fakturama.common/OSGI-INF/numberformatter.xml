@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.sebulli.fakturama.numberformatter">
+   <implementation class="com.sebulli.fakturama.misc.NumberFormatterService"/>
+   <service>
+      <provide interface="com.sebulli.fakturama.misc.INumberFormatterService"/>
+   </service>
+   <reference bind="bindLocaleService" cardinality="1..1" interface="com.sebulli.fakturama.i18n.ILocaleService" name="ILocaleService" policy="static"/>
+   <reference cardinality="1..1" interface="com.sebulli.fakturama.log.ILogger" name="ILogger" policy="static"/>
+</scr:component>

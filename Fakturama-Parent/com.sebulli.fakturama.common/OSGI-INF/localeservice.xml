@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.sebulli.fakturama.l10n">
+   <implementation class="com.sebulli.fakturama.i18n.LocaleUtil"/>
+   <service>
+      <provide interface="com.sebulli.fakturama.i18n.ILocaleService"/>
+   </service>
+</scr:component>

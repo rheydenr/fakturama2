@@ -192,9 +192,24 @@ public class Constants {
     public static final String PREFERENCES_PRODUCT_SCALED_PRICES = "PRODUCT_SCALED_PRICES";
 
     /**
-     * 
+     * Preference: Use gross or net or both for price values
      */
     public static final String PREFERENCES_PRODUCT_USE_NET_GROSS = "PRODUCT_USE_NET_GROSS";
+    
+    /**
+     * Use net and gross prices for monetary values
+     */
+    public static final int PRODUCT_USE_NET_AND_GROSS = 0;
+    
+    /**
+     * Use only net prices for monetary values
+     */
+    public static final int PRODUCT_USE_NET = 1;
+    
+    /**
+     * Use only gross prices for monetary values
+     */
+    public static final int PRODUCT_USE_GROSS = 2;
 
     /**
      * 
@@ -537,6 +552,17 @@ public class Constants {
 	public static final String TAX_DEFAULT_CODE = "VAT";
 
 	public static final String PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX = "PREFERENCES_DOCUMENT_USE_SALES_EQUALIZATION_TAX";
+
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY = "PRODUCT_CHANGE_QTY";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_ORDER = "0";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY = "1";
+	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE = "2";
+
+	public static final String PARAM_STATUS =   "com.sebulli.fakturama.command.order.markas.status";
+	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
+
+	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
+
 
 
 }

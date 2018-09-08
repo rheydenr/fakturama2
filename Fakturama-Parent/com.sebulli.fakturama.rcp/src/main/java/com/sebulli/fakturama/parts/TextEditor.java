@@ -111,7 +111,7 @@ public class TextEditor extends Editor<TextModule> {
             String testCat = comboCategory.getText();
             // if there's no category we can skip this step
             if(StringUtils.isNotBlank(testCat)) {
-                TextCategory parentCategory = textCategoriesDAO.getOrCreateCategory(testCat, true);
+                TextCategory parentCategory = textCategoriesDAO.getCategory(testCat, true);
                 // parentCategory now has the last found Category
                 editorText.setCategories(parentCategory);
             }
@@ -183,7 +183,7 @@ public class TextEditor extends Editor<TextModule> {
             editorText = modelFactory.createTextModule();
             String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
-                TextCategory newCat = textCategoriesDAO.findTextCategoryByName(category);
+                TextCategory newCat = textCategoriesDAO.findCategoryByName(category);
                 editorText.setCategories(newCat);
             }
             

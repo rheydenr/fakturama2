@@ -41,6 +41,7 @@ import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.ItemAccountType;
@@ -83,6 +84,9 @@ public class ExpendituresCsvImporter {
     @Inject
     private VatsDAO vatsDAO;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	/**
 	 * the model factory
 	 */
@@ -215,7 +219,7 @@ public class ExpendituresCsvImporter {
 							account.setName(prop.getProperty("category"));
 						}
 						expenditure.setAccount(account);
-						expenditure.setVoucherDate(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date")).getTime());
+						expenditure.setVoucherDate(dateFormatterService.getCalendarFromDateString(prop.getProperty("date")).getTime());
 						expenditure.setVoucherNumber(prop.getProperty("nr"));
 						expenditure.setDocumentNumber(prop.getProperty("documentnr"));
 

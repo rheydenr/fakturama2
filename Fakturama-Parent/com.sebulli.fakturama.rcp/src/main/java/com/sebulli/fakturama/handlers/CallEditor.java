@@ -193,7 +193,7 @@ public class CallEditor {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
 		// search only if not duplicated!
-		if(!Boolean.toString(true).equals(duplicate)) {
+		if(!BooleanUtils.toBoolean(duplicate)) {
 			Collection<MPart> parts = partService.getParts();
 	        if (params.get(PARAM_OBJ_ID) != null) {
 	    		// at first we look for an existing Part

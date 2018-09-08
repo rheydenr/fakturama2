@@ -17,6 +17,7 @@ package com.sebulli.fakturama.parts.converter;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.conversion.Converter;
 
 import com.sebulli.fakturama.model.IDescribableEntity;
@@ -51,7 +52,7 @@ public class StringToEntityConverter<T extends IEntity> extends Converter {
         String searchString = (String)fromObject;
         Optional<T> firstFound;
         if(!isDescribable) {
-            firstFound = categories.stream().filter(cat -> cat.getName().equals(searchString)).findFirst();
+            firstFound = categories.stream().filter(cat -> StringUtils.defaultString(cat.getName()).equals(searchString)).findFirst();
 //        for (T category : categories) {
 //            if(category.getName().equals(searchString)) {
 //                return category;

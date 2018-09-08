@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -94,21 +95,27 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
@@ -116,10 +123,11 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DummyStringCategory;
@@ -156,10 +164,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private ESelectionService selectionService;
     
     @Inject
+    private EMenuService menuService;
+    
+    @Inject
     private IEclipseContext context;
     
     @Inject
     private VatsDAO vatsDAO;
+	
+	@Inject
+	private ILocaleService localeUtil;
+	
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
@@ -223,7 +240,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public Control createPartControl(Composite parent, Document document,/* boolean useGross,*/DocumentEditor container,
             int netgross) {
-        log.info("create DocumentItem list part");
+        log.debug("create DocumentItem list part");
         this.document = document;
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         this.container = container;
@@ -248,26 +265,109 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	 * Create the default context menu
 	 */
 	private Menu createContextMenu() {
-		// // Add up/down and delete actions
-		// menuManager.add(new MoveEntryUpAction());
-		// menuManager.add(new MoveEntryDownAction());
-		// menuManager.add(new DeleteDataSetAction());
-		
-		// add NatTable menu items
+		// Add up/down and delete actions
 		MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
-		
 		MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
 		
-//		DeleteHandler deleteHandler = ContextInjectionFactory.make(DeleteHandler.class, context);
+		IMenuItemProvider deleteMenuItem = new IMenuItemProvider() {
+
+			@Override
+			public void addMenuItem(NatTable natTable, Menu popupMenu) {
+		        final MenuItem deleteItem = new MenuItem(popupMenu, SWT.PUSH);
+		        deleteItem.setText(msg.mainMenuEditDeleteName);
+				deleteItem.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
+				deleteItem.setEnabled(true);
+				deleteItem.setAccelerator(SWT.MOD1 + 'D');  // doesn't work :-(
+				deleteItem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent event) {
+						removeSelectedEntry();
+					}
+				});
+			}
+			
+		};
+		
 		MenuManager menuManager = new MenuManager();
 		Menu retval = new PopupMenuBuilder(natTable, menuManager)
 				.withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
 				.withMenuItemProvider(CommandIds.CMD_MOVE_DOWN, moveEntryDownHandler)
-//				.withMenuItemProvider(CommandIds.CMD_DELETE_DATASET, deleteHandler)
+				.withMenuItemProvider(CommandIds.CMD_DELETE_DATASET, deleteMenuItem)
+			    .withEnabledState(
+			    		CommandIds.CMD_MOVE_UP,
+			            new IMenuItemState() {
+			     
+			                @Override
+			                public boolean isActive(NatEventData natEventData) {
+			                    return natEventData.getRowPosition() > 1;
+			                }
+			        })
+			    .withEnabledState(
+			    		CommandIds.CMD_MOVE_DOWN,
+			    		new IMenuItemState() {
+			    			
+			    			@Override
+			    			public boolean isActive(NatEventData natEventData) {
+			    				return natEventData.getRowPosition() < getGridLayer().getBodyDataProvider().getRowCount();
+			    			}
+			    		})
 				.build();
-		
-		getGridLayer().getSelectionLayer().getSelectedRowPositions();
+////		
+//		getGridLayer().getSelectionLayer().getSelectedRowPositions();
 
+		return retval;
+	}
+	
+	/**
+	 * This is an alternative implementation of the context menu. It uses the definition from Application.e4xmi. 
+	 * At the moment, it's unused because the {@link MenuItem}s aren't real handler implementations. 
+	 * This could be changed in the future. 
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	private Menu createContextMenuFromE4Applicationmodel() {
+		Menu retval = null;
+		menuService.registerContextMenu(natTable, "com.sebulli.fakturama.documentitemlist.popup");
+		// get the menu registered by EMenuService
+		final Menu e4Menu = natTable.getMenu();
+		
+		// remove the menu reference from NatTable instance
+		natTable.setMenu(null);
+		natTable.addConfiguration(
+		        new AbstractUiBindingConfiguration() {
+		 
+		    @Override
+		    public void configureUiBindings(
+		            UiBindingRegistry uiBindingRegistry) {
+		        // add NatTable menu items
+		        // and register the DisposeListener
+		        new PopupMenuBuilder(natTable, e4Menu)
+		            .build();
+		 
+		        // register the UI binding
+		        uiBindingRegistry.registerMouseDownBinding(
+		                new MouseEventMatcher(
+		                        SWT.NONE,
+		                        GridRegion.BODY,
+		                        MouseEventMatcher.RIGHT_BUTTON),
+		                new PopupMenuAction(e4Menu));
+		    }
+		});
+		
+		retval = new PopupMenuBuilder(natTable, e4Menu)
+				.withEnabledState(CommandIds.CMD_MOVE_UP, new IMenuItemState() {
+
+					@Override
+					public boolean isActive(NatEventData natEventData) {
+						return natEventData.getRowPosition() > 1;
+					}
+				}).withEnabledState(CommandIds.CMD_MOVE_DOWN, new IMenuItemState() {
+
+					@Override
+					public boolean isActive(NatEventData natEventData) {
+						return natEventData.getRowPosition() < getGridLayer().getBodyDataProvider().getRowCount();
+					}
+				}).build();		
 		return retval;
 	}
     
@@ -363,7 +463,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    retval = rowObject.getDocumentItem().getPosNr();
 	                    break;
 	                case QUANTITY:
-	                    retval = DataUtils.getInstance().doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
+	                    retval = numberFormatterService.doubleToFormattedQuantity(rowObject.getDocumentItem().getQuantity());
 	                    break;
 	                case OPTIONAL:
 	                case QUNIT:
@@ -441,9 +541,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     rowObject.getDocumentItem().setOptional((Boolean) newValue);
                     break;
                 case QUANTITY:
-                    Double oldQuanity = rowObject.getDocumentItem().getQuantity();
+                    Double oldQuantity = rowObject.getDocumentItem().getQuantity();
                     // Set the quantity
-                    rowObject.getDocumentItem().setQuantity(ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0)));
+                    rowObject.getDocumentItem().setQuantity(Optional.ofNullable((Double) newValue).orElse(Double.valueOf(0.0)));
                     Product product = rowObject.getDocumentItem().getProduct();
 
                     // If the item is coupled with a product, get the graduated price
@@ -454,7 +554,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                         // If the price is not equal, it was modified. In this case, do not
                         // modify the price value.
                         Double oldPrice = rowObject.getDocumentItem().getPrice();
-                        Double oldPriceByQuantity = productUtil.getPriceByQuantity(product, oldQuanity);
+                        Double oldPriceByQuantity = productUtil.getPriceByQuantity(product, oldQuantity);
 
                         Double newPrice = productUtil.getPriceByQuantity(product, (Double) newValue);
 
@@ -681,6 +781,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 new MoveCellSelectionCommandHandler(gridListLayer.getSelectionLayer(),
                         new EditTraversalStrategy(ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, natTable),
                         new EditTraversalStrategy(ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, natTable)));
+        
+        // register Delete command
+        // https://stackoverflow.com/questions/31907288/delete-rows-from-nattable
+        gridListLayer.getBodyDataLayer().registerCommandHandler(
+                new DeleteRowCommandHandler<DocumentItemDTO>(gridListLayer.getBodyDataProvider().getList()));
         
         return natTable;
     }
@@ -977,7 +1082,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             TextCellEditor textCellEditor = new TextCellEditor(true, true);
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
 			doubleDisplayConverter.setNumberFormat(numberInstance);
@@ -1029,7 +1134,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DoublePercentageDisplayConverter(),
+                    new DoublePercentageDisplayConverter(localeUtil),
                     DisplayMode.NORMAL, PERCENT_CELL_LABEL);
             configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
@@ -1057,7 +1162,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.EDIT, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
@@ -1070,7 +1175,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL, TOTAL_MONEYVALUE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE, 

@@ -1,14 +1,15 @@
-/*
- * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
+/* 
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
  * 
- * Copyright (C) 2012 Gerd Bartelt
+ * Copyright (C) 2014 www.fakturama.org
  * 
- * All rights reserved. This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License v1.0 which
- * accompanies this distribution, and is available at
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: Gerd Bartelt - initial API and implementation
+ * Contributors:
+ *     The Fakturama Team - initial API and implementation
  */
 
 package com.sebulli.fakturama.handlers;
@@ -22,7 +23,9 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -54,7 +57,11 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.office.OfficeDocument;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
@@ -84,9 +91,6 @@ public class CreateOODocumentHandler {
     @Inject
     private ILogger log;
 
-    //T: Text of the action
-    public final static String ACTIONTEXT = "Print as OO document";
-
     /**
      * Parameter identifier for the document
      */
@@ -101,31 +105,6 @@ public class CreateOODocumentHandler {
 	 * Parameter identifier for the template path.
 	 */
 	public static final String PARAM_TEMPLATEPATH = "org.fakturama.command.printoo.templatepath";
-
-    //	/**
-    //	 * default constructor
-    //	 */
-    //	public CreateOODocumentHandler() {
-    //		this(ACTIONTEXT, 
-    //				//T: Text of the action
-    //			_("Print/Export this document as an OpenOffice Writer document"));
-    //	}
-    //
-    //	/**
-    //	 * constructor
-    //	 * 
-    //	 * @param text
-    //	 *            Action text
-    //	 * @param toolTipText
-    //	 *            Tool tip text
-    //	 */
-    //	public CreateOODocumentHandler(String text, String toolTipText) {
-    //		super(text);
-    //		setToolTipText(toolTipText);
-    //		setId(CommandIds.CMD_CREATE_OODOCUMENT);
-    //		setActionDefinitionId(CommandIds.CMD_CREATE_OODOCUMENT);
-    //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/32/oowriter_32.png"));
-    //	}
     
     @CanExecute
     public boolean canExecute(EPartService partService, @Optional @Named(PARAM_SILENTMODE) String silentMode) {
@@ -199,12 +178,22 @@ public class CreateOODocumentHandler {
 		}
     	MPart activePart = partService.getActivePart();
 		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
-			// Search in the folder "Templates" and also in the folder with the
-			// localized name
+			// Search in the folder "Templates" and also in the folder with the localized name
 			DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
 			
 			if(documentEditor != null) {
 				List<Path> templates = collectTemplates(documentEditor.getDocumentType());
+				final List<DocumentItem> olditemsList = new ArrayList<>();
+				
+				// new documents need to be saved first, we don't have an id yet
+				Document tmpDoc = null;
+				if(documentEditor.getDocument().getId() > 0) {
+					tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
+				}
+				
+				if(tmpDoc != null) {
+					 olditemsList.addAll(tmpDoc.getItems());
+				}
 				
 				// If more than 1 template is found, show a pup up menu
 				if (templates.size() > 1) {
@@ -221,6 +210,7 @@ public class CreateOODocumentHandler {
 								documentEditor.doSave(null);
 								openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
 								// documentEditor.markAsPrinted();
+								updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
 							}
 						});
 					}
@@ -239,18 +229,144 @@ public class CreateOODocumentHandler {
 					documentEditor.doSave(null);
 					openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
 					// documentEditor.markAsPrinted();
+					updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
 				} else {
 					// Show an information dialog if no template was found
 					MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
 							MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
 				}
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Please select a document first! No active part was found.");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooErrorNoactivepart);
 			}
 		}
 	}
 
-    /**
+	/**
+	 * <p>The stock update works as follows:</p>
+	 * <p>You have to collect the
+	 * <ul><li>changed,</li><li>new and</li><li>deleted</li></ul>
+	 * {@link DocumentItem}s. For this, we hold the previous {@link DocumentItem} list and compare it to
+	 * the current one. Here we can find the updated {@link DocumentItem}s (which are available in both lists),
+	 * the new {@link DocumentItem}s (which are only available in the current list) and the deleted {@link DocumentItem}s
+	 * (which are only available in the old list). The resulting list is a combination of the changed and created {@link DocumentItem}s
+	 * from the current list and the deleted {@link DocumentItem}s from the old list. This resulting list contains
+	 * {@link DocumentItem}s which each contains a transient field (not stored to database) named <code>quantityOrigin</code>. 
+	 * This field is filled like follows:
+	 * <ul><li>changed {@link DocumentItem}s &rArr; <code>quantityOrigin</code> contains the old <code>quantity</code>
+	 * <li>new {@link DocumentItem}s &rArr; <code>quantityOrigin</code> contains nothing (<code>null</code>)
+	 * <li>deleted {@link DocumentItem}s &rArr; <code>quantityOrigin</code> contains the old <code>quantity</code>, but the
+	 * <code>quantity</code> of this {@link DocumentItem} is set to <code>null</code>.
+	 * </li></p>
+	 * <p>
+	 * <b><i>This merged list is only for checking the changed, created or deleted {@link DocumentItem}s and is NOT intended to being
+	 * stored in database!</i></b>
+	 * </p>
+	 * @param shell 
+	 * 
+	 * @param olditemsList
+	 * @param currentDocument
+	 */
+    private void updateStockQuantity(Shell shell, List<DocumentItem> olditemsList, Document currentDocument) {
+    	Document tmpDocument = null;
+    	boolean found = false;
+    	FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;    	
+    	
+    	// create a temporary document
+    	switch (currentDocument.getBillingType()) {
+		case DELIVERY:
+			tmpDocument = modelFactory.createDelivery();
+			tmpDocument.setBillingType(BillingType.DELIVERY);
+			break;
+		case INVOICE:
+			tmpDocument = modelFactory.createInvoice();
+			tmpDocument.setBillingType(BillingType.INVOICE);
+			break;
+		case CREDIT:
+			tmpDocument = modelFactory.createCredit();
+			tmpDocument.setBillingType(BillingType.CREDIT);
+			break;
+		default:
+			break;
+		}
+    	
+    	//if no reasonable billing type ist given we can return from this method
+    	if(tmpDocument == null) {
+    		return;
+    	}
+    	
+		// create a set of DocumentItems (if the same DocumentItem is used we have to
+		// summarize them)
+    	// Note: The key can't be the ID of the  DocumentItem since it couldn't be persisted yet.
+		Map<Integer, DocumentItem> tmpDocItems = new HashMap<>();
+		for (DocumentItem currentDocumentItem : currentDocument.getItems()) {
+			found = false;
+			// collect changed items for stock update
+			for (DocumentItem oldItem : olditemsList) {
+				// only items which have a changed quantity compared to the old one (comparing
+				// via itemNumber)
+				// Hint: don't use "Optional" class since a quantity of "0" is different from a
+				// quantity of "null"!
+				if (StringUtils.equalsIgnoreCase(oldItem.getItemNumber(), currentDocumentItem.getItemNumber())) {
+					// item was found so we have to mark it as found
+					found = true;
+					
+					// now check if it's changed
+					if (currentDocumentItem.getQuantity() != null
+							&& currentDocumentItem.getQuantity().compareTo(oldItem.getQuantity()) != 0) {
+
+						currentDocumentItem.setOriginQuantity(oldItem.getQuantity());
+						addToTmpItems(tmpDocItems, currentDocumentItem);
+					}
+				}
+			}
+
+			if (!found) {
+// "not found" means the currentDocumentItem couldn't be found in the oldDocumentItem's list. It seems to be a new one.
+// "found" means that the item was found in both lists but wasn't changed.
+				tmpDocItems.put(currentDocumentItem.getItemNumber().hashCode(), currentDocumentItem);
+			}
+		}
+		
+		// at the end collect the deleted items (but only if the document was printed before, because only then the stock was updated).
+		if(currentDocument.getPrinted()) {
+			for (DocumentItem oldItem : olditemsList) {
+				java.util.Optional<DocumentItem> firstFound = currentDocument.getItems().stream()
+						.filter(currentDocumentItem -> StringUtils.equalsIgnoreCase(oldItem.getItemNumber(), currentDocumentItem.getItemNumber()))
+						.findFirst();
+				if(!firstFound.isPresent()) {
+					oldItem.setOriginQuantity(oldItem.getQuantity());
+					oldItem.setQuantity(null);
+					addToTmpItems(tmpDocItems, oldItem);
+				}
+			}
+		}
+		
+		tmpDocument.setItems(tmpDocItems.entrySet().stream()
+						.map(item -> item.getValue())
+						.collect(Collectors.toList()));
+        
+        // update stock quantity
+		// can't be called via HandlerService since the ParemeterConverter reads the document from the database :-(
+		// Therefore we have to call it manually.
+       
+        StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
+        stockUpdateHandler.updateStockQuantity(shell, null, tmpDocument);
+	}
+
+	/**
+	 * @param tmpDocItems
+	 * @param itemToAdd
+	 */
+	private void addToTmpItems(Map<Integer, DocumentItem> tmpDocItems, DocumentItem itemToAdd) {
+		if (tmpDocItems.get(itemToAdd.getItemNumber().hashCode()) != null) {
+			itemToAdd.setOriginQuantity(itemToAdd.getOriginQuantity()
+					+ tmpDocItems.get(itemToAdd.getItemNumber().hashCode()).getQuantity());
+		}
+
+		tmpDocItems.put(itemToAdd.getItemNumber().hashCode(), itemToAdd);
+	}
+
+	/**
      * Get the relative path of the template
      * 
      * @param doctype
@@ -293,8 +409,7 @@ public class CreateOODocumentHandler {
 			        if (answer == 0) {
 			            log.debug("open doc");
 			            od.createDocument(false);
-			        }
-			        if (answer == 1) {
+			        } else if (answer == 1) {
 			            log.debug("create doc");
 			            od.createDocument(true);
 			        }
@@ -302,18 +417,18 @@ public class CreateOODocumentHandler {
 			} else {
 			    od.setDocument(document);
 			    od.setTemplate(template);
-			    log.debug("******************* open NEW doc");
+			    log.debug("open NEW doc");
 			    od.createDocument(false);
 			}
 		} catch (FakturamaStoringException e) {
-			log.error(e, "Dokument konnte nicht erstellt werden! Grund: " + e.getDescription());
+			log.error(e, "Document couldn't be created. Reason: " + e.getDescription());
 			if(e.getException() != null && e.getException() instanceof FakturamaStoringException) {
 				log.warn("Caused by: " + ((FakturamaStoringException)e.getException()).getDescription());
 			} else {
 				log.error(e.getException());
 			}
 			if(!silentMode) {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Dokument konnte nicht erstellt werden! Weitere Informationen finden Sie im Logfile.");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooCantprint);
 			}
 		}
     }

@@ -637,12 +637,15 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
                 	}
                     if(confirmation) {  // only kill if confirmed
+                    	handleAfterConfirmation(objToDelete);
+                    	
                         // refresh object from database
                         objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
                         // Instead of deleting it completely from the database the element is just marked
                         // as deleted. So a document which still refers to this element would not cause an error.
                         objToDelete.setDeleted(Boolean.TRUE);
-                        getEntityDAO().update(objToDelete);
+                        
+                        objToDelete = getEntityDAO().update(objToDelete);
                         
                         // if an editor with this object is open we have to close it forcibly
                         Map<String, Object> params = new HashMap<>();
@@ -653,6 +656,14 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                 catch (FakturamaStoringException e) {
                     log.error(e, "can't save the current Entity: " + objToDelete.toString());
                 }
+                
+                /*
+                 * TODO as long as the categories aren't fully implemented (multiple categories per entity)
+                 * we use this workaround for deleting the empty categories. If we later on change the structure
+                 * of the entities we have to change this into a comprehensive form (i.e., use interface DescribableEntity
+                 * with category attribute).  
+                 */
+                handleAfterDeletion(objToDelete);
     
                 // Refresh the corresponding table view
                 evtBroker.post(getEditorTypeId(), Editor.UPDATE_EVENT);
@@ -662,7 +673,24 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
         }
 	}
 
-    abstract protected AbstractDAO<T> getEntityDAO();
+	/**
+	 * Hook for handling objects after the deletion is confirmed by user.
+	 * This method should be overwritten if additional behavior is wanted.
+	 */
+    protected void handleAfterConfirmation(T objToDelete) {
+		// empty per default
+	}
+    
+	/**
+	 * Hook for handling objects after the deletion was processed.
+	 * This method should be overwritten if additional behavior is wanted.
+	 */
+    protected void handleAfterDeletion(T objToDelete) {
+		// empty per default
+    }
+
+
+	abstract protected AbstractDAO<T> getEntityDAO();
 
 
     /**

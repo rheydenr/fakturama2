@@ -3,8 +3,10 @@
  */
 package com.sebulli.fakturama.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.model.AbstractCategory;
+import com.sebulli.fakturama.model.AbstractCategory_;
+import com.sebulli.fakturama.model.VATCategory_;
 
 /**
  *
@@ -40,8 +44,8 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
         	String leafCategory = splittedCategories[splittedCategories.length - 1];       	
     		CriteriaQuery<T> selectQuery = cq.select(rootEntity)
     		        .where(cb.and(
-        		                cb.equal(rootEntity.<String> get("name"), leafCategory),
-        		                cb.equal(rootEntity.<Boolean> get("deleted"), false)/*));
+        		                cb.equal(rootEntity.get(AbstractCategory_.name), leafCategory),
+        		                cb.equal(rootEntity.get(AbstractCategory_.deleted), false)/*));
         		                /*cb.equal(rootEntity.get(ContactCategory_.parent), getEntityClass())
         		               ,
         		                cb.equal(rootEntity.get(ContactCategory_.deleted), false)*/));
@@ -64,6 +68,55 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
     }
     
     /**
+     * Tests if a given Category has child categories.
+     * 
+     * @param category
+     * @return
+     */
+    public boolean hasChildren(T category) {
+    	// select * from abstractcategory where parent_id = category.id;
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
+        Root<T> root = criteria.from(getEntityClass());
+        criteria.where(cb.equal(root.get(VATCategory_.parent), category));
+        return !getEntityManager().createQuery(criteria).getResultList().isEmpty();
+    }
+
+    /**
+     * Checks if the given Category can be deleted. This is the case if no reference to it exists and if the category has no children.
+     * @param oldCat the category to delete
+     * @throws FakturamaStoringException 
+     */
+	public void deleteEmptyCategory(T oldCat) throws FakturamaStoringException {
+		try {
+			if(hasChildren(oldCat)) {
+				throw new FakturamaStoringException("category has one or more children and can't be deleted.", new SQLException());
+			}
+			checkConnection();
+			EntityTransaction trx = getEntityManager().getTransaction();
+			trx.begin();
+			updateObsoleteEntities(oldCat);
+			oldCat = getEntityManager().merge(oldCat);
+//			oldCat.setDeleted(true);
+			getEntityManager().remove(oldCat);
+			trx.commit();
+		} catch (SQLException e) {
+			throw new FakturamaStoringException("Error removing category from database.", e, oldCat);
+		}
+	}
+
+	/**
+	 * Used only if orphaned categories should be deleted. In this case the entities' category has to
+	 * be set to null since else references to empty categories exist.
+	 * This method should be overwritten if needed.  
+	 * @param oldCat the obsolete category
+	 */
+    protected void updateObsoleteEntities(T oldCat) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
      * Find a Category by its name. If one of the part categories doesn't exist we create it 
      * (if withPersistOption is set).
      * 

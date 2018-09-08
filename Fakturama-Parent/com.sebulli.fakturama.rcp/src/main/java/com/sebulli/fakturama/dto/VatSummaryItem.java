@@ -21,7 +21,6 @@ import javax.money.MonetaryRounding;
 import org.apache.commons.lang3.StringUtils;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.ItemAccountType;
 
@@ -32,7 +31,7 @@ import com.sebulli.fakturama.model.ItemAccountType;
  * @author Gerd Bartelt
  */
 public class VatSummaryItem implements Comparable<VatSummaryItem> {
-
+	
 	// Absolute Net and Vat value
 	// This can be the sum of more than one item
 	private MonetaryAmount net;
@@ -101,6 +100,11 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.accountType = accountType;
    }
 
+
+
+
+
+
     /**
 	 * Creates a {@link VatSummaryItem} from an existing {@link VatSummaryItem}.
 	 * 
@@ -126,7 +130,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	public void add(VatSummaryItem other) {
 	    this.net = this.net.add(other.net);
 	    this.vat = this.vat.add(other.vat);
-	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale()));
+	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 
 	/**
@@ -134,7 +138,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	 * "xxRoundingError"
 	 */
 	public void round() {
-        CurrencyUnit currencyUnit = DataUtils.getInstance().getCurrencyUnit(LocaleUtil.getInstance().getCurrencyLocale());
+        CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
 
 		// Round the net value
@@ -326,3 +330,4 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
         		.append(']').toString();
     }
 }
+

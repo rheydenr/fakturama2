@@ -15,6 +15,10 @@
 package com.sebulli.fakturama.parts;
 
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +30,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -38,6 +49,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -57,7 +69,10 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -75,11 +90,10 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
-import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -120,6 +134,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     
     @Inject
     private EPartService partService;
+    
+	@Inject
+	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
     private Composite top;
@@ -196,9 +213,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * Window and Part informations
 	 */
 	private MPart part;
-	
-	@Inject
-	private ItemAccountTypeDAO itemListTypeDao;
     
     @Inject
     private ContactCategoriesDAO contactCategoriesDAO;
@@ -217,8 +231,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
-
-	private List<Payment> allPayments;
 
 	/**
 	 * Saves the contents of this part
@@ -269,7 +281,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				messageBox.setMessage(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()) + "\n" + 
 						msg.editorContactHintSeepreferences);
 				messageBox.open();
-				return;
+				throw new RuntimeException(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()));
+//				return;
 			}
 
 		}
@@ -405,7 +418,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.setUseNetGross((short)0);
 			
 			// country is determined by locale
-			editorContact.getAddress().setCountryCode(LocaleUtil.getInstance().getDefaultLocale().getCountry());
+			editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -461,7 +474,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.getAlternateContacts().getAddress().setCountryCode(
 					editorContact.getAddress() != null 
 						? editorContact.getAddress().getCountryCode() 
-						: LocaleUtil.getInstance().getDefaultLocale().getCountry()); 
+						: localeUtil.getDefaultLocale().getCountry()); 
 			rebindAlternativeContactsEditor();
 		}
 	}
@@ -548,7 +561,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		useCountry = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
 		
 		// now do some helpful initializations (needed for combo boxes)
-        Map<String, String> countryNames = LocaleUtil.getInstance().getLocaleCountryMap();
+        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
 		
 		Map<Integer, String> salutationList = new HashMap<>();
 		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
@@ -814,7 +827,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
 		comboCountry.setInput(countryNames);
-		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
 		
 		// Birthday
@@ -926,7 +939,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
         comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
         comboDeliveryCountry.setInput(countryNames);
-        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames));
+        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
 		
 		// Deliverer's Birthday
@@ -1031,12 +1044,23 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtSupplierNr = new Text(tabMisc, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtSupplierNr);
 		
+		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
+		
 		// EMail
 		Label labelEmail = new Label(tabMisc, SWT.NONE);
 		//T: Label in the contact editor
 		labelEmail.setText(msg.exporterDataEmail);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelEmail);
 		txtEmail = new Text(tabMisc, SWT.BORDER);
+		txtEmail.addMouseMoveListener((e) -> {
+			if (e.stateMask == SWT.CTRL) {
+				txtEmail.setCursor(cursorHand);
+			} else {
+				txtEmail.setCursor(cursorIBeam);
+			}
+		});
+		txtEmail.addMouseListener(new UrlCallHandler(txtEmail, log));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtEmail);
 
 		// Telephone
@@ -1069,6 +1093,18 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelWebsite.setText(msg.exporterDataWebsite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebsite);
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
+		
+		txtWebsite.addMouseMoveListener((e) -> {
+			if (e.stateMask == SWT.CTRL) {
+				txtWebsite.setCursor(cursorHand);
+			} else {
+				txtWebsite.setCursor(cursorIBeam);
+			}
+		});
+		
+		// FAK-382 clickable URL
+		txtWebsite.addMouseListener(new UrlCallHandler(txtWebsite, log));
+		
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
 		
 		// WebShop name  
@@ -1241,7 +1277,24 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		fillAndBindPaymentCombo();
 		
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
-		bindModelValue(editorContact, txtEmail, Contact_.email.getName(), 64);
+		
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setBeforeSetValidator(new IValidator() {
+
+		    @Override
+		    public IStatus validate(Object value) {
+		        String emailAddress = (String) value;
+		        if(StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
+		        	return ValidationStatus.ok();
+		        } else {
+		        	return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
+		        }
+		    }
+		});
+		
+		Binding binding = bindModelValue(editorContact, txtEmail, Contact_.email.getName(), 64, strategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		
 		bindModelValue(editorContact, txtPhone, Contact_.phone.getName(), 32);
 		bindModelValue(editorContact, txtFax, Contact_.fax.getName(), 32);
 		bindModelValue(editorContact, txtMobile, Contact_.mobile.getName(), 32);
@@ -1408,5 +1461,61 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	@Override
 	abstract protected String getEditorID();
+
+	/**
+		 * 
+		 *
+		 */
+	private static final class UrlCallHandler extends MouseAdapter {
+		
+		private Text txtField;
+		private Logger log;
+
+
+		/**
+		 * @param txtField
+		 * @param log
+		 */
+		public UrlCallHandler(Text txtField, Logger log) {
+			this.txtField = txtField;
+			this.log = log;
+		}
+
+
+		@Override
+		public void mouseDown(MouseEvent e) {
+			if (e.stateMask == SWT.CTRL) {
+				String websiteText = txtField.getText();
+				
+				// distinguish between URLs and E-Mail addresses
+				if(websiteText.indexOf('@') > 0) {
+					if(EmailValidator.getInstance().isValid(websiteText)) {
+						try {
+							websiteText = StringUtils.prependIfMissing(websiteText, "mailto:");
+							Desktop.getDesktop().mail(new URI(websiteText));
+						} catch (IOException | URISyntaxException e1) {
+							log.warn("can't open the e-mail application. Reason: ", e1);
+						}
+					}
+				} else {
+					// validate URL and open it in browser
+					String[] schemes = { "http", "https" };
+					UrlValidator urlValidator = new UrlValidator(schemes);
+					if (urlValidator.isValid(websiteText)) {
+						try {
+							Desktop.getDesktop().browse(new URI(websiteText));
+						} catch (IOException | URISyntaxException e1) {
+							log.warn("can't open the contact's web site. Reason: ", e1);
+						}
+					} else {
+						// URL is invalid or empty
+					}
+				}
+			}
+			super.mouseDown(e);
+		}
+
+	}
+
 }
 

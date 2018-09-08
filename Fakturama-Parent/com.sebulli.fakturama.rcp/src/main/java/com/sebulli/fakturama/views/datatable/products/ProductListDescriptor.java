@@ -14,6 +14,10 @@
  
 package com.sebulli.fakturama.views.datatable.products;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Enum for describing a product list. This contains the name of the displayed values, the position of
@@ -79,6 +83,10 @@ public enum ProductListDescriptor {
             }
         }
         return null;
+    }
+    
+    public static final Optional<ProductListDescriptor> getDescriptorForProperty(String propertyName) {
+    	return Arrays.stream(values()).filter(descriptor -> StringUtils.equalsIgnoreCase(descriptor.getPropertyName(), propertyName)).findFirst();
     }
 
     public static final String[] getProductPropertyNames() {

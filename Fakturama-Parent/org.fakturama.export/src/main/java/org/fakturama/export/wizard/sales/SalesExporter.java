@@ -46,7 +46,7 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -66,7 +66,10 @@ public class SalesExporter extends OOCalcExporter {
 	@Inject
 	@Translation
 	protected ExportMessages exportMessages;
-	    
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	@Inject
 	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
 	private IEclipsePreferences eclipsePrefs;
@@ -276,14 +279,14 @@ public class SalesExporter extends OOCalcExporter {
 				// Fill the row with the document data
 				col = 0;
 				if(this.exportPaid) {
-					setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getPayDate()));
+					setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getPayDate()));
 				} else {
 					// calculate due date
 					LocalDateTime targetDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
 					setCellText(row, col++, DateTimeFormatter.ISO_LOCAL_DATE.format(targetDate));
 				}
 				setCellText(row, col++, document.getName());
-				setCellText(row, col++, DataUtils.getInstance().getFormattedLocalizedDate(document.getDocumentDate()));
+				setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate()));
 				Contact addressid = document.getBillingContact();
 
 				// Fill the address columns with the contact that corresponds to the addressid

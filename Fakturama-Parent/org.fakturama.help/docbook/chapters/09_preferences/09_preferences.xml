@@ -683,7 +683,7 @@
         <section>
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
             <title>Format und Pfad der Dateien</title>
-            <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest.</para>
+            <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest. Hier können auch absolute Pfadangaben eingetragen werden. Ansonsten sind die Pfade relativ zum Arbeitsverzeichnis.</para>
             <para>Über das Hauptmenü Extras <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
             <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
@@ -855,7 +855,9 @@
         </section>
         <section>
             <title>Mengenangaben benutzen</title>
-            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Menge' ausgeblendet werden. Zur Zeit werden die Mengen nur beim Abruf der Informationen aus dem Webshop benutzt. Bei der Erstellung einer Rechnung oder eines Lieferscheines wird der Wert nicht verändert.</para>
+            <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Menge' ausgeblendet werden. Ansonsten kann 
+			hier ein Lagerbestand angegeben werden. Dieser wird angepasst, wenn Bestellungen aus dem Webshop abgerufen werden oder
+			wenn ein Lieferschein bzw. eine Rechnung erfasst wird. Alternativ kann die Lagermenge auch geändert werden, wenn ein Auftrag in den Status "versandt" gesetzt wird. Dies kann man über die folgende Einstellung beinflussen:
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -866,6 +868,8 @@
                     </imageobject>
                 </mediaobject>
             </informalfigure>
+			Sinkt die Lagermenge nach dem Speichern unter Null, wird ein entsprechender Hinweistext ausgegeben.
+			</para>
         </section>
         <section>
             <title>Produktbild benutzen</title>
