@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: com.sebulli.fakturama.resources.templates
 Bundle-SymbolicName: com.sebulli.fakturama.resources.templates
-Bundle-Version: 2.0.3.qualifier
+Bundle-Version: 2.0.2.1
 Bundle-Vendor: Fakturama.org
 Fragment-Host: com.sebulli.fakturama.resources;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
