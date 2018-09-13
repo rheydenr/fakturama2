@@ -26,7 +26,7 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.0.2</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.0.3</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.0.2</releaseinfo>
+		<releaseinfo>Version 2.0.3</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
@@ -146,29 +146,108 @@
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/10_license/10_license.xml"/>
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/appendix_a_connect-base/appendix_a_connect-base.xml"/>
 
-	<!--appendix>
-
+	<appendix>
+		<anchor xreflabel="faq" xml:id="appendix_faq"/>
+      <title>Häufig gestellte Fragen (FAQ)</title>
     <qandaset>
-      <title>Frequently Asked Questions (FAQ)</title>
+	<qandadiv>
+	<title>Allgemeines</title>
+	<qandaentry>
+	<question><para>In der türkischen Lokalisierung startet Fakturama nicht.</para></question>
+	<answer><para>Beim Start von Fakturama werden die Metadaten der Datenbank von EclipseLink aus den Model-Dateien ermittelt.
+Dabei werden alle Attribute in Großbuchstaben konvertiert, allerdings mit der Default-Locale (also tr_TR). Das hat
+zur Folge, daß der Kleinbuchstabe "i" in einen Großbuchstaben "I" (mit einem Punkt darüber) konvertiert wird. Dieses
+Attribut gibt es natürlich nicht, deswegen kann die Datenbank nicht initialisiert werden. Dafür gibt es aktuell
+noch keine Lösung, der Versuch, das mit einem Patch (Fragment) zu beheben war noch nicht erfolgreich.
+Es gibt dazu das Ticket <ulink url="https://bugs.eclipse.org/bugs/show_bug.cgi?id=527415"/>.</para></answer>
+	</qandaentry>
+	<qandaentry>
+	<question><para>Verwendung von MySQL ab Version x bringt Fehler</para></question>
+	<answer><para>Symptom:
+	<programlisting>
+Tue Jun 20 21:33:55 CEST 2017 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+	</programlisting>
+Abhilfe: An die URL noch folgendes ranhängen: <code>?useSSL=false</code>.
+also z. B. 
+<programlisting>jdbc:mysql://rhehomesrv/fakturama?useSSL=false&#038;characterEncoding=utf8&#038;useUnicode=yes</programlisting>
+</para></answer>
+	</qandaentry>
+	
+	<qandaentry><question><para>Fakturama startet nicht</para></question>
+	<answer><para>Folgendes prüfen:
+	<itemizedlist spacing="compact">
+<listitem>welche Java-Version wird verwendet?</listitem>
+<listitem>stehen in <code>~/.fakturama2/.metadata/.log</code> (bei Linux / Mac OS) bzw. <code>%USERPROFILE%\.fakturama2\.metadata\.log</code>  irgendwelche Hinweise?</listitem>
+</itemizedlist>
+Die Frage kann dann mit den Zusatzhinweisen auch im Forum gepostet werden.
+</para></answer></qandaentry>
+
+<qandaentry><question><para>MySQL-DB ist im Netzwerk nicht erreichbar</para></question>
+<answer><para>
+siehe dazu <ulink url="https://forum.fakturama.info/read.php?9,10826,11823#msg-11823"/>.
+Wichtig ist hier, als bind-addr 0.0.0.0 anzugeben.</para></answer></qandaentry>
+	</qandadiv>
+	
+	<qandadiv>
+		<title>Fakturama unter Mac OS</title>
+	<qandaentry>
+	<question><para>Unter MacOS sehe ich keine CoolBar (die Leiste mit den großen Icons) im Vollbildmodus.</para></question>
+	<answer><para>Dafür gibt es leider noch keine Lösung. Abhilfe schafft hier vorübergehend das nicht-maximierte Ausführen der Anwendung.</para></answer>
+	</qandaentry>		
+	</qandadiv>
+	
       <qandadiv>
-        <title>Questions about Networking</title>
+        <title>Fakturama 2 unter Linux</title>
         <qandaentry>
           <question>
-            <para>How do I get an IP address?</para>
+            <para>Mein Fakturama startet nicht oder meldet <code>"MOZILLA_FIVE_HOME not set"</code></para>
           </question>
           <answer>
-            <para>Ask your system administrator.</para>
+            <para>Hier hilft oft die Installation des WebToolkits:
+			<programlisting>
+			apt-get install libwebkitgtk-3.0-0
+			</programlisting>
+			</para>
           </answer>
         </qandaentry>
+		
         <qandaentry>
-          ...
+			<question><para>Unklarer Absturz unter Linux</para></question>
+			<answer><para>
+Symptom:
+			<programlisting>
+!MESSAGE Unable to create class 'com.sebulli.fakturama.views.datatable.documents.DocumentsListTable' from bundle '860'
+!STACK 0
+org.eclipse.e4.core.di.InjectionException: java.lang.NoClassDefFoundError: org/eclipse/swt/events/SelectionListener
+	at org.eclipse.e4.core.internal.di.InjectorImpl.internalMake(InjectorImpl.java:410)
+	at org.eclipse.e4.core.internal.di.InjectorImpl.make(InjectorImpl.java:318)
+</programlisting></para>
+<para>
+Lösung: Schalter <code>-DSWT_GTK3=0</code> oder Schalter <code>-clean -consoleLog</code> beim Start der Anwendung über die Console (Terminal) mitgeben</para>
+			</answer>
         </qandaentry>
-        ...
-      </qandadiv>
+        <qandaentry>
+		<question><para>Eine Datei kann nicht bearbeitet werden, wenn sie auf einem Netzlaufwerk liegt (unter LibreOffice)</para></question>
+		<answer><para>Das file-locking von libreoffice macht Probleme, wenn die Datei von einem Netzlaufwerk über nfs geholt wird. Abhilfe schafft das Ausschalten des file-lockings in der Datei <code>/usr/lib/libreoffice/program/soffice</code>:
+<programlisting>
+# file locking now enabled by default
+SAL_ENABLE_FILE_LOCKING=1
+export SAL_ENABLE_FILE_LOCKING
+</programlisting>
+ändern in
+<programlisting>
+# file locking now enabled by default  - disabled
+#SAL_ENABLE_FILE_LOCKING=1
+#export SAL_ENABLE_FILE_LOCKING
+</programlisting>
+</para></answer>
+		</qandaentry>
+
+		</qandadiv>
     </qandaset>
 
 
-  </appendix-->
+  </appendix>
 	<glossary>
     <glossentry id="Transaktionsnummer">
       <glossterm>Transaktionsnummer</glossterm>
