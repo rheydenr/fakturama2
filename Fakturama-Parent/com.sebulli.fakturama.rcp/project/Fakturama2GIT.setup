@@ -127,8 +127,8 @@
       xsi:type="git:GitCloneTask"
       id="git.clone.fakturama2"
       remoteURI="https://bitbucket.org/fakturamadev/fakturama-2.git"
-	  checkoutBranch="develop"
-      pushURI="">
+      pushURI=""
+      checkoutBranch="develop">
     <description>${scope.project.label}</description>
   </setupTask>
   <setupTask
@@ -172,7 +172,7 @@
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
       value="org.fakturama.target"
-      defaultValue="Neon"
+      defaultValue="Photon"
       storageURI="scope://Workspace">
     <description>basic IDE target platform</description>
   </setupTask>
@@ -181,7 +181,7 @@
     <setupTask
         xsi:type="setup:EclipseIniTask"
         option="-Doomph.redirection.fakturama.2.git"
-        value="=https://git.eclipse.org/c/fakturamadev/fakturama-2.git.git/plain/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup->${git.clone.fakturama2.location|uri}/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup"
+        value="=https://bitbucket.org/fakturamadev/fakturama-2/raw/release/2.0.3/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup ->${git.clone.fakturama2.location|uri}/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup"
         vm="true">
       <description>Set an Oomph redirection system property to redirect the logical location of this setup to its physical location in the Git clone.</description>
     </setupTask>
