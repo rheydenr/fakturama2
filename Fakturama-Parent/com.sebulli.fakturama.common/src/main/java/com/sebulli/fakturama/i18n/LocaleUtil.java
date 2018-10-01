@@ -120,10 +120,10 @@ public class LocaleUtil implements ILocaleService {
     @Override
 	public String findCodeByDisplayCountry(String country, String lang) {
     	// TODO use lang, but without interfering with other methods!
-        Locale retval = countryLocaleMap.get(country);
+        Optional<Locale> retval = findLocaleByDisplayCountry(country);
         // hint: countryLocaleString.getDisplayCountry(defaultLocale) gives
         // the country as localized string
-        return retval != null ? retval.getCountry() : null;
+        return retval.isPresent() ? retval.get().getCountry() : null;
     }
     
     /* (non-Javadoc)
