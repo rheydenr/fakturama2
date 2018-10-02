@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
@@ -27,9 +28,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 
 /**
  *
@@ -39,16 +40,21 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
     @Inject @Optional
     protected IPreferenceStore defaultValuePrefs;
     
-    public MoneyFormatter() {
-    	this(null);
-    }
+	@Inject
+	private ILocaleService localeUtil;
     
-    @Inject
-    public MoneyFormatter(IPreferenceStore defaultValuePrefs) {
-        super();
-        DecimalFormat format = (DecimalFormat) DataUtils.getInstance().getCurrencyFormat();
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
+	public MoneyFormatter() {
+		super();
+	}
+
+    @PostConstruct
+    public void init() {
+        DecimalFormat format = (DecimalFormat) numberFormatterService.getCurrencyFormat();
         // the edit pattern has to be a normal number pattern
-        DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(LocaleUtil.getInstance().getCurrencyLocale());
+        DecimalFormat editFormat = (DecimalFormat) NumberFormat.getNumberInstance(localeUtil.getCurrencyLocale());
         editFormat.setMaximumIntegerDigits(6);
         if(defaultValuePrefs != null) {
         	format.setMinimumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES));
@@ -62,7 +68,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
 //        if(editFormat.getMaximumFractionDigits() > 2) {
 //        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
 //        }
-        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), LocaleUtil.getInstance().getCurrencyLocale());
+        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), localeUtil.getCurrencyLocale());
 //        setFixedLengths(false, true);
     }
     
@@ -89,7 +95,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
      */
     @Override
     public String getDisplayString() {
-    	return DataUtils.getInstance().doubleToFormattedPrice((Double) getValue());
+    	return numberFormatterService.doubleToFormattedPrice((Double) getValue());
     }
 
     /**

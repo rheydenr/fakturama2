@@ -19,6 +19,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -92,6 +94,9 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;
 
+    @Inject
+    private IEclipseContext context;
+
     private EventList<Voucher> expenditureListData;
     private EventList<VoucherCategory> categories;
 
@@ -135,7 +140,8 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new VoucherTableConfiguration());
+        VoucherTableConfiguration voucherTableConfiguration = ContextInjectionFactory.make(VoucherTableConfiguration.class, context);
+        natTable.addConfiguration(voucherTableConfiguration);
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));

@@ -52,10 +52,6 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
     	restrictions.add(criteriaBuilder.equal(root.get(Voucher_.voucherNumber), StringUtils.defaultString(object.getVoucherNumber())));
     	return restrictions;
     }
-    
-    public List<Voucher> findAll() {
-        return findAll(false);
-    }
  
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.dao.AbstractDAO#findAll()

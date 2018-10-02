@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<setup:Configuration
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
+    label="Fakturama IDE">
+  <installation
+      name="fakturama.installation"
+      label="Fakturama IDE Installation">
+    <productVersion
+        href="index:/org.eclipse.setup#//@productCatalogs[name='org.eclipse.products']/@products[name='epp.package.rcp']/@versions[name='latest.released']"/>
+    <description>The Fakturama IDE installation file provides the IDE for development.</description>
+  </installation>
+  <workspace
+      name="fakturama-workspace"
+      label="Fakturama IDE Workspace">
+    <stream
+        href="https://bitbucket.org/fakturamadev/fakturama-2/raw/release/2.0.3/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup#//@streams[name='master']"/>
+    <description>The Fakturama IDE workspace provides cool stuff.</description>
+  </workspace>
+  <description>The Fakturama IDE configuration.</description>
+</setup:Configuration>

@@ -3,6 +3,8 @@ package com.sebulli.fakturama.views.datatable.vouchers;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import javax.inject.Inject;
+
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -13,10 +15,17 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 
 class VoucherTableConfiguration extends AbstractRegistryConfiguration {
+    
+	@Inject
+	private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
 
     static final String DONOTBOOK_LABEL = "Do_Not_Book_Label";
 
@@ -47,7 +56,7 @@ class VoucherTableConfiguration extends AbstractRegistryConfiguration {
                 styleRightAligned,      
                 DisplayMode.NORMAL,             
                 ExpenditureVoucherListTable.DATE_CELL_LABEL ); 
-        SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, LocaleUtil.getInstance().getDefaultLocale());
+        SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, localeUtil.getDefaultLocale());
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
                 new DefaultDateDisplayConverter(dateFormat.toPattern()),
@@ -60,7 +69,7 @@ class VoucherTableConfiguration extends AbstractRegistryConfiguration {
                 ExpenditureVoucherListTable.MONEYVALUE_CELL_LABEL ); 
         configRegistry.registerConfigAttribute(
                 CellConfigAttributes.DISPLAY_CONVERTER,
-                new MoneyDisplayConverter(),
+                new MoneyDisplayConverter(numberFormatterService),
                 DisplayMode.NORMAL,
                 ExpenditureVoucherListTable.MONEYVALUE_CELL_LABEL);
         }

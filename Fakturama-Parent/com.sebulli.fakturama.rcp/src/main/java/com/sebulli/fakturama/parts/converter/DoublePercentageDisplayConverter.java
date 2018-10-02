@@ -9,6 +9,7 @@ import java.text.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
 
 /**
@@ -16,6 +17,21 @@ import com.sebulli.fakturama.i18n.LocaleUtil;
  *
  */
 public class DoublePercentageDisplayConverter extends DisplayConverter {
+	
+	private ILocaleService localeUtil;
+	
+	/**
+	 * hidden constructor
+	 */
+	@SuppressWarnings("unused")
+	private DoublePercentageDisplayConverter() {}
+	
+	/**
+	 * @param localeUtil
+	 */
+	public DoublePercentageDisplayConverter(ILocaleService localeUtil) {
+		this.localeUtil = localeUtil;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter#canonicalToDisplayValue(java.lang.Object)
@@ -42,7 +58,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
     	try {
     		// don't use NumberFormat.getPercentInstance()! The formatting of percentage values is evil!
     		// We can use "normal" numbers. 
-    		return NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale()).parse(displayString).doubleValue()/100;
+    		return NumberFormat.getNumberInstance(localeUtil.getDefaultLocale()).parse(displayString).doubleValue()/100;
         } catch (ParseException e) {
             throw new NumberFormatException(e.getLocalizedMessage());
         }

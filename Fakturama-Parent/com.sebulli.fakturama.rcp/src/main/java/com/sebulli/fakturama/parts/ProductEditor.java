@@ -73,7 +73,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -127,6 +127,9 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
+    
+	@Inject
+	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -141,6 +144,7 @@ public class ProductEditor extends Editor<Product> {
 	private FormattedText costPrice;
 	private Text textQuantityUnit;
 	private Combo comboCategory;
+	private ProductCategory oldCat;
 	private FakturamaPictureControl labelProductPicture;
 	private Composite photoComposite;
 
@@ -201,7 +205,7 @@ public class ProductEditor extends Editor<Product> {
             // parentCategory now has the last found Category
             editorProduct.setCategories(contactCategory);
         }
-
+        
 		if (newProduct) {
 			// Check, if the item number is the next one
 			if (setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
@@ -222,6 +226,7 @@ public class ProductEditor extends Editor<Product> {
 
 		// Always set the editor's data set to "undeleted"
 		editorProduct.setDeleted(Boolean.FALSE);
+    
 
 		// Set the product data
         // ... done through databinding...
@@ -261,11 +266,22 @@ public class ProductEditor extends Editor<Product> {
 		else {
 //			Data.INSTANCE.getProducts().updateDataSet(product);
 		}
-			try {
-				editorProduct = productsDAO.save(editorProduct);
-            } catch (FakturamaStoringException e) {
-                log.error(e);
-            }
+		
+		try {
+			editorProduct = productsDAO.save(editorProduct);
+			
+	        // check if we can delete the old category (if it's empty)
+	        if(oldCat != null && oldCat != editorProduct.getCategories()) {
+	        	long countOfEntriesInCategory = productsDAO.countByCategory(oldCat);
+	        	if(countOfEntriesInCategory == 0) {
+	        		productCategoriesDAO.deleteEmptyCategory(oldCat);
+	        	}
+	        }
+
+	        oldCat = editorProduct.getCategories();
+        } catch (FakturamaStoringException e) {
+            log.error(e);
+        }
 
 		// Set the Editor's name to the product name...
 		this.part.setLabel(editorProduct.getName());
@@ -345,76 +361,6 @@ public class ProductEditor extends Editor<Product> {
 		  
         createPartControl(parent);
 	}
-
-//	/**
-//	 * Set the variable picturePath to the path of the product picture, which is
-//	 * a combination of the selected workspace, the /pics/products/ folder and
-//	 * the product name.
-//	 * 
-//	 * Also update the text widget textProductPicturePath which is displayed
-//	 * under the product picture.
-//	 */
-//	private void createPicturePathFromPictureName() {
-//
-//		// Get the workspace
-//		filename1 = defaultValuePrefs.getString(Constants.GENERAL_WORKSPACE);
-//
-//		// add the picture sub folder
-//		filename2 = Constants.PRODUCT_PICTURE_FOLDER;
-//
-//		// Set the variables
-//		picturePath = filename1 + filename2;
-//		filename2 += pictureName;
-//
-//		// Display the text under the product picture
-//		if (textProductPicturePath != null) {
-//			textProductPicturePath.setText(filename2);
-//		}
-//	}
-//
-//	/**
-//	 * Create the picture name based on the product's item number
-//	 */
-//	private void createPictureName() {
-//
-//		pictureName = createPictureName(textName.getText(), textItemNr.getText());
-//
-//		// Add the full path.
-//		createPicturePathFromPictureName();
-//	}
-//
-//	/**
-//	 * Create the picture name based on the product's item number. Remove illegal
-//	 * characters and add a ".jpg"
-//	 * 
-//	 * @param name
-//	 *            The name of the product
-//	 * @param itemNr
-//	 *            The item number of the product
-//	 * @return Picture name as String
-//	 */
-//	public String createPictureName(String name, String itemNr) {
-//
-//		String pictureName;
-//
-//		// Get the product's item number
-//		pictureName = itemNr;
-//
-//		// If the product name is different to the item number,
-//		// add also the product name to the pictures name
-//		if (!name.equals(itemNr))
-//			pictureName += "_" + name;
-//
-//		// Remove all illegal characters that are not allowed as file name.
-//		final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':', ' ', '.' };
-//		for (char c : ILLEGAL_CHARACTERS)
-//			pictureName = pictureName.replace(c, '_');
-//
-//		// Add the .*jpg
-//		pictureName += ".jpg";
-//
-//		return pictureName;
-//	}
 
 	/**
 	 * Reload the product picture
@@ -627,8 +573,8 @@ public class ProductEditor extends Editor<Product> {
 		// Create a row for each entry of the scaled price table
 		context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
 		context.set(Constants.CONTEXT_VATVALUE, editorProduct.getVat().getTaxValue());
+		Object priceObj;
 		for (int i = 0; i < MAX_NUMBER_OF_PRICES; i++) {
-			Object priceObj;
 			try {
 
 				// Get the net price scaled price
@@ -743,7 +689,7 @@ public class ProductEditor extends Editor<Product> {
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
 		}
-		textQuantity.setFormatter(new DoubleFormatter(LocaleUtil.getInstance().getDefaultLocale()));
+		textQuantity.setFormatter(new DoubleFormatter(localeUtil.getDefaultLocale()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 
 		// user defined fields
@@ -811,6 +757,8 @@ public class ProductEditor extends Editor<Product> {
 	            getMDirtyablePart().setDirty(true);
 	        }
 		});
+        
+    	oldCat = editorProduct.getCategories();        
 
 		bindModel();
 	}

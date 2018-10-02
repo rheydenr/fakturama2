@@ -55,7 +55,9 @@ import org.eclipse.swt.widgets.Control;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.VATCategory;
@@ -101,6 +103,9 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     @Inject
     @Preference
     private IEclipsePreferences preferences;
+    
+	@Inject
+	private ILocaleService localeUtil;
 
     
     private EventList<VAT> vatListData;
@@ -322,6 +327,28 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
     	}
     }
 
+	@Override
+	protected void handleAfterDeletion(VAT objToDelete) {
+		// check if we can delete the old category (if it's empty)
+		if (objToDelete != null) {
+			try {
+				long countOfEntriesInCategory = vatsDAO.countByCategory(objToDelete.getCategory());
+				if (countOfEntriesInCategory == 0) {
+					/* the category has to be set to null since the objToDelete isn't "really" deleted
+				     * but only marked as "invisible". The reference to the category still remains,
+					 * therefore we have to update it.
+					 */
+					VATCategory oldCat = objToDelete.getCategory();
+					objToDelete.setCategory(null);
+					getEntityDAO().update(objToDelete);
+					vatCategoriesDAO.deleteEmptyCategory(oldCat);
+				}
+			} catch (FakturamaStoringException e) {
+				log.error(e, "can't delete empty category from object " + objToDelete.getName());
+			}
+		}
+	}
+
     /**
      * Set the category filter with a given {@link TreeObjectType}.
      * 
@@ -401,7 +428,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
 					TAXVALUE_CELL_LABEL ); 
 			configRegistry.registerConfigAttribute(
 					CellConfigAttributes.DISPLAY_CONVERTER,
-					new DoublePercentageDisplayConverter(),
+					new DoublePercentageDisplayConverter(localeUtil),
 					DisplayMode.NORMAL,
 					TAXVALUE_CELL_LABEL);
             // have a little space between cell border and value

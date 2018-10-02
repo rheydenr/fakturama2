@@ -115,11 +115,13 @@ import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -163,6 +165,15 @@ public class ZugferdExporter {
     @Inject
     private ESelectionService selectionService;
     
+	@Inject
+	private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     private Shell shell;
 	
 	/** The Constant DEFAULT_PRICE_SCALE. */
@@ -490,7 +501,7 @@ public class ZugferdExporter {
 			break; // ONLY FIRST ID IS USED (according to the specification only ONE document can be referenced!)
 		}
 		if (transaction != null) {
-			refDoc.setIssueDateTime(DataUtils.getInstance().DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
+			refDoc.setIssueDateTime(dateFormatterService.DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
 		}
 		if(!refDoc.getID().isEmpty()) {
 			tradeDelivery.setDeliveryNoteReferencedDocument(refDoc);
@@ -785,7 +796,7 @@ public class ZugferdExporter {
 	private String determineQuantityUnit(String userdefinedQuantityUnit) {
 		String isoUnit = "";
 		if(StringUtils.isNotBlank(userdefinedQuantityUnit))	{
-			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, LocaleUtil.getInstance().getDefaultLocale());
+			Optional<CEFACTCode> code = measureUnits.findByAbbreviation(userdefinedQuantityUnit, localeUtil.getDefaultLocale());
 			isoUnit = code.isPresent() ? code.get().getCode() : "";
 		}
 		return isoUnit;
@@ -949,7 +960,7 @@ public class ZugferdExporter {
 		// VAT description
 		// (unused) String key = vatSummaryItem.getVatName();
 		// It's the VAT value
-		MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
+		MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
 		TradeTaxType retval = factory.createTradeTaxType()
 				.withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
 				.withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
@@ -1150,8 +1161,9 @@ public class ZugferdExporter {
 
 	private CountryIDType createCountry(final String value) {
 		String countryStr = null;
+		// FIXME CHANGE THIS!!!
 		if(StringUtils.length(value) > 2) {
-			countryStr = LocaleUtil.getInstance().findCodeByDisplayCountry(value);
+			countryStr = localeUtil.findCodeByDisplayCountry(value, "DE");
 		}
 		// null values aren't allowed!
 		return factory.createCountryIDType().withValue(Optional.ofNullable(countryStr).orElse("DE"));

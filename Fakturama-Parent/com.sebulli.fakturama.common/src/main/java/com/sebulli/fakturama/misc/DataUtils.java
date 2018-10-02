@@ -14,45 +14,30 @@
 
 package com.sebulli.fakturama.misc;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 import javax.money.RoundingQueryBuilder;
-import javax.money.format.AmountFormatQueryBuilder;
-import javax.money.format.MonetaryAmountFormat;
-import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.swt.widgets.DateTime;
 import org.javamoney.moneta.Money;
-import org.javamoney.moneta.RoundedMoney;
-import org.javamoney.moneta.format.CurrencyStyle;
+import org.osgi.framework.ServiceReference;
 
 import com.sebulli.fakturama.common.Activator;
-import com.sebulli.fakturama.i18n.LocaleUtil;
-import com.sebulli.fakturama.money.CurrencySettingEnum;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
-import com.sebulli.fakturama.money.internal.FakturamaFormatProviderSpi;
-import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
 
 /**
  * This class provides static functions to convert and format data like double
@@ -61,16 +46,16 @@ import com.sebulli.fakturama.money.internal.FakturamaMonetaryAmountFormat;
  * @author Gerd Bartelt
  */
 public class DataUtils {
+	
+	@Inject
+	private ILocaleService localeUtil;
+	
+	private static Locale currencyLocale;
 
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
-    static boolean useThousandsSeparator = false;
     private static DataUtils instance = null;
-    private static NumberFormat currencyFormat;
-    private static MonetaryRounding mro = null;
-    private static MonetaryAmountFormat monetaryAmountFormat;
-    private static Locale currencyLocale = Locale.getDefault();
-    
+
     /**
      * @return the instance
      */
@@ -89,49 +74,26 @@ public class DataUtils {
      */
     public void refresh() {
         instance = null;
-        useThousandsSeparator = false;
-        LocaleUtil.refresh();
     }
 
     /**
      * Update the currency symbol and the thousands separator from the preferences
+     * @param localeUtil 
      */
     private void initialize() {
-        useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
-        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
-        		CurrencySettingEnum.SYMBOL.name()));
-        
-        currencyFormat = NumberFormat.getCurrencyInstance();
-        currencyLocale = LocaleUtil.getInstance().getCurrencyLocale();
-
-        if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
-            mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                    .setCurrency(Monetary.getCurrency(currencyLocale))
-                    .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
-                    .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
-                    // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false))
-                    .build());
-        }
-        monetaryAmountFormat = MonetaryFormats.getAmountFormat(
-                AmountFormatQueryBuilder.of(currencyLocale)
-	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
-                        .set(currencyCheckboxEnabled)
-                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
-                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
-                        .build());
+    	ServiceReference<ILocaleService> serviceReference = Activator.getContext().getServiceReference(ILocaleService.class);
+    	this.localeUtil = Activator.getContext().getService(serviceReference);
+        currencyLocale = localeUtil.getCurrencyLocale();
     }
     
     public CurrencyUnit getDefaultCurrencyUnit() {
         return Monetary.getCurrency(currencyLocale);
     }
     
-    public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
-        return Monetary.getCurrency(currencyLocale);
+    public MonetaryRounding getDefaultRounding() {
+    	return getRounding(getDefaultCurrencyUnit());
     }
-    
+
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit, boolean cashRounding) {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
@@ -143,20 +105,6 @@ public class DataUtils {
     
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
         return getRounding(currencyUnit, Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false));
-    }
-    
-    /**
-     * @return the monetaryAmountFormat
-     */
-    public MonetaryAmountFormat getMonetaryAmountFormat() {
-        return monetaryAmountFormat;
-    }
-
-    public NumberFormat getCurrencyFormat() {
-        if (currencyFormat == null) {
-            initialize();
-        }
-        return currencyFormat;
     }
     
 /* * * * * * * * * * * * [Price and Number calculations] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -350,253 +298,6 @@ public class DataUtils {
         return floorValue;
     }
     
-   
-
-    /**
-     * Convert a double to a formatted string value. If the value has parts of a
-     * cent, add ".."
-     * 
-     * @param d
-     *            Double value to convert
-     * @param twoDecimals
-     *            <code>true</code>, if the value is displayed in the format 0.00
-     * @return Converted value as String
-     */
-    private String doubleToFormattedValue(Double d, int scale) {
-        String s = "";
-
-        // Calculate the floor cent value.
-        // for negative values, use the ceil
-        if(d != null) {
-        	Double floorValue = round(d, scale);
-        
-	        // Format as "0.00"
-	        NumberFormat numberFormat = NumberFormat.getNumberInstance();
-	        numberFormat.setGroupingUsed(useThousandsSeparator);
-	        numberFormat = new DecimalFormat((useThousandsSeparator ? ",##0." : "0.") + (scale < 0 ? StringUtils.repeat('#', scale) : StringUtils.repeat('0', scale)));
-			s = numberFormat.format(floorValue);
-	
-	        // Are there parts of a cent ? Add ".."
-	        double epsilon = 2*Math.pow(10, -1*(scale+2));
-	        if (Math.abs(d - floorValue) > epsilon) {
-	            s += "..";
-	        }
-        }
-        return s;
-    }
-
-    /**
-     * Convert a double to a formated string value. 
-     * 
-     * @param d
-     *            Double value to convert
-     * @param format
-     *            the format of the string
-     * @return Converted value as String
-     */
-    public String DoubleToDecimalFormatedValue(final Double d, String format) {
-    	Double value = (d != null) ? d : Double.valueOf(0.0);
-
-        // Format as ...
-        DecimalFormat decimalFormat = new DecimalFormat(format);
-        return decimalFormat.format(value);
-    }
-
-    /**
-     * Convert a double to a formatted price value. Same as conversion to a
-     * formatted value. But use always 2 decimals and add the currency sign.
-     * 
-     * @param value
-     *            Value to convert to a price string.
-     * @return Converted value as string
-     */
-    public String doubleToFormattedPrice(Double value) {
-        CurrencyUnit currUnit = getCurrencyUnit(currencyLocale);
-        MonetaryAmount rounded = RoundedMoney.of(value, currUnit);
-        return formatCurrency(rounded);
-    }
-
-    /**
-     * Convert a double to a formated percent value. Same as conversion to a
-     * formated value. But do not use 2 decimals and add the percent sign, and
-     * scale it by 100
-     * 
-     * @param d
-     *            Value to convert to a percent string.
-     * @return Converted value as string
-     */
-    public String DoubleToFormatedPercent(Double d) {
-		String retval = "";
-		if (d != null) {
-			NumberFormat percentageFormat = NumberFormat.getPercentInstance();
-			percentageFormat.setMinimumFractionDigits(1);
-			retval = percentageFormat.format(d);
-		}
-		return retval;
-    }
-
-    /**
-     * Convert a double to a formated quantity value. Same as conversion to a
-     * formated value. But do not use 2 decimals.
-     * 
-     * @param d
-     *            Value to convert to a quantity string.
-     * @return Converted value as string
-     */
-    public String doubleToFormattedQuantity(Double d) {
-        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
-        return doubleToFormattedValue(d, scale);
-    }
-    
-    public String doubleToFormattedQuantity(Double d, int scale) {
-        return doubleToFormattedValue(d, scale);
-    }
-
-    /**
-     * Convert a double to a formated price value. Same as conversion to a
-     * formated price value. But round the value to full cent values
-     * 
-     * @param d
-     *            Value to convert to a price string.
-     * @return Converted value as string
-     */
-    public String DoubleToFormatedPriceRound(Double d) {
-        return doubleToFormattedPrice(round(d));
-    }
-    
-    /**
-     * Parse a price (given as String) and return its value as Double.
-     * Uses the current Money format.
-     * 
-     * @param value
-     * @return
-     */
-    public Double formattedPriceToDouble(String value) {
-        Double retval = NumberUtils.DOUBLE_ZERO;
-        try {
-            Number amount = currencyFormat.parse(value);
-            retval = amount.doubleValue();
-        }
-        catch (ParseException e) {
-//            LOG.error(String.format("Can't parse '%s' as money. Please check the format!", value));
-        }
-        return retval;
-    }
-    
-    public String formatCurrency(MonetaryAmount amount) {
-        return getMonetaryAmountFormat().format(mro != null ? amount.with(mro) : amount);
-    }
-    
-    @Deprecated
-    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
-        CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryRounding mro = getRounding(usd, cashRounding);
-        MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
-                AmountFormatQueryBuilder.of(locale)
-                        .set(useCurrencySymbol ? CurrencyStyle.SYMBOL : CurrencyStyle.CODE)
-//                .set(CurrencySettingEnum.NONE)
-                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-                        		Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
-                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
-                .build());
-        return format.format(amount.with(mro));
-    }
-    
-    public String formatCurrency(MonetaryAmount amount, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
-    	CurrencyUnit usd = getCurrencyUnit(locale);
-    	MonetaryRounding mro = getRounding(usd, cashRounding);
-    	MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
-    			AmountFormatQueryBuilder.of(locale)
-    			.set(useCurrencySymbol)
-    			.setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
-    			.set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-    					Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
-    			.set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
-    			.build());
-    	return format.format(amount.with(mro));
-    }
-    
-    public MonetaryRounding getDefaultRounding() {
-    	return getRounding(getDefaultCurrencyUnit());
-    }
-    
-    public String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol) {
-        return formatCurrency(amount, locale, useCurrencySymbol, 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
-    }
-     
-//	/**
-//	 * @param currencyCheckboxEnabled
-//	 */
-//	private MonetaryAmountFormat buildMonetaryAmountFormat(Locale locale, CurrencySettingEnum currencySetting, boolean useSeparator) {
-//
-//        NumberFormat form = NumberFormat.getCurrencyInstance(currencyLocale);
-//        form.setGroupingUsed(useThousandsSeparator);
-//        if (currencyLocale.getCountry().equals("CH")) {
-//            if(currencySetting != CurrencySettingEnum.NONE) {
-//                CurrencyUnit chf = Monetary.getCurrency(currencyLocale);
-//                mro = Monetary.getRounding(RoundingQueryBuilder.of()
-//                        .setCurrency(chf)
-//                        // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-//                        .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, true)) 
-//                        .build());
-//            }
-//        }
-//        monetaryAmountFormat = MonetaryFormats.getAmountFormat(
-//                AmountFormatQueryBuilder.of(currencyLocale)
-//	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-//                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
-//                        .set(currencySetting)
-//                        .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-//                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
-//                        .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
-//                        .build());
-//        return monetaryAmountFormat;
-//	}   
-    
-    
-    /**
-     * Formats a number as currency.
-     *
-     * @param myNumber the number to format
-     * @param locale the locale
-     * @param useCurrencySymbol the use currency symbol
-     * @param cashRounding the cash rounding
-     * @param useSeparator the use separator
-     * @return the formatted string
-     * 
-     * @deprecated use {@link DataUtils#formatCurrency(double, Locale, CurrencySettingEnum, boolean, boolean)}
-     */
-    public String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
-        CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
-        return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
-    }
-    
-    public String formatCurrency(double myNumber, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
-        CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
-        return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
-    }
-
-    
-    /**
-     * Formats a number as currency.
-     *
-     * @param myNumber the number to format
-     * @param locale the locale
-     * @return the formatted string
-     */
-    public String formatCurrency(double myNumber, Locale locale) {
-        return formatCurrency(myNumber, locale, 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, true), 
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false),
-                Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false));
-    }
-
-    
 //    /**
 //     * Calculates the gross value based on a net value and the vat
 //     * 
@@ -700,244 +401,19 @@ public class DataUtils {
     }
     
 /* * * * * * * * * * * * [Date and Time methods] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    /**
-     * Get the date from a SWT DateTime widget in the format: YYYY-MM-DD
-     * 
-     * @param dtDate
-     *            SWT DateTime widget
-     * @return Date as formated String
-     */
-    public String getDateTimeAsString(DateTime dtDate) {
-        return String.format("%04d-%02d-%02d", dtDate.getYear(), dtDate.getMonth() + 1, dtDate.getDay());
-    }
-
-    
     
     /**
-     * Get the date from a Calendar object in the format: YYYY-MM-DD
-     * 
-     * @param calendar
-     *            Calendar object
-     * @return Date as formatted String
-     */
-    public String getDateTimeAsString(Calendar calendar) {
-        return String.format("%tF", calendar.getTime()); 
-    }
-
-    /**
-     * Get the date and time from a Calendar object in the format: YYYY-MM-DD HH:MM:SS
-     * 
-     * @param calendar
-     *            Calendar object
-     * @return Date and Time as formatted String
-     */
-    public String getDateAndTimeAsString(Calendar calendar) {
-        return String.format("%1$tF %1$tT", calendar.getTime());
-    }
-
-    /**
-     * Get the date from a Calendar object in the localized format.
-     * 
-     * @param calendar
-     *            calendar Gregorian Calendar object
-     * @return Date as formated String
-     */
-    public String getDateTimeAsLocalString(GregorianCalendar calendar) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        return df.format(calendar.getTime());
-    }
-
-//    /**
-//     * Convert a date string from the format YYYY-MM-DD to to localized format.
-//     * 
-//     * @param s
-//     *            Date String
-//     * @return Date as formated String
-//     */
-//    public static String DateAsLocalString(String s) {
-//        if(s.equals(ZERO_DATE)) {
-//            return "";
-//        }
-//
-//        GregorianCalendar calendar = new GregorianCalendar();
-//        try {
-//            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-//            calendar.setTime(formatter.parse(s));
-//        }
-//        catch (ParseException e) {
-////            Logger.logError(e, "Error parsing Date");
-//        }
-//        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
-//        return df.format(calendar.getTime());
-//    }
-
-    /**
-     * Convert a date and time string from the format YYYY-MM-DD HH:MM:SS to to
-     * localized format.
-     * 
-     * @param s
-     *            Date and time String
-     * @return Date and time as formated String
-     */
-    public String DateAndTimeAsLocalString(String s) {
-    	String retval = "";
-    	if(s == null) {
-    		return retval;
-    	}
-        GregorianCalendar calendar = new GregorianCalendar();
-        try {
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            calendar.setTime(formatter.parse(s));
-	        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
-	        retval = df.format(calendar.getTime());
-        }
-        catch (ParseException e) {
-//            Logger.logError(e, "Error parsing Date and Time");
-        }
-        return retval;
-    }
-
-    /**
-     * Convert a date string into the format ISO 8601 YYYY-MM-DD.
-     * 
-     * @param s
-     *            Date String
-     * @return Date as formated String
-     */
-    public String DateAsISO8601String(String s) {
-        GregorianCalendar calendar = null;
-        String retval;
-        if(s != null && s != "") {
-            calendar = getCalendarFromDateString(s);
-            retval = getDateTimeAsString(calendar);
-        } else {
-            retval = "";
-        }
-        return retval;
-    }
-
-    /**
-     * Returns the date now in the format ISO 8601 YYYY-MM-DD
-     * 
-     * @return Date as formatted String
-     */
-    public String DateAsISO8601String() {
-
-        GregorianCalendar calendar = new GregorianCalendar();
-        return getDateAndTimeAsString(calendar);
-    }
-
-    /**
-     * Returns the date and time of now in a localized format.
-     * 
-     * @return Date and time as formated String
-     */
-    public String DateAndTimeOfNowAsISO8601String() {
-
-        LocalDateTime dateTime = LocalDateTime.now();
-        return dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
-    }
-    
-    /**
-     * Gets the formatted localized date.
-     *
-     * @param date the date
-     * @return the formatted localized date
-     */
-    public String getFormattedLocalizedDate(Date date) {
-        if(date != null) {
-            LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-            return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
-        } else { return ""; }
-    }
-    
-    /**
-     * Convert date strings from the following format to a calendar
+     * Adds days to a date string.
      * 
      * @param date
-     *            Date as string
-     * @return GregorianCalendar
+     *            Days to add
+     * @param days
+     *            Date
+     * @return Calculated date
      */
-    public GregorianCalendar getCalendarFromDateString(String date) {
-        GregorianCalendar calendar = new GregorianCalendar();
-
-        // try to parse the input date string
-        try {
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            calendar.setTime(formatter.parse(date));
-        }
-        catch (ParseException e) {
-
-            // use also localized formats
-            try {
-                DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-                calendar.setTime(formatter.parse(date));
-            }
-            catch (ParseException e2) {
-
-                // use also localized formats
-                try {
-                    DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-                    calendar.setTime(formatter.parse(date));
-                }
-                catch (ParseException e3) {
-//                    Logger.logError(e3, "Error parsing Date:" + date);
-                }
-            }
-        }
-        return calendar;
-    }
-
-    /**
-     * Returns the date and time of now in a localized format.
-     * 
-     * @return Date and time as formated String
-     */
-    public String DateAndTimeOfNowAsLocalString() {
-        GregorianCalendar calendar = new GregorianCalendar();
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-        return df.format(calendar.getTime());
-    }
-
-//    /**
-//     * Adds days to a date string.
-//     * 
-//     * @param date
-//     *            Days to add
-//     * @param days
-//     *            Date as string
-//     * @return Calculated date
-//     */
-//    public static String AddToDate(String date, int days) {
-//        GregorianCalendar calendar = getCalendarFromDateString(date);
-//
-//        // Add the days
-//        calendar.add(Calendar.DAY_OF_MONTH, days);
-//
-//        // And convert it back to a String value
-//        return getDateTimeAsString(calendar);
-//    }
-    
     public LocalDateTime addToDate(Date date, int days) {
         LocalDateTime localDate = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         return localDate.plusDays(days);
-    }
-
-    /**
-     * Calculates the similarity of two string.
-     * 
-     * The result is a value from 0.0 to 1.0. Returns 1.0, if both strings are
-     * equal.
-     * 
-     * @param sA
-     *            First String value
-     * @param sB
-     *            Second String value
-     * @return Similarity from 0.0 to 1.0
-     */
-    public double similarity(String sA, String sB) {
-        return StringUtils.getJaroWinklerDistance(sA, sB);
     }
 
 //    /**
@@ -1113,6 +589,4 @@ public class DataUtils {
 
         return s;
     }
-
-
 }

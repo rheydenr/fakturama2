@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -77,11 +78,13 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Product;
@@ -117,6 +120,15 @@ public class OfficeDocument {
     @Inject
     private DocumentsDAO documentsDAO;
     
+	@Inject
+	private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     /**
      * Event Broker for sending update events to the list table
      */
@@ -172,9 +184,7 @@ public class OfficeDocument {
 			// generate one by the data, but open the existing one.
 			if (testOpenAsExisting(document, template) && !forceRecreation) {
 				openExisting = true;
-	    		Set<PathOption> pathOptions = new HashSet<>();
-	            pathOptions.add(PathOption.WITH_FILENAME);
-	            pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				template = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 			}
 
@@ -365,9 +375,7 @@ public class OfficeDocument {
      */
 	private boolean saveOODocument(TextDocument textdoc) throws FakturamaStoringException {
 		generatedPdf = null;
-		Set<PathOption> pathOptions = new HashSet<>();
-		pathOptions.add(PathOption.WITH_FILENAME);
-		pathOptions.add(PathOption.WITH_EXTENSION);
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 
         boolean wasSaved = false;
         textdoc.getOfficeMetadata().setCreator(msg.applicationName);
@@ -423,7 +431,7 @@ public class OfficeDocument {
         
         // copy the PDF to the additional directory
         if (generatedPdf != null && !preferences.getString(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT).isEmpty()) {
-        	documentPath = Paths.get(fo.getRelativeDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document));
+        	documentPath = fo.getDocumentPath(pathOptions, TargetFormat.ADDITIONAL_PDF, document);
 			try {
 				if (Files.notExists(documentPath.getParent())) {
 					Files.createDirectories(documentPath.getParent());
@@ -451,7 +459,7 @@ public class OfficeDocument {
                 document.setPdfPath(generatedPdf.toString());
             }
 
-        	document = documentsDAO.update(document);                
+        	document = documentsDAO.save(document);                
 
             // Refresh the table view of all documents
             evtBroker.post(DocumentEditor.EDITOR_ID, "update");
@@ -463,7 +471,7 @@ public class OfficeDocument {
 	private void cleanup() throws IOException {
 		// remove temp images
 		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
-				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
+				"glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"/tmpImage*");
 		
 		Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
 			
@@ -518,9 +526,7 @@ public class OfficeDocument {
 
 				// now, if the file name templates are different, we have to
 				// rename the pdf
-				Set<PathOption> pathOptions = new HashSet<>();
-				pathOptions.add(PathOption.WITH_FILENAME);
-				pathOptions.add(PathOption.WITH_EXTENSION);
+				Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 				pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 
 				// FIXME How to create a PDF/A1 document?
@@ -683,7 +689,7 @@ public class OfficeDocument {
         String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
         
 		String key = vatSummaryItem.getVatName();
-		String value = DataUtils.getInstance().formatCurrency(vatSummaryItem.getVat());
+		String value = numberFormatterService.formatCurrency(vatSummaryItem.getVat());
 		// Get the text of the column. This is to determine, if it is the column
 		// with the VAT description or with the VAT value
 		String textValue = "";
@@ -697,10 +703,10 @@ public class OfficeDocument {
 			textValue = value;
 		}
 		else if (placeholder.equals("VATLIST.PERCENT")) {
-			textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
+			textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
 		}
 		else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
-			textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+			textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
 		}
 		else {
 			return null;
@@ -727,11 +733,11 @@ public class OfficeDocument {
 
 		if (this.useSET && vatSummaryItem.getSalesEqTax() != null) {
 			if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
-				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getSalesEqTax());
+				textValue = numberFormatterService.formatCurrency(vatSummaryItem.getSalesEqTax());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
-				textValue = DataUtils.getInstance().DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
+				textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
 			} else if (placeholder.equals("SALESEQUALIZATIONTAX.SUBTOTAL")) {
-				textValue = DataUtils.getInstance().formatCurrency(vatSummaryItem.getNet());
+				textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
 			} else {
 				return null;
 			}
@@ -825,7 +831,7 @@ public class OfficeDocument {
 
 		// Get the item quantity
 		if (key.equals("ITEM.QUANTITY")) {
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(LocaleUtil.getInstance().getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			value = numberInstance.format(item.getQuantity());
 		}
@@ -870,10 +876,10 @@ public class OfficeDocument {
 		
 		// vesting period
 		else if (key.equals("ITEM.VESTINGPERIOD.START")) {
-			value = item.getVestingPeriodStart() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
+			value = item.getVestingPeriodStart() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
 		}
 		else if (key.equals("ITEM.VESTINGPERIOD.END")) {
-			value = item.getVestingPeriodEnd() != null ? DataUtils.getInstance().getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
+			value = item.getVestingPeriodEnd() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
 		}
 
 		// Get the item description
@@ -887,16 +893,16 @@ public class OfficeDocument {
 
 		// Get the item discount in percent
 		else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemRebate());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemRebate());
 		}
 
 		// Get the absolute item discount (gross=
 		else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 		
 		else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
 		}
 		
 
@@ -912,32 +918,32 @@ public class OfficeDocument {
 		
 		// Get the item net value
 		else if (key.equals("ITEM.UNIT.NET")) {
-		    value = DataUtils.getInstance().formatCurrency(price.getUnitNetRounded());
+		    value = numberFormatterService.formatCurrency(price.getUnitNetRounded());
 		}
 
 		// Get the item VAT
 		else if (key.equals("ITEM.UNIT.VAT")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitVatRounded());
 		}
 
 		// Get the item gross value
 		else if (key.equals("ITEM.UNIT.GROSS")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossRounded());
 		}
 
 		// Get the discounted item net value
 		else if (key.equals("ITEM.UNIT.NET.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitNetDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitNetDiscountedRounded());
 		}
 
 		// Get the discounted item VAT
 		else if (key.equals("ITEM.UNIT.VAT.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitVatDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitVatDiscountedRounded());
 		}
 
 		// Get the discounted item gross value
 		else if (key.equals("ITEM.UNIT.GROSS.DISCOUNTED")) {
-			value = DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscountedRounded());
+			value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
 		}
 
 		// Get the total net value
@@ -945,10 +951,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice ) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalNetRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalNetRounded());
 			}
 		}
 
@@ -957,10 +963,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalVatRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalVatRounded());
 			}
 		}
 
@@ -969,10 +975,10 @@ public class OfficeDocument {
             if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getTotalGrossRounded());
+				value = numberFormatterService.formatCurrency(price.getTotalGrossRounded());
 			}
 		}
 		
@@ -981,10 +987,10 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
+				value = numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
 			}
 		}
 		
@@ -993,16 +999,16 @@ public class OfficeDocument {
 			if (isReplaceOptionalPrice) {
 				value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
 				if(value.contains("{}")) {
-					value = value.replaceAll("\\{\\}", DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
+					value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
 				}
 			} else {
-				value = DataUtils.getInstance().formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
+				value = numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
 			}
 		}
 		
 		// Get the item's VAT
 		else if (key.equals("ITEM.VAT.PERCENT")) {
-			value = DataUtils.getInstance().DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+			value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getTaxValue());
 		}
 	
 		// Get product picture
@@ -1126,7 +1132,7 @@ public class OfficeDocument {
 			} else if(key.equals("ITEM.UNIT.UDF03")) {
 				value = product.getCdf03();
 			} else if(key.equals("ITEM.UNIT.COSTPRICE")) {
-				value = DataUtils.getInstance().DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
+				value = numberFormatterService.DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
 			} else {
 				value = "";
 			}
@@ -1238,10 +1244,8 @@ public class OfficeDocument {
 	*	generate one by the data, but open the existing one.
 	*/
 	public boolean testOpenAsExisting(Document document, Path template) {
-		Path oODocumentFile = fo.getDocumentPath(
-				FileOrganizer.WITH_FILENAME,
-				FileOrganizer.WITH_EXTENSION, 
-				FileOrganizer.ODT, document);
+		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
+		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
 				filesAreEqual(document.getPrintTemplate(),template));
@@ -1257,7 +1261,7 @@ public class OfficeDocument {
      * @param folder
      *      The folder name to separate the relative path
      * @return
-     *      True, if both are equal
+     *      <code>true</code>, if both are equal
      */
     private boolean filesAreEqual(String fileName1, Path fileName2, String folder) {
         
@@ -1270,7 +1274,6 @@ public class OfficeDocument {
         pos = fileName2.toString().indexOf(folder);
         if (pos >= 0)
             otherFileName = fileName2.toString().substring(pos);
-
         
         return fileName1.equals(otherFileName);
     }

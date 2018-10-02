@@ -2012,7 +2012,9 @@
 					<para>Statusänderung einer Bestellung (auch ohne Webshop-Anbindung)</para>
 				</listitem>
 			</itemizedlist>
-			<para>Bei der Statusänderung einer Bestellung von "offen" oder "in Bearbeitung" auf "versendet" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend verringert. Bei der Statusänderung von "versendet" auf "in Bearbeitung" oder "offen" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend erhöht. Wenn der Bestand eines Produktes auf Null oder darunter sinkt, wird eine Meldung ausgegeben. Die Aktualisierung des Bestands durch Statusänderungen erfolgt nur bei Bestellungen und nicht bei Lieferscheinen, Rechnungen, Rechnungskorrekturen oder anderen Dokumenten.</para>
+			<para>Bei der Statusänderung einer Bestellung von "offen" oder "in Bearbeitung" auf "versendet" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend verringert. Bei der Statusänderung von "versendet" auf "in Bearbeitung" oder "offen" wird der Bestand jedes der in der Bestellung enthaltenen Produkte entsprechend erhöht. Wenn der Bestand eines Produktes auf Null oder darunter sinkt, wird eine Meldung ausgegeben. Die Aktualisierung des Bestands durch Statusänderungen erfolgt nur bei Bestellungen und nicht bei Lieferscheinen, Rechnungen, Rechnungskorrekturen oder anderen Dokumenten. Wann der Lagerbestand bem Erfassen von Rechnungen o.ä. Dokumenten geändert werden soll, kann in den Einstellungen hinterlegt werden.</para>
+			<para>Siehe auch <link linkend="preferences_product">Einstellungen Produkt</link>
+			</para>
 		</sect2>
 		<sect2>
 			<title>Benutzerfeld 1 .. 3</title>
@@ -2099,6 +2101,9 @@
 		<sect3>
 			<title>Zusätzliche Kontaktdaten</title>
 			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
+			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man bei gedrückter STRG-Taste 
+			und Mausklick auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
+			neues E-Mail-Fenster geöffnet.</para>
 		</sect3>
 		<sect3>
 			<title>Zahlungsart</title>
@@ -2304,7 +2309,32 @@
 				</listitem>
 			</itemizedlist>
 			<para>
-				<emphasis role="italic">Beispiel für SEPA-Lastschrifteinzug (Prenotification):</emphasis> Den Rechnungsbetrag in Höhe von &lt;DOCUMENT.TOTAL&gt; ziehen wir am &lt;DUE.DATE&gt; von Ihrem Konto &lt;DEBITOR.BANK.IBAN.CENSORED&gt; bei der &lt;DEBITOR.BANK.NAME&gt; unter Angabe der Mandatsreferenz &lt;DEBITOR.MANDATREF&gt; ein. Unsere Gläubiger-ID lautet &lt;YOURCOMPANY.CREDITORID&gt;. </para>
+				<emphasis role="italic">Beispiel für SEPA-Lastschrifteinzug (Prenotification):</emphasis> Den Rechnungsbetrag in Höhe von &lt;DOCUMENT.TOTAL&gt; ziehen wir am &lt;DUE.DATE&gt; von Ihrem Konto &lt;DEBITOR.BANK.IBAN.CENSORED&gt; bei der &lt;DEBITOR.BANK.NAME&gt; unter Angabe der Mandatsreferenz &lt;DEBITOR.MANDATREF&gt; ein. Unsere Gläubiger-ID lautet &lt;YOURCOMPANY.CREDITORID&gt;.
+			</para>
+			<para>
+				Die Platzhalter können über die Schaltfläche neben dem jeweiligen Textfeld ausgewählt werden:
+				<informalfigure>
+					<mediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/editor/placeholder_selector.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata width="100%" fileref="../images/editor/placeholder_selector.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</mediaobject>
+				</informalfigure>
+				Es erscheint ein Auswahlfeld, aus dem der jeweilige Platzhalter ausgewählt werden kann. Der Platzhalter wird dann an der aktuellen Cursorposition eingefügt.
+				<informalfigure>
+					<mediaobject>
+						<imageobject role="html">
+							<imagedata fileref="../images/editor/select_payment_placeholder.png" format="PNG" scalefit="1"/>
+						</imageobject>
+						<imageobject role="fo">
+							<imagedata width="100%" fileref="../images/editor/select_payment_placeholder.png" format="PNG" scalefit="1"/>
+						</imageobject>
+					</mediaobject>
+				</informalfigure>
+			</para>
 		</sect2>
 		<sect2>
 			<title>Standard</title>
@@ -2462,7 +2492,7 @@
 			<listitem><para>Der eigentliche Text.</para></listitem>
 		</varlistentry></variablelist>
 	</section>
-	<section>
+	<!-- section>
 		<anchor xreflabel="" xml:id="editor_editor_list"/>
 		<title>Editor Listeneintrag</title>
 		<para>Erstellt oder ändert einen Eintrag einer Liste.</para>
@@ -2490,7 +2520,7 @@
 			<listitem><para>Wert (Text) des Listeneintrages.</para>
 		</listitem>
 		</varlistentry></variablelist>
-	</section>
+	</section -->
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_voucher"/><title>Editor Einnahmen- oder Ausgabebeleg</title>
 		<para>Alle Einahmen/Ausgaben können in Belegen erfasst und später tabellarisch und sortiert als OpenOffice Calc Tabelle exportiert werden.</para>

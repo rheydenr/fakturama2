@@ -77,17 +77,22 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.handlers.paramconverter.LongParameterValueConverter;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.handlers.StockUpdateHandler;
+import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
+import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
+import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -126,6 +131,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private ILocaleService localeUtil;
 	
     @Inject
     @Preference   //(value=InstanceScope.SCOPE)
@@ -140,6 +148,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     private ContactsDAO contactsDAO;
     
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
     private EntityGridListLayer<Document> gridLayer;
     
 //    @Inject
@@ -170,10 +181,16 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
         	return null;
         }
-        // This is for text only!!!
-        ParameterType parameterType = cmdMan.getParameterType("myParam");
-    	AbstractParameterValueConverter parameterTypeConverter = new LongParameterValueConverter();
-		parameterType.define("myParam", parameterTypeConverter);
+        // This is for test only!!!
+        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
+        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
+		
+        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
+        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
+		
+        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
+        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
+
         // +++ END TEST +++
         
         super.createPartControl(parent, Document.class, true, ID);
@@ -211,10 +228,15 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     int rowPos = natTable.getRowPositionByY(event.y);
                     int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
                     selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                    // see comment below
 //                    selectionService.setSelection(selectionService);
                 }
             });
         }
+        
+        // TODO refactor the IMouseAction into a new class. Then add a new KeyBinding for RETURN key so that
+        // the user can select an entry with one keystroke.
+        
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -233,7 +255,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 Map<String, Object> params = new HashMap<>();
                 ParameterizedCommand parameterizedCommand;
                 if(commandId != null) {
-                    // If we don't give a target document number the event will  be catched by *all*
+                    // If we don't give a target document number the event will be caught by *all*
                     // open editors which listens to this event. This is (obviously :-) ) not
                     // the intended behavior...
                     Map<String, Object> eventParams = new HashMap<>();
@@ -581,7 +603,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 ParameterizedCommand wbCommand = toolItem.getWbCommand();
                 @SuppressWarnings("unchecked")
                 Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
-                if (treeObject.getNodeType() == TreeObjectType.DEFAULT_NODE) {
+                if (treeObject.getDocType() != null) {
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(treeObject.getDocType().getSingularKey()));
                     parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getDocType().name());
                 }
@@ -740,7 +762,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(),
+                    new MoneyDisplayConverter(numberFormatterService),
                     DisplayMode.NORMAL,
                     MONEYVALUE_CELL_LABEL);
 
@@ -748,7 +770,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
                     DATE_CELL_LABEL ); 
-            SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, LocaleUtil.getInstance().getDefaultLocale());
+            SimpleDateFormat dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, localeUtil.getDefaultLocale());
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new DefaultDateDisplayConverter(dateFormat.toPattern()),
@@ -842,6 +864,20 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                 IConfigRegistry configRegistry, Object displayValue) {
             return displayToCanonicalValue(displayValue);
         }
+    }
+    
+    @Override
+    	protected void handleAfterConfirmation(Document tmpDocument) {
+    	// before deletion first update stock
+    		if(tmpDocument.getPrinted()) {
+    			tmpDocument.getItems().stream().forEach(oldItem -> {
+    					oldItem.setOriginQuantity(oldItem.getQuantity());
+    					oldItem.setQuantity(null);
+    			});
+    		}
+    			
+            StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
+            stockUpdateHandler.updateStockQuantity(top.getShell(), null, tmpDocument);
     }
 
     @Override

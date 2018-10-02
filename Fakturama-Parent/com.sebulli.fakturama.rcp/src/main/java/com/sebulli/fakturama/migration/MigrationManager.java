@@ -481,7 +481,7 @@ public class MigrationManager {
 
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
-		CategoryBuilder<ProductCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<ProductCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		CursoredStream cs = oldDao.findAllProducts();
 		try {
@@ -885,7 +885,7 @@ public class MigrationManager {
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<ContactCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<ContactCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, ContactCategory> contactCategories = catBuilder.buildCategoryMap(oldDao.findAllContactCategories(), ContactCategory.class);
 		CursoredStream cs = oldDao.findAllContacts();
 		try {
@@ -1045,7 +1045,7 @@ public class MigrationManager {
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 
-        CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
+        CategoryBuilder<VoucherCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
         Map<String, VoucherCategory> receiptVoucherAccounts = catBuilder.buildCategoryMap(oldDao.findAllReceiptvoucherCategories(), VoucherCategory.class);
 
 		for (OldReceiptvouchers oldReceiptvoucher : oldDao.findAllReceiptvouchers()) {
@@ -1054,7 +1054,7 @@ public class MigrationManager {
 				receiptVoucher.setVoucherType(VoucherType.RECEIPTVOUCHER);
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getCategory()) && receiptVoucherAccounts.containsKey(oldReceiptvoucher.getCategory())) {
 					//receiptVoucher.setAccount(receiptVoucherAccounts.get(oldReceiptvoucher.getCategory()));
-					receiptVoucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldReceiptvoucher.getCategory(), true));
+					receiptVoucher.setAccount(voucherCategoriesDAO.getCategory(oldReceiptvoucher.getCategory(), true));
 				}
 				receiptVoucher.setDiscounted(oldReceiptvoucher.isDiscounted());
 				receiptVoucher.setDeleted(oldReceiptvoucher.isDeleted());
@@ -1113,7 +1113,7 @@ public class MigrationManager {
 					Voucher Voucher = modelFactory.createVoucher();
 					Voucher.setVoucherType(VoucherType.EXPENDITURE);
 					if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
-						Voucher.setAccount(voucherCategoriesDAO.getOrCreateCategory(oldExpenditure.getCategory(), true));
+						Voucher.setAccount(voucherCategoriesDAO.getCategory(oldExpenditure.getCategory(), true));
 					}
 					Voucher.setDeleted(oldExpenditure.isDeleted());
 					Voucher.setDiscounted(oldExpenditure.isDiscounted());
@@ -1215,7 +1215,7 @@ public class MigrationManager {
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
 		// Hint: Payments have the same(!) categories as Vouchers
-		CategoryBuilder<VoucherCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<VoucherCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, VoucherCategory> paymentCategories = catBuilder.buildCategoryMap(oldDao.findAllPaymentCategories(), VoucherCategory.class);
 		for (OldPayments oldPayment : oldDao.findAllPayments()) {
 			try {
@@ -1235,7 +1235,7 @@ public class MigrationManager {
 				payment.setValidFrom(new Date());
 				if(StringUtils.isNotBlank(oldPayment.getCategory()) && paymentCategories.containsKey(oldPayment.getCategory())) {
 					// add it to the new entity
-					payment.setCategory(voucherCategoriesDAO.getOrCreateCategory(oldPayment.getCategory(), true));
+					payment.setCategory(voucherCategoriesDAO.getCategory(oldPayment.getCategory(), true));
 				}
 				payment = paymentsDAO.save(payment, true);
 				newPayments.put(oldPayment.getId(), payment.getId());
@@ -1260,7 +1260,7 @@ public class MigrationManager {
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<TextCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<TextCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, TextCategory> textCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllTextCategories(), TextCategory.class);
 		for (OldTexts oldTexts : oldDao.findAllTexts()) {
 			try {
@@ -1295,7 +1295,7 @@ public class MigrationManager {
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 
-		CategoryBuilder<VATCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<VATCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, VATCategory> vatCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllVatCategories(), VATCategory.class);
 		for (OldVats oldVat : oldDao.findAllVats()) {
 			try {
@@ -1308,7 +1308,7 @@ public class MigrationManager {
 				if(StringUtils.isNotBlank(oldVat.getCategory()) && vatCategoriesMap.containsKey(oldVat.getCategory())) {
 					// add it to the new entity
 				    // get VatCategory from DAO since it may not be stored
-					vat.setCategory(vatCategoriesDAO.getOrCreateCategory(oldVat.getCategory(), true));
+					vat.setCategory(vatCategoriesDAO.getCategory(oldVat.getCategory(), true));
 				}
 				vat = vatsDAO.save(vat, true);
 				// use a HashMap as a simple cache
@@ -1333,7 +1333,7 @@ public class MigrationManager {
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
 		// use a HashMap as a simple cache
-		CategoryBuilder<ShippingCategory> catBuilder = new CategoryBuilder<>(log); 
+		CategoryBuilder<ShippingCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, ShippingCategory> shippingCategoriesMap = catBuilder.buildCategoryMap(oldDao.findAllShippingCategories(), ShippingCategory.class);
 		for (OldShippings oldShipping : oldDao.findAllShippings()) {
 			try {

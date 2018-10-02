@@ -22,7 +22,6 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -41,6 +40,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
@@ -73,6 +73,9 @@ public class ProductsCsvImporter {
     @Inject
     protected Logger log;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
 	/**
 	 * the model factory
 	 */
@@ -190,11 +193,11 @@ public class ProductsCsvImporter {
 					product.setPrice3(DataUtils.getInstance().StringToDouble(prop.getProperty("price3")));
 					product.setPrice4(DataUtils.getInstance().StringToDouble(prop.getProperty("price4")));
 					product.setPrice5(DataUtils.getInstance().StringToDouble(prop.getProperty("price5")));
-					product.setBlock1(StringUtils.isNumeric(prop.getProperty("block1")) ? Integer.parseInt(prop.getProperty("block1")) : null);
-					product.setBlock2(StringUtils.isNumeric(prop.getProperty("block2")) ? Integer.parseInt(prop.getProperty("block2")) : null);
-					product.setBlock3(StringUtils.isNumeric(prop.getProperty("block3")) ? Integer.parseInt(prop.getProperty("block3")) : null);
-					product.setBlock4(StringUtils.isNumeric(prop.getProperty("block4")) ? Integer.parseInt(prop.getProperty("block4")) : null);
-					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5")) ? Integer.parseInt(prop.getProperty("block5")) : null);
+					product.setBlock1(StringUtils.isNumeric(prop.getProperty("block1")) ? Integer.parseInt(prop.getProperty("block1")) : Integer.valueOf(1));
+					product.setBlock2(StringUtils.isNumeric(prop.getProperty("block2")) ? Integer.parseInt(prop.getProperty("block2")) : Integer.valueOf(10));
+					product.setBlock3(StringUtils.isNumeric(prop.getProperty("block3")) ? Integer.parseInt(prop.getProperty("block3")) : Integer.valueOf(100));
+					product.setBlock4(StringUtils.isNumeric(prop.getProperty("block4")) ? Integer.parseInt(prop.getProperty("block4")) : Integer.valueOf(1000));
+					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5")) ? Integer.parseInt(prop.getProperty("block5")) : Integer.valueOf(10000));
 
 // FIXME implement!
 //					ProductOptions productOption = modelFactory.createProductOptions();
@@ -208,7 +211,7 @@ public class ProductsCsvImporter {
 					if (prop.getProperty("date_added").isEmpty()) {
 						product.setDateAdded(today);
 					} else {
-						product.setDateAdded(DataUtils.getInstance().getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						product.setDateAdded(dateFormatterService.getCalendarFromDateString(prop.getProperty("date_added")).getTime());
 						product.setModified(today);
 					}
 					

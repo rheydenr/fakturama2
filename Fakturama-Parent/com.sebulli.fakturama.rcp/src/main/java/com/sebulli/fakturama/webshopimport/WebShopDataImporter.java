@@ -1,3 +1,17 @@
+/* 
+ * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
+ * 
+ * Copyright (C) 2017 The Fakturama Team
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Fakturama Team - initial API and implementation
+ */
+
 package com.sebulli.fakturama.webshopimport;
 
 import java.io.BufferedWriter;
@@ -65,12 +79,14 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
-import com.sebulli.fakturama.i18n.LocaleUtil;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -148,6 +164,9 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     @Inject 
     private ProductCategoriesDAO productCategoriesDAO;
     
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
     private OrderSyncManager orderSyncManager;
 
 	private MathContext mathContext = new MathContext(5);
@@ -155,6 +174,13 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private ProductUtil productUtil;
 	
 	private String generalWorkspace;
+	
+	@Inject
+    private ILocaleService localeUtil;
+    
+	@Inject
+	private INumberFormatterService numberFormatterService;
+
 	
 	private WebShopConnector connector;
 	private String runResult = "";
@@ -174,6 +200,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+//    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
 	@Override
@@ -373,7 +400,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
                 }
         
                 // Store the time of now
-                String now = DataUtils.getInstance().DateAsISO8601String();
+                String now = dateFormatterService.DateAsISO8601String();
                 preferences.putValue(PREFERENCE_LASTWEBSHOPIMPORT_DATE, now);
             }
             // else cancel the download process
@@ -410,11 +437,12 @@ public class WebShopDataImporter implements IRunnableWithProgress {
      * @throws SQLException 
      */
     private void interpretWebShopData(IProgressMonitor monitor, Webshopexport webshopexport) throws FakturamaStoringException {
-    	connector.setShopURL(webshopexport.getWebshop().getUrl());
-    	productImagePath = "";
     
     	// There is no order
     	if (webshopexport == null) return;
+    	
+    	connector.setShopURL(webshopexport.getWebshop().getUrl());
+    	productImagePath = "";
     
     	// Mark all orders as "in sync with the web shop"
     	orderSyncManager.allOrdersAreInSync();
@@ -515,7 +543,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	dataSetDocument.setWebshopDate(Date.from(instant));
     	dataSetDocument.setValidFrom(Date.from(instant));
     
-        CategoryBuilder<ContactCategory> contactCatBuilder = new CategoryBuilder<>(log);
+        CategoryBuilder<ContactCategory> contactCatBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
    
         // First get all contacts. Normally there is only one
         ContactType contact = order.getContact();        
@@ -556,7 +584,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         address.setZip(contact.getZip());
         address.setCity(contact.getCity());
         address.setValidFrom(today);
-        String countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getCountry());
+        String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
         address.setCountryCode(countryCode);
         
         contactItem.setAddress(address);
@@ -577,7 +605,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         deliveryAddress.setZip(contact.getDeliveryZip());
         deliveryAddress.setCity(contact.getDeliveryCity());
         deliveryAddress.setValidFrom(today);
-        countryCode = LocaleUtil.getInstance(lang).findCodeByDisplayCountry(contact.getDeliveryCountry());
+        countryCode = localeUtil.findCodeByDisplayCountry(contact.getDeliveryCountry(), lang);
         deliveryAddress.setCountryCode(countryCode);
         
         // if delivery contact is equal to main contact we don't need to persist it
@@ -859,8 +887,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     		//T: Error message importing data from web shop
     		//T: Format: ORDER xx TOTAL SUM FROM WEB SHOP: xx IS NOT EQUAL TO CALCULATED ONE: xx. PLEASE CHECK
     		String error = MessageFormat.format(msg.toolbarNewOrderName + ": " + webshopId + "\n"
-    		+ msg.importWebshopErrorTotalsumincorrect, DataUtils.getInstance().DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
-    		DataUtils.getInstance().formatCurrency(calcTotal));
+    		+ msg.importWebshopErrorTotalsumincorrect, numberFormatterService.DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
+    		numberFormatterService.formatCurrency(calcTotal));
     		setRunResult(error);
     	}        
     }

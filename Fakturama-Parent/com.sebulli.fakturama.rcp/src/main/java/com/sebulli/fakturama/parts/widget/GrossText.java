@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
@@ -62,11 +63,10 @@ public class GrossText {
 		// Create the text widget
 		this.grossText = new FormattedText(parent, style);
 		ITextFormatter formatter;
-		if(context != null) {
-			formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
-		} else {
-			formatter = new MoneyFormatter(null);
+		if(context == null) {
+			context = EclipseContextFactory.create();
 		}
+		formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		this.grossText.setFormatter(formatter);
 		if(netValue != null) {
 			grossText.setValue(netValue.multiply(1 + vat));
@@ -83,7 +83,7 @@ public class GrossText {
 			public void modifyText(ModifyEvent e) {
 				if (grossText != null && grossText.getControl().isFocusControl()) {
 					setNetValue(DataUtils.getInstance().calculateNetFromGross(
-							grossText.getControl().getText(), 
+							Double.toString((Double) grossText.getValue()), 
 							vatValue, netValue));
 
 			        // Fill the SWT text field "net" with the result

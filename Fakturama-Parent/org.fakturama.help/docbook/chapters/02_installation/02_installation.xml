@@ -26,7 +26,6 @@
 		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende 
 		Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.
 		</para>
-		<warning>Bitte beachten Sie, dass Java 9 derzeit noch nicht untersützt wird.</warning>
 	</section>
 	
 	<section><title>Allgemeine Installationshinweise</title>
@@ -100,6 +99,7 @@
 					</imageobject>
 				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_64Bit_x_x_x.sh) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
+			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken.</para>
 			<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
 			und alle Dokumente und Vorlagen abgelegt. Beispiel:</para>
 			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
@@ -180,7 +180,7 @@
 				</imageobject>
 			</mediaobject>
 		</informalfigure -->
-		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://www.fakturama.info">www.fakturama.info</link> in den Einstellungen vorausgewählt. Startet man den Import von Webshopdaten, 
+		<para>Nach der Installation ist ein Demowebshop auf <link xl:href="http://shop.fakturama.info">shop.fakturama.info</link> in den Einstellungen vorausgewählt. Startet man den Import von Webshopdaten, 
 		so werden 3 Musterprodukte und 2 Musterkunden angelegt. Diese können später wieder gelöscht werden.</para>
 		<para>Vor dem Arbeiten mit Fakturama sollten noch einige Einstellungen gesetzt werden. Die Werte sind bereits sinnvoll ausgewählt, doch nicht immer passen 
 		diese auf den eigenen Arbeitsablauf.</para>
@@ -188,6 +188,7 @@
 		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheinen Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. 
 		Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden. Die Vorlagen befinden sich im Arbeitsverzeichnis im Unterordner Vorlagen (dort jeweils
 		in einem separaten Ordner).</para>
+		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie nur Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt.</para>
 		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link> und <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
 		</para>
 	</section>

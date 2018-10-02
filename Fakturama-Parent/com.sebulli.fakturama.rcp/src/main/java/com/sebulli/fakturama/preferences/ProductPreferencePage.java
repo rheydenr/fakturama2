@@ -17,6 +17,7 @@ package com.sebulli.fakturama.preferences;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -25,6 +26,8 @@ import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Composite;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -42,6 +45,10 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
+
+	private BooleanFieldEditor useQuantityCheckbox;
+
+	private RadioGroupFieldEditor radioGroupQtyChange;
 
     /**
 	 * Constructor
@@ -73,10 +80,10 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Product" - Label "Use gross or net or both"
 		addField(new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_USE_NET_GROSS, msg.preferencesProductNetorgrossprices, 3, new String[][] { 
-				{ msg.productDataNet, "1" },
-				{ msg.productDataGross, "2" },
+				{ msg.productDataNet, Integer.toString(Constants.PRODUCT_USE_NET) },
+				{ msg.productDataGross, Integer.toString(Constants.PRODUCT_USE_GROSS) },
 				//T: Preference page "Product" - Label "Use both: net and gross"
-				{ msg.preferencesProductNetandgross, "0" } }, getFieldEditorParent()));
+				{ msg.preferencesProductNetandgross, Integer.toString(Constants.PRODUCT_USE_NET_AND_GROSS) } }, getFieldEditorParent()));
 
 		//T: Preference page "Product" - Label "Use scaled prices"
 		addField(new ComboFieldEditor(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, msg.preferencesProductScaledprices, new String[][] { { "--", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" },
@@ -87,14 +94,44 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 
 		//T: Preference page "Product" - Label "Use weight"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, msg.preferencesProductUseweight, getFieldEditorParent()));
-
-		//T: Preference page "Product" - Label "Use quantity"
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, msg.preferencesProductUsequantity, getFieldEditorParent()));
-
+		
+		useQuantityCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, msg.preferencesProductUsequantity, getFieldEditorParent());
+		addField(useQuantityCheckbox);
+		
+		radioGroupQtyChange = new RadioGroupFieldEditor(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, msg.preferencesProductQtyHeader, 3, new String[][] { 
+			{ msg.preferencesProductQtyChangeOrder, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_ORDER },
+			{ msg.preferencesProductQtyChangeDelivery, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY },
+			{ msg.preferencesProductQtyChangeInvoice, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE } }, getFieldEditorParent());
+		addField(radioGroupQtyChange);
+		
 		//T: Preference page "Product" - Label "Use product picture"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_PRODUCT_USE_PICTURE, msg.preferencesProductUsepicture, getFieldEditorParent()));
 	}
 	
+	@Override
+	protected void contributeButtons(Composite parent) {
+		// ok, it's a little misuse of this method, but I need to initialize the RadioGroup correctly...
+		super.contributeButtons(parent);
+		
+		radioGroupQtyChange.setEnabled(useQuantityCheckbox.getBooleanValue(), getFieldEditorParent());
+	}
+	
+	/**
+	 * Some values depends from each other. This method listens to changes for some values and adapt them if necessary.
+	 */
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        String preferenceName = null;
+        super.propertyChange(event);
+        
+        Object eventSource = event.getSource();
+		if (eventSource instanceof BooleanFieldEditor) {
+			preferenceName = ((BooleanFieldEditor)eventSource).getPreferenceName();
+        }
+        if (StringUtils.equalsIgnoreCase(preferenceName, Constants.PREFERENCES_PRODUCT_USE_QUANTITY)) {
+        	radioGroupQtyChange.setEnabled(((BooleanFieldEditor)eventSource).getBooleanValue(), getFieldEditorParent());
+        }
+    }
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 
@@ -110,6 +147,7 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_VAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_PRODUCT_USE_PICTURE, write);
 	}
 
@@ -137,6 +175,7 @@ public class ProductPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_VAT, true);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_WEIGHT, false);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, true);
+		node.setDefault(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE);
 		node.setDefault(Constants.PREFERENCES_PRODUCT_USE_PICTURE, true);
 	}
 }

@@ -1,9 +1,12 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -12,16 +15,24 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.oldmodel.OldProducts;
 
 @Creatable
 public class ProductsDAO extends AbstractDAO<Product> {
+    
+    @Inject
+    @Preference
+    private IEclipsePreferences eclipsePrefs;
 
     protected Class<Product> getEntityClass() {
     	return Product.class;
@@ -43,7 +54,25 @@ public class ProductsDAO extends AbstractDAO<Product> {
 						cb.equal(root.<String>get(Product_.name), oldProduct.getName())));
     	return getEntityManager().createQuery(cq).getSingleResult();
 	}
-
+	
+	/**
+	 * Counts all entities with the given category.
+	 * 
+	 * @param cat count of entities which have the given category
+	 */
+	public long countByCategory(AbstractCategory cat) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+		Root<Product> root = criteria.from(getEntityClass());
+		criteria.select(cb.count(root)).where(
+						cb.and(
+								cb.equal(root.get(Product_.categories), cat),
+								cb.isFalse(root.get(Product_.deleted))
+								)
+				);
+		return getEntityManager().createQuery(criteria).getSingleResult();
+	}
+	
     /**
      * @param object
      * @param cb
@@ -74,13 +103,29 @@ public class ProductsDAO extends AbstractDAO<Product> {
      * @return String[] of visible VAT properties
      */
     public String[] getVisibleProperties() {
-        return new String[] { 
-                Product_.itemNumber.getName(), 
-                Product_.name.getName(), 
-                Product_.description.getName(),
-                Product_.quantity.getName(), 
-                Product_.price1.getName(), 
-                Product_.vat.getName() };
+    	// remove invisible properties
+    	List<String> resultList = Arrays.asList(Product_.itemNumber.getName(), 
+            Product_.name.getName(), 
+            Product_.description.getName(),
+            Product_.quantity.getName(), 
+            Product_.price1.getName(), 
+            Product_.vat.getName()).stream().filter((String prop) -> {
+    	
+		    	if(eclipsePrefs != null) {
+		    		if(prop.equalsIgnoreCase(Product_.quantity.getName()) && !eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUANTITY, true)) {
+		    			return false;
+		    		} else if(prop.equalsIgnoreCase(Product_.vat.getName()) && !eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_VAT, true)) {
+		    			return false;
+		    		} else if(prop.equalsIgnoreCase(Product_.description.getName()) && !eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_DESCRIPTION, true)) {
+		    			return false;
+		    		} else if(prop.equalsIgnoreCase(Product_.itemNumber.getName()) && !eclipsePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR, true)) {
+		    			return false;
+		    		}
+		    	}
+		    	return true;
+            }).collect(Collectors.toList());
+
+        return resultList.toArray(new String[resultList.size()]);
     }
 
 	public Product findByItemNumber(String itemNo) {

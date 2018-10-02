@@ -341,6 +341,21 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
     	}
     }
 
+//	@Override
+//	protected void handleAfterDeletion(Payment objToDelete) {
+//		// check if we can delete the old category (if it's empty)
+//		if (objToDelete != null) {
+//			try {
+//				long countOfEntriesInCategory = paymentsDAO.countByCategory(objToDelete.getCategory());
+//				if (countOfEntriesInCategory == 0) {
+//					accountDAO.deleteEmptyCategory(objToDelete.getCategory());
+//				}
+//			} catch (FakturamaStoringException e) {
+//				log.error(e, "can't delete empty category from object " + objToDelete.getName());
+//			}
+//		}
+//	}
+
     /**
      * Set the category filter with a given {@link TreeObjectType}.
      * 

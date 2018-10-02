@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -44,6 +45,7 @@ import org.fakturama.wizards.IFakturamaWizardService;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 
 /**
@@ -60,6 +62,12 @@ public class AccountSettingsPage extends WizardPage {
 	@Inject
 	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
 	private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+    
+	@Inject
+	protected IEclipseContext context;
 
 	//Control elements
 	private CDateTime dtDate;
@@ -128,7 +136,7 @@ public class AccountSettingsPage extends WizardPage {
 		}));
 
 		txtValue = new FormattedText(dateAndValue, SWT.BORDER | SWT.RIGHT);
-		txtValue.setFormatter(new MoneyFormatter());
+		txtValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
 		txtValue.setValue(value);
 		
 		//T: Account settings page of account exporter
@@ -185,7 +193,7 @@ public class AccountSettingsPage extends WizardPage {
 		String date = eclipsePrefs.get(datePropertyKey, "2000-01-01");
 		
 		GregorianCalendar calendar = new GregorianCalendar();
-		calendar = DataUtils.getInstance().getCalendarFromDateString(date);
+		calendar = dateFormatterService.getCalendarFromDateString(date);
 
 		// Set the date widget with the property from the database
 		if (dtDate != null) {

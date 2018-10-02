@@ -76,7 +76,7 @@ public class DbUpdateService implements IDbUpdateService {
 			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
-			liquibase.forceReleaseLocks();   // workaround!
+//			liquibase.forceReleaseLocks();   // workaround!
 			liquibase.update(new Contexts(), new LabelExpression());
 		} catch (LiquibaseException | SQLException | NullPointerException ex) {
 			ex.printStackTrace();

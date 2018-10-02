@@ -151,7 +151,8 @@ public class WebShopImportManager {
 	 */
 	@Execute
 	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
-	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) String prepareGetProductsAndOrders) {
+	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) Boolean prepareGetProductsAndOrders,
+	        @Named(WebShopCallHandler.PARAM_ACTION) String action) {
 	    ExecutionResult executionResult = null;
 	    
 		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
