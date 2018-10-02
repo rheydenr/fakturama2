@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.6" transformSequenceNumber="5">
   <directoryPresets config="./linux_32bit" />
-  <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.2.1-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
+  <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.3-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="de" customLocalizationFile="" />
       <additionalLanguages>
@@ -120,7 +120,7 @@
                 </void>
               </void>
               <void property="customWatermarkText">
-                <string>(c) 2017 Fakturama.org</string>
+                <string>(c) 2018 Fakturama.org</string>
               </void>
               <void property="headerIconOverlap">
                 <boolean>true</boolean>
@@ -413,7 +413,7 @@
                 <string>${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</string>
               </void>
               <void property="customWatermarkText">
-                <string>(c) 2017 Fakturama.org</string>
+                <string>(c) 2018 Fakturama.org</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
