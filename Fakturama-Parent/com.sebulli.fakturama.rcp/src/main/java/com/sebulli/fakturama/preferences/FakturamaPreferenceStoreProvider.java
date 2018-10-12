@@ -3,6 +3,8 @@ package com.sebulli.fakturama.preferences;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
@@ -29,6 +31,8 @@ public class FakturamaPreferenceStoreProvider implements IPreferenceStoreProvide
 	@Override
 	public IPersistentPreferenceStore getPreferenceStore() {
 		if(preferenceStore == null) {
+			ISecurePreferences secPrefs = SecurePreferencesFactory.getDefault();
+			
 			preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE,
 					Activator.getContext().getBundle().getSymbolicName());
 		}

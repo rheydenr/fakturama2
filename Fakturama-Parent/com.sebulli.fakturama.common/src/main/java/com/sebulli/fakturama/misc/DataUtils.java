@@ -373,6 +373,7 @@ public class DataUtils {
      * @param netvalue
      *            Net value as UniData. This is modified with the net value.
      */
+    @Deprecated
     public MonetaryAmount calculateNetFromGross(String gross, Double vat, MonetaryAmount netvalue) {
     	// If there is a gross SWT text field specified, its value is used
     	// In the other case: do not convert. Just format the netvalue.

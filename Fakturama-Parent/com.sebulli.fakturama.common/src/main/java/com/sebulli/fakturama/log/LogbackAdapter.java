@@ -63,7 +63,7 @@ public class LogbackAdapter implements LogListener {
 		 * we DON'T know at this point if the user has switched the workspace,
 		 * if the application is started the first time or 
 		 */
-		String productName = System.getProperty(InternalPlatform.PROP_PRODUCT).replaceAll("\\.product", "");
+		String productName = StringUtils.defaultString(System.getProperty(InternalPlatform.PROP_PRODUCT)).replaceAll("\\.product", "");
 		String workspaceLoc = InstanceScope.INSTANCE.getNode(productName).get(Constants.GENERAL_WORKSPACE, null);
 		String logFile = getLogfileName(workspaceLoc);
 		if (StringUtils.isNotBlank(logFile)) {

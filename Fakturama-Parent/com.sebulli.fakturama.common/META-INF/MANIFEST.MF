@@ -129,3 +129,4 @@ Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provi
  OSGI-INF/numberformatter.xml
 Bundle-ClassPath: .,
  lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
+Eclipse-BuddyPolicy: registered
