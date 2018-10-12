@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -68,6 +69,7 @@ import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.SaveHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -472,7 +474,7 @@ public class LifecycleManager {
         appContext.applicationRunning();
     }
 
-    /**
+	/**
      * Because we don't have a complete workbench at this stage, the
      * {@link EventHandler} is registered so that we can restart the application
      * if the working directory has changed or the application is launched the
@@ -498,12 +500,11 @@ public class LifecycleManager {
 
         @Override
         public void handleEvent(final Event event) {
-        	// TODO implement an appropriate SaveDialog for this, then enable this code again
-//        	if(modelService != null) {
-//	            MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
-//	        	ISaveHandler saveHandler = ContextInjectionFactory.make(EditorSaveHandler.class, mainMTrimmedWindow.getContext());
-//	        	mainMTrimmedWindow.getContext().set(ISaveHandler.class, saveHandler);
-//        	}
+        	if(modelService != null) {
+	            MTrimmedWindow mainMTrimmedWindow = (MTrimmedWindow) modelService.find("com.sebulli.fakturama.application", app);
+	        	ISaveHandler saveHandler = ContextInjectionFactory.make(SaveHandler.class, mainMTrimmedWindow.getContext());
+	        	mainMTrimmedWindow.getContext().set(ISaveHandler.class, saveHandler);
+        	}
         	
         	IWorkbench workbench = _context.get(IWorkbench.class);
             if (restartApplication) {

@@ -352,14 +352,14 @@ public class DocumentEditor extends Editor<Document> {
 	}
 	
 	/**
-	 * Saves the contents of this part
+	 * Saves the contents of this part.
 	 * 
 	 * @param monitor
 	 *            Progress monitor
-	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
+	 * @return {@link Boolean#TRUE} if saving was ok, {@link Boolean#FALSE} otherwise.  
 	 */
     @Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 
 		/*
 		 * the following parameters are not saved: 
@@ -393,7 +393,8 @@ public class DocumentEditor extends Editor<Document> {
 					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
-					return;
+//					throw new RuntimeException(msg.editorDocumentErrorDocnumberNotnextfree);
+					return Boolean.FALSE;
 				}
 			}
 		}
@@ -401,7 +402,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Exit save if there is a document with the same number
 		// already checked in saveAllowed()
 		if (thereIsOneWithSameNumber()) {
-			return;
+			return Boolean.FALSE;
 		}
 
 		// Always set the editor's data set to "undeleted"
@@ -705,6 +706,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
+        return Boolean.TRUE;
 	}
     
     @Override
