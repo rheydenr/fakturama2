@@ -60,7 +60,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.sebulli.fakturama.addons.BackupManager;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -391,11 +390,11 @@ public class LifecycleManager {
             preferencesInDatabase.savePreferencesInDatabase();
         }
 		
-		dbUpdateService.shutDownDb();
-		
-		// #0000604: Create a database backup
-		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
-		backupManager.createBackup();
+//		dbUpdateService.shutDownDb();
+//		
+//		// #0000604: Create a database backup
+//		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
+//		backupManager.createBackup();
         
         if(dialogSettings != null) {
         	log.debug("save dialog settings");

@@ -24,6 +24,7 @@ import com.sebulli.fakturama.dbconnector.IDbConnection;
 public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer {
 
 	private Server server;
+	private String workspace;
 
 	@Override
 	public String getKey() {
@@ -47,6 +48,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		server = new Server();
 		HsqlProperties hsqlProps = new HsqlProperties();
 		String url = props.getProperty("url");
+		workspace = props.getProperty("GENERAL_WORKSPACE");
 		Pattern patt = Pattern.compile(".*?:file:(.*?);.*");
 		Matcher m = patt.matcher(url);
 		if (m.matches() && m.groupCount() > 0) {
@@ -92,5 +94,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	@Override
 	public void stopServer() {
 		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
+		BackupManager bm = new BackupManager();
+		bm.createBackup(workspace);
 	}
 }

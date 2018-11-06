@@ -12,42 +12,39 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.addons;
+package com.sebulli.fakturama.hsqlconnector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.inject.Inject;
-
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.di.extensions.Preference;
-
-import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.IDateFormatterService;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
 
 public class BackupManager {
 
-    @Inject
-    private ILogger log;
-
-    @Inject
-    @Preference
-    private IEclipsePreferences eclipsePrefs;
+//    @Inject
+    private LogService log;
     
-    @Inject
-    private IDateFormatterService dateFormatterService;
+//    @Inject
+//    private IDateFormatterService dateFormatterService;
 
-	public void createBackup() {
-
+	public void createBackup(String workspacePath) {
+		ServiceReference<LogService> loggerRefs = FrameworkUtil.getBundle(getClass()).getBundleContext().getServiceReference(LogService.class);
+		
+		log = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(loggerRefs);
+		log.log(LogService.LOG_WARNING, "TEST");
+//		dateFormatterService = new DateFormatter();
+		
 		// Get the path to the workspace
-		String workspacePath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
 		if (workspacePath == null || workspacePath.length() == 0)
 			return;
 		
@@ -63,17 +60,18 @@ public class BackupManager {
 			try {
 				Files.createDirectories(directory);
 			} catch (IOException e1) {
-				log.error(e1, "can't create backup directory");
+				log.log(LogService.LOG_ERROR, "can't create backup directory", e1);
 				return;
 			}
 		}
-
+		
 		// Filename of the zip file
-		String dateString = dateFormatterService.DateAndTimeOfNowAsLocalString();
+		String dateString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmSS"));
 		dateString = dateString.replace(" ", "_");
 		dateString = dateString.replace(":", "");
 
 		Path backupPath = Paths.get(directory.toString(), "/Backup_" + dateString + ".zip");
+		log.log(LogService.LOG_INFO, "create Database backup in " + backupPath.toString());
 
 		// The file to add to the ZIP archive
 		ArrayList<String> backupedFiles = new ArrayList<String>();
@@ -118,13 +116,13 @@ public class BackupManager {
 					}
 				}
 				catch (Exception e) {
-					log.error(e, "Error during file backup:" + backupedFile);
+					log.log(LogService.LOG_ERROR, "Error during file backup:" + backupedFile, e);
 				}
 			}
 			zip.close();
 		}
 		catch (IOException ex) {
-			log.error(ex, "Error during backup");
+			log.log(LogService.LOG_ERROR, "Error during backup", ex);
 		}
 	}
 }

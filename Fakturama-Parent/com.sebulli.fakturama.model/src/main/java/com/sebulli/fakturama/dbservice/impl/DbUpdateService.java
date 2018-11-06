@@ -31,6 +31,7 @@ import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
+import com.sebulli.fakturama.misc.Constants;
 
 import liquibase.Contexts;
 import liquibase.LabelExpression;
@@ -124,7 +125,7 @@ public class DbUpdateService implements IDbUpdateService {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
 					prop.put("encoding", "UTF-8");
-					prop.put("shutdown", "true");
+					prop.put(Constants.GENERAL_WORKSPACE, eclipsePrefs.get(Constants.GENERAL_WORKSPACE, ""));
 					if(currentService != null) {
 						try {
 							currentService.stopServer();
