@@ -650,7 +650,7 @@
             <title>OpenOffice-org Pfad/App</title>
             <para>Je nach Betriebssystem wird hier der Ordner ausgewählt, in dem sich die OpenOffice / LibreOffice Installation oder die OpenOffice App befindet. In Klammern steht der Standard-Pfad. Wurde es an einer anderen Stelle installiert, ist diese auszuwählen.</para>
             <para>Standardpfad für Windows-Betriebssysteme</para>
-            <programlisting>C:\Program Files\OpenOffice.org 4</programlisting>
+            <programlisting>C:\Program Files\OpenOffice.org 6</programlisting>
             <para>Standardpfad für Linux-Betriebssysteme</para>
             <programlisting>/usr/lib/openoffice</programlisting>
             <para>Standardapp für MacOS-Betriebssysteme</para>
@@ -684,7 +684,7 @@
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
             <title>Format und Pfad der Dateien</title>
             <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest. Hier können auch absolute Pfadangaben eingetragen werden. Ansonsten sind die Pfade relativ zum Arbeitsverzeichnis.</para>
-            <para>Über das Hauptmenü Extras <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
+            <para>Über das Hauptmenü Extras -> <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
             <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
             Folgende Platzhalter können benutzt werden:</para>

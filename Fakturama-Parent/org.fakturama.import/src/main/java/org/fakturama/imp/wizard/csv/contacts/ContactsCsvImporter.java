@@ -139,6 +139,7 @@ public class ContactsCsvImporter {
 		// Count the imported contacts
 		int importedContacts = 0;
 		int updatedContacts = 0;
+		int skippedContacts = 0;
 
 		// Count the line of the import file
 		int lineNr = 0;
@@ -210,6 +211,12 @@ public class ContactsCsvImporter {
 					 * Customer number, first name, name and ZIP are compared
 					 */
 					Contact testContact = contactsDAO.findOrCreate(contact);
+					
+					// if found and no update is required skip to the next record
+					if(testContact != null && !updateExisting) {
+						skippedContacts++;
+						continue;
+					}
 					
 					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
 					if(category == null && prop.getProperty("category") != null) {
@@ -299,6 +306,8 @@ public class ContactsCsvImporter {
 			result += NL + importedContacts + " " + importMessages.wizardImportInfoContactsimported;
 			if (updatedContacts > 0)
 				result += NL + updatedContacts + " " + importMessages.wizardImportInfoContactsupdated;
+			if (skippedContacts > 0)
+				result += NL + skippedContacts + " " + importMessages.wizardImportInfoContactsskipped;
 		}
 		
 		catch (UnsupportedEncodingException e) {
