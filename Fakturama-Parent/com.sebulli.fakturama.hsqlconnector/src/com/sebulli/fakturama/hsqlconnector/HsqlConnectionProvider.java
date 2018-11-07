@@ -73,8 +73,6 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 			e.printStackTrace();
 		}
 		props.put("runningfakdb", server.getDatabaseName(0, false));
-		
-//		FrameworkUtil.getBundle(IDbConnection.class).getBundleContext().registerService(IDbConnection.class.getName(), this, null);
 		return props;
 	}
 	
