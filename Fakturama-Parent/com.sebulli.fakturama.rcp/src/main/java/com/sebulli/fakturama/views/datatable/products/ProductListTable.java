@@ -23,6 +23,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -30,6 +31,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -39,7 +41,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.data.convert.NumericDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -68,7 +69,6 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
-import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -114,9 +114,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
     @Inject
     private ProductCategoriesDAO productCategoriesDAO;
-
-	@Inject
-	private INumberFormatterService numberFormatterService;
+	
+    @Inject @Optional
+    protected IPreferenceStore defaultValuePrefs;
 
     private EventList<Product> productListData;
     private EventList<ProductCategory> categories;
@@ -532,6 +532,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 			styleRightAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
 			Style styleCentered = new Style();
 			styleCentered.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.CENTER);
+			
+			MoneyDisplayConverter moneyDisplayConverter = ContextInjectionFactory.make(MoneyDisplayConverter.class, context);
 
 			// default style for the most of the cells
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, // attribute to apply
@@ -545,7 +547,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     MONEYVALUE_CELL_LABEL ); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new MoneyDisplayConverter(numberFormatterService),
+                    moneyDisplayConverter,
                     DisplayMode.NORMAL,
                     MONEYVALUE_CELL_LABEL);
             
@@ -563,9 +565,11 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
                     NUMBER_CELL_LABEL); 
-            configRegistry.registerConfigAttribute(
+            DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
+            doubleDisplayConverter.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES));
+			configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
-                    new DefaultDoubleDisplayConverter(),
+                    doubleDisplayConverter,
                     DisplayMode.NORMAL,
                     NUMBER_CELL_LABEL);
 		}
