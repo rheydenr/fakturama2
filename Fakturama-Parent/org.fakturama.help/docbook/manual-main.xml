@@ -194,6 +194,15 @@ Wichtig ist hier, als bind-addr 0.0.0.0 anzugeben.</para></answer></qandaentry>
 	<question><para>Unter MacOS sehe ich keine CoolBar (die Leiste mit den großen Icons) im Vollbildmodus.</para></question>
 	<answer><para>Dafür gibt es leider noch keine Lösung. Abhilfe schafft hier vorübergehend das nicht-maximierte Ausführen der Anwendung.</para></answer>
 	</qandaentry>		
+	<qandaentry>
+	<question><para>Der Aufruf via Doppelklick bzw. Spotlight führt zur Fehlermeldung, dass das Programm scheinbar defekt ist.</para></question>
+	<answer><para>Da die Anwendung nicht signiert ist lehnt MacOS den start via Finder ab. Der Start über die Kommandozeile funktioniert allerdings. Deswegen kann man folgendes Script auf dem Desktop platzieren (Dateiendung <code>.sh</code> und diesem das Fakturama-Icon zuweisen:
+		<programlisting>
+		#!/bin/bash
+		/Applications/Fakturama2.app/Contents/MacOS/Fakturama
+		</programlisting>
+</para></answer>
+	</qandaentry>		
 	</qandadiv>
 	
       <qandadiv>
