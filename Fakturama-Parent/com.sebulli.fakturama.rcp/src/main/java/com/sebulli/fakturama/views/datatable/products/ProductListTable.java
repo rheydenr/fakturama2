@@ -38,6 +38,8 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.NumericDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -550,7 +552,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
-                    VAT_CELL_LABEL ); 
+                    VAT_CELL_LABEL); 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     new VatDisplayConverter(),
@@ -560,7 +562,12 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                     styleRightAligned,      
                     DisplayMode.NORMAL,             
-                    NUMBER_CELL_LABEL ); 
+                    NUMBER_CELL_LABEL); 
+            configRegistry.registerConfigAttribute(
+                    CellConfigAttributes.DISPLAY_CONVERTER,
+                    new DefaultDoubleDisplayConverter(),
+                    DisplayMode.NORMAL,
+                    NUMBER_CELL_LABEL);
 		}
 	}
 
