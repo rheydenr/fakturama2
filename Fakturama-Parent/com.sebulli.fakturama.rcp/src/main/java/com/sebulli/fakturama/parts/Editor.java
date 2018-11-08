@@ -421,7 +421,9 @@ public abstract class Editor<T extends IEntity> {
 
     protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
     	Binding binding = null;
-        source.getControl().setTextLimit(limit);
+    	if(limit > 0) {
+    		source.getControl().setTextLimit(limit);
+    	}
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);

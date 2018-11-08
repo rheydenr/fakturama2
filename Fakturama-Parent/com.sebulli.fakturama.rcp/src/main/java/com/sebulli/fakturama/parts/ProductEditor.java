@@ -73,7 +73,6 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -89,6 +88,7 @@ import com.sebulli.fakturama.parts.widget.FakturamaPictureControl;
 import com.sebulli.fakturama.parts.widget.GrossText;
 import com.sebulli.fakturama.parts.widget.NetText;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.formatter.DoubleValueFormatter;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -127,9 +127,6 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
-    
-	@Inject
-	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -354,7 +351,6 @@ public class ProductEditor extends Editor<Product> {
 
 			// Get the next item number
 			editorProduct.setItemNumber(getNextNr());
-
 		}
 		else {
 
@@ -685,14 +681,15 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
 		if(useQuantity) {
+			DoubleValueFormatter quantityFormatter = ContextInjectionFactory.make(DoubleValueFormatter.class, context);
 			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
+			textQuantity.setFormatter(quantityFormatter);
 			textQuantity.getControl().addKeyListener(new ReturnKeyAdapter(textQuantity.getControl()));
 			textQuantity.getControl().setToolTipText(msg.commonFieldQuantityTooltip);
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
 		}
-		textQuantity.setFormatter(new DoubleFormatter(localeUtil.getDefaultLocale()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 
 		// user defined fields
@@ -801,7 +798,7 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
 		fillAndBindVatCombo();
 		bindModelValue(editorProduct, textWeight, Product_.weight.getName(), 16);
-		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
+		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 0);
 		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
 		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
 		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
