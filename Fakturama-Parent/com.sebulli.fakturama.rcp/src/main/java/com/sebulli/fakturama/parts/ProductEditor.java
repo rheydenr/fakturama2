@@ -187,7 +187,7 @@ public class ProductEditor extends Editor<Product> {
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 
 		/*
 		 * the following parameters are not saved:
@@ -251,6 +251,7 @@ public class ProductEditor extends Editor<Product> {
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return Boolean.FALSE;
 		}
 
 		// Set the product data
@@ -281,6 +282,7 @@ public class ProductEditor extends Editor<Product> {
 	        oldCat = editorProduct.getCategories();
         } catch (FakturamaStoringException e) {
             log.error(e);
+			return Boolean.FALSE;
         }
 
 		// Set the Editor's name to the product name...
@@ -297,6 +299,7 @@ public class ProductEditor extends Editor<Product> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+		return Boolean.TRUE;
 	}
 
 	/**

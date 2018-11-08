@@ -82,7 +82,7 @@ public class SaveHandler extends PartServiceSaveHandler {
 		Boolean retVal = Boolean.TRUE;
 		try {
 			retVal = (Boolean) ContextInjectionFactory.invoke(client, Persist.class, dirtyPart.getContext());
-			System.out.println(retVal);
+			log.debug(client.getClass().getSimpleName().toString() + " save result: " + retVal);
 		} catch (InjectionException e) {
 			log.error(e, MessageFormat.format("Failed to persist contents of part ({0})", dirtyPart.getElementId()));
 			return false;

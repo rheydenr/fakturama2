@@ -239,7 +239,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 *            Progress monitor
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+	public Boolean doSave(IProgressMonitor monitor, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
 
 		/*
 		 * the following parameters are not saved: 
@@ -260,7 +260,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// check if the same number was used.
 		if(thereIsOneWithSameNumber()) {
 			// Save is only allowed, if there is no contact with the same number
-			return;
+			return Boolean.FALSE;
 		}
 
 	    // check for a new contact
@@ -282,7 +282,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 						msg.editorContactHintSeepreferences);
 				messageBox.open();
 				throw new RuntimeException(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()));
-//				return;
 			}
 
 		}
@@ -330,7 +329,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
             MessageDialog.openError(parent, msg.dialogMessageboxTitleError, "Can't save data! Please see log file.\n");
-            return;
+            return Boolean.FALSE;
         }
 		newContact = false;
 		
@@ -363,6 +362,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+        return Boolean.TRUE;
 	}
 
 	protected abstract AbstractDAO<C> getContactsDao();

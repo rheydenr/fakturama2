@@ -3107,6 +3107,8 @@ public class DocumentEditor extends Editor<Document> {
                 calculate();
             }
             setDirty(true);
+            System.err.println("SOURCE: " + event.getProperty("source"));
+        	new Throwable().printStackTrace();
         }
     }    
     

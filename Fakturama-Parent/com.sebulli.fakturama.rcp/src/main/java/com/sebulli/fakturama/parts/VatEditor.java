@@ -106,7 +106,7 @@ public class VatEditor extends Editor<VAT> {
      *            Progress monitor
      */
     @Persist
-    public void doSave(IProgressMonitor monitor) {
+    public Boolean doSave(IProgressMonitor monitor) {
 
         /*
          * the following parameters are not saved: 
@@ -151,6 +151,7 @@ public class VatEditor extends Editor<VAT> {
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current VAT: " + editorVat.toString());
+            return Boolean.FALSE;
         }
 
         if (newVat) {
@@ -176,6 +177,7 @@ public class VatEditor extends Editor<VAT> {
         
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
+		return Boolean.TRUE;
     }
 
     /**

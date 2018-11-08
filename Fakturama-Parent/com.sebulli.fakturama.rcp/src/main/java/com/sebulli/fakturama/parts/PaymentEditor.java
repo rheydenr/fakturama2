@@ -111,7 +111,7 @@ public class PaymentEditor extends Editor<Payment> {
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
     @Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 		/*
 		 * the following parameters are not saved:
 		 * - id (constant)
@@ -143,6 +143,7 @@ public class PaymentEditor extends Editor<Payment> {
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Payment: " + payment.toString());
+            return Boolean.FALSE;
         }
 		
 		// If it is a new payment, add it to the payment list and
@@ -171,6 +172,7 @@ public class PaymentEditor extends Editor<Payment> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+        return Boolean.TRUE;
 	}
 
 	/**

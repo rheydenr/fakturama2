@@ -94,7 +94,7 @@ public class TextEditor extends Editor<TextModule> {
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
     @Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 		/*
 		 * the following parameters are not saved:
 		 * - id (constant)
@@ -125,6 +125,7 @@ public class TextEditor extends Editor<TextModule> {
         }
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current VAT: " + editorText.toString());
+            return Boolean.FALSE;
         }
 
 		// If it is a new text, add it to the text list and
@@ -147,6 +148,7 @@ public class TextEditor extends Editor<TextModule> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+        return Boolean.TRUE;
 	}
 
 	/**

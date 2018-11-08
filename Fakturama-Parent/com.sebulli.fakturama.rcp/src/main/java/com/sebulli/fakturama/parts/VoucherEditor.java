@@ -534,7 +534,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 	        /*
 	         * the following parameters are not saved: 
 	         * - id (constant)
@@ -586,6 +586,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 			voucher = getModelRepository().update(voucher);
 		} catch (FakturamaStoringException e) {
 			log.error(e);
+			return Boolean.FALSE;
 		}
 
 	      // Set the Editor's name to the voucher name.
@@ -598,6 +599,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);
+	      return Boolean.TRUE;
 	    }
 	
 	/**

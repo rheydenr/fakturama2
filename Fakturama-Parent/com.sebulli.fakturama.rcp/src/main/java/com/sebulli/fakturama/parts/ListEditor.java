@@ -87,7 +87,7 @@ public class ListEditor extends Editor<ItemAccountType> {
      * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Persist
-    public void doSave(IProgressMonitor monitor) {
+    public Boolean doSave(IProgressMonitor monitor) {
         /*
          * the following parameters are not saved:
          * - id (constant)
@@ -103,6 +103,7 @@ public class ListEditor extends Editor<ItemAccountType> {
             editorListEntry = itemAccountTypeDAO.update(editorListEntry);
         } catch (FakturamaStoringException e) {
             log.error(e, "can't save the current ItemAccountType: " + editorListEntry.toString());
+            return Boolean.FALSE;
         }
 
         // Always set the editor's data set to "undeleted"
@@ -124,6 +125,7 @@ public class ListEditor extends Editor<ItemAccountType> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+        return Boolean.TRUE;
     }
 
     /**
