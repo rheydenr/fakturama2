@@ -659,9 +659,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 }
 
                 if(valueChanged) {
+                    Map<String, Object> event = new HashMap<>();
+                    event.put("source", descriptor);
 	                // Recalculate the total sum of the document if necessary
 	                // do it via the messaging system and send a message to DocumentEditor
-	                Map<String, Object> event = new HashMap<>();
 	                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
 	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
 	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
