@@ -269,6 +269,13 @@ public class CreateOODocumentHandler {
     private void updateStockQuantity(Shell shell, List<DocumentItem> olditemsList, Document currentDocument) {
     	Document tmpDocument = null;
     	boolean found = false;
+    	
+		// if no quantity should be used or document is not of the right BillingType we
+		// can omit the stock update
+		if (!isStockUpdateForCurrentDocument(currentDocument)) {
+			return;
+		}
+    	
     	FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;    	
     	
     	// create a temporary document
@@ -323,7 +330,7 @@ public class CreateOODocumentHandler {
 			if (!found) {
 // "not found" means the currentDocumentItem couldn't be found in the oldDocumentItem's list. It seems to be a new one.
 // "found" means that the item was found in both lists but wasn't changed.
-				tmpDocItems.put(currentDocumentItem.getItemNumber().hashCode(), currentDocumentItem);
+				tmpDocItems.put(currentDocumentItem.hashCode(), currentDocumentItem);
 			}
 		}
 		
@@ -346,11 +353,29 @@ public class CreateOODocumentHandler {
 						.collect(Collectors.toList()));
         
         // update stock quantity
-		// can't be called via HandlerService since the ParemeterConverter reads the document from the database :-(
+		// can't be called via HandlerService since the ParameterConverter reads the document from the database :-(
 		// Therefore we have to call it manually.
        
         StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
         stockUpdateHandler.updateStockQuantity(shell, null, tmpDocument);
+	}
+
+	private boolean isStockUpdateForCurrentDocument(Document currentDocument) {
+		boolean retval = false;
+		switch (preferences.getString(Constants.PREFERENCES_PRODUCT_CHANGE_QTY)) {
+		case Constants.PREFERENCES_PRODUCT_CHANGE_QTY_ORDER:
+			retval = currentDocument.getBillingType().isORDER();
+			break;
+		case Constants.PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY:
+			retval = currentDocument.getBillingType().isDELIVERY();
+			break;
+		case Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE:
+			retval = currentDocument.getBillingType().isINVOICE();
+			break;
+		default:
+			break;
+		}
+		return retval && preferences.getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUANTITY);
 	}
 
 	/**
