@@ -383,12 +383,12 @@ public class CreateOODocumentHandler {
 	 * @param itemToAdd
 	 */
 	private void addToTmpItems(Map<Integer, DocumentItem> tmpDocItems, DocumentItem itemToAdd) {
-		if (tmpDocItems.get(itemToAdd.getItemNumber().hashCode()) != null) {
+		if (tmpDocItems.get(itemToAdd.hashCode()) != null) {
 			itemToAdd.setOriginQuantity(itemToAdd.getOriginQuantity()
-					+ tmpDocItems.get(itemToAdd.getItemNumber().hashCode()).getQuantity());
+					+ tmpDocItems.get(itemToAdd.hashCode()).getQuantity());
 		}
 
-		tmpDocItems.put(itemToAdd.getItemNumber().hashCode(), itemToAdd);
+		tmpDocItems.put(itemToAdd.hashCode(), itemToAdd);
 	}
 
 	/**
