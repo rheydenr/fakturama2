@@ -531,11 +531,15 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
             /**
              * Sets the new value on the given element.
+             * <h3>HINT</h3>
+             * <p>Saving a new document causes to set the technical fields (dateAdded or modifiedBy) for the DocumentItem.
+             * Therefore we have to check the "real" changes and ignore the only technical ones. This is achieved by 
+             * a tiny PropertyChangeListener inside DocumentItemDTO, which tracks all "real" changes. The status
+             * can be get with "isDocumentItemDirty()" method from DocumentItemDTO.</p>
              */
             public void setDataValue(DocumentItemDTO rowObject, int columnIndex, Object newValue) {
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 boolean calculate = true;
-                boolean valueChanged = true;  
                 switch (descriptor) {
                 case OPTIONAL:
                     rowObject.getDocumentItem().setOptional((Boolean) newValue);
@@ -592,29 +596,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case PICTURE:
                     // setting a new picture isn't allowed in this context!
                     calculate = false; // no recalculation needed
-                    valueChanged = false;
                     break;
                 case VAT:
                     // Set the VAT
-                    VAT vat = (VAT) newValue; //columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-
-                    // // If no VAT is found, use the standard VAT
-                    // if (i < 0)
-                    //     i = Integer.parseInt(Data.INSTANCE.getProperty("standardvat"));
-
-                    // Set the vat and store the vat value before and after the modification.
-                    //                    Double oldVat = 1.0 + item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value");
-                    //                    item.setVat(i);
-                    //                    Double newVat = 1.0 + item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value");
-                    //
-                    //                    // Modify the net value that the gross value stays constant.
-                    //                    if (documentEditor.getUseGross())
-                    //                        item.setDoubleValueByKey("price", oldVat / newVat * item.getDoubleValueByKey("price"));
-
-                    if (vat != null) {
-                        rowObject.getDocumentItem().setItemVat(vat);
-                        //                    } else {   TODO ???
-                        //                        retval = Double.valueOf(0.0);
+                    if (newValue != null) {
+                        rowObject.getDocumentItem().setItemVat((VAT) newValue);
                     }
                     break;
                 case UNITPRICE:
@@ -658,18 +644,20 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     break;
                 }
 
-                if(valueChanged) {
+                if(rowObject.isDocumentItemDirty()) {
                     Map<String, Object> event = new HashMap<>();
                     event.put("source", descriptor);
 	                // Recalculate the total sum of the document if necessary
 	                // do it via the messaging system and send a message to DocumentEditor
 	                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
 	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
+	                rowObject.setDocumentItemDirty(false);
+	                
 	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
                 }
             }
 
-            public int getColumnCount() {
+			public int getColumnCount() {
                 return propertyNamesList.size();
             }
 
@@ -693,6 +681,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         //build the grid layer
 		gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames,
 				derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, msg, true);
+		
 		DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         
         // set default percentage width 

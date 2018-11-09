@@ -49,7 +49,6 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
-import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 
 /**
@@ -160,7 +159,7 @@ public class ItemListBuilder {
 //                    modelService.bringToTop(dialog);
                     
                     // set document dirty
-                    container.setDirty(true);
+//                    container.setDirty(true);
 
                     // handling of adding a new list item is done via event handling in DocumentEditor
                 }
@@ -223,7 +222,7 @@ public class ItemListBuilder {
                 // renumberItems();
                 
                 // set document dirty
-                container.setDirty(true);
+//                container.setDirty(true);
 
             }
         });

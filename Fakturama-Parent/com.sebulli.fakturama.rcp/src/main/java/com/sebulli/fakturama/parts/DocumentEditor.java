@@ -360,7 +360,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
     @Persist
 	public Boolean doSave(IProgressMonitor monitor) {
-
+    	
 		/*
 		 * the following parameters are not saved: 
 		 * - id (constant) 
@@ -3107,8 +3107,6 @@ public class DocumentEditor extends Editor<Document> {
                 calculate();
             }
             setDirty(true);
-            System.err.println("SOURCE: " + event.getProperty("source"));
-        	new Throwable().printStackTrace();
         }
     }    
     
