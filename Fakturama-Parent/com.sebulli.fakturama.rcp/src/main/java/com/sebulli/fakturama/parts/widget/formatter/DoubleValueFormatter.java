@@ -64,6 +64,12 @@ public class DoubleValueFormatter extends NumberFormatter implements ITextFormat
         setFixedLengths(false, true);
     }
     
+    @Override
+    public Object getValue() {
+    	Number widgetValue = (Number) super.getValue();
+    	return widgetValue.doubleValue();
+    }
+    
     /* (non-Javadoc)
      * @see org.eclipse.nebula.widgets.formattedtext.NumberFormatter#getDisplayString()
      */
