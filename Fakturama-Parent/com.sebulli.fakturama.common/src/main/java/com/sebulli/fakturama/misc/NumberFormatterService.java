@@ -125,7 +125,8 @@ public class NumberFormatterService implements INumberFormatterService {
 		String retval = "";
 		if (d != null) {
 			NumberFormat percentageFormat = NumberFormat.getPercentInstance();
-			percentageFormat.setMinimumFractionDigits(1);
+	        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 1);
+			percentageFormat.setMaximumFractionDigits(scale);
 			retval = percentageFormat.format(d);
 		}
 		return retval;
