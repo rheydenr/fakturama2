@@ -26,7 +26,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.office.FileOrganizer;
 
 /**
@@ -51,7 +51,7 @@ public class ReorganizeDocuments {
 	protected Messages msg;
 
 	@Inject
-	private Logger log;
+	private ILogger log;
 
     @Inject
     protected IEclipseContext context;
@@ -95,7 +95,7 @@ public class ReorganizeDocuments {
 			progressMonitorDialog.run(true, true, op);
 		}
 		catch (InvocationTargetException e) {
-			log.error("Fehler: ", e.getMessage());
+			log.error(e, "Fehler: ");
 		}
 		catch (InterruptedException e) {
 			// handle cancellation

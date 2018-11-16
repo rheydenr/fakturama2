@@ -34,7 +34,6 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -47,6 +46,7 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dialogs.OrderStatusDialog;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
@@ -69,7 +69,7 @@ public class MarkOrderAsActionHandler {
     private Messages msg;
 
     @Inject
-    private Logger log;
+    private ILogger log;
 
     @Inject
     @Preference

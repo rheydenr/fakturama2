@@ -21,13 +21,13 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.dto.VoucherSummary;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.Voucher;
@@ -39,7 +39,7 @@ import com.sebulli.fakturama.model.VoucherItem;
 public class VoucherSummaryCalculator {
 
     @Inject
-    private Logger log;
+    private ILogger log;
     
     public VoucherSummary calculate(Voucher voucher) {
     	MonetaryAmount paidValue = Money.of(Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());

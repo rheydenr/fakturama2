@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -52,6 +51,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
@@ -84,7 +84,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	private IEclipseContext context;
     
     @Inject
-    private Logger log;
+    private ILogger log;
     
 	private Control top;
 

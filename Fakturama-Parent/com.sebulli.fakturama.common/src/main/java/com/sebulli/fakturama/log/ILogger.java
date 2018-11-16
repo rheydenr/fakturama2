@@ -55,4 +55,8 @@ public interface ILogger {
      */
 	public void error(Throwable exception);
 
+	void error(String message);
+
+	boolean isDebugEnabled();
+
 }

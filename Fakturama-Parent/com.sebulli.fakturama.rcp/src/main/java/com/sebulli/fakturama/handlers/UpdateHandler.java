@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -40,6 +39,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * Update Handler.
@@ -49,7 +49,7 @@ import com.sebulli.fakturama.i18n.Messages;
 public class UpdateHandler {
 
 	@Inject
-	protected Logger log;
+	protected ILogger log;
 
 	@Inject
 	@Translation

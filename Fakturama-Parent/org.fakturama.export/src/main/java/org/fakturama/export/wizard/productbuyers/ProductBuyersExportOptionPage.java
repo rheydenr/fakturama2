@@ -18,7 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -32,6 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
 import org.fakturama.wizards.IFakturamaWizardService;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
@@ -48,7 +48,7 @@ public class ProductBuyersExportOptionPage extends WizardPage {
 	protected ExportMessages exportMessages;
 
     @Inject
-    protected Logger log;
+    protected ILogger log;
 
 	@Inject
 	private ITemplateResourceManager resourceManager;

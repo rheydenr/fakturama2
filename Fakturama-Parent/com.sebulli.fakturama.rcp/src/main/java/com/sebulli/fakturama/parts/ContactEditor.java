@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -94,6 +93,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -1469,14 +1469,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private static final class UrlCallHandler extends MouseAdapter {
 		
 		private Text txtField;
-		private Logger log;
+		private ILogger log;
 
 
 		/**
 		 * @param txtField
 		 * @param log
 		 */
-		public UrlCallHandler(Text txtField, Logger log) {
+		public UrlCallHandler(Text txtField, ILogger log) {
 			this.txtField = txtField;
 			this.log = log;
 		}
@@ -1494,7 +1494,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 							websiteText = StringUtils.prependIfMissing(websiteText, "mailto:");
 							Desktop.getDesktop().mail(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
-							log.warn("can't open the e-mail application. Reason: ", e1);
+							log.error(e1, "can't open the e-mail application. Reason: ");
 						}
 					}
 				} else {
@@ -1505,7 +1505,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 						try {
 							Desktop.getDesktop().browse(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
-							log.warn("can't open the contact's web site. Reason: ", e1);
+							log.error(e1, "can't open the contact's web site. Reason: ");
 						}
 					} else {
 						// URL is invalid or empty

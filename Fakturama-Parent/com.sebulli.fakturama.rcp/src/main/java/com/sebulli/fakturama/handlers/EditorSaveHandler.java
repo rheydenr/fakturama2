@@ -21,11 +21,12 @@ import java.util.List;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.InjectionException;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.osgi.util.NLS;
+
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * This class was copied from org.eclipse.e4.ui.internal.workbench.PartServiceSaveHandler
@@ -34,16 +35,15 @@ import org.eclipse.osgi.util.NLS;
  */
 public class EditorSaveHandler implements ISaveHandler {
 	
-	public Logger logger;
+	public ILogger logger;
 
 	private void log(String unidentifiedMessage, String identifiedMessage, String id, Exception e) {
-		if (logger == null) {
-			return;
-		}
-		if (id == null || id.length() == 0) {
-			logger.error(e, unidentifiedMessage);
-		} else {
-			logger.error(e, NLS.bind(identifiedMessage, id));
+		if (logger != null) {
+			if (id == null || id.length() == 0) {
+				logger.error(e, unidentifiedMessage);
+			} else {
+				logger.error(e, NLS.bind(identifiedMessage, id));
+			}
 		}
 	}
 

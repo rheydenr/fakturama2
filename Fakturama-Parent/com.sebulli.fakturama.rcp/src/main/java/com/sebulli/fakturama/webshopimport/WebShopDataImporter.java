@@ -81,6 +81,7 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -132,7 +133,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private IPreferenceStore preferences;
     
     @Inject 
-    private Logger log;
+    private ILogger log;
 
     @Inject 
     private IEclipseContext context;

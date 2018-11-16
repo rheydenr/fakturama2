@@ -21,9 +21,9 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.osgi.service.log.LogService;
 
 import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * Initializes the preference pages with default values
@@ -52,9 +52,8 @@ public class DefaultValuesInitializer extends AbstractPreferenceInitializer {
 	 *      #initializeDefaultPreferences()
 	 */
 	public void initializeDefaultPreferences() { 
-		LogService log = EclipseContextFactory.getServiceContext(Activator.getContext()).get(LogService.class);
-		log.log(LogService.LOG_INFO, "Entering default Preference Initializer");
-		
+		ILogger log = EclipseContextFactory.getServiceContext(Activator.getContext()).get(ILogger.class);
+		log.info("Entering default Preference Initializer");
 		IPreferenceStore defaultValuesNode = FakturamaPreferenceStoreProvider.getInstance().getPreferenceStore(); 		
 
 // TODO Later on we use registered preference pages which register itself on a registry:

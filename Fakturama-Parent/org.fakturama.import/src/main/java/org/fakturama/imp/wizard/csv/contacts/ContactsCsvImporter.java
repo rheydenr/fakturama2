@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
@@ -39,6 +38,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
@@ -66,7 +66,7 @@ public class ContactsCsvImporter {
 	protected Messages msg;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
 	
 	@Inject
 	private ContactsDAO contactsDAO;

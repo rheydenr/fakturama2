@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +35,7 @@ import org.fakturama.wizards.IExportWizard;
 import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
@@ -61,7 +61,7 @@ public class VcardExportWizard extends Wizard implements IExportWizard {
 	private ITemplateResourceManager resourceManager;
 
 	@Inject
-	private Logger log;
+	private ILogger log;
 
 	// The first (and only) page of this wizard
 	EmptyWizardPage page1;

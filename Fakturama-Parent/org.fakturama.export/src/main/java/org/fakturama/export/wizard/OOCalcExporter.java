@@ -25,7 +25,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -40,6 +39,7 @@ import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.dto.AccountEntry;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
@@ -66,7 +66,7 @@ public class OOCalcExporter {
     private IDateFormatterService dateFormatterService;
 
     @Inject
-    protected Logger log;
+    protected ILogger log;
 	
 	@Inject
 	protected Shell shell;

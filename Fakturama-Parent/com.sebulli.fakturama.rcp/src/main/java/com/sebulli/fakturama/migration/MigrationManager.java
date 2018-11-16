@@ -64,7 +64,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -94,6 +93,7 @@ import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address;
@@ -165,7 +165,7 @@ public class MigrationManager {
 	private IEclipseContext context;
 
 	@Inject
-	private Logger log;
+	private ILogger log;
 	
 	private java.util.logging.Logger migLogUser;
 
@@ -345,7 +345,7 @@ public class MigrationManager {
 						try {
 							Files.walkFileTree(oldtemplateDir, Collections.emptySet(), Integer.MAX_VALUE, new CopyDir(oldtemplateDir, newtemplateDir));
 						} catch (IOException e) {
-							log.error("can't copy old template files:", e.getMessage());
+							log.error(e, "can't copy old template files:");
 						}
 					}
 					
@@ -355,7 +355,7 @@ public class MigrationManager {
 			progressMonitorDialog.run(true, true, op);
 		}
 		catch (InvocationTargetException e) {
-			log.error("Error: ", e.getMessage());
+			log.error(e, "Error: ");
 		}
 		catch (InterruptedException e) {
 			// handle cancellation

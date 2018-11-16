@@ -1,7 +1,7 @@
 package com.sebulli.fakturama.log;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,12 +15,15 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.services.events.EventBrokerFactory;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
@@ -41,7 +44,9 @@ import ch.qos.logback.core.joran.spi.JoranException;
  */
 public class LogbackAdapter implements LogListener {    
 
-    private IEventBroker eventBroker;
+    private static final String LOGBACK_TEMPLATE = "logback.template.xml";
+
+	private IEventBroker eventBroker;
     
     /**
      * The token for replacing the file name in a <tt>logback.xml</tt> file.
@@ -51,7 +56,7 @@ public class LogbackAdapter implements LogListener {
 	/**
 	 * A {@link Map} of all valid {@link Logger}s.
 	 */
-    Map<Long, Logger> loggers = new HashMap<Long, Logger>();
+    Map<Long, Logger> loggers = new HashMap<>();
 
     /**
      * Default constructor where initializing takes place.
@@ -60,8 +65,8 @@ public class LogbackAdapter implements LogListener {
 	public LogbackAdapter() {
 		/*
 		 * We have to put the log file into {workspace}/Log directory. However,
-		 * we DON'T know at this point if the user has switched the workspace,
-		 * if the application is started the first time or 
+		 * we DON'T know at this point if the user has switched the workspace
+		 * or if the application is started the first time 
 		 */
 		String productName = StringUtils.defaultString(System.getProperty(InternalPlatform.PROP_PRODUCT)).replaceAll("\\.product", "");
 		String workspaceLoc = InstanceScope.INSTANCE.getNode(productName).get(Constants.GENERAL_WORKSPACE, null);
@@ -88,8 +93,10 @@ public class LogbackAdapter implements LogListener {
     				    // 
     				    // this doesn't work
 //    				    Activator.getContext().getBundle().getEntry("/logback.template.xml").openStream();
-    					InputStream templateStream = LogbackAdapter.class.getClassLoader().getResourceAsStream("/logback.template.xml");
-    					Files.copy(templateStream, defaultLogConfigFile);
+						URL logTemplate = FrameworkUtil.getBundle(getClass()).getResource(LOGBACK_TEMPLATE);
+						if(logTemplate != null) {
+	    					Files.copy(logTemplate.openStream(), defaultLogConfigFile);
+						}
     				}
     				JoranConfigurator jc = new JoranConfigurator();
     				jc.setContext(loggerContext);
@@ -109,6 +116,7 @@ public class LogbackAdapter implements LogListener {
 	 * to the appropriate SLF4J loggers. 
 	 */
 	public void logged(LogEntry log) {
+		Marker bundleMarker = Activator.BUNDLE_MARKER;
 		if (log.getBundle() == null || log.getBundle().getSymbolicName() == null) {
 			// if there is no name, it's probably the framework emitting a log
 			// This should not happen and we don't want to log something anonymous
@@ -124,41 +132,46 @@ public class LogbackAdapter implements LogListener {
 
 		// Show the error view (only if it is not just an information message)
 		if (log.getLevel() == LogService.LOG_ERROR && !showErrorView(log)) {
-		    logger.error(Activator.BUNDLE_MARKER, "Can't show the error message in Error View because no EventBroker is available!");
+		    logger.error(bundleMarker, "Can't show the error message in Error View because no EventBroker is available!");
 		}
 
 		// If there is an exception available, use it, otherwise just log 
 		// the message
+		String message = log.getMessage();
 		if (log.getException() != null) {
 			switch (log.getLevel()) {
 			case LogService.LOG_DEBUG:
-				logger.debug(log.getMessage(), log.getException());
+				logger.debug(message, log.getException());
 				break;
 			case LogService.LOG_INFO:
-				logger.info(log.getMessage(), log.getException());
+				logger.info(message, log.getException());
 				break;
 			case LogService.LOG_WARNING:
-				logger.warn(log.getMessage(), log.getException());
+				logger.warn(message, log.getException());
 				break;
 			case LogService.LOG_ERROR:
-				logger.error(log.getMessage(), log.getException());
+				logger.error(message, log.getException());
 				break;
 			}
 		} else {
-			String message = filter(log.getMessage());
-			if(message != null) {
+			if(!ignoreMessage(message)) {
+				if(message.contains("|")) {
+					String splittedString[] = message.split("\\|");
+					bundleMarker = MarkerFactory.getMarker(splittedString[0]);
+					message = splittedString[1];
+				}
 				switch (log.getLevel()) {
 				case LogService.LOG_DEBUG:
-					logger.debug(Activator.BUNDLE_MARKER, message);
+					logger.debug(bundleMarker, message);
 					break;
 				case LogService.LOG_INFO:
-					logger.info(Activator.BUNDLE_MARKER, message);
+					logger.info(bundleMarker, message);
 					break;
 				case LogService.LOG_WARNING:
-					logger.warn(Activator.BUNDLE_MARKER, message);
+					logger.warn(bundleMarker, message);
 					break;
 				case LogService.LOG_ERROR:
-					logger.error(Activator.BUNDLE_MARKER, message);
+					logger.error(bundleMarker, message);
 					break;
 				}
 			}
@@ -170,11 +183,8 @@ public class LogbackAdapter implements LogListener {
 	 *
 	 * @param message the message
 	 */
-	private String filter(String message) {
-	    String filteredMessage = message;
-	    if(message.startsWith("BundleEvent")) filteredMessage = null;
-	    if(message.startsWith("ServiceEvent")) filteredMessage = null;
-		return filteredMessage;
+	private boolean ignoreMessage(String message) {
+	    return (message.startsWith("BundleEvent") || message.startsWith("ServiceEvent"));
 	}
 
 	/**
