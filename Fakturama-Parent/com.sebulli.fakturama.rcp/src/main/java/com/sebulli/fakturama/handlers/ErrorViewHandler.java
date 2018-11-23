@@ -129,7 +129,9 @@ public class ErrorViewHandler {
             // at first we look for an existing Part
             MPartStack errorViewStack = (MPartStack) modelService.find("com.sebulli.fakturama.errorview.partstack", application);
             if(errorViewStack != null) {
-            	errorViewStack.setVisible(false);errorViewStack.setOnTop(false);
+            	// since setting to invisible doesn't really hide the view we remove them from its parent stack
+            	errorViewStack.setVisible(false);
+            	errorViewStack.getChildren().clear();
             }
 		}
     }
