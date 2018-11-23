@@ -37,7 +37,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	private int worked = 0;
 	
 	private WebShopConnector connector;
-	private String runResult = "";
+	private ExecutionResult runResult;
 	
 	private IProgressMonitor localMonitor;
 	private Webshopexport webshopexport = null;
@@ -47,7 +47,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
         localMonitor = pMonitor;
         
         if(connector == null) {
-	        	runResult = "no connection information provided";
+	        	setRunResult("no connection information provided");
 	        	return;
         }
         String shopURL = connector.getScriptURL();
@@ -162,16 +162,14 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 		}
         catch (Exception e) {
             //T: Status message importing data from web shop
-        	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n");
-        	setRunResult(getRunResult() + "\nMessage: " + e.getLocalizedMessage()+ "\n");
-            if (e.getStackTrace().length > 0)
-            	setRunResult(getRunResult()+ "\nTrace: " + e.getStackTrace()[0].toString()+ "\n");
+        	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n"
+        				+ "Message: " + e.getLocalizedMessage()+ "\n", e);
 
             if (webshopexport != null)
-            	setRunResult(getRunResult() + "\n\n" + webshopexport);
+            	setRunResult(getRunResult().getErrorMessage() + "\n\n" + webshopexport, e);
             }
         }
-	
+
 	/**
 	 * Sets the progress of the job in percent
 	 * 
@@ -187,15 +185,19 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	/**
 	 * @return the runResult
 	 */
-	public String getRunResult() {
+	public ExecutionResult getRunResult() {
 		return runResult;
 	}
-
-	/**
-	 * @param runResult the runResult to set
-	 */
-	public void setRunResult(String runResult) {
-		this.runResult = runResult;
+	
+	private void setRunResult(String runResult) {
+		setRunResult(runResult, null);
+	}
+	
+	private void setRunResult(String runResult, Exception error) {
+		this.runResult = new ExecutionResult(runResult, 1);
+		if(error != null) {
+			this.runResult.setException(error);
+		}
 	}
 
 	/**
@@ -203,13 +205,6 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	 */
 	public Webshopexport getWebshopexport() {
 		return webshopexport;
-	}
-
-	/**
-	 * @param webshopexport the webshopexport to set
-	 */
-	public void setWebshopexport(Webshopexport webshopexport) {
-		this.webshopexport = webshopexport;
 	}
 
 	/**

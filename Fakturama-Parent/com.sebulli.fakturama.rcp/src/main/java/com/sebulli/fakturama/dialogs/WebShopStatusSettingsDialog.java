@@ -588,7 +588,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		try {
 			// get all order status from web shop
 			progressMonitorDialog.run(true, true, importOperation);
-			executionResult = new ExecutionResult(importOperation.getRunResult(), importOperation.getRunResult().isEmpty() ? 0 : 1);
+			executionResult = importOperation.getRunResult();
 		} catch (Exception ex) {
 			log.error(ex);
 		}
@@ -597,7 +597,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 			// If there is an error - display it in a message box
 			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
 			MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
-			log.error(errorMessage);
+			log.error(executionResult.getException(), errorMessage);
 		}
 		return importOperation.getWebshopexport();
 	}

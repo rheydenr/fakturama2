@@ -45,7 +45,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
@@ -381,9 +380,7 @@ public class LifecycleManager {
 	}
 
 	@PreDestroy
-    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation,
-    		EPartService partService) {
-		
+    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
         PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
 		if (preferencesInDatabase != null) {
 			log.debug("Storing preferences in database");
