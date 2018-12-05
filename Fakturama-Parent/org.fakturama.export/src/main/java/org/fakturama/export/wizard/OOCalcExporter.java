@@ -150,54 +150,6 @@ public class OOCalcExporter {
 	}
 	
 	
-	/**
-	 * Returns if a given document should be used to export. Only invoices and
-	 * credit documents that are paid in the specified time interval are
-	 * exported.
-	 * 
-	 * @param document
-	 *            The document that is tested
-	 * @return True, if the document should be exported
-	 * @deprecated Do it with database queries!
-	 */
-	protected boolean documentShouldBeExported(Document document) {
-
-		// By default, the document will be exported.
-		boolean isInIntervall = true;
-
-		// Use the time period
-		if (!doNotUseTimePeriod) {
-			// Get the date of the document and convert it to a
-			// GregorianCalendar object.
-			GregorianCalendar documentDate = new GregorianCalendar();
-			
-			// Use pay date or document date
-			Date documentDateString = usePaidDate ? document.getPayDate() : document.getDocumentDate();
-			documentDate.setTime(documentDateString);
-
-			// Test, if the document's date is in the interval
-			if ((startDate != null) && (endDate != null)) {
-				if (startDate.after(documentDate))
-					isInIntervall = false;
-				if (endDate.before(documentDate))
-					isInIntervall = false;
-			}
-		}
-
-		// Only invoices and credits in the interval
-		// will be exported.
-		boolean isInvoiceOrCreditInIntervall = (document.getBillingType().isINVOICE() 
-				|| (document.getBillingType().isCREDIT()
-				)) && isInIntervall;
-		
-		// Export paid or unpaid documents
-		if (exportPaid)
-			// export paid
-			return isInvoiceOrCreditInIntervall && document.getPaid();
-		else
-			// export unpaid
-			return isInvoiceOrCreditInIntervall && !document.getPaid();
-	}
 	
 	/**
 	 * Returns if a given data set should be used to export. Only
