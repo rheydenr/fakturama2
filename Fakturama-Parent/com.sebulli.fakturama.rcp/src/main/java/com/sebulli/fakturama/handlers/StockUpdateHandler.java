@@ -86,8 +86,8 @@ public class StockUpdateHandler {
 			switch (eclipsePrefs.get(Constants.PREFERENCES_PRODUCT_CHANGE_QTY, Constants.PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE)) {
 			case Constants.PREFERENCES_PRODUCT_CHANGE_QTY_ORDER:
 				if(document.getProgress() != null) {
-					OrderState progress = OrderState.findByProgressValue(Optional.of(document.getProgress()));
-					OrderState progressOld = OrderState.findByProgressValue(Optional.of(oldProgress));
+					OrderState progress = OrderState.findByProgressValue(Optional.ofNullable(document.getProgress()));
+					OrderState progressOld = OrderState.findByProgressValue(Optional.ofNullable(oldProgress));
 					// adapt stock value
 					List<DocumentItem> items = document.getItems();
 					// mark as shipped - take from stock
