@@ -804,6 +804,8 @@ public class OfficeDocument {
                       PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
                       fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                     }
+                    
+                    if(tmpIdx > j) cellCount += (tmpIdx - j);
                 }
             }
 	}

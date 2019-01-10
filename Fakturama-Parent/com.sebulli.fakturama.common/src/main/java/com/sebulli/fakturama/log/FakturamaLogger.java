@@ -57,11 +57,11 @@ public class FakturamaLogger implements ILogger {
 	}
 
 	private String extractMessageWithCaller(String message) {
-		StackTraceElement[] caller = CallerData.extract(new Throwable(), this.getClass().getName(), 1);
-		if (caller != null && caller.length > 0) {
-			message = String.format("%s.%s:%d|%s", ClassUtils.getAbbreviatedName(caller[0].getClassName(), 15),
-					caller[0].getMethodName(), caller[0].getLineNumber(), message);
-		}
+//		StackTraceElement[] caller = CallerData.extract(new Throwable(), this.getClass().getName(), 1);
+//		if (caller != null && caller.length > 0) {
+//			message = String.format("%s.%s:%d|%s", ClassUtils.getAbbreviatedName(caller[0].getClassName(), 15),
+//					caller[0].getMethodName(), caller[0].getLineNumber(), message);
+//		}
 		return message;
 	}
 
