@@ -40,6 +40,8 @@
         <module>../../javamoney/javamoney.feature</module>
         
         <module>de.rhe.apps.updatesite</module>
+        <module>com.opencsv</module>
+        <module>com.opencsv.feature</module>
     </modules>
     <build>
         <plugins>
