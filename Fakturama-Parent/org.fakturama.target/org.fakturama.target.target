@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="469">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="org.fakturama.target" sequenceNumber="469">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.collections.feature.source.feature.group" version="9.1.0.v20171231-1315"/>
@@ -128,6 +127,10 @@
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.powermock.mockito-junit.feature.feature.group" version="1.5.6.0"/>
 		<repository location="http://mextest.inf.elte.hu/updates/mirrors/powermock-osgi/"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="com.opencsv.feature.feature.group" version="3.9.0"/>
+		<repository location="file:/C:/Projekte/fakturama-2/libs/fakturama-helper-libs/de.rhe.apps.updatesite/target/repository/"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
