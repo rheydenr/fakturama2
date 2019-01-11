@@ -14,18 +14,17 @@
 
 package com.sebulli.fakturama.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Voucher;
-import com.sebulli.fakturama.model.VoucherItem;
 
 
 /**
@@ -35,6 +34,10 @@ import com.sebulli.fakturama.model.VoucherItem;
  * @author Gerd Bartelt
  */
 public class VoucherSummarySetManager {
+	
+	@Inject
+	private IEclipseContext ctx;
+
 	VatSummarySet voucherSummarySet;
 
 	/**
@@ -54,14 +57,7 @@ public class VoucherSummarySetManager {
 	 *            description
 	 */
 	public void add(Voucher voucher, boolean useCategory) {
-
-		// Create a new summary object and start the calculation.
-		// This will add all the entries to the VatSummarySet
-		VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
-        CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-        List<VoucherItem> items = new ArrayList<>(voucher.getItems());
-		summary.calculate(voucherSummarySet, items, useCategory,
-				Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
+		add(voucher, useCategory, 0);
 	}
 
 	/**
@@ -75,13 +71,11 @@ public class VoucherSummarySetManager {
 	 * @itemNr index of one item
 	 */
 	public void add(Voucher voucher, boolean useCategory, int itemNr) {
-
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-        VoucherSummaryCalculator summary = new VoucherSummaryCalculator();
+        VoucherSummaryCalculator summary = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
         CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-		List<VoucherItem> items = new ArrayList<>(voucher.getItems());
-		summary.calculate(voucherSummarySet, items.subList(itemNr, itemNr+1), useCategory,
+		summary.calculate(voucherSummarySet, itemNr > 0 ? voucher.getItems().subList(itemNr, itemNr+1) : voucher.getItems(), useCategory,
 		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
 	}
 
