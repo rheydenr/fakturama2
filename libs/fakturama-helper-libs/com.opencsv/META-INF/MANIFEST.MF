@@ -2,11 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenCSV
 Bundle-SymbolicName: com.opencsv
-Bundle-Version: 3.9.0
+Bundle-Version: 4.4.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: opencsv-3.9.jar
+Bundle-ClassPath: lib/opencsv-4.4.jar
 Export-Package: com.opencsv,
  com.opencsv.bean,
+ com.opencsv.bean.comparator,
+ com.opencsv.bean.concurrent,
  com.opencsv.bean.customconverter,
  com.opencsv.enums,
  com.opencsv.exceptions,
