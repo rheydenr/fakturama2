@@ -140,5 +140,11 @@
             name="%wizard.export.csv.lists.category"
             parentCategory="com.sebulli.fakturama.export.lists">
       </category>
+      <wizard
+            category="com.sebulli.fakturama.export.salesandvouchers"
+            class="org.fakturama.export.wizard.vouchers.ReceiptsAndExpendituresWizard"
+            id="com.sebulli.fakturama.export.vouchers.exportReceiptsAndExpenditures"
+            name="Einnahmen und Ausgaben">
+      </wizard>
    </extension>
 </plugin>
