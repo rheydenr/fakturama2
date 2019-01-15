@@ -122,6 +122,7 @@ public final class CommandIds {
 	public static final String CMD_MOVE_DOWN = "com.sebulli.fakturama.command.moveEntryDown";
 	
 	public static final String CMD_REORGANIZE_DOCUMENTS = "com.sebulli.fakturama.command.reorganizeDocuments";
+	public static final String CMD_QRK_EXPORT = "org.fakturama.command.export.qrk";
 	
 	
 }

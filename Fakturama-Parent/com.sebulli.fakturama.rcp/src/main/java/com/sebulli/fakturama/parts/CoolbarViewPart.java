@@ -210,6 +210,10 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, msg.commandCalculatorName, msg.commandCalculatorTooltip,
 				Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR), null);	
+		
+		createToolItem(toolBar4, CommandIds.CMD_QRK_EXPORT, msg.commandExportQrkName, msg.commandExportQrkTooltip,
+				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
+				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
 		finishToolbar(coolbar1, toolBar4);	
 	}
 

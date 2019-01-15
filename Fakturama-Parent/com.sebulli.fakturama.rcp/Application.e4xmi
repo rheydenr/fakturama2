@@ -210,6 +210,7 @@
   <handlers xmi:id="_591t8DAPEeadQNc3uX9jkA" elementId="handler:org.fakturama.parcelservice" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenParcelServiceHandler" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_90KEgJ7PEeeQ-uZqSpleQA" elementId="com.sebulli.fakturama.resetperspective.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ResetPerspectiveHandler" command="_4yx1UJ7PEeeQ-uZqSpleQA"/>
   <handlers xmi:id="_ww_VsG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.handler.stockupdate" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.StockUpdateHandler" command="_hvS4IG4_EeixJ7qGG0_Y8A"/>
+  <handlers xmi:id="_Ia1wIBkLEems16HDe00Etw" elementId="org.fakturama.handler.export.qrk" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QRKExportHandler" command="_70JVYBkKEems16HDe00Etw"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.bindingtable.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -600,6 +601,7 @@
     <parameters xmi:id="_XfNAAG5NEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="java.lang.Integer"/>
     <parameters xmi:id="_tDNsUG5TEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.orderid" name="Document to update" typeId="com.sebulli.fakturama.model.Order" optional="false"/>
   </commands>
+  <commands xmi:id="_70JVYBkKEems16HDe00Etw" elementId="org.fakturama.command.export.qrk" commandName="%command.export.qrk.name" description="%command.export.qrk.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
