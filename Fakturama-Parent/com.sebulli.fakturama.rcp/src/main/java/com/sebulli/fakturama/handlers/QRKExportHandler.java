@@ -1,7 +1,6 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -32,9 +30,9 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
 import at.ckvsoft.qrk.QRKPaymentTypes;
-import at.ckvsoft.qrk.type.Item;
 import at.ckvsoft.qrk.type.ObjectFactory;
-import at.ckvsoft.qrk.type.Receipt;
+import at.ckvsoft.qrk.type.Qrkvoucher;
+import at.ckvsoft.qrk.type.Receipt2Bon;
 
 public class QRKExportHandler {
 
@@ -65,15 +63,20 @@ public class QRKExportHandler {
 			try {
 				Map<String, Object> properties = new HashMap<>();
 				properties.put(MarshallerProperties.MEDIA_TYPE, "application/json");
-				jc = JAXBContextFactory.createContext(new Class[]{Receipt.class, ObjectFactory.class}, properties);
+				jc = JAXBContextFactory.createContext(new Class[]{Receipt2Bon.class, ObjectFactory.class}, properties);
 				
 	            ObjectFactory qrkObjectFactory = new ObjectFactory();
-				Receipt qrkReceipt = qrkObjectFactory.createReceipt();
 				Document document = ((DocumentEditor) activePart.getObject()).getDocument();
+				Receipt2Bon qrkVouchers = qrkObjectFactory.createReceipt2Bon();
+				Qrkvoucher singleVoucher = qrkObjectFactory.createQrkvoucher()
+						.withCustomerText(document.getCustomerRef())
+						.withGross(numberFormatter.doubleToFormattedQuantity(document.getTotalValue()))
+						.withReceiptNum(document.getName());
+				
 				if(document.getPayment() != null) {
 					java.util.Optional<QRKPaymentTypes> paymentMatch = Arrays.stream(QRKPaymentTypes.values()).filter(payment -> document.getPayment().getName().equalsIgnoreCase(payment.getName())).findFirst();
 					if(paymentMatch.isPresent()) {
-						qrkReceipt.setPayedBy(Integer.toString(paymentMatch.get().getId()));
+						singleVoucher.setPayedBy(Integer.toString(paymentMatch.get().getId()));
 					} else {
 						logAndShowError(shell, "No payment type matches for document " + document.getName() + ".");
 						return;
@@ -83,27 +86,15 @@ public class QRKExportHandler {
 					return;
 				}
 				
-				document.getItems().forEach(it -> {
-					Price price = new Price(it);
-					Item qrkItem = qrkObjectFactory.createItem()
-							.withCount(numberFormatter.doubleToFormattedQuantity(it.getQuantity()))
-							.withDiscount(numberFormatter.doubleToFormattedQuantity(it.getItemRebate() * 100))
-							.withGross(NumberFormat.getNumberInstance().format(price.getUnitGrossRounded().getNumber()))
-							.withName(it.getName())
-							.withTax(it.getItemVat() != null ? numberFormatter.doubleToFormattedQuantity(it.getItemVat().getTaxValue() * 100) : "0");
-					qrkReceipt.getItems().add(qrkItem);
-				});
-				
-				qrkReceipt.setCustomerText(document.getCustomerRef());
-	            
+				qrkVouchers.getR2B().add(singleVoucher);
+
 	            Marshaller marshaller = jc.createMarshaller();
 	            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	            marshaller.marshal(qrkReceipt, System.out);
+	            marshaller.marshal(qrkVouchers, System.out);
 			} catch (JAXBException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-	
 		}
 	}
 
