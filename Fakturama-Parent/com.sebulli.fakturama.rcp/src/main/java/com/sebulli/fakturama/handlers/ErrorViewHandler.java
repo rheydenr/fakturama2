@@ -131,7 +131,6 @@ public class ErrorViewHandler {
             if(errorViewStack != null) {
             	// since setting to invisible doesn't really hide the view we remove them from its parent stack
             	errorViewStack.setVisible(false);
-            	errorViewStack.getChildren().clear();
             }
 		}
     }
