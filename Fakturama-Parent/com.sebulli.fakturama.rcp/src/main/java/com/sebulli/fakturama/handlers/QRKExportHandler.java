@@ -1,6 +1,9 @@
 
 package com.sebulli.fakturama.handlers;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -34,6 +38,12 @@ import at.ckvsoft.qrk.type.ObjectFactory;
 import at.ckvsoft.qrk.type.Qrkvoucher;
 import at.ckvsoft.qrk.type.Receipt2Bon;
 
+/**
+ * Export handler for exporting documents to "QRK Kasse" (see <a href="http://www.ckvsoft.at">web site</a>). 
+ * This handler creates a single JSON file from a document (namely an invoice) and stores it in the exchange directory (given
+ * in Preferences).
+ *
+ */
 public class QRKExportHandler {
 
 	@Inject
@@ -55,6 +65,13 @@ public class QRKExportHandler {
 
 	@Execute
 	public void execute(Shell shell, EPartService partService) {
+		String qrkImportDirectory = preferences.getString(Constants.PREFERENCES_QRK_EXPORT_PATH);
+		Path qrkImportPath = Paths.get(qrkImportDirectory);
+		if(qrkImportPath == null || !Files.isDirectory(qrkImportPath) || !Files.isWritable(qrkImportPath)) {
+			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.preferencesQrkExportMissingfolder);
+			return;
+		}
+		
 		MPart activePart = partService.getActivePart();
 		if(activePart != null && activePart.getObject() != null
 				&& (activePart.getObject() instanceof DocumentEditor)
@@ -90,10 +107,12 @@ public class QRKExportHandler {
 
 	            Marshaller marshaller = jc.createMarshaller();
 	            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	            marshaller.marshal(qrkVouchers, System.out);
+	            
+	            // now create a file in the import directory of QRK
+	            Path qrkJsonFile = Paths.get(qrkImportDirectory, "r2b.json");
+	            marshaller.marshal(qrkVouchers, qrkJsonFile.toFile());
 			} catch (JAXBException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				log.error(e1, "Error while exporting document to JSON for QRK. Reason: ");
 			}
 		}
 	}

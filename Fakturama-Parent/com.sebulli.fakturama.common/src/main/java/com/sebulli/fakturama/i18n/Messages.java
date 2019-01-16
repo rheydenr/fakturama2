@@ -760,6 +760,7 @@ public class Messages {
 	public String preferencesProductUseweight;
 	
 	public String preferencesQrkExportFolder;
+	public String preferencesQrkExportMissingfolder;
 
 	public String preferencesToolbarIcons;
 	public String preferencesToolbarShowicon;
