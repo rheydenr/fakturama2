@@ -27,6 +27,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -73,16 +74,16 @@ public class ExportCSV4DP implements ICSVExporter {
 
 	@Execute
 	public void execute(@Optional @Named(CallEditor.PARAM_CALLING_DOC) String callingDoc,
-			final MApplication application) throws ExecutionException {
+			final MApplication application, Shell shell) throws ExecutionException {
 		MPart activePart = partService.getActivePart();
 		DocumentEditor activeEditor = (DocumentEditor) activePart.getObject();
     	contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 		Contact billingContact = activeEditor.getDocument().getBillingContact();
-		exportCSV4DP(billingContact);
+		exportCSV4DP(shell, billingContact);
 	}
 
 	@Override
-	public Path exportCSV4DP(Contact contact) {
+	public Path exportCSV4DP(Shell shell, Contact contact) {
 		// Create a File object in workspace
 		Path csvFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "dp-addressimport-" + contact.getCustomerNumber() + ".csv");
 
@@ -90,11 +91,16 @@ public class ExportCSV4DP implements ICSVExporter {
 		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);) {
 			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos).build();
+			
 			DPAddress dpAddressBean = createDPBean(contact);
-			List<DPAddress> beans = new ArrayList<>();
-			beans.add(dpAddressBean);
-			beanToCsv.write(beans);
-			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), msg.dialogMessageboxTitleInfo, "see " + csvFile.toString());
+			if(dpAddressBean.isValid()) {
+				List<DPAddress> beans = new ArrayList<>();
+				beans.add(dpAddressBean);
+				beanToCsv.write(beans);
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), msg.dialogMessageboxTitleInfo, "see " + csvFile.toString());
+			} else {
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "fehlende Werte!");
+			}
 		} catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
 			e.printStackTrace();
 		}
