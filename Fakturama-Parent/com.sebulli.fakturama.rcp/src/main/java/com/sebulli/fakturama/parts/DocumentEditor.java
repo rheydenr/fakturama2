@@ -2237,10 +2237,8 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Export address to CSV
 		Label exportToCSV = new Label(addressComposite, SWT.NONE | SWT.RIGHT);
-		exportToCSV.setToolTipText("exportiere Adresse nach CSV für Deutsche Post");
-		
-		// bis auf weiteres nur Text, später mit Icon ersetzen
-		exportToCSV.setText("CSV");
+		exportToCSV.setToolTipText(msg.commandDocumentsExportAddresscsv4dpDescription);
+		exportToCSV.setImage(Icon.DOCUMENT_DHL_CSV.getImage(IconSize.DocumentIconSize));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(exportToCSV);
 		exportToCSV.addMouseListener(new MouseAdapter() {
 

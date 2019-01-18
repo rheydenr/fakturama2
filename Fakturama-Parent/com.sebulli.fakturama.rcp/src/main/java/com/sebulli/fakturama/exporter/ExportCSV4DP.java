@@ -1,4 +1,4 @@
- 
+
 package com.sebulli.fakturama.exporter;
 
 import java.io.BufferedWriter;
@@ -7,12 +7,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -22,132 +26,126 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.sebulli.fakturama.handlers.CallEditor;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.util.ContactUtil;
 
 /**
- * Exporter for a single address of a document (invoice, offer etc). Only used for 
- * Deutsche Post AG.
+ * Exporter for a single address of a document (invoice, offer etc). Only used
+ * for Deutsche Post AG.
  * 
- * @see <a href="https://shop.deutschepost.de/shop/pop/popcsvupload.jsp">Deutsche Post AG</a>
+ * @see <a href=
+ *      "https://shop.deutschepost.de/shop/pop/popcsvupload.jsp">Deutsche Post
+ *      AG</a>
  *
  */
 public class ExportCSV4DP implements ICSVExporter {
 
-    @Inject
-    @Translation
-    protected Messages msg;
+	@Inject
+	@Translation
+	protected Messages msg;
 
-    @Inject @Optional
-    private IPreferenceStore preferences;
+	@Inject
+	@Optional
+	private IPreferenceStore preferences;
 
 	@Inject
 	private EPartService partService;
-	
+
+	@Inject
+	private ILocaleService localeUtil;
+    
+    @Inject
+    private IEclipseContext context;
+
+	private ContactUtil contactUtil;
+
 	@Execute
 	public void execute(@Optional @Named(CallEditor.PARAM_CALLING_DOC) String callingDoc,
 			final MApplication application) throws ExecutionException {
 		MPart activePart = partService.getActivePart();
-		DocumentEditor activeEditor = (DocumentEditor)activePart.getObject();
+		DocumentEditor activeEditor = (DocumentEditor) activePart.getObject();
+    	contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 		Contact billingContact = activeEditor.getDocument().getBillingContact();
 		exportCSV4DP(billingContact);
-	}	
-	
+	}
 
 	@Override
 	public Path exportCSV4DP(Contact contact) {
-		// Create a File object
-		Path csvFile = Paths.get("");
-
-		String NEW_LINE = System.lineSeparator();
+		// Create a File object in workspace
+		Path csvFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "dp-addressimport-" + contact.getCustomerNumber() + ".csv");
 
 		// Create a new file
-		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);){
-			StringBuffer stringBuffer = new StringBuffer();
-			
-			bos.write(
-					"\"id\";"+ 
-					"\"category\";"+
-					
-					"\"gender\";"+
-					"\"title\";"+
-					"\"firstname\";"+
-					"\"name\";"+
-					"\"company\";"+
-					"\"street\";"+
-					"\"zip\";"+
-					"\"city\";"+
-					"\"country\";"+
-
-					"\"delivery_gender\";"+
-					"\"delivery_title\";"+
-					"\"delivery_firstname\";"+
-					"\"delivery_name\";"+
-					"\"delivery_company\";"+
-					"\"delivery_street\";"+
-					"\"delivery_zip\";"+
-					"\"delivery_city\";"+
-					"\"delivery_country\";"+
-					
-					"\"account_holder\";"+
-					"\"account\";"+
-					"\"bank_code\";"+
-					"\"bank_name\";"+
-					"\"iban\";"+
-					"\"bic\";"+
-					
-					"\"nr\";"+
-
-					"\"note\";"+
-					"\"date_added\";"+
-					"\"payment\";"+
-					"\"reliability\";"+
-					"\"phone\";"+
-					"\"fax\";"+
-					"\"mobile\";"+
-					"\"email\";"+
-					"\"website\";"+
-					"\"vatnr\";"+
-					"\"vatnrvalid\";"+
-					"\"discount\";"+
-					"\"birthday\""+
-					NEW_LINE);
-			stringBuffer.append(";");
-
-			bos.write(stringBuffer.toString() + NEW_LINE);
-	}
-	catch (IOException e) {
-	}
+		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);) {
+			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos).build();
+			DPAddress dpAddressBean = createDPBean(contact);
+			List<DPAddress> beans = new ArrayList<>();
+			beans.add(dpAddressBean);
+			beanToCsv.write(beans);
+			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), msg.dialogMessageboxTitleInfo, "see " + csvFile.toString());
+		} catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+			e.printStackTrace();
+		}
 		return csvFile;
 	}
-	
-	
-	public void createFile() {
-		// Create a "SAVE AS" file dialog
-		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
-		
-		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 
-		//T: Text in a file name dialog
-		fileDialog.setFilterNames(new String[] { msg.exporterFilenameTypeCsv + " (*.csv)" });
-		//T: Text in a file name dialog
-		fileDialog.setText(msg.exporterFilename);
-		fileDialog.setFileName("");
-		fileDialog.setOverwrite(true);
-		String selectedFile = fileDialog.open();
-		if (selectedFile != null) {
-		}
+	private DPAddress createDPBean(Contact contact) {
+		DPAddress dpAddressBean = new DPAddress();
+		dpAddressBean.setSenderName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME));
+		dpAddressBean.setAdditionalSenderName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER));
+		dpAddressBean.setSenderStreet(contactUtil.getStreetName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET)));
+		dpAddressBean.setSenderHousenumber(contactUtil.getStreetNo(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET)));
+		dpAddressBean.setSenderZipCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP));
+		dpAddressBean.setSenderCity(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
+        java.util.Optional<Locale> locale = localeUtil.findLocaleByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
+		dpAddressBean.setSenderISO3Country(locale.orElse(Locale.getDefault()).getISO3Country());
+		
+		dpAddressBean.setReceiverName(contactUtil.getCompanyOrLastname(contact));
+		dpAddressBean.setAdditionalReceiverName(contactUtil.getFirstAndLastName(contact));
+		Address receiverAddress = contact.getAddress();
+		dpAddressBean.setReceiverStreet(contactUtil.getStreetName(receiverAddress.getStreet()));
+		dpAddressBean.setReceiverHousenumber(contactUtil.getStreetNo(receiverAddress.getStreet()));
+		dpAddressBean.setReceiverZipCode(receiverAddress.getZip());
+		dpAddressBean.setReceiverCity(receiverAddress.getCity());
+		dpAddressBean.setReceiverISO3Country(localeUtil.findLocaleByDisplayCountry(receiverAddress.getCountryCode()).orElse(Locale.getDefault()).getISO3Country());
+		
+		// for the first iteration we use a hard coded product
+		dpAddressBean.setProduct("PAECKXS.DEU");
+		return dpAddressBean;
 	}
+//
+//	public void createFile() {
+//		// Create a "SAVE AS" file dialog
+//		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+//
+//		fileDialog.setFilterExtensions(new String[] { "*.csv" });
+//
+//		// T: Text in a file name dialog
+//		fileDialog.setFilterNames(new String[] { msg.exporterFilenameTypeCsv + " (*.csv)" });
+//		// T: Text in a file name dialog
+//		fileDialog.setText(msg.exporterFilename);
+//		fileDialog.setFileName("");
+//		fileDialog.setOverwrite(true);
+//		String selectedFile = fileDialog.open();
+//		if (selectedFile != null) {
+//		}
+//	}
 
 	@CanExecute
 	public boolean canExecute() {
 		// can only execute if document is not dirty
-		return partService.getActivePart() != null && !partService.getActivePart().isDirty(); 
+		return partService.getActivePart() != null && !partService.getActivePart().isDirty();
 	}
 }

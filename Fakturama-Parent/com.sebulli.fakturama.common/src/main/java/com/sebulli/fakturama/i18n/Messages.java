@@ -62,6 +62,7 @@ public class Messages {
 	public String commandDataNameTooltip;
 	public String commandDebtorsName;
 	public String commandDebtorsTooltip;
+	public String commandDocumentsExportAddresscsv4dpDescription;
 	public String commandDocumentsMoveDownName;
 	public String commandDocumentsMoveDownTooltip;
 	public String commandDocumentsMoveUpName;
