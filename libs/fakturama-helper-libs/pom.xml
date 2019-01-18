@@ -42,6 +42,9 @@
         <module>de.rhe.apps.updatesite</module>
         <module>com.opencsv</module>
         <module>com.opencsv.feature</module>
+        <module>org.apache.commons.text</module>
+        
+        <module>org.apache.commons.beanutils</module>
     </modules>
     <build>
         <plugins>
