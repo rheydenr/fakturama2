@@ -3,11 +3,14 @@ package com.sebulli.fakturama.exporter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -88,20 +92,27 @@ public class ExportCSV4DP implements ICSVExporter {
 		Path csvFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "dp-addressimport-" + contact.getCustomerNumber() + ".csv");
 
 		// Create a new file
-		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, StandardOpenOption.CREATE,
+		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, Charset.forName("CP1252"), StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);) {
-			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos).build();
+			HeaderColumnNameMappingStrategy<DPAddress> strategy = new HeaderColumnNameMappingStrategy<>();
+			strategy.setColumnOrderOnWrite(new Comparator<String>() {
+				public int compare(String o1, String o2) {
+					return Integer.compare(DPAddress.HeaderPositions.valueOf(o1).pos, DPAddress.HeaderPositions.valueOf(o2).pos);
+				};
+			});
+			strategy.setType(DPAddress.class);
+			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos).withMappingStrategy(strategy).build();
 			
 			DPAddress dpAddressBean = createDPBean(contact);
 			if(dpAddressBean.isValid()) {
 				List<DPAddress> beans = new ArrayList<>();
 				beans.add(dpAddressBean);
 				beanToCsv.write(beans);
-				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), msg.dialogMessageboxTitleInfo, "see " + csvFile.toString());
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), msg.dialogMessageboxTitleInfo, MessageFormat.format(msg.commandDocumentsExportAddresscsv4dpExportfinished, csvFile.toString()));
 			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "fehlende Werte!");
+				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.commandDocumentsExportAddresscsv4dpEmptyfields);
 			}
-		} catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+		} catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IllegalStateException e) {
 			e.printStackTrace();
 		}
 		return csvFile;

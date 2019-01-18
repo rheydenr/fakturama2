@@ -12,6 +12,42 @@ import com.opencsv.bean.CsvBindByName;
  *
  */
 public class DPAddress {
+	
+	enum HeaderPositions {
+		SEND_NAME1("SEND_NAME1", 0),
+		SEND_NAME2("SEND_NAME2", 1),
+		SEND_STREET("SEND_STREET", 2),
+		SEND_HOUSENUMBER("SEND_HOUSENUMBER", 3),
+		SEND_PLZ("SEND_PLZ", 4),
+		SEND_CITY("SEND_CITY", 5),
+		SEND_COUNTRY("SEND_COUNTRY", 6),
+		RECV_NAME1("RECV_NAME1", 7),
+		RECV_NAME2("RECV_NAME2", 8),
+		RECV_STREET("RECV_STREET", 9),
+		RECV_HOUSENUMBER("RECV_HOUSENUMBER", 10),
+		RECV_PLZ("RECV_PLZ", 11),
+		RECV_CITY("RECV_CITY", 12),
+		RECV_COUNTRY("RECV_COUNTRY", 13),
+		PRODUCT("PRODUCT", 14),
+		COUPON("COUPON", 15);
+		
+		String name;
+		int pos;
+		
+		private HeaderPositions(String name, int pos) {
+			this.name = name;
+			this.pos = pos;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getPos() {
+			return pos;
+		}
+	}
+	
 	/**
 	 * Absender Name1: z.B. Vor- und Nachname. Firmenname
 	 */
@@ -86,9 +122,6 @@ public class DPAddress {
 	@CsvBindByName(column = "COUPON", required = false)
 	private String coupon;
 	
-	private String[] requiredFields = { senderName, senderStreet, senderHousenumber, senderZipCode, senderCity,
-			senderISO3Country, receiverName, receiverStreet, receiverHousenumber, receiverZipCode, receiverCity,
-			product };
 
 	/**
 	 * Checks if all required bean attributes are set.
@@ -96,9 +129,9 @@ public class DPAddress {
 	 * @return <code>true</code> if all required bean attributes are set
 	 */
 	public boolean isValid() {
-//		Set<String> emptyF = new HashSet<>();
-//		List<String> emptyFields = Arrays.stream(requiredFields).filter(f -> f == null || f.isEmpty()).collect(Collectors.toList());
-		return StringUtils.isNoneBlank(requiredFields);
+		return StringUtils.isNoneBlank(senderName, senderStreet, senderHousenumber, senderZipCode, senderCity,
+				senderISO3Country, receiverName, receiverStreet, receiverHousenumber, receiverZipCode, receiverCity,
+				product);
 	}
 
 	public String getSenderName() {
