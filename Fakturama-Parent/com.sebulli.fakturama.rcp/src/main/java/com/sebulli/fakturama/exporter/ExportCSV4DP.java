@@ -32,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -101,7 +102,8 @@ public class ExportCSV4DP implements ICSVExporter {
 				};
 			});
 			strategy.setType(DPAddress.class);
-			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos).withMappingStrategy(strategy).build();
+			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos)
+					.withMappingStrategy(strategy).withLineEnd("\r\n").withSeparator(';').withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
 			
 			DPAddress dpAddressBean = createDPBean(contact);
 			if(dpAddressBean.isValid()) {
