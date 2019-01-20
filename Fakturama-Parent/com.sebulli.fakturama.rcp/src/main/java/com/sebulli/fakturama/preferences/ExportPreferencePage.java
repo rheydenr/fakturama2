@@ -61,6 +61,7 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 		//T: Preference page "Export Sales" - Label "Use Pay Date instead of Invoice Date"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, msg.preferencesExportUsepaydate, getFieldEditorParent()));
 		addField(new DirectoryFieldEditor(Constants.PREFERENCES_QRK_EXPORT_PATH, msg.preferencesQrkExportFolder, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_EXPORT_CSV4DHL, msg.preferencesExportCsv4dhl, getFieldEditorParent()));
 
 	}
 
@@ -93,5 +94,6 @@ public class ExportPreferencePage extends FieldEditorPreferencePage implements I
 	public void setInitValues(IPreferenceStore node) {
 		node.setDefault(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, true);
 		node.setDefault(Constants.PREFERENCES_QRK_EXPORT_PATH, "");
+		node.setDefault(Constants.PREFERENCES_EXPORT_CSV4DHL, false);
 	}
 }

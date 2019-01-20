@@ -44,7 +44,7 @@ public class VoucherSummaryCalculator {
     public VoucherSummary calculate(Voucher voucher) {
     	MonetaryAmount paidValue = Money.of(Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
     	MonetaryAmount totalValue = Money.of(Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
-    	return calculate(voucher.getItems(), paidValue, totalValue, voucher.getDiscounted());
+    	return calculate(voucher.getItems(), paidValue, totalValue, BooleanUtils.toBoolean(voucher.getDiscounted()));
     }
     
 	/**

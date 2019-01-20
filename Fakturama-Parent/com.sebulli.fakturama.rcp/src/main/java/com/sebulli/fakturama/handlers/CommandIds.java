@@ -123,6 +123,7 @@ public final class CommandIds {
 	
 	public static final String CMD_REORGANIZE_DOCUMENTS = "com.sebulli.fakturama.command.reorganizeDocuments";
 	public static final String CMD_QRK_EXPORT = "org.fakturama.command.export.qrk";
+	public static final String CMD_EXPORT_CSV4DP =  "org.fakturama.command.exportcsv4dp";
 	
 	
 }

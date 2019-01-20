@@ -62,6 +62,9 @@ public class Messages {
 	public String commandDataNameTooltip;
 	public String commandDebtorsName;
 	public String commandDebtorsTooltip;
+	public String commandDocumentsExportAddresscsv4dpDescription;
+	public String commandDocumentsExportAddresscsv4dpEmptyfields;
+	public String commandDocumentsExportAddresscsv4dpExportfinished;
 	public String commandDocumentsMoveDownName;
 	public String commandDocumentsMoveDownTooltip;
 	public String commandDocumentsMoveUpName;
@@ -435,6 +438,8 @@ public class Messages {
 	public String exporterDataWebsite;
 	public String exporterDataWebshopname;
 	public String exporterDataWeight;
+	public String exporterFilenameTypeCsv;	
+	public String exporterFilename;	
 	public String wizardExportCommonFilterlabel;
 	public String wizardExportCommonDescription;
 	public String wizardExportCommonHeadline;
@@ -673,6 +678,7 @@ public class Messages {
 	public String preferencesDocumentUsevestingperiodPeriod;
 	public String preferencesExport;
 	public String preferencesExportUsepaydate;
+	public String preferencesExportCsv4dhl;
 	public String preferencesGeneral;
 	public String preferencesGeneralCloseeditors;
 	public String preferencesGeneralCollapsenavbar;

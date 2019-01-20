@@ -38,8 +38,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -52,6 +56,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -723,8 +728,27 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
-		bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName());
-		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());		
+
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setBeforeSetValidator(new IValidator() {
+
+		    @Override
+		    public IStatus validate(Object value) {
+		    	if(value == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
+		        Date vestingPeriodStart = (Date) value;
+		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
+		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
+		        } else {
+		        	return ValidationStatus.ok();
+		        }
+		    }
+		});
+		
+		Binding binding = bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName(), strategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		
+		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());
+		
 		bindModelValue(document, txtMessage, Document_.message.getName(), 10_000);
 		if (noOfMessageFields >= 2) {
 			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10_000);
@@ -2208,6 +2232,23 @@ public class DocumentEditor extends Editor<Document> {
 			    
 			    document.getBillingContact().getAddress().setManualAddress(null);
                 setDirty(true);
+			}
+		});
+		
+		// Export address to CSV
+		Label exportToCSV = new Label(defaultValuePrefs.getBoolean(Constants.PREFERENCES_EXPORT_CSV4DHL) ? addressComposite : invisible, SWT.NONE | SWT.RIGHT);
+		exportToCSV.setToolTipText(msg.commandDocumentsExportAddresscsv4dpDescription);
+		exportToCSV.setImage(Icon.DOCUMENT_DHL_CSV.getImage(IconSize.DocumentIconSize));
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(exportToCSV);
+		exportToCSV.addMouseListener(new MouseAdapter() {
+
+			// Open the address dialog, if the icon is clicked.
+			public void mouseDown(MouseEvent e) {
+				// Open a new Contact Editor 
+                Map<String, Object> params = new HashMap<>();
+                params.put(CallEditor.PARAM_CALLING_DOC, document.getName());
+                ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_EXPORT_CSV4DP, params);
+                handlerService.executeHandler(parameterizedCommand);
 			}
 		});
 
