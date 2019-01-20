@@ -210,6 +210,7 @@
   <handlers xmi:id="_591t8DAPEeadQNc3uX9jkA" elementId="handler:org.fakturama.parcelservice" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.OpenParcelServiceHandler" command="_UP9z8Ey_EeOA3qmx22wNtw"/>
   <handlers xmi:id="_90KEgJ7PEeeQ-uZqSpleQA" elementId="com.sebulli.fakturama.resetperspective.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ResetPerspectiveHandler" command="_4yx1UJ7PEeeQ-uZqSpleQA"/>
   <handlers xmi:id="_ww_VsG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.handler.stockupdate" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.StockUpdateHandler" command="_hvS4IG4_EeixJ7qGG0_Y8A"/>
+  <handlers xmi:id="_Q5xkoBWEEemR8qmuWxCvLQ" elementId="org.fakturama.handler.exportcsv4dp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.exporter.ExportCSV4DP" command="_TznVABWDEemR8qmuWxCvLQ"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.bindingtable.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
@@ -599,6 +600,9 @@
   <commands xmi:id="_hvS4IG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.command.updatestock" commandName="%command.products.stockupdate" description="%command.products.stockupdate">
     <parameters xmi:id="_XfNAAG5NEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.progress" name="Progress indicator" typeId="java.lang.Integer"/>
     <parameters xmi:id="_tDNsUG5TEeixJ7qGG0_Y8A" elementId="com.sebulli.fakturama.command.order.markas.orderid" name="Document to update" typeId="com.sebulli.fakturama.model.Order" optional="false"/>
+  </commands>
+  <commands xmi:id="_TznVABWDEemR8qmuWxCvLQ" elementId="org.fakturama.command.exportcsv4dp" commandName="%command.documents.export.addresscsv4dp.label" description="%command.documents.export.addresscsv4dp.description" category="_no8mgEstEeOZ37-tYt-QvQ">
+    <parameters xmi:id="_B_RUMBWEEemR8qmuWxCvLQ" elementId="org.fakturama.document.caller" name="calling document editor"/>
   </commands>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>

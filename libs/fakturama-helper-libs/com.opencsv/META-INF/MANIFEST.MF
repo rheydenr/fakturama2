@@ -4,7 +4,8 @@ Bundle-Name: OpenCSV
 Bundle-SymbolicName: com.opencsv
 Bundle-Version: 4.4.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/opencsv-4.4.jar
+Bundle-ClassPath: lib/commons-collections-3.2.2.jar,
+ lib/opencsv-4.4.jar
 Export-Package: com.opencsv,
  com.opencsv.bean,
  com.opencsv.bean.comparator,
@@ -15,3 +16,7 @@ Export-Package: com.opencsv,
  com.opencsv.stream.reader
 Bundle-Vendor: The OpenCSV team
 Bundle-ActivationPolicy: lazy
+Require-Bundle: org.apache.commons.collections;bundle-version="4.1.0",
+ org.apache.commons.lang3;bundle-version="3.4.0",
+ org.apache.commons.beanutils;bundle-version="1.9.3",
+ org.apache.commons.text;bundle-version="1.6.0"
