@@ -1711,6 +1711,7 @@
 					</term>
 					<listitem>
 						<para>Die Adresse kann als Datensatz (CSV) in einer Datei gespeichert werden. Diese Datei kann beim <link xl:href="https://shop.deutschepost.de/dhl-online-frankierung">Online-Frankierservice von DHL</link> über den Button "Sammelbestellung per CSV" hochgeladen werden. Die Absenderdaten werden dabei aus den hinterlegten Firmendaten ergänzt. Die Art des Pakets muss derzeit noch manuell geändert werden (direkt in der CSV-Datei oder im Online-Warenkorb).</para>
+						<para>Die Funktion kann über die Einstellungen aktiviert werden. Siehe dazu <link linkend="preferences_export">Einstellungen Export</link>.</para>
 						<tip>Die konkrete Empfängeradresse sieht man nur, indem man im Warenkorb das entsprechende Produkt anklickt.</tip>
 					</listitem>
 				</varlistentry>

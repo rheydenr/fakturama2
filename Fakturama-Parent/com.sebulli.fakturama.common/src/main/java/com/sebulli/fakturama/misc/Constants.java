@@ -528,6 +528,7 @@ public class Constants {
 	 * 
 	 */
 	public static final String PREFERENCES_EXPORTSALES_PAIDDATE = "EXPORTSALES_PAIDDATE";
+	public static final String PREFERENCES_EXPORT_CSV4DHL = "EXPORT_CSV4DHL";
 
 	/** The Constant CONTEXT_VATVALUE. */
 	public static final String CONTEXT_VATVALUE = "vatvalue";
@@ -562,7 +563,4 @@ public class Constants {
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
 
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
-
-
-
 }

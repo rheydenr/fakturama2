@@ -246,6 +246,12 @@
             <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link> und <link linkend="importexport_export_sales">Export Liste Umsätze</link>
             </para>
         </section>
+        <section>
+            <title>aktiviere CSV-Export für DHL</title>
+            <para>Aktiviert die Export-Funktion für den CSV-Export einer Adresse aus dem Dokumenteneditor.</para>
+            <para>Siehe auch <link linkend="editor_editor_document_address">Adresse (Dokumenteneditor)</link>
+            </para>
+        </section>
     </section>
     <section>
         <anchor xreflabel="" xml:id="preferences_yourcompany"/>

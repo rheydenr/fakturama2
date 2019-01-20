@@ -675,6 +675,7 @@ public class Messages {
 	public String preferencesDocumentUsevestingperiodPeriod;
 	public String preferencesExport;
 	public String preferencesExportUsepaydate;
+	public String preferencesExportCsv4dhl;
 	public String preferencesGeneral;
 	public String preferencesGeneralCloseeditors;
 	public String preferencesGeneralCollapsenavbar;

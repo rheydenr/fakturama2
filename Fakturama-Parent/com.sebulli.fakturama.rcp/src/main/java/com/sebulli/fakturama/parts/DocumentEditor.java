@@ -2236,7 +2236,7 @@ public class DocumentEditor extends Editor<Document> {
 		});
 		
 		// Export address to CSV
-		Label exportToCSV = new Label(addressComposite, SWT.NONE | SWT.RIGHT);
+		Label exportToCSV = new Label(defaultValuePrefs.getBoolean(Constants.PREFERENCES_EXPORT_CSV4DHL) ? addressComposite : invisible, SWT.NONE | SWT.RIGHT);
 		exportToCSV.setToolTipText(msg.commandDocumentsExportAddresscsv4dpDescription);
 		exportToCSV.setImage(Icon.DOCUMENT_DHL_CSV.getImage(IconSize.DocumentIconSize));
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(exportToCSV);
