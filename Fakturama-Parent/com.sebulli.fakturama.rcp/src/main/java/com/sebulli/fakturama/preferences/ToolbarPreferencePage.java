@@ -83,6 +83,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.commandParcelserviceName, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName , getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_QRK_EXPORT, showIcon + msg.commandExportQrkName , getFieldEditorParent()));
 	}
 	
 	/**
@@ -147,6 +148,6 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_BROWSER, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, true);
-		node.setDefault(Constants.TOOLBAR_SHOW_QRK_EXPORT, true);
+		node.setDefault(Constants.TOOLBAR_SHOW_QRK_EXPORT, false);
 	}
 }
