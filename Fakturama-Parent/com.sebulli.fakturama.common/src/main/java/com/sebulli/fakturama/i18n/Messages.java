@@ -100,6 +100,8 @@ public class Messages {
 	public String commandPaymentsTooltip;
 	public String commandProductsName;
 	public String commandProductsTooltip;
+	public String commandExportQrkName;
+	public String commandExportQrkTooltip;
 	public String commandReceiptvouchersName;
 	public String commandReceiptvouchersTooltip;
 	public String commandReorganizeDocumentsMessage;
@@ -115,6 +117,7 @@ public class Messages {
 	public String commandVatsTooltip;
 	public String commandWebshopName;
 	public String commandWebshopTooltip;
+	
 	public String commonButtonSavechanges;
 	public String commonButtonSavechangesquestion;
 	public String commonButtonSetdefault;
@@ -760,8 +763,11 @@ public class Messages {
 	public String preferencesProductQtyChangeInvoice;
 	public String preferencesProductQtyChangeOrder;
 	public String preferencesProductQtyHeader;
-	
 	public String preferencesProductUseweight;
+	
+	public String preferencesQrkExportFolder;
+	public String preferencesQrkExportMissingfolder;
+
 	public String preferencesToolbarIcons;
 	public String preferencesToolbarShowicon;
 	public String preferencesWebshop;

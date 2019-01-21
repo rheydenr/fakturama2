@@ -77,22 +77,53 @@
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.13.2</version>
-                <executions>
-                    <execution><id>jaxb</id> <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals><configuration>
-                                            <!-- forceRegenerate>true</forceRegenerate   -->
-                    <verbose>true</verbose>
-                    <schemaDirectory>src/main/resources</schemaDirectory>                    
-                    <generateDirectory>src-gen/main/java</generateDirectory>
-                    <encoding>UTF-8</encoding>
-                    <markGenerated>true</markGenerated>
-                    <locale>en</locale>
-                    <generatePackage>com.sebulli.fakturama.webshopimport.type</generatePackage>
-                        </configuration>
-                    </execution>
-                </executions>
+				<executions><execution>
+						<id>jaxb-webshopimport</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- forceRegenerate>true</forceRegenerate -->
+							<verbose>true</verbose>
+							<schemaDirectory>src/main/resources</schemaDirectory>
+							                <schemaIncludes>
+                    <include>webshop-import.xsd</include>
+                </schemaIncludes>							
+							
+							<generateDirectory>src-gen/main/java</generateDirectory>
+							<encoding>UTF-8</encoding>
+							<markGenerated>true</markGenerated>
+							<locale>en</locale>
+							<generatePackage>com.sebulli.fakturama.webshopimport.type</generatePackage>
+						</configuration>
+					</execution>
+										<execution>
+						<id>jaxb-qrk</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- forceRegenerate>true</forceRegenerate -->
+							<verbose>true</verbose>
+							<schemaDirectory>src/main/resources</schemaDirectory>
+                <schemaIncludes>
+                    <include>QRK-R2B.xsd</include>
+                </schemaIncludes>	
+                                <!-- bindingDirectory>src/main/resources</bindingDirectory>
+                <bindingIncludes>
+                    <include>classgeneration.xjb</include>
+                </bindingIncludes-->						
+                <generateDirectory>src-gen/main/java</generateDirectory>
+							<encoding>UTF-8</encoding>
+							<markGenerated>true</markGenerated>
+							<locale>en</locale>
+							<generatePackage>at.ckvsoft.qrk.type</generatePackage>
+						</configuration>
+					</execution>
+					
+				</executions>
                 <configuration>
                     <extension>true</extension>
                     <args>

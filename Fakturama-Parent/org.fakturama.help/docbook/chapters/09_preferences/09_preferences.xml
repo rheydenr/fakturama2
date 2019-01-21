@@ -239,11 +239,27 @@
     <section>
         <anchor xreflabel="" xml:id="preferences_export"/>
         <title>Einstellungen Export</title>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/preferences/export_preferences.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="200%" fileref="../images/preferences/export_preferences.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
         <section>
             <title>Zahldatum anstatt Rechnungsdatum verwenden</title>
             <para>Beim Export der Umsätze und Ausgaben in einer Tabelle wird ein Zeitabschnitt, zum Beispiel ein Monat oder ein Quartal angegeben. Es werden nur diejenigen Rechnungen und Belege exportiert, deren Datum in diesem Zeitabschnitt liegen. Hier kann festgelegt werden, ob dabei das Zahldatum oder das Rechnungsdatum berücksichtigt wird.</para>
             <para>Bei einer Istversteuerung wird hier üblicherweise das Zahldatum gewählt. Bei einer Sollversteuerung das Rechnungsdatum.</para>
             <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link> und <link linkend="importexport_export_sales">Export Liste Umsätze</link>
+            </para>
+        </section>
+        <section>
+            <title>Datenaustausch-Verzeichnis für QRK Kasse</title>
+            <para>Damit legt man das Datenaustausch-Verzeichnis für das Opensource-Programm QRK Kasse fest. Dieses Programm ist separat zu installieren. Wurde das Verzeichnis festgelegt, kann man mit Hilfe des Buttons "QRK Kasse" in der Toolbar ein Rechnungss-Dokument an das Kassenprogramm übergeben. Dort wird die Rechnung dann als Kassenbon weiterverarbeitet.</para>
+            <para>Siehe auch <link linkend="preferences_toolbars">Einstellungen Werkzeugleiste</link>
             </para>
         </section>
         <section>
@@ -1000,7 +1016,7 @@
         </section>
     </section>
     <section>
-                 <anchor xreflabel="" xml:id="preferences_webshopauthorization"/>
+       <anchor xreflabel="" xml:id="preferences_webshopauthorization"/>
        <title>Webshop Autorisierung</title>
         <section>
             <title>Webshop ist passwortgeschützt</title>
@@ -1018,6 +1034,7 @@
         </section>
     </section>
     <section>
+       <anchor xreflabel="" xml:id="preferences_toolbars"/>
         <title>Einstellungen Werkzeugleiste</title>
         <section>
             <title>Icons in der Werkzeugleiste ein/ausblenden</title>

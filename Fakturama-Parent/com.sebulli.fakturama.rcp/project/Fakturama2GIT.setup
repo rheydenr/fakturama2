@@ -193,11 +193,21 @@
           name="com.opcoach.e4.preference.feature.feature.group"/>
       <requirement
           name="org.eclipse.gemini.ext.di.feature.feature.group"/>
+      <requirement
+          name="org.eclipse.nebula.cwt.feature.feature.group"/>
+      <requirement
+          name="org.eclipse.nebula.widgets.cdatetime.feature.feature.group"/>
+      <requirement
+          name="org.eclipse.nebula.widgets.pgroup.feature.feature.group"/>
+      <requirement
+          name="com.opencsv.feature.feature.group"/>
       <repositoryList>
         <repository
             url="https://p2.fakturama.info"/>
         <repository
             url="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest"/>
+        <repository
+            url="https://p2.fakturama.info/nebula-fakturama"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -281,6 +291,8 @@
       <requirement
           name="org.apache.poi.ooxml.schemas"/>
       <requirement
+          name="org.apache.xmlbeans"/>
+      <requirement
           name="org.slf4j.bridge.jul"/>
       <requirement
           name="org.slf4j.apis.log4j"/>
@@ -307,12 +319,6 @@
     </targlet>
     <targlet
         name="Nebula Dependencies">
-      <requirement
-          name="org.eclipse.nebula.cwt.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.nebula.widgets.cdatetime.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.nebula.widgets.pgroup.feature.feature.group"/>
       <requirement
           name="org.eclipse.nebula.widgets.formattedtext.feature.feature.group"/>
       <requirement

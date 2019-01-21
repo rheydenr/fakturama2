@@ -1411,30 +1411,31 @@ public class MigrationManager {
            			// Money doesn't work with symbols, therefore we have to convert this.
                     // Try to determine a Locale from symbol
                     Locale currencyLocale = Locale.getDefault();
+                    Currency jdkCurrency = Currency.getInstance(currencyLocale);
            			// the key has to be changed, too!
            			prop.setName(Constants.PREFERENCE_CURRENCY_LOCALE);
            			UserProperty propUseSymbol = modelFactory.createUserProperty();
            			propUseSymbol.setUser(currentUser);
            			propUseSymbol.setName(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
-       			    propUseSymbol.setValue(Boolean.FALSE.toString());  // default
+       			    propUseSymbol.setValue(CurrencySettingEnum.CODE.toString());  // default
        			    
        			    // try to interpret the currency symbol
            			if(StringUtils.length(propValue) == 1) {
            			    propUseSymbol.setValue(CurrencySettingEnum.SYMBOL.name());
-                        Currency jdkCurrency = Currency.getInstance(currencyLocale);
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
-           		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
            		            migLogUser.warning("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
-           		        } else {
-           		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
-           		            currencyLocale = Locale.GERMANY;
-           		            propValue = "de/DE";
-           		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
-           		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
+       		        } else {
+       		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
+       		            currencyLocale = Locale.GERMANY;
+	           			propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
+       		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
+       		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            			}
+           			// re-assign property value
+           			propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
                     propertiesDAO.save(propUseSymbol, true);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
                     break;
