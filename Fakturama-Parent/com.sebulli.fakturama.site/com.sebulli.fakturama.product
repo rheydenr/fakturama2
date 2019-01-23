@@ -25,6 +25,7 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
+      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -286,6 +287,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
       <property name="eclipse.p2.profile" value="profile" />
+      <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
       <property name="org.eclipse.update.reconcile" value="false" />
       <property name="osgi.instance.area" value="@user.home/.fakturama2" />
    </configurations>
