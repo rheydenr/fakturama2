@@ -815,6 +815,10 @@ public class MigrationManager {
 	    for (int i = 0; i < itemRefs.length; i++) {
             String itemRef = itemRefs[i];
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
+			if(oldItem == null) {
+				migLogUser.severe("Can't find a Document's item. Document number=["+document.getName()+ "], item number=["+itemRef+"]. Entry skipped!");
+				continue;
+			}
 			DocumentItem item = modelFactory.createDocumentItem();
 			// the position was formerly determined through the order how they stayed in documents entry
 			item.setPosNr(Integer.valueOf(i+1));
