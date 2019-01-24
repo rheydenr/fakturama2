@@ -17,6 +17,7 @@
 <booleanAttribute key="includeOptional" value="true"/>
 <stringAttribute key="location" value="${workspace_loc}/../runtime-Fakturama.product"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="org.eclipse.swt.browser.IEVersion" value="12001"/>
 <mapEntry key="osgi.instance.area" value="@user.home/fakturama2"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.pde.ui.launcher.PDESourceLookupDirector"/>
