@@ -11,7 +11,8 @@
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
+    xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
     name="fakturama.git"
     label="Fakturama Project">
   <setupTask
@@ -67,7 +68,6 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      value="org.fakturama.target"
       defaultValue="Photon"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
@@ -133,7 +133,7 @@
   <setupTask
       xsi:type="setup.targlets:TargletTask"
       id="org.fakturama.target.id"
-      targetName="Modular Target for Fakturama dependencies">
+      targetName="Modular Target for Fakturama">
     <targlet
         name="Eclipse Dependencies"
         includeSources="false">
@@ -372,24 +372,39 @@
       xsi:type="setup.workingsets:WorkingSetTask">
     <workingSet
         name="Fakturama"
-        id="org.fakturama.core">
+        id="org.fakturama.workingset">
       <predicate
-          xsi:type="predicates:LocationPredicate"
-          pattern="./Fakturama-Parent/.*"/>
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="com\.sebulli\.fakturama.*"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="org\.fakturama.*"/>
+      </predicate>
     </workingSet>
     <workingSet
         name="JavaMoney"
         id="org.fakturama.javamoney">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="javamoney*"/>
+          pattern="javamoney\.*"/>
     </workingSet>
     <workingSet
         name="Helper Libs"
         id="org.fakturama.helperlibs">
       <predicate
-          xsi:type="predicates:LocationPredicate"
-          pattern=".*/libs/.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NotPredicate">
+          <operand
+              xsi:type="workingsets:ExclusionPredicate"
+              excludedWorkingSet="//@setupTasks.10/@workingSets.0 //@setupTasks.10/@workingSets.1"/>
+        </operand>
+        <operand
+            xsi:type="predicates:LocationPredicate"
+            pattern="${git.clone.fakturama2.location}/libs/fakturama-helper-libs/*"/>
+      </predicate>
     </workingSet>
     <description>The dynamic working sets for ${scope.project.label}</description>
   </setupTask>
@@ -448,8 +463,8 @@
   <setupTask
       xsi:type="pde:APIBaselineFromTargetTask"
       name="Fakturama API Baseline"
-      targetName="Modular Target for Fakturama dependencies">
-    <description>Fakturama API Baseline</description>
+      targetName="Modular Target for Fakturama">
+    <description>An API baseline based on the target platform named 'Modular Target for Fakturama'</description>
   </setupTask>
   <stream name="master"
       label="Master">
