@@ -82,7 +82,7 @@ public final class ProductUtil {
         // maybe later on we use a list of "blocks"
         Integer[] blocks = new Integer[] {product.getBlock1(), product.getBlock2(), product.getBlock3(), product.getBlock4(), product.getBlock5()};
         Double[] prices = new Double[] {product.getPrice1(), product.getPrice2(), product.getPrice3(), product.getPrice4(), product.getPrice5()};
-        for (int i = 0; i < scaledPrices; i++) {
+        for (int i = 0; i <= scaledPrices; i++) {
             newQuantity = blocks[i];
             if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001 && prices[i] != 0) {
                 blockQuantity = newQuantity;
