@@ -706,9 +706,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //                log.debug("Selection changed:");
                 
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                @SuppressWarnings("unchecked")
-                List<DocumentItemDTO> selectedElements = selection.toList();
-                selectionService.setSelection(selectedElements);
+                selectionService.setSelection(selection.toList());
             }
         );
          

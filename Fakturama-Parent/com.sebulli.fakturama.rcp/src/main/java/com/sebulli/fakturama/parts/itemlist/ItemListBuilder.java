@@ -23,6 +23,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -116,14 +117,16 @@ public class ItemListBuilder {
             // Open the product dialog and add the
             // selected product as new item.
             public void mouseDown(MouseEvent e) {
-
+            	// save MPart
+            	MPart currentPart = context.get(MPart.class);
                 // T: Document Editor
                 // T: Title of the dialog to select a product
                 // SelectProductDialog
 			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
-			    context.set(ESelectionService.class, selectionService);
+//			    context.set(ESelectionService.class, selectionService);
 			    SelectProductDialog dlg = ContextInjectionFactory.make(SelectProductDialog.class, context);
 			    dlg.open();
+			    context.set(MPart.class, currentPart);
 
                 // handling of adding a new list item is done via event handling in DocumentEditor
 			    // (setting via dlg.getResult() would get too complicated, since we have to hold

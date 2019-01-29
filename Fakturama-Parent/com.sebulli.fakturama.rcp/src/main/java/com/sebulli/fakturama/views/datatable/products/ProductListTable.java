@@ -144,8 +144,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	getGridLayer().getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
             
-            E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, getGridLayer().getSelectionLayer(), getGridLayer().getBodyDataProvider());
-            getGridLayer().getSelectionLayer().addLayerListener(esl);
+//            E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, getGridLayer().getSelectionLayer(), getGridLayer().getBodyDataProvider());
+//            getGridLayer().getSelectionLayer().addLayerListener(esl);
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         }
         hookDoubleClickCommand2(natTable, gridListLayer);

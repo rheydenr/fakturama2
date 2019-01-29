@@ -2218,6 +2218,9 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
+            	// save MPart
+            	MPart myPart = context.get(MPart.class);
+
 		        // FIXME Workaround (quick & dirty), please use enums or an extra button
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
@@ -2228,6 +2231,7 @@ public class DocumentEditor extends Editor<Document> {
 			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    	dlg.open();
 			    }
+			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
 			}
 		});
