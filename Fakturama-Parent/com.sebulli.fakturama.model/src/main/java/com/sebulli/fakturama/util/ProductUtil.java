@@ -75,14 +75,14 @@ public final class ProductUtil {
         int blockQuantity = Integer.valueOf(0);
         int newQuantity;
         int scaledPrices;
-        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(1));
+        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
 
         // search all used blocks
         // no reflection used because of unwanted side effects...
         // maybe later on we use a list of "blocks"
         Integer[] blocks = new Integer[] {product.getBlock1(), product.getBlock2(), product.getBlock3(), product.getBlock4(), product.getBlock5()};
         Double[] prices = new Double[] {product.getPrice1(), product.getPrice2(), product.getPrice3(), product.getPrice4(), product.getPrice5()};
-        for (int i = 0; i <= scaledPrices; i++) {
+        for (int i = 0; i < scaledPrices; i++) {
             newQuantity = blocks[i];
             if (newQuantity > blockQuantity && quantity >= newQuantity - 0.0001 && prices[i] != 0) {
                 blockQuantity = newQuantity;
