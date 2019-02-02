@@ -74,6 +74,16 @@
          </description>
       </wizard>
       <wizard
+            category="com.sebulli.fakturama.export.salesandvouchers"
+            class="org.fakturama.export.wizard.vouchers.ReceiptsAndExpendituresWizard"
+            icon="icons/16/receipt_expenditure_voucher.png"
+            id="com.sebulli.fakturama.export.vouchers.exportReceiptsAndExpenditures"
+            name="%wizard.export.salesandvouchers.category">
+         <description>
+            %wizard.export.salesandvouchers.description
+         </description>
+      </wizard>
+      <wizard
             category="com.sebulli.fakturama.export.lists"
             class="org.fakturama.export.wizard.products.ProductExportWizard"
             icon="icons/16/product.png"
@@ -140,11 +150,5 @@
             name="%wizard.export.csv.lists.category"
             parentCategory="com.sebulli.fakturama.export.lists">
       </category>
-      <wizard
-            category="com.sebulli.fakturama.export.salesandvouchers"
-            class="org.fakturama.export.wizard.vouchers.ReceiptsAndExpendituresWizard"
-            id="com.sebulli.fakturama.export.vouchers.exportReceiptsAndExpenditures"
-            name="Einnahmen und Ausgaben">
-      </wizard>
    </extension>
 </plugin>
