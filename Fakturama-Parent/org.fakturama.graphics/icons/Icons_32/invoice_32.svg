@@ -14,7 +14,7 @@
    height="32"
    id="svg2862"
    version="1.1"
-   inkscape:version="0.47pre3 r22311"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="invoice_32.svg"
    inkscape:export-filename="/Users/gerdbartelt/Documents/Fakturama/com.sebulli.fakturama/icons/32/invoice_32.png"
    inkscape:export-xdpi="90"
@@ -440,9 +440,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="45.206731"
-     inkscape:cy="-4.8798985"
+     inkscape:zoom="15.999999"
+     inkscape:cx="24.041768"
+     inkscape:cy="13.506014"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -453,7 +453,7 @@
      inkscape:window-height="1050"
      inkscape:window-x="625"
      inkscape:window-y="61"
-     inkscape:window-maximized="0">
+     inkscape:window-maximized="1">
     <inkscape:grid
        type="xygrid"
        id="grid2872"
@@ -461,11 +461,11 @@
        visible="false"
        enabled="false"
        snapvisiblegridlinesonly="true"
-       spacingx="1px"
-       spacingy="1px"
+       spacingx="1"
+       spacingy="1"
        dotted="true"
-       originy="0.5px"
-       originx="0.5px" />
+       originy="0.5"
+       originx="0.5" />
     <inkscape:grid
        type="xygrid"
        id="grid3826"
@@ -473,10 +473,10 @@
        visible="false"
        enabled="false"
        snapvisiblegridlinesonly="true"
-       originy="0px"
-       originx="0px"
-       spacingx="1px"
-       spacingy="1px"
+       originy="0"
+       originx="0"
+       spacingx="1"
+       spacingy="1"
        dotted="false" />
   </sodipodi:namedview>
   <metadata
@@ -487,7 +487,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
