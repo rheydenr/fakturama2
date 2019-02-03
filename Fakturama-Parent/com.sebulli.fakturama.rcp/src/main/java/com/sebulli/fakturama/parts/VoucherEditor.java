@@ -68,6 +68,7 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dao.VoucherItemsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -119,6 +120,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	@Inject
 	protected VoucherItemsDAO voucherItemsDAO;
+	
+	@Inject
+	protected ItemAccountTypeDAO itemAccountTypeDAO;
 	
 	@Inject
 	protected IEclipseContext context;
@@ -293,6 +297,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	                .withParent(top)
 	                .withVoucher(voucher)
 	//                .withNetGross(netgross)
+	                .withContainer(this)
 	                .withUseGross(useGross)
 	                .build();
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
@@ -559,7 +564,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	            .map(dto -> dto.getVoucherItem())
 	            /*.sorted(Comparator.comparing(VoucherItem::getId))*/
 	            .collect(Collectors.toList());
-	        voucher.setItems(new ArrayList<>(items));
+	        voucher.setItems(items);
 	        
 	        // delete removed items
 	        for (IEntity expenditureItem : itemListTable.getMarkedForDeletion()) {
@@ -591,11 +596,13 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 
 	      // Set the Editor's name to the voucher name.
 	      this.part.setLabel(voucher.getName());
+	      
+	      itemListTable.updateVoucherItemsAndAccountTypes(voucher);
 	
 	      // Refresh the table view of all vouchers
 	      evtBroker.post(getEditorId(), Editor.UPDATE_EVENT);
 	      
-	        bindModel();
+	      bindModel();
 
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);
@@ -683,6 +690,10 @@ public abstract class VoucherEditor extends Editor<Voucher>{
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;
+    }
+    
+    public void setDirty(boolean isDirty) {
+    	getMDirtyablePart().setDirty(isDirty);
     }
     
 	protected abstract String[] getNameProposals();

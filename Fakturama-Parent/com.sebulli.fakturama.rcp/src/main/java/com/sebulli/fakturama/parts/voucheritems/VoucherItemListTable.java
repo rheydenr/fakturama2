@@ -26,14 +26,19 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
@@ -46,32 +51,47 @@ import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDoubleDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
+import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 import org.eclipse.nebula.widgets.nattable.edit.editor.MultiLineTextCellEditor;
 import org.eclipse.nebula.widgets.nattable.edit.editor.TextCellEditor;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.layer.event.ILayerEvent;
 import org.eclipse.nebula.widgets.nattable.painter.cell.CellPainterWrapper;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ComboBoxPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.TextPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
 import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.config.DefaultRowReorderLayerConfiguration;
+import org.eclipse.nebula.widgets.nattable.reorder.event.RowReorderEvent;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemProvider;
+import org.eclipse.nebula.widgets.nattable.ui.menu.IMenuItemState;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuAction;
+import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
@@ -79,6 +99,7 @@ import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.IEntity;
@@ -87,14 +108,18 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
-import com.sebulli.fakturama.model.Voucher_;
+import com.sebulli.fakturama.model.VoucherItem_;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.VoucherEditor;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeDisplayConverter;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeValueComboProvider;
+import com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem;
+import com.sebulli.fakturama.parts.itemlist.MoveEntryUpMenuItem;
 import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.parts.itemlist.VatValueComboProvider;
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
@@ -120,13 +145,17 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
+    
+    @Inject
+    private IEclipseContext context;
 
     // ID of this view
     public static final String ID = "fakturama.document.voucherItemTable";
     
-    private Voucher Voucher;
+    private Voucher voucher;
     private EventList<VoucherItemDTO> voucherItemsListData;
     private List<IEntity> markedForDeletion = new ArrayList<>();
+    private VoucherEditor container;
 
     // Flag if there are items with an discount set
 //    private boolean containsDiscountedItems = false;
@@ -150,6 +179,8 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     private SelectionLayer selectionLayer;
+
+	private VoucherItemTableConfiguration voucherItemsTableConfig;
     
     /**
      * Entry point for this class. Here the whole Composite is built.
@@ -160,12 +191,13 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
      * @param useGross 
      * @return
      */
-    public Control createPartControl(Composite parent, Voucher Voucher, boolean useGross,
-            int netgross) {
+    public Control createPartControl(Composite parent, Voucher voucher, boolean useGross,
+            int netgross, VoucherEditor container) {
         log.info("create VoucherItem list part");
-        this.Voucher = Voucher;
+        this.voucher = voucher;
         this.useGross = useGross;
-        
+        this.container = container;
+
         this.top = super.createPartControl(parent, VoucherItemDTO.class, false, ID);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
         // Listen to double clicks (omitted at the moment, perhaps at a later time
@@ -173,7 +205,62 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         return top;
     }
     
-    
+
+	/**
+	 * Create the default context menu
+	 */
+	private Menu createContextMenu() {
+		// Add up/down and delete actions
+		MoveEntryUpMenuItem moveEntryUpHandler = ContextInjectionFactory.make(MoveEntryUpMenuItem.class, context);
+		MoveEntryDownMenuItem moveEntryDownHandler = ContextInjectionFactory.make(MoveEntryDownMenuItem.class, context);
+		
+		IMenuItemProvider deleteMenuItem = new IMenuItemProvider() {
+
+			@Override
+			public void addMenuItem(NatTable natTable, Menu popupMenu) {
+		        final MenuItem deleteItem = new MenuItem(popupMenu, SWT.PUSH);
+		        deleteItem.setText(msg.mainMenuEditDeleteName);
+				deleteItem.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
+				deleteItem.setEnabled(true);
+				deleteItem.setAccelerator(SWT.MOD1 + 'D');  // doesn't work :-(
+				deleteItem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent event) {
+						removeSelectedEntry();
+					}
+				});
+			}
+			
+		};
+		
+		MenuManager menuManager = new MenuManager();
+		Menu retval = new PopupMenuBuilder(natTable, menuManager)
+				.withMenuItemProvider(CommandIds.CMD_MOVE_UP, moveEntryUpHandler)
+				.withMenuItemProvider(CommandIds.CMD_MOVE_DOWN, moveEntryDownHandler)
+				.withMenuItemProvider(CommandIds.CMD_DELETE_DATASET, deleteMenuItem)
+			    .withEnabledState(
+			    		CommandIds.CMD_MOVE_UP,
+			            new IMenuItemState() {
+			     
+			                @Override
+			                public boolean isActive(NatEventData natEventData) {
+			                    return natEventData.getRowPosition() > 1;
+			                }
+			        })
+			    .withEnabledState(
+			    		CommandIds.CMD_MOVE_DOWN,
+			    		new IMenuItemState() {
+			    			
+			    			@Override
+			    			public boolean isActive(NatEventData natEventData) {
+			    				return natEventData.getRowPosition() < gridListLayer.getBodyDataProvider().getRowCount();
+			    			}
+			    		})
+				.build();
+
+		return retval;
+	}
+
     protected NatTable createListTable(Composite tableComposite) {  
         Integer columnIndex = Integer.valueOf(0);
         // fill the underlying data source (GlazedLists)
@@ -256,14 +343,21 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     VAT vat = (VAT) newValue; //columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
                     if (vat != null) {
                         rowObject.getVoucherItem().setVat(vat);
+                        // if this item has an accountType change its value
+                        if(rowObject.getVoucherItem().getAccountType() != null) {
+                        	rowObject.getVoucherItem().getAccountType().setValue(vat.getName());
+                        }
                     }
                     break;
                 case ACCOUNTTYPE:
                     ItemAccountType accountType = (ItemAccountType) newValue;
                     if(accountType != null) {
+                    	// enrich a new accountType with VAT name
+                    	if(accountType.getId() == 0 && rowObject.getVoucherItem().getVat() != null) {
+                    		accountType.setValue(rowObject.getVoucherItem().getVat().getName());
+                    	}
                         rowObject.getVoucherItem().setAccountType(accountType);
                     }
-                    calculate = false; // no recalculation needed
                     break;
                 case PRICE:
                 	String priceString = ((String) newValue).toLowerCase();
@@ -369,29 +463,56 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // Register label accumulator
         gridListLayer.getBodyLayerStack().setConfigLabelAccumulator(columnLabelAccumulator);
         
-//        // if a re-ordering of rows occurs we have to renumber the items
-//        gridListLayer.getBodyLayerStack().getRowReorderLayer().addLayerListener(new ILayerListener() {
-//            
-//            @Override
-//            public void handleLayerEvent(ILayerEvent event) {
-//                if (event instanceof RowReorderEvent) {
-//                    RowReorderEvent evt = (RowReorderEvent) event;
-//                    evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
-//                    int newIdx = 0;
-//                    for (Integer rowIndex : gridListLayer.getBodyLayerStack().getRowReorderLayer().getRowIndexOrder()) {
-//                        VoucherItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
-//                        objToRenumber.getExpenditureItem().setPosNr(++newIdx);
-//                    }
-//                }
-//            }
-//        });
+        // if a re-ordering of rows occurs we have to renumber the items
+        gridListLayer.getBodyLayerStack().getRowReorderLayer().addLayerListener((ILayerEvent event) -> {
+                if (event instanceof RowReorderEvent) {
+                    RowReorderEvent evt = (RowReorderEvent) event;
+                    evt.convertToLocal(gridListLayer.getBodyLayerStack().getRowReorderLayer());
+                    int newIdx = 0;
+                    for (Integer rowIndex : gridListLayer.getBodyLayerStack().getRowReorderLayer().getRowIndexOrder()) {
+                        VoucherItemDTO objToRenumber = gridListLayer.getBodyDataProvider().getRowObject(rowIndex);
+                        objToRenumber.getVoucherItem().setPosNr(++newIdx);
+                    }
+                    getContainer().setDirty(true);
+              }
+            }
+        );
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
         
         return natTable;
-        
     }
 
+	@Override
+	protected void createDefaultContextMenu() {
+
+		natTable.addConfiguration(new AbstractUiBindingConfiguration() {
+
+			private final Menu bodyMenu = createContextMenu();
+
+			@Override
+			public void configureUiBindings(UiBindingRegistry uiBindingRegistry) {
+				uiBindingRegistry.registerFirstMouseDownBinding(
+						new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+						new PopupMenuAction(this.bodyMenu) {
+					@Override
+					public void run(NatTable natTable, MouseEvent event) {
+						int columnPosition = natTable.getColumnPositionByX(event.x);
+						int rowPosition = natTable.getRowPositionByY(event.y);
+
+						if (!selectionLayer.isRowPositionFullySelected(rowPosition)) {
+							natTable.doCommand(
+									new SelectRowsCommand(natTable, columnPosition, rowPosition, false, false));
+						}
+
+						super.run(natTable, event);
+					}
+				});
+			}
+
+		});
+	}
+    
     /**
      * @param reverseMap
      * @param columnLabelAccumulator
@@ -415,13 +536,19 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         // enable sorting on single click on the column header
         natTable.addConfiguration(new SingleClickSortConfiguration());
-        natTable.addConfiguration(new VoucherItemTableConfiguration());
+        natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
+        voucherItemsTableConfig = new VoucherItemTableConfiguration();
+		natTable.addConfiguration(voucherItemsTableConfig);
         natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
 //        natTable.addConfiguration(new DebugMenuConfiguration(natTable));
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
+        selectionLayer.getSelectionModel().setMultipleSelectionAllowed(true);
         
+        E4SelectionListener<VoucherItemDTO> esl = new E4SelectionListener<>(selectionService, selectionLayer, gridListLayer.getBodyDataProvider());
+        selectionLayer.addLayerListener(esl);
+
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
@@ -450,14 +577,14 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
         List<VoucherItemDTO> wrappedItems = new ArrayList<>();
-        for (VoucherItem item : Voucher.getItems()) {
+        for (VoucherItem item : voucher.getItems()) {
             if(!item.getDeleted()) {
                 wrappedItems.add(new VoucherItemDTO(item));
             }
         }
 //        wrappedItems.sort(Comparator.comparing((VoucherItemDTO d) -> d.getExpenditureItem().getPosNr()));
         voucherItemsListData = new FilterList<VoucherItemDTO>(GlazedLists.eventList(wrappedItems), 
-                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + Voucher_.deleted.getName(), Boolean.FALSE));
+                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + VoucherItem_.deleted.getName(), Boolean.FALSE));
         markedForDeletion.clear();
         
         renumberItems();
@@ -543,20 +670,25 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     /**
      * Renumber all items
      */
-    private void renumberItems() {
-        
+    protected void renumberItems() {
         int no = 1;
-        for (VoucherItemDTO documentItemDTO : voucherItemsListData) {
-            if(documentItemDTO.getVoucherItem().getDeleted()) {
+        for (VoucherItemDTO voucherItemDTO : voucherItemsListData) {
+            if(voucherItemDTO.getVoucherItem().getDeleted()) {
                 continue;
             }
-            documentItemDTO.getVoucherItem().setPosNr(no++);
+            voucherItemDTO.getVoucherItem().setPosNr(no++);
         }
+    }
+    
+    public void updateVoucherItemsAndAccountTypes(Voucher voucher) {
+    	this.voucher = voucher;
+    	initItemsList();
+    	voucherItemsTableConfig.registerAndFillAccountTypeComboBox();
     }
 
     class VoucherItemTableConfiguration extends AbstractRegistryConfiguration {
 
-        @Override
+		@Override
         public void configureRegistry(IConfigRegistry configRegistry) {
             Style styleLeftAligned = new Style();
             styleLeftAligned.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
@@ -620,7 +752,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     CellConfigAttributes.CELL_PAINTER, 
                     new ComboBoxPainter(), 
                     DisplayMode.NORMAL, VAT_CELL_LABEL);
-            VatValueComboProvider dataProvider = new VatValueComboProvider(vatsDAO.findAll());
+            IComboBoxDataProvider dataProvider = new VatValueComboProvider(vatsDAO.findAll());
             ComboBoxCellEditor vatValueCombobox = new ComboBoxCellEditor(dataProvider);
             vatValueCombobox.setFreeEdit(false);
             configRegistry.registerConfigAttribute( 
@@ -639,22 +771,18 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     DisplayMode.EDIT, ACCOUNTTYPE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_STYLE,
-                    styleRightAligned,      
-                    DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL ); 
+                    styleLeftAligned,      
+                    DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL); 
             configRegistry.registerConfigAttribute( 
                     CellConfigAttributes.CELL_PAINTER, 
                     new ComboBoxPainter(), 
                     DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL);
-            ItemAccountTypeValueComboProvider dataProviderItemAccountTypes = new ItemAccountTypeValueComboProvider(itemAccountTypeDAO.findAll());
-            ComboBoxCellEditor itemAccountTypeValueCombobox = new ComboBoxCellEditor(dataProviderItemAccountTypes);
-            itemAccountTypeValueCombobox.setFreeEdit(false);
-            configRegistry.registerConfigAttribute( 
-                    EditConfigAttributes.CELL_EDITOR, 
-                    itemAccountTypeValueCombobox, 
-                    DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL); 
+            
+            registerAndFillAccountTypeComboBox();
+            
             configRegistry.registerConfigAttribute( 
                     CellConfigAttributes.DISPLAY_CONVERTER, 
-                    new ItemAccountTypeDisplayConverter(), 
+                    ContextInjectionFactory.make(ItemAccountTypeDisplayConverter.class, context), 
                     DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL); 
             
             // have a little space between cell border and value
@@ -699,30 +827,38 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
                     IEditableRule.NEVER_EDITABLE, 
                     DisplayMode.EDIT, TOTAL_MONEYVALUE_CELL_LABEL);
          }
+		
+		void registerAndFillAccountTypeComboBox() {
+			IComboBoxDataProvider dataProviderItemAccountTypes = new ItemAccountTypeValueComboProvider(itemAccountTypeDAO.findAll());
+			ComboBoxCellEditor itemAccountTypeValueCombobox = new ComboBoxCellEditor(dataProviderItemAccountTypes);
+			itemAccountTypeValueCombobox.setFreeEdit(true);
+            configRegistry.registerConfigAttribute( 
+                    EditConfigAttributes.CELL_EDITOR, 
+                    itemAccountTypeValueCombobox, 
+                    DisplayMode.NORMAL, ACCOUNTTYPE_CELL_LABEL); 
+		}
     }
 
 
     @Override
-    public void removeSelectedEntry() {
-        if(selectionLayer.getFullySelectedRowPositions().length > 0) { 
-            VoucherItemDTO objToDelete = gridListLayer.getBodyDataProvider().getRowObject(selectionLayer.getFullySelectedRowPositions()[0]);
-            // only persisted objects have to set to deleted, others can be ignored
-            if(objToDelete.getVoucherItem().getId() > 0) {
-                objToDelete.getVoucherItem().setDeleted(Boolean.TRUE);
-                markedForDeletion.add(objToDelete.getVoucherItem());
-            }
-            selectionLayer.clear();
-            List<VoucherItemDTO> tmpList = getVoucherItemsListData().stream()
-                    .filter(d -> d != objToDelete)
-                    .collect(Collectors.toList());
-                getVoucherItemsListData().clear();
-                getVoucherItemsListData().addAll(tmpList);
-                renumberItems();
-                notifyChangeListener(true);
-        } else {
-            log.debug("no rows selected!");
-        }
-    }
+	public void removeSelectedEntry() {
+    	@SuppressWarnings("unchecked")
+		List<VoucherItem> selectedEntries = (List<VoucherItem>) selectionService.getSelection();
+		if (selectedEntries != null) {
+        	// at first, close an open cell editor, if any
+        	if(natTable.getActiveCellEditor() != null) {
+        		natTable.getActiveCellEditor().close();
+        	}
+			
+        	boolean isRemoved = getVoucherItemsListData().removeAll(selectedEntries);
+            if(isRemoved) {
+            	renumberItems();
+            	notifyChangeListener(true);
+			}
+		} else {
+			log.debug("no rows selected!");
+		}
+	}
 
     /**
      * @param calculate
@@ -745,10 +881,18 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     public void addNewItem(VoucherItemDTO newItem) {
         getVoucherItemsListData().add(newItem);
         notifyChangeListener(false);
+        getContainer().setDirty(true);
+        ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getVoucherItem().getPosNr(), false, false);
+		natTable.doCommand(scrollToLastPositionCommand);
     }
     
     @Override
     protected Class<VoucherItemDTO> getEntityClass() {
     	return VoucherItemDTO.class;
     }
+
+	private VoucherEditor getContainer() {
+		return container;
+	}
+
 }

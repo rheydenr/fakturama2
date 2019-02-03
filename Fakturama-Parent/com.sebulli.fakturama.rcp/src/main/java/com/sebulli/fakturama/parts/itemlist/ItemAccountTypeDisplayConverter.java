@@ -13,14 +13,30 @@
 
 package com.sebulli.fakturama.parts.itemlist;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
+import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.ItemAccountType;
+import com.sebulli.fakturama.model.ItemListTypeCategory;
 
 /**
  * Converter for displaying {@link ItemAccountType} values in a combo box inside a NatTable.
  */
 public class ItemAccountTypeDisplayConverter extends DisplayConverter {
+	
+	@Inject
+	private ItemListTypeCategoriesDAO itemListTypeCategoriesDAO;
+	private ItemListTypeCategory accountCat;
+	
+	@PostConstruct
+	public void initialize() {
+		accountCat = itemListTypeCategoriesDAO.findCategoryByName(Constants.ACCOUNT_LIST_CATEGORY);
+	}
 
     /* (non-Javadoc)
      * @see org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter#canonicalToDisplayValue(java.lang.Object)
@@ -40,7 +56,10 @@ public class ItemAccountTypeDisplayConverter extends DisplayConverter {
      */
     @Override
     public Object displayToCanonicalValue(Object displayValue) {
-        return null;  // TODO don't know where it is used...
+    	ItemAccountType accType = FakturamaModelPackage.MODELFACTORY.createItemAccountType();
+    	accType.setCategory(accountCat);
+    	accType.setName((String) displayValue);
+        return accType;
     }
 
 }

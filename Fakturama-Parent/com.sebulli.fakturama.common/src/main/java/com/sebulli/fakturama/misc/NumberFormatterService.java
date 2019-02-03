@@ -75,7 +75,7 @@ public class NumberFormatterService implements INumberFormatterService {
         
         currencyLocale = localeUtil.getCurrencyLocale();
 
-        currencyFormat = NumberFormat.getCurrencyInstance();
+        currencyFormat = NumberFormat.getCurrencyInstance(currencyLocale);
         if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
             mro = Monetary.getRounding(RoundingQueryBuilder.of()
                     .setCurrency(Monetary.getCurrency(currencyLocale))

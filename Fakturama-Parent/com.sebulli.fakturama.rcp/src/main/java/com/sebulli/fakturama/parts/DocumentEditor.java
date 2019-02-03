@@ -2996,6 +2996,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		//          if (newItem!= null)
 		//              tableViewerItems.reveal(newItem);
+		setDirty(true);
 		calculate();
 	} 
 

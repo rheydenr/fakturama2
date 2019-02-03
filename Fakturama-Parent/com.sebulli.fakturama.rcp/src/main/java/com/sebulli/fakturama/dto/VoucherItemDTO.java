@@ -19,7 +19,7 @@ import java.util.Date;
 import com.sebulli.fakturama.model.VoucherItem;
 
 /**
- * Container object for link VoucherItems
+ * Container object for link {@link VoucherItem}s
  */
 public class VoucherItemDTO extends VoucherItem {
     

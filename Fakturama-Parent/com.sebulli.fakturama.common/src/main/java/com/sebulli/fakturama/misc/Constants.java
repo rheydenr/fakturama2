@@ -46,6 +46,8 @@ public class Constants {
      */
     public static final String DEFAULT_PAYMENT = "standardpayment";
     
+    public static final String ACCOUNT_LIST_CATEGORY = "data.list.accountnumbers";
+    
     /**
      * The following constants are for hiding and showing the appropriate tool icons within the tool bar
      */

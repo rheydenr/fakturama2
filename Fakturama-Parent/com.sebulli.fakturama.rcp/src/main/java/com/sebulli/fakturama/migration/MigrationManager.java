@@ -1181,7 +1181,7 @@ public class MigrationManager {
 		// there's only one fixed category which has to be migrated ("billing_accounts")
 		ItemListTypeCategory cat = modelFactory.createItemListTypeCategory();
 		// the message key has to be provided here (we us it as combo value later on)
-		cat.setName("data.list.accountnumbers");  // old: "billing_accounts"
+		cat.setName(Constants.ACCOUNT_LIST_CATEGORY);  // old: "billing_accounts"
 		for (OldList oldVoucherItemCategory : resultSet) {
 			try {
 		    ItemAccountType itemAccountType = modelFactory.createItemAccountType();

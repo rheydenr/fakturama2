@@ -186,7 +186,6 @@ public class ItemListBuilder {
         // Composite that contains the table
         // The table viewer
         final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
-//        itemListTable.setContainer(container);
         Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
 

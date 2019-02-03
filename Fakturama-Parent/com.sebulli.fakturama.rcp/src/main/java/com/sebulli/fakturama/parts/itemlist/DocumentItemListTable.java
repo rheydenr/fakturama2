@@ -999,6 +999,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
         getDocumentItemsListData().add(newItem);
         renumberItems();
+        getContainer().setDirty(true);
         ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
 		natTable.doCommand(scrollToLastPositionCommand);
     }
@@ -1010,6 +1011,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         int no = 1;
         for (DocumentItemDTO documentItemDTO : documentItemsListData) {
+        	if(documentItemDTO.getDocumentItem().getDeleted()) {
+        		continue;
+        	}
             documentItemDTO.getDocumentItem().setPosNr(no++);
         }
     }
