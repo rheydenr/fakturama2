@@ -16,9 +16,12 @@ package com.sebulli.fakturama.parts.voucheritems;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -154,7 +157,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     
     private Voucher voucher;
     private EventList<VoucherItemDTO> voucherItemsListData;
-    private List<IEntity> markedForDeletion = new ArrayList<>();
+    private Set<IEntity> markedForDeletion = new HashSet<>();
     private VoucherEditor container;
 
     // Flag if there are items with an discount set
@@ -576,18 +579,13 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // If the editor is opened, the items from the document are
         // copied to this item set. If the editor is closed or saved,
         // these items are copied back to the document and to the data base.
-        List<VoucherItemDTO> wrappedItems = new ArrayList<>();
-        for (VoucherItem item : voucher.getItems()) {
-            if(!item.getDeleted()) {
-                wrappedItems.add(new VoucherItemDTO(item));
-            }
-        }
-//        wrappedItems.sort(Comparator.comparing((VoucherItemDTO d) -> d.getExpenditureItem().getPosNr()));
-        voucherItemsListData = new FilterList<VoucherItemDTO>(GlazedLists.eventList(wrappedItems), 
-                Matchers.beanPropertyMatcher(VoucherItemDTO.class, "voucherItem." + VoucherItem_.deleted.getName(), Boolean.FALSE));
+        List<VoucherItemDTO> wrappedItems = voucher.getItems().stream()
+        		.sorted(Comparator.comparing((VoucherItem v) -> v.getPosNr()))
+        		.map(VoucherItemDTO::new).collect(Collectors.toList());
+        voucherItemsListData = GlazedLists.eventList(wrappedItems);
         markedForDeletion.clear();
         
-        renumberItems();
+//        renumberItems();
     }
     
     @Override
@@ -635,7 +633,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     /**
      * @return the markedForDeletion
      */
-    public final List<IEntity> getMarkedForDeletion() {
+    public final Set<IEntity> getMarkedForDeletion() {
         return markedForDeletion;
     }
 
@@ -682,7 +680,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
     
     public void updateVoucherItemsAndAccountTypes(Voucher voucher) {
     	this.voucher = voucher;
-    	initItemsList();
+//    	initItemsList();
     	voucherItemsTableConfig.registerAndFillAccountTypeComboBox();
     }
 
@@ -852,6 +850,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
 			
         	boolean isRemoved = getVoucherItemsListData().removeAll(selectedEntries);
             if(isRemoved) {
+            	markedForDeletion.addAll(selectedEntries);
             	renumberItems();
             	notifyChangeListener(true);
 			}

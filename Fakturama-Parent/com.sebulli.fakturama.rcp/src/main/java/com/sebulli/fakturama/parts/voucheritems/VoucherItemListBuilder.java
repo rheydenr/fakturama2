@@ -104,7 +104,7 @@ public class VoucherItemListBuilder {
                 int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
                 // Use the standard VAT value
                 VAT defaultVat = vatsDao.findById(defaultVatId);
-                VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat);
+                VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat, container.getVoucherType());
                 Optional<VoucherItemDTO> maxPosItem = itemListTable.getVoucherItemsListData().stream().max(
                         new Comparator<VoucherItemDTO>() {
                     @Override
@@ -138,15 +138,16 @@ public class VoucherItemListBuilder {
      * @param category the category
      * @param price the price
      * @param vat the vat
+     * @param voucherType 
      * @return the voucher item
      */
-    private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
-    	VoucherItem expenditureItem = modelFactory.createVoucherItem();
-    	expenditureItem.setItemVoucherType(VoucherType.EXPENDITURE);
-        expenditureItem.setName(name);
-        expenditureItem.setPrice(price);
-        expenditureItem.setVat(vat);
-        return expenditureItem;
+    private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat, VoucherType voucherType) {
+    	VoucherItem voucherItem = modelFactory.createVoucherItem();
+    	voucherItem.setItemVoucherType(voucherType);
+        voucherItem.setName(name);
+        voucherItem.setPrice(price);
+        voucherItem.setVat(vat);
+        return voucherItem;
     }
     
   /**

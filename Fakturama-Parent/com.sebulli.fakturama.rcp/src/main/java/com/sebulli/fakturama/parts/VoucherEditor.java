@@ -444,7 +444,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	/**
 	 * @return
 	 */
-	protected abstract VoucherType getVoucherType();
+	public abstract VoucherType getVoucherType();
 	
 	/**
 	 * Gets the model repository.
@@ -457,16 +457,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	 * @return "Customer" or "Supplier"
 	 */
 	protected abstract String getCustomerSupplierString();
-	
-	/**
-	 * Creates a new voucher items
-	 * 
-	 * @return
-	 * 	Array with all voucher items
-	 */
-	public VoucherItem createNewVoucherItem() {
-		return modelFactory.createVoucherItem();
-	}
 
 	/**
 	 * Initializes the editor. If an existing data set is opened, the local
@@ -569,7 +559,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // delete removed items
 	        for (IEntity expenditureItem : itemListTable.getMarkedForDeletion()) {
 	            try {
-	                voucherItemsDAO.save((VoucherItem)expenditureItem);
+	            	VoucherItemDTO voucherItem = (VoucherItemDTO)expenditureItem;
+	                voucherItem.getVoucherItem().setDeleted(Boolean.TRUE);
+					voucherItemsDAO.save(voucherItem.getVoucherItem());
 	            } catch (FakturamaStoringException e) {
 	                log.error(e);
 	            }

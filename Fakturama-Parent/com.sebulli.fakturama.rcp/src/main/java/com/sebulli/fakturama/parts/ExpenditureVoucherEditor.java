@@ -51,7 +51,7 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 	/**
 	 * @return
 	 */
-	protected VoucherType getVoucherType() {
+	public VoucherType getVoucherType() {
 		return VoucherType.EXPENDITURE;
 	}
 	
