@@ -292,11 +292,15 @@ public class CreateOODocumentHandler {
 			tmpDocument = modelFactory.createCredit();
 			tmpDocument.setBillingType(BillingType.CREDIT);
 			break;
+		case ORDER:
+			tmpDocument = modelFactory.createOrder();
+			tmpDocument.setBillingType(BillingType.ORDER);
+			break;
 		default:
 			break;
 		}
     	
-    	//if no reasonable billing type ist given we can return from this method
+    	//if no reasonable billing type is given we can return from this method
     	if(tmpDocument == null) {
     		return;
     	}

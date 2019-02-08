@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.CommandManager;
 import org.eclipse.core.commands.ParameterType;
@@ -866,7 +867,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     	protected void handleAfterConfirmation(Document tmpDocument) {
     	// before deletion first update stock
-    		if(tmpDocument.getPrinted()) {
+    		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
     			tmpDocument.getItems().stream().forEach(oldItem -> {
     					oldItem.setOriginQuantity(oldItem.getQuantity());
     					oldItem.setQuantity(null);
