@@ -784,7 +784,7 @@ public class ProductEditor extends Editor<Product> {
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
 		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
-		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
+		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 80);
 		// bind the scaled prices widgets
 		for (int i = 0; i < grossText.length; i++) {
 			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 8);
