@@ -237,7 +237,7 @@ public abstract class Editor<T extends IEntity> {
 						try {
 							((IPersistentPreferenceStore)defaultValuePrefs).save();
                             // Refresh the table view of all VATs
-                            evtBroker.post(getEditorID(), "update");
+                            evtBroker.post(getEditorID(), "update/defaultvalue");
                         } catch (IOException e1) {
                             log.error(e1, "Error while flushing default value preferences.");
                         }

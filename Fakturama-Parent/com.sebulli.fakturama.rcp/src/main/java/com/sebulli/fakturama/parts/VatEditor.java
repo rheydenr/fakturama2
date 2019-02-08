@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.parts;
 
+import java.util.Collection;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -195,7 +197,6 @@ public class VatEditor extends Editor<VAT> {
     public void createPartControl(Composite parent) {
         Long objId = null;
         VAT stdVat = null;
-        long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_VAT.getIconURI());
         String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
@@ -301,14 +302,7 @@ public class VatEditor extends Editor<VAT> {
         labelStdVat.setText(msg.commonLabelDefault);
         labelStdVat.setToolTipText(msg.editorVatNameTooltip);
 
-        // Get the ID of the standard entity from preferences
-        try {
-            stdID = defaultValuePrefs.getLong(getDefaultEntryKey());
-        } catch (NumberFormatException | NullPointerException e) {
-            stdID = 1L;
-        } finally {
-            stdVat = vatDao.findById(stdID);
-        }
+        stdVat = getDefaultEntry();
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStdVat);
         //T: VAT Editor: Button description to make this as standard VAT.
@@ -325,6 +319,20 @@ public class VatEditor extends Editor<VAT> {
         
         bindModel();
     }
+
+	private VAT getDefaultEntry() {
+		VAT stdVat;
+        long stdID = 1L;
+		// Get the ID of the standard entity from preferences
+        try {
+            stdID = defaultValuePrefs.getLong(getDefaultEntryKey());
+        } catch (NumberFormatException | NullPointerException e) {
+            stdID = 1L;
+        } finally {
+            stdVat = vatDao.findById(stdID);
+        }
+		return stdVat;
+	}
     
     protected void bindModel() {
 		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
@@ -409,6 +417,31 @@ public class VatEditor extends Editor<VAT> {
         }
         partService.hidePart(part, true);
         //  sync.syncExec(() -> top.setRedraw(true));
+    }
+    
+    @Inject
+    @Optional
+    public void handleChangeDefaultEntry(@UIEventTopic(VatEditor.EDITOR_ID) Event event) {
+    	String selector = (String) event.getProperty(IEventBroker.DATA);
+		switch (selector) {
+		case "update/defaultvalue":
+			Collection<MPart> parts = partService.getParts();
+			for (MPart mPart : parts) {
+				if(ID.contentEquals(mPart.getElementId()) && mPart.getObject() != null) {
+					 VatEditor vatEditor = (VatEditor)mPart.getObject();
+					 if(vatEditor != this) {
+					    VAT defaultVat = getDefaultEntry();
+					    vatEditor.stdComposite.setStdText(defaultVat);
+					 }
+				}
+			}
+			break;
+		case "forceClose":
+			// tbd.
+			break;
+		default:
+			break;
+		}
     }
 
     @Override
