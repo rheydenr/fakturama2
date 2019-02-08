@@ -290,9 +290,9 @@ public class DataUtils {
     	double factor = Math.pow(10, scale);
     	if (d != null) {
 	        if(d >= 0)
-	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	            floorValue = Math.round(d * factor + EPSILON) / factor;
 	        else
-	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+	            floorValue = Math.round(d * factor - EPSILON) / factor;
     	}
     	
         return floorValue;
@@ -457,7 +457,8 @@ public class DataUtils {
      *      The new string without them
      */
     public String removeCR(String s) {
-        return s.replaceAll("\r", "");
+        return s.replaceAll(System.lineSeparator()+"|\\r", "");
+        		
     }
 
     /**
