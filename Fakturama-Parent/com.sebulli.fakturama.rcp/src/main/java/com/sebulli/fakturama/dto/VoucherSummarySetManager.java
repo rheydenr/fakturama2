@@ -38,7 +38,7 @@ public class VoucherSummarySetManager {
 	@Inject
 	private IEclipseContext ctx;
 
-	VatSummarySet voucherSummarySet;
+	private VatSummarySet voucherSummarySet;
 
 	/**
 	 * Constructor Creates a new voucherSummarySet

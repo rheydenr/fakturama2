@@ -51,7 +51,7 @@ public class AccountSummaryCalculator {
     @Inject
     private DocumentsDAO documentsDAO;
 
-	HashMap<String,Integer> paymentIds = new HashMap<>();  
+    private HashMap<String,Integer> paymentIds = new HashMap<>();  
 	
 	// Set with all accounts
 	private SortedSet<VoucherCategory> accounts; 
@@ -112,15 +112,13 @@ public class AccountSummaryCalculator {
 //	private void collectDocuments (String account, DataSetArray<DataSetDocument> documents,
 //			 DataSetArray<DataSetPayment> payments) {
 //
-//		paymentIds = new HashMap<String,Integer>();
+//		paymentIds = new HashMap<>();
 //		
 //		for (DataSetPayment payment : payments.getActiveDatasets()) {
 //			paymentIds.put(payment.getStringValueByKey("description"), payment.getIntValueByKey("id"));
 //		}
 //		
-//
-//		
-//		ArrayList<DataSetDocument> entries = documents.getActiveDatasets();
+//		List<DataSetDocument> entries = documents.getActiveDatasets();
 //		
 //		for (DataSetDocument document : entries) {
 //			

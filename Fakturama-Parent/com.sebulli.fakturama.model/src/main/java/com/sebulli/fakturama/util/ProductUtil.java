@@ -19,8 +19,6 @@ import com.sebulli.fakturama.model.Product;
 @Singleton
 public final class ProductUtil {
        
-    @Inject
-    @Preference(nodePath="/instance/com.sebulli.fakturama.rcp")
     private IEclipsePreferences eclipsePrefs;
 
     /**
@@ -75,7 +73,7 @@ public final class ProductUtil {
         int blockQuantity = Integer.valueOf(0);
         int newQuantity;
         int scaledPrices;
-        scaledPrices = eclipsePrefs.getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
+        scaledPrices = getEclipsePrefs().getInt(Constants.PREFERENCES_PRODUCT_SCALED_PRICES, Integer.valueOf(1));
 
         // search all used blocks
         // no reflection used because of unwanted side effects...
@@ -91,5 +89,14 @@ public final class ProductUtil {
         }
         return price;
     }
+
+	IEclipsePreferences getEclipsePrefs() {
+		return eclipsePrefs;
+	}
+
+    @Inject
+	public void setEclipsePrefs(@Preference(nodePath="/instance/com.sebulli.fakturama.rcp") IEclipsePreferences eclipsePrefs) {
+		this.eclipsePrefs = eclipsePrefs;
+	}
 
 }
