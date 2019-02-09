@@ -138,6 +138,7 @@ import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
@@ -177,7 +178,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	
 	@Inject
 	private INumberFormatterService numberFormatterService;
-
+	
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
     
@@ -223,6 +224,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private SelectionLayer selectionLayer;
     
     private ProductUtil productUtil;
+    private DocumentItemUtil documentItemUtil;
 
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
@@ -245,6 +247,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+        this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
@@ -567,6 +570,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                             //if (!DataUtils.DoublesAreEqual(newPrice, 0.0))
                             rowObject.getDocumentItem().setPrice(newPrice);
                         }
+                        
+                        rowObject.getDocumentItem().setQuantityUnit(documentItemUtil.getProductQuantityUnit(product, rowObject.getDocumentItem().getQuantity()));
                     }
                     break;
                 case QUNIT:

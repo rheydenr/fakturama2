@@ -3,9 +3,15 @@
  */
 package com.sebulli.fakturama.util;
 
+import java.text.ChoiceFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
@@ -48,7 +54,8 @@ public class DocumentItemUtil {
 		    newItem.setItemNumber(product.getItemNumber());
 		    newItem.setItemType(ItemType.POSITION);
 		    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
-		    newItem.setQuantityUnit(product.getQuantityUnit());
+		    // if quantity unit has a special meaning we have to consider that
+		    newItem.setQuantityUnit(getProductQuantityUnit(product, newItem.getQuantity()));
 		    newItem.setDescription(product.getDescription());
 		    newItem.setPrice(productUtil.getPriceByQuantity(product, newItem.getQuantity()));
 		    newItem.setItemVat(product.getVat());
@@ -58,6 +65,38 @@ public class DocumentItemUtil {
 	    }
 	    return newItem;
     }
-    
 
+    /**
+     * Creates the correct spelled form of the quantity unit if configured. The quantity unit has to be in the following form:
+     * <pre>
+     * n#name1|n#name2|n#name3
+     * </pre>
+     * 
+     * Example:
+     * <pre>
+     * 1#Stück|2#Stücke|100#Stück|101#Stücke
+     * </pre>
+     * 
+     * I.e., if you have a quantity of "1" the quantity unit is "Stück". For 2 and up to 99 articles it is "Stücke".
+     * 
+     * @param product
+     * @return
+     */
+	public String getProductQuantityUnit(Product product, Double quantity) {
+		String retval = product.getQuantityUnit();
+		if (StringUtils.defaultString(retval).contains("|")) {
+			String[] choices = retval.split("\\|");
+			List<Double> limitList = new ArrayList<>();
+			List<String> names = new ArrayList<>();
+			for (String string : choices) {
+				String[] tmpSplit = string.split("#");
+				limitList.add(Double.valueOf(tmpSplit[0]));
+				names.add(tmpSplit[1]);
+			}
+			ChoiceFormat form3 = new ChoiceFormat(ArrayUtils.toPrimitive(limitList.toArray(new Double[] {})),
+					names.toArray(new String[] {}));
+			retval = form3.format(quantity);
+		}
+		return retval;
+	}    
 }

@@ -953,7 +953,6 @@ public class DocumentEditor extends Editor<Document> {
     		tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
     		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
     	}
-//        this.context = part.getContext();
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         this.currencyUnit = numberFormatterService.getCurrencyUnit(localeUtil.getCurrencyLocale());
