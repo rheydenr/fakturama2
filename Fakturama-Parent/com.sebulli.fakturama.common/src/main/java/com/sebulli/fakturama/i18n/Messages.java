@@ -375,6 +375,7 @@ public class Messages {
 	public String editorProductFieldPriceName;
 	public String editorProductFieldCostprice;;
 	public String editorProductFieldQuantityunitName;
+	public String editorProductFieldQuantityunitInvalid;
 	public String editorProductFieldQuantityunitNameShort;
 	public String editorProductLabelFrom;
 	public String editorProductNameTooltip;
