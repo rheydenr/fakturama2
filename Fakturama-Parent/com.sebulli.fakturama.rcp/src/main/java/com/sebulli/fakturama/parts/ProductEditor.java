@@ -828,12 +828,12 @@ public class ProductEditor extends Editor<Product> {
 	 */
 	private boolean isQuantityUnitValid(String quantityUnit) {
 		boolean retval = false;
-		if(StringUtils.isBlank(quantityUnit) || quantityUnit.matches("\\w+")) {
+		if(StringUtils.isBlank(quantityUnit) || quantityUnit.matches("(?U)\\w+")) {
 			retval = true;
 		} else {
 			// Pattern: n#name1|n#name2|n#name3
 			// only pairs of such blocks are valid!
-			if(quantityUnit.matches("(\\d+#[a-zA-Z]+\\|?)*")) {
+			if(quantityUnit.matches("(?U)(\\d+#\\w+\\|?)*")) {
 				retval = true;
 			}
 		}
