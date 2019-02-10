@@ -322,13 +322,15 @@ public class VoucherExporter extends OOCalcExporter {
 						setCellText(row, col++, voucher.getVoucherNumber());
 						setCellText(row, col++, voucher.getDocumentNumber());
 						setCellText(row, col++, voucher.getName());
+					} else {
+						col += 5;
 					}
-
-					col = 5;
+					
 					setCellText(row, col++, voucherItem.getName());
 					if(voucherItem.getAccountType() != null) {
-						setCellText(row, col++, voucherItem.getAccountType().getName());
+						setCellText(row, col, voucherItem.getAccountType().getName());
 					}
+					col++;
 
 					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
 
@@ -483,19 +485,13 @@ public class VoucherExporter extends OOCalcExporter {
 		// values of all vouchers
 		VoucherSummarySetManager voucherSummarySetAllVouchers = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
 		
-//		vouchers.stream().filter(voucher -> isInTimeIntervall(voucher)).
+		vouchers.stream().filter(voucher -> isInTimeIntervall(voucher)).forEach(voucher -> voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories));
 
-		for (Voucher voucher : vouchers) {
-
-			if (isInTimeIntervall(voucher)) {
-				// FIXME ????
-				if(voucher instanceof Voucher) {
-					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
-				} else {
-					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
-				}
-			}
-		}
+//		for (Voucher voucher : vouchers) {
+//			if (isInTimeIntervall(voucher)) {
+//					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
+//			}
+//		}
 		
 		return voucherSummarySetAllVouchers;
 	}
