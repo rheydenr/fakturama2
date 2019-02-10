@@ -38,13 +38,14 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Voucher;
 
 /**
@@ -64,6 +65,12 @@ public class OOCalcExporter {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private INumberFormatterService numberformatter;
+    
+    @Inject
+    private ILocaleService localeService;
 
     @Inject
     protected ILogger log;
@@ -328,11 +335,8 @@ public class OOCalcExporter {
 	protected void setCellValueAsLocalCurrency(int row, int column, MonetaryAmount amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setCurrencyValue(amount.getNumber().doubleValue(), amount.getCurrency().getCurrencyCode());
-		String currencyCode = amount.getCurrency().getCurrencyCode(); 
-		// DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		String currencyCode = numberformatter.getCurrencySymbol(amount);
 		cell.setCurrencyCode(currencyCode);
-//		String formattedValue = DataUtils.getInstance().formatCurrency(amount);
-//		cell.setDisplayText(formattedValue);
 		// TODO make it more flexible!
 		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", amount.getCurrency().getDefaultFractionDigits())+" " + currencyCode);
 	}

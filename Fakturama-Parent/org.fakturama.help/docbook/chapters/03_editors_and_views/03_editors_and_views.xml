@@ -2003,7 +2003,7 @@
 			<para>Hierbei steht <code>n</code> für eine beliebige Mengenangabe und <code>name1</code>, <code>name2</code> usw. für die entsprechende Mengenangabe.</para>
 			<para>Beispiel:
 			<programlisting>1#Karton|2#Kartons</programlisting>
-			liefert für die Mengenangabe "1" &#x2026; "Karton", für "2" &#x2026; "Kartons", für "100" &#x2026; "Kartons". Die Mengenenheit wird beim Ändern der Menge im Dokumenten-Editor automatisch angepasst.
+			liefert für die Mengenangabe "1" &#x2026; "Karton", für "2" &#x2026; "Kartons", für "100" &#x2026; "Kartons". Die Mengeneinheit wird beim Ändern der Menge im Dokumenten-Editor automatisch angepasst.
 			</para>
 		</sect2>
 		<sect2>

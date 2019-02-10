@@ -833,7 +833,7 @@ public class ProductEditor extends Editor<Product> {
 		} else {
 			// Pattern: n#name1|n#name2|n#name3
 			// only pairs of such blocks are valid!
-			if(quantityUnit.matches("(?U)(\\d+#\\w+\\|?)*")) {
+			if(quantityUnit.matches("(?U)(\\d+#\\w+\\|?)+")) {
 				retval = true;
 			}
 		}

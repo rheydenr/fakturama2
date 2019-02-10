@@ -317,7 +317,7 @@ public class VoucherExporter extends OOCalcExporter {
 					col = 0;
 
 					if (voucherItemIndex == 0) {
-						setCellText(row, col++, voucher.getAccount().getName());
+						setCellText(row, col++, voucher.getAccount() != null ? voucher.getAccount().getName() : "");
 						setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(voucher.getVoucherDate()));
 						setCellText(row, col++, voucher.getVoucherNumber());
 						setCellText(row, col++, voucher.getDocumentNumber());

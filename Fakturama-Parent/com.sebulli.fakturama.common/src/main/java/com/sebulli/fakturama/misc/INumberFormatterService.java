@@ -76,14 +76,15 @@ public interface INumberFormatterService {
 
 	String formatCurrency(MonetaryAmount amount);
 
-	String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol, boolean cashRounding,
-			boolean useSeparator);
-
 	String formatCurrency(MonetaryAmount amount, Locale locale, CurrencySettingEnum useCurrencySymbol,
 			boolean cashRounding, boolean useSeparator);
 
-	String formatCurrency(MonetaryAmount amount, Locale locale, boolean useCurrencySymbol);
-
+	/**
+	 * The currently used currency symbol, according to the preferences (symbol, ISO code or nothing at all).
+	 * @return symbol, ISO code or nothing at all
+	 */
+	String getCurrencySymbol(MonetaryAmount monetaryAmount);
+		
 	/**
 	 * Formats a number as currency.
 	 *
@@ -91,25 +92,10 @@ public interface INumberFormatterService {
 	 * @param locale the locale
 	 * @param useCurrencySymbol the use currency symbol
 	 * @param cashRounding the cash rounding
-	 * @param useSeparator the use separator
 	 * @return the formatted string
-	 * 
-	 * @deprecated use {@link DataUtils#formatCurrency(double, Locale, CurrencySettingEnum, boolean, boolean)}
 	 */
-	String formatCurrency(double myNumber, Locale locale, boolean useCurrencySymbol, boolean cashRounding,
-			boolean useSeparator);
-
 	String formatCurrency(double myNumber, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding,
 			boolean useSeparator);
-
-	/**
-	 * Formats a number as currency.
-	 *
-	 * @param myNumber the number to format
-	 * @param locale the locale
-	 * @return the formatted string
-	 */
-	String formatCurrency(double myNumber, Locale locale);
 
 	NumberFormat getCurrencyFormat();
 
@@ -118,9 +104,8 @@ public interface INumberFormatterService {
 	CurrencyUnit getCurrencyUnit(Locale currencyLocale);
 
 	/**
-	 * Updates some internal values if pereferences have changed.
+	 * Updates some internal values if preferences have been changed.
 	 * 
 	 */
 	void update();
-
 }
