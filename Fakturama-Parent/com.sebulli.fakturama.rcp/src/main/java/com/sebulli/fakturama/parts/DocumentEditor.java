@@ -2889,7 +2889,7 @@ public class DocumentEditor extends Editor<Document> {
             switch (subTopic) {
             case "Contact":
                 Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
-                Contact contact = contactDAO.findById(contactId);
+                Contact contact = contactDAO.findById(contactId, true);
 //
 //                // we can't use the Selection Service!!!
 //                Contact contact = (Contact) selectionService.getSelection();
