@@ -93,14 +93,10 @@ public class VoucherExporter extends OOCalcExporter {
 	public void initialize(IEclipseContext ctx) {
 		if(ctx.get(Constants.PARAM_START_DATE) != null) {
 			startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
-		} else {
-			startDate = null;
 		}
 		
 		if(ctx.get(Constants.PARAM_END_DATE) != null) {
 			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
-		} else {
-			endDate = null;
 		}
 		doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
 
@@ -122,7 +118,7 @@ public class VoucherExporter extends OOCalcExporter {
 				
 				@Override
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					// TODO Auto-generated method stub
+					// TODO skeleton for further implementation with progress monitor
 					
 				}
 			});
@@ -437,10 +433,7 @@ public class VoucherExporter extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.getPurchaseTaxString());
 		setCellTextInBold(row, col++, msg.productDataNet);
 
-		// Draw a horizontal line
-		for (col = 0; col < 4; col++) {
-			setBorder(row, col, Color.BLACK, false, false, true, false);
-		}
+		drawHorizontalLine(row);
 
 		row++;
 
@@ -449,6 +442,7 @@ public class VoucherExporter extends OOCalcExporter {
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
 		for (VatSummaryItem item : voucherSummaryCategories.getVoucherSummaryItems()) {
+//            int sign = item.getItemVoucherType().isEXPENDITURE() ? -1 : 1;
 
 			col = 0;
 			setCellText(row, col++, item.getDescription());
@@ -464,15 +458,23 @@ public class VoucherExporter extends OOCalcExporter {
 			row++;
 		}
 
-		// Draw a horizontal line
-		for (col = 0; col < 4; col++) {
-			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
-		}
+		drawHorizontalLine(row);
 
 		save();
 		
 		// True = Export was successful
 		return true;
+	}
+
+	/**
+	 * @param row
+	 * @return
+	 */
+	private void drawHorizontalLine(int row) {
+		// Draw a horizontal line
+		for (int col = 0; col < 4; col++) {
+			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
+		}
 	}
 
 	/**

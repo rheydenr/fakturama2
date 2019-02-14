@@ -85,8 +85,8 @@ public class OOCalcExporter {
 	public final static boolean PAID = true;
 	public final static boolean UNPAID = false;
 	// The begin and end date to specify the export periode
-	protected GregorianCalendar startDate;
-	protected GregorianCalendar endDate;
+	protected GregorianCalendar startDate = null;
+	protected GregorianCalendar endDate = null;
 	
 	// Use start and end date or export all
 	protected boolean doNotUseTimePeriod;

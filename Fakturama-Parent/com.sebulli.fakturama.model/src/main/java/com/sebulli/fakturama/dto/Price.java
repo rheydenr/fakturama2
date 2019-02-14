@@ -632,4 +632,9 @@ public class Price {
     public String toString() {
     	return ToStringBuilder.reflectionToString(this);
     }
+
+	public void multiply(int sign) {
+		this.unitPrice = this.unitPrice.multiply(sign);		
+		calculate(false);
+	}
 }
