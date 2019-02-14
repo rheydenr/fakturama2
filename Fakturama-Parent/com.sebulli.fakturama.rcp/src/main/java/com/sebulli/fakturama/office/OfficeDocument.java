@@ -763,51 +763,42 @@ public class OfficeDocument {
 	 */
 	private void fillItemTableWithData(List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate) {
         // Get all items
-        int cellCount = pRowTemplate.getCellCount();
         for (int row = 0; row < itemDataSets.size(); row++) {
 //               clone one row from template
-                TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
-                // we always insert only ONE row to the table
-                Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
-                pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
-                Row newRow = Row.getInstance(newRowElement);
-                // find all placeholders within row
-                for (int j = 0; j < cellCount; j++) {
-//                    System.out.print(".");
-                    // a template cell
-                    Cell currentCell = newRow.getCellByIndex(j);
-                    
-    				// temp index for columns
-    				int tmpIdx = j;
-    				do {
-    					// Attention: Skip covered (spanned) cells!
-    					currentCell = newRow.getCellByIndex(tmpIdx++);
-    				} while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
-    				// correct for later use
-    				tmpIdx--;
-                    
-                    // make a copy of the template cell
-                    Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+            TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+            // we always insert only ONE row to the table
+            Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+            pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+            Row newRow = Row.getInstance(newRowElement);
+            // find all placeholders within row
+	        int cellCount = newRowElement.getChildElementCount();
+            for (int j = 0; j < cellCount; j++) {
+                // a template cell
+                Cell currentCell = newRow.getCellByIndex(j);
+                
+                // skip unnecessary cells
+                if(currentCell.getOdfElement() instanceof TableCoveredTableCellElement) continue;
+                
+                // make a copy of the template cell
+                Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
 
-                    // find all placeholders in a cell
-                    NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+                // find all placeholders in a cell
+                NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
 
-                    /*
-                     * The appended row only has default cells (without styles etc.). Therefore we have to take
-                     * the template cell and replace the current cell with it.
-                     */
-                    newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
-                    // replace placeholders in this cell with current content
-                    int countOfPlaceholders = cellPlaceholders.getLength();
-                    for (int k = 0; k < countOfPlaceholders; k++) {
-                      Node item = cellPlaceholders.item(0);
-                      PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
-                      fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
-                    }
-                    
-                    if(tmpIdx > j) cellCount += (tmpIdx - j);
+                /*
+                 * The appended row only has default cells (without styles etc.). Therefore we have to take
+                 * the template cell and replace the current cell with it.
+                 */
+                newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                // replace placeholders in this cell with current content
+                int countOfPlaceholders = cellPlaceholders.getLength();
+                for (int k = 0; k < countOfPlaceholders; k++) {
+                  Node item = cellPlaceholders.item(0);
+                  PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                  fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                 }
             }
+        }
 	}
 	
 	/**
