@@ -41,3 +41,4 @@ Import-Package: org.apache.commons.lang3,
 Bundle-Vendor: Fakturama.org
 Bundle-ClassPath: .,
  lib/liquibase.jar
+Automatic-Module-Name: com.sebulli.fakturama.model

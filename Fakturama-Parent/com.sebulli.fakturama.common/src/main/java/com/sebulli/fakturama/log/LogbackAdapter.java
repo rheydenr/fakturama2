@@ -70,18 +70,15 @@ public class LogbackAdapter implements LogListener {
 		 */
 		String productName = StringUtils.defaultString(System.getProperty(InternalPlatform.PROP_PRODUCT)).replaceAll("\\.product", "");
 		String workspaceLoc = InstanceScope.INSTANCE.getNode(productName).get(Constants.GENERAL_WORKSPACE, null);
-		String logFile = getLogfileName(workspaceLoc);
-		if (StringUtils.isNotBlank(logFile)) {
+		Path logFile = getLogfileName(workspaceLoc);
+		if (logFile != null) {
 			// determine the configuration file location
 			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 			// if a workspace is set we can adapt the log configuration file location
-			String defaultLogConfigFileName;
 			// at first check if the configuration is set via a switch
-			if (System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY) != null) {
-				defaultLogConfigFileName = System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY);
-			} else {
-				defaultLogConfigFileName = workspaceLoc;
-			}
+			String defaultLogConfigFileName = System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY) != null
+					? System.getProperty(ContextInitializer.CONFIG_FILE_PROPERTY)
+					: workspaceLoc;
 			defaultLogConfigFileName += "/" + ContextInitializer.AUTOCONFIG_FILE;
 
 			try {
@@ -89,10 +86,7 @@ public class LogbackAdapter implements LogListener {
 			        Path defaultLogConfigFile = Paths.get(defaultLogConfigFileName);
 					if (!Files.exists(defaultLogConfigFile)) {
     					// oh, there's no configuration file... 
-    					// then we create it from our own template
-    				    // 
-    				    // this doesn't work
-//    				    Activator.getContext().getBundle().getEntry("/logback.template.xml").openStream();
+    					// then we create it from our own template!
 						URL logTemplate = FrameworkUtil.getBundle(getClass()).getResource(LOGBACK_TEMPLATE);
 						if(logTemplate != null) {
 	    					Files.copy(logTemplate.openStream(), defaultLogConfigFile);
@@ -100,7 +94,7 @@ public class LogbackAdapter implements LogListener {
     				}
     				JoranConfigurator jc = new JoranConfigurator();
     				jc.setContext(loggerContext);
-    				loggerContext.putProperty(LOG_FILE_NAME_TOKEN, logFile);
+    				loggerContext.putProperty(LOG_FILE_NAME_TOKEN, logFile.toString());
     				// now try to set this log file 
     				jc.doConfigure(defaultLogConfigFileName);    		        
 			    }
@@ -210,13 +204,13 @@ public class LogbackAdapter implements LogListener {
 	 * 
 	 * @return Name of the log file or an empty string, if workspace is not set
 	 */
-	private String getLogfileName(final String workspaceLoc) {
+	private Path getLogfileName(final String workspaceLoc) {
 		// Do not save log files, if there is no workspace set
-		if (StringUtils.isBlank(workspaceLoc)) { return ""; }
+		if (StringUtils.isBlank(workspaceLoc)) { return null; }
 
 		// Do not save log files if workspace is not created
 		Path directory = Paths.get(workspaceLoc);
-		if (Files.notExists(directory)) { return ""; }
+		if (Files.notExists(directory)) { return null; }
 
 		// Create a sub folder "Log" if it does not exist yet.
 		try {
@@ -229,7 +223,7 @@ public class LogbackAdapter implements LogListener {
 		// Name of the log file
 		directory = directory.resolve("Error");  // .log is substituted in the configuration file, as there's a date before it
 
-		return directory.toString();
+		return directory;
 	}
 
     /**
