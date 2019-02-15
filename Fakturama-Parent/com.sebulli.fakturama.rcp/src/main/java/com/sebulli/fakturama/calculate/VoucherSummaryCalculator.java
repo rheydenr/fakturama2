@@ -95,12 +95,14 @@ public class VoucherSummaryCalculator {
 
         // Use all non-deleted items
         for (VoucherItem item : items) {
-
+        	 // expenditures have a negative sign, receipts a positive
+        	int itemSign = item.getItemVoucherType().isRECEIPTVOUCHER() ? 1 : -1;
             // Get the data from each item
             vatDescription = item.getVat().getDescription();
             vatPercent = item.getVat().getTaxValue();
 
             Price price = new Price(item, paidFactor);
+            price.multiply(itemSign);
             MonetaryAmount itemVat = price.getTotalVat();
 
             // Add the total net value of this item to the sum of net items
@@ -135,7 +137,7 @@ public class VoucherSummaryCalculator {
 
 //        this.totalGross.round();
 //        this.totalNet.round();
-        retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
+//        retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
 
         // Round also the Vat summaries
         voucherSummaryItems.roundAllEntries();

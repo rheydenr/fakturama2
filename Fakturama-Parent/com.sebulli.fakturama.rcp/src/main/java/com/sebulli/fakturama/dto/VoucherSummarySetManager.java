@@ -14,6 +14,8 @@
 
 package com.sebulli.fakturama.dto;
 
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 
@@ -57,7 +59,7 @@ public class VoucherSummarySetManager {
 	 *            description
 	 */
 	public void add(Voucher voucher, boolean useCategory) {
-		add(voucher, useCategory, 0);
+		add(voucher, useCategory, -1);
 	}
 
 	/**
@@ -75,7 +77,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
         VoucherSummaryCalculator summary = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
         CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-		summary.calculate(voucherSummarySet, itemNr > 0 ? voucher.getItems().subList(itemNr, itemNr+1) : voucher.getItems(), useCategory,
+		summary.calculate(voucherSummarySet, itemNr > -1 ? voucher.getItems().stream().filter(item -> item.getPosNr().compareTo(itemNr) == 0).collect(Collectors.toList()) : voucher.getItems(), useCategory,
 		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
 	}
 
