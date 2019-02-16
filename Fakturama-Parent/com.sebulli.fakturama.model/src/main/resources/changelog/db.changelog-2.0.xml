@@ -939,7 +939,21 @@
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="VARCHAR(2048)"/>
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="VARCHAR(2048)"/>
     </changeSet>
+    
     <changeSet author="rheydenr (generated)" id="20180122-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="TEXT"/>
+    </changeSet>
+    
+    <!--  fix voucher type for voucher items -->
+    <changeSet author="rheydenr" id="20190216-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	    <sql>update fkt_voucheritems vi set ITEMVOUCHERTYPE = (select v.VOUCHERTYPE from fkt_vouchers v where vi.FK_VOUCHER = v.ID)
+	    </sql>
+    </changeSet>
+    
+    <!--  remove orphaned voucher items -->
+    <changeSet author="rheydenr" id="20190216-002" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	    <delete tableName="fkt_voucheritems">
+	        <where>FK_VOUCHER is NULL</where>
+	    </delete>
     </changeSet>
 </databaseChangeLog>
