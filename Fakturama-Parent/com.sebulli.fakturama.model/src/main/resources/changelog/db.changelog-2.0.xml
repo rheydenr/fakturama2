@@ -946,13 +946,13 @@
     
     <!--  fix voucher type for voucher items -->
     <changeSet author="rheydenr" id="20190216-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-	    <sql>update fkt_voucheritems vi set ITEMVOUCHERTYPE = (select v.VOUCHERTYPE from fkt_vouchers v where vi.FK_VOUCHER = v.ID)
+	    <sql>update FKT_VOUCHERITEMS vi set ITEMVOUCHERTYPE = (select v.VOUCHERTYPE from FKT_VOUCHERS v where vi.FK_VOUCHER = v.ID)
 	    </sql>
     </changeSet>
     
     <!--  remove orphaned voucher items -->
     <changeSet author="rheydenr" id="20190216-002" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-	    <delete tableName="fkt_voucheritems">
+	    <delete tableName="FKT_VOUCHERITEMS">
 	        <where>FK_VOUCHER is NULL</where>
 	    </delete>
     </changeSet>
