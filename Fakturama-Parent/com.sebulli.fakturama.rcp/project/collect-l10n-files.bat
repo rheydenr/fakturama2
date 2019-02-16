@@ -5,12 +5,14 @@
 @REM or ../../org.fakturama.help/howto/translate/howto_translate_DE.md.
 
 @ECHO OFF
-SET FAKTURAMA_INSTALLDIR=c:\Projekte\fakturama-2\Fakturama-Parent
+SET FAKTURAMA_INSTALLDIR=d:\User\GitHome\fakturama-2\Fakturama-Parent\
 
 @REM create a folder with name as current date
 SET COLLECTIONS_FOLDER=%date:~-4,4%%date:~-7,2%%date:~-10,2%_Fakturama_l10nfiles
 mkdir %COLLECTIONS_FOLDER%
 cd %COLLECTIONS_FOLDER%
+
+copy %FAKTURAMA_INSTALLDIR%\com.sebulli.fakturama.rcp\project\i18nedit.properties .
 
 mkdir rcp
 xcopy /f %FAKTURAMA_INSTALLDIR%\com.sebulli.fakturama.rcp\OSGI-INF\l10n\*.properties rcp
