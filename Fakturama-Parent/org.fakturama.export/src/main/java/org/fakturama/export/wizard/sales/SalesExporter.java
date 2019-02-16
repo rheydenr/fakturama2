@@ -396,10 +396,11 @@ public class SalesExporter extends OOCalcExporter {
 					// Create formula for the sum. 
 					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
 					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
-					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
+					setFormula(sumrow, col, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
 					setBold(sumrow, col);
 				}
 				catch (IndexOutOfBoundsException e) {
+					log.error(e, "No access to cell: " + sumrow + ":" + col);
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -150,7 +151,7 @@ public class VoucherExporter extends OOCalcExporter {
 			outputFileName = msg.commandReceiptvouchersName;
 			break;
 		default:
-			customerSupplier = "Kunden und Lieferanten";
+			customerSupplier = String.format("%s / %s", msg.editorVoucherExpenditureFieldSupplier, msg.editorVoucherReceiptFieldCustomer);
 			vouchers.addAll(expendituresDAO.findVouchersInDateRange(startDate, endDate));
 			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
 			
@@ -162,7 +163,7 @@ public class VoucherExporter extends OOCalcExporter {
 						else if(v2 == null) return 1;
 						else return v1.getName().compareTo(v2.getName());
 					}).thenComparing(Voucher::getVoucherDate));
-			outputFileName = "Einnahmen und Ausgaben";
+			outputFileName = String.format("%s_%s", msg.commandExpenditurevouchersName, msg.commandReceiptvouchersName);
 			break;
 		}
 		
@@ -190,7 +191,6 @@ public class VoucherExporter extends OOCalcExporter {
 		// Counter for the current row and columns in the Calc document
 		int row = 9;
 		int col = 0;
-
 
 		// Set the title
 		setCellTextInBold(row++, 0, title);
@@ -237,7 +237,7 @@ public class VoucherExporter extends OOCalcExporter {
 		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
 
 			// Create a column, if the value is not 0%
-			if (vatIsNotZero || showZeroVatColumn || item.getVat() != null && item.getVat().getNumber().doubleValue() > 0.001) {
+			if (vatIsNotZero || showZeroVatColumn || item.getVat() != null && Math.abs(item.getVat().getNumber().doubleValue()) > 0.001) {
 
 				// If the first non-zero VAT column is created,
 				// do not check the value any more.
@@ -275,7 +275,6 @@ public class VoucherExporter extends OOCalcExporter {
 			int column = voucherSummarySetAllVouchers.getIndex(item);
 
 			// Add VAT name and description and use 2 lines
-			//T: Used as heading of a table. Keep the word short.
 			String text = msg.productDataNet + "\n" + item.getVatName();
 			String description = item.getDescription();
 
@@ -284,17 +283,17 @@ public class VoucherExporter extends OOCalcExporter {
 
 			setCellTextInBold(headLine, columnsWithVatHeading + column + columnOffset, text);
 		}
+		
+		setOptimalheight(headLine);
 
 		int voucherIndex = 0;
-		int itemSign = 1; // expenditures have a negative sign, receipts a positive
 		VoucherSummaryCalculator calc = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
 
 		// Second run.
 		// Export the voucher data
 		for (Voucher voucher : vouchers) {
 			if (isInTimeIntervall(voucher)) {
-				itemSign = voucher.getVoucherType().isRECEIPTVOUCHER() ? 1 : -1;
-				List<VoucherItem> items = voucher.getItems();
+				List<VoucherItem> items = voucher.getItems().stream().sorted(Comparator.comparingInt(VoucherItem::getPosNr)).collect(Collectors.toList());
 				
 				for (int voucherItemIndex = 0; voucherItemIndex < items.size(); voucherItemIndex++) {
 					VoucherItem voucherItem = items.get(voucherItemIndex);
@@ -307,7 +306,8 @@ public class VoucherExporter extends OOCalcExporter {
 //					voucher.calculate();
 
 					// Add the voucher to the VAT summary
-					vatSummarySetOneVoucher.add(voucher, false, voucherItemIndex);
+					// +1 because we use the index as posNo which starts at 1 (only necessary for the VoucherSummarySetManager)
+					vatSummarySetOneVoucher.add(voucher, false, voucherItemIndex + 1);
 					
 					// Fill the row with the voucher data
 					col = 0;
@@ -344,8 +344,8 @@ public class VoucherExporter extends OOCalcExporter {
 						if (column >= 0) {
 
 							// Round the VAT and add fill the table cell
-							totalVat = totalVat.add(item.getVat().multiply(itemSign));
-							setCellValueAsLocalCurrency(row, column + columnOffset, item.getVat().multiply(itemSign));
+							totalVat = totalVat.add(item.getVat());
+							setCellValueAsLocalCurrency(row, column + columnOffset, item.getVat());
 						}
 					}
 
@@ -361,7 +361,7 @@ public class VoucherExporter extends OOCalcExporter {
 							// Round the net and add fill the table cell
 							//totalVat.add(net.asRoundedDouble());
 							setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + columnOffset,
-									item.getNet().multiply(itemSign));
+									item.getNet()/*.multiply(itemSign)*/);
 						}
 					}
 
@@ -370,8 +370,8 @@ public class VoucherExporter extends OOCalcExporter {
 					if (showVoucherSumColumn && voucherItemIndex == 0) {
 						col = columnOffset - 2;
 						// Calculate the vouchers net and gross total 
-						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalNet().multiply(itemSign));
-						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalGross().multiply(itemSign));
+						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalNet());
+						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalGross());
 					}
 
 					// Set the background of the table rows. Use an light and
@@ -398,10 +398,12 @@ public class VoucherExporter extends OOCalcExporter {
 					// Create formula for the sum. 
 					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
 					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
-					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
+					formatAsCurrency(sumrow, col);
+					setFormula(sumrow, col, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
 					setBold(sumrow, col);
 				}
 				catch (IndexOutOfBoundsException e) {
+					log.error(e, "No access to cell: " + sumrow + ":" + col);
 				}
 			}
 		}
@@ -442,8 +444,6 @@ public class VoucherExporter extends OOCalcExporter {
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
 		for (VatSummaryItem item : voucherSummaryCategories.getVoucherSummaryItems()) {
-//            int sign = item.getItemVoucherType().isEXPENDITURE() ? -1 : 1;
-
 			col = 0;
 			setCellText(row, col++, item.getDescription());
 			setCellText(row, col++, item.getVatName());

@@ -1761,14 +1761,13 @@ public class DocumentEditor extends Editor<Document> {
         boolean hasDifferentDeliveryAddress;
 
         if (documentType == DocumentType.DELIVERY) {
-            hasDifferentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(billingAddress, txtAddress.getText());
             // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
             differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, billingAddress.replaceAll("&", "&&")));
         } else {
-            hasDifferentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(deliveryAddress, txtAddress.getText());
             differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, deliveryAddress.replaceAll("&", "&&")));
         }
-
         
         if (hasDifferentDeliveryAddress) {
             // Show the icon

@@ -31,10 +31,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.ExportMessages;
+import org.odftoolkit.odfdom.dom.attribute.office.OfficeValueTypeAttribute;
+import org.odftoolkit.odfdom.dom.style.props.OdfTableRowProperties;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.dto.AccountEntry;
@@ -403,13 +406,21 @@ public class OOCalcExporter {
 		CellFormatter.setBorder(spreadsheet, row, column, color, top, right, bottom, left); 
 	}
 
-	protected void setFormula(int column, int row, String formula) {
+	protected void setFormula(int row, int column, String formula) {
 		try {
 			spreadsheet.getCellByPosition(column, row).setFormula(formula);
 		}
 		catch (IndexOutOfBoundsException e) {
-			log.error(e, "No access to cell: " + column + ":" +row);
+			log.error(e, "No access to cell: " + row + ":" + column);
 		}
+	}
+	
+	protected void formatAsCurrency(int row, int column) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		String currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		cell.getOdfElement().setOfficeCurrencyAttribute(currencyCode);
+		cell.getOdfElement().setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.CURRENCY.toString());
+		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", DataUtils.getInstance().getDefaultCurrencyUnit().getDefaultFractionDigits())+" " + currencyCode);
 	}
 	
 	public void save() {
@@ -454,6 +465,13 @@ public class OOCalcExporter {
 	 */
 	protected String getOutputFileName() {
 		return "DEFAULT";
+	}
+
+	protected void setOptimalheight(int rowIndex) {
+		Row row = RowFormatter.getRow(spreadsheet, rowIndex);
+		if(row != null) {
+			row.getOdfElement().setProperty(OdfTableRowProperties.UseOptimalRowHeight, "true");
+		}
 	}
 
 }

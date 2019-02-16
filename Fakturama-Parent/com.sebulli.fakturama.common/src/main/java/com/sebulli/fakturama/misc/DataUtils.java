@@ -457,8 +457,7 @@ public class DataUtils {
      *      The new string without them
      */
     public String removeCR(String s) {
-        return s.replaceAll(System.lineSeparator()+"|\\r", "");
-        		
+        return s != null ? s.replaceAll(System.lineSeparator()+"|\\r|\\n", "") : "";
     }
 
     /**
@@ -481,9 +480,9 @@ public class DataUtils {
      * @param s2
      *          Second String to compare
      * @return
-     *          True, if bothe are equal
+     *          <code>true</code> if both are equal
      */
-    public boolean MultiLineStringsAreEqual (String s1, String s2) {
+    public boolean MultiLineStringsAreEqual(String s1, String s2) {
         return removeCR(s1).equals(removeCR(s2));
     }
     
