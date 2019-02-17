@@ -48,6 +48,9 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
+							<compilerArguments>
+								-Aeclipselink.persistencexml=${project.basedir}/META-INF/persistence.xml
+							</compilerArguments>
 							<processors>
 								<processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</processor>
 							</processors>
