@@ -68,7 +68,7 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      defaultValue="Photon"
+      defaultValue="2018-12"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
     <description>basic IDE target platform</description>
@@ -273,7 +273,7 @@
           name="org.eclipse.babel.nls_eclipse_uk.feature.group"/>
       <repositoryList>
         <repository
-            url="http://archive.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
+            url="https://download.eclipse.org/technology/babel/update-site/R0.16.1/2018-12"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -398,8 +398,7 @@
         <operand
             xsi:type="predicates:NotPredicate">
           <operand
-              xsi:type="workingsets:ExclusionPredicate"
-              excludedWorkingSet="//@setupTasks.10/@workingSets.0 //@setupTasks.10/@workingSets.1"/>
+              xsi:type="workingsets:ExclusionPredicate"/>
         </operand>
         <operand
             xsi:type="predicates:LocationPredicate"
