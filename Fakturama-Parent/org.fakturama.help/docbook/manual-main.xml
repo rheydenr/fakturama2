@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.1" xml:lang="de">
 	<title>Benutzerhandbuch</title>
-	<bookinfo>
+	<info>
 		<title>Benutzerhandbuch für Fakturama</title>
 		<footerurl>www.fakturama.info</footerurl>
 		<mediaobject>
