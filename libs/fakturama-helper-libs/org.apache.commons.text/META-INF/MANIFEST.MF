@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.apache.commons.text;singleton:=true
 Bundle-Version: 1.6.0
 Bundle-Vendor: Apache.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: lib/commons-text-1.6.jar
 Export-Package: org.apache.commons.text,
  org.apache.commons.text.diff,
  org.apache.commons.text.lookup,
  org.apache.commons.text.matcher,
  org.apache.commons.text.similarity,
  org.apache.commons.text.translate
+Bundle-ClassPath: lib/commons-text-1.6.jar

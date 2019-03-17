@@ -26,12 +26,12 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.0.3</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.0.4</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
 		<copyright>
-			<year>2011-2018</year>
+			<year>2011-2019</year>
 			<holder>Fakturama.org</holder>
 		</copyright>
 
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.0.3</releaseinfo>
+		<releaseinfo>Version 2.0.4</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
@@ -170,7 +170,9 @@ Tue Jun 20 21:33:55 CEST 2017 WARN: Establishing SSL connection without server's
 Abhilfe: An die URL noch folgendes ranhängen: <code>?useSSL=false</code>.
 also z. B. 
 <programlisting>jdbc:mysql://rhehomesrv/fakturama?useSSL=false&#038;characterEncoding=utf8&#038;useUnicode=yes</programlisting>
-</para></answer>
+</para>
+<para>Als Alternative empfehlen wir den Einsatz ener verschlüsselten Verbindung. Wie diese einzurichten ist steht im HowTo-Dokument unter https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md</para>
+</answer>
 	</qandaentry>
 	
 	<qandaentry><question><para>Fakturama startet nicht</para></question>

@@ -486,7 +486,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			    displayAddress = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
-			    address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+			    address.setManualAddress(txtAddress.getText());
 			    displayAddress.setAddress(address);
 			    try {
                     displayAddress = contactDAO.save(displayAddress);

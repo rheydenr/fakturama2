@@ -91,6 +91,6 @@ Now, inform the Java Runtime Environment about this new CA. Run this command fro
 
 Ok, almost done :-) Now you can start **Fakturama** for the first time. Remove the *use default settings* switch and enter the connection URL like in the following example:
 
-    jdbc:mysql://localhost/fakturama?verifyServerCertificate=true&trustCertificateKeyStoreUrl=file:///d:/Programme/MySQL/mysqlCerts/truststore&trustCertificateKeyStorePassword=aStrongPassword&useSSL=true&characterEncoding=utf8&useUnicode=yes
+    jdbc:mysql://localhost/fakturama?verifyServerCertificate=true&trustCertificateKeyStoreUrl=file:///d:/Programs/MySQL/mysqlCerts/truststore&trustCertificateKeyStorePassword=aStrongPassword&useSSL=true&characterEncoding=utf8&useUnicode=yes
 
 Adapt the paths to your own path locations. At the moment, the password is stored in plain text in a settings file below your local user folder. This file is only readable by you and your Administrator. It is planned on a later release to encrypt this password along with the connection user password for the database. 

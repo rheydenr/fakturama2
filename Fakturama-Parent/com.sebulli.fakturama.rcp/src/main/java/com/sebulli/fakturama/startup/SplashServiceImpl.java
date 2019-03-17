@@ -130,7 +130,7 @@ public class SplashServiceImpl implements ISplashService {
 //		layout.horizontalSpacing = 6;
 //		shell.setLayout(layout);
 		
-		// TODO Set the postion and stlye of the text from outside to make the service reusable
+		// TODO Set the position and style of the text from outside to make the service reusable
 		textLabel = createTextLabel(shell);
 		if (textRect == null) {
 			textRect = new Rectangle(10, imageBounds.height - 50,

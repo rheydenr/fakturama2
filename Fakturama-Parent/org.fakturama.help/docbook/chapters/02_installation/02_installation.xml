@@ -48,13 +48,13 @@
 				<imageobject role="fo">
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_windows-x64_x_x_x.exe bzw. Installer_Fakturama_windows-32Bit_x_x_x.exe) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter.</para>
+			</inlinemediaobject>(Installer_Fakturama_windows_x_x_x.zip bzw. Installer_Fakturama_windows-x64_x_x_x.zip) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
 		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden die Firmendatenbank und alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
+		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
 		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
 		sind für die Installation Administratorrechte notwendig.</para>
-		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
 	</section>
@@ -71,7 +71,7 @@
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_x_ x.deb bzw. Installer_Fakturama_linux_64Bit_x_x_x.deb) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject>(Installer_Fakturama_linux_x_x_x.deb bzw. Installer_Fakturama_linux_x64_x_x_x.deb) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
@@ -84,7 +84,7 @@
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_linux_32Bit_x_ x_x.rpm bzw. Installer_Fakturama_linux_64Bit_x_x_x.rpm) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject>(Installer_Fakturama_linux_x64_x_x_x.rpm) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
@@ -97,7 +97,7 @@
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_64Bit_x_x_x.sh) von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject>(Installer_Fakturama_unix_x_x_x.sh bzw. Installer_Fakturama_unix_x64_x_x_x.sh) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java 8 installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
 			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken. Für Arch-Linux gibt es ebenfalls ein separates <link xl:href="https://aur.archlinux.org/packages/fakturama/">Installationspaket</link>.</para>
 			<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
@@ -118,7 +118,7 @@
 				<imageobject role="fo">
 					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="http://www.fakturama.info/download.php">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
+			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -153,7 +153,7 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://fakturama.atlassian.net/wiki/spaces/FAK/blog/2015/05/05/11763718/Migration+der+Altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -188,7 +188,7 @@
 		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheinen Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. 
 		Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden. Die Vorlagen befinden sich im Arbeitsverzeichnis im Unterordner Vorlagen (dort jeweils
 		in einem separaten Ordner).</para>
-		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie nur Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt.</para>
+		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt. Für die Erstellung von ZUGFeRD-Dokumenten müssen Sie einmalig im LibreOffice einen PDF-Export eines beliebigen Dokumentes durchführen und dabei als Option PDF/A-1 einstellen.</para>
 		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link> und <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
 		</para>
 	</section>

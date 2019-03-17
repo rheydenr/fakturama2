@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wizards
 Bundle-SymbolicName: org.fakturama.wizards;singleton:=true
-Bundle-Version: 2.0.3
+Bundle-Version: 2.0.4
 Require-Bundle: com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.resources;bundle-version="2.0.0",
  org.eclipse.e4.core.services,
@@ -36,7 +36,7 @@ Import-Package: org.apache.commons.collections4,
  org.eclipse.swt.widgets,
  org.osgi.framework,
  org.osgi.service.log
-Export-Package: org.fakturama.wizards;version="2.0.3",
+Export-Package: org.fakturama.wizards;version="2.0.4",
  org.fakturama.wizards.internal.dialogs,
  org.fakturama.wizards.internal.registry,
  org.fakturama.wizards.model

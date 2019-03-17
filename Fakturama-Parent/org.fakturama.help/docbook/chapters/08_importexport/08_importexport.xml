@@ -695,6 +695,11 @@
 			</para>
 		</section>
 	</section>
+	<section> 
+		<anchor xreflabel="" xml:id="importexport_export_receipt_expenditure_vouchers"/>
+		<title>Export Liste Einnahme- und Ausgabebelege</title>
+		<para>Exportiert eine Liste mit den Einnahmen und Ausgaben in eine OpenOffice.org / LibreOffice-Tabelle.</para>
+	</section>
 	<section>
 		<anchor xreflabel="" xml:id="importexport_export_sales"/>
 		<title>Export Liste Umsätze</title>

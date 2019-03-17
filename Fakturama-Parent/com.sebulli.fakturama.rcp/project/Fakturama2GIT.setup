@@ -11,8 +11,7 @@
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="fakturama.git"
     label="Fakturama Project">
   <setupTask
@@ -68,7 +67,7 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      defaultValue="Photon"
+      defaultValue="2018-12"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
     <description>basic IDE target platform</description>
@@ -273,7 +272,7 @@
           name="org.eclipse.babel.nls_eclipse_uk.feature.group"/>
       <repositoryList>
         <repository
-            url="http://archive.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
+            url="https://download.eclipse.org/technology/babel/update-site/R0.16.1/2018-12"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -376,35 +375,26 @@
       <predicate
           xsi:type="predicates:OrPredicate">
         <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="com\.sebulli\.fakturama.*"/>
+            xsi:type="predicates:FilePredicate"
+            filePattern="**/com.sebulli.*"/>
         <operand
-            xsi:type="predicates:NamePredicate"
-            pattern="org\.fakturama.*"/>
+            xsi:type="predicates:FilePredicate"
+            filePattern="**/org.fakturama.*"/>
       </predicate>
     </workingSet>
     <workingSet
         name="JavaMoney"
         id="org.fakturama.javamoney">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="javamoney\.*"/>
+          xsi:type="predicates:LocationPredicate"
+          pattern="${git.clone.fakturama2.location}/javamoney"/>
     </workingSet>
     <workingSet
         name="Helper Libs"
         id="org.fakturama.helperlibs">
       <predicate
-          xsi:type="predicates:AndPredicate">
-        <operand
-            xsi:type="predicates:NotPredicate">
-          <operand
-              xsi:type="workingsets:ExclusionPredicate"
-              excludedWorkingSet="//@setupTasks.10/@workingSets.0 //@setupTasks.10/@workingSets.1"/>
-        </operand>
-        <operand
-            xsi:type="predicates:LocationPredicate"
-            pattern="${git.clone.fakturama2.location}/libs/fakturama-helper-libs/*"/>
-      </predicate>
+          xsi:type="predicates:LocationPredicate"
+          pattern="${git.clone.fakturama2.location}/libs/*"/>
     </workingSet>
     <description>The dynamic working sets for ${scope.project.label}</description>
   </setupTask>
@@ -439,10 +429,6 @@
         name="org.eclipse.jdt.ui">
       <setupTask
           xsi:type="setup:PreferenceTask"
-          key="formatter_profile"
-          value="_Fakturama"/>
-      <setupTask
-          xsi:type="setup:PreferenceTask"
           key="formatter_settings_version"
           value="15"/>
       <setupTask
@@ -457,6 +443,10 @@
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.text.custom_code_templates"
           value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?>&lt;templates>&lt;template autoinsert=&quot;false&quot; context=&quot;filecomment_context&quot; deleted=&quot;false&quot; description=&quot;Comment for created Java files&quot; enabled=&quot;true&quot; id=&quot;org.eclipse.jdt.ui.text.codetemplates.filecomment&quot; name=&quot;filecomment&quot;>/* &#xA; * Fakturama - Free Invoicing Software - http://www.fakturama.org&#xA; * &#xA; * Copyright (C) $${year} www.fakturama.org&#xA; * &#xA; * All rights reserved. This program and the accompanying materials&#xA; * are made available under the terms of the Eclipse Public License v1.0&#xA; * which accompanies this distribution, and is available at&#xA; * http://www.eclipse.org/legal/epl-v10.html&#xA; * &#xA; * Contributors:&#xA; *     The Fakturama Team - initial API and implementation&#xA; */&#xA; &lt;/template>&lt;/templates>"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="formatter_profile"
+          value="_Fakturama"/>
     </setupTask>
     <description>User preferences for the IDE.</description>
   </setupTask>

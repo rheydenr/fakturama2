@@ -126,16 +126,16 @@ public class LifecycleManager {
     @PostContextCreate
     public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
 //        IApplicationContext appContext = context.get(IApplicationContext.class);
+
+    	splashService.setSplashPluginId(Activator.PLUGIN_ID);
+    	splashService.setTotalWork(40);
+    	splashService.open();
+    	splashService.setTextColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+    	splashService.setMessage("Loading Application...");
     	
         ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
         // launch ConfigurationManager.checkFirstStart
         configMgr.checkAndUpdateConfiguration();
-
-    	splashService.setSplashPluginId(Activator.PLUGIN_ID);
-    	splashService.setTotalWork(20);
-    	splashService.setTextColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-    	splashService.open();
-    	splashService.setMessage("Loading Application...");
     	
     	// There should be a better way to close the Splash
     	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=376821

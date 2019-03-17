@@ -95,6 +95,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	@Override
 	public void stopServer() {
 		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
+		server.stop();
 		BackupManager bm = new BackupManager();
 		bm.createBackup(workspace);
 	}

@@ -17,6 +17,13 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="org.apache.commons.collections" version="4.1.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.lang3" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.beanutils" version="1.9.3" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.text" version="1.6.0" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="com.opencsv"
          download-size="0"

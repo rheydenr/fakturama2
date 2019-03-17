@@ -9,7 +9,7 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.0.2.1
+VERSION=2.0.4
 # prepare the correct directory structure
 tar -xzvf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
@@ -24,7 +24,7 @@ DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # you should not need to change these
 APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
 
-VOL_NAME="${APP_NAME}_macosx_${VERSION}"   # volume name will be "Fakturama2_macosx_2_0_0”
+VOL_NAME="Installer_${APP_NAME}_${VERSION}"   # volume name will be "Installer_Fakturama_2_0_0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
 DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama2_2_0_0.dmg"
 STAGING_DIR="./Install"             # we copy all our stuff into this dir

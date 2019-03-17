@@ -4,10 +4,6 @@ Bundle-Name: ODF Toolkit
 Bundle-SymbolicName: org.apache.odftoolkit
 Bundle-Version: 0.9.0
 Bundle-Vendor: Apache.org
-Bundle-ClassPath: odfdom-java-0.9.0-incubating-SNAPSHOT.jar,
- schema2template-0.9.0-incubating-SNAPSHOT.jar,
- simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar,
- taglets-0.9.0-incubating-SNAPSHOT.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.odfdom.doc,
@@ -85,3 +81,7 @@ Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.simple.table,
  org.odftoolkit.simple.text,
  org.odftoolkit.simple.text.list
+Bundle-ClassPath: lib/odfdom-java-0.9.0-incubating-SNAPSHOT.jar,
+ lib/schema2template-0.9.0-incubating-SNAPSHOT.jar,
+ lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar,
+ lib/taglets-0.9.0-incubating-SNAPSHOT.jar
