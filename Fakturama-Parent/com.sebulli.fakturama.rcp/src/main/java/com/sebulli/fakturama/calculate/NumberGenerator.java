@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.UserProperty;
@@ -35,7 +35,7 @@ public class NumberGenerator {
     private IPreferenceStore defaultValuePrefs;
     
     @Inject
-    private Logger log;
+    private ILogger log;
 
     @Inject
     private PropertiesDAO propertiesDao;

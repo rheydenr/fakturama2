@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -86,9 +85,6 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
     
     @Inject
     protected IEclipseContext context;
-
-    @Inject
-    private Logger log;
 
 //    this is for synchronizing the UI thread
     @Inject    

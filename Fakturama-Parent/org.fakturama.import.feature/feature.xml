@@ -2,7 +2,7 @@
 <feature
       id="org.fakturama.import.feature"
       label="Fakturama Importer Feature"
-      version="2.0.3"
+      version="2.0.4"
       provider-name="Fakturama.org">
 
    <description url="http://www.fakturama.info">

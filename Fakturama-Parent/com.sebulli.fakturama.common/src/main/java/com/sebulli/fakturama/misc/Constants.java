@@ -46,6 +46,8 @@ public class Constants {
      */
     public static final String DEFAULT_PAYMENT = "standardpayment";
     
+    public static final String ACCOUNT_LIST_CATEGORY = "data.list.accountnumbers";
+    
     /**
      * The following constants are for hiding and showing the appropriate tool icons within the tool bar
      */
@@ -70,7 +72,8 @@ public class Constants {
     public static final String TOOLBAR_SHOW_SAVE = "TOOLBAR_SHOW_SAVE";
     public static final String TOOLBAR_SHOW_PRINT = "TOOLBAR_SHOW_PRINT";
     public static final String TOOLBAR_SHOW_WEBSHOP = "TOOLBAR_SHOW_WEBSHOP";
-    
+	public static final String TOOLBAR_SHOW_QRK_EXPORT = "TOOLBAR_SHOW_QRK_EXPORT";
+
     /**
      * 
      */
@@ -507,6 +510,7 @@ public class Constants {
      * 
      */
     public static final String PREFERENCES_OPENOFFICE_PATH = "OPENOFFICE_PATH";
+	public static final String PREFERENCES_QRK_EXPORT_PATH = "QRK_EXPORT_PATH";
 
 	public static final String PROPERTY_CONTACTS_CLICKHANDLER = "fakturama.datatable.contacts.clickhandler";
 
@@ -528,6 +532,7 @@ public class Constants {
 	 * 
 	 */
 	public static final String PREFERENCES_EXPORTSALES_PAIDDATE = "EXPORTSALES_PAIDDATE";
+	public static final String PREFERENCES_EXPORT_CSV4DHL = "EXPORT_CSV4DHL";
 
 	/** The Constant CONTEXT_VATVALUE. */
 	public static final String CONTEXT_VATVALUE = "vatvalue";
@@ -562,7 +567,4 @@ public class Constants {
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
 
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
-
-
-
 }

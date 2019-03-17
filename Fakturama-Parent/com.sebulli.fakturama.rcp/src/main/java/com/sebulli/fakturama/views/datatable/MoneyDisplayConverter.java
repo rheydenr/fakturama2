@@ -13,6 +13,7 @@
 
 package com.sebulli.fakturama.views.datatable;
 
+import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
@@ -24,15 +25,15 @@ import com.sebulli.fakturama.misc.INumberFormatterService;
  */
 public class MoneyDisplayConverter extends DisplayConverter {
 	
-//	@Inject
 	private INumberFormatterService numberFormatterService;
-
+	
     /**
      * Constructor.
      * @param numberFormatterService2 
      * 
      */
-    public MoneyDisplayConverter(INumberFormatterService numberFormatterService) {
+ 	@Inject
+   public MoneyDisplayConverter(INumberFormatterService numberFormatterService) {
     	this.numberFormatterService = numberFormatterService;
     }
 

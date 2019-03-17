@@ -13,12 +13,12 @@
       </mediaobject>
     </informalfigure>
      <para>Fakturama kann Bestellungen aus einem Webshop importieren und daraus Rechnungen und Lieferscheine erstellen. Ebenso können Adressdaten und Produkte mit Produktbild importiert werden.</para>
-    <para>Die Verbindung zwischen einem Webshop und Fakturama wird durch eine Webshop-Schnittstelle hergestellt. Zurzeit stehen Schnittstellen für 3 verschiedene, kostenlose Shopsysteme zur Verfügung. </para>
+    <para>Die Verbindung zwischen einem Webshop und Fakturama wird durch eine Webshop-Schnittstelle hergestellt. Zurzeit stehen Schnittstellen für verschiedene kostenlose Shopsysteme zur Verfügung. </para>
     </abstract>
     <section>
 <anchor xreflabel="" xml:id="webshop_overview_webshops"/>
       <title>Übersicht Webshop-Systeme</title>
-      <para>Folgende Shopsysteme werden unterstützt:</para>
+      <para>Fakturama unterstützt viele unterschiedliche Shopsysteme. Die komplette Übersicht finden Sie in unserem <link xl:href="https://supr.com/fakturama/webshops">SuPPort  (Software- und Peripherie-Portal)</link>. Nachfolgend eine kleine Auswahl an unterstützten Shopsystemen.</para>
       <sect2>
         <title>osCommerce</title>
         <para>
@@ -27,14 +27,14 @@
         <para>osCommerce ist ein Open-Source Shopsystem. Es ist kostenlos und bietet sehr viele <link xl:href="http://www.oscommerce.com/community/contributions">Erweiterungen</link>, um den Shop auf die eigenen Bedürfnisse anzupassen. Neben der englischen gibt es auch eine <link xl:href="http://www.oscommerce.de/">deutschsprachige Seite</link>.</para>
       </sect2>
       <sect2>
-        <title>xt:Commerce 3</title>
+        <title>xt:Commerce</title>
         <para>
 <link xl:href="http://www.xt-commerce.com/">www.xt-commerce.com</link>
 </para>
-        <para>xt:Commerce 3 zählt laut Hersteller zu den führenden Shopsoftware Lösungen. xt:Commerce 3 basiert auf osCommerce und beinhaltet bereits viele Erweiterungen.</para>
+        <para>xt:Commerce zählt laut Hersteller zu den führenden Shopsoftware Lösungen. xt:Commerce basiert auf osCommerce und beinhaltet bereits viele Erweiterungen.</para>
       </sect2>
       <sect2>
-        <title>xtcModified</title>
+        <title>modified eCommerce Shopsoftware</title>
         <informalfigure>
           <mediaobject>
             <imageobject role="html">
@@ -46,9 +46,9 @@
           </mediaobject>
         </informalfigure>
          <para>
-<link xl:href="http://www.xtc-modified.org/">www.xtc-modified.org</link>
+<link xl:href="https://www.modified-shop.org/">www.modified-shop.org</link>
 </para>
-        <para>xtcModified ist eine verbesserte Version von xt:Commerce 3.04 SP2.1. Es sind viele Fehlerkorrekturen und Verbesserungen eingeflossen. xtcModified ist ebenfalls kostenlos. Ein <link xl:href="http://www.xtc-modified.org/forum/">deutschsprachiges Forum</link> bietet Hilfe rund um dieses Shopsystem.</para>
+        <para>modified eCommerce Shopsoftware ist eine verbesserte Version von xt:Commerce. Es sind viele Fehlerkorrekturen und Verbesserungen eingeflossen. modified eCommerce Shopsoftware ist ebenfalls kostenlos. Ein <link xl:href="https://www.modified-shop.org/forum/">deutschsprachiges Forum</link> bietet Hilfe rund um dieses Shopsystem.</para>
      </sect2>
      </section>
     <section>

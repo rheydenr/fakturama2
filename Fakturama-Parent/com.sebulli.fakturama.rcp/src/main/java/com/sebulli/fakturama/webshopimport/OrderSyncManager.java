@@ -16,9 +16,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
@@ -33,7 +33,7 @@ public class OrderSyncManager {
 	private IPreferenceStore preferences;
     
     @Inject 
-    private Logger log;
+    private ILogger log;
 
 	private WebShopConnector conn;
 

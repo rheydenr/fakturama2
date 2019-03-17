@@ -68,6 +68,7 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
+import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dao.VoucherItemsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -119,6 +120,9 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	@Inject
 	protected VoucherItemsDAO voucherItemsDAO;
+	
+	@Inject
+	protected ItemAccountTypeDAO itemAccountTypeDAO;
 	
 	@Inject
 	protected IEclipseContext context;
@@ -293,6 +297,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	                .withParent(top)
 	                .withVoucher(voucher)
 	//                .withNetGross(netgross)
+	                .withContainer(this)
 	                .withUseGross(useGross)
 	                .build();
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
@@ -439,7 +444,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	/**
 	 * @return
 	 */
-	protected abstract VoucherType getVoucherType();
+	public abstract VoucherType getVoucherType();
 	
 	/**
 	 * Gets the model repository.
@@ -452,16 +457,6 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	 * @return "Customer" or "Supplier"
 	 */
 	protected abstract String getCustomerSupplierString();
-	
-	/**
-	 * Creates a new voucher items
-	 * 
-	 * @return
-	 * 	Array with all voucher items
-	 */
-	public VoucherItem createNewVoucherItem() {
-		return modelFactory.createVoucherItem();
-	}
 
 	/**
 	 * Initializes the editor. If an existing data set is opened, the local
@@ -534,7 +529,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 	        /*
 	         * the following parameters are not saved: 
 	         * - id (constant)
@@ -559,12 +554,14 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	            .map(dto -> dto.getVoucherItem())
 	            /*.sorted(Comparator.comparing(VoucherItem::getId))*/
 	            .collect(Collectors.toList());
-	        voucher.setItems(new ArrayList<>(items));
+	        voucher.setItems(items);
 	        
 	        // delete removed items
 	        for (IEntity expenditureItem : itemListTable.getMarkedForDeletion()) {
 	            try {
-	                voucherItemsDAO.save((VoucherItem)expenditureItem);
+	            	VoucherItemDTO voucherItem = (VoucherItemDTO)expenditureItem;
+	                voucherItem.getVoucherItem().setDeleted(Boolean.TRUE);
+					voucherItemsDAO.save(voucherItem.getVoucherItem());
 	            } catch (FakturamaStoringException e) {
 	                log.error(e);
 	            }
@@ -586,18 +583,22 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 			voucher = getModelRepository().update(voucher);
 		} catch (FakturamaStoringException e) {
 			log.error(e);
+			return Boolean.FALSE;
 		}
 
 	      // Set the Editor's name to the voucher name.
 	      this.part.setLabel(voucher.getName());
+	      
+	      itemListTable.updateVoucherItemsAndAccountTypes(voucher);
 	
 	      // Refresh the table view of all vouchers
 	      evtBroker.post(getEditorId(), Editor.UPDATE_EVENT);
 	      
-	        bindModel();
+	      bindModel();
 
 	      // reset dirty flag
 	      getMDirtyablePart().setDirty(false);
+	      return Boolean.TRUE;
 	    }
 	
 	/**
@@ -681,6 +682,10 @@ public abstract class VoucherEditor extends Editor<Voucher>{
     @Override
     protected MDirtyable getMDirtyablePart() {
         return part;
+    }
+    
+    public void setDirty(boolean isDirty) {
+    	getMDirtyablePart().setDirty(isDirty);
     }
     
 	protected abstract String[] getNameProposals();

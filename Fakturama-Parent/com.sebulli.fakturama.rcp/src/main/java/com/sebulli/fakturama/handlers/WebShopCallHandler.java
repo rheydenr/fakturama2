@@ -20,12 +20,12 @@ import javax.inject.Named;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * Handler for calling web shop import actions or getting status values from web shop. This
@@ -42,7 +42,7 @@ public class WebShopCallHandler {
     private IPreferenceStore preferences;
     
     @Inject 
-    private Logger log;
+    private ILogger log;
 
 
 //    @Inject

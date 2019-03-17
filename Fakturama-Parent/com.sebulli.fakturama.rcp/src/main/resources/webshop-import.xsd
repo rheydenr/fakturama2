@@ -88,7 +88,8 @@
 			<xs:element name="delivery_country" type="xs:string" />
 			<xs:element name="phone" type="xs:string" />
 			<xs:element name="email" type="xs:string" />
-			<xs:element name="webshop_name" type="xs:string"></xs:element>
+			<xs:element name="webshop_name" type="xs:string"/>
+			<xs:element name="vatno" type="xs:string"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:string" use="optional"/>
 	</xs:complexType>

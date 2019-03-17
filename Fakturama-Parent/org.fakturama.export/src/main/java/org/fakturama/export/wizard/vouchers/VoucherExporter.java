@@ -15,18 +15,25 @@
 package org.fakturama.export.wizard.vouchers;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.fakturama.export.wizard.CellFormatter;
 import org.fakturama.export.wizard.ExportWizardPageStartEndDate;
 import org.fakturama.export.wizard.OOCalcExporter;
@@ -55,6 +62,7 @@ public class VoucherExporter extends OOCalcExporter {
 	
 	public static final int SUPPLIER = 1;
 	public static final int CUSTOMER = 2;
+	public static final int ALL = 3;
 
 	@Inject
 	private IEclipseContext ctx;
@@ -86,14 +94,10 @@ public class VoucherExporter extends OOCalcExporter {
 	public void initialize(IEclipseContext ctx) {
 		if(ctx.get(Constants.PARAM_START_DATE) != null) {
 			startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
-		} else {
-			startDate = null;
 		}
 		
 		if(ctx.get(Constants.PARAM_END_DATE) != null) {
 			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
-		} else {
-			endDate = null;
 		}
 		doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
 
@@ -109,6 +113,25 @@ public class VoucherExporter extends OOCalcExporter {
 	 */
 	public boolean export(String title, int type) {
 		
+		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+		try {
+			progressMonitorDialog.run(true, true, new IRunnableWithProgress() {
+				
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					// TODO skeleton for further implementation with progress monitor
+					
+				}
+			});
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		String customerSupplier = "";
 		List<Voucher> vouchers = new ArrayList<>();
 		if(BooleanUtils.toBoolean((Boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD))) {
@@ -122,10 +145,25 @@ public class VoucherExporter extends OOCalcExporter {
 			vouchers.addAll(expendituresDAO.findVouchersInDateRange(startDate, endDate));
 			outputFileName = msg.commandExpenditurevouchersName;
 			break;
-		default:
+		case CUSTOMER:
 			customerSupplier = msg.editorVoucherReceiptFieldCustomer;
 			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
 			outputFileName = msg.commandReceiptvouchersName;
+			break;
+		default:
+			customerSupplier = String.format("%s / %s", msg.editorVoucherExpenditureFieldSupplier, msg.editorVoucherReceiptFieldCustomer);
+			vouchers.addAll(expendituresDAO.findVouchersInDateRange(startDate, endDate));
+			vouchers.addAll(receiptVouchersDAO.findVouchersInDateRange(startDate, endDate));
+			
+		// Sort the vouchers by category and date --> this is normally done by database,
+		// but in this case we have to do this manually 
+			vouchers.stream().sorted(Comparator.comparing(
+					Voucher::getAccount, (v1, v2) -> {
+						if(v1 == null) return (v2 == null) ? 0 : -1;
+						else if(v2 == null) return 1;
+						else return v1.getName().compareTo(v2.getName());
+					}).thenComparing(Voucher::getVoucherDate));
+			outputFileName = String.format("%s_%s", msg.commandExpenditurevouchersName, msg.commandReceiptvouchersName);
 			break;
 		}
 		
@@ -138,9 +176,6 @@ public class VoucherExporter extends OOCalcExporter {
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())
 			return false;
-//
-//		// Sort the vouchers by category and date --> this is done by database
-//		Collections.sort(vouchers, new UniDataSetSorter("category", "date"));
 
 		// Count the columns that contain a VAT and net value 
 		int columnsWithVatHeading = 0;
@@ -156,7 +191,6 @@ public class VoucherExporter extends OOCalcExporter {
 		// Counter for the current row and columns in the Calc document
 		int row = 9;
 		int col = 0;
-
 
 		// Set the title
 		setCellTextInBold(row++, 0, title);
@@ -192,19 +226,18 @@ public class VoucherExporter extends OOCalcExporter {
 
 		boolean vatIsNotZero = false;
 
-		vatIsNotZero = false;
 		col = columnOffset;
 		columnsWithVatHeading = 0;
 		columnsWithNetHeading = 0;
 
-		// A column for each Vat value is created 
+		// A column for each VAT value is created 
 		// The VAT summary items are sorted. So first ignore the VAT entries
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
 		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
 
 			// Create a column, if the value is not 0%
-			if (item.getVat() != null && item.getVat().getNumber().doubleValue() > 0.001 || vatIsNotZero || showZeroVatColumn) {
+			if (vatIsNotZero || showZeroVatColumn || item.getVat() != null && Math.abs(item.getVat().getNumber().doubleValue()) > 0.001) {
 
 				// If the first non-zero VAT column is created,
 				// do not check the value any more.
@@ -224,7 +257,6 @@ public class VoucherExporter extends OOCalcExporter {
 					text += "\n" + description;
 
 				setCellTextInBold(headLine, column + columnOffset, text);
-
 			}
 			else {
 				// Count the columns with 0% VAT
@@ -243,7 +275,6 @@ public class VoucherExporter extends OOCalcExporter {
 			int column = voucherSummarySetAllVouchers.getIndex(item);
 
 			// Add VAT name and description and use 2 lines
-			//T: Used as heading of a table. Keep the word short.
 			String text = msg.productDataNet + "\n" + item.getVatName();
 			String description = item.getDescription();
 
@@ -252,6 +283,8 @@ public class VoucherExporter extends OOCalcExporter {
 
 			setCellTextInBold(headLine, columnsWithVatHeading + column + columnOffset, text);
 		}
+		
+		setOptimalheight(headLine);
 
 		int voucherIndex = 0;
 		VoucherSummaryCalculator calc = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
@@ -259,47 +292,41 @@ public class VoucherExporter extends OOCalcExporter {
 		// Second run.
 		// Export the voucher data
 		for (Voucher voucher : vouchers) {
-
 			if (isInTimeIntervall(voucher)) {
-				List<VoucherItem> items = new ArrayList<>();
-//				if(voucher instanceof Voucher) {
-//					items.addAll(((Voucher)voucher).getItems());
-//				} else {
-					items.addAll(((Voucher)voucher).getItems());
-//				}
+				List<VoucherItem> items = voucher.getItems().stream().sorted(Comparator.comparingInt(VoucherItem::getPosNr)).collect(Collectors.toList());
 				
-				for (int voucherItemIndex = 0; voucherItemIndex < voucher.getItems().size(); voucherItemIndex++) {
+				for (int voucherItemIndex = 0; voucherItemIndex < items.size(); voucherItemIndex++) {
 					VoucherItem voucherItem = items.get(voucherItemIndex);
 					// Now analyze voucher by voucher
 					VoucherSummarySetManager vatSummarySetOneVoucher = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
 					MonetaryAmount paidValue = Money.of(voucher.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
 					MonetaryAmount totalValue = Money.of(voucher.getTotalValue(), DataUtils.getInstance().getDefaultCurrencyUnit());
-					VoucherSummary voucherSummaryValue = calc.calculate(items, paidValue, totalValue, BooleanUtils.toBoolean(voucher.getDiscounted()));
+					VoucherSummary voucherSummaryValue = calc.calculate(items, paidValue, totalValue, 
+							BooleanUtils.toBoolean(voucher.getDiscounted()));
 //					voucher.calculate();
 
 					// Add the voucher to the VAT summary
-//					if(voucher instanceof Voucher) {
-//						vatSummarySetOneVoucher.add((Voucher) voucher, false, voucherItemIndex);
-//					} else {
-						vatSummarySetOneVoucher.add((Voucher) voucher, false, voucherItemIndex);
-//					}
+					// +1 because we use the index as posNo which starts at 1 (only necessary for the VoucherSummarySetManager)
+					vatSummarySetOneVoucher.add(voucher, false, voucherItemIndex + 1);
 					
 					// Fill the row with the voucher data
 					col = 0;
 
 					if (voucherItemIndex == 0) {
-						setCellText(row, col++, voucher.getAccount().getName());
+						setCellText(row, col++, voucher.getAccount() != null ? voucher.getAccount().getName() : "");
 						setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(voucher.getVoucherDate()));
 						setCellText(row, col++, voucher.getVoucherNumber());
 						setCellText(row, col++, voucher.getDocumentNumber());
 						setCellText(row, col++, voucher.getName());
+					} else {
+						col += 5;
 					}
-
-					col = 5;
+					
 					setCellText(row, col++, voucherItem.getName());
 					if(voucherItem.getAccountType() != null) {
-						setCellText(row, col++, voucherItem.getAccountType().getName());
+						setCellText(row, col, voucherItem.getAccountType().getName());
 					}
+					col++;
 
 					//setCellValueAsLocalCurrency(xSpreadsheetDocument, spreadsheet, row, col++, document.getDoubleValueByKey("total"));
 
@@ -334,19 +361,17 @@ public class VoucherExporter extends OOCalcExporter {
 							// Round the net and add fill the table cell
 							//totalVat.add(net.asRoundedDouble());
 							setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + columnOffset,
-									item.getNet());
+									item.getNet()/*.multiply(itemSign)*/);
 						}
 					}
 
 					// Display the sum of an voucher only in the row of the first
 					// voucher item
-					if (showVoucherSumColumn) {
-						if (voucherItemIndex == 0) {
-							col = columnOffset - 2;
-							// Calculate the vouchers net and gross total 
-							setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalNet());
-							setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalGross());
-						}
+					if (showVoucherSumColumn && voucherItemIndex == 0) {
+						col = columnOffset - 2;
+						// Calculate the vouchers net and gross total 
+						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalNet());
+						setCellValueAsLocalCurrency(row, col++, voucherSummaryValue.getTotalGross());
 					}
 
 					// Set the background of the table rows. Use an light and
@@ -356,7 +381,6 @@ public class VoucherExporter extends OOCalcExporter {
 								CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 					row++;
-
 				}
 				voucherIndex++;
 			}
@@ -374,10 +398,12 @@ public class VoucherExporter extends OOCalcExporter {
 					// Create formula for the sum. 
 					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
 					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
-					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
+					formatAsCurrency(sumrow, col);
+					setFormula(sumrow, col, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
 					setBold(sumrow, col);
 				}
 				catch (IndexOutOfBoundsException e) {
+					log.error(e, "No access to cell: " + sumrow + ":" + col);
 				}
 			}
 		}
@@ -409,10 +435,7 @@ public class VoucherExporter extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.getPurchaseTaxString());
 		setCellTextInBold(row, col++, msg.productDataNet);
 
-		// Draw a horizontal line
-		for (col = 0; col < 4; col++) {
-			setBorder(row, col, Color.BLACK, false, false, true, false);
-		}
+		drawHorizontalLine(row);
 
 		row++;
 
@@ -421,7 +444,6 @@ public class VoucherExporter extends OOCalcExporter {
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
 		for (VatSummaryItem item : voucherSummaryCategories.getVoucherSummaryItems()) {
-
 			col = 0;
 			setCellText(row, col++, item.getDescription());
 			setCellText(row, col++, item.getVatName());
@@ -434,18 +456,25 @@ public class VoucherExporter extends OOCalcExporter {
 				setBackgroundColor(0, row, 3, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
 
 			row++;
-
 		}
 
-		// Draw a horizontal line
-		for (col = 0; col < 4; col++) {
-			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
-		}
+		drawHorizontalLine(row);
 
 		save();
 		
 		// True = Export was successful
 		return true;
+	}
+
+	/**
+	 * @param row
+	 * @return
+	 */
+	private void drawHorizontalLine(int row) {
+		// Draw a horizontal line
+		for (int col = 0; col < 4; col++) {
+			setBorder(row - 1, col, Color.BLACK, false, false, true, false);
+		}
 	}
 
 	/**
@@ -457,18 +486,15 @@ public class VoucherExporter extends OOCalcExporter {
 		// Create a voucher summary set manager that collects all voucher VAT
 		// values of all vouchers
 		VoucherSummarySetManager voucherSummarySetAllVouchers = ContextInjectionFactory.make(VoucherSummarySetManager.class, ctx);
+		
+		vouchers.stream().filter(voucher -> isInTimeIntervall(voucher)).forEach(voucher -> voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories));
 
-		for (Voucher voucher : vouchers) {
-
-			if (isInTimeIntervall(voucher)) {
-				
-				if(voucher instanceof Voucher) {
-					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
-				} else {
-					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
-				}
-			}
-		}
+//		for (Voucher voucher : vouchers) {
+//			if (isInTimeIntervall(voucher)) {
+//					voucherSummarySetAllVouchers.add((Voucher) voucher, useCategories);
+//			}
+//		}
+		
 		return voucherSummarySetAllVouchers;
 	}
 	

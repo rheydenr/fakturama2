@@ -29,7 +29,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.i18n.Messages;
@@ -79,13 +78,8 @@ public class ErrorView {
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.ERROR_VIEW);
 
-		// create the label
-		Label labelItemNr = new Label(top, SWT.NONE);
-		//T: Label of the error view
-		labelItemNr.setText(msg.viewErrorlogLabel);
-
 		// fill the rest of the view with the text field
-		errorText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		errorText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(errorText);
 		
 		parent.setVisible(false);

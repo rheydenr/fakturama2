@@ -25,26 +25,30 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.ExportMessages;
+import org.odftoolkit.odfdom.dom.attribute.office.OfficeValueTypeAttribute;
+import org.odftoolkit.odfdom.dom.style.props.OdfTableRowProperties;
 import org.odftoolkit.odfdom.type.Color;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.style.StyleTypeDefinitions.FontStyle;
 import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.dto.AccountEntry;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Voucher;
 
 /**
@@ -64,9 +68,15 @@ public class OOCalcExporter {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private INumberFormatterService numberformatter;
+    
+    @Inject
+    private ILocaleService localeService;
 
     @Inject
-    protected Logger log;
+    protected ILogger log;
 	
 	@Inject
 	protected Shell shell;
@@ -78,8 +88,8 @@ public class OOCalcExporter {
 	public final static boolean PAID = true;
 	public final static boolean UNPAID = false;
 	// The begin and end date to specify the export periode
-	protected GregorianCalendar startDate;
-	protected GregorianCalendar endDate;
+	protected GregorianCalendar startDate = null;
+	protected GregorianCalendar endDate = null;
 	
 	// Use start and end date or export all
 	protected boolean doNotUseTimePeriod;
@@ -150,54 +160,6 @@ public class OOCalcExporter {
 	}
 	
 	
-	/**
-	 * Returns if a given document should be used to export. Only invoices and
-	 * credit documents that are paid in the specified time interval are
-	 * exported.
-	 * 
-	 * @param document
-	 *            The document that is tested
-	 * @return True, if the document should be exported
-	 * @deprecated Do it with database queries!
-	 */
-	protected boolean documentShouldBeExported(Document document) {
-
-		// By default, the document will be exported.
-		boolean isInIntervall = true;
-
-		// Use the time period
-		if (!doNotUseTimePeriod) {
-			// Get the date of the document and convert it to a
-			// GregorianCalendar object.
-			GregorianCalendar documentDate = new GregorianCalendar();
-			
-			// Use pay date or document date
-			Date documentDateString = usePaidDate ? document.getPayDate() : document.getDocumentDate();
-			documentDate.setTime(documentDateString);
-
-			// Test, if the document's date is in the interval
-			if ((startDate != null) && (endDate != null)) {
-				if (startDate.after(documentDate))
-					isInIntervall = false;
-				if (endDate.before(documentDate))
-					isInIntervall = false;
-			}
-		}
-
-		// Only invoices and credits in the interval
-		// will be exported.
-		boolean isInvoiceOrCreditInIntervall = (document.getBillingType().isINVOICE() 
-				|| (document.getBillingType().isCREDIT()
-				)) && isInIntervall;
-		
-		// Export paid or unpaid documents
-		if (exportPaid)
-			// export paid
-			return isInvoiceOrCreditInIntervall && document.getPaid();
-		else
-			// export unpaid
-			return isInvoiceOrCreditInIntervall && !document.getPaid();
-	}
 	
 	/**
 	 * Returns if a given data set should be used to export. Only
@@ -376,11 +338,8 @@ public class OOCalcExporter {
 	protected void setCellValueAsLocalCurrency(int row, int column, MonetaryAmount amount) {
 		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
 		cell.setCurrencyValue(amount.getNumber().doubleValue(), amount.getCurrency().getCurrencyCode());
-		String currencyCode = amount.getCurrency().getCurrencyCode(); 
-		// DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		String currencyCode = numberformatter.getCurrencySymbol(amount);
 		cell.setCurrencyCode(currencyCode);
-//		String formattedValue = DataUtils.getInstance().formatCurrency(amount);
-//		cell.setDisplayText(formattedValue);
 		// TODO make it more flexible!
 		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", amount.getCurrency().getDefaultFractionDigits())+" " + currencyCode);
 	}
@@ -447,13 +406,21 @@ public class OOCalcExporter {
 		CellFormatter.setBorder(spreadsheet, row, column, color, top, right, bottom, left); 
 	}
 
-	protected void setFormula(int column, int row, String formula) {
+	protected void setFormula(int row, int column, String formula) {
 		try {
 			spreadsheet.getCellByPosition(column, row).setFormula(formula);
 		}
 		catch (IndexOutOfBoundsException e) {
-			log.error(e, "No access to cell: " + column + ":" +row);
+			log.error(e, "No access to cell: " + row + ":" + column);
 		}
+	}
+	
+	protected void formatAsCurrency(int row, int column) {
+		Cell cell = CellFormatter.getCell(spreadsheet, row, column);
+		String currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode();
+		cell.getOdfElement().setOfficeCurrencyAttribute(currencyCode);
+		cell.getOdfElement().setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.CURRENCY.toString());
+		cell.setCurrencyFormat(currencyCode, "#,##0."+StringUtils.repeat("0", DataUtils.getInstance().getDefaultCurrencyUnit().getDefaultFractionDigits())+" " + currencyCode);
 	}
 	
 	public void save() {
@@ -498,6 +465,13 @@ public class OOCalcExporter {
 	 */
 	protected String getOutputFileName() {
 		return "DEFAULT";
+	}
+
+	protected void setOptimalheight(int rowIndex) {
+		Row row = RowFormatter.getRow(spreadsheet, rowIndex);
+		if(row != null) {
+			row.getOdfElement().setProperty(OdfTableRowProperties.UseOptimalRowHeight, "true");
+		}
 	}
 
 }

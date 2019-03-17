@@ -101,6 +101,7 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
+        part.setElementId("org.fakturama.productselection.dialog");
         part.getProperties().put(Constants.PROPERTY_PRODUCTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         productListTable = ContextInjectionFactory.make(ProductListTable.class, context);

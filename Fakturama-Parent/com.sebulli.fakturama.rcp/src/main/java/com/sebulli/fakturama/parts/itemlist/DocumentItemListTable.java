@@ -138,6 +138,7 @@ import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
@@ -177,7 +178,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	
 	@Inject
 	private INumberFormatterService numberFormatterService;
-
+	
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
     
@@ -223,6 +224,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     private SelectionLayer selectionLayer;
     
     private ProductUtil productUtil;
+    private DocumentItemUtil documentItemUtil;
 
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
@@ -245,6 +247,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.documentType = DocumentType.findByKey(document.getBillingType().getValue());
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+        this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
@@ -531,11 +534,15 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
             /**
              * Sets the new value on the given element.
+             * <h3>HINT</h3>
+             * <p>Saving a new document causes to set the technical fields (dateAdded or modifiedBy) for the DocumentItem.
+             * Therefore we have to check the "real" changes and ignore the only technical ones. This is achieved by 
+             * a tiny PropertyChangeListener inside DocumentItemDTO, which tracks all "real" changes. The status
+             * can be get with "isDocumentItemDirty()" method from DocumentItemDTO.</p>
              */
             public void setDataValue(DocumentItemDTO rowObject, int columnIndex, Object newValue) {
                 DocumentItemListDescriptor descriptor = (DocumentItemListDescriptor) propertyNamesList.get(columnIndex);
                 boolean calculate = true;
-                boolean valueChanged = true;  
                 switch (descriptor) {
                 case OPTIONAL:
                     rowObject.getDocumentItem().setOptional((Boolean) newValue);
@@ -563,6 +570,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                             //if (!DataUtils.DoublesAreEqual(newPrice, 0.0))
                             rowObject.getDocumentItem().setPrice(newPrice);
                         }
+                        
+                        rowObject.getDocumentItem().setQuantityUnit(documentItemUtil.getProductQuantityUnit(product, rowObject.getDocumentItem().getQuantity()));
                     }
                     break;
                 case QUNIT:
@@ -592,29 +601,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case PICTURE:
                     // setting a new picture isn't allowed in this context!
                     calculate = false; // no recalculation needed
-                    valueChanged = false;
                     break;
                 case VAT:
                     // Set the VAT
-                    VAT vat = (VAT) newValue; //columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-
-                    // // If no VAT is found, use the standard VAT
-                    // if (i < 0)
-                    //     i = Integer.parseInt(Data.INSTANCE.getProperty("standardvat"));
-
-                    // Set the vat and store the vat value before and after the modification.
-                    //                    Double oldVat = 1.0 + item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value");
-                    //                    item.setVat(i);
-                    //                    Double newVat = 1.0 + item.getDoubleValueByKeyFromOtherTable("vatid.VATS:value");
-                    //
-                    //                    // Modify the net value that the gross value stays constant.
-                    //                    if (documentEditor.getUseGross())
-                    //                        item.setDoubleValueByKey("price", oldVat / newVat * item.getDoubleValueByKey("price"));
-
-                    if (vat != null) {
-                        rowObject.getDocumentItem().setItemVat(vat);
-                        //                    } else {   TODO ???
-                        //                        retval = Double.valueOf(0.0);
+                    if (newValue != null) {
+                        rowObject.getDocumentItem().setItemVat((VAT) newValue);
                     }
                     break;
                 case UNITPRICE:
@@ -658,17 +649,20 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     break;
                 }
 
-                if(valueChanged) {
+                if(rowObject.isDocumentItemDirty()) {
+                    Map<String, Object> event = new HashMap<>();
+                    event.put("source", descriptor);
 	                // Recalculate the total sum of the document if necessary
 	                // do it via the messaging system and send a message to DocumentEditor
-	                Map<String, Object> event = new HashMap<>();
 	                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
 	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
+	                rowObject.setDocumentItemDirty(false);
+	                
 	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
                 }
             }
 
-            public int getColumnCount() {
+			public int getColumnCount() {
                 return propertyNamesList.size();
             }
 
@@ -692,6 +686,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         //build the grid layer
 		gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames,
 				derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, msg, true);
+		
 		DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         
         // set default percentage width 
@@ -716,9 +711,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //                log.debug("Selection changed:");
                 
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                @SuppressWarnings("unchecked")
-                List<DocumentItemDTO> selectedElements = selection.toList();
-                selectionService.setSelection(selectedElements);
+                selectionService.setSelection(selection.toList());
             }
         );
          
@@ -1011,6 +1004,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
         getDocumentItemsListData().add(newItem);
         renumberItems();
+        getContainer().setDirty(true);
         ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
 		natTable.doCommand(scrollToLastPositionCommand);
     }
@@ -1022,6 +1016,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         int no = 1;
         for (DocumentItemDTO documentItemDTO : documentItemsListData) {
+        	if(documentItemDTO.getDocumentItem().getDeleted()) {
+        		continue;
+        	}
             documentItemDTO.getDocumentItem().setPosNr(no++);
         }
     }

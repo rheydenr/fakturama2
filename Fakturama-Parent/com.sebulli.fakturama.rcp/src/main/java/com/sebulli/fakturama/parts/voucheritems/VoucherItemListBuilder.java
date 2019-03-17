@@ -30,6 +30,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.model.VoucherType;
+import com.sebulli.fakturama.parts.VoucherEditor;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 
@@ -62,7 +63,7 @@ public class VoucherItemListBuilder {
 
     private FakturamaModelFactory modelFactory;
 
-    private VoucherItemListTable itemListTable;
+	private VoucherEditor container;
 
 //    protected NatTable natTable;
 
@@ -92,14 +93,30 @@ public class VoucherItemListBuilder {
         deleteButton.setToolTipText(msg.editorVoucherFieldItemsDeleteposTooltip);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
         
-        itemListTable = ContextInjectionFactory.make(VoucherItemListTable.class, context);
-        Control tableComposite = itemListTable.createPartControl(parent, voucher, useGross, netgross);
+
+        final VoucherItemListTable itemListTable = ContextInjectionFactory.make(VoucherItemListTable.class, context);
+        Control tableComposite = itemListTable.createPartControl(parent, voucher, useGross, netgross, container);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
         addButton.addMouseListener(new MouseAdapter() {
 
             // Add a new item with default properties
             public void mouseDown(MouseEvent e) {
-                addNewItem();
+                int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
+                // Use the standard VAT value
+                VAT defaultVat = vatsDao.findById(defaultVatId);
+                VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat, container.getVoucherType());
+                Optional<VoucherItemDTO> maxPosItem = itemListTable.getVoucherItemsListData().stream().max(
+                        new Comparator<VoucherItemDTO>() {
+                    @Override
+                    public int compare(VoucherItemDTO o1, VoucherItemDTO o2) {
+                        return o1.getVoucherItem().getPosNr().compareTo(o2.getVoucherItem().getPosNr());
+                    }
+                });
+                
+                Integer newPosNr = maxPosItem.isPresent() ? maxPosItem.get().getVoucherItem().getPosNr() + Integer.valueOf(1) : Integer.valueOf(1);
+                item.setPosNr(newPosNr);
+                VoucherItemDTO newItem = new VoucherItemDTO(item);
+                itemListTable.addNewItem(newItem);
             }
         });
         deleteButton.addMouseListener(new MouseAdapter() {
@@ -107,32 +124,11 @@ public class VoucherItemListBuilder {
             // Delete the selected item
             public void mouseDown(MouseEvent e) {
                 itemListTable.removeSelectedEntry();
+                itemListTable.renumberItems();
             }
         });
         return itemListTable;
 
-    }
-    
-    /**
-     * Add a voucher item to the list of all voucher items.
-     */
-    private void addNewItem() {
-        int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
-        // Use the standard VAT value
-        VAT defaultVat = vatsDao.findById(defaultVatId);
-        VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat);
-        Optional<VoucherItemDTO> maxPosItem = itemListTable.getVoucherItemsListData().stream().max(
-                new Comparator<VoucherItemDTO>() {
-            @Override
-            public int compare(VoucherItemDTO o1, VoucherItemDTO o2) {
-                return o1.getVoucherItem().getPosNr().compareTo(o2.getVoucherItem().getPosNr());
-            }
-        });
-        
-        Integer newPosNr = maxPosItem.isPresent() ? maxPosItem.get().getVoucherItem().getPosNr() + Integer.valueOf(1) : Integer.valueOf(1);
-        item.setPosNr(newPosNr);
-        VoucherItemDTO newItem = new VoucherItemDTO(item);
-        itemListTable.addNewItem(newItem);
     }
     
     /**
@@ -142,15 +138,16 @@ public class VoucherItemListBuilder {
      * @param category the category
      * @param price the price
      * @param vat the vat
+     * @param voucherType 
      * @return the voucher item
      */
-    private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat) {
-    	VoucherItem expenditureItem = modelFactory.createVoucherItem();
-    	expenditureItem.setItemVoucherType(VoucherType.EXPENDITURE);
-        expenditureItem.setName(name);
-        expenditureItem.setPrice(price);
-        expenditureItem.setVat(vat);
-        return expenditureItem;
+    private VoucherItem createNewVoucherItem(String name, String category, Double price, VAT vat, VoucherType voucherType) {
+    	VoucherItem voucherItem = modelFactory.createVoucherItem();
+    	voucherItem.setItemVoucherType(voucherType);
+        voucherItem.setName(name);
+        voucherItem.setPrice(price);
+        voucherItem.setVat(vat);
+        return voucherItem;
     }
     
   /**
@@ -197,6 +194,11 @@ public class VoucherItemListBuilder {
     public VoucherItemListBuilder withVoucher(Voucher voucher) {
         this.voucher = voucher;
         return this;
+    }
+    
+    public VoucherItemListBuilder withContainer(VoucherEditor container) {
+    	this.container = container;
+    	return this;
     }
 
 }

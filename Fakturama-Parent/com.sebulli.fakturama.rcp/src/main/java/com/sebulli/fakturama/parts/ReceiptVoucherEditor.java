@@ -56,7 +56,7 @@ public class ReceiptVoucherEditor extends VoucherEditor {
      * @see com.sebulli.fakturama.parts.VoucherEditor#getVoucherType()
      */
     @Override
-    protected VoucherType getVoucherType() {
+    public VoucherType getVoucherType() {
     	return VoucherType.RECEIPTVOUCHER;
     }
     

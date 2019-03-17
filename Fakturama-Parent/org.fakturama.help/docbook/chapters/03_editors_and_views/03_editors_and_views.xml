@@ -844,7 +844,7 @@
 			</varlistentry>
 			<varlistentry>
 				<term>ZUGFeRD Exporter
-				</term><listitem>Wandelt ein vorher als PDF-Rechnung erstelltes Dokument in ein ZUGFeRD-konformes Dokument um.</listitem></varlistentry>
+				</term><listitem>Wandelt ein vorher als PDF-Rechnung erstelltes Dokument in ein ZUGFeRD-konformes Dokument um. Das PDF-Dokument muss im Format PDF/A-1 vorliegen (siehe Export-Dialog im LibreOffice).</listitem></varlistentry>
 		</variablelist>
 	</section>
 	<section>
@@ -852,7 +852,8 @@
 		<variablelist>
 		<varlistentry>
 				<term>Perspektive zurücksetzen</term>
-			<listitem>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.</listitem>
+			<listitem>Die Position und Größe der Editorfenster, des Übersichtsfensters und der Navigationsleiste werden gespeichert. Mit <emphasis role="bold">Perspektive zurücksetzen</emphasis> wird die ursprüngliche Größe und Position der einzelnen Fenster wieder hergestellt.<note>Sollten die Spalten der Artikel-Eingabetabelle nicht mehr sinnvoll gesetzt sein können Sie in Ihrem Arbeitsverzeichnis die Datei <code>fakturamaviews.properties</code> löschen.</note></listitem>
+			
 		</varlistentry>
 			<varlistentry>
 				<term>
@@ -941,7 +942,8 @@
 		</varlistentry -->
 		<varlistentry>
 			<term>Nach Updates suchen</term>
-			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall, kann der Benutzer entscheiden, ob diese installiert werden soll.</para>
+			<listitem>
+			<para>Überprüft, ob für Fakturama eine Programmaktualisierung zur Verfügung steht. Ist das der Fall, kann der Benutzer entscheiden, ob diese installiert werden soll.</para></listitem>
 		</varlistentry>
 		<!--varlistentry>
 			<term>Neue Software installieren</term>
@@ -1189,7 +1191,7 @@
 						<imagedata contentdepth="80%" width="40pt"  fileref="../images/application/parcel_service_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Paket</title>
-			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist oder das im Übersichtsfenster markierte Dokument.</para>
+			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist oder die Adresse des im Übersichtsfenster markierten Dokuments.</para>
 			<para>Siehe auch <link linkend="editor_editor_parcelservice">Paketdienst Editor</link> und <link linkend="parcelservice_main">Paketdienst Vorlagen</link>
 			</para>
 		</sect2>
@@ -1514,7 +1516,7 @@
 						<imagedata contentdepth="40%" width="20pt" fileref="../images/application/parcel_16.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Paketdienst</title>
-			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender- und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist oder das im Übersichtsfenster markierte Dokument. </para>
+			<para>Öffnet die Webseite eines Paketdienstes und füllt die Formulardaten mit Absender- und Empfängeradresse. Es wird entweder die Adresse desjenigen Dokumentes verwendet, das gerade im Dokumenteneditor geöffnet ist oder die Adresse des im Übersichtsfenster markierten Dokuments.</para>
 			<para>Siehe auch <link linkend="parcelservice_main">Paketdienst</link>
 			</para>
 		</section>
@@ -1680,7 +1682,7 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-						<para>Die Adresse kann auch direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Debitoradressen geöffnet und die gewünschte Adresse ausgewählt werden (mit STRG+Klick wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese ebenfalls mit übernommen.</para>
+						<para>Die Adresse kann direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Debitoradressen geöffnet und die gewünschte Adresse ausgewählt werden (mit STRG+Klick wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese ebenfalls mit übernommen.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -1696,6 +1698,23 @@
 					</term>
 					<listitem>
 						<para>Soll eine neue Adresse eingegeben und die Adressdaten gleichzeitig als neuer Kontakt angelegt werden, so wird über dieses Symbol der Kontakteditor geöffnet und beim Speichern die Daten automatisch in das Dokument übernommen.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata contentdepth="60%" fileref="../images/editor/DHL_CSV.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="60%" fileref="../images/editor/DHL_CSV.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Die Adresse kann als Datensatz (CSV) in einer Datei gespeichert werden. Diese Datei kann beim <link xl:href="https://shop.deutschepost.de/dhl-online-frankierung">Online-Frankierservice von DHL</link> über den Button "Sammelbestellung per CSV" hochgeladen werden. Die Absenderdaten werden dabei aus den hinterlegten Firmendaten ergänzt. Die Art des Pakets muss derzeit noch manuell geändert werden (direkt in der CSV-Datei oder im Online-Warenkorb).</para>
+						<para>Die Funktion kann über die Einstellungen aktiviert werden. Siehe dazu <link linkend="preferences_export">Einstellungen Export</link>.</para>
+						<tip>Die konkrete Empfängeradresse sieht man nur, indem man im Warenkorb das entsprechende Produkt anklickt.</tip>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -1717,7 +1736,7 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-						<para>Ist die Lieferadresse unterschiedlich zur Rechnungsadresse, so erscheint ein Warnsymbol. Die Lieferadresse wird angezeigt, wenn man mit der Maus über das Symbol streicht.</para>
+						<para>Unterscheidet sich die Lieferadresse von der Rechnungsadresse, so erscheint ein Warnsymbol. Die Lieferadresse wird angezeigt, wenn man mit der Maus über das Symbol streicht.</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -1903,7 +1922,7 @@
 		</sect2>
 		<sect2>
 			<title>am</title>
-			<para>Tag des Geldeingangs (wird angezeigt, wenn "bezahlt" angklickt wurde).</para>
+			<para>Tag des Geldeingangs (wird angezeigt, wenn "bezahlt" angeklickt wurde).</para>
 		</sect2>
 		<sect2>
 			<title>Wert</title>
@@ -1928,7 +1947,7 @@
 		</sect2>
 		<sect2>
 			<title>Versand</title>
-			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist auch möglich, die Beschreibung und auch den Betrag nachträglich von Hand zu ändern. Die Umsatzsteuer wird jedoch immer vom ursprünglich ausgewählten Eintrag verwendet. Die Versandkosten werden als Netto- oder Bruttowert angezeigt, je nach Einstellung.</para>
+			<para>Die Versandkosten lassen sich aus einer Liste auswählen. Es ist möglich, sowohl die Beschreibung als auch den Betrag nachträglich von Hand zu ändern. Die Umsatzsteuer wird jedoch immer vom ursprünglich ausgewählten Eintrag verwendet. Die Versandkosten werden als Netto- oder Bruttowert angezeigt, je nach Einstellung.</para>
 			<para>Siehe <link linkend="editor_editor_shipping">Editor Versandart</link>
 			</para>
 		</sect2>
@@ -1981,7 +2000,13 @@
 		</sect2>
 		<sect2>
 			<title>Einheit</title>
-			<para>Die Maßeinheit des Produktes.</para>
+			<para>Die Maßeinheit des Produktes. Hier können Sie bei Bedarf auch definieren, wie die Maßeinheit bei unterschiedlichen Mengen heißen soll ("Karton" oder "Kartons"). Der Aufbau einer solchen Maßeinheit ist wie folgt:</para>
+			<programlisting>n#name1|n#name2|n#name3</programlisting>
+			<para>Hierbei steht <code>n</code> für eine beliebige Mengenangabe und <code>name1</code>, <code>name2</code> usw. für die entsprechende Mengenangabe.</para>
+			<para>Beispiel:
+			<programlisting>1#Karton|2#Kartons</programlisting>
+			liefert für die Mengenangabe "1" &#x2026; "Karton", für "2" &#x2026; "Kartons", für "100" &#x2026; "Kartons". Die Mengeneinheit wird beim Ändern der Menge im Dokumenten-Editor automatisch angepasst.
+			</para>
 		</sect2>
 		<sect2>
 			<title>Preis</title>
@@ -2309,8 +2334,7 @@
 				</listitem>
 			</itemizedlist>
 			<para>
-				<emphasis role="italic">Beispiel für SEPA-Lastschrifteinzug (Prenotification):</emphasis> Den Rechnungsbetrag in Höhe von &lt;DOCUMENT.TOTAL&gt; ziehen wir am &lt;DUE.DATE&gt; von Ihrem Konto &lt;DEBITOR.BANK.IBAN.CENSORED&gt; bei der &lt;DEBITOR.BANK.NAME&gt; unter Angabe der Mandatsreferenz &lt;DEBITOR.MANDATREF&gt; ein. Unsere Gläubiger-ID lautet &lt;YOURCOMPANY.CREDITORID&gt;.
-			</para>
+				<emphasis role="italic">Beispiel für SEPA-Lastschrifteinzug (Prenotification):</emphasis></para><blockquote><para>Den Rechnungsbetrag in Höhe von <code>&lt;DOCUMENT.TOTAL&gt;</code> ziehen wir am <code>&lt;DUE.DATE&gt;</code> von Ihrem Konto <code>&lt;DEBITOR.BANK.IBAN.CENSORED&gt;</code> bei der <code>&lt;DEBITOR.BANK.NAME&gt;</code> unter Angabe der Mandatsreferenz <code>&lt;DEBITOR.MANDATREF&gt;</code> ein. Unsere Gläubiger-ID lautet <code>&lt;YOURCOMPANY.CREDITORID&gt;</code>.</para></blockquote>
 			<para>
 				Die Platzhalter können über die Schaltfläche neben dem jeweiligen Textfeld ausgewählt werden:
 				<informalfigure>
@@ -2319,7 +2343,7 @@
 							<imagedata fileref="../images/editor/placeholder_selector.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata width="100%" fileref="../images/editor/placeholder_selector.png" format="PNG" scalefit="1"/>
+							<imagedata width="80%" fileref="../images/editor/placeholder_selector.png" format="PNG" scalefit="1"/>
 						</imageobject>
 					</mediaobject>
 				</informalfigure>
@@ -2330,7 +2354,7 @@
 							<imagedata fileref="../images/editor/select_payment_placeholder.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata width="100%" fileref="../images/editor/select_payment_placeholder.png" format="PNG" scalefit="1"/>
+							<imagedata width="80%" fileref="../images/editor/select_payment_placeholder.png" format="PNG" scalefit="1"/>
 						</imageobject>
 					</mediaobject>
 				</informalfigure>
@@ -2781,7 +2805,7 @@
 					<imageobject role="fo">
 						<imagedata contentdepth="100%" fileref="../images/application/printer_grey_16.png" format="PNG" scalefit="1" width="100%"/>
 					</imageobject>
-				</inlinemediaobject></term><listitem><para>Sind Daten nachträglich nochmals geändert worden, erscheint das Symbol ausgegraut.</para></listitem></varlistentry></variablelist>
+				</inlinemediaobject></term><listitem><para>Sind Daten nachträglich geändert worden, erscheint das Symbol ausgegraut.</para></listitem></varlistentry></variablelist>
 			<para>Siehe <link linkend="preferences_notification">Kunde benachrichtigen</link>
 			</para>
 		</section>

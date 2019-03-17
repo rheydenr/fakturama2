@@ -15,7 +15,6 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -42,6 +41,7 @@ import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -66,7 +66,7 @@ public class CoolbarViewPart {
     private IPreferenceStore preferences;
 	
 	@Inject
-	private Logger log;
+	private ILogger log;
 	
 	@Inject
 	@Translation
@@ -210,6 +210,10 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, msg.commandCalculatorName, msg.commandCalculatorTooltip,
 				Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR), null);	
+		
+		createToolItem(toolBar4, CommandIds.CMD_QRK_EXPORT, msg.commandExportQrkName, msg.commandExportQrkTooltip,
+				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
+				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
 		finishToolbar(coolbar1, toolBar4);	
 	}
 

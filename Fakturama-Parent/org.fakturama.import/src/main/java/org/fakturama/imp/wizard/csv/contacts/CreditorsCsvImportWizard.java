@@ -40,6 +40,8 @@ public class CreditorsCsvImportWizard extends ContactsCsvImportWizard implements
 		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
 		ctx.set(ContactUtil.class, contactUtil);
 		ContactsCsvImporter csvImporter = ContextInjectionFactory.make(ContactsCsvImporter.class, ctx);
+		csvImporter.setQuoteChar(options.getQuoteChar().charAt(0));
+		csvImporter.setSeparator(options.getSeparator().charAt(0));
 		csvImporter.importCSV(fileName, FakturamaModelPackage.CREDITOR_CLASSIFIER_ID, options.getUpdateExisting(), options.getUpdateWithEmptyValues());
 
 		ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);

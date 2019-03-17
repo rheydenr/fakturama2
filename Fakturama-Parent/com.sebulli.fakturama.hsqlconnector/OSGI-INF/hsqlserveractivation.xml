@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.sebulli.fakturama.hsqlsrvstarter">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="stopServer" name="com.sebulli.fakturama.hsqlsrvstarter">
    <implementation class="com.sebulli.fakturama.hsqlconnector.HsqlConnectionProvider"/>
    <service>
       <provide interface="com.sebulli.fakturama.dbconnector.IActivateDbServer"/>

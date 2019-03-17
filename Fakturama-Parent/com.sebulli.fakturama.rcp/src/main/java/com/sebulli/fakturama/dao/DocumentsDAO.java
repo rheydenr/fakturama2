@@ -156,10 +156,12 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 
 
     /**
-     * @param order
-     * @param order_id
-     * @param dateAsISO8601String
-     * @return
+     * Find {@link Document}s by type, their webshop ID and a date. 
+     *  
+     * @param type the {@link DocumentType} of the document
+     * @param webshopId the ID from webshop which is assigned to this {@link Document}  
+     * @param calendarWebshopDate the dateTime for which this {@link Document} was retrieved from webShop
+     * @return a List of {@link Document}s (or an empty List if none was found) 
      */
     public List<Document> findByDocIdAndDocDate(DocumentType type, String webshopId, LocalDateTime calendarWebshopDate) {
         FakturamaModelFactory modelFactory = new FakturamaModelFactory();

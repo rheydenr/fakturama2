@@ -27,7 +27,6 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
@@ -49,6 +48,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
@@ -89,7 +89,7 @@ public class WebShopImportManager {
     private Object data;
     
     @Inject 
-    private Logger log;
+    private ILogger log;
 
     /**
      * Event Broker for sending update events to the list table
@@ -263,7 +263,7 @@ public class WebShopImportManager {
 	/**
 	 * @return the log
 	 */
-	public Logger getLog() {
+	public ILogger getLog() {
 		return log;
 	}
 

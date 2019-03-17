@@ -18,6 +18,7 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 public interface IWebshopConnection {
 
@@ -50,7 +51,7 @@ public interface IWebshopConnection {
 
 	Properties getOrderstosynchronize();
 
-	Logger getLog();
+	ILogger getLog();
 
 	void setOrderstosynchronize(Properties orderstosynchronize);
 

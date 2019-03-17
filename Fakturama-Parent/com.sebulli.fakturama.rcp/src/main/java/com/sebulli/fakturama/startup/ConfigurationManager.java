@@ -31,6 +31,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -234,9 +235,19 @@ public class ConfigurationManager {
 	 */
 	private void selectWorkspace(String requestedWorkspace) {
 	    // you can't use the ModelService because it isn't available at this moment :-(
-//		InitialStartupDialog startDialog = ContextInjectionFactory.make(InitialStartupDialog.class, context);
-		InitialStartupDialog startDialog = new InitialStartupDialog(shell, eclipsePrefs, log, msg, requestedWorkspace);
+		Shell dialogShell = new Shell(Display.getCurrent());
+		InitialStartupDialog startDialog = new InitialStartupDialog(dialogShell, eclipsePrefs, log, msg, requestedWorkspace) {
+            @Override
+            protected Shell getParentShell() {
+                // Bug 429308: Make workspace selection dialog visible
+                // in the task manager of the OS
+                return null;
+            }
+		};
 		int result = startDialog.open();
+		
+		dialogShell.dispose();
+		
 		if (result != Window.OK || eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) == null) {
 			// close the application
 			log.warn("Dialog was closed without setting any preferences. Exiting.");

@@ -290,9 +290,9 @@ public class DataUtils {
     	double factor = Math.pow(10, scale);
     	if (d != null) {
 	        if(d >= 0)
-	            floorValue = Math.floor(d * factor + EPSILON) / factor;
+	            floorValue = Math.round(d * factor + EPSILON) / factor;
 	        else
-	            floorValue = Math.ceil(d * factor - EPSILON) / factor;
+	            floorValue = Math.round(d * factor - EPSILON) / factor;
     	}
     	
         return floorValue;
@@ -373,6 +373,7 @@ public class DataUtils {
      * @param netvalue
      *            Net value as UniData. This is modified with the net value.
      */
+    @Deprecated
     public MonetaryAmount calculateNetFromGross(String gross, Double vat, MonetaryAmount netvalue) {
     	// If there is a gross SWT text field specified, its value is used
     	// In the other case: do not convert. Just format the netvalue.
@@ -456,7 +457,7 @@ public class DataUtils {
      *      The new string without them
      */
     public String removeCR(String s) {
-        return s.replaceAll("\r", "");
+        return s != null ? s.replaceAll(System.lineSeparator()+"|\\r|\\n", "") : "";
     }
 
     /**
@@ -479,9 +480,9 @@ public class DataUtils {
      * @param s2
      *          Second String to compare
      * @return
-     *          True, if bothe are equal
+     *          <code>true</code> if both are equal
      */
-    public boolean MultiLineStringsAreEqual (String s1, String s2) {
+    public boolean MultiLineStringsAreEqual(String s1, String s2) {
         return removeCR(s1).equals(removeCR(s2));
     }
     

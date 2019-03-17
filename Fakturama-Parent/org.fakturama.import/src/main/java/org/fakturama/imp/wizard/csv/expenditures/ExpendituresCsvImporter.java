@@ -26,7 +26,6 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
@@ -40,6 +39,7 @@ import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
@@ -67,7 +67,7 @@ public class ExpendituresCsvImporter {
 	protected Messages msg;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
     
     @Inject
     private VoucherCategoriesDAO voucherCategoriesDAO;

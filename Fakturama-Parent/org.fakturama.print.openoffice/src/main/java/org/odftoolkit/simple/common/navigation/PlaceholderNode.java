@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextLineBreakElement;
 import org.odftoolkit.odfdom.dom.element.text.TextPElement;
 import org.odftoolkit.odfdom.dom.element.text.TextParagraphElementBase;
 import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
@@ -183,7 +184,7 @@ public class PlaceholderNode extends Selection {
 			}
         }
         
-        // make every line break a separate paragraph
+
         String[] st = StringUtils.splitByWholeSeparatorPreserveAllTokens(StringUtils.defaultString(newText), "\r");
         
         // if the first line is empty, we have a flag for this case
@@ -234,9 +235,11 @@ public class PlaceholderNode extends Selection {
         while(it.hasNext()) {
         	Node node = (Node)it.next();
 	        if(insertedNode == null) {
-	        	insertedNode = parentNode.getParentNode().insertBefore(node, parentNode.getNextSibling());
+	        	Node lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), parentNode.getNextSibling());
+	        	insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
 	        } else {
-	        	insertedNode = parentNode.getParentNode().insertBefore(node, insertedNode);
+	        	Node lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), insertedNode);
+	        	insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
 	        }
         }
         // ...then remove the origin "placeholder" node...

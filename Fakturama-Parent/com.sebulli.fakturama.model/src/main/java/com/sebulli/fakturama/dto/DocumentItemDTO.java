@@ -11,115 +11,145 @@
  * Contributors:
  *     The Fakturama Team - initial API and implementation
  */
- 
+
 package com.sebulli.fakturama.dto;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.IEntity;
 
 /**
- * Container object for {@link DocumentItem}s. This container contains a {@link DocumentItem}
- * and a {@link Price} object. It is used in the {@link com.sebulli.fakturama.parts.itemlist.DocumentItemListTable} for
- * holding the displayed values. 
+ * Container object for {@link DocumentItem}s. This container contains a
+ * {@link DocumentItem} and a {@link Price} object. It is used in the
+ * {@link com.sebulli.fakturama.parts.itemlist.DocumentItemListTable} for
+ * holding the displayed values.
  *
  */
 public class DocumentItemDTO implements IEntity {
-    private DocumentItem documentItem;
-//    private Price price;
-    
-    /**
-     * Creates a new DTO based on a given {@link DocumentItem}.
-     * 
-     * @param documentItem
-     */
-    public DocumentItemDTO(DocumentItem documentItem) {
-        this.documentItem = documentItem;
-//        this.price = new Price(documentItem);
-    }
+	private DocumentItem documentItem;
+	private boolean dirty;
+	private List<String> ignoredAttributes = new ArrayList<>();
 
-    /**
-     * @return the documentItem
-     */
-    public DocumentItem getDocumentItem() {
-        return documentItem;
-    }
+	/**
+	 * Creates a new DTO based on a given {@link DocumentItem}.
+	 * 
+	 * @param documentItem
+	 */
+	public DocumentItemDTO(DocumentItem documentItem) {
+		this.documentItem = documentItem;
+		ignoredAttributes.add("dateAdded");
+		ignoredAttributes.add("validFrom");
+		ignoredAttributes.add("modifiedBy");
+		ignoredAttributes.add("originQuantity");
+		this.documentItem.addPropertyChangeListener(new PropertyChangeListener() {
 
-    /**
-     * @return the price
-     */
-    public Price getPrice() {
-        return getPrice(false);
-    }
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (!ignoredAttributes.contains(evt.getPropertyName())) {
+//					System.out.format("changed [%s] from [%s] to [%s]%n", evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+					dirty = true;
+//				} else {
+//					System.out.format("ignored [%s]%n", evt.getPropertyName());
+				}
+			}
+		});
+	}
 
-    /**
-     * 
-     * @param useSET use sales equalization tax, if any
-     * @return the price
-     */
-     public Price getPrice(boolean useSET) {
-        return new Price(documentItem, 1.0, useSET);
-    }
-   @Override
-    public String getName() {
-        return documentItem.getName();
-    }
+	public boolean isDocumentItemDirty() {
+		return dirty;
+	}
 
-    @Override
-    public void setName(String newName) {
-        documentItem.setName(newName);
-    }
+	public void setDocumentItemDirty(boolean dirtyState) {
+		this.dirty = dirtyState;
+	}
 
-    @Override
-    public Date getDateAdded() {
-        return documentItem.getDateAdded();
-    }
+	/**
+	 * @return the documentItem
+	 */
+	public DocumentItem getDocumentItem() {
+		return documentItem;
+	}
 
-    @Override
-    public void setDateAdded(Date newDateAdded) {
-        documentItem.setDateAdded(newDateAdded);
-    }
+	/**
+	 * @return the price
+	 */
+	public Price getPrice() {
+		return getPrice(false);
+	}
 
-    @Override
-    public String getModifiedBy() {
-        return documentItem.getModifiedBy();
-    }
+	/**
+	 * 
+	 * @param useSET use sales equalization tax, if any
+	 * @return the price
+	 */
+	public Price getPrice(boolean useSET) {
+		return new Price(documentItem, 1.0, useSET);
+	}
 
-    @Override
-    public void setModifiedBy(String newModifiedBy) {
-        documentItem.setModifiedBy(newModifiedBy);
-    }
+	@Override
+	public String getName() {
+		return documentItem.getName();
+	}
 
-    @Override
-    public Date getModified() {
-        return documentItem.getModified();
-    }
+	@Override
+	public void setName(String newName) {
+		documentItem.setName(newName);
+	}
 
-    @Override
-    public void setModified(Date newModified) {
-        documentItem.setModified(newModified);
-    }
+	@Override
+	public Date getDateAdded() {
+		return documentItem.getDateAdded();
+	}
 
-    @Override
-    public long getId() {
-        return documentItem.getId();
-    }
+	@Override
+	public void setDateAdded(Date newDateAdded) {
+		documentItem.setDateAdded(newDateAdded);
+	}
 
-    @Override
-    public void setId(long newId) {
-        throw new UnsupportedOperationException("object is only a wrapper object!");
-    }
+	@Override
+	public String getModifiedBy() {
+		return documentItem.getModifiedBy();
+	}
 
-    @Override
-    public Boolean getDeleted() {
-        return documentItem.getDeleted();
-    }
+	@Override
+	public void setModifiedBy(String newModifiedBy) {
+		documentItem.setModifiedBy(newModifiedBy);
+	}
 
-    @Override
-    public void setDeleted(Boolean newDeleted) {
-        documentItem.setDeleted(newDeleted);
-    }
+	@Override
+	public Date getModified() {
+		return documentItem.getModified();
+	}
+
+	@Override
+	public void setModified(Date newModified) {
+		documentItem.setModified(newModified);
+	}
+
+	@Override
+	public long getId() {
+		return documentItem.getId();
+	}
+
+	@Override
+	public void setId(long newId) {
+		throw new UnsupportedOperationException("object is only a wrapper object!");
+	}
+
+	@Override
+	public Boolean getDeleted() {
+		return documentItem.getDeleted();
+	}
+
+	@Override
+	public void setDeleted(Boolean newDeleted) {
+		documentItem.setDeleted(newDeleted);
+	}
 
 	@Override
 	public Date getValidFrom() {

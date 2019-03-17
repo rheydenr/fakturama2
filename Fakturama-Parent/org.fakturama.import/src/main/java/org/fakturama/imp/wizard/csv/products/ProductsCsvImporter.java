@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
@@ -39,6 +38,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
@@ -71,7 +71,7 @@ public class ProductsCsvImporter {
 	private VatsDAO vatsDAO;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
     
     @Inject
     private IDateFormatterService dateFormatterService;

@@ -65,10 +65,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.TOOLBAR_PREFERENCE_PAGE);
 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_WEBSHOP, showIcon + msg.commandWebshopName, getFieldEditorParent()));
-
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_PRINT, showIcon + msg.mainMenuFilePrintTooltipDeprecated, getFieldEditorParent()));
-
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_SAVE, showIcon + msg.mainMenuFileSave, getFieldEditorParent()));
 
 		// Get all documents
@@ -79,42 +76,16 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 			addField(new BooleanFieldEditor("TOOLBAR_SHOW_DOCUMENT_NEW_" + DocumentType.getTypeAsString(i).toUpperCase(), showIcon + msg.getMessageFromKey(DocumentType.getNewTextKey(DocumentType.findByKey(i))), getFieldEditorParent()));
 		}
 		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_PRODUCT, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_PRODUCT), getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_CONTACT, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_CONTACT), getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_EXPENDITUREVOUCHER), getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, showIcon + msg.getMessageFromKey(CommandIds.TOOLBAR_RECEIPTVOUCHER), getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, showIcon + msg.commandParcelserviceName, getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
-		
-		//T: Preference page "toolbar" 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName , getFieldEditorParent()));
+		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_QRK_EXPORT, showIcon + msg.commandExportQrkName , getFieldEditorParent()));
 	}
 	
-//	/* (non-Javadoc)
-//	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
-//	 */
-//	@Override
-//	public boolean performOk() {
-//	    eventBroker.post("TOOLBARPREFS", "jaa");
-//	    return super.performOk();
-//	}
-//	
-//	@Override
-//	public String getDescription() {
-//	    return msg.preferencesToolbarIcons;
-//	}
-//
 	/**
 	 * Write or read the preference settings to or from the data base
 	 * 
@@ -139,6 +110,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_BROWSER, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.TOOLBAR_SHOW_QRK_EXPORT, write);
 	}
 	
     @Override
@@ -176,5 +148,6 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_BROWSER, true);
 		node.setDefault(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, true);
+		node.setDefault(Constants.TOOLBAR_SHOW_QRK_EXPORT, false);
 	}
 }

@@ -126,9 +126,22 @@ public class AccountsExporter extends OOCalcExporter {
 			return false;
 		}
 		
-		// Sort the accountEntries by category and date --> already done by database
-//		Collections.sort(accountEntries, new UniDataSetSorter("date"));
-		accountEntries.sort((AccountEntry entry1, AccountEntry entry2) -> {return entry1.date.before(entry2.date) ? -1 : 1;});
+		// Sort the accountEntries by category and date
+		accountEntries.sort((AccountEntry entry1, AccountEntry entry2) -> {
+			if (entry1.date == null) {
+				if (entry2.date == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			} else {
+				if (entry2 == null) {
+					return -1;
+				} else {
+					return entry1.date.before(entry2.date) ? -1 : 1;
+				}
+			}
+		});
 
 		// Fill the first 4 rows with the company information
 		fillCompanyInformation(0);
@@ -238,5 +251,4 @@ public class AccountsExporter extends OOCalcExporter {
 	protected String getOutputFileName() {
 		return exportMessages.wizardExportAccountsDefaultfilename;
 	}
-
 }

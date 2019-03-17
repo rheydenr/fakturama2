@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreePathViewerSorter;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -186,6 +187,8 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 			    viewDataSetTable.changeToolbarItem(treeObject);
 			}
 		});
+		
+		internalTreeViewer.setComparator(new TreePathViewerSorter());
 	}
 		
 	public Tree getTree() {

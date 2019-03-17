@@ -29,13 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.translation.TranslationService;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
 
@@ -52,7 +54,7 @@ public class TemplateResourceManager implements ITemplateResourceManager {
 	private static final String CONTRIBUTION_URI = "platform:/plugin/com.sebulli.fakturama.rcp";
     
 //    @Inject
-    private Logger log;   
+    private ILogger log;   
     
     // Messages class can't be used at this point, since it isn't in context at this stage
     private TranslationService translationService;
@@ -63,7 +65,9 @@ public class TemplateResourceManager implements ITemplateResourceManager {
     @Override
     public boolean createWorkspaceTemplates(String workspace, IEclipseContext context) {
         this.translationService = context.get(TranslationService.class);
-        this.log = context.get(Logger.class);
+		BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
+		ServiceReference<ILogger> servRef = bundleContext.getServiceReference(ILogger.class);
+		this.log = bundleContext.getService(servRef);
         String templateFolderName = translate("config.workspace.templates.name"); 
         
         // Exit if the workspace path is not set

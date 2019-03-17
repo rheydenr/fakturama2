@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -94,6 +93,7 @@ import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -239,7 +239,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 *            Progress monitor
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
+	public Boolean doSave(IProgressMonitor monitor, @Named(IServiceConstants.ACTIVE_SHELL) Shell parent) {
 
 		/*
 		 * the following parameters are not saved: 
@@ -260,7 +260,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// check if the same number was used.
 		if(thereIsOneWithSameNumber()) {
 			// Save is only allowed, if there is no contact with the same number
-			return;
+			return Boolean.FALSE;
 		}
 
 	    // check for a new contact
@@ -282,7 +282,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 						msg.editorContactHintSeepreferences);
 				messageBox.open();
 				throw new RuntimeException(MessageFormat.format(msg.editorContactErrorNotnextfreenumber, txtNr.getText()));
-//				return;
 			}
 
 		}
@@ -330,7 +329,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         catch (FakturamaStoringException e) {
             log.error(e, "can't save the current Contact: " + editorContact.toString());
             MessageDialog.openError(parent, msg.dialogMessageboxTitleError, "Can't save data! Please see log file.\n");
-            return;
+            return Boolean.FALSE;
         }
 		newContact = false;
 		
@@ -363,6 +362,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+        return Boolean.TRUE;
 	}
 
 	protected abstract AbstractDAO<C> getContactsDao();
@@ -1469,14 +1469,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private static final class UrlCallHandler extends MouseAdapter {
 		
 		private Text txtField;
-		private Logger log;
+		private ILogger log;
 
 
 		/**
 		 * @param txtField
 		 * @param log
 		 */
-		public UrlCallHandler(Text txtField, Logger log) {
+		public UrlCallHandler(Text txtField, ILogger log) {
 			this.txtField = txtField;
 			this.log = log;
 		}
@@ -1494,7 +1494,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 							websiteText = StringUtils.prependIfMissing(websiteText, "mailto:");
 							Desktop.getDesktop().mail(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
-							log.warn("can't open the e-mail application. Reason: ", e1);
+							log.error(e1, "can't open the e-mail application. Reason: ");
 						}
 					}
 				} else {
@@ -1505,7 +1505,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 						try {
 							Desktop.getDesktop().browse(new URI(websiteText));
 						} catch (IOException | URISyntaxException e1) {
-							log.warn("can't open the contact's web site. Reason: ", e1);
+							log.error(e1, "can't open the contact's web site. Reason: ");
 						}
 					} else {
 						// URL is invalid or empty

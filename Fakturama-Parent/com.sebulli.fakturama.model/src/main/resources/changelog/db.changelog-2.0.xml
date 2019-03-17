@@ -939,7 +939,45 @@
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="VARCHAR(2048)"/>
 		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="VARCHAR(2048)"/>
     </changeSet>
+    
     <changeSet author="rheydenr (generated)" id="20180122-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="TEXT"/>
     </changeSet>
+    
+    <!--  fix voucher type for voucher items -->
+    <changeSet author="rheydenr" id="20190216-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	    <sql>update FKT_VOUCHERITEMS vi set ITEMVOUCHERTYPE = (select v.VOUCHERTYPE from FKT_VOUCHERS v where vi.FK_VOUCHER = v.ID)
+	    </sql>
+    </changeSet>
+    
+    <!--  remove orphaned voucher items -->
+    <changeSet author="rheydenr" id="20190216-002" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+	    <delete tableName="FKT_VOUCHERITEMS">
+	        <where>FK_VOUCHER is NULL</where>
+	    </delete>
+    </changeSet>
+    
+    <!--  update wrong contact type fields -->
+	<changeSet author="rheydenr" id="20190227-001">
+		<update tableName="FKT_CONTACT">
+			<column name="CONTACTTYPE" value="0" />
+			<where>CONTACTTYPE IS NULL</where>
+		</update>
+		
+		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
+			<column name="id" type="int(10)" />
+		</createTable>
+	
+		<sql>INSERT INTO TMP_FKT_CONT SELECT
+			c2.ID FROM FKT_CONTACT c1, FKT_CONTACT c2
+			WHERE c1.FK_ALTERNATECONTACT = c2.ID
+			AND c2.CUSTOMERNUMBER IS NULL
+		</sql>
+		
+        <sql>UPDATE FKT_CONTACT SET CONTACTTYPE=1 WHERE ID in (SELECT
+            ID FROM TMP_FKT_CONT)
+        </sql>
+		
+	   <dropTable tableName="TMP_FKT_CONT"/>
+	</changeSet>
 </databaseChangeLog>

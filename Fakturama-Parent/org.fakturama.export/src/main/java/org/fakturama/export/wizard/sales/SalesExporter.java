@@ -250,130 +250,128 @@ public class SalesExporter extends OOCalcExporter {
 		DocumentSummary documentSummary;
 		for (Document document : documents) {
 			documentSummary = null;
-			if (documentShouldBeExported(document)) {
 
-				// Now analyze document by document
-				VatSummarySetManager vatSummarySetOneDocument = new VatSummarySetManager();
-				documentSummary = dsc.calculate(document);
+			// Now analyze document by document
+			VatSummarySetManager vatSummarySetOneDocument = new VatSummarySetManager();
+			documentSummary = dsc.calculate(document);
 
-				// Calculate the relation between paid value and the value
-				// of the invoice. This is used to calculate the VAT.
-				// Example.
-				// The net sum of the invoice is 100€.
-				// Plus 20% VAT: +20€ = Total: 120€.
-				//
-				// The customer pays only 115€.
-				// 
-				// Then the paidFactor is 115/120 = 0.9583333..
-				// The VAT value in the invoice is also scaled by this 0.958333...
-				// to 19.17€
-				
-				Double paidFactor = Double.valueOf(1.0); 
-				if(Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)) > 0) {
-					paidFactor = document.getPaidValue() / document.getTotalValue();
-				}
-
-				// Use the paid value
-				vatSummarySetOneDocument.add(document, paidFactor);
-
-				// Fill the row with the document data
-				col = 0;
-				if(this.exportPaid) {
-					setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getPayDate()));
-				} else {
-					// calculate due date
-					LocalDateTime targetDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
-					setCellText(row, col++, DateTimeFormatter.ISO_LOCAL_DATE.format(targetDate));
-				}
-				setCellText(row, col++, document.getName());
-				setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate()));
-				Contact addressid = document.getBillingContact();
-
-				// Fill the address columns with the contact that corresponds to the addressid
-				if (addressid != null && addressid.getName() != null) {
-					setCellText(row, col++, addressid.getFirstName());
-					setCellText(row, col++, addressid.getName());
-					setCellText(row, col++, addressid.getCompany());
-					setCellText(row, col++, addressid.getVatNumber());
-					if(addressid.getAddress() != null) {
-						setCellText(row, col++, addressid.getAddress().getCountryCode());
-					} else {
-						col++;
-					}
-				} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
-					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
-					setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
-					col += 3;
-				}
-				// ... or use the documents first line
-				else {
-					setCellText(row, col++, document.getAddressFirstLine());
-					col += 4;
-				}
-
-				setCellValueAsLocalCurrency(row, col++, Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)));
-				setCellValueAsLocalCurrency(row, col++, Optional.ofNullable(document.getPaidValue()).orElse(Double.valueOf(0.0)));
-
-				// Calculate the total VAT of the document
-				MonetaryAmount totalVat = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
-
-				// Get all VAT entries of this document and place them into the
-				// corresponding column.
-				for (VatSummaryItem item : vatSummarySetOneDocument.getVatSummaryItems()) {
-
-					// Get the column
-					int column = vatSummarySetAllDocuments.getIndex(item) - zeroVatColumns;
-
-					// If column is <0, it was a VAT entry with 0%
-					if (column >= 0) {
-
-						// Round the VAT and add fill the table cell
-						totalVat = totalVat.add(item.getVat());
-						setCellValueAsLocalCurrency(row, column + (col + 1), item.getVat());
-					}
-				}
-
-				// Get all net entries of this document and place them into the
-				// corresponding column.
-				for (VatSummaryItem item : vatSummarySetOneDocument.getVatSummaryItems()) {
-					// Get the column
-					int column = vatSummarySetAllDocuments.getIndex(item);
-
-					// If column is <0, it was a VAT entry with 0%
-					if (column >= 0) {
-
-						// Round the net and add fill the table cell
-						//totalVat.add(net.asRoundedDouble());
-						setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + (col + 1), item.getNet());
-					}
-				}
-
-				// Calculate the documents net total (incl. shipping) 
-				// by the documents total value and the sum of all VAT values.
-				Double net = document.getPaidValue() - totalVat.getNumber().doubleValue();
-				setCellValueAsLocalCurrency(row, col++, net);
-
-				// Calculate the documents net total (incl. shipping)
-				// a second time, but now use the documents net value,
-				// and scale it by the scale factor.
-				MonetaryAmount totalNet = documentSummary != null ? documentSummary.getTotalNet() : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()); 
-				//totalNet += document.getSummary().getShipping().getUnitNet().asDouble();
-
-				Double roundingError = totalNet.getNumber().doubleValue() * paidFactor - net;
-
-				// Normally both results must be equal.
-				// If the difference is grater than 1 Cent, display a warning.
-				// It could be a rounding error.
-				if (Math.abs(roundingError) > 0.01)
-					setCellTextInRedBold(row, col + columnsWithVatHeading + columnsWithNetHeading, "Runden prüfen");
-				
-				// Set the background of the table rows. Use a light and
-				// alternating blue color.
-				if ((row % 2) == 0)
-					setBackgroundColor( 0, row, col + columnsWithVatHeading + columnsWithNetHeading - 1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
-
-				row++;
+			// Calculate the relation between paid value and the value
+			// of the invoice. This is used to calculate the VAT.
+			// Example.
+			// The net sum of the invoice is 100€.
+			// Plus 20% VAT: +20€ = Total: 120€.
+			//
+			// The customer pays only 115€.
+			// 
+			// Then the paidFactor is 115/120 = 0.9583333..
+			// The VAT value in the invoice is also scaled by this 0.958333...
+			// to 19.17€
+			
+			Double paidFactor = Double.valueOf(1.0); 
+			if(Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)) > 0) {
+				paidFactor = document.getPaidValue() / document.getTotalValue();
 			}
+
+			// Use the paid value
+			vatSummarySetOneDocument.add(document, paidFactor);
+
+			// Fill the row with the document data
+			col = 0;
+			if(this.exportPaid) {
+				setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getPayDate()));
+			} else {
+				// calculate due date
+				LocalDateTime targetDate = DataUtils.getInstance().addToDate(document.getDocumentDate(), document.getDueDays());
+				setCellText(row, col++, DateTimeFormatter.ISO_LOCAL_DATE.format(targetDate));
+			}
+			setCellText(row, col++, document.getName());
+			setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate()));
+			Contact addressid = document.getBillingContact();
+
+			// Fill the address columns with the contact that corresponds to the addressid
+			if (addressid != null && addressid.getName() != null) {
+				setCellText(row, col++, addressid.getFirstName());
+				setCellText(row, col++, addressid.getName());
+				setCellText(row, col++, addressid.getCompany());
+				setCellText(row, col++, addressid.getVatNumber());
+				if(addressid.getAddress() != null) {
+					setCellText(row, col++, addressid.getAddress().getCountryCode());
+				} else {
+					col++;
+				}
+			} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
+				col += 3;
+			}
+			// ... or use the documents first line
+			else {
+				setCellText(row, col++, document.getAddressFirstLine());
+				col += 4;
+			}
+
+			setCellValueAsLocalCurrency(row, col++, Optional.ofNullable(document.getTotalValue()).orElse(Double.valueOf(0.0)));
+			setCellValueAsLocalCurrency(row, col++, Optional.ofNullable(document.getPaidValue()).orElse(Double.valueOf(0.0)));
+
+			// Calculate the total VAT of the document
+			MonetaryAmount totalVat = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
+
+			// Get all VAT entries of this document and place them into the
+			// corresponding column.
+			for (VatSummaryItem item : vatSummarySetOneDocument.getVatSummaryItems()) {
+
+				// Get the column
+				int column = vatSummarySetAllDocuments.getIndex(item) - zeroVatColumns;
+
+				// If column is <0, it was a VAT entry with 0%
+				if (column >= 0) {
+
+					// Round the VAT and add fill the table cell
+					totalVat = totalVat.add(item.getVat());
+					setCellValueAsLocalCurrency(row, column + (col + 1), item.getVat());
+				}
+			}
+
+			// Get all net entries of this document and place them into the
+			// corresponding column.
+			for (VatSummaryItem item : vatSummarySetOneDocument.getVatSummaryItems()) {
+				// Get the column
+				int column = vatSummarySetAllDocuments.getIndex(item);
+
+				// If column is <0, it was a VAT entry with 0%
+				if (column >= 0) {
+
+					// Round the net and add fill the table cell
+					//totalVat.add(net.asRoundedDouble());
+					setCellValueAsLocalCurrency(row, columnsWithVatHeading + column + (col + 1), item.getNet());
+				}
+			}
+
+			// Calculate the documents net total (incl. shipping) 
+			// by the documents total value and the sum of all VAT values.
+			Double net = document.getPaidValue() - totalVat.getNumber().doubleValue();
+			setCellValueAsLocalCurrency(row, col++, net);
+
+			// Calculate the documents net total (incl. shipping)
+			// a second time, but now use the documents net value,
+			// and scale it by the scale factor.
+			MonetaryAmount totalNet = documentSummary != null ? documentSummary.getTotalNet() : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()); 
+			//totalNet += document.getSummary().getShipping().getUnitNet().asDouble();
+
+			Double roundingError = totalNet.getNumber().doubleValue() * paidFactor - net;
+
+			// Normally both results must be equal.
+			// If the difference is grater than 1 Cent, display a warning.
+			// It could be a rounding error.
+			if (Math.abs(roundingError) > 0.01)
+				setCellTextInRedBold(row, col + columnsWithVatHeading + columnsWithNetHeading, "Runden prüfen");
+			
+			// Set the background of the table rows. Use a light and
+			// alternating blue color.
+			if ((row % 2) == 0)
+				setBackgroundColor( 0, row, col + columnsWithVatHeading + columnsWithNetHeading - 1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
+
+			row++;
 		}
 
 		// Insert a formula to calculate the sum of a column.
@@ -398,10 +396,11 @@ public class SalesExporter extends OOCalcExporter {
 					// Create formula for the sum. 
 					String cellNameBegin = CellFormatter.getCellName(headLine + 1, col);
 					String cellNameEnd = CellFormatter.getCellName(row - 1, col);
-					setFormula(col, sumrow, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
+					setFormula(sumrow, col, "=SUM(" + cellNameBegin + ":" + cellNameEnd + ")");
 					setBold(sumrow, col);
 				}
 				catch (IndexOutOfBoundsException e) {
+					log.error(e, "No access to cell: " + sumrow + ":" + col);
 				}
 			}
 		}

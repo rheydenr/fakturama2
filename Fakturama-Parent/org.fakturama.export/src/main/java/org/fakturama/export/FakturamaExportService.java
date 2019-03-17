@@ -49,8 +49,6 @@ public class FakturamaExportService implements IFakturamaWizardService {
 	@Inject
 	private ILogger log;
 
-	private Messages msg = null;
-
 	public void startUp() {
 
 		Bundle bundle = FrameworkUtil.getBundle(Messages.class);
@@ -60,7 +58,6 @@ public class FakturamaExportService implements IFakturamaWizardService {
 					.getServiceReferences(IEclipseContext.class, null);
 			ServiceReference<IEclipseContext> next = serviceReferences.iterator().next();
 			ctx = bundleContext.getService(next);
-			msg = ctx.get(Messages.class);
 		} catch (InvalidSyntaxException e) {
 			// log.error(e);
 		}
@@ -99,5 +96,4 @@ public class FakturamaExportService implements IFakturamaWizardService {
 	public String getExtensionPointPlugin() {
 		return FrameworkUtil.getBundle(getClass()).getSymbolicName();
 	}
-
 }

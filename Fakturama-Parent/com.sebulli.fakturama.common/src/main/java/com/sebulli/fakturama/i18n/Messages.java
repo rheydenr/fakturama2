@@ -62,6 +62,9 @@ public class Messages {
 	public String commandDataNameTooltip;
 	public String commandDebtorsName;
 	public String commandDebtorsTooltip;
+	public String commandDocumentsExportAddresscsv4dpDescription;
+	public String commandDocumentsExportAddresscsv4dpEmptyfields;
+	public String commandDocumentsExportAddresscsv4dpExportfinished;
 	public String commandDocumentsMoveDownName;
 	public String commandDocumentsMoveDownTooltip;
 	public String commandDocumentsMoveUpName;
@@ -97,6 +100,8 @@ public class Messages {
 	public String commandPaymentsTooltip;
 	public String commandProductsName;
 	public String commandProductsTooltip;
+	public String commandExportQrkName;
+	public String commandExportQrkTooltip;
 	public String commandReceiptvouchersName;
 	public String commandReceiptvouchersTooltip;
 	public String commandReorganizeDocumentsMessage;
@@ -112,6 +117,7 @@ public class Messages {
 	public String commandVatsTooltip;
 	public String commandWebshopName;
 	public String commandWebshopTooltip;
+	
 	public String commonButtonSavechanges;
 	public String commonButtonSavechangesquestion;
 	public String commonButtonSetdefault;
@@ -369,6 +375,7 @@ public class Messages {
 	public String editorProductFieldPriceName;
 	public String editorProductFieldCostprice;;
 	public String editorProductFieldQuantityunitName;
+	public String editorProductFieldQuantityunitInvalid;
 	public String editorProductFieldQuantityunitNameShort;
 	public String editorProductLabelFrom;
 	public String editorProductNameTooltip;
@@ -432,6 +439,8 @@ public class Messages {
 	public String exporterDataWebsite;
 	public String exporterDataWebshopname;
 	public String exporterDataWeight;
+	public String exporterFilenameTypeCsv;	
+	public String exporterFilename;	
 	public String wizardExportCommonFilterlabel;
 	public String wizardExportCommonDescription;
 	public String wizardExportCommonHeadline;
@@ -670,6 +679,7 @@ public class Messages {
 	public String preferencesDocumentUsevestingperiodPeriod;
 	public String preferencesExport;
 	public String preferencesExportUsepaydate;
+	public String preferencesExportCsv4dhl;
 	public String preferencesGeneral;
 	public String preferencesGeneralCloseeditors;
 	public String preferencesGeneralCollapsenavbar;
@@ -754,8 +764,11 @@ public class Messages {
 	public String preferencesProductQtyChangeInvoice;
 	public String preferencesProductQtyChangeOrder;
 	public String preferencesProductQtyHeader;
-	
 	public String preferencesProductUseweight;
+	
+	public String preferencesQrkExportFolder;
+	public String preferencesQrkExportMissingfolder;
+
 	public String preferencesToolbarIcons;
 	public String preferencesToolbarShowicon;
 	public String preferencesWebshop;

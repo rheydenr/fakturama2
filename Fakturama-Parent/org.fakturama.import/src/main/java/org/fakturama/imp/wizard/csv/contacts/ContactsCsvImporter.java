@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
@@ -39,6 +38,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
@@ -66,7 +66,7 @@ public class ContactsCsvImporter {
 	protected Messages msg;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
 	
 	@Inject
 	private ContactsDAO contactsDAO;
@@ -139,6 +139,7 @@ public class ContactsCsvImporter {
 		// Count the imported contacts
 		int importedContacts = 0;
 		int updatedContacts = 0;
+		int skippedContacts = 0;
 
 		// Count the line of the import file
 		int lineNr = 0;
@@ -210,6 +211,12 @@ public class ContactsCsvImporter {
 					 * Customer number, first name, name and ZIP are compared
 					 */
 					Contact testContact = contactsDAO.findOrCreate(contact);
+					
+					// if found and no update is required skip to the next record
+					if(testContact != null && !updateExisting) {
+						skippedContacts++;
+						continue;
+					}
 					
 					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
 					if(category == null && prop.getProperty("category") != null) {
@@ -299,6 +306,8 @@ public class ContactsCsvImporter {
 			result += NL + importedContacts + " " + importMessages.wizardImportInfoContactsimported;
 			if (updatedContacts > 0)
 				result += NL + updatedContacts + " " + importMessages.wizardImportInfoContactsupdated;
+			if (skippedContacts > 0)
+				result += NL + skippedContacts + " " + importMessages.wizardImportInfoContactsskipped;
 		}
 		
 		catch (UnsupportedEncodingException e) {

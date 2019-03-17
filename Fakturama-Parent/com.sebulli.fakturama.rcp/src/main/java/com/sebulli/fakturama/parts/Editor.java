@@ -28,7 +28,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -64,6 +63,7 @@ import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
@@ -100,7 +100,7 @@ public abstract class Editor<T extends IEntity> {
 	protected Messages msg;
     
     @Inject
-    protected Logger log;
+    protected ILogger log;
     
     /**
      * Event Broker for sending update events to the list table
@@ -237,7 +237,7 @@ public abstract class Editor<T extends IEntity> {
 						try {
 							((IPersistentPreferenceStore)defaultValuePrefs).save();
                             // Refresh the table view of all VATs
-                            evtBroker.post(getEditorID(), "update");
+                            evtBroker.post(getEditorID(), "update/defaultvalue");
                         } catch (IOException e1) {
                             log.error(e1, "Error while flushing default value preferences.");
                         }
@@ -421,7 +421,9 @@ public abstract class Editor<T extends IEntity> {
 
     protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
     	Binding binding = null;
-        source.getControl().setTextLimit(limit);
+    	if(limit > 0) {
+    		source.getControl().setTextLimit(limit);
+    	}
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
         IObservableValue<T> model = nameProperty.observe(target);
         IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);

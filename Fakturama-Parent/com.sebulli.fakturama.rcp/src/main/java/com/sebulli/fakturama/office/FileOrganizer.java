@@ -133,7 +133,7 @@ public class FileOrganizer {
 		// Replace the placeholders
 		String customerRef = replaceIllegalCharacters(document.getCustomerRef());
 		
-		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", document.getName())
+		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{docname\\}", replaceIllegalCharacters(document.getName()))
 				.replaceAll("\\{docref\\}", StringUtils.defaultString(customerRef))
 				.replaceAll("\\{doctype\\}", msg.getMessageFromKey(
 						DocumentType.getPluralString(DocumentTypeUtil.findByBillingType(document.getBillingType()))))

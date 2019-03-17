@@ -64,7 +64,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -94,6 +93,7 @@ import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dbconnector.OldTableinfo;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address;
@@ -165,7 +165,7 @@ public class MigrationManager {
 	private IEclipseContext context;
 
 	@Inject
-	private Logger log;
+	private ILogger log;
 	
 	private java.util.logging.Logger migLogUser;
 
@@ -345,7 +345,7 @@ public class MigrationManager {
 						try {
 							Files.walkFileTree(oldtemplateDir, Collections.emptySet(), Integer.MAX_VALUE, new CopyDir(oldtemplateDir, newtemplateDir));
 						} catch (IOException e) {
-							log.error("can't copy old template files:", e.getMessage());
+							log.error(e, "can't copy old template files:");
 						}
 					}
 					
@@ -355,7 +355,7 @@ public class MigrationManager {
 			progressMonitorDialog.run(true, true, op);
 		}
 		catch (InvocationTargetException e) {
-			log.error("Error: ", e.getMessage());
+			log.error(e, "Error: ");
 		}
 		catch (InterruptedException e) {
 			// handle cancellation
@@ -815,6 +815,10 @@ public class MigrationManager {
 	    for (int i = 0; i < itemRefs.length; i++) {
             String itemRef = itemRefs[i];
 			OldItems oldItem = oldDao.findDocumentItem(Integer.valueOf(itemRef));
+			if(oldItem == null) {
+				migLogUser.severe("Can't find a Document's item. Document number=["+document.getName()+ "], item number=["+itemRef+"]. Entry skipped!");
+				continue;
+			}
 			DocumentItem item = modelFactory.createDocumentItem();
 			// the position was formerly determined through the order how they stayed in documents entry
 			item.setPosNr(Integer.valueOf(i+1));
@@ -1177,7 +1181,7 @@ public class MigrationManager {
 		// there's only one fixed category which has to be migrated ("billing_accounts")
 		ItemListTypeCategory cat = modelFactory.createItemListTypeCategory();
 		// the message key has to be provided here (we us it as combo value later on)
-		cat.setName("data.list.accountnumbers");  // old: "billing_accounts"
+		cat.setName(Constants.ACCOUNT_LIST_CATEGORY);  // old: "billing_accounts"
 		for (OldList oldVoucherItemCategory : resultSet) {
 			try {
 		    ItemAccountType itemAccountType = modelFactory.createItemAccountType();
@@ -1411,30 +1415,31 @@ public class MigrationManager {
            			// Money doesn't work with symbols, therefore we have to convert this.
                     // Try to determine a Locale from symbol
                     Locale currencyLocale = Locale.getDefault();
+                    Currency jdkCurrency = Currency.getInstance(currencyLocale);
            			// the key has to be changed, too!
            			prop.setName(Constants.PREFERENCE_CURRENCY_LOCALE);
            			UserProperty propUseSymbol = modelFactory.createUserProperty();
            			propUseSymbol.setUser(currentUser);
            			propUseSymbol.setName(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
-       			    propUseSymbol.setValue(Boolean.FALSE.toString());  // default
+       			    propUseSymbol.setValue(CurrencySettingEnum.CODE.toString());  // default
        			    
        			    // try to interpret the currency symbol
            			if(StringUtils.length(propValue) == 1) {
            			    propUseSymbol.setValue(CurrencySettingEnum.SYMBOL.name());
-                        Currency jdkCurrency = Currency.getInstance(currencyLocale);
            		        String currencySymbol = jdkCurrency.getSymbol(currencyLocale);
            		        if(currencySymbol.contentEquals(propValue)) {
-           		            propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
            		            migLogUser.warning("!!! The currency locale was set to '" + currencyLocale.toLanguageTag()+"'. "
            		                    + "Please check this in the general settings.");
-           		        } else {
-           		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
-           		            currencyLocale = Locale.GERMANY;
-           		            propValue = "de/DE";
-           		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
-           		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            		        }
+       		        } else {
+       		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
+       		            currencyLocale = Locale.GERMANY;
+	           			propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
+       		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
+       		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");
            			}
+           			// re-assign property value
+           			propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
                     propertiesDAO.save(propUseSymbol, true);
                     eclipsePrefs.put(propUseSymbol.getName(), propUseSymbol.getValue());
                     break;

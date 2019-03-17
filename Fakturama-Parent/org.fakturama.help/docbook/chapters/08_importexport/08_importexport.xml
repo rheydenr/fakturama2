@@ -35,13 +35,13 @@
 		</section>
 		<section>
 			<title>Import: Kontakte aus CSV-Datei</title>
-			<para>Adressdaten können aus einer CSV-Tabelle in Fakturama importiert werden. Damit ist eine Datenübernahme aus einem anderen Programm möglich.</para>
+			<para>Adressdaten können aus einer CSV-Datei in Fakturama importiert werden. Damit ist eine Datenübernahme aus einem anderen Programm möglich.</para>
 			<para>Siehe <link linkend="importexport_import_csv_contacts">Kontakte aus CSV-Datei importieren</link>
 			</para>
 		</section>
 		<section>
 			<title>Import: Produkte aus CSV-Datei</title>
-			<para>Produkte können aus einer CSV-Tabelle in Fakturama importiert werden.</para>
+			<para>Produkte können aus einer CSV-Datei in Fakturama importiert werden.</para>
 			<para>Siehe <link linkend="importexport_import_csv_products">Produkte aus CSV-Datei importieren</link>
 			</para>
 		</section>
@@ -53,43 +53,43 @@
 		</section>
 		<section>
 			<title>Export: Liste Ausgabebelege</title>
-			<para>Exportiert eine Liste mit den Ausgaben (Ausgabebelege) in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit den Ausgaben (Ausgabebelege) in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgabebelege</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Liste Einnahmebelege</title>
-			<para>Exportiert eine Liste mit den Einnahmen (Einnahmebelege) in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit den Einnahmen (Einnahmebelege) in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_receipt_vouchers">Export Liste Einnahmebelege</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Liste Umsätze (bezahlte Rechnungen)</title>
-			<para>Exportiert eine Liste mit den Umsätzen (alle bezahlten Rechnungen) in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit den Umsätzen (alle bezahlten Rechnungen) in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_sales">Export Liste Umsätze</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Liste unbezahlte Rechnungen</title>
-			<para>Exportiert eine Liste mit allen unbezahlten Rechnungen in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit allen unbezahlten Rechnungen in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_unpaid_invoices">Export Liste unbezahlte Rechnungen</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Adressliste</title>
-			<para>Exportiert eine Liste mit allen Kontakten in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit allen Kontakten in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_contacts">Export Adressliste</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Adressliste als Visitenkartendatei</title>
-			<para>Exportiert eine Liste mit allen Kontakten in einer VCard Visitenkartendatei. Diese Datei lässt sich von vielen Adressbuchprogrammen wieder einlesen.</para>
+			<para>Exportiert eine Liste mit allen Kontakten in eine VCard Visitenkartendatei. Diese Datei lässt sich von vielen Adressbuchprogrammen wieder einlesen.</para>
 			<para>Siehe <link linkend="importexport_export_vcf_contacts">Export Adressliste als Visitenkartendatei</link>
 			</para>
 		</section>
 		<section>
 			<title>Export: Liste Produkte</title>
-			<para>Exportiert eine Liste mit allen Produkten in einer OpenOffice.org / LibreOffice-Tabelle.</para>
+			<para>Exportiert eine Liste mit allen Produkten in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 			<para>Siehe <link linkend="importexport_export_products">Export Liste Produkte</link>
 			</para>
 		</section>
@@ -121,77 +121,78 @@
 	<section>
 		<anchor xreflabel="" xml:id="importexport_import_csv_expenditures"/>
 		<title>Ausgaben aus CSV-Datei</title>
-		<para>Liegen die Ausgaben bisher nur in einer Tabelle vor, können diese in Fakturama importiert werden, um diese nach der Vorsteuer oder Kontenart zusammenzufassen. Die Datei muss im Format UTF-8 vorliegen und durch Semikola getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
+		<para>Liegen die Ausgaben bisher nur in einer Datei vor, können diese in Fakturama importiert werden, um diese nach der Vorsteuer oder Kontenart zusammenzufassen. Die Datei muss im Format UTF-8 vorliegen und durch Semikola getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
 		<informalexample pgwide="1">
 			<programlisting><?db-font-size 75% ?><xi:include href="../images/importexport/expenditures.csv" parse="text" />
 			</programlisting>
 		</informalexample>
-		<para>Die zu importierenden Daten müssen in einer CSV-Tabelle vorliegen und folgende Spalten beinhalten:</para>
+		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/expenditures.csv">hier</link> heruntergeladen werden.</info>
+		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
 				<term>Category</term>
 				<listitem>
-					<para> Kategorie, in die der Beleg einsortiert wird. Zum Beispiel "Bank", "Kreditkarte", privat verauslagt</para>
+					<para>Kategorie, in die der Beleg einsortiert wird. Zum Beispiel "Bank", "Kreditkarte", "privat verauslagt"</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Date</term>
 				<listitem>
-					<para> Datum des Beleges, zum Beispiel das Rechnungsdatum.</para>
+					<para>Datum des Beleges, zum Beispiel das Rechnungsdatum.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>DocumentNr</term>
 				<listitem>
-					<para> Nummer des Beleges, zum Beispiel die Rechnungsnummer.</para>
+					<para>Nummer des Beleges, zum Beispiel die Rechnungsnummer.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Nr</term>
 				<listitem>
-					<para> Selbst vergebene, fortlaufende Belegnummer.</para>
+					<para>Selbst vergebene, fortlaufende Belegnummer.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Name</term>
 				<listitem>
-					<para> Name des Lieferanten.</para>
+					<para>Name des Lieferanten.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Item Name</term>
 				<listitem>
-					<para> Text des Beleges, zum Beispiel "Weinflaschen".</para>
+					<para>Text des Beleges, zum Beispiel "Weinflaschen".</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Item Category</term>
 				<listitem>
-					<para> Kontenart, zum Beispiel "Wareneinkauf".</para>
+					<para>Kontenart, zum Beispiel "Wareneinkauf".</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Item Price</term>
 				<listitem>
-					<para> Preis (Netto).</para>
+					<para>Preis (Netto).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Item VAT</term>
 				<listitem>
-					<para> Bezeichnung der Vorsteuer, zum Beispiel "Vorsteuer 19%".</para>
+					<para>Bezeichnung der Vorsteuer, zum Beispiel "Vorsteuer 19%".</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>VAT</term>
 				<listitem>
-					<para> Prozentsatz der Steuer, zum Beispiel 19%.</para>
+					<para>Prozentsatz der Steuer, zum Beispiel 19%.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Position in einer eigenen Zeile angelegt wird und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis> und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
 		<para>Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
-		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird (zum Beispiel auch ein Beleg mit mehreren Positionen). Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
+		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird (zum Beispiel auch ein Beleg mit mehreren Positionen). Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
 		</para>
 	</section>
@@ -202,174 +203,175 @@
 		<informalexample pgwide="1">
 		<programlisting><?db-font-size 75% ?><xi:include href="../images/importexport/contacts.csv" parse="text" />
 		</programlisting></informalexample>
+		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/contacts.csv">hier</link> heruntergeladen werden.</info>
 		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
 				<term>category</term>
 				<listitem>
-					<para> Kategorie, in die der Kontakt einsortiert wird. Zum Beispiel "Shop Kunden", "Lieferanten"</para>
+					<para>Kategorie, in die der Kontakt einsortiert wird. Zum Beispiel "Shop Kunden", "Lieferanten"</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>gender</term>
 				<listitem>
-					<para>Anrede. "Herr" oder "Frau".</para>
+					<para>Anrede ("Herr", "Frau" oder "Firma").</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>title</term>
 				<listitem>
-					<para> Zusätzlicher Titel.</para>
+					<para>Zusätzlicher Titel</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>firstname</term>
 				<listitem>
-					<para> Vorname</para>
+					<para>Vorname</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>name</term>
 				<listitem>
-					<para> Nachname</para>
+					<para>Nachname</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>company</term>
 				<listitem>
-					<para> Firma</para>
+					<para>Firma</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>street</term>
 				<listitem>
-					<para> Straße und Hausnummer</para>
+					<para>Straße und Hausnummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>zip</term>
 				<listitem>
-					<para> PLZ</para>
+					<para>PLZ</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>city</term>
 				<listitem>
-					<para> Ort</para>
+					<para>Ort</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>country</term>
 				<listitem>
-					<para> Land</para>
+					<para>Land</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_gender</term>
 				<listitem>
-					<para> Lieferanschrift - Anrede. "Herr" oder "Frau".</para>
+					<para>Lieferanschrift - Anrede ("Herr", "Frau" oder "Firma").</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_title</term>
 				<listitem>
-					<para> Lieferanschrift - Zusätzlicher Titel.</para>
+					<para>Lieferanschrift - zusätzlicher Titel</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_firstname</term>
 				<listitem>
-					<para> Lieferanschrift - Vorname</para>
+					<para>Lieferanschrift - Vorname</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_name</term>
 				<listitem>
-					<para> Lieferanschrift - Nachname</para>
+					<para>Lieferanschrift - Nachname</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_company</term>
 				<listitem>
-					<para> Lieferanschrift - Firma</para>
+					<para>Lieferanschrift - Firma</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_street</term>
 				<listitem>
-					<para> Lieferanschrift - Strasse und Hausnummer</para>
+					<para>Lieferanschrift - Strasse und Hausnummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_zip</term>
 				<listitem>
-					<para> Lieferanschrift - PLZ</para>
+					<para>Lieferanschrift - PLZ</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_city</term>
 				<listitem>
-					<para> Lieferanschrift - Ort</para>
+					<para>Lieferanschrift - Ort</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>delivery_country</term>
 				<listitem>
-					<para> Lieferanschrift - Land</para>
+					<para>Lieferanschrift - Land</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>account_holder</term>
 				<listitem>
-					<para> Kontoinhaber</para>
+					<para>Kontoinhaber</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>account</term>
 				<listitem>
-					<para> Kontonummer</para>
+					<para>Kontonummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>bank_code</term>
 				<listitem>
-					<para> Bankleitzahl</para>
+					<para>Bankleitzahl</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>bank_name</term>
 				<listitem>
-					<para> Name der Bank</para>
+					<para>Name der Bank</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>iban</term>
 				<listitem>
-					<para> IBAN</para>
+					<para>IBAN</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>bic</term>
 				<listitem>
-					<para> BIC</para>
+					<para>BIC</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>nr</term>
 				<listitem>
-					<para> Kunden/Lieferantennummer</para>
+					<para>Kunden/Lieferantennummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>note</term>
 				<listitem>
-					<para> Notiz</para>
+					<para>Notiz</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>date_added</term>
 				<listitem>
-					<para> Datum, an dem der Kunde angelegt wurde, oder leer.</para>
+					<para>Datum, an dem der Kunde angelegt wurde (kann leer gelassen werden)</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -381,53 +383,53 @@
 			<varlistentry>
 				<term>phone</term>
 				<listitem>
-					<para> Telefonnummer</para>
+					<para>Telefonnummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>fax</term>
 				<listitem>
-					<para> Telefaxnummer</para>
+					<para>Telefaxnummer</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>mobile</term>
 				<listitem>
-					<para> Telefonnummer Mobiltelefon</para>
+					<para>Telefonnummer Mobiltelefon</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>email</term>
 				<listitem>
-					<para> Email</para>
+					<para>E-Mail</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>website</term>
 				<listitem>
-					<para> Webseite</para>
+					<para>Webseite</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>vatnr</term>
 				<listitem>
-					<para> USt.-ID-Nr.</para>
+					<para>USt.-ID-Nr.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>vatnrvalid</term>
 				<listitem>
-					<para> USt.-ID-Nr. gültig. 0 = ungültig oder nicht geprüft, 1 = geprüft und gültig</para>
+					<para>USt.-ID-Nr. gültig? 0 = ungültig oder nicht geprüft, 1 = geprüft und gültig</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>discount</term>
 				<listitem>
-					<para> Rabatt, der diesem Kunden gewährt wird.</para>
+					<para>Rabatt, der diesem Kunden gewährt wird.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird. Bei einem fehlerhaften Import muss ansonsten jeder Kontakt einzeln gelöscht werden.</para>
+		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird. Bei einem fehlerhaften Import muss ansonsten jeder Kontakt einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_csv_contacts">Export Adressliste als CSV-Datei</link>
 		</para>
 	</section>
@@ -437,7 +439,8 @@
 		<para>Produkte können aus einer CSV-Datei in Fakturama importiert werden. Die Datei muss im Format UTF-8 vorliegen und durch Semikola getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
 		<informalexample pgwide="1">
   <programlisting><?db-font-size 65% ?><xi:include href="../images/importexport/import_products.csv" parse="text" /></programlisting></informalexample>
-		<para>Die zu importierenden Daten müssen in einer CSV-Tabelle vorliegen und folgende Spalten beinhalten:</para>
+		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/import_products.csv">hier</link> heruntergeladen werden.</info>
+		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
 				<term>itemnr</term>
@@ -448,138 +451,138 @@
 			<varlistentry>
 				<term>name</term>
 				<listitem>
-					<para> Name</para>
+					<para>Name</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>category</term>
 				<listitem>
-					<para> Kategorie, in die der Artikel einsortiert wird</para>
+					<para>Kategorie, in die der Artikel einsortiert wird</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>description</term>
 				<listitem>
-					<para> Beschreibung</para>
+					<para>Beschreibung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>price1</term>
 				<listitem>
-					<para> Nettopreis für 1. Staffelung</para>
+					<para>Nettopreis für 1. Staffelung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>price2</term>
 				<listitem>
-					<para> Nettopreis für 2. Staffelung</para>
+					<para>Nettopreis für 2. Staffelung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>price3</term>
 				<listitem>
-					<para> Nettopreis für 3. Staffelung</para>
+					<para>Nettopreis für 3. Staffelung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>price4</term>
 				<listitem>
-					<para> Nettopreis für 4. Staffelung</para>
+					<para>Nettopreis für 4. Staffelung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>price5</term>
 				<listitem>
-					<para> Nettopreis für 5. Staffelung</para>
+					<para>Nettopreis für 5. Staffelung</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>block1</term>
 				<listitem>
-					<para> Menge, bei die 1. Staffel startet, (z.B.: 1 bei 1-9).</para>
+					<para>Menge, bei die 1. Staffel startet, (z.B.: 1 bei 1-9).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>block2</term>
 				<listitem>
-					<para> Menge, bei die 2. Staffel startet, (z.B.: 10 bei 10-99).</para>
+					<para>Menge, bei die 2. Staffel startet, (z.B.: 10 bei 10-99).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>block3</term>
 				<listitem>
-					<para> Menge, bei die 3. Staffel startet, (z.B.: 100 bei 100-999).</para>
+					<para>Menge, bei die 3. Staffel startet, (z.B.: 100 bei 100-999).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>block4</term>
 				<listitem>
-					<para> Menge, bei die 4. Staffel startet, (z.B.: 1000 bei 1000-9999).</para>
+					<para>Menge, bei die 4. Staffel startet, (z.B.: 1000 bei 1000-9999).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>block5</term>
 				<listitem>
-					<para> Menge, bei die 5. Staffel startet, (z.B.: 10000 bei 10000-).</para>
+					<para>Menge, bei die 5. Staffel startet, (z.B.: 10000 bei 10000-).</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>vat</term>
 				<listitem>
-					<para> MwSt. z.B. 0,19 für 19%</para>
+					<para>MwSt. z.B. 0,19 für 19%</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>options</term>
 				<listitem>
-					<para> wird z.Z. noch nicht unterstützt - Spalte leer lassen.</para>
+					<para>wird z.Z. noch nicht unterstützt - Spalte leer lassen.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>weight</term>
 				<listitem>
-					<para> Gewicht</para>
+					<para>Gewicht</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>unit</term>
 				<listitem>
-					<para> wird z.Z. noch nicht unterstützt - Spalte mit -1 füllen.</para>
+					<para>wird z.Z. noch nicht unterstützt - Spalte mit -1 füllen.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>date_added</term>
 				<listitem>
-					<para> Datum, an dem das Produkt hinzugefügt wurde. Oder leer lassen.</para>
+					<para>Datum, an dem das Produkt hinzugefügt wurde. Oder leer lassen.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>picturename</term>
 				<listitem>
-					<para> Name des Produktbildes, z.B.: <literal>SAMPL03_Poti_100k.jpg</literal>
+					<para>Name des Produktbildes, z.B.: <literal>SAMPL03_Poti_100k.jpg</literal>
 					</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>quantity</term>
 				<listitem>
-					<para> Menge</para>
+					<para>Menge</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>webshopid</term>
 				<listitem>
-					<para> ID des Webshops oder -1</para>
+					<para>ID des Webshops oder -1</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>qunit</term>
 				<listitem>
-					<para> Mengeneinheit</para>
+					<para>Mengeneinheit</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		<para>Es wird empfohlen, den Import zuerst mit einer Tabelle aus nur 2-3 Einträgen zu testen, bevor die ganze Tabelle importiert wird. Bei einem fehlerhaften Import muss ansonsten jedes Produkt einzeln gelöscht werden.</para>
+		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird. Bei einem fehlerhaften Import muss ansonsten jedes Produkt einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_csv_products">Export Liste Produkte als CSV-Datei</link>
 		</para>
 	</section>
@@ -691,6 +694,11 @@
 			<para>Siehe auch <link linkend="preferences_export">Einstellungen Export</link>
 			</para>
 		</section>
+	</section>
+	<section> 
+		<anchor xreflabel="" xml:id="importexport_export_receipt_expenditure_vouchers"/>
+		<title>Export Liste Einnahme- und Ausgabebelege</title>
+		<para>Exportiert eine Liste mit den Einnahmen und Ausgaben in eine OpenOffice.org / LibreOffice-Tabelle.</para>
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="importexport_export_sales"/>

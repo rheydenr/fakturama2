@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.AbstractParameterValueConverter;
 import org.eclipse.core.commands.CommandManager;
 import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -92,7 +92,6 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -173,10 +172,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     protected MessageRegistry registry;
 
 	private DocumentMatcher currentFilter;
-    
+	
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
-        log.info("create Document list part");
+        log.debug("create Document list part");
         this.listTablePart = listTablePart;
         if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
         	return null;
@@ -530,7 +529,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 			}
         }
         return topicTreeViewer;
-        
     }
     
     /**
@@ -869,7 +867,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     	protected void handleAfterConfirmation(Document tmpDocument) {
     	// before deletion first update stock
-    		if(tmpDocument.getPrinted()) {
+    		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
     			tmpDocument.getItems().stream().forEach(oldItem -> {
     					oldItem.setOriginQuantity(oldItem.getQuantity());
     					oldItem.setQuantity(null);

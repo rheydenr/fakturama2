@@ -38,8 +38,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -52,6 +56,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -352,15 +357,15 @@ public class DocumentEditor extends Editor<Document> {
 	}
 	
 	/**
-	 * Saves the contents of this part
+	 * Saves the contents of this part.
 	 * 
 	 * @param monitor
 	 *            Progress monitor
-	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
+	 * @return {@link Boolean#TRUE} if saving was ok, {@link Boolean#FALSE} otherwise.  
 	 */
     @Persist
-	public void doSave(IProgressMonitor monitor) {
-
+	public Boolean doSave(IProgressMonitor monitor) {
+    	
 		/*
 		 * the following parameters are not saved: 
 		 * - id (constant) 
@@ -393,7 +398,8 @@ public class DocumentEditor extends Editor<Document> {
 					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
-					return;
+//					throw new RuntimeException(msg.editorDocumentErrorDocnumberNotnextfree);
+					return Boolean.FALSE;
 				}
 			}
 		}
@@ -401,7 +407,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Exit save if there is a document with the same number
 		// already checked in saveAllowed()
 		if (thereIsOneWithSameNumber()) {
-			return;
+			return Boolean.FALSE;
 		}
 
 		// Always set the editor's data set to "undeleted"
@@ -480,7 +486,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			    displayAddress = modelFactory.createDebitor();
 			    Address address = modelFactory.createAddress();
-			    address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
+			    address.setManualAddress(txtAddress.getText());
 			    displayAddress.setAddress(address);
 			    try {
                     displayAddress = contactDAO.save(displayAddress);
@@ -705,6 +711,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
+        return Boolean.TRUE;
 	}
     
     @Override
@@ -721,8 +728,27 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
-		bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName());
-		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());		
+
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setBeforeSetValidator(new IValidator() {
+
+		    @Override
+		    public IStatus validate(Object value) {
+		    	if(value == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
+		        Date vestingPeriodStart = (Date) value;
+		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
+		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
+		        } else {
+		        	return ValidationStatus.ok();
+		        }
+		    }
+		});
+		
+		Binding binding = bindModelValue(document, dtVestingPeriodStart, Document_.vestingPeriodStart.getName(), strategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		
+		bindModelValue(document, dtVestingPeriodEnd, Document_.vestingPeriodEnd.getName());
+		
 		bindModelValue(document, txtMessage, Document_.message.getName(), 10_000);
 		if (noOfMessageFields >= 2) {
 			bindModelValue(document, txtMessage2, Document_.message2.getName(), 10_000);
@@ -752,7 +778,11 @@ public class DocumentEditor extends Editor<Document> {
 				bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
 						new UpdateValueStrategy(),
 						new UpdateValueStrategy());
+				spDueDays.setSelection(document.getDueDays());
 			}
+			
+			updateIssueDate();
+
 		}
         
         // now remove the "bind mode" from part
@@ -923,7 +953,6 @@ public class DocumentEditor extends Editor<Document> {
     		tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
     		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
     	}
-//        this.context = part.getContext();
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
         this.currencyUnit = numberFormatterService.getCurrencyUnit(localeUtil.getCurrencyLocale());
@@ -1171,17 +1200,32 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setShipping(parentDoc.getShipping());
 		retval.setShippingValue(parentDoc.getShipping() != null ? parentDoc.getShipping().getShippingValue() : parentDoc.getShippingValue());
 		retval.setShippingAutoVat(parentDoc.getShippingAutoVat());
-		retval.setPayment(parentDoc.getPayment());
 		
-		retval.setTotalValue(parentDoc.getTotalValue());
+		Payment parentPayment = parentDoc.getPayment();
 		retval.setPaidValue(parentDoc.getPaidValue());
 		retval.setPaid(parentDoc.getPaid());
 		retval.setPayDate(parentDoc.getPayDate());
+		retval.setDueDays(parentDoc.getDueDays());
+		retval.setDeposit(parentDoc.getDeposit());
+		if((parentPayment == null || !DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()).canBePaid()) && documentType.canBePaid()) {
+			// set payment method to default payment if parent document is not a payable document (e.g.,, an offer or delivery document)
+			int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+			parentPayment = paymentsDao.findById(paymentId);
+			
+			// reset some payment-related values
+			retval.setPaidValue(Double.valueOf(0.0));
+			retval.setPaid(Boolean.FALSE);
+			retval.setPayDate(null);
+			retval.setDueDays(parentPayment.getNetDays());
+			retval.setDeposit(Boolean.FALSE);
+			
+		}
+		retval.setPayment(parentPayment);
+		
+		retval.setTotalValue(parentDoc.getTotalValue());
 		if(parentDoc.getTransactionId() != null) {
 			retval.setTransactionId(parentDoc.getTransactionId());
 		}
-		retval.setDueDays(parentDoc.getDueDays());
-		retval.setDeposit(parentDoc.getDeposit());
 		
 		billingContact = parentDoc.getBillingContact();
 		retval.setBillingContact(billingContact);
@@ -1717,14 +1761,13 @@ public class DocumentEditor extends Editor<Document> {
         boolean hasDifferentDeliveryAddress;
 
         if (documentType == DocumentType.DELIVERY) {
-            hasDifferentDeliveryAddress = !billingAddress.isEmpty() && !billingAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(billingAddress, txtAddress.getText());
             // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
             differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, billingAddress.replaceAll("&", "&&")));
         } else {
-            hasDifferentDeliveryAddress = !deliveryAddress.isEmpty() && !deliveryAddress.equalsIgnoreCase(DataUtils.getInstance().removeCR(txtAddress.getText()));
+            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(deliveryAddress, txtAddress.getText());
             differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, deliveryAddress.replaceAll("&", "&&")));
         }
-
         
         if (hasDifferentDeliveryAddress) {
             // Show the icon
@@ -2173,6 +2216,9 @@ public class DocumentEditor extends Editor<Document> {
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
 			    context.set(DOCUMENT_ID, document.getName());
+            	// save MPart
+            	MPart myPart = context.get(MPart.class);
+
 		        // FIXME Workaround (quick & dirty), please use enums or an extra button
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
@@ -2183,6 +2229,7 @@ public class DocumentEditor extends Editor<Document> {
 			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    	dlg.open();
 			    }
+			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
 			}
 		});
@@ -2206,6 +2253,23 @@ public class DocumentEditor extends Editor<Document> {
 			    
 			    document.getBillingContact().getAddress().setManualAddress(null);
                 setDirty(true);
+			}
+		});
+		
+		// Export address to CSV
+		Label exportToCSV = new Label(defaultValuePrefs.getBoolean(Constants.PREFERENCES_EXPORT_CSV4DHL) ? addressComposite : invisible, SWT.NONE | SWT.RIGHT);
+		exportToCSV.setToolTipText(msg.commandDocumentsExportAddresscsv4dpDescription);
+		exportToCSV.setImage(Icon.DOCUMENT_DHL_CSV.getImage(IconSize.DocumentIconSize));
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(exportToCSV);
+		exportToCSV.addMouseListener(new MouseAdapter() {
+
+			// Open the address dialog, if the icon is clicked.
+			public void mouseDown(MouseEvent e) {
+				// Open a new Contact Editor 
+                Map<String, Object> params = new HashMap<>();
+                params.put(CallEditor.PARAM_CALLING_DOC, document.getName());
+                ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_EXPORT_CSV4DP, params);
+                handlerService.executeHandler(parameterizedCommand);
 			}
 		});
 
@@ -2824,7 +2888,7 @@ public class DocumentEditor extends Editor<Document> {
             switch (subTopic) {
             case "Contact":
                 Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
-                Contact contact = contactDAO.findById(contactId);
+                Contact contact = contactDAO.findById(contactId, true);
 //
 //                // we can't use the Selection Service!!!
 //                Contact contact = (Contact) selectionService.getSelection();
@@ -2930,6 +2994,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		//          if (newItem!= null)
 		//              tableViewerItems.reveal(newItem);
+		setDirty(true);
 		calculate();
 	} 
 

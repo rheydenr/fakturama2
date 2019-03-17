@@ -32,13 +32,16 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -73,7 +76,6 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
-import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
@@ -89,6 +91,7 @@ import com.sebulli.fakturama.parts.widget.FakturamaPictureControl;
 import com.sebulli.fakturama.parts.widget.GrossText;
 import com.sebulli.fakturama.parts.widget.NetText;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
+import com.sebulli.fakturama.parts.widget.formatter.DoubleValueFormatter;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.resources.ITemplateResourceManager;
@@ -127,9 +130,6 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
-    
-	@Inject
-	private ILocaleService localeUtil;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -187,7 +187,7 @@ public class ProductEditor extends Editor<Product> {
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Persist
-	public void doSave(IProgressMonitor monitor) {
+	public Boolean doSave(IProgressMonitor monitor) {
 
 		/*
 		 * the following parameters are not saved:
@@ -251,6 +251,7 @@ public class ProductEditor extends Editor<Product> {
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return Boolean.FALSE;
 		}
 
 		// Set the product data
@@ -281,6 +282,7 @@ public class ProductEditor extends Editor<Product> {
 	        oldCat = editorProduct.getCategories();
         } catch (FakturamaStoringException e) {
             log.error(e);
+			return Boolean.FALSE;
         }
 
 		// Set the Editor's name to the product name...
@@ -297,6 +299,7 @@ public class ProductEditor extends Editor<Product> {
         
         // reset dirty flag
         getMDirtyablePart().setDirty(false);
+		return Boolean.TRUE;
 	}
 
 	/**
@@ -351,7 +354,6 @@ public class ProductEditor extends Editor<Product> {
 
 			// Get the next item number
 			editorProduct.setItemNumber(getNextNr());
-
 		}
 		else {
 
@@ -516,8 +518,8 @@ public class ProductEditor extends Editor<Product> {
 		Label labelQuantityUnit = new Label(useQuantityUnit ? productDescGroup : invisible, SWT.NONE);
 		//T: Product Editor - Label Product quantity unit
 		labelQuantityUnit.setText(msg.editorProductFieldQuantityunitName);
+		GridDataFactory.defaultsFor(labelQuantityUnit).indent(-20, 0).align(SWT.END, SWT.CENTER).applyTo(labelQuantityUnit);
 
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantityUnit);
 		if(useQuantityUnit) {
 			textQuantityUnit = new Text(productDescGroup, SWT.BORDER);
 			textQuantityUnit.addKeyListener(new ReturnKeyAdapter(textQuantityUnit));
@@ -682,14 +684,15 @@ public class ProductEditor extends Editor<Product> {
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelQuantity);
 		if(useQuantity) {
+			DoubleValueFormatter quantityFormatter = ContextInjectionFactory.make(DoubleValueFormatter.class, context);
 			textQuantity = new FormattedText(productDescGroup, SWT.BORDER);
+			textQuantity.setFormatter(quantityFormatter);
 			textQuantity.getControl().addKeyListener(new ReturnKeyAdapter(textQuantity.getControl()));
 			textQuantity.getControl().setToolTipText(msg.commonFieldQuantityTooltip);
 			nextWidget = textQuantityUnit;
 		} else {
 			textQuantity = new FormattedText(invisible, SWT.BORDER);
 		}
-		textQuantity.setFormatter(new DoubleFormatter(localeUtil.getDefaultLocale()));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textQuantity.getControl());
 
 		// user defined fields
@@ -784,7 +787,20 @@ public class ProductEditor extends Editor<Product> {
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
 		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
-		bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 16);
+		if(useQuantityUnit) {
+			UpdateValueStrategy strategy = new UpdateValueStrategy();
+			strategy.setBeforeSetValidator((Object value) -> {
+		        String quantityUnit = (String) value;
+		        if(isQuantityUnitValid(quantityUnit)) {
+		        	return ValidationStatus.ok();
+		        } else {
+		        	return ValidationStatus.error(msg.editorProductFieldQuantityunitInvalid);
+		        }
+			});
+			
+			Binding binding = bindModelValue(editorProduct, textQuantityUnit, Product_.quantityUnit.getName(), 80, strategy, null);
+			ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		}
 		// bind the scaled prices widgets
 		for (int i = 0; i < grossText.length; i++) {
 			bindModelValue(editorProduct, textBlock[i], priceBlocks.get(i).getBlock().getName(), 8);
@@ -798,13 +814,31 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
 		fillAndBindVatCombo();
 		bindModelValue(editorProduct, textWeight, Product_.weight.getName(), 16);
-		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 16);
+		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 0);
 		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
 		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
 		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
 		
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
+
+	/**
+	 * @param quantityUnit
+	 * @return
+	 */
+	private boolean isQuantityUnitValid(String quantityUnit) {
+		boolean retval = false;
+		if(StringUtils.isBlank(quantityUnit) || quantityUnit.matches("(?U)\\w+")) {
+			retval = true;
+		} else {
+			// Pattern: n#name1|n#name2|n#name3
+			// only pairs of such blocks are valid!
+			if(quantityUnit.matches("(?U)(\\d+#\\w+\\|?)+")) {
+				retval = true;
+			}
+		}
+		return retval;
+	}
 
 	private void fillAndBindVatCombo() {
 		VAT tmpVat = editorProduct.getVat();

@@ -26,10 +26,10 @@ import com.sebulli.fakturama.model.ItemAccountType;
  */
 public class ItemAccountTypeValueComboProvider implements IComboBoxDataProvider {
 
-    private List<ItemAccountType> allVats = null;
+    private List<ItemAccountType> allItemAccountTypes = null;
     
     public ItemAccountTypeValueComboProvider(List<ItemAccountType> allVats) {
-        this.allVats = allVats;
+        this.allItemAccountTypes = allVats;
     }
 
     /* (non-Javadoc)
@@ -37,7 +37,10 @@ public class ItemAccountTypeValueComboProvider implements IComboBoxDataProvider 
      */
     @Override
     public List<?> getValues(int columnIndex, int rowIndex) {
-        return allVats;
+        return allItemAccountTypes;
     }
-
+    
+    public void setAllItemAccountTypes(List<ItemAccountType> allItemAccountTypes) {
+		this.allItemAccountTypes = allItemAccountTypes;
+	}
 }

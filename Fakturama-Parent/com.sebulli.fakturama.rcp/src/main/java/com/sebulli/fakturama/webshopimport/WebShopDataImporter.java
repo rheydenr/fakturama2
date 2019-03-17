@@ -59,7 +59,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -81,6 +80,7 @@ import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -132,7 +132,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private IPreferenceStore preferences;
     
     @Inject 
-    private Logger log;
+    private ILogger log;
 
     @Inject 
     private IEclipseContext context;
@@ -553,7 +553,6 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 		// Convert a gender character "m" or "f" to the gender number 
 		// 1 or 2
 	    contactItem.setGender(contactUtil.getGenderIdFromString(contact.getGender()));
-		
 		contactItem.setValidFrom(Date.from(instant));
 
 		// Get the category for new contacts from the preferences
@@ -567,9 +566,14 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 		
 		// set explicitly the customers data
 		// only set the number if it's not empty
-		// see Bug FAK-510
+		// (see Bug FAK-510)
+		// and if the number isn't assigned yet
 		if(StringUtils.isNotBlank(contact.getId())) {
-		    contactItem.setCustomerNumber(contact.getId());
+			if(contactsDAO.getContactWithSameNumber(contact.getId()) == null) {
+				contactItem.setCustomerNumber(contact.getId());
+			} else {
+				log.error("Contact with customer number [" + contact.getId() + "] already exists! Please assign another customer number!");
+			}
 		}
         contactItem.setFirstName(contact.getFirstname());
         contactItem.setName(contact.getLastname());
@@ -577,6 +581,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         contactItem.setPhone(contact.getPhone());
         contactItem.setEmail(contact.getEmail());
         contactItem.setWebshopName(contact.getWebshopName());
+        contactItem.setVatNumber(contact.getVatno());
 		contactItem.setValidFrom(today);
         
         Address address = fakturamaModelFactory.createAddress();

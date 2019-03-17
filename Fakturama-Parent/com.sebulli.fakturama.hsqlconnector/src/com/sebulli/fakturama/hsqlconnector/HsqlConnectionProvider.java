@@ -12,7 +12,6 @@ import org.hsqldb.Database;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.Server;
 import org.hsqldb.server.ServerAcl.AclFormatException;
-import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
@@ -23,7 +22,10 @@ import com.sebulli.fakturama.dbconnector.IDbConnection;
  */
 public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer {
 
+	private static final String DEFAULT_HSQL_DATABASEPORT = "9002";
+	private static final String DEFAULT_HSQL_DATABASENAME = "fakdbneu";
 	private Server server;
+	private String workspace;
 
 	@Override
 	public String getKey() {
@@ -47,20 +49,21 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		server = new Server();
 		HsqlProperties hsqlProps = new HsqlProperties();
 		String url = props.getProperty("url");
+		workspace = props.getProperty("GENERAL_WORKSPACE");
 		Pattern patt = Pattern.compile(".*?:file:(.*?);.*");
 		Matcher m = patt.matcher(url);
 		if (m.matches() && m.groupCount() > 0) {
 			String dbFileName = m.group(1);
 			hsqlProps.setProperty("server.database.0", dbFileName);
 			props.put("hsqlfiledb", dbFileName);
-			props.put("newfakdbname", "fakdbneu");
+			props.put("newfakdbname", DEFAULT_HSQL_DATABASENAME);
 			// set up the rest of properties
-		} else if(props.getProperty("url").endsWith("fakdbneu")) {
+		} else if(props.getProperty("url").endsWith(DEFAULT_HSQL_DATABASENAME)) {
 			hsqlProps.setProperty("server.database.0", (String)props.get("hsqlfiledb"));
 		}
-		hsqlProps.setProperty("server.dbname.0", "fakdbneu");
+		hsqlProps.setProperty("server.dbname.0", DEFAULT_HSQL_DATABASENAME);
 		hsqlProps.setProperty("hsqldb.lob_compressed", "true");
-		hsqlProps.setProperty("server.port", "9002");
+		hsqlProps.setProperty("server.port", DEFAULT_HSQL_DATABASEPORT);
 		hsqlProps.setProperty("hsqldb.lob_file_scale", "1");
 		hsqlProps.setProperty("hsqldb.shutdown", "true");
 
@@ -80,7 +83,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	public Connection getConnection() {
 		Connection c = null;
 		try {
-			c = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost:9002/"+server.getDatabaseName(0, false), "SA", "");
+			c = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost:"+DEFAULT_HSQL_DATABASEPORT+"/"+server.getDatabaseName(0, false), "SA", "");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,5 +95,8 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	@Override
 	public void stopServer() {
 		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
+		server.stop();
+		BackupManager bm = new BackupManager();
+		bm.createBackup(workspace);
 	}
 }

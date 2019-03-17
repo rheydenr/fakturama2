@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -49,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parcelservice.ParcelServiceFormFiller;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -70,7 +70,7 @@ public class BrowserEditor {
     private IPreferenceStore preferences;
 
     @Inject
-    private Logger log;
+    private ILogger log;
     
     @Inject
     private IEclipseContext ctx;

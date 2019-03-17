@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.ckvsoft.at/QRK"
+	elementFormDefault="unqualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:qrk="http://www.ckvsoft.at/QRK">
+
+	<complexType name="receipt2bon">
+		<sequence>
+			<element name="r2b" type="qrk:qrkvoucher" maxOccurs="unbounded"
+				minOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="qrkvoucher">
+		<attribute name="receiptNum" type="string"></attribute>
+		<attribute name="gross" type="string"></attribute>
+		<attribute name="payedBy" type="string"></attribute>
+		<attribute name="customerText" type="string"></attribute>
+	</complexType>
+
+	<complexType name="item">
+		<attribute name="count" type="string"></attribute>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="gross" type="string"></attribute>
+		<attribute name="tax" type="string"></attribute>
+		<attribute name="discount" type="string"></attribute>
+	</complexType>
+
+	<element name="receipt">
+		<complexType>
+			<sequence>
+				<element name="items" type="qrk:item" maxOccurs="unbounded"
+					minOccurs="1"></element>
+			</sequence>
+			<attribute name="customerText" type="string"></attribute>
+			<attribute name="payedBy" type="string"></attribute>
+		</complexType>
+	</element>
+</schema>

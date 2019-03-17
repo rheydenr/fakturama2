@@ -40,6 +40,7 @@ public class ImportMessages {
 	public String wizardImportErrorAlreadyimported;
 	public String wizardImportInfoContactsimported;
 	public String wizardImportInfoContactsupdated;
+	public String wizardImportInfoContactsskipped;
 	public String wizardImportInfoProductsimported;
 	public String wizardImportInfoProductsupdated;
 	public String wizardImportInfoVouchersimported;
