@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.6" transformSequenceNumber="5">
   <directoryPresets config="./linux_32bit" />
-  <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.3-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
+  <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.0.4-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="de" customLocalizationFile="" />
       <additionalLanguages>
+        <language id="ar" customLocalizationFile="" />
         <language id="en" customLocalizationFile="" />
         <language id="fr" customLocalizationFile="" />
+        <language id="el" customLocalizationFile="" />
         <language id="hu" customLocalizationFile="" />
         <language id="it" customLocalizationFile="" />
         <language id="pl" customLocalizationFile="" />
@@ -120,7 +122,7 @@
                 </void>
               </void>
               <void property="customWatermarkText">
-                <string>(c) 2018 Fakturama.org</string>
+                <string>(c) 2019 Fakturama.org</string>
               </void>
               <void property="headerIconOverlap">
                 <boolean>true</boolean>
@@ -413,7 +415,7 @@
                 <string>${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</string>
               </void>
               <void property="customWatermarkText">
-                <string>(c) 2018 Fakturama.org</string>
+                <string>(c) 2019 Fakturama.org</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
@@ -525,7 +527,7 @@
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="Windows" id="24" customizedId="" mediaFileName="" installDir="Fakturama" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows" id="24" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="Fakturama" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -573,7 +575,7 @@
       </autoUpdate>
       <topLevelFiles />
     </macosFolder>
-    <windows name="Windows 64bit" id="45" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows 64bit" id="45" customizedId="" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -622,7 +624,7 @@
         <content />
       </installerScript>
     </unixInstaller>
-    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
+    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -648,7 +650,7 @@
         <content />
       </installerScript>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="119" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" os="linux" arch="x86_64">
+    <linuxRPM name="Linux RPM" id="119" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" os="linux" arch="x86_64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -683,7 +685,7 @@
         <content />
       </postUninstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -718,7 +720,7 @@
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
+    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
@@ -757,6 +759,7 @@
   <buildIds buildAll="false">
     <mediaSet refId="24" />
     <mediaSet refId="45" />
+    <mediaSet refId="53" />
     <mediaSet refId="59" />
     <mediaSet refId="119" />
     <mediaSet refId="120" />
