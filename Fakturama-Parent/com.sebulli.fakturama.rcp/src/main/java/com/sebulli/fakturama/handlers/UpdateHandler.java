@@ -16,9 +16,12 @@ package com.sebulli.fakturama.handlers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -29,6 +32,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.equinox.internal.p2.operations.IStatusCodes;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
@@ -89,6 +93,14 @@ public class UpdateHandler {
 			showDialog(sync, MessageDialog.INFORMATION, msg.dialogMessageboxTitleInfo, msg.commandAppUpdateNoupdates);
 			return Status.CANCEL_STATUS;
 		}
+		
+		if(status.getCode() == IStatusCodes.MISSING_REQUIREMENTS) {
+			showDialog(sync, MessageDialog.ERROR, msg.dialogMessageboxTitleError, "Update not possible, please download installation file and install it manually");
+			log.error(null, "can't update application. Reason: ");
+			List<String> reasons = collectErrors(status, new ArrayList<>());
+			log.warn(StringUtils.join(reasons, '\n'));
+			return Status.CANCEL_STATUS;
+		}
 
 		ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));
 		if (provisioningJob != null) {
@@ -143,6 +155,21 @@ public class UpdateHandler {
 		}
 		
 		return Status.OK_STATUS;
+	}
+
+	private List<String> collectErrors(IStatus status, List<String> reasons) {
+		if(status.isMultiStatus()) {
+			if(status.getChildren().length > 0) {
+				for (IStatus stat : status.getChildren()) {
+					collectErrors(stat, reasons);
+				}
+			} else {
+				reasons.add(status.getMessage());
+			}
+		} else {
+			reasons.add(status.getMessage());
+		}
+		return reasons;
 	}
 
 	private void showDialog(UISynchronize sync, int dialogType, String title, final String message) {
