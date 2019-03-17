@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xl="http://www.w3.org/1999/xlink" version="5.1" xml:lang="de">
 	<title>Benutzerhandbuch</title>
-	<info>
+	<bookinfo>
 		<title>Benutzerhandbuch für Fakturama</title>
 		<footerurl>www.fakturama.info</footerurl>
 		<mediaobject>
@@ -170,7 +170,9 @@ Tue Jun 20 21:33:55 CEST 2017 WARN: Establishing SSL connection without server's
 Abhilfe: An die URL noch folgendes ranhängen: <code>?useSSL=false</code>.
 also z. B. 
 <programlisting>jdbc:mysql://rhehomesrv/fakturama?useSSL=false&#038;characterEncoding=utf8&#038;useUnicode=yes</programlisting>
-</para></answer>
+</para>
+<para>Als Alternative empfehlen wir den Einsatz ener verschlüsselten Verbindung. Wie diese einzurichten ist steht im HowTo-Dokument unter https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md</para>
+</answer>
 	</qandaentry>
 	
 	<qandaentry><question><para>Fakturama startet nicht</para></question>
