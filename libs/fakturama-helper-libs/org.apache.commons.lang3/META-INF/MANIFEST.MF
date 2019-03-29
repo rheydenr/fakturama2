@@ -1,11 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Lang3
+Bundle-Name: Commons Lang3
 Bundle-SymbolicName: org.apache.commons.lang3;singleton:=true
-Bundle-Version: 3.4.0
-Bundle-ClassPath: lib/commons-lang3-3.4.jar
+Bundle-Version: 3.8.1
+Bundle-ClassPath: lib/commons-lang3-3.8.1.jar
 Bundle-Vendor: Apache.org
 Export-Package: org.apache.commons.lang3,
+ org.apache.commons.lang3.arch,
  org.apache.commons.lang3.builder,
  org.apache.commons.lang3.concurrent,
  org.apache.commons.lang3.event,
