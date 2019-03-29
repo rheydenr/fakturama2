@@ -8,3 +8,5 @@ Export-Package: org.apache.commons.validator,
  org.apache.commons.validator.routines.checkdigit,
  org.apache.commons.validator.util
 Bundle-ClassPath: lib/commons-validator-1.6.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.apache.commons.validator
