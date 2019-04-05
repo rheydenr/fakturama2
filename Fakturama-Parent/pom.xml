@@ -6,8 +6,8 @@
 	<version>2.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>1.4.0</tycho.version>
-		<tycho-extras.version>1.4.0</tycho-extras.version>
+		<tycho.version>1.2.0</tycho.version>
+		<tycho-extras.version>1.2.0</tycho-extras.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
@@ -74,7 +74,7 @@
                             <ws>win32</ws>
                             <arch>x86_64</arch>
                         </environment>
-                        <environment>
+                        <!--  environment>
                             <os>linux</os>
                             <ws>gtk</ws>
                             <arch>x86_64</arch>
@@ -83,7 +83,7 @@
                             <os>macosx</os>
                             <ws>cocoa</ws>
                             <arch>x86_64</arch>
-                        </environment>
+                        </environment -->
                     </environments>
 					<target>
 						<artifact>
@@ -115,18 +115,18 @@
 				<version>2.5.3</version>
 				<configuration>
 					<preparationGoals>org.eclipse.tycho:tycho-versions-plugin:${tycho-version}:update-eclipse-metadata
-						org.apache.maven.plugins:maven-scm-plugin:1.9.5:add
-						org.apache.maven.plugins:maven-scm-plugin:1.9.5:checkin</preparationGoals>
+						org.apache.maven.plugins:maven-scm-plugin:1.11.2:add
+						org.apache.maven.plugins:maven-scm-plugin:1.11.2:checkin</preparationGoals>
 					<completionGoals>org.eclipse.tycho:tycho-versions-plugin:${tycho-version}:update-eclipse-metadata
-						org.apache.maven.plugins:maven-scm-plugin:1.9.5:add
-						org.apache.maven.plugins:maven-scm-plugin:1.9.5:checkin</completionGoals>
+						org.apache.maven.plugins:maven-scm-plugin:1.11.2:add
+						org.apache.maven.plugins:maven-scm-plugin:1.11.2:checkin</completionGoals>
 				</configuration>
 			</plugin>
 			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.9.5</version>
+				<version>1.11.2</version>
 				<executions>
 					<execution>
 						<id>default-cli</id>

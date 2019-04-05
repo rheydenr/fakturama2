@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: MySQL Connector/J
 Bundle-SymbolicName: com.mysql.jdbc
-Bundle-Version: 8.0.15
+Bundle-Version: 5.9.99
 Specification-Version: 5.1.38
 Bundle-ClassPath: lib/mysql-connector-java-8.0.15.jar
 Bundle-Vendor: mysql.org

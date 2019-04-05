@@ -15,14 +15,14 @@
    <feature url="features/org.apache.odftoolkit.feature_0.9.0.jar" id="org.apache.odftoolkit.feature" version="0.9.0">
       <category name="de.rhe.libs.apache"/>
    </feature>
-   <feature url="features/com.mysql.jdbc.feature_8.0.15.jar" id="com.mysql.jdbc.feature" version="8.0.15">
-      <category name="de.rhe.apps.osgi.drivers"/>
-   </feature>
    <feature url="features/org.hsql.jdbc.feature_2.4.1.jar" id="org.hsql.jdbc.feature" version="2.4.1">
       <category name="de.rhe.apps.osgi.drivers"/>
    </feature>
    <feature url="features/com.opencsv.feature_4.5.0.jar" id="com.opencsv.feature" version="4.5.0">
       <category name="de.rhe.libs.additional"/>
+   </feature>
+   <feature url="features/com.mysql.jdbc.feature_5.9.99.jar" id="com.mysql.jdbc.feature" version="5.9.99">
+      <category name="de.rhe.apps.osgi.drivers"/>
    </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
       <description>
