@@ -40,3 +40,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/opencsv-3.9.jar
 Service-Component: OSGI-INF/importservice.xml
+Automatic-Module-Name: org.fakturama.import

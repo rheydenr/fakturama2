@@ -32,10 +32,11 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
@@ -516,7 +517,8 @@ public class DocumentEditor extends Editor<Document> {
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
 		if (displayAddress.getCustomerNumber() != null && addressModified) {
-			if (StringUtils.getJaroWinklerDistance(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
+			JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
+			if (jaroWinklerDistance.apply(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
 				//T: Title of the dialog that appears if the document is assigned to  an other address.

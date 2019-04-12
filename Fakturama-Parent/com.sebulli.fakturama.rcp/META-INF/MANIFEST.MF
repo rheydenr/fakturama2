@@ -67,7 +67,10 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.osgi.services,
  org.eclipse.equinox.security,
  com.opencsv,
- org.eclipse.persistence.moxy
+ org.eclipse.persistence.moxy,
+ org.apache.xerces;bundle-version="2.9.0",
+ org.apache.commons.logging;bundle-version="1.1.1",
+ org.apache.commons.text;bundle-version="1.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml
@@ -126,3 +129,4 @@ Import-Package: javax.inject,
  org.osgi.service.prefs,
  org.osgi.util.tracker,
  org.osgi.util.xml
+Automatic-Module-Name: com.sebulli.fakturama.rcp

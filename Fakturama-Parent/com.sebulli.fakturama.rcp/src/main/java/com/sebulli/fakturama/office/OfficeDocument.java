@@ -771,7 +771,7 @@ public class OfficeDocument {
             pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
             Row newRow = Row.getInstance(newRowElement);
             // find all placeholders within row
-	        int cellCount = newRowElement.getChildElementCount();
+	        int cellCount = newRowElement.getChildNodes().getLength();
             for (int j = 0; j < cellCount; j++) {
                 // a template cell
                 Cell currentCell = newRow.getCellByIndex(j);
