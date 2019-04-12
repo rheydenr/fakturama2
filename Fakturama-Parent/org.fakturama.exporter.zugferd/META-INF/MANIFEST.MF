@@ -35,3 +35,4 @@ Import-Package: com.sebulli.fakturama.model,
  org.eclipse.e4.ui.model,
  org.eclipse.e4.ui.model.application.ui.basic
 Bundle-Activator: org.fakturama.export.zugferd.Activator
+Automatic-Module-Name: org.fakturama.exporter.zugferd
