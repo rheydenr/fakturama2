@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.rhe.helper</groupId>
   <artifactId>fakturama</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>Fakturama Helper Libs</name>
     <packaging>pom</packaging>
     <properties>

@@ -25,6 +25,7 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
+      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -243,15 +244,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="com.mysql.jdbc.feature"/>
       <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.slf4j.osgi.feature"/>
+      <feature id="org.slf4j.osgi.feature" version="1.0.0"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.persistence.jpa"/>
-      <feature id="org.eclipse.persistence.moxy"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
@@ -272,10 +271,9 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
-      <feature id="com.opencsv.feature"/>
-      <feature id="org.apache.commons.feature"/>
-      <feature id="org.eclipse.equinox.executable" version="3.8.300.v20190213-1655"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature" version="1.4.300.v20190220-1158"/>
+      <feature id="com.opencsv.feature" version="4.4.0"/>
+      <feature id="org.apache.commons.feature" version="3.3.0"/>
+      <feature id="org.eclipse.persistence.moxy" version="2.7.1.v20171221-bd47e8f"/>
    </features>
 
    <configurations>

@@ -21,7 +21,7 @@
    <feature url="features/com.opencsv.feature_4.5.0.jar" id="com.opencsv.feature" version="4.5.0">
       <category name="de.rhe.libs.additional"/>
    </feature>
-   <feature url="features/com.mysql.jdbc.feature_5.9.99.jar" id="com.mysql.jdbc.feature" version="5.9.99">
+   <feature url="features/com.mysql.jdbc.feature_5.1.47.jar" id="com.mysql.jdbc.feature" version="5.1.47">
       <category name="de.rhe.apps.osgi.drivers"/>
    </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
