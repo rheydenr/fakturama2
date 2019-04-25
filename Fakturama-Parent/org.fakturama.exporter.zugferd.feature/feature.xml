@@ -2,7 +2,7 @@
 <feature
       id="org.fakturama.exporter.zugferd.feature"
       label="Fakturama ZUGFeRD Exporter"
-      version="2.1.0.qualifier"
+      version="2.0.5.qualifier"
       provider-name="Fakturama.org">
 
    <description url="http://www.fakturama.info/">

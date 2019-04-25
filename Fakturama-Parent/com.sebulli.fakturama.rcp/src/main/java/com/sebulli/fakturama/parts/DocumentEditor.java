@@ -1747,8 +1747,11 @@ public class DocumentEditor extends Editor<Document> {
             //	    localDate.plusDays(spDueDays.getSelection());
             //	    Date.from(localDate.???)
             //		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-            calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
-            dtIssueDate.setSelection(calendar.getTime());
+            
+			top.getParent().getDisplay().syncExec(() -> {
+				calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
+				dtIssueDate.setSelection(calendar.getTime());
+			});
         }
     }
 	
