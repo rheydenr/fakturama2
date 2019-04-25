@@ -393,10 +393,7 @@ public class LifecycleManager {
 //		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
 //		backupManager.createBackup();
         
-        if(dialogSettings != null) {
-        	log.debug("save dialog settings");
-        	saveDialogSettings(instanceLocation);
-        }
+    	saveDialogSettings(instanceLocation);
     }
 	
     /**
@@ -408,6 +405,7 @@ public class LifecycleManager {
         if (dialogSettings == null) {
             return;
         }
+    	log.debug("save dialog settings");
 
         try {
         	URL path = instanceLocation.getDataArea(Activator.PLUGIN_ID);
@@ -427,8 +425,7 @@ public class LifecycleManager {
             }
             dialogSettings.save(storage.toString());
         } catch (IOException | IllegalStateException | URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Can't save dialog settings. Reason: " + e.getMessage());
 		}
     }
 
@@ -534,7 +531,7 @@ public class LifecycleManager {
      * @param instanceLocation 
      */
     private IDialogSettings loadDialogSettings(Location instanceLocation) {
-    	IDialogSettings dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
+    	dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
     	
     	//look for bundle specific dialog settings
         URL dsURL = null;

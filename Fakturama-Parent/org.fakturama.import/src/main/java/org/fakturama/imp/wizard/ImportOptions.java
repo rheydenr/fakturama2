@@ -7,10 +7,24 @@ package org.fakturama.imp.wizard;
  *
  */
 public class ImportOptions {
-	private Boolean updateExisting;
-	private Boolean updateWithEmptyValues;
-	private String quoteChar;
-	private String separator;
+	
+	// initialize with some predefined values
+	private Boolean updateExisting = false;
+	private Boolean updateWithEmptyValues = false;
+	private String quoteChar = "\"";
+	private String separator = ";";
+	private String basePath = "";
+
+	public ImportOptions() {
+		
+	}
+
+	public ImportOptions(Boolean updateExisting, Boolean updateWithEmptyValues, String quoteChar, String separator) {
+		this.updateExisting = updateExisting;
+		this.updateWithEmptyValues = updateWithEmptyValues;
+		this.quoteChar = quoteChar;
+		this.separator = separator;
+	}
 
 	/**
 	 * @return the updateExisting
@@ -75,50 +89,17 @@ public class ImportOptions {
 		this.separator = separator;
 	}
 
-
-	public ImportOptions(Boolean updateExisting, Boolean updateWithEmptyValues, String quoteChar, String separator) {
-		super();
-		this.updateExisting = updateExisting;
-		this.updateWithEmptyValues = updateWithEmptyValues;
-		this.quoteChar = quoteChar;
-		this.separator = separator;
+	/**
+	 * @return the basePath
+	 */
+	public String getBasePath() {
+		return basePath;
 	}
 
-
-	public static class ImportOptionsBuilder {
-		private Boolean updateExisting;
-		private Boolean updateWithEmptyValues;
-		private String quoteChar;
-		private String separator;
-
-		public ImportOptionsBuilder withUpdateExisting(Boolean updateExisting) {
-			this.updateExisting = updateExisting;
-			return this;
-		}
-
-		public ImportOptionsBuilder withUpdateWithEmptyValues(Boolean updateWithEmptyValues) {
-			this.updateWithEmptyValues = updateWithEmptyValues;
-			return this;
-		}
-
-		public ImportOptionsBuilder withQuoteChar(String quoteChar) {
-			this.quoteChar = quoteChar;
-			return this;
-		}
-
-		public ImportOptionsBuilder withSeparator(String separator) {
-			this.separator = separator;
-			return this;
-		}
-
-		public ImportOptions build() {
-			return new ImportOptions(updateExisting, updateWithEmptyValues, quoteChar, separator);
-		}
+	/**
+	 * @param basePath the basePath to set
+	 */
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
 	}
-
-
-	public static ImportOptionsBuilder importOptions() {
-		return new ImportOptionsBuilder();
-	}
-
 }
