@@ -57,7 +57,7 @@ public abstract class WorkbenchWizardSelectionPage extends WizardSelectionPage {
     }
 
     public IStructuredSelection getCurrentResourceSelection() {
-        return currentResourceSelection;
+        return this.currentResourceSelection;
     }
 
     public IWorkbench getWorkbench() {

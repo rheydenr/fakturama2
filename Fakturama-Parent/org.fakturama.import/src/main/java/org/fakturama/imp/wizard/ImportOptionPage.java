@@ -211,7 +211,7 @@ public class ImportOptionPage extends WizardPage {
 	      }		
 	    });
 	}
-
+	
 	public ImportOptions getImportOptions() {
 		return options;
 	}

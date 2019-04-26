@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -19,6 +20,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 
 /**
  * Wizard page class from which an import wizard is selected.
@@ -33,7 +35,7 @@ public class ImportPage extends ImportExportPage {
 	private static final String STORE_EXPANDED_IMPORT_CATEGORIES = DIALOG_SETTING_SECTION_NAME
 		+ "STORE_EXPANDED_IMPORT_CATEGORIES";	//$NON-NLS-1$
 
-	CategorizedWizardSelectionTree importTree;
+	private CategorizedWizardSelectionTree importTree;
 
 	/**
 	 * The import service is injected by OSGi container. It resides in a bundle
@@ -45,28 +47,27 @@ public class ImportPage extends ImportExportPage {
 	private Messages msg;
 	
 	@Inject
+	private ILogger logger;
+	
+	@Inject
 	private MApplication application;
 
 	private ImportWizardRegistry importWizardRegistry;
 
 	@Inject
-	public ImportPage(/* E4Workbench workbench*/) {
-		super(null, null);
-//		this.importService = importService;
+	public ImportPage(IWorkbench workbench) {
+		super(workbench, null);
 	}
 	
-//	@PostConstruct
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		setTitle(msg.wizardExportCommonHeadline);
 		setDescription(msg.wizardCommonTitleSelectsource);
-		
-		// setImageDescriptor(image);
-		// IWorkbenchGraphicConstants.IMG_WIZBAN_IMPORT_WIZ
 	}
 
 	
-	protected void initialize() {
+	@SuppressWarnings("unchecked")
+    protected void initialize() {
 //		workbench.getHelpSystem().setHelp(getControl(),
 //                IWorkbenchHelpContextIds.IMPORT_WIZARD_SELECTION_WIZARD_PAGE);
 
@@ -81,8 +82,7 @@ public class ImportPage extends ImportExportPage {
 				this.importService = service;
 			}
 		} catch (InvalidSyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error("Can't resolve import service. Reason: " + e.getMessage());
 		}
 	}
 

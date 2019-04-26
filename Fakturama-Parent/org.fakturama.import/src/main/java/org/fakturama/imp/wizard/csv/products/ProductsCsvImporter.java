@@ -20,9 +20,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -46,6 +48,7 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
+import com.sebulli.fakturama.model.ProductOptions;
 import com.sebulli.fakturama.model.VAT;
 
 /**
@@ -196,7 +199,9 @@ public class ProductsCsvImporter {
 						product = productsDAO.findOrCreate(product);
 					}
 					ProductCategory category = productCategoriesDAO.getCategory(prop.getProperty("category"), false);
-					product.setCategories(category);
+					if(importEmptyValues || category != null) {
+					    product.setCategories(category);
+					}
 					product.setDescription(prop.getProperty("description"));
 					product.setPrice1(DataUtils.getInstance().StringToDouble(prop.getProperty("price1")));
 					product.setPrice2(DataUtils.getInstance().StringToDouble(prop.getProperty("price2")));
@@ -214,16 +219,10 @@ public class ProductsCsvImporter {
 					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5"))
 							? Integer.parseInt(prop.getProperty("block5")) : Integer.valueOf(10000));
 
-					// FIXME implement!
-					// ProductOptions productOption =
-					// modelFactory.createProductOptions();
-					// productOption.setAttributeValue(prop.getProperty("options"));
-					// List<ProductOptions> productOptions = new ArrayList<>();
-					// productOptions.add(productOption);
-					// product.setAttributes(productOptions);
-					product.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
-					product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit"))
-							? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
+                    setProductOptions(product, prop.getProperty("options"));
+
+                    product.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
+                    product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
 
 					if (prop.getProperty("date_added").isEmpty()) {
 						product.setDateAdded(today);
@@ -233,7 +232,7 @@ public class ProductsCsvImporter {
 						product.setModified(today);
 					}
 
-					if(prop.getProperty("picturename") != null) {
+					if(prop.getProperty("picturename") != null && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
 					    byte[] picture = readPicture(prop.getProperty("picturename"), basePath);
 					    product.setPicture(picture);
 					}
@@ -241,7 +240,6 @@ public class ProductsCsvImporter {
 					product.setQuantityUnit(prop.getProperty("qunit"));
 
 					String vatName = prop.getProperty("item vat");
-
 					Double vatValue = DataUtils.getInstance().StringToDouble(prop.getProperty("vat"));
 					VAT prodVat = modelFactory.createVAT();
 					prodVat.setName(vatName);
@@ -277,15 +275,27 @@ public class ProductsCsvImporter {
 		}
 	}
 
-	private byte[] readPicture(String fileName, Path basePath) {
-	    Path productPictureFile = basePath.resolve(fileName);
-	    byte[] retval = null;
-	    try {
-            retval = Files.readAllBytes(productPictureFile);
-        } catch (IOException ioex) {
-            log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
-        }
+    // FIXME implement!
+	private void setProductOptions(Product product, String property) {
+        ProductOptions productOption = modelFactory.createProductOptions();
+        // productOption.setAttributeValue(prop.getProperty("options"));
+        List<ProductOptions> productOptions = new ArrayList<>();
+        
+        // TODO set attribute value, name, sequence
+         productOptions.add(productOption);
+         product.setAttributes(productOptions);
+    }
 
+    private byte[] readPicture(String fileName, Path basePath) {
+        Path productPictureFile = basePath.resolve(fileName);
+        byte[] retval = null;
+        if (StringUtils.isNotBlank(fileName)) {
+            try {
+                retval = Files.readAllBytes(productPictureFile);
+            } catch (IOException ioex) {
+                log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
+            }
+        }
         return retval;
     }
 

@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -48,18 +49,14 @@ public class ExportPage extends ImportExportPage {
 	private ExportWizardRegistry exportWizardRegistry;
 
 	@Inject
-	public ExportPage(/* E4Workbench workbench*/) {
-		super(null, null);
-//		this.exportService = exportService;
+	public ExportPage(IWorkbench workbench) {
+		super(workbench, null);
 	}
 	
-//	@PostConstruct
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		setTitle(msg.wizardExportCommonHeadline);
 		setDescription(msg.wizardExportCommonDescription);
-		// setImageDescriptor(image);
-		// IWorkbenchGraphicConstants.IMG_WIZBAN_EXPORT_WIZ
 	}
 
 	
