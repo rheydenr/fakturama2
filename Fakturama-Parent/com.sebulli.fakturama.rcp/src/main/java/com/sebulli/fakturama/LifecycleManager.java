@@ -3,7 +3,6 @@ package com.sebulli.fakturama;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -545,11 +544,10 @@ public class LifecycleManager {
 			return null;
 		}
         
-        try(InputStream is = dsURL.openStream();) {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is, "utf-8")); //$NON-NLS-1$
+        try {
+            BufferedReader reader = Files.newBufferedReader(Paths.get(dsURL.toURI()));
             dialogSettings.load(reader);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             // load failed so ensure we have an empty settings
             dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
         }

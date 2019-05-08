@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -46,7 +47,8 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  */
 public class ImportOptionPage extends WizardPage {
 
-	public static final String WIZARD_TITLE = "title";
+	private static final String PICTURE_BASE_PATH = "picture.base.path";
+    public static final String WIZARD_TITLE = "title";
 	public static final String WIZARD_DESCRIPTION = "description";
 	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
 	
@@ -56,6 +58,9 @@ public class ImportOptionPage extends WizardPage {
 	
 	@Inject
 	private ILogger log;
+	
+	@Inject
+	private IDialogSettings settings;
 
 	//Control elements
 	/**
@@ -193,6 +198,9 @@ public class ImportOptionPage extends WizardPage {
                 options.setBasePath(((Text)e.getSource()).getText());
             }
         });
+		if(getCurrentDialogSettings() != null && getCurrentDialogSettings().get(PICTURE_BASE_PATH) != null) {
+		    pictureBasePath.setText(getCurrentDialogSettings().get(PICTURE_BASE_PATH));
+		}
         GridDataFactory.fillDefaults().grab(true, false).applyTo(pictureBasePath);
 		
 		Button buttonSelectDir = new Button(top, SWT.PUSH);
@@ -207,10 +215,20 @@ public class ImportOptionPage extends WizardPage {
 	        String dir = directoryDialog.open();
 	        if(dir != null) {
 	        	pictureBasePath.setText(dir);
+	        	getCurrentDialogSettings().put(PICTURE_BASE_PATH, dir);
 	        }
 	      }		
 	    });
 	}
+	
+	private IDialogSettings getCurrentDialogSettings() {
+	    IDialogSettings section = settings.getSection("org.fakturama.import.options");
+	    if(section == null) {
+	        section =settings.addNewSection("org.fakturama.import.options");
+	    }
+	    return section;
+	}
+	
 	
 	public ImportOptions getImportOptions() {
 		return options;
