@@ -62,7 +62,7 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
     protected IEventBroker evtBroker;
 
 	// The wizard pages
-	ImportOptionPage optionPage;
+	private ImportOptionPage optionPage;
 
 	/*
 	 * (non-Javadoc)
@@ -112,9 +112,7 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
 			if (!selectedFile.isEmpty()) {
 
 				ProductsCsvImporter csvImporter = ContextInjectionFactory.make(ProductsCsvImporter.class, ctx);
-//				csvImporter.setQuoteChar(options.getQuoteChar().charAt(0));
-//				csvImporter.setSeparator(options.getSeparator().charAt(0));
-				csvImporter.importCSV(selectedFile, false, optionPage);
+				csvImporter.importCSV(selectedFile, false, optionPage.getImportOptions());
 
 				ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 				dialog.setStatusText(csvImporter.getResult());

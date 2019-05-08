@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -14,7 +15,6 @@ import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IWizardRegistry;
 import org.fakturama.wizards.ImportExportPage;
-import org.fakturama.wizards.ImportExportPage.CategorizedWizardSelectionTree;
 
 import com.sebulli.fakturama.i18n.Messages;
 
@@ -49,18 +49,14 @@ public class ExportPage extends ImportExportPage {
 	private ExportWizardRegistry exportWizardRegistry;
 
 	@Inject
-	public ExportPage(/* E4Workbench workbench*/) {
-		super(null, null);
-//		this.exportService = exportService;
+	public ExportPage(IWorkbench workbench) {
+		super(workbench, null);
 	}
 	
-//	@PostConstruct
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		setTitle(msg.wizardExportCommonHeadline);
 		setDescription(msg.wizardExportCommonDescription);
-		// setImageDescriptor(image);
-		// IWorkbenchGraphicConstants.IMG_WIZBAN_EXPORT_WIZ
 	}
 
 	
@@ -117,11 +113,6 @@ public class ExportPage extends ImportExportPage {
         selectPreviouslySelected(STORE_SELECTED_EXPORT_WIZARD_ID, exportRoot, exportTree.getViewer());       
         super.restoreWidgetValues();
 	}
-	
-//	protected ITriggerPoint getTriggerPoint(){
-//		return getWorkbench().getActivitySupport()
-//    		.getTriggerPointManager().getTriggerPoint(WorkbenchTriggerPoints.EXPORT_WIZARDS);
-//	}
 	
 	protected void updateMessage(){
 //		setMessage(WorkbenchMessages.ImportExportPage_chooseExportDestination); 

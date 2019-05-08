@@ -15,13 +15,16 @@
 package org.fakturama.imp.wizard.csv.products;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -30,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
-import org.fakturama.imp.wizard.ImportOptionPage;
+import org.fakturama.imp.wizard.ImportOptions;
 
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -45,36 +48,37 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
+import com.sebulli.fakturama.model.ProductOptions;
 import com.sebulli.fakturama.model.VAT;
 
 /**
- * CSV importer
+ * CSV importer for products
  * 
  */
 public class ProductsCsvImporter {
-	
+
 	@Inject
 	@Translation
 	protected ImportMessages importMessages;
-	
+
 	@Inject
 	@Translation
 	protected Messages msg;
-	
+
 	@Inject
 	private ProductsDAO productsDAO;
-	
+
 	@Inject
 	private ProductCategoriesDAO productCategoriesDAO;
-	
+
 	@Inject
 	private VatsDAO vatsDAO;
-    
-    @Inject
-    protected ILogger log;
-    
-    @Inject
-    private IDateFormatterService dateFormatterService;
+
+	@Inject
+	protected ILogger log;
+
+	@Inject
+	private IDateFormatterService dateFormatterService;
 
 	/**
 	 * the model factory
@@ -82,15 +86,15 @@ public class ProductsCsvImporter {
 	private FakturamaModelFactory modelFactory;
 
 	// Defines all columns that are used and imported
-	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3", "price4", "price5",
-			 "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit", 
-			 "date_added", /*"picturename",*/ "quantity", "webshopid", "qunit" };
+	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3",
+			"price4", "price5", "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit",
+			"date_added", "picturename", "quantity", "webshopid", "qunit" };
 
 	// The result string
-	String result = " ";
-	
+	private String result = " ";
+
 	// NewLine
-	String NL = System.lineSeparator();
+	private String NL = System.lineSeparator();
 
 	/**
 	 * Returns, if a column is in the list of required columns
@@ -103,7 +107,6 @@ public class ProductsCsvImporter {
 		return Arrays.stream(requiredHeaders).anyMatch(col -> columnName.equalsIgnoreCase(col));
 	}
 
-
 	/**
 	 * The import procedure
 	 * 
@@ -111,21 +114,30 @@ public class ProductsCsvImporter {
 	 *            Name of the file to import
 	 * @param test
 	 *            if true, the dataset are not imported (currently not used)
-	 * @param updateExisting
-	 *            if true, also existing entries will be updated
-	 * @param importEmptyValues
-	 *            if true, also empty values will be updated
+	 * @param importOptions
+	 *            Options for Import
+	 * 
 	 */
-	public void importCSV(final String fileName, boolean test, ImportOptionPage optionPage) {
-		boolean updateExisting = optionPage.getUpdateExisting(); 
-		//boolean importEmptyValues = optionPage.getUpdateWithEmptyValues();
-		char separator = StringUtils.defaultIfBlank(optionPage.getSeparator(), ";").charAt(0);
-		char quoteChar = StringUtils.isNotBlank(optionPage.getQuoteChar()) ? optionPage.getQuoteChar().charAt(0) : '"';
+	public void importCSV(final String fileName, boolean test, ImportOptions importOptions) {
+
+		// if true, also existing entries will be updated
+		boolean updateExisting = importOptions.getUpdateExisting();
+
+		// if true, also empty values will be updated
+		boolean importEmptyValues = importOptions.getUpdateWithEmptyValues();
+		Path basePath = Paths.get(importOptions.getBasePath());
+		char separator = StringUtils.defaultIfBlank(importOptions.getSeparator(), ";").charAt(0);
+		char quoteChar = StringUtils.isNotBlank(importOptions.getQuoteChar()) ? importOptions.getQuoteChar().charAt(0) : '"';
 		modelFactory = FakturamaModelPackage.MODELFACTORY;
 		Date today = Calendar.getInstance().getTime();
 
+		if (fileName == null) {
+			log.error("No filename for import file given.");
+			return;
+		}
+
 		// Result string
-		//T: Importing + .. FILENAME
+		// T: Importing + .. FILENAME
 		result = String.format("%s %s", importMessages.wizardImportProgressinfo, fileName);
 
 		// Count the imported products
@@ -137,22 +149,23 @@ public class ProductsCsvImporter {
 
 		String[] columns;
 
-		// Open the existing file
-		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-				 BufferedReader in = new BufferedReader(isr);
-				 CSVReader csvr = new CSVReader(in, separator, quoteChar);	) {
-				
-				// Read next CSV line
-				columns = csvr.readNext();
-				
-				if (columns.length < 5) {
-					//T: Error message
-					result += NL + importMessages.wizardImportErrorFirstline;
-					return;
-				}
+		Path inputFile = Paths.get(fileName);
 
-		// Read the existing file and store it in a buffer
-		// with a fixed size. Only the newest lines are kept.
+		// Open the existing file
+		try (BufferedReader in = Files.newBufferedReader(inputFile);
+			 CSVReader csvr = new CSVReader(in, separator, quoteChar);) {
+
+			// Read next CSV line
+			columns = csvr.readNext();
+
+			if (columns.length < 5) {
+				// T: Error message
+				result += NL + importMessages.wizardImportErrorFirstline;
+				return;
+			}
+
+			// Read the existing file and store it in a buffer
+			// with a fixed size. Only the newest lines are kept.
 
 			// Read line by line
 			String[] cells;
@@ -173,61 +186,67 @@ public class ProductsCsvImporter {
 				if (prop.size() > 0 && (prop.size() != requiredHeaders.length)) {
 					for (int i = 0; i < requiredHeaders.length; i++) {
 						if (!prop.containsKey(requiredHeaders[i]))
-							//T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
-							result += NL 
-							+ MessageFormat.format(importMessages.wizardImportErrorNodatafound, Integer.toString(lineNr) 
-						    + "\"" + requiredHeaders[i] + "\""); 
+							// T: Format: LINE: xx: NO DATA IN COLUMN yy FOUND.
+							result += NL + MessageFormat.format(importMessages.wizardImportErrorNodatafound,
+									Integer.toString(lineNr) + "\"" + requiredHeaders[i] + "\"");
 					}
 				} else {
 					product.setItemNumber(prop.getProperty("itemnr"));
 					product.setName(prop.getProperty("name"));
-					product.setWebshopId(StringUtils.isNumeric(prop.getProperty("webshopid")) ? Long.parseLong(prop.getProperty("webshopid")) : Long.valueOf(1));
-					if(updateExisting) {
-					    product = productsDAO.findOrCreate(product);
+					product.setWebshopId(StringUtils.isNumeric(prop.getProperty("webshopid"))
+							? Long.parseLong(prop.getProperty("webshopid")) : Long.valueOf(1));
+					if (updateExisting) {
+						product = productsDAO.findOrCreate(product);
 					}
 					ProductCategory category = productCategoriesDAO.getCategory(prop.getProperty("category"), false);
-					product.setCategories(category);
+					if(importEmptyValues || category != null) {
+					    product.setCategories(category);
+					}
 					product.setDescription(prop.getProperty("description"));
 					product.setPrice1(DataUtils.getInstance().StringToDouble(prop.getProperty("price1")));
 					product.setPrice2(DataUtils.getInstance().StringToDouble(prop.getProperty("price2")));
 					product.setPrice3(DataUtils.getInstance().StringToDouble(prop.getProperty("price3")));
 					product.setPrice4(DataUtils.getInstance().StringToDouble(prop.getProperty("price4")));
 					product.setPrice5(DataUtils.getInstance().StringToDouble(prop.getProperty("price5")));
-					product.setBlock1(StringUtils.isNumeric(prop.getProperty("block1")) ? Integer.parseInt(prop.getProperty("block1")) : Integer.valueOf(1));
-					product.setBlock2(StringUtils.isNumeric(prop.getProperty("block2")) ? Integer.parseInt(prop.getProperty("block2")) : Integer.valueOf(10));
-					product.setBlock3(StringUtils.isNumeric(prop.getProperty("block3")) ? Integer.parseInt(prop.getProperty("block3")) : Integer.valueOf(100));
-					product.setBlock4(StringUtils.isNumeric(prop.getProperty("block4")) ? Integer.parseInt(prop.getProperty("block4")) : Integer.valueOf(1000));
-					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5")) ? Integer.parseInt(prop.getProperty("block5")) : Integer.valueOf(10000));
+					product.setBlock1(StringUtils.isNumeric(prop.getProperty("block1"))
+							? Integer.parseInt(prop.getProperty("block1")) : Integer.valueOf(1));
+					product.setBlock2(StringUtils.isNumeric(prop.getProperty("block2"))
+							? Integer.parseInt(prop.getProperty("block2")) : Integer.valueOf(10));
+					product.setBlock3(StringUtils.isNumeric(prop.getProperty("block3"))
+							? Integer.parseInt(prop.getProperty("block3")) : Integer.valueOf(100));
+					product.setBlock4(StringUtils.isNumeric(prop.getProperty("block4"))
+							? Integer.parseInt(prop.getProperty("block4")) : Integer.valueOf(1000));
+					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5"))
+							? Integer.parseInt(prop.getProperty("block5")) : Integer.valueOf(10000));
 
-// FIXME implement!
-//					ProductOptions productOption = modelFactory.createProductOptions();
-//					productOption.setAttributeValue(prop.getProperty("options"));
-//					List<ProductOptions> productOptions = new ArrayList<>();
-//					productOptions.add(productOption);
-//					product.setAttributes(productOptions);
-					product.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
-					product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
+                    setProductOptions(product, prop.getProperty("options"));
+
+                    product.setWeight(DataUtils.getInstance().StringToDouble(prop.getProperty("weight")));
+                    product.setSellingUnit(StringUtils.isNumeric(prop.getProperty("unit")) ? Integer.parseInt(prop.getProperty("unit")) : Integer.valueOf(1));
 
 					if (prop.getProperty("date_added").isEmpty()) {
 						product.setDateAdded(today);
 					} else {
-						product.setDateAdded(dateFormatterService.getCalendarFromDateString(prop.getProperty("date_added")).getTime());
+						product.setDateAdded(dateFormatterService
+								.getCalendarFromDateString(prop.getProperty("date_added")).getTime());
 						product.setModified(today);
 					}
-					
-//					product.setPictureName(prop.getProperty("picturename"));
+
+					if(prop.getProperty("picturename") != null && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
+					    byte[] picture = readPicture(prop.getProperty("picturename"), basePath);
+					    product.setPicture(picture);
+					}
 					product.setQuantity(DataUtils.getInstance().StringToDouble(prop.getProperty("quantity")));
 					product.setQuantityUnit(prop.getProperty("qunit"));
 
 					String vatName = prop.getProperty("item vat");
-
 					Double vatValue = DataUtils.getInstance().StringToDouble(prop.getProperty("vat"));
 					VAT prodVat = modelFactory.createVAT();
 					prodVat.setName(vatName);
 					prodVat.setTaxValue(vatValue);
 					prodVat.setDescription(msg.getPurchaseTaxString());
 					prodVat = vatsDAO.findOrCreate(prodVat);
-					
+
 					product.setVat(prodVat);
 
 					// Add the product to the data base
@@ -243,23 +262,44 @@ public class ProductsCsvImporter {
 			}
 
 			// The result string
-			//T: Message: xx Products HAVE BEEN IMPORTED 
+			// T: Message: xx Products HAVE BEEN IMPORTED
 			result += NL + Integer.toString(importedProducts) + " " + importMessages.wizardImportInfoProductsimported;
 			if (updatedProducts > 0)
 				result += NL + Integer.toString(updatedProducts) + " " + importMessages.wizardImportInfoProductsupdated;
 
-		}
-		catch (IOException e) {
-			//T: Error message
+		} catch (IOException e) {
+			// T: Error message
 			result += NL + importMessages.wizardImportErrorOpenfile;
-		}
-		catch (FakturamaStoringException e) {
+		} catch (FakturamaStoringException e) {
 			log.error(e, "cant't store import data.");
 		}
 	}
 
-	public String getResult() {
+    // FIXME implement!
+	private void setProductOptions(Product product, String property) {
+        ProductOptions productOption = modelFactory.createProductOptions();
+        // productOption.setAttributeValue(prop.getProperty("options"));
+        List<ProductOptions> productOptions = new ArrayList<>();
+        
+        // TODO set attribute value, name, sequence
+         productOptions.add(productOption);
+         product.setAttributes(productOptions);
+    }
+
+    private byte[] readPicture(String fileName, Path basePath) {
+        Path productPictureFile = basePath.resolve(fileName);
+        byte[] retval = null;
+        if (StringUtils.isNotBlank(fileName)) {
+            try {
+                retval = Files.readAllBytes(productPictureFile);
+            } catch (IOException ioex) {
+                log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
+            }
+        }
+        return retval;
+    }
+
+    public String getResult() {
 		return result;
 	}
-
 }

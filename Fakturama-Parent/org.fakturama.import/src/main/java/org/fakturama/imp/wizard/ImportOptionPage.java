@@ -19,13 +19,19 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.fakturama.imp.ImportMessages;
@@ -41,7 +47,8 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  */
 public class ImportOptionPage extends WizardPage {
 
-	public static final String WIZARD_TITLE = "title";
+	private static final String PICTURE_BASE_PATH = "picture.base.path";
+    public static final String WIZARD_TITLE = "title";
 	public static final String WIZARD_DESCRIPTION = "description";
 	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
 	
@@ -51,12 +58,25 @@ public class ImportOptionPage extends WizardPage {
 	
 	@Inject
 	private ILogger log;
+	
+	@Inject
+	private IDialogSettings settings;
 
 	//Control elements
+	/**
+	 * Return whether existing entries should be overwritten
+	 */
 	private Button buttonUpdateExisting;
+	
+	/**
+	 * Return whether empty cells should be imported
+	 */
 	private Button buttonUpdateWithEmptyValues;
 	private Image previewImage = null;
 	private Text quoteChar, separator;
+	
+	private ImportOptions options;
+	private Text pictureBasePath;
 	
 	/**
 	 * Constructor Create the page and set title and message.
@@ -80,7 +100,6 @@ public class ImportOptionPage extends WizardPage {
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(WIZARD_TITLE));
-//		setMessage((String) ctx.get(WIZARD_DESCRIPTION));
 		this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
 	}
 
@@ -92,10 +111,12 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
+		
+		options = new ImportOptions();
 
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(top);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(top);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
 		setControl(top);
 
@@ -103,7 +124,7 @@ public class ImportOptionPage extends WizardPage {
 		if (previewImage != null) {
 			Label preview = new Label(top, SWT.BORDER);
 			preview.setText(importMessages.wizardCommonPreviewLabel);
-			GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
+			GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
 			try {
 				preview.setImage(previewImage);
 			}
@@ -117,15 +138,28 @@ public class ImportOptionPage extends WizardPage {
 		
 		//T: Import Wizard Page 1 - Long description.
 		labelDescription.setText(importMessages.wizardImportOptionsSet);
-		GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+		GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
 
 		buttonUpdateExisting = new Button (top, SWT.CHECK);
 		buttonUpdateExisting.setText(importMessages.wizardImportOptionsUpdate);
-		GridDataFactory.swtDefaults().span(2, 1).applyTo(buttonUpdateExisting);
+		buttonUpdateExisting.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				options.setUpdateExisting(((Button)e.getSource()).getSelection());
+			}
+		});
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(buttonUpdateExisting);
 
 		buttonUpdateWithEmptyValues = new Button (top, SWT.CHECK);
 		buttonUpdateWithEmptyValues.setText(importMessages.wizardImportOptionsEmptyupdate);
-		GridDataFactory.swtDefaults().span(2, 1).applyTo(buttonUpdateWithEmptyValues);
+		buttonUpdateWithEmptyValues.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				options.setUpdateWithEmptyValues(((Button)e.getSource()).getSelection());
+			}
+		});
+		
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(buttonUpdateWithEmptyValues);
 		
 		Label quoteCharLbl = new Label(top, SWT.NONE);
 		quoteCharLbl.setText(importMessages.wizardImportOptionsQuotechar);
@@ -133,68 +167,70 @@ public class ImportOptionPage extends WizardPage {
 		
 		quoteChar = new Text(top, SWT.BORDER);
 		quoteChar.setText("\"");
-		GridDataFactory.swtDefaults().hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
+		quoteChar.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				options.setQuoteChar(((Text)e.getSource()).getText());
+			}
+		});
+		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
+		
 		Label separatorLbl = new Label(top, SWT.NONE);
 		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
 		separator = new Text(top, SWT.BORDER);
 		separator.setText(";");
-		GridDataFactory.swtDefaults().hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
-	}
-
-	/**
-	 * Return whether existing entries should be overwritten
-	 * 
-	 * @return 
-	 * 		True, if they should be overwritten
-	 */
-	public boolean getUpdateExisting() {
-		return buttonUpdateExisting.getSelection();
+		separator.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				options.setSeparator(((Text)e.getSource()).getText());
+			}
+		});
+		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
+		
+		Label basePathLbl = new Label(top, SWT.NONE);
+		basePathLbl.setText(importMessages.wizardImportOptionsPicturebasepath);
+		
+		pictureBasePath = new Text(top, SWT.BORDER);
+		pictureBasePath.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                options.setBasePath(((Text)e.getSource()).getText());
+            }
+        });
+		if(getCurrentDialogSettings() != null && getCurrentDialogSettings().get(PICTURE_BASE_PATH) != null) {
+		    pictureBasePath.setText(getCurrentDialogSettings().get(PICTURE_BASE_PATH));
+		}
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(pictureBasePath);
+		
+		Button buttonSelectDir = new Button(top, SWT.PUSH);
+	    buttonSelectDir.setText("...");
+	    buttonSelectDir.addSelectionListener(new SelectionAdapter() {
+	    	public void widgetSelected(SelectionEvent e) {
+	        DirectoryDialog directoryDialog = new DirectoryDialog(top.getShell());
+	        
+	        directoryDialog.setFilterPath("");
+	        directoryDialog.setMessage("Please select a directory and click OK");
+	        
+	        String dir = directoryDialog.open();
+	        if(dir != null) {
+	        	pictureBasePath.setText(dir);
+	        	getCurrentDialogSettings().put(PICTURE_BASE_PATH, dir);
+	        }
+	      }		
+	    });
 	}
 	
-	/**
-	 * Return whether empty cells should be imported
-	 * 
-	 * @return 
-	 * 		True, if they should be imported
-	 */
-	public boolean getUpdateWithEmptyValues() {
-		return buttonUpdateWithEmptyValues.getSelection();
+	private IDialogSettings getCurrentDialogSettings() {
+	    IDialogSettings section = settings.getSection("org.fakturama.import.options");
+	    if(section == null) {
+	        section =settings.addNewSection("org.fakturama.import.options");
+	    }
+	    return section;
 	}
-
-	/**
-	 * @return the quoteChar
-	 */
-	public String getQuoteChar() {
-		return quoteChar.getText();
-	}
-
-	/**
-	 * @param quoteChar the quoteChar to set
-	 */
-	public void setQuoteChar(String quoteChar) {
-		this.quoteChar.setText(quoteChar);
-	}
-
-	/**
-	 * @return the separator
-	 */
-	public String getSeparator() {
-		return separator.getText();
-	}
-
-	/**
-	 * @param separator the separator to set
-	 */
-	public void setSeparator(String separator) {
-		this.separator.setText(separator);
-	}
+	
 	
 	public ImportOptions getImportOptions() {
-		return ImportOptions.importOptions()
-			.withQuoteChar(getQuoteChar())
-			.withSeparator(getSeparator())
-			.withUpdateExisting(getUpdateExisting())
-			.withUpdateWithEmptyValues(getUpdateWithEmptyValues())
-			.build();
+		return options;
 	}
 }
