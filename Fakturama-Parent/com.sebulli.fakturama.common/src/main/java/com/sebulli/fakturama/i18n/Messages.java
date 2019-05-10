@@ -101,6 +101,7 @@ public class Messages {
 	public String commandProductsName;
 	public String commandProductsTooltip;
 	public String commandExportQrkName;
+	public String commandExportQrkSuccess;
 	public String commandExportQrkTooltip;
 	public String commandReceiptvouchersName;
 	public String commandReceiptvouchersTooltip;
