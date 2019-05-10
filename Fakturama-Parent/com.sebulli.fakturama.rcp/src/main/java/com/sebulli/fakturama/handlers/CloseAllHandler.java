@@ -68,6 +68,7 @@ public class CloseAllHandler {
         List<MStackElement> stackElements = documentPartStack.getChildren().stream().filter(
         		elem -> !elem.getElementId().equals(BrowserEditor.ID)
         		      && elem.getTags().contains("documentWindow")).collect(Collectors.toList());
+        // alternative: EPartService.REMOVE_ON_HIDE_TAG
         
         for (MStackElement stackElement : stackElements) {
         	MPart activePart = (MPart)stackElement;
