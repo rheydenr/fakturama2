@@ -2510,6 +2510,9 @@ public class DocumentEditor extends Editor<Document> {
 		// Add buttons, depending on the document type
 		switch (documentType) {
 		case OFFER:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
+                    tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.CONFIRMATION));
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
 	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.ORDER));
