@@ -13,11 +13,7 @@
  */
 package com.sebulli.fakturama.misc;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Currency;
-import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +32,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.RoundedMoney;
 import org.osgi.service.prefs.Preferences;
 
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.Currency;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
@@ -61,7 +61,7 @@ public class NumberFormatterService implements INumberFormatterService {
     private NumberFormat currencyFormat;
     private MonetaryRounding mro = null;
     private boolean useThousandsSeparator = false;
-    private Locale currencyLocale = Locale.getDefault();
+    private ULocale currencyLocale = ULocale.getDefault();
    
     @PostConstruct
     protected void initialize() {
@@ -79,7 +79,7 @@ public class NumberFormatterService implements INumberFormatterService {
         currencyFormat = NumberFormat.getCurrencyInstance(currencyLocale);
         if(currencyCheckboxEnabled != CurrencySettingEnum.NONE) {
             mro = Monetary.getRounding(RoundingQueryBuilder.of()
-                    .setCurrency(Monetary.getCurrency(currencyLocale))
+                    .setCurrency(Monetary.getCurrency(currencyLocale.toLocale()))
                     .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
                     .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
                     // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
@@ -180,14 +180,14 @@ public class NumberFormatterService implements INumberFormatterService {
     }
     
     /* (non-Javadoc)
-	 * @see com.sebulli.fakturama.misc.INumberFormatterService#formatCurrency(javax.money.MonetaryAmount, java.util.Locale, com.sebulli.fakturama.money.CurrencySettingEnum, boolean, boolean)
+	 * @see com.sebulli.fakturama.misc.INumberFormatterService#formatCurrency(javax.money.MonetaryAmount, ULocale, com.sebulli.fakturama.money.CurrencySettingEnum, boolean, boolean)
 	 */
     @Override
-	public String formatCurrency(MonetaryAmount amount, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
+	public String formatCurrency(MonetaryAmount amount, ULocale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
     	CurrencyUnit usd = getCurrencyUnit(locale);
     	MonetaryRounding mro = DataUtils.getInstance().getRounding(usd, cashRounding);
     	MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(
-    			AmountFormatQueryBuilder.of(locale)
+    			AmountFormatQueryBuilder.of(locale.toLocale())
     			.set(useCurrencySymbol)
     			.setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
     			.set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
@@ -200,7 +200,7 @@ public class NumberFormatterService implements INumberFormatterService {
 //	/**
 //	 * @param currencyCheckboxEnabled
 //	 */
-//	private MonetaryAmountFormat buildMonetaryAmountFormat(Locale locale, CurrencySettingEnum currencySetting, boolean useSeparator) {
+//	private MonetaryAmountFormat buildMonetaryAmountFormat(ULocale locale, CurrencySettingEnum currencySetting, boolean useSeparator) {
 //
 //        NumberFormat form = NumberFormat.getCurrencyInstance(localeUtil.getCurrencyLocale());
 //        form.setGroupingUsed(useThousandsSeparator);
@@ -260,10 +260,10 @@ public class NumberFormatterService implements INumberFormatterService {
     }
 
     /* (non-Javadoc)
-	 * @see com.sebulli.fakturama.misc.INumberFormatterService#formatCurrency(double, java.util.Locale, com.sebulli.fakturama.money.CurrencySettingEnum, boolean, boolean)
+	 * @see com.sebulli.fakturama.misc.INumberFormatterService#formatCurrency(double, java.util.ULocale, com.sebulli.fakturama.money.CurrencySettingEnum, boolean, boolean)
 	 */
     @Override
-	public String formatCurrency(double myNumber, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
+	public String formatCurrency(double myNumber, ULocale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
         MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
         return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
@@ -271,8 +271,8 @@ public class NumberFormatterService implements INumberFormatterService {
 
     
     @Override
-	public CurrencyUnit getCurrencyUnit(Locale currencyLocale) {
-        return Monetary.getCurrency(currencyLocale);
+	public CurrencyUnit getCurrencyUnit(ULocale currencyLocale) {
+        return Monetary.getCurrency(currencyLocale.toLocale());
     }
 
     /**
@@ -316,7 +316,7 @@ public class NumberFormatterService implements INumberFormatterService {
         CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
         		CurrencySettingEnum.SYMBOL.name()));
         return MonetaryFormats.getAmountFormat(
-                AmountFormatQueryBuilder.of(currencyLocale)
+                AmountFormatQueryBuilder.of(currencyLocale.toLocale())
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
                         .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
                         .set(currencyCheckboxEnabled)

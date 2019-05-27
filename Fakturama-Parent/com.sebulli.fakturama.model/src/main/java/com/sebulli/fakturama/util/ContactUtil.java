@@ -4,7 +4,6 @@
 package com.sebulli.fakturama.util;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -303,13 +303,13 @@ public class ContactUtil {
         		for (String hideCountry : hideCountries) {
         			String hiddenCountry = "";
         			if(hideCountry.length() <= 3) {
-	        			Optional<Locale> hiddenLocale = localeUtil.findByCode(hideCountry);
+	        			Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
 						//if(hiddenLocale.isPresent()) {
-							hiddenCountry = hiddenLocale.orElse(Locale.US).getISO3Country();
+							hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
 						//}
         			}
         			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(Locale.US).getISO3Country(), hiddenCountry))) {
+        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
@@ -342,7 +342,7 @@ public class ContactUtil {
 		retval.setCity(getDataFromAddressField(address, KEY_CITY));
 		retval.setZip(getDataFromAddressField(address, KEY_ZIP));
 		String country = getDataFromAddressField(address, KEY_COUNTY);
-		Optional<Locale> locale = determineCountryCode(country);
+		Optional<ULocale> locale = determineCountryCode(country);
 		if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
 			retval.setCountryCode(locale.get().getCountry());
 		}
@@ -356,18 +356,18 @@ public class ContactUtil {
     
 
 	/**
-	 * Try to determine the Locale from a given country string.
+	 * Try to determine the ULocale from a given country string.
 	 * 
 	 * @param country the country string to look up
-	 * @return a {@link Locale} or an empty Optional, if not found
+	 * @return a {@link ULocale} or an empty Optional, if not found
 	 */
-	public Optional<Locale> determineCountryCode(String country) {
+	public Optional<ULocale> determineCountryCode(String country) {
 		/*
 		 * Since the country may be given as localized string (e.g., "Deutschland") or as non-localized string (e.g., "Germany"),
 		 * we have to look up the whole Locales
 		 * But wait... Sometimes the country is given as code only (e.g., "DE" or even "DEU"). That has to be respected, too.  
 		 */
-		Optional<Locale> locale;
+		Optional<ULocale> locale;
 		if(StringUtils.length(country) > 3) {
 			locale = localeUtil.findLocaleByDisplayCountry(country);
 		} else {
@@ -375,8 +375,8 @@ public class ContactUtil {
 		}
 		// if not found we try to find it in localized form
 		if (!locale.isPresent()) {
-		    Locale[] availableLocales = Locale.getAvailableLocales();
-		    for (Locale locale2 : availableLocales) {
+		    ULocale[] availableLocales = ULocale.getAvailableLocales();
+		    for (ULocale locale2 : availableLocales) {
 		        // don't try to make it parallel() because then it takes longer than a single stream!
 		        locale = Arrays.stream(availableLocales)
 		                .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(country))
@@ -614,7 +614,7 @@ public class ContactUtil {
 			
 			// determine the country from country code
 			if(address.getCountryCode() != null) {
-    			Locale cLocale = new Locale.Builder().setRegion(address.getCountryCode()).build();
+    			ULocale cLocale = new ULocale.Builder().setRegion(address.getCountryCode()).build();
     			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
 			} else {
     			formatString = replaceAllWithSpace(formatString, "\\{country\\}", "");

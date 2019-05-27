@@ -1079,7 +1079,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             TextCellEditor textCellEditor = new TextCellEditor(true, true);
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale().toLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
 			doubleDisplayConverter.setNumberFormat(numberInstance);

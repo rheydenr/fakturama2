@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.javamoney.osgi;bundle-version="1.0.1",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
  com.sebulli.fakturama.rcp;bundle-version="2.0.0",
- org.eclipse.e4.core.di.extensions
+ org.eclipse.e4.core.di.extensions,
+ com.ibm.icu;bundle-version="58.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: OSGI-INF/l10n/zfbundle
 Export-Package: org.fakturama.export.zugferd

@@ -1,12 +1,11 @@
 package com.sebulli.fakturama.misc;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.format.MonetaryAmountFormat;
 
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.money.CurrencySettingEnum;
 
 public interface INumberFormatterService {
@@ -76,7 +75,7 @@ public interface INumberFormatterService {
 
 	String formatCurrency(MonetaryAmount amount);
 
-	String formatCurrency(MonetaryAmount amount, Locale locale, CurrencySettingEnum useCurrencySymbol,
+	String formatCurrency(MonetaryAmount amount, ULocale locale, CurrencySettingEnum useCurrencySymbol,
 			boolean cashRounding, boolean useSeparator);
 
 	/**
@@ -94,14 +93,14 @@ public interface INumberFormatterService {
 	 * @param cashRounding the cash rounding
 	 * @return the formatted string
 	 */
-	String formatCurrency(double myNumber, Locale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding,
+	String formatCurrency(double myNumber, ULocale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding,
 			boolean useSeparator);
 
 	NumberFormat getCurrencyFormat();
 
 	MonetaryAmountFormat getMonetaryAmountFormat();
 
-	CurrencyUnit getCurrencyUnit(Locale currencyLocale);
+	CurrencyUnit getCurrencyUnit(ULocale currencyLocale);
 
 	/**
 	 * Updates some internal values if preferences have been changed.

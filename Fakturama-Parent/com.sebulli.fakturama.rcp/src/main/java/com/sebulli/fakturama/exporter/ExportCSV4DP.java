@@ -12,7 +12,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,6 +31,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.ibm.icu.util.ULocale;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -128,8 +128,8 @@ public class ExportCSV4DP implements ICSVExporter {
 		dpAddressBean.setSenderHousenumber(contactUtil.getStreetNo(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET)));
 		dpAddressBean.setSenderZipCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP));
 		dpAddressBean.setSenderCity(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
-        java.util.Optional<Locale> locale = localeUtil.findLocaleByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
-		dpAddressBean.setSenderISO3Country(locale.orElse(Locale.getDefault()).getISO3Country());
+        java.util.Optional<ULocale> locale = localeUtil.findLocaleByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
+		dpAddressBean.setSenderISO3Country(locale.orElse(ULocale.getDefault()).getISO3Country());
 		
 		dpAddressBean.setReceiverName(contactUtil.getCompanyOrLastname(contact));
 		dpAddressBean.setAdditionalReceiverName(contactUtil.getFirstAndLastName(contact));
@@ -138,7 +138,7 @@ public class ExportCSV4DP implements ICSVExporter {
 		dpAddressBean.setReceiverHousenumber(contactUtil.getStreetNo(receiverAddress.getStreet()));
 		dpAddressBean.setReceiverZipCode(receiverAddress.getZip());
 		dpAddressBean.setReceiverCity(receiverAddress.getCity());
-		dpAddressBean.setReceiverISO3Country(localeUtil.findLocaleByDisplayCountry(receiverAddress.getCountryCode()).orElse(Locale.getDefault()).getISO3Country());
+		dpAddressBean.setReceiverISO3Country(localeUtil.findLocaleByDisplayCountry(receiverAddress.getCountryCode()).orElse(ULocale.getDefault()).getISO3Country());
 		
 		// for the first iteration we use a hard coded product
 		dpAddressBean.setProduct("PAECKXS.DEU");

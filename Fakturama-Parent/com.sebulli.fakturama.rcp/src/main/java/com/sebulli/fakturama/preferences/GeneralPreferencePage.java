@@ -17,8 +17,6 @@ package com.sebulli.fakturama.preferences;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.Collator;
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -52,6 +50,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.ibm.icu.text.Collator;
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -118,7 +119,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
         Locale[] locales = NumberFormat.getAvailableLocales();
-        final Collator collator = Collator.getInstance(Locale.getDefault());
+        final Collator collator = Collator.getInstance(ULocale.getDefault());
         collator.setStrength(Collator.SECONDARY);
         List<Locale> currencyLocaleList = Arrays.stream(locales)
                 .filter(l -> l.getCountry().length() != 0)
@@ -286,7 +287,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         if (matcher.matches() && matcher.groupCount() > 1) {
             String s = matcher.group(1);
             String s2 = matcher.group(2);
-            Locale locale = new Locale(s, s2);
+            ULocale locale = new ULocale(s, s2);
 
 //            NumberFormat form;
 //            if(currencySetting == CurrencySettingEnum.NONE) {
@@ -372,7 +373,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
 
 		//Set the default currency locale from current locale
-		Locale defaultLocale = localeUtil.getCurrencyLocale();
+		ULocale defaultLocale = localeUtil.getCurrencyLocale();
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));
