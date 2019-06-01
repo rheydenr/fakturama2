@@ -595,8 +595,7 @@ public class ProductEditor extends Editor<Product> {
 						SWT.BORDER | SWT.RIGHT);
 				methodName = String.format("getBlock%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
-				textBlock[i].setText(Integer.toString((Integer) priceObj));
-//				textBlock[i].addKeyListener(textBlock[i].addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
+				textBlock[i].setText(Integer.toString(priceObj != null ? (Integer) priceObj : 0));
 				GridDataFactory.swtDefaults().hint(40, SWT.DEFAULT).applyTo(textBlock[i]);
 
 				// Create the net columns
