@@ -749,7 +749,7 @@ public class Placeholders {
 		if (key.equals("SHIPPING.NET")) return numberFormatterService.formatCurrency(documentSummary.getShippingNet());
 		if (key.equals("SHIPPING.VAT")) return numberFormatterService.formatCurrency(documentSummary.getShippingVat());
 		if (key.equals("SHIPPING.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getShippingGross());
-//		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
+		if (key.equals("SHIPPING.NAME")) return document.getShipping() != null ? document.getShipping().getName() : "";
 		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();

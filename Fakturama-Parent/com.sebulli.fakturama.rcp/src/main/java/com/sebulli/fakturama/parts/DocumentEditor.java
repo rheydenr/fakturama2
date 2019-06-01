@@ -1347,7 +1347,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Do the calculation
 		// if - for what reason ever - the document shipping has no value, I've decided to set it to default shipping.
-		if(shipping == null && document.getShippingValue() == null && document.getAdditionalInfo().getShippingValue() == null) {
+		if(shipping == null && document.getShippingValue() == null) {
 			shipping = lookupDefaultShippingValue();
 		}
 		
@@ -1514,15 +1514,19 @@ public class DocumentEditor extends Editor<Document> {
 		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
 		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
 				currentShippingValue.getNumber().doubleValue())) {
+		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
+		    document.getAdditionalInfo().setShippingName(shipping.getName());
+		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
+		    
+		    document.setShippingValue(newShippingValue);
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
 		} else {
-			// no change occured, we can return and leave the values unchanged
+			// no change occurred, we can return and leave the values unchanged
 			return;
 		}
 
 		// Recalculate the sum
-//		shipping = newShippingValue;
-		document.setShippingValue(newShippingValue);
+		shipping = null;
 		document.setShipping(null);   // because we changed the Shipping value manually
 		
 		// now the document gets dirty
