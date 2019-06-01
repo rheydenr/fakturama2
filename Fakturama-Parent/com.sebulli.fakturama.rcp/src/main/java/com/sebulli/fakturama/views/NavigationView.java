@@ -204,7 +204,7 @@ public class NavigationView {
             @Override
             public void mouseDown(MouseEvent e) {
                 ParameterizedCommand pCmd = commandService.createCommand(commandId, parameters);
-                if (handlerService.canExecute(pCmd)) {
+                if (pCmd != null && handlerService.canExecute(pCmd)) {
                     handlerService.executeHandler(pCmd);
                 }
                 else {
