@@ -264,6 +264,29 @@ export SAL_ENABLE_FILE_LOCKING
 </programlisting>
 </para></answer>
 		</qandaentry>
+		<qandaentry><question><para>OpenOffice-Dokument wird nach dem Drucken nicht geöffnet</para></question>
+		<answer><para>Unter Linux, egal mit welcher UI, wird auf eine Mime-Datenbank zugegriffen. Diese befindet sich unter <code>/usr/share/mime/</code>
+und spezifisch für einen Benutzer in <code>~/.local/share/mime/</code>.</para>
+<para>
+Zum Beispiel:
+<informaltable> 
+<tgroup cols='3'>
+<colspec colwidth='1.3in'/>
+<colspec colwidth='1.3in'/>
+<colspec colwidth='2.5in'/>
+<thead>
+<row>
+  <entry align="center">Dateiendung</entry>
+  <entry>Name</entry>
+  <entry>MIME-Typ</entry>
+</row>
+</thead>
+<tbody>
+<row><entry>.odt</entry><entry>OpenDocument Text</entry><entry>application/vnd.oasis.opendocument.text</entry></row>
+</tbody>
+</tgroup>
+  </informaltable>
+</para><!-- --></answer></qandaentry>
 
 		</qandadiv>
     </qandaset>

@@ -51,6 +51,8 @@ import com.sebulli.fakturama.views.datatable.contacts.DebitorListTable;
  *
  */
 public class SelectContactDialog<T extends Contact> extends AbstractSelectionDialog<T> {
+    protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
+
     protected String editor = "";
     
     @Inject
@@ -164,6 +166,10 @@ public class SelectContactDialog<T extends Contact> extends AbstractSelectionDia
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(800, 550);
+        Point initalSize = super.getInitialSize();
+        if (initalSize != null && (initalSize.x < DEFAULT_DIALOG_SIZE.x || initalSize.y < DEFAULT_DIALOG_SIZE.y)) {
+            initalSize = DEFAULT_DIALOG_SIZE;
+        }
+        return initalSize;
     }
 }
