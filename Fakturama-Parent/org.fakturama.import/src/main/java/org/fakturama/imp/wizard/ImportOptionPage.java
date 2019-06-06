@@ -56,9 +56,6 @@ public class ImportOptionPage extends WizardPage {
 	
 	@Inject
 	private ILogger log;
-	
-	@Inject
-	private IDialogSettings settings;
 
 	//Control elements
 	/**
@@ -109,7 +106,7 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		options = new ImportOptions(settings);
+		options = new ImportOptions(getDialogSettings());
 
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
@@ -219,9 +216,9 @@ public class ImportOptionPage extends WizardPage {
 	}
 	
     private IDialogSettings getCurrentDialogSettings() {
-        IDialogSettings section = settings.getSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+        IDialogSettings section = getDialogSettings().getSection(ImportOptions.IMPORT_SETTING_OPTIONS);
         if (section == null) {
-            section = settings.addNewSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+            section = getDialogSettings().addNewSection(ImportOptions.IMPORT_SETTING_OPTIONS);
         }
         return section;
     }
