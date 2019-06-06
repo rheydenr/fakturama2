@@ -46,8 +46,6 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  * 
  */
 public class ImportOptionPage extends WizardPage {
-
-	private static final String PICTURE_BASE_PATH = "picture.base.path";
     public static final String WIZARD_TITLE = "title";
 	public static final String WIZARD_DESCRIPTION = "description";
 	public static final String WIZARD_PREVIEW_IMAGE = "previewimage";
@@ -111,8 +109,7 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		
-		options = new ImportOptions();
+		options = new ImportOptions(settings);
 
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
@@ -148,6 +145,7 @@ public class ImportOptionPage extends WizardPage {
 				options.setUpdateExisting(((Button)e.getSource()).getSelection());
 			}
 		});
+		buttonUpdateExisting.setSelection(options.getUpdateExisting());
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(buttonUpdateExisting);
 
 		buttonUpdateWithEmptyValues = new Button (top, SWT.CHECK);
@@ -158,7 +156,7 @@ public class ImportOptionPage extends WizardPage {
 				options.setUpdateWithEmptyValues(((Button)e.getSource()).getSelection());
 			}
 		});
-		
+		buttonUpdateWithEmptyValues.setSelection(options.getUpdateWithEmptyValues());
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(buttonUpdateWithEmptyValues);
 		
 		Label quoteCharLbl = new Label(top, SWT.NONE);
@@ -166,7 +164,7 @@ public class ImportOptionPage extends WizardPage {
 		GridDataFactory.swtDefaults().hint(190, SWT.DEFAULT).grab(false, false).applyTo(quoteCharLbl);
 		
 		quoteChar = new Text(top, SWT.BORDER);
-		quoteChar.setText("\"");
+		quoteChar.setText(options.getQuoteChar());
 		quoteChar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -178,7 +176,7 @@ public class ImportOptionPage extends WizardPage {
 		Label separatorLbl = new Label(top, SWT.NONE);
 		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
 		separator = new Text(top, SWT.BORDER);
-		separator.setText(";");
+		separator.setText(options.getSeparator());
 		separator.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -198,8 +196,8 @@ public class ImportOptionPage extends WizardPage {
                 options.setBasePath(((Text)e.getSource()).getText());
             }
         });
-		if(getCurrentDialogSettings() != null && getCurrentDialogSettings().get(PICTURE_BASE_PATH) != null) {
-		    pictureBasePath.setText(getCurrentDialogSettings().get(PICTURE_BASE_PATH));
+		if(options.getBasePath() != null) {
+		    pictureBasePath.setText(options.getBasePath());
 		}
         GridDataFactory.fillDefaults().grab(true, false).applyTo(pictureBasePath);
 		
@@ -215,22 +213,33 @@ public class ImportOptionPage extends WizardPage {
 	        String dir = directoryDialog.open();
 	        if(dir != null) {
 	        	pictureBasePath.setText(dir);
-	        	getCurrentDialogSettings().put(PICTURE_BASE_PATH, dir);
 	        }
 	      }		
 	    });
 	}
 	
-	private IDialogSettings getCurrentDialogSettings() {
-	    IDialogSettings section = settings.getSection("org.fakturama.import.options");
-	    if(section == null) {
-	        section =settings.addNewSection("org.fakturama.import.options");
-	    }
-	    return section;
-	}
+    private IDialogSettings getCurrentDialogSettings() {
+        IDialogSettings section = settings.getSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+        if (section == null) {
+            section = settings.addNewSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+        }
+        return section;
+    }
+
+    public ImportOptions getImportOptions() {
+        return options;
+    }
+    
+    /**
+     * Save the current dialog settings for further use.
+     */
+    public void saveSettings() {
+        getCurrentDialogSettings().put(ImportOptions.PICTURE_BASE_PATH, pictureBasePath.getText());
+        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_SEPARATOR, separator.getText());
+        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_QUOTECHAR, quoteChar.getText());
+        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_FILENAME, options.getCsvFile());
+        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_UPDATEEXISTING, buttonUpdateExisting.getSelection());
+        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_UPDATEWITHEMPTYVALUES, buttonUpdateWithEmptyValues.getSelection());
+    }
 	
-	
-	public ImportOptions getImportOptions() {
-		return options;
-	}
 }

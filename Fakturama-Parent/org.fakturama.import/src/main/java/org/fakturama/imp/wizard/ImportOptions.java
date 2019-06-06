@@ -3,17 +3,28 @@
  */
 package org.fakturama.imp.wizard;
 
+import javax.inject.Inject;
+
+import org.eclipse.jface.dialogs.IDialogSettings;
+
 /**
  *
  */
 public class ImportOptions {
-	
+    public static final String IMPORT_SETTING_OPTIONS = "org.fakturama.import.options";
+    public static final String PICTURE_BASE_PATH = "import.picture.base.path";
+    public static final String IMPORT_CSV_UPDATEEXISTING = "import.csv.updateexisting";
+    public static final String IMPORT_CSV_UPDATEWITHEMPTYVALUES = "import.csv.withemptyvalues";
+    public static final String IMPORT_CSV_SEPARATOR = "import.csv.separator";
+    public static final String IMPORT_CSV_QUOTECHAR = "import.csv.quotechar";
+    public static final String IMPORT_CSV_FILENAME = "import.csv.filename";
+
 	// initialize with some predefined values
 	private Boolean updateExisting = false;
 	private Boolean updateWithEmptyValues = false;
 	private String quoteChar = "\"";
 	private String separator = ";";
-	private String basePath = "";
+	private String basePath = "", csvFile = "";
 
 	public ImportOptions() {
 		
@@ -25,7 +36,37 @@ public class ImportOptions {
 		this.quoteChar = quoteChar;
 		this.separator = separator;
 	}
+    
+	@Inject
+    public ImportOptions(IDialogSettings settings) {
+	    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
+	    if(importSettings == null) {
+	        settings.addNewSection(IMPORT_SETTING_OPTIONS);
+	    }
+        if (importSettings.get(PICTURE_BASE_PATH) != null) {
+            basePath = importSettings.get(PICTURE_BASE_PATH);
+        }
 
+        if (importSettings.get(IMPORT_CSV_SEPARATOR) != null) {
+            separator = importSettings.get(IMPORT_CSV_SEPARATOR);
+        }
+
+        if (importSettings.get(IMPORT_CSV_QUOTECHAR) != null) {
+            quoteChar = importSettings.get(IMPORT_CSV_QUOTECHAR);
+        }
+
+        if (importSettings.get(IMPORT_CSV_FILENAME) != null) {
+            csvFile = importSettings.get(IMPORT_CSV_FILENAME);
+        }
+        
+        if (importSettings.get(IMPORT_CSV_UPDATEEXISTING) != null) {
+            updateExisting = importSettings.getBoolean(IMPORT_CSV_UPDATEEXISTING);
+        }
+        
+        if (settings.get(IMPORT_CSV_UPDATEWITHEMPTYVALUES) != null) {
+            updateWithEmptyValues = settings.getBoolean(IMPORT_CSV_UPDATEWITHEMPTYVALUES);
+        }
+    }
 	/**
 	 * @return the updateExisting
 	 */
@@ -102,4 +143,18 @@ public class ImportOptions {
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
 	}
+
+    /**
+     * @return the csvfile
+     */
+    public String getCsvFile() {
+        return csvFile;
+    }
+
+    /**
+     * @param csvfile the csvfile to set
+     */
+    public void setCsvFile(String csvfile) {
+        this.csvFile = csvfile;
+    }
 }
