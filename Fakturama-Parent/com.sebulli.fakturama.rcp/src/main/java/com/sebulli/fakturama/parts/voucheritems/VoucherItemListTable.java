@@ -111,7 +111,6 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.Voucher;
 import com.sebulli.fakturama.model.VoucherCategory;
 import com.sebulli.fakturama.model.VoucherItem;
-import com.sebulli.fakturama.model.VoucherItem_;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.VoucherEditor;
@@ -131,9 +130,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.Matchers;
 
 /**
  *

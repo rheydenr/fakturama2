@@ -4,7 +4,7 @@ Bundle-Name: Commons Text
 Bundle-SymbolicName: org.apache.commons.text;singleton:=true
 Bundle-Version: 1.6.0
 Bundle-Vendor: Apache.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.apache.commons.text,
  org.apache.commons.text.diff,
  org.apache.commons.text.lookup,
@@ -12,3 +12,4 @@ Export-Package: org.apache.commons.text,
  org.apache.commons.text.similarity,
  org.apache.commons.text.translate
 Bundle-ClassPath: lib/commons-text-1.6.jar
+Automatic-Module-Name: org.apache.commons.text

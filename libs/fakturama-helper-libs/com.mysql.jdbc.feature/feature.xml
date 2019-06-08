@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.mysql.jdbc.feature"
-      label="MYSQL Feature"
-      version="5.1.38"
-      provider-name="MYSQL">
+      label="MySQL Feature"
+      version="5.1.47"
+      provider-name="MySQL">
 
-   <description url="http://www.example.com/description">
+   <description url="https://dev.mysql.com/doc">
       JDBC connector for MySQL as Eclipse Plugin
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright url="https://dev.mysql.com/doc/connector-j/8.0/en/preface.html">
       [Enter Copyright Description here.]
    </copyright>
 
-   <license url="http://www.example.com/license">
+   <license url="https://dev.mysql.com/doc/connector-j/8.0/en/preface.html">
       [Enter License Description here.]
    </license>
 

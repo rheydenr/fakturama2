@@ -4,7 +4,7 @@ Bundle-Name: Commons BeanUtils
 Bundle-SymbolicName: org.apache.commons.beanutils;singleton:=true
 Bundle-Version: 1.9.3
 Bundle-Vendor: Apache.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.apache.commons.beanutils,
  org.apache.commons.beanutils.converters,
  org.apache.commons.beanutils.expression,
@@ -12,3 +12,4 @@ Export-Package: org.apache.commons.beanutils,
  org.apache.commons.beanutils.locale.converters
 Require-Bundle: org.apache.commons.logging;bundle-version="1.1.1"
 Bundle-ClassPath: lib/commons-beanutils-1.9.3.jar
+Automatic-Module-Name: org.apache.commons.beanutils

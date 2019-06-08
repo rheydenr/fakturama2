@@ -2,9 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Apache Collections
 Bundle-SymbolicName: org.apache.commons.collections;singleton:=true
-Bundle-Version: 4.1.0
-Bundle-ClassPath: commons-collections4-4.1-javadoc.jar,
- commons-collections4-4.1.jar
+Bundle-Version: 4.3.0
+Bundle-ClassPath: lib/commons-collections4-4.3.jar
 Bundle-Vendor: Apache.org
 Export-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bag,
@@ -25,3 +24,4 @@ Export-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.trie,
  org.apache.commons.collections4.trie.analyzer
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.apache.commons.collections

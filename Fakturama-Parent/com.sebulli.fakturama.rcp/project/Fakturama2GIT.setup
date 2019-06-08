@@ -67,7 +67,7 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      defaultValue="2018-12"
+      defaultValue="2019-03"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
     <description>basic IDE target platform</description>

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JavaMoney OSGI
+Bundle-Name: JavaMoney OSGi
 Bundle-SymbolicName: org.javamoney.osgi
 Bundle-Version: 1.0.1
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -19,10 +19,11 @@ Export-Package: javax.money,
  org.javamoney.moneta.spi,
  org.javamoney.osgi
 Bundle-ClassPath: .,
- lib/money-api-1.0.2-SNAPSHOT.jar,
- lib/moneta-core-1.2-SNAPSHOT.jar,
- lib/moneta-convert-1.2-SNAPSHOT.jar,
- lib/moneta-convert-ecb-1.2-SNAPSHOT.jar,
- lib/moneta-convert-imf-1.2-SNAPSHOT.jar
+ lib/moneta-convert-1.4-SNAPSHOT.jar,
+ lib/moneta-convert-ecb-1.4-SNAPSHOT.jar,
+ lib/moneta-convert-imf-1.4-SNAPSHOT.jar,
+ lib/moneta-core-1.4-SNAPSHOT.jar,
+ lib/money-api-1.0.4-SNAPSHOT.jar
 Bundle-Activator: org.javamoney.osgi.Activator
 Require-Bundle: javax.inject
+Automatic-Module-Name: org.javamoney.osgi
