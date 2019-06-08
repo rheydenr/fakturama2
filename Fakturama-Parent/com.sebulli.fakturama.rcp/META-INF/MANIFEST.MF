@@ -51,6 +51,7 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.equinox.p2.metadata.repository,
  ca.odell.glazedlists,
  com.opcoach.e4.preferences,
+ com.opencsv;bundle-version="4.5.0",
  org.apache.commons.cli,
  org.apache.commons.codec,
  org.apache.commons.collections,
@@ -66,12 +67,12 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.gemini.ext.di,
  org.eclipse.osgi.services,
  org.eclipse.equinox.security,
- com.opencsv,
  org.eclipse.persistence.moxy,
  com.ibm.icu;bundle-version="58.2.0",
  org.apache.xerces;bundle-version="2.9.0",
  org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.commons.text;bundle-version="1.6.0"
+ org.apache.commons.text;bundle-version="1.6.0",
+ org.apache.odftoolkit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml
