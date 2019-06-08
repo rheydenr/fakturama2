@@ -24,6 +24,9 @@ import javax.inject.Named;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -130,6 +133,12 @@ public class CallEditor {
 	
     @Inject
     private IEventBroker evtBroker;
+    
+    @Inject
+    private EHandlerService handlerService;
+    
+    @Inject
+    private ECommandService commandService;
 
 	/**
 	 * Execute the command
@@ -153,7 +162,11 @@ public class CallEditor {
             
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
-            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
+                
+                ParameterizedCommand closeCommand = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
+                handlerService.executeHandler(closeCommand);
+                
+//            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
             }
 
             Map<String, String> params = new HashMap<>();

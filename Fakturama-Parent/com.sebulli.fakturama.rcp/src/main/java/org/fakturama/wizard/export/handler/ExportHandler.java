@@ -39,11 +39,10 @@ public class ExportHandler {
     private static final int SIZING_WIZARD_HEIGHT = 550;
 
 	@Execute
-	public void execute(IEclipseContext ctx, Shell shell) {
+	public void execute(IEclipseContext ctx, Shell shell, IDialogSettings settings) {
 		// create the wizard selection dialog
 		ctx.set(FakturamaImportExportWizard.WIZARD_MODE, FakturamaImportExportWizard.EXPORT);
 		FakturamaImportExportWizard wizard = ContextInjectionFactory.make(FakturamaImportExportWizard.class, ctx);
-		IDialogSettings settings = ctx.get(IDialogSettings.class);
 		WizardDialog.setDefaultImage(Icon.COMMAND_APP.getImage(IconSize.DefaultIconSize));
 		wizard.setForcePreviousAndNextButtons(true);
 		wizard.setDialogSettings(settings);

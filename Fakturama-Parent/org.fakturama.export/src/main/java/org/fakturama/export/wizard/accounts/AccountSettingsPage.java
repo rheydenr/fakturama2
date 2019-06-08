@@ -26,15 +26,19 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
@@ -108,12 +112,25 @@ public class AccountSettingsPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(top);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
 		setControl(top);
+		
+		((WizardDialog)getContainer()).addPageChangedListener(new IPageChangedListener() {
+            
+            @Override
+            public void pageChanged(PageChangedEvent event) {
+                if(event.getSelectedPage() instanceof AccountSettingsPage) {
+                    // we assume that the current page was selected
+                    GregorianCalendar startDate = ((ExportWizardPageStartEndDate)getWizard().getStartingPage()).getStartDate();
+                    if(startDate != null) {
+                        dtDate.setSelection(startDate.getTime());
+                    }
+                }
+            }
+        });
 		
 		// Create the label with the help text
 		Label labelDescription = new Label(top, SWT.NONE);
@@ -129,11 +146,14 @@ public class AccountSettingsPage extends WizardPage {
 		// Start date
 		dtDate = new CDateTime(dateAndValue, CDT.BORDER | CDT.DROP_DOWN);
 		dtDate.setFormat(CDT.DATE_MEDIUM);
+		dtDate.addSelectionListener(new SelectionAdapter() {
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		        checkWarning();
+		    }
+        });
+		
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtDate);
-
-		dtDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				setPageComplete(isPageComplete());
-		}));
 
 		txtValue = new FormattedText(dateAndValue, SWT.BORDER | SWT.RIGHT);
 		txtValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
@@ -158,6 +178,20 @@ public class AccountSettingsPage extends WizardPage {
 		// Show or hide the warning
 		isPageComplete();
 		
+	}
+	
+	final private void checkWarning() {
+        // Get the first page with the start and end date
+        ExportWizardPageStartEndDate startPage = (ExportWizardPageStartEndDate)getWizard().getStartingPage();
+        
+        // The date must be before the start date
+        boolean isAfterStartDate = getDate().after(startPage.getStartDate());
+        
+        // If not, show a warning text
+        if (isAfterStartDate && warning != null)
+            warning.setVisible(isAfterStartDate);
+        else
+            warning.setVisible(false);
 	}
 	
 	/**
@@ -223,13 +257,8 @@ public class AccountSettingsPage extends WizardPage {
 	 */
 	@Override
 	public boolean isPageComplete() {
-
-		// It is not complete if the previous page isn't
-		if (!this.getPreviousPage().canFlipToNextPage())
-			return false;
-
 		// Get the first page with the start and end date
-		ExportWizardPageStartEndDate startPage = (ExportWizardPageStartEndDate)this.getPreviousPage().getPreviousPage();
+		ExportWizardPageStartEndDate startPage = (ExportWizardPageStartEndDate)getWizard().getStartingPage();
 		
 		if (startPage.getDoNotUseTimePeriod())
 			return true;
@@ -245,9 +274,11 @@ public class AccountSettingsPage extends WizardPage {
 		// The date must be before the start date
 		boolean isAfterStartDate = getDate().after(startPage.getStartDate());
 		
-		// If not, show a warning text
-		if (warning != null)
-			warning.setVisible(isAfterStartDate);
+        // If not, show a warning text
+        if (isAfterStartDate && warning != null)
+            warning.setVisible(isAfterStartDate);
+        else
+            warning.setVisible(false);
 		
 		return !isAfterStartDate;
 	}

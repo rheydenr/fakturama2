@@ -154,6 +154,7 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_RCrwcPo9EeKmVtv93KLoRw" elementId="menu:main.menu.extra.id" label="%main.menu.extra">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FNuUoPo9EeKmVtv93KLoRw" elementId="menu:main.menu.organize_documents.id" label="%main.menu.extra.reorganize" iconURI="icon://COMMAND_REORGANIZE" command="_uB33QIZSEeWRb8xKRQdEJg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_5OytoHNoEemQjJpHe9Zv1A" elementId="org.fakturama.rcp.handledmenuitem.qrkexport" label="%command.export.qrk.name" iconURI="icon://COMMAND_QRK_EXPORT" command="_70JVYBkKEems16HDe00Etw"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_jPhn4Ef7EeO7mNzAwIZUXQ" elementId="menu:main.menu.window.id" label="%main.menu.window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ENu1sJ7QEeeQ-uZqSpleQA" elementId="com.sebulli.fakturama.menuitem.resetperspective" label="%main.menu.help.reset" command="_4yx1UJ7PEeeQ-uZqSpleQA"/>

@@ -980,4 +980,12 @@
 		
 	   <dropTable tableName="TMP_FKT_CONT"/>
 	</changeSet>
+	
+	<!--  remove unnecessary columns -->
+	<changeSet id="20190601-001" author="rheydenr">
+	    <dropColumn columnName="SHIPPINGAUTOVAT"
+            tableName="FKT_INDIVIDUALDOCUMENTINFO"/>
+	    <dropColumn columnName="SHIPPINGVALUE"
+            tableName="FKT_INDIVIDUALDOCUMENTINFO"/>
+	</changeSet>
 </databaseChangeLog>

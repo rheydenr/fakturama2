@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Locale;
 
 import javax.money.MonetaryAmount;
 
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 
@@ -43,8 +43,8 @@ public class DataUtilsTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(localeService.getDefaultLocale()).thenReturn(Locale.GERMANY);
-		Mockito.when(localeService.getCurrencyLocale()).thenReturn(Locale.GERMANY);
+		Mockito.when(localeService.getDefaultLocale()).thenReturn(ULocale.GERMANY);
+		Mockito.when(localeService.getCurrencyLocale()).thenReturn(ULocale.GERMANY);
 		Dictionary<String, Object> dict = new Hashtable<>();
 		dict.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MAX_VALUE);
 		Activator.getContext().registerService(ILocaleService.class, localeService, dict);

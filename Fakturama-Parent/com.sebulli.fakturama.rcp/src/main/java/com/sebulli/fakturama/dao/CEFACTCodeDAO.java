@@ -16,7 +16,6 @@ package com.sebulli.fakturama.dao;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +27,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.CEFACTCode_;
 
@@ -50,7 +50,7 @@ public class CEFACTCodeDAO extends AbstractDAO<CEFACTCode> {
 	 * @param locale the locale
 	 * @return the CEFACT code
 	 */
-	public Optional<CEFACTCode> findByAbbreviation(String userdefinedQuantityUnit, Locale locale) {
+	public Optional<CEFACTCode> findByAbbreviation(String userdefinedQuantityUnit, ULocale locale) {
 		Set<Predicate> restrictions = new HashSet<>();
 		Optional<CEFACTCode> retval = Optional.empty();
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

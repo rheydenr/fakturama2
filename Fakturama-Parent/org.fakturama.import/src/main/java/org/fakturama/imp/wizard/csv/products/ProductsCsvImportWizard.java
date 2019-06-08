@@ -62,7 +62,7 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
     protected IEventBroker evtBroker;
 
 	// The wizard pages
-	ImportOptionPage optionPage;
+	private ImportOptionPage optionPage;
 
 	/*
 	 * (non-Javadoc)
@@ -96,8 +96,13 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
 		//fileDialog.setFilterPath("/");
 		fileDialog.setFilterExtensions(new String[] { "*.csv" });
 
-		// Start at the user's home
-		Path path = Paths.get(System.getProperty("user.home"));
+		// Start at the user's home or use the previously set filename
+		Path path;
+		if(optionPage.getImportOptions().getCsvFile() != null) {
+		    path = Paths.get(optionPage.getImportOptions().getCsvFile());
+		} else {
+		    path = Paths.get(System.getProperty("user.home"));
+		}
 		fileDialog.setFilterPath(path.toString());
 		
 		//T: CSV Import File Dialog Title
@@ -110,11 +115,11 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
 
 			// Import the selected file
 			if (!selectedFile.isEmpty()) {
+			    optionPage.getImportOptions().setCsvFile(selectedFile);
+			    optionPage.saveSettings();
 
 				ProductsCsvImporter csvImporter = ContextInjectionFactory.make(ProductsCsvImporter.class, ctx);
-//				csvImporter.setQuoteChar(options.getQuoteChar().charAt(0));
-//				csvImporter.setSeparator(options.getSeparator().charAt(0));
-				csvImporter.importCSV(selectedFile, false, optionPage);
+				csvImporter.importCSV(selectedFile, false, optionPage.getImportOptions());
 
 				ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
 				dialog.setStatusText(csvImporter.getResult());

@@ -32,12 +32,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -74,6 +72,8 @@ import org.eclipse.persistence.queries.CursoredStream;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.ibm.icu.util.Currency;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -438,7 +438,7 @@ public class MigrationManager {
 				break;
 			case Lists:
 				// Country Codes are no user definable data; they will be read
-				// from java Locale. Therefore we've to convert only the itemAccountTypes
+				// from java ULocale. Therefore we've to convert only the itemAccountTypes
 		        itemAccountTypes = buildItemAccountTypeMap();
 				break;
 			case Texts:
@@ -1004,12 +1004,12 @@ public class MigrationManager {
 			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
 			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
 			address.setValidFrom(new Date());
-			// we don't have a CountryCode table :-(, therefore we have to look up in Locale classes
+			// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
 			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
 			if(country.equalsIgnoreCase("deu")) {
 				country = "de";
 			}
-			Optional<Locale> locale = contactUtil.determineCountryCode(country);
+			Optional<ULocale> locale = contactUtil.determineCountryCode(country);
 			if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
 			    address.setCountryCode(locale.get().getCountry());
 			} else {
@@ -1413,8 +1413,8 @@ public class MigrationManager {
                 case Constants.PREFERENCE_GENERAL_CURRENCY:
                 	// if the currency is stored as symbol we have to convert it to an ISO code.
            			// Money doesn't work with symbols, therefore we have to convert this.
-                    // Try to determine a Locale from symbol
-                    Locale currencyLocale = Locale.getDefault();
+                    // Try to determine a ULocale from symbol
+                    ULocale currencyLocale = ULocale.getDefault();
                     Currency jdkCurrency = Currency.getInstance(currencyLocale);
            			// the key has to be changed, too!
            			prop.setName(Constants.PREFERENCE_CURRENCY_LOCALE);
@@ -1433,7 +1433,7 @@ public class MigrationManager {
            		        }
        		        } else {
        		            // Since most of the Fakturama users are from Germany we assume "de/DE" as default locale.
-       		            currencyLocale = Locale.GERMANY;
+       		            currencyLocale = ULocale.GERMANY;
 	           			propValue = currencyLocale.getLanguage() + "/" + currencyLocale.getCountry();
        		            migLogUser.warning("!!! Can't determine the currency locale. Please choose the right locale "
        		                    + "in the general settings dialog. Locale is temporarily set to '" +propValue + "'.");

@@ -49,5 +49,6 @@ public class ImportMessages {
 	public String wizardImportOptionsUpdate;
 	public String wizardImportOptionsQuotechar;
 	public String wizardImportOptionsSeparator;
+	public String wizardImportOptionsPicturebasepath;
 	public String wizardImportProgressinfo;
 }

@@ -3,7 +3,6 @@ package com.sebulli.fakturama;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -393,10 +392,7 @@ public class LifecycleManager {
 //		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
 //		backupManager.createBackup();
         
-        if(dialogSettings != null) {
-        	log.debug("save dialog settings");
-        	saveDialogSettings(instanceLocation);
-        }
+    	saveDialogSettings(instanceLocation);
     }
 	
     /**
@@ -408,6 +404,7 @@ public class LifecycleManager {
         if (dialogSettings == null) {
             return;
         }
+    	log.debug("save dialog settings");
 
         try {
         	URL path = instanceLocation.getDataArea(Activator.PLUGIN_ID);
@@ -427,8 +424,7 @@ public class LifecycleManager {
             }
             dialogSettings.save(storage.toString());
         } catch (IOException | IllegalStateException | URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Can't save dialog settings. Reason: " + e.getMessage());
 		}
     }
 
@@ -534,7 +530,7 @@ public class LifecycleManager {
      * @param instanceLocation 
      */
     private IDialogSettings loadDialogSettings(Location instanceLocation) {
-    	IDialogSettings dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
+    	dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
     	
     	//look for bundle specific dialog settings
         URL dsURL = null;
@@ -548,11 +544,10 @@ public class LifecycleManager {
 			return null;
 		}
         
-        try(InputStream is = dsURL.openStream();) {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is, "utf-8")); //$NON-NLS-1$
+        try {
+            BufferedReader reader = Files.newBufferedReader(Paths.get(dsURL.toURI()));
             dialogSettings.load(reader);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             // load failed so ensure we have an empty settings
             dialogSettings = new DialogSettings("Workbench"); //$NON-NLS-1$
         }

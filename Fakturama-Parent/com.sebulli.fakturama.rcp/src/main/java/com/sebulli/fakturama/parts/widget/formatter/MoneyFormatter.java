@@ -14,10 +14,6 @@
  
 package com.sebulli.fakturama.parts.widget.formatter;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
@@ -28,6 +24,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -68,7 +67,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
 //        if(editFormat.getMaximumFractionDigits() > 2) {
 //        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);
 //        }
-        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), localeUtil.getCurrencyLocale());
+        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), localeUtil.getCurrencyLocale().toLocale());
 //        setFixedLengths(false, true);
     }
     
@@ -110,11 +109,11 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
      * @param display
      *            display pattern
      * @param loc
-     *            Locale to use
+     *            ULocale to use
      * @throws IllegalArgumentException
      *             if a pattern is invalid
      */
-    protected void setPatterns(String edit, String display, Locale loc) {
-        super.setPatterns(edit, display, loc);
+    protected void setPatterns(String edit, String display, ULocale loc) {
+        super.setPatterns(edit, display, loc.toLocale());
     }
 }

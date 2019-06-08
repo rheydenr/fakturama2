@@ -1,8 +1,5 @@
 package com.sebulli.fakturama.views.datatable.vouchers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import javax.inject.Inject;
 
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -15,6 +12,8 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 
+import com.ibm.icu.text.DateFormat;
+import com.ibm.icu.text.SimpleDateFormat;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;

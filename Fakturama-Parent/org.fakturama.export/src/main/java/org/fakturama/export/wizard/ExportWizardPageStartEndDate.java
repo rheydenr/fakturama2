@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.accounts.AccountSettingsPage;
 import org.fakturama.wizards.IFakturamaWizardService;
 
 /**
@@ -156,9 +155,6 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 
 		dtStartDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				setPageComplete(canFlipToNextPage());
-				if(getNextPage().getNextPage() != null) {
-					((AccountSettingsPage)getNextPage().getNextPage()).getDtDate().setSelection(dtStartDate.getSelection());
-				}
 		}));
 		
 		// End date

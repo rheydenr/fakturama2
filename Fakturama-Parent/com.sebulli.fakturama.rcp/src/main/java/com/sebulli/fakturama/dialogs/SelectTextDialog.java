@@ -50,6 +50,8 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  * @author Gerd Bartelt
  */
 public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
+    protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
+
     @Inject
     @Translation
     protected Messages msg;
@@ -157,6 +159,10 @@ public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(800, 550);
+        Point initalSize = super.getInitialSize();
+        if (initalSize != null && (initalSize.x < DEFAULT_DIALOG_SIZE.x || initalSize.y < DEFAULT_DIALOG_SIZE.y)) {
+            initalSize = DEFAULT_DIALOG_SIZE;
+        }
+        return initalSize;
     }
 }

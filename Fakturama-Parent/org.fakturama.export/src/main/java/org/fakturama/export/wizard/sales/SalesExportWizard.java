@@ -75,7 +75,6 @@ public class SalesExportWizard extends Wizard implements IExportWizard {
 
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, exportMessages.wizardExportAccountsTableListentriesTitle);
 		page2 = ContextInjectionFactory.make(SalesExportOptionPage.class, ctx);
-
 		addPage(page1);
 		addPage(page2);
 	}

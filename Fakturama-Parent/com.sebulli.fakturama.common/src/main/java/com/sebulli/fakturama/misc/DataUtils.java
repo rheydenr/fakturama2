@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +34,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.Money;
 import org.osgi.framework.ServiceReference;
 
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
@@ -50,7 +50,7 @@ public class DataUtils {
 	@Inject
 	private ILocaleService localeUtil;
 	
-	private static Locale currencyLocale;
+	private static ULocale currencyLocale;
 
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
@@ -87,7 +87,7 @@ public class DataUtils {
     }
     
     public CurrencyUnit getDefaultCurrencyUnit() {
-        return Monetary.getCurrency(currencyLocale);
+        return Monetary.getCurrency(currencyLocale.toLocale());
     }
     
     public MonetaryRounding getDefaultRounding() {

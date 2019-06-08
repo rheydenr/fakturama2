@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.osgi.service.prefs.Preferences;
 
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.LocaleUtil;
@@ -41,7 +42,7 @@ public class LocaleUtilTest {
 
 	@Test
 	public void testFindLocaleByDisplayCountry() {
-		Optional<Locale> localeByDisplayCountry = localeService.findLocaleByDisplayCountry("Italien");
+		Optional<ULocale> localeByDisplayCountry = localeService.findLocaleByDisplayCountry("Italien");
 		Assert.assertTrue(localeByDisplayCountry.isPresent());
 		Assert.assertEquals(Locale.ITALY, localeByDisplayCountry.get());
 	}
@@ -54,7 +55,7 @@ public class LocaleUtilTest {
 	
 	@Test
 	public void testGetCurrencyLocale() {
-		Locale currencyLocale = localeService.getCurrencyLocale();
+		ULocale currencyLocale = localeService.getCurrencyLocale();
 		Assert.assertEquals(Locale.GERMANY, currencyLocale);
 	}
 
@@ -63,7 +64,7 @@ public class LocaleUtilTest {
 	public void testFindByCode() {
 		Mockito.when(Activator.getPreferences()).thenReturn(mockPrefs);
 		Mockito.when(mockPrefs.get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry())).thenReturn("de_DE");
-		Optional<Locale> localeByCode = localeService.findByCode("de");
+		Optional<ULocale> localeByCode = localeService.findByCode("de");
 		Assert.assertTrue(localeByCode.isPresent());
 		Assert.assertEquals(Locale.GERMANY, localeByCode.get());
 	}

@@ -3,12 +3,12 @@
  */
 package com.sebulli.fakturama.parts.converter;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
+import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.i18n.ILocaleService;
 
 /**

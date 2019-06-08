@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.0.5.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
@@ -68,6 +68,7 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.equinox.security,
  com.opencsv,
  org.eclipse.persistence.moxy,
+ com.ibm.icu;bundle-version="58.2.0",
  org.apache.xerces;bundle-version="2.9.0",
  org.apache.commons.logging;bundle-version="1.1.1",
  org.apache.commons.text;bundle-version="1.6.0"

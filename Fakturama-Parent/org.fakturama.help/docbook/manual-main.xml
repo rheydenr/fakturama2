@@ -26,7 +26,7 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.0.4</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.0.5</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.0.4</releaseinfo>
+		<releaseinfo>Version 2.0.5</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
@@ -204,7 +204,18 @@ Wichtig ist hier, als bind-addr 0.0.0.0 anzugeben.</para></answer></qandaentry>
 		/Applications/Fakturama2.app/Contents/MacOS/Fakturama
 		</programlisting>
 </para></answer>
-	</qandaentry>		
+	</qandaentry>	
+	<qandaentry>
+	<question><para>Beim Start der Anwendung meldet das System, dass die Datei beschädigt sei und in den Papierkorb verschoben werden soll.</para></question>
+	<answer><para>Zunächst folgendes in einem Terminalfenster eingeben:
+        <programlisting>
+cd /Applications
+xattr -d com.apple.quarantine Fakturama2.app
+        </programlisting>
+       Anschließend im Finder mit gedrückter CTRL-Taste das Fakturama-Icon anklicken und in dem aufklappenden Menü "Öffnen" wählen. Dann muss man nur noch die Netzwerkverbindung zulassen. 
+       Die nachfolgenden Aufrufe funktionieren dann auch ohne CTRL-Taste.  
+	</para></answer>
+	</qandaentry>	
 	</qandadiv>
 	
       <qandadiv>
@@ -253,6 +264,29 @@ export SAL_ENABLE_FILE_LOCKING
 </programlisting>
 </para></answer>
 		</qandaentry>
+		<qandaentry><question><para>OpenOffice-Dokument wird nach dem Drucken nicht geöffnet</para></question>
+		<answer><para>Unter Linux, egal mit welcher UI, wird auf eine Mime-Datenbank zugegriffen. Diese befindet sich unter <code>/usr/share/mime/</code>
+und spezifisch für einen Benutzer in <code>~/.local/share/mime/</code>.</para>
+<para>
+Zum Beispiel:
+<informaltable> 
+<tgroup cols='3'>
+<colspec colwidth='1.3in'/>
+<colspec colwidth='1.3in'/>
+<colspec colwidth='2.5in'/>
+<thead>
+<row>
+  <entry align="center">Dateiendung</entry>
+  <entry>Name</entry>
+  <entry>MIME-Typ</entry>
+</row>
+</thead>
+<tbody>
+<row><entry>.odt</entry><entry>OpenDocument Text</entry><entry>application/vnd.oasis.opendocument.text</entry></row>
+</tbody>
+</tgroup>
+  </informaltable>
+</para><!-- --></answer></qandaentry>
 
 		</qandadiv>
     </qandaset>

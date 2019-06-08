@@ -200,7 +200,6 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
-//    	this.localeUtil = ContextInjectionFactory.make(LocaleUtil.class, EclipseContextFactory.getServiceContext(Activator.getContext()));
 	}
 
 	@Override

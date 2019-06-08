@@ -102,7 +102,7 @@ public class AccountsExportOptionPage extends WizardPage {
 		labelDescription.setText(exportMessages.wizardExportOptionSelect+":");
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
 
-		comboAccount = new Combo(top, SWT.BORDER);
+		comboAccount = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
 		comboAccount.setToolTipText(labelDescription.getToolTipText());
 		comboAccount.setText("");
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboAccount);

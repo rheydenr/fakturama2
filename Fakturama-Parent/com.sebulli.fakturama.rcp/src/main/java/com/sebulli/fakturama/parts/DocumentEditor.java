@@ -58,6 +58,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -229,6 +231,9 @@ public class DocumentEditor extends Editor<Document> {
 	
 	@Inject
 	private INumberFormatterService numberFormatterService;
+	
+	@Inject
+	private IDialogSettings settings;
 
 	// SWT components of the editor
 	private Composite top;
@@ -1349,7 +1354,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Do the calculation
 		// if - for what reason ever - the document shipping has no value, I've decided to set it to default shipping.
-		if(shipping == null && document.getShippingValue() == null && document.getAdditionalInfo().getShippingValue() == null) {
+		if(shipping == null && document.getShippingValue() == null) {
 			shipping = lookupDefaultShippingValue();
 		}
 		
@@ -1516,15 +1521,19 @@ public class DocumentEditor extends Editor<Document> {
 		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
 		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
 				currentShippingValue.getNumber().doubleValue())) {
+		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
+		    document.getAdditionalInfo().setShippingName(shipping.getName());
+		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
+		    
+		    document.setShippingValue(newShippingValue);
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
 		} else {
-			// no change occured, we can return and leave the values unchanged
+			// no change occurred, we can return and leave the values unchanged
 			return;
 		}
 
 		// Recalculate the sum
-//		shipping = newShippingValue;
-		document.setShippingValue(newShippingValue);
+		shipping = null;
 		document.setShipping(null);   // because we changed the Shipping value manually
 		
 		// now the document gets dirty
@@ -1745,12 +1754,12 @@ public class DocumentEditor extends Editor<Document> {
         if (dtIssueDate != null && dtDate.getSelection() != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(dtDate.getSelection());
-            //	    LocalDate localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            //	    localDate.plusDays(spDueDays.getSelection());
-            //	    Date.from(localDate.???)
-            //		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-            calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
-            dtIssueDate.setSelection(calendar.getTime());
+			top.getParent().getDisplay().syncExec(() -> {
+			    if(!spDueDays.isDisposed()) {
+    				calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
+    				dtIssueDate.setSelection(calendar.getTime());
+			    }
+			});
         }
     }
 	
@@ -2220,17 +2229,17 @@ public class DocumentEditor extends Editor<Document> {
 			    context.set(DOCUMENT_ID, document.getName());
             	// save MPart
             	MPart myPart = context.get(MPart.class);
-
-		        // FIXME Workaround (quick & dirty), please use enums or an extra button
+                // FIXME Workaround (quick & dirty), please use enums or an extra button
+                SelectContactDialog<Contact> dlg = null;
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    SelectContactDialog<Creditor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-				    dlg.open();
+				    dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-			    	dlg.open();
+			    	dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    }
+			    dlg.setDialogBoundsSettings(getDialogSettings("SelectContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
+			    dlg.open();
 			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
 			}
@@ -2381,6 +2390,7 @@ public class DocumentEditor extends Editor<Document> {
 			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
 			    context.set(ESelectionService.class, selectionService);
 			    SelectTextDialog dlg = ContextInjectionFactory.make(SelectTextDialog.class, context);
+	            dlg.setDialogBoundsSettings(getDialogSettings("SelectTextDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
                 // handling of adding a new list item is done via event handling in DocumentEditor
 			}
@@ -2512,6 +2522,9 @@ public class DocumentEditor extends Editor<Document> {
 		// Add buttons, depending on the document type
 		switch (documentType) {
 		case OFFER:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
+                    tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.CONFIRMATION));
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
 	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.ORDER));
@@ -3204,5 +3217,17 @@ public class DocumentEditor extends Editor<Document> {
     @Override
     protected Class<Document> getModelClass() {
         return Document.class;
+    }
+
+    /**
+     * @param section 
+     * @return 
+     * 
+     */
+    private IDialogSettings getDialogSettings(String section) {
+        if(settings.getSection(section) == null) {
+            settings.addNewSection(section);
+        }
+        return settings.getSection(section);
     }
 }
