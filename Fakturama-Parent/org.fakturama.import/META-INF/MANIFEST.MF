@@ -5,17 +5,17 @@ Bundle-SymbolicName: org.fakturama.import;singleton:=true
 Bundle-Version: 2.0.5.qualifier
 Bundle-Vendor: Fakturama.org
 Require-Bundle: javax.inject;bundle-version="1.0.0",
- org.eclipse.e4.core.services;bundle-version="2.0.0",
- org.fakturama.wizards;bundle-version="2.0.0",
- com.sebulli.fakturama.model;bundle-version="2.0.0",
- com.sebulli.fakturama.rcp;bundle-version="2.0.0",
- com.sebulli.fakturama.common;bundle-version="2.0.0",
+ org.eclipse.e4.core.services,
+ org.fakturama.wizards,
+ com.sebulli.fakturama.model,
+ com.sebulli.fakturama.rcp,
+ com.sebulli.fakturama.common,
  org.eclipse.jface,
- org.eclipse.equinox.ds;bundle-version="1.4.300",
- com.opcoach.e4.preferences;bundle-version="1.0.0",
- org.eclipse.nebula.widgets.formattedtext;bundle-version="1.0.0",
- org.eclipse.nebula.widgets.cdatetime;bundle-version="1.0.0",
- com.opencsv;bundle-version="4.5.0"
+ org.eclipse.equinox.ds,
+ com.opcoach.e4.preferences,
+ org.eclipse.nebula.widgets.formattedtext,
+ org.eclipse.nebula.widgets.cdatetime,
+ com.opencsv
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
