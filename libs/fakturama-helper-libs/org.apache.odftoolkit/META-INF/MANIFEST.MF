@@ -4,7 +4,7 @@ Bundle-Name: ODF Toolkit
 Bundle-SymbolicName: org.apache.odftoolkit
 Bundle-Version: 0.9.0
 Bundle-Vendor: Apache.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.odfdom.doc,
  org.odftoolkit.odfdom.doc.presentation,
@@ -67,7 +67,6 @@ Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.odfdom.pkg.dsig,
  org.odftoolkit.odfdom.pkg.manifest,
  org.odftoolkit.odfdom.pkg.rdfa,
- org.odftoolkit.odfdom.taglet,
  org.odftoolkit.odfdom.type,
  org.odftoolkit.simple,
  org.odftoolkit.simple.chart,
@@ -81,28 +80,8 @@ Export-Package: org.odftoolkit.odfdom,
  org.odftoolkit.simple.style,
  org.odftoolkit.simple.table,
  org.odftoolkit.simple.text,
- org.odftoolkit.simple.text.list,
- org.w3c.dom,
- org.w3c.dom.bootstrap,
- org.w3c.dom.css,
- org.w3c.dom.events,
- org.w3c.dom.html,
- org.w3c.dom.ls,
- org.w3c.dom.ranges,
- org.w3c.dom.stylesheets,
- org.w3c.dom.traversal,
- org.w3c.dom.views,
- org.w3c.dom.xpath,
- org.xml.sax,
- org.xml.sax.ext,
- org.xml.sax.helpers
+ org.odftoolkit.simple.text.list
 Bundle-ClassPath: lib/odfdom-java-0.9.0-incubating-SNAPSHOT.jar,
  lib/schema2template-0.9.0-incubating-SNAPSHOT.jar,
- lib/simple-odf-0.9.0-incubating-SNAPSHOT.jar,
+ lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar,
  lib/taglets-0.9.0-incubating-SNAPSHOT.jar
-Automatic-Module-Name: org.apache.odftoolkit
-Require-Bundle: org.apache.commons.collections;bundle-version="4.3.0",
- org.apache.commons.beanutils;bundle-version="1.9.3",
- org.apache.commons.lang3;bundle-version="3.8.1",
- org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.commons.validator;bundle-version="1.6.0"
