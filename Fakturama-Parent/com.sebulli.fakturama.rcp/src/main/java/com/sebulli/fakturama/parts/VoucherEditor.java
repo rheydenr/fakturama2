@@ -417,11 +417,8 @@ public abstract class VoucherEditor extends Editor<Voucher>{
         });
         voucher.setAccount(tmpAccount);
 
-        UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
-        vatCatModel2Target.setConverter(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
-        
-        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
+        UpdateValueStrategy<VoucherCategory, String> vatCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<VoucherCategory>(VoucherCategory.class));
+        UpdateValueStrategy<String, VoucherCategory> target2VatcatModel = UpdateValueStrategy.create(new StringToCategoryConverter<VoucherCategory>(categories, VoucherCategory.class));
         bindModelValue(voucher, comboCategory, Voucher_.account.getName(), target2VatcatModel, vatCatModel2Target);
     }
     

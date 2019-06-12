@@ -20,10 +20,9 @@ import com.sebulli.fakturama.model.IDescribableEntity;
 import com.sebulli.fakturama.model.IEntity;
 
 /**
- * @author rheydenr
- *
+ * Common Converter for {@link IEntity}.
  */
-public class EntityConverter<T extends IEntity> extends Converter {
+public class EntityConverter<T extends IEntity> extends Converter<T, String> {
 
     private Class<T> type;
     
@@ -36,13 +35,13 @@ public class EntityConverter<T extends IEntity> extends Converter {
      * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
      */
     @Override
-    public Object convert(Object fromObject) {
+    public String convert(IEntity fromObject) {
         String result = null;
         if(type.equals(getFromType()) && fromObject != null) {
             if(fromObject instanceof IDescribableEntity) {
                 result = ((IDescribableEntity)fromObject).getDescription();
             } else {
-                result = ((IEntity)fromObject).getName();
+                result = fromObject.getName();
             }
         }
         return result;

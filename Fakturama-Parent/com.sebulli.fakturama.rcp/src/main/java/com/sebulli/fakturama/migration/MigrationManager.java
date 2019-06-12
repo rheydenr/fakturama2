@@ -481,6 +481,8 @@ public class MigrationManager {
 
         subMonitor.setWorkRemaining(countOfEntitiesInTable.intValue());
         subMonitor.subTask(String.format("%s %d %s", msg.startMigrationWorking, countOfEntitiesInTable, msg.startMigration));
+
+        @SuppressWarnings("unchecked")
 		CategoryBuilder<ProductCategory> catBuilder = ContextInjectionFactory.make(CategoryBuilder.class, context);
 		Map<String, ProductCategory> productCategories = catBuilder.buildCategoryMap(oldDao.findAllProductCategories(), ProductCategory.class);
 		CursoredStream cs = oldDao.findAllProducts();

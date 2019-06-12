@@ -566,11 +566,8 @@ public class ShippingEditor extends Editor<Shipping> {
         comboViewer.setInput(allVATs);
         editorShipping.setShippingVat(tmpShippingVat);
         
-        UpdateValueStrategy vatModel2Target = new UpdateValueStrategy();
-        vatModel2Target.setConverter(new EntityConverter<VAT>(VAT.class));
-        
-        UpdateValueStrategy target2VatModel = new UpdateValueStrategy();
-        target2VatModel.setConverter(new StringToEntityConverter<VAT>(allVATs, VAT.class));
+        UpdateValueStrategy<VAT, String> vatModel2Target = UpdateValueStrategy.create(new EntityConverter<VAT>(VAT.class));
+        UpdateValueStrategy<String, VAT> target2VatModel = UpdateValueStrategy.create(new StringToEntityConverter<VAT>(allVATs, VAT.class));
         bindModelValue(editorShipping, comboVat, Shipping_.shippingVat.getName(),
                 target2VatModel, vatModel2Target);
 	}
@@ -630,11 +627,8 @@ public class ShippingEditor extends Editor<Shipping> {
         });
         editorShipping.setCategories(tmpCat);
 
-        UpdateValueStrategy shippingCatModel2Target = new UpdateValueStrategy();
-        shippingCatModel2Target.setConverter(new CategoryConverter<ShippingCategory>(ShippingCategory.class));
-        
-        UpdateValueStrategy target2ShippingcatModel = new UpdateValueStrategy();
-        target2ShippingcatModel.setConverter(new StringToCategoryConverter<ShippingCategory>(categories, ShippingCategory.class));
+        UpdateValueStrategy<ShippingCategory, String> shippingCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<ShippingCategory>(ShippingCategory.class));
+        UpdateValueStrategy<String, ShippingCategory> target2ShippingcatModel = UpdateValueStrategy.create(new StringToCategoryConverter<ShippingCategory>(categories, ShippingCategory.class));
         bindModelValue(editorShipping, comboCategory, Shipping_.categories.getName(), target2ShippingcatModel, shippingCatModel2Target);
     }
 
