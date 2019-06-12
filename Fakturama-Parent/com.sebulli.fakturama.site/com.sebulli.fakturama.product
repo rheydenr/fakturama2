@@ -25,7 +25,6 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
-      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -271,7 +270,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
-      <feature id="org.eclipse.persistence.moxy" version="2.7.1.v20171221-bd47e8f"/>
+      <feature id="org.eclipse.persistence.moxy"/>
       <feature id="com.opencsv.feature"/>
    </features>
 
