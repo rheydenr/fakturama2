@@ -829,7 +829,7 @@ public class Placeholders {
 			if (key.equals("ADDRESS.BIRTHDAY")) {
 				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
 			}
-			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
+			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact, document.getReceiver().getManualAddress());
 			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("ADDRESS.FIRSTNAME")) return contact.getFirstName();
 			if (key.equals("ADDRESS.LASTNAME")) return contact.getName();

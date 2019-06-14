@@ -130,6 +130,7 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -862,10 +863,8 @@ public class DocumentEditor extends Editor<Document> {
         	}
 
 			private void clearManualShipping(Document document) {
-//				document.getAdditionalInfo().setShippingAutoVat(null);
 				document.getAdditionalInfo().setShippingDescription(null);
 //				document.getAdditionalInfo().setShippingName(null);
-//				document.getAdditionalInfo().setShippingValue(null);
 //				document.getAdditionalInfo().setShippingVatDescription(null);
 //				document.getAdditionalInfo().setShippingVatValue(null);
 			}
@@ -1191,7 +1190,7 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		Contact billingContact;
+		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
 		// what about additionalInfo?
@@ -1225,13 +1224,7 @@ public class DocumentEditor extends Editor<Document> {
 			retval.setTransactionId(parentDoc.getTransactionId());
 		}
 		
-		billingContact = parentDoc.getBillingContact();
-		retval.setBillingContact(billingContact);
-		retval.setDeliveryContact(java.util.Optional.ofNullable(parentDoc.getDeliveryContact()).orElse(billingContact));
-		
-		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
-		// addressFirstLine instead
-		retval.setAddressFirstLine(contactUtil.getNameWithCompany(billingContact));
+		createReceiverInformationFromParentDoc(parentDoc, retval);
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setConsultant(parentDoc.getConsultant());
@@ -1259,6 +1252,20 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setMessage2(parentDoc.getMessage2());
 		retval.setMessage3(parentDoc.getMessage3());
 		return retval;
+	}
+
+	/**
+	 * Create the receiver information for this document.
+	 * 
+	 * @param resultingDoc the document for which the receiver's information should be created
+	 */
+	private void createReceiverInformationFromParentDoc(Document parentDoc, Document resultingDoc) {
+		DocumentReceiver receiver = modelFactory.createDocumentReceiver();
+		
+		// determine parentDoc's Contact
+		
+		receiver.setAddressFirstLine(contactUtil.getNameWithCompany(parentDoc.getReceiver()));
+		resultingDoc.setReceiver(receiver);
 	}
 
 	/**

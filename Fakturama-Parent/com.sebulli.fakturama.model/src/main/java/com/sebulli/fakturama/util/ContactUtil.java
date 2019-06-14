@@ -23,6 +23,7 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.ReliabilityType;
@@ -85,11 +86,12 @@ public class ContactUtil {
 	 * Address key for the complete name field.
 	 */
 	public static final String KEY_NAME = "name";
+	
+//	private static final String DEFAULT_ADDRESS_SEPARATOR = "\n";
 
 	/**
 	 * Maximal count of salutations.
 	 */
-
     public static final int MAX_SALUTATION_COUNT = 4;
 
 	@Inject
@@ -109,6 +111,8 @@ public class ContactUtil {
      */
     public String getNameWithCompany(Contact contact) {
         String line = "";
+        String manualAddress = contact.getManualAddress();
+        
         if (StringUtils.isNotBlank(contact.getCompany())) {
             line = DataUtils.getInstance().getSingleLine(contact.getCompany());
             if (StringUtils.isNotBlank(contact.getFirstName()) || 
@@ -120,8 +124,7 @@ public class ContactUtil {
          * Therefore we've to skip the following in case we use a manual address
          * (which is determined by a missing customer number).
          */
-        if(contact.getCustomerNumber() == null && contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
-            String manualAddress = contact.getAddress().getManualAddress();
+        if(contact.getCustomerNumber() == null && manualAddress != null) {
             String[] splitted = manualAddress.split("\\n");
             line += StringUtils.chomp(splitted[0]);
         } else {
@@ -136,8 +139,8 @@ public class ContactUtil {
             line = DataUtils.getInstance().getSingleLine(contact.getCompany());
         } else if (StringUtils.isNotBlank(contact.getName())) {
             line = contact.getName();
-        } else if(contact.getAddress() != null && contact.getAddress().getManualAddress() != null) {
-        	line = getDataFromAddressField(contact.getAddress().getManualAddress(), KEY_NAME);
+        } else if(contact.getManualAddress() != null) {
+        	line = getDataFromAddressField(contact.getManualAddress(), KEY_NAME);
         }
         return line;
     }
@@ -161,7 +164,6 @@ public class ContactUtil {
 
         return line;
     }
-
 
     /**
      * Get the gender String
@@ -268,29 +270,40 @@ public class ContactUtil {
     /**
      * Get the address as one String.
      * 
-	 * @param contact the {@link Contact} to use
+	 * @param contact the {@link DocumentReceiver} to use
 	 * @return Complete address
      */
-	public String getAddressAsString(Contact contact) {
-		return getAddressAsString(contact, "\n");
+	public String getAddressAsString(DocumentReceiver contact) {
+		return getAddressAsString(contact, null,"\n");
 	}
+	
+//    /**
+//	 * Get the address as one String. Use a specified separator.
+//	 *
+//	 * @param contact the {@link Contact} to use
+//	 * @param separator the separator
+//	 * 
+//	 * @return Complete address
+//	 */
+//	public String getAddressAsString(final Contact address, String separator) {
+//		return getAddressAsString(address, null, separator);
+//	}
 
     /**
 	 * Get the address as one String. Use a specified separator.
 	 *
 	 * @param contact the {@link Contact} to use
+	 * @param manualAddress manual address to use (if any, can be <code>null</code>)
 	 * @param separator the separator
 	 * 
 	 * @return Complete address
 	 */
-	public String getAddressAsString(Contact contact, String separator) {
+	public String getAddressAsString(final DocumentReceiver address, String manualAddress, String separator) {
 		String addressFormat = "";
-		String address = "";
-		if(contact != null && contact.getAddress() != null) {
-		    
-		    if(contact.getAddress().getManualAddress() != null) {
+		String addressString = "";
+		    if(address == null) {
 		        // if a manual address is set we use it
-		        address = contact.getAddress().getManualAddress();
+		    	addressString = manualAddress;
 		    } else {
 		        // else we build an address string from address fields
 		    	
@@ -308,8 +321,10 @@ public class ContactUtil {
 							hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
 						//}
         			}
-        			if (contact.getAddress() != null && (StringUtils.equalsIgnoreCase(contact.getAddress().getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
+        			
+        			
+        			if (address != null && (StringUtils.equalsIgnoreCase(address.getCountryCode(), hideCountry)
+        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(address.getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
         				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
         			}
@@ -318,20 +333,19 @@ public class ContactUtil {
         		// Get each line
         		String[] addressFormatLines = addressFormat.split("<br>");
         		for (String addressFormatLine : addressFormatLines) {
-        			String formatedAddressLine = replaceFormatString(addressFormatLine, contact);
+        			String formatedAddressLine = replaceFormatString(addressFormatLine, address);
         			String trimmedAddressLine = formatedAddressLine.trim();
         			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
-        					&& !address.isEmpty()) {
-						address += separator;
+        					&& !addressString.isEmpty()) {
+        				addressString += separator;
         			}
         
-        			address += trimmedAddressLine;
+        			addressString += trimmedAddressLine;
         		}
 		    }
-		}
 		
 		// return the complete address
-		return address;
+		return addressString;
 	}
 	
 	
@@ -595,7 +609,7 @@ public class ContactUtil {
 	 * @param contact the given {@link Contact}           
 	 * @return the formatted string.
 	 */
-	public String replaceFormatString(String formatString, Contact contact) {
+	public String replaceFormatString(String formatString, DocumentReceiver contact) {
 		if(contact == null) {
 			return "";
 		}
@@ -606,31 +620,26 @@ public class ContactUtil {
 		formatString = replaceAllWithSpace(formatString, "\\{firstname\\}", contact.getFirstName());
 		formatString = replaceAllWithSpace(formatString, "\\{lastname\\}", contact.getName());
 		
-		Address address = contact.getAddress();
-		if(address != null) {
-			formatString = replaceAllWithSpace(formatString, "\\{street\\}", address.getStreet());
-			formatString = replaceAllWithSpace(formatString, "\\{zip\\}", address.getZip());
-			formatString = replaceAllWithSpace(formatString, "\\{city\\}", address.getCity());
+			formatString = replaceAllWithSpace(formatString, "\\{street\\}", contact.getStreet());
+			formatString = replaceAllWithSpace(formatString, "\\{zip\\}", contact.getZip());
+			formatString = replaceAllWithSpace(formatString, "\\{city\\}", contact.getCity());
 			
 			// determine the country from country code
-			if(address.getCountryCode() != null) {
-    			ULocale cLocale = new ULocale.Builder().setRegion(address.getCountryCode()).build();
+			if(contact.getCountryCode() != null) {
+    			ULocale cLocale = new ULocale.Builder().setRegion(contact.getCountryCode()).build();
     			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
 			} else {
     			formatString = replaceAllWithSpace(formatString, "\\{country\\}", "");
 			}
 			
-			String countrycode = StringUtils.defaultString(address.getCountryCode());
+			String countrycode = StringUtils.defaultString(contact.getCountryCode());
 	
 			if (!countrycode.isEmpty() && !StringUtils.containsAny(countrycode, eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES).split(","))) {
 				countrycode += "-";
 			}
 			formatString = replaceAllWithSpace(formatString, "\\{countrycode\\}", countrycode);
-		} else {
-			formatString = formatString.replaceAll("\\{street\\}|\\{zip\\}|\\{city\\}|\\{country\\}|\\{countrycode\\}", "");
-		}
 
-		formatString = replaceAllWithSpace(formatString, "\\{removed\\}", "");
+			formatString = replaceAllWithSpace(formatString, "\\{removed\\}", "");
 
 		return formatString;
 	}
@@ -643,7 +652,7 @@ public class ContactUtil {
 	 *            TRUE, if the delivery address should be used
 	 * @return The greeting string
 	 */
-	public String getGreeting(Contact contact) {
+	public String getGreeting(DocumentReceiver contact) {
 		String greeting = "";
 		int gender;
 
@@ -728,18 +737,20 @@ public class ContactUtil {
 	//}
 
     /**
-     * Returns <code>true</code> if billing and delivery address are equal
+     * Returns <code>true</code> if billing and delivery addresses are equal
      * 
      * @return
      *  <code>true</code>, if both are equal
      */
     public Boolean deliveryAddressEqualsBillingAddress(Document document) {
-        String billingAddress = getAddressAsString(document.getBillingContact());
-        String deliveryAddress = getAddressAsString(document.getDeliveryContact() != null 
-        		? document.getDeliveryContact() 
-        		: (document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) 
-        		   ? document.getBillingContact().getAlternateContacts() 
-        		   : document.getBillingContact());
+    	
+    	Optional<DocumentReceiver> billingAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isINVOICE()).findFirst();
+        String billingAddress = getAddressAsString(billingAddressFromReceiverDocument.get());
+        
+    	Optional<DocumentReceiver> deliveryAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isDELIVERY()).findFirst();
+    	
+    	// if no explicit delivery address is found we just use the billing address
+        String deliveryAddress = getAddressAsString(deliveryAddressFromReceiverDocument.orElse(billingAddressFromReceiverDocument.get()));
 
 //        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
 //        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }

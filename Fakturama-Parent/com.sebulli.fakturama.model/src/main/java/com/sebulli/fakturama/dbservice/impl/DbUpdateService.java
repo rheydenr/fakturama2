@@ -68,6 +68,9 @@ public class DbUpdateService implements IDbUpdateService {
 		this.eclipsePrefs = Activator.getPreferences();
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		try (java.sql.Connection connection = openConnection(context);) {
+			if(connection == null) {
+				throw new SQLException("can't create database connection!");
+			}
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 //			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
 //				System.err.println("dropping old database schema for workspace request");
