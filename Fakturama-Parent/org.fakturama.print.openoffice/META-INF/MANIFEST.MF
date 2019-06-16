@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenOffice print adapter
 Bundle-SymbolicName: org.fakturama.print.openoffice
-Bundle-Version: 2.0.5.qualifier
+Bundle-Version: 2.0.5
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
